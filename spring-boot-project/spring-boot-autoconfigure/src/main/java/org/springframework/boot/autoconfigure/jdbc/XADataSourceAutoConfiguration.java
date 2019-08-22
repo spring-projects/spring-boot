@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,37 +52,20 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
-@ConditionalOnClass({ DataSource.class, TransactionManager.class,
-		EmbeddedDatabaseType.class })
+@ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
-	private final XADataSourceWrapper wrapper;
-
-	private final DataSourceProperties properties;
-
-	private final XADataSource xaDataSource;
-
 	private ClassLoader classLoader;
 
-	public XADataSourceAutoConfiguration(XADataSourceWrapper wrapper,
-			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource) {
-		this.wrapper = wrapper;
-		this.properties = properties;
-		this.xaDataSource = xaDataSource.getIfAvailable();
-	}
-
 	@Bean
-	public DataSource dataSource() throws Exception {
-		XADataSource xaDataSource = this.xaDataSource;
-		if (xaDataSource == null) {
-			xaDataSource = createXaDataSource();
-		}
-		return this.wrapper.wrapDataSource(xaDataSource);
+	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
+			ObjectProvider<XADataSource> xaDataSource) throws Exception {
+		return wrapper.wrapDataSource(xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
 	}
 
 	@Override
@@ -90,16 +73,14 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource() {
-		String className = this.properties.getXa().getDataSourceClassName();
+	private XADataSource createXaDataSource(DataSourceProperties properties) {
+		String className = properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(this.properties.determineUrl())
-					.getXaDataSourceClassName();
+			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl()).getXaDataSourceClassName();
 		}
-		Assert.state(StringUtils.hasLength(className),
-				"No XA DataSource class name specified");
+		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
-		bindXaProperties(dataSource, this.properties);
+		bindXaProperties(dataSource, properties);
 		return dataSource;
 	}
 
@@ -111,23 +92,20 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 			return (XADataSource) instance;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to create XADataSource instance from '" + className + "'");
+			throw new IllegalStateException("Unable to create XADataSource instance from '" + className + "'");
 		}
 	}
 
-	private void bindXaProperties(XADataSource target,
-			DataSourceProperties dataSourceProperties) {
+	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
-	private ConfigurationPropertySource getBinderSource(
-			DataSourceProperties dataSourceProperties) {
+	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.put("user", this.properties.determineUsername());
-		source.put("password", this.properties.determinePassword());
-		source.put("url", this.properties.determineUrl());
+		source.put("user", dataSourceProperties.determineUsername());
+		source.put("password", dataSourceProperties.determinePassword());
+		source.put("url", dataSourceProperties.determineUrl());
 		source.putAll(dataSourceProperties.getXa().getProperties());
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("user", "username");

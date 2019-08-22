@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,18 +55,6 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 		this.threshold = threshold;
 	}
 
-	/**
-	 * Create a new {@code DiskSpaceHealthIndicator} instance.
-	 * @param path the Path used to compute the available disk space
-	 * @param threshold the minimum disk space that should be available (in bytes)
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #DiskSpaceHealthIndicator(File, DataSize)}
-	 */
-	@Deprecated
-	public DiskSpaceHealthIndicator(File path, long threshold) {
-		this(path, DataSize.ofBytes(threshold));
-	}
-
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
@@ -74,14 +62,11 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format(
-					"Free disk space below threshold. "
-							+ "Available: %d bytes (threshold: %s)",
+			logger.warn(String.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
 					diskFreeInBytes, this.threshold));
 			builder.down();
 		}
-		builder.withDetail("total", this.path.getTotalSpace())
-				.withDetail("free", diskFreeInBytes)
+		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
 				.withDetail("threshold", this.threshold.toBytes());
 	}
 

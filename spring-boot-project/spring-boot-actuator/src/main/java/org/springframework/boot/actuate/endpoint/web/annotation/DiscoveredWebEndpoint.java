@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,14 +29,12 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
  *
  * @author Phillip Webb
  */
-class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation>
-		implements ExposableWebEndpoint {
+class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation> implements ExposableWebEndpoint {
 
 	private final String rootPath;
 
-	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-			EndpointId id, String rootPath, boolean enabledByDefault,
-			Collection<WebOperation> operations) {
+	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
+			boolean enabledByDefault, Collection<WebOperation> operations) {
 		super(discoverer, endpointBean, id, enabledByDefault, operations);
 		this.rootPath = rootPath;
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,29 +23,26 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.server.WebExceptionHandler;
+import org.springframework.web.server.WebFilter;
 
 /**
  * {@link TypeExcludeFilter} for {@link WebFluxTest @WebFluxTest}.
  *
  * @author Stephane Nicoll
  */
-class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebFluxTest> {
+
+	private static final Class<?>[] NO_CONTROLLERS = {};
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
-
-	private static final String[] OPTIONAL_INCLUDES = {
-			"org.springframework.security.config.web.server.ServerHttpSecurity" };
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
@@ -55,14 +52,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
 		includes.add(WebExceptionHandler.class);
-		for (String optionalInclude : OPTIONAL_INCLUDES) {
-			try {
-				includes.add(ClassUtils.forName(optionalInclude, null));
-			}
-			catch (Exception ex) {
-				// Ignore
-			}
-		}
+		includes.add(WebFilter.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
@@ -74,37 +64,16 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
 	}
 
-	private final WebFluxTest annotation;
+	private final Class<?>[] controllers;
 
 	WebFluxTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebFluxTest.class);
-	}
-
-	@Override
-	protected boolean hasAnnotation() {
-		return this.annotation != null;
-	}
-
-	@Override
-	protected ComponentScan.Filter[] getFilters(FilterType type) {
-		switch (type) {
-		case INCLUDE:
-			return this.annotation.includeFilters();
-		case EXCLUDE:
-			return this.annotation.excludeFilters();
-		}
-		throw new IllegalStateException("Unsupported type " + type);
-	}
-
-	@Override
-	protected boolean isUseDefaultFilters() {
-		return this.annotation.useDefaultFilters();
+		super(testClass);
+		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
 	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
-		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
+		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}
 		return DEFAULT_INCLUDES;
@@ -112,7 +81,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.annotation.controllers()));
+		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}
 
 }

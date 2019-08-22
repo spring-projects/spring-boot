@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,8 +49,7 @@ public class DependencyResolutionContext {
 	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
 
 	private String getIdentifier(Dependency dependency) {
-		return getIdentifier(dependency.getArtifact().getGroupId(),
-				dependency.getArtifact().getArtifactId());
+		return getIdentifier(dependency.getArtifact().getGroupId(), dependency.getArtifact().getArtifactId());
 	}
 
 	private String getIdentifier(String groupId, String artifactId) {
@@ -64,8 +63,7 @@ public class DependencyResolutionContext {
 	public String getManagedVersion(String groupId, String artifactId) {
 		Dependency dependency = getManagedDependency(groupId, artifactId);
 		if (dependency == null) {
-			dependency = this.managedDependencyByGroupAndArtifact
-					.get(getIdentifier(groupId, artifactId));
+			dependency = this.managedDependencyByGroupAndArtifact.get(getIdentifier(groupId, artifactId));
 		}
 		return (dependency != null) ? dependency.getArtifact().getVersion() : null;
 	}
@@ -75,15 +73,13 @@ public class DependencyResolutionContext {
 	}
 
 	private Dependency getManagedDependency(String group, String artifact) {
-		return this.managedDependencyByGroupAndArtifact
-				.get(getIdentifier(group, artifact));
+		return this.managedDependencyByGroupAndArtifact.get(getIdentifier(group, artifact));
 	}
 
 	public void addManagedDependencies(List<Dependency> dependencies) {
 		this.managedDependencies.addAll(dependencies);
 		for (Dependency dependency : dependencies) {
-			this.managedDependencyByGroupAndArtifact.put(getIdentifier(dependency),
-					dependency);
+			this.managedDependencyByGroupAndArtifact.put(getIdentifier(dependency), dependency);
 		}
 	}
 
@@ -93,20 +89,16 @@ public class DependencyResolutionContext {
 			List<Exclusion> aetherExclusions = new ArrayList<>();
 			for (org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion exclusion : dependency
 					.getExclusions()) {
-				aetherExclusions.add(new Exclusion(exclusion.getGroupId(),
-						exclusion.getArtifactId(), "*", "*"));
+				aetherExclusions.add(new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*"));
 			}
-			Dependency aetherDependency = new Dependency(
-					new DefaultArtifact(dependency.getGroupId(),
-							dependency.getArtifactId(), "jar", dependency.getVersion()),
-					JavaScopes.COMPILE, false, aetherExclusions);
+			Dependency aetherDependency = new Dependency(new DefaultArtifact(dependency.getGroupId(),
+					dependency.getArtifactId(), "jar", dependency.getVersion()), JavaScopes.COMPILE, false,
+					aetherExclusions);
 			this.managedDependencies.add(0, aetherDependency);
-			this.managedDependencyByGroupAndArtifact.put(getIdentifier(aetherDependency),
-					aetherDependency);
+			this.managedDependencyByGroupAndArtifact.put(getIdentifier(aetherDependency), aetherDependency);
 		}
 		this.dependencyManagement = (this.dependencyManagement != null)
-				? new CompositeDependencyManagement(dependencyManagement,
-						this.dependencyManagement)
+				? new CompositeDependencyManagement(dependencyManagement, this.dependencyManagement)
 				: dependencyManagement;
 		this.artifactCoordinatesResolver = new DependencyManagementArtifactCoordinatesResolver(
 				this.dependencyManagement);

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
@@ -54,152 +54,125 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-public class IntegrationAutoConfigurationTests {
+class IntegrationAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
-					IntegrationAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
 
 	@Test
-	public void integrationIsAvailable() {
+	void integrationIsAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
-			assertThat(context)
-					.hasSingleBean(IntegrationComponentScanConfiguration.class);
+			assertThat(context).hasSingleBean(IntegrationComponentScanConfiguration.class);
 		});
 	}
 
 	@Test
-	public void explicitIntegrationComponentScan() {
-		this.contextRunner
-				.withUserConfiguration(CustomIntegrationComponentScanConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(TestGateway.class);
-					assertThat(context)
-							.doesNotHaveBean(IntegrationComponentScanConfiguration.class);
-				});
+	void explicitIntegrationComponentScan() {
+		this.contextRunner.withUserConfiguration(CustomIntegrationComponentScanConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(TestGateway.class);
+			assertThat(context).doesNotHaveBean(IntegrationComponentScanConfiguration.class);
+		});
 	}
 
 	@Test
-	public void noMBeanServerAvailable() {
+	void noMBeanServerAvailable() {
 		ApplicationContextRunner contextRunnerWithoutJmx = new ApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(IntegrationAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class));
 		contextRunnerWithoutJmx.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
-			assertThat(context)
-					.hasSingleBean(IntegrationComponentScanConfiguration.class);
+			assertThat(context).hasSingleBean(IntegrationComponentScanConfiguration.class);
 		});
 	}
 
 	@Test
-	public void parentContext() {
+	void parentContext() {
 		this.contextRunner.run((context) -> this.contextRunner.withParent(context)
 				.withPropertyValues("spring.jmx.default_domain=org.foo")
-				.run((child) -> assertThat(child)
-						.hasSingleBean(HeaderChannelRegistry.class)));
+				.run((child) -> assertThat(child).hasSingleBean(HeaderChannelRegistry.class)));
 	}
 
 	@Test
-	public void jmxIntegrationEnabledByDefault() {
-		this.contextRunner.run((context) -> {
+	void enableJmxIntegration() {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			assertThat(mBeanServer.getDomains()).contains(
-					"org.springframework.integration",
+			assertThat(mBeanServer.getDomains()).contains("org.springframework.integration",
 					"org.springframework.integration.monitor");
-			assertThat(context)
-					.hasBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
+			assertThat(context).hasBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
 		});
 	}
 
 	@Test
-	public void disableJmxIntegration() {
-		this.contextRunner.withPropertyValues("spring.jmx.enabled=false")
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(MBeanServer.class);
-					assertThat(context)
-							.hasSingleBean(IntegrationManagementConfigurer.class);
-				});
+	void jmxIntegrationIsDisabledByDefault() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(MBeanServer.class);
+			assertThat(context).hasSingleBean(IntegrationManagementConfigurer.class);
+		});
 	}
 
 	@Test
-	public void customizeJmxDomain() {
-		this.contextRunner.withPropertyValues("spring.jmx.default_domain=org.foo")
+	void customizeJmxDomain() {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default_domain=org.foo")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					assertThat(mBeanServer.getDomains()).contains("org.foo")
-							.doesNotContain("org.springframework.integration",
-									"org.springframework.integration.monitor");
+					assertThat(mBeanServer.getDomains()).contains("org.foo").doesNotContain(
+							"org.springframework.integration", "org.springframework.integration.monitor");
 				});
 	}
 
 	@Test
-	public void primaryExporterIsAllowed() {
-		this.contextRunner.withUserConfiguration(CustomMBeanExporter.class)
-				.run((context) -> {
+	void primaryExporterIsAllowed() {
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
+				.withUserConfiguration(CustomMBeanExporter.class).run((context) -> {
 					assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
-					assertThat(context.getBean(MBeanExporter.class))
-							.isSameAs(context.getBean("myMBeanExporter"));
+					assertThat(context.getBean(MBeanExporter.class)).isSameAs(context.getBean("myMBeanExporter"));
 				});
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerEnabled() {
+	void integrationJdbcDataSourceInitializerEnabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.integration.jdbc.initialize-schema=always")
 				.run((context) -> {
-					IntegrationProperties properties = context
-							.getBean(IntegrationProperties.class);
+					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.ALWAYS);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE"))
-							.isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP"))
-							.isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
 					assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE"))
-							.isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
 				});
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerDisabled() {
+	void integrationJdbcDataSourceInitializerDisabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.integration.jdbc.initialize-schema=never")
 				.run((context) -> {
-					IntegrationProperties properties = context
-							.getBean(IntegrationProperties.class);
+					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
-							() -> jdbc.queryForList("select * from INT_MESSAGE"));
+					assertThatExceptionOfType(BadSqlGrammarException.class)
+							.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
 				});
 	}
 
 	@Test
-	public void integrationJdbcDataSourceInitializerEnabledByDefaultWithEmbeddedDb() {
+	void integrationJdbcDataSourceInitializerEnabledByDefaultWithEmbeddedDb() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true")
-				.run((context) -> {
-					IntegrationProperties properties = context
-							.getBean(IntegrationProperties.class);
+				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.generate-unique-name=true").run((context) -> {
+					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
@@ -208,42 +181,40 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationEnablesDefaultCounts() {
-		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasBean("myMessageSource");
-					assertThat(((MessageProcessorMessageSource) context
-							.getBean("myMessageSource")).isCountsEnabled()).isTrue();
-				});
+	void integrationEnablesDefaultCounts() {
+		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("myMessageSource");
+			assertThat(((MessageProcessorMessageSource) context.getBean("myMessageSource")).isCountsEnabled()).isTrue();
+		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
 		@Bean
 		@Primary
-		public MBeanExporter myMBeanExporter() {
+		MBeanExporter myMBeanExporter() {
 			return mock(MBeanExporter.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@IntegrationComponentScan
 	static class CustomIntegrationComponentScanConfiguration {
 
 	}
 
 	@MessagingGateway
-	public interface TestGateway extends RequestReplyExchanger {
+	interface TestGateway extends RequestReplyExchanger {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MessageSourceConfiguration {
 
 		@Bean
-		public MessageSource<?> myMessageSource() {
+		MessageSource<?> myMessageSource() {
 			return new MessageProcessorMessageSource(mock(MessageProcessor.class));
 		}
 

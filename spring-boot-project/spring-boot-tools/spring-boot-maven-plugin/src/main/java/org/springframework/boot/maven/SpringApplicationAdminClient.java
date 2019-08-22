@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ class SpringApplicationAdminClient {
 	 * @return {@code true} if the application is ready to service requests
 	 * @throws MojoExecutionException if the JMX service could not be contacted
 	 */
-	public boolean isReady() throws MojoExecutionException {
+	boolean isReady() throws MojoExecutionException {
 		try {
 			return (Boolean) this.connection.getAttribute(this.objectName, "Ready");
 		}
@@ -66,12 +66,10 @@ class SpringApplicationAdminClient {
 			return false; // Instance not available yet
 		}
 		catch (AttributeNotFoundException ex) {
-			throw new IllegalStateException("Unexpected: attribute 'Ready' not available",
-					ex);
+			throw new IllegalStateException("Unexpected: attribute 'Ready' not available", ex);
 		}
 		catch (ReflectionException ex) {
-			throw new MojoExecutionException("Failed to retrieve Ready attribute",
-					ex.getCause());
+			throw new MojoExecutionException("Failed to retrieve Ready attribute", ex.getCause());
 		}
 		catch (MBeanException | IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -84,8 +82,7 @@ class SpringApplicationAdminClient {
 	 * @throws IOException if an I/O error occurs
 	 * @throws InstanceNotFoundException if the lifecycle mbean cannot be found
 	 */
-	public void stop()
-			throws MojoExecutionException, IOException, InstanceNotFoundException {
+	void stop() throws MojoExecutionException, IOException, InstanceNotFoundException {
 		try {
 			this.connection.invoke(this.objectName, "shutdown", null, null);
 		}
@@ -113,7 +110,7 @@ class SpringApplicationAdminClient {
 	 * @return a connection
 	 * @throws IOException if the connection to that server failed
 	 */
-	public static JMXConnector connect(int port) throws IOException {
+	static JMXConnector connect(int port) throws IOException {
 		String url = "service:jmx:rmi:///jndi/rmi://127.0.0.1:" + port + "/jmxrmi";
 		JMXServiceURL serviceUrl = new JMXServiceURL(url);
 		return JMXConnectorFactory.connect(serviceUrl, null);

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.jdbc;
-
-import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -31,40 +29,24 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @since 1.0.0
  * @see DataSourceAutoConfiguration
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
-	private EmbeddedDatabase database;
-
 	private ClassLoader classLoader;
-
-	private final DataSourceProperties properties;
-
-	public EmbeddedDataSourceConfiguration(DataSourceProperties properties) {
-		this.properties = properties;
-	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	@Bean
-	public EmbeddedDatabase dataSource() {
-		this.database = new EmbeddedDatabaseBuilder()
-				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType())
-				.setName(this.properties.determineDatabaseName()).build();
-		return this.database;
-	}
-
-	@PreDestroy
-	public void close() {
-		if (this.database != null) {
-			this.database.shutdown();
-		}
+	@Bean(destroyMethod = "shutdown")
+	public EmbeddedDatabase dataSource(DataSourceProperties properties) {
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.get(this.classLoader).getType())
+				.setName(properties.determineDatabaseName()).build();
 	}
 
 }

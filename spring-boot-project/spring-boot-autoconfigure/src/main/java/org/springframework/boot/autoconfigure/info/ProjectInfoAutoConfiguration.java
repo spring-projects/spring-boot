@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ProjectInfoProperties.class)
 public class ProjectInfoAutoConfiguration {
 
@@ -62,20 +62,19 @@ public class ProjectInfoAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Bean
 	public GitProperties gitProperties() throws Exception {
-		return new GitProperties(loadFrom(this.properties.getGit().getLocation(), "git",
-				this.properties.getGit().getEncoding()));
+		return new GitProperties(
+				loadFrom(this.properties.getGit().getLocation(), "git", this.properties.getGit().getEncoding()));
 	}
 
 	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {
-		return new BuildProperties(loadFrom(this.properties.getBuild().getLocation(),
-				"build", this.properties.getBuild().getEncoding()));
+		return new BuildProperties(
+				loadFrom(this.properties.getBuild().getLocation(), "build", this.properties.getBuild().getEncoding()));
 	}
 
-	protected Properties loadFrom(Resource location, String prefix, Charset encoding)
-			throws IOException {
+	protected Properties loadFrom(Resource location, String prefix, Charset encoding) throws IOException {
 		prefix = prefix.endsWith(".") ? prefix : prefix + ".";
 		Properties source = loadSource(location, encoding);
 		Properties target = new Properties();
@@ -87,11 +86,9 @@ public class ProjectInfoAutoConfiguration {
 		return target;
 	}
 
-	private Properties loadSource(Resource location, Charset encoding)
-			throws IOException {
+	private Properties loadSource(Resource location, Charset encoding) throws IOException {
 		if (encoding != null) {
-			return PropertiesLoaderUtils
-					.loadProperties(new EncodedResource(location, encoding));
+			return PropertiesLoaderUtils.loadProperties(new EncodedResource(location, encoding));
 		}
 		return PropertiesLoaderUtils.loadProperties(location);
 	}
@@ -101,8 +98,7 @@ public class ProjectInfoAutoConfiguration {
 		private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
 			loader = (loader != null) ? loader : this.defaultResourceLoader;
 			Environment environment = context.getEnvironment();
@@ -110,14 +106,11 @@ public class ProjectInfoAutoConfiguration {
 			if (location == null) {
 				location = "classpath:git.properties";
 			}
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("GitResource");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("GitResource");
 			if (loader.getResource(location).exists()) {
-				return ConditionOutcome
-						.match(message.found("git info at").items(location));
+				return ConditionOutcome.match(message.found("git info at").items(location));
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("git info at").items(location));
+			return ConditionOutcome.noMatch(message.didNotFind("git info at").items(location));
 		}
 
 	}

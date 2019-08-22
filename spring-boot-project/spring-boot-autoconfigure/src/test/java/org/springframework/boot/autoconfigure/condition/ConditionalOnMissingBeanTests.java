@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnMissingBean}.
+ * Tests for {@link ConditionalOnMissingBean @ConditionalOnMissingBean}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -64,18 +64,18 @@ public class ConditionalOnMissingBeanTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void testNameOnMissingBeanCondition() {
-		this.contextRunner.withUserConfiguration(FooConfiguration.class,
-				OnBeanNameConfiguration.class).run((context) -> {
+	void testNameOnMissingBeanCondition() {
+		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanNameConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
 					assertThat(context.getBean("foo")).isEqualTo("foo");
 				});
 	}
 
 	@Test
-	public void testNameOnMissingBeanConditionReverseOrder() {
-		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class,
-				FooConfiguration.class).run((context) -> {
+	void testNameOnMissingBeanConditionReverseOrder() {
+		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class, FooConfiguration.class)
+				.run((context) -> {
 					// Ideally this would be doesNotHaveBean, but the ordering is a
 					// problem
 					assertThat(context).hasBean("bar");
@@ -84,57 +84,52 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testNameAndTypeOnMissingBeanCondition() {
+	void testNameAndTypeOnMissingBeanCondition() {
 		// Arguably this should be hasBean, but as things are implemented the conditions
 		// specified in the different attributes of @ConditionalOnBean are combined with
 		// logical OR (not AND) so if any of them match the condition is true.
-		this.contextRunner
-				.withUserConfiguration(FooConfiguration.class,
-						OnBeanNameAndTypeConfiguration.class)
+		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanNameAndTypeConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
-	public void hierarchyConsidered() {
+	void hierarchyConsidered() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class)
 				.run((parent) -> new ApplicationContextRunner().withParent(parent)
 						.withUserConfiguration(HierarchyConsidered.class)
-						.run((context) -> assertThat(context.containsLocalBean("bar"))
-								.isFalse()));
+						.run((context) -> assertThat(context.containsLocalBean("bar")).isFalse()));
 	}
 
 	@Test
-	public void hierarchyNotConsidered() {
+	void hierarchyNotConsidered() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class)
 				.run((parent) -> new ApplicationContextRunner().withParent(parent)
 						.withUserConfiguration(HierarchyNotConsidered.class)
-						.run((context) -> assertThat(context.containsLocalBean("bar"))
-								.isTrue()));
+						.run((context) -> assertThat(context.containsLocalBean("bar")).isTrue()));
 	}
 
 	@Test
-	public void impliedOnBeanMethod() {
-		this.contextRunner
-				.withUserConfiguration(ExampleBeanConfiguration.class,
-						ImpliedOnBeanMethod.class)
+	void impliedOnBeanMethod() {
+		this.contextRunner.withUserConfiguration(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class)
 				.run((context) -> assertThat(context).hasSingleBean(ExampleBean.class));
 	}
 
 	@Test
-	public void testAnnotationOnMissingBeanCondition() {
-		this.contextRunner.withUserConfiguration(FooConfiguration.class,
-				OnAnnotationConfiguration.class).run((context) -> {
+	void testAnnotationOnMissingBeanCondition() {
+		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnAnnotationConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
 					assertThat(context.getBean("foo")).isEqualTo("foo");
 				});
 	}
 
 	@Test
-	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
+	void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
 		// Rigorous test for SPR-11069
-		this.contextRunner.withUserConfiguration(FooConfiguration.class,
-				OnAnnotationConfiguration.class, FactoryBeanXmlConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(FooConfiguration.class, OnAnnotationConfiguration.class,
+						FactoryBeanXmlConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
 					assertThat(context).hasBean("example");
 					assertThat(context.getBean("foo")).isEqualTo("foo");
@@ -142,164 +137,124 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBean() {
+	void testOnMissingBeanConditionWithFactoryBean() {
 		this.contextRunner
-				.withUserConfiguration(FactoryBeanConfiguration.class,
-						ConditionalOnFactoryBean.class,
+				.withUserConfiguration(FactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
+	void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
 		this.contextRunner
-				.withUserConfiguration(
-						ComponentScannedFactoryBeanBeanMethodConfiguration.class,
-						ConditionalOnFactoryBean.class,
-						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
+						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
-		this.contextRunner.withUserConfiguration(
-				ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+	void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
+		this.contextRunner
+				.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
+						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
+	void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
 		this.contextRunner
-				.withUserConfiguration(
-						FactoryBeanWithBeanMethodArgumentsConfiguration.class,
-						ConditionalOnFactoryBean.class,
-						PropertyPlaceholderAutoConfiguration.class)
+				.withUserConfiguration(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
+						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 				.withPropertyValues("theValue=foo")
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
+	void testOnMissingBeanConditionWithConcreteFactoryBean() {
 		this.contextRunner
-				.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
-						ConditionalOnFactoryBean.class,
+				.withUserConfiguration(ConcreteFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
+	void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
 		this.contextRunner
-				.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class,
-						ConditionalOnFactoryBean.class,
+				.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(context).getBeans(ExampleBean.class)
-						.hasSize(2));
+				.run((context) -> assertThat(context).getBeans(ExampleBean.class).hasSize(2));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithRegisteredFactoryBean() {
+	void testOnMissingBeanConditionWithRegisteredFactoryBean() {
 		this.contextRunner
-				.withUserConfiguration(RegisteredFactoryBeanConfiguration.class,
-						ConditionalOnFactoryBean.class,
+				.withUserConfiguration(RegisteredFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
+	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
 		this.contextRunner
-				.withUserConfiguration(
-						NonspecificFactoryBeanClassAttributeConfiguration.class,
-						ConditionalOnFactoryBean.class,
-						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.withUserConfiguration(NonspecificFactoryBeanClassAttributeConfiguration.class,
+						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
+	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
 		this.contextRunner
-				.withUserConfiguration(
-						NonspecificFactoryBeanStringAttributeConfiguration.class,
-						ConditionalOnFactoryBean.class,
-						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.withUserConfiguration(NonspecificFactoryBeanStringAttributeConfiguration.class,
+						ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
+	void testOnMissingBeanConditionWithFactoryBeanInXml() {
 		this.contextRunner
-				.withUserConfiguration(FactoryBeanXmlConfiguration.class,
-						ConditionalOnFactoryBean.class,
+				.withUserConfiguration(FactoryBeanXmlConfiguration.class, ConditionalOnFactoryBean.class,
 						PropertyPlaceholderAutoConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(ExampleBean.class).toString())
-								.isEqualTo("fromFactory"));
+				.run((context) -> assertThat(context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory"));
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithIgnoredSubclass() {
+	void testOnMissingBeanConditionWithIgnoredSubclass() {
 		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclass.class,
-				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+				ConditionalOnIgnoredSubclass.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
 					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
 				});
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithIgnoredSubclassByName() {
+	void testOnMissingBeanConditionWithIgnoredSubclassByName() {
 		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclassByName.class,
-				PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+				ConditionalOnIgnoredSubclassByName.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
 					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
 				});
 	}
 
 	@Test
-	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
+	void grandparentIsConsideredWhenUsingAncestorsStrategy() {
 		this.contextRunner.withUserConfiguration(ExampleBeanConfiguration.class)
-				.run((grandparent) -> new ApplicationContextRunner()
-						.withParent(grandparent)
+				.run((grandparent) -> new ApplicationContextRunner().withParent(grandparent)
 						.run((parent) -> new ApplicationContextRunner().withParent(parent)
 								.withUserConfiguration(ExampleBeanConfiguration.class,
 										OnBeanInAncestorsConfiguration.class)
-								.run((context) -> assertThat(context)
-										.getBeans(ExampleBean.class).hasSize(1))));
+								.run((context) -> assertThat(context).getBeans(ExampleBean.class).hasSize(1))));
 	}
 
 	@Test
-	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
-		this.contextRunner
-				.run((parent) -> new ApplicationContextRunner().withParent(parent)
-						.withUserConfiguration(ExampleBeanConfiguration.class,
-								OnBeanInAncestorsConfiguration.class)
-						.run((context) -> assertThat(context).getBeans(ExampleBean.class)
-								.hasSize(2)));
+	void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
+		this.contextRunner.run((parent) -> new ApplicationContextRunner().withParent(parent)
+				.withUserConfiguration(ExampleBeanConfiguration.class, OnBeanInAncestorsConfiguration.class)
+				.run((context) -> assertThat(context).getBeans(ExampleBean.class).hasSize(2)));
 	}
 
 	@Test
-	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
 		this.contextRunner.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
 				OnAnnotationWithFactoryBeanConfiguration.class).run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
@@ -308,363 +263,343 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfMissingBeanMatches() {
+	void parameterizedContainerWhenValueIsOfMissingBeanMatches() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithoutCustomConfig.class,
 						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
-						"otherExampleBean", "conditionalCustomExampleBean")));
-	}
-
-	@Test
-	public void parameterizedContainerWhenValueIsOfExistingBeanDoesNotMatch() {
-		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class,
-						ParameterizedConditionWithValueConfig.class)
 				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+						.satisfies(exampleBeanRequirement("otherExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfMissingBeanRegistrationMatches() {
+	void parameterizedContainerWhenValueIsOfExistingBeanDoesNotMatch() {
+		this.contextRunner
+				.withUserConfiguration(ParameterizedWithCustomConfig.class, ParameterizedConditionWithValueConfig.class)
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
+	}
+
+	@Test
+	void parameterizedContainerWhenValueIsOfMissingBeanRegistrationMatches() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
 						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement(
-						"otherExampleBean", "conditionalCustomExampleBean")));
+				.run((context) -> assertThat(context)
+						.satisfies(exampleBeanRequirement("otherExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenValueIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenValueIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanDoesNotMatch() {
+	void parameterizedContainerWhenReturnTypeIsOfExistingBeanDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomConfig.class,
 						ParameterizedConditionWithReturnTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithReturnTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanDoesNotMatch() {
+	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomConfig.class,
 						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
 	@Test
-	public void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationDoesNotMatch() {
+	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
 				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
 						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean")));
+				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
-	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(
-			String... names) {
+	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
-			String[] containers = context
-					.getBeanNamesForType(TestParameterizedContainer.class);
-			assertThat(StringUtils.concatenateStringArrays(beans, containers))
-					.containsOnly(names);
+			String[] containers = context.getBeanNamesForType(TestParameterizedContainer.class);
+			assertThat(StringUtils.concatenateStringArrays(beans, containers)).containsOnly(names);
 		};
 	}
 
-	@Configuration
-	protected static class OnBeanInAncestorsConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class OnBeanInAncestorsConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(search = SearchStrategy.ANCESTORS)
-		public ExampleBean exampleBean2() {
+		ExampleBean exampleBean2() {
 			return new ExampleBean("test");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
-	protected static class OnBeanNameConfiguration {
+	static class OnBeanNameConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo", value = Date.class)
 	@ConditionalOnBean(name = "foo", value = Date.class)
-	protected static class OnBeanNameAndTypeConfiguration {
+	static class OnBeanNameAndTypeConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
-	protected static class FactoryBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class FactoryBeanConfiguration {
 
 		@Bean
-		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
+		FactoryBean<ExampleBean> exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
 
 	}
 
-	@Configuration
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanConfiguration.class))
-	protected static class ComponentScannedFactoryBeanBeanMethodConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanConfiguration.class))
+	static class ComponentScannedFactoryBeanBeanMethodConfiguration {
 
 	}
 
-	@Configuration
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
-	protected static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+					classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
+	static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
 
 	}
 
-	@Configuration
-	protected static class FactoryBeanWithBeanMethodArgumentsConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class FactoryBeanWithBeanMethodArgumentsConfiguration {
 
 		@Bean
-		public FactoryBean<ExampleBean> exampleBeanFactoryBean(
-				@Value("${theValue}") String value) {
+		FactoryBean<ExampleBean> exampleBeanFactoryBean(@Value("${theValue}") String value) {
 			return new ExampleFactoryBean(value);
 		}
 
 	}
 
-	@Configuration
-	protected static class ConcreteFactoryBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class ConcreteFactoryBeanConfiguration {
 
 		@Bean
-		public ExampleFactoryBean exampleBeanFactoryBean() {
+		ExampleFactoryBean exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
 
 	}
 
-	@Configuration
-	protected static class UnhelpfulFactoryBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class UnhelpfulFactoryBeanConfiguration {
 
 		@Bean
 		@SuppressWarnings("rawtypes")
-		public FactoryBean exampleBeanFactoryBean() {
+		FactoryBean exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
-	protected static class NonspecificFactoryBeanClassAttributeConfiguration {
+	static class NonspecificFactoryBeanClassAttributeConfiguration {
 
 	}
 
-	protected static class NonspecificFactoryBeanClassAttributeRegistrar
-			implements ImportBeanDefinitionRegistrar {
+	static class NonspecificFactoryBeanClassAttributeRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(NonspecificFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(
-					OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			builder.getBeanDefinition().setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, ExampleBean.class);
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
-	protected static class NonspecificFactoryBeanStringAttributeConfiguration {
+	static class NonspecificFactoryBeanStringAttributeConfiguration {
 
 	}
 
-	protected static class NonspecificFactoryBeanStringAttributeRegistrar
-			implements ImportBeanDefinitionRegistrar {
+	static class NonspecificFactoryBeanStringAttributeRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(NonspecificFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(
-					OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE,
-					ExampleBean.class.getName());
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			builder.getBeanDefinition().setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, ExampleBean.class.getName());
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(FactoryBeanRegistrar.class)
-	protected static class RegisteredFactoryBeanConfiguration {
+	static class RegisteredFactoryBeanConfiguration {
 
 	}
 
-	protected static class FactoryBeanRegistrar implements ImportBeanDefinitionRegistrar {
+	static class FactoryBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(ExampleFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ExampleFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/factorybean.xml")
-	protected static class FactoryBeanXmlConfiguration {
+	static class FactoryBeanXmlConfiguration {
 
 	}
 
-	@Configuration
-	protected static class ConditionalOnFactoryBean {
+	@Configuration(proxyBeanMethods = false)
+	static class ConditionalOnFactoryBean {
 
 		@Bean
 		@ConditionalOnMissingBean(ExampleBean.class)
-		public ExampleBean createExampleBean() {
+		ExampleBean createExampleBean() {
 			return new ExampleBean("direct");
 		}
 
 	}
 
-	@Configuration
-	protected static class ConditionalOnIgnoredSubclass {
+	@Configuration(proxyBeanMethods = false)
+	static class ConditionalOnIgnoredSubclass {
 
 		@Bean
 		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
-		public ExampleBean exampleBean() {
+		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
 
 	}
 
-	@Configuration
-	protected static class ConditionalOnIgnoredSubclassByName {
+	@Configuration(proxyBeanMethods = false)
+	static class ConditionalOnIgnoredSubclassByName {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
-		public ExampleBean exampleBean() {
+		@ConditionalOnMissingBean(value = ExampleBean.class,
+				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests$CustomExampleBean")
+		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
 
 	}
 
-	@Configuration
-	protected static class CustomExampleBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExampleBeanConfiguration {
 
 		@Bean
-		public CustomExampleBean customExampleBean() {
+		CustomExampleBean customExampleBean() {
 			return new CustomExampleBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(annotation = EnableScheduling.class)
-	protected static class OnAnnotationConfiguration {
+	static class OnAnnotationConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
-	protected static class OnAnnotationWithFactoryBeanConfiguration {
+	static class OnAnnotationWithFactoryBeanConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
-	protected static class FooConfiguration {
+	static class FooConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
-	protected static class HierarchyConsidered {
+	static class HierarchyConsidered {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo", search = SearchStrategy.CURRENT)
-	protected static class HierarchyNotConsidered {
+	static class HierarchyNotConsidered {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
-	protected static class ExampleBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class ExampleBeanConfiguration {
 
 		@Bean
-		public ExampleBean exampleBean() {
+		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
 
 	}
 
-	@Configuration
-	protected static class ImpliedOnBeanMethod {
+	@Configuration(proxyBeanMethods = false)
+	static class ImpliedOnBeanMethod {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ExampleBean exampleBean2() {
+		ExampleBean exampleBean2() {
 			return new ExampleBean("test");
 		}
 
@@ -693,9 +628,9 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	public static class NonspecificFactoryBean implements FactoryBean<Object> {
+	static class NonspecificFactoryBean implements FactoryBean<Object> {
 
-		public NonspecificFactoryBean(String value) {
+		NonspecificFactoryBean(String value) {
 			Assert.state(!value.contains("$"), "value should not contain '$'");
 		}
 
@@ -716,74 +651,75 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomConfig {
 
 		@Bean
-		public CustomExampleBean customExampleBean() {
+		CustomExampleBean customExampleBean() {
 			return new CustomExampleBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomConfig {
 
 		@Bean
-		public OtherExampleBean otherExampleBean() {
+		OtherExampleBean otherExampleBean() {
 			return new OtherExampleBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithoutCustomContainerConfig {
 
 		@Bean
-		public TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
+		TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedWithCustomContainerConfig {
 
 		@Bean
-		public TestParameterizedContainer<CustomExampleBean> customExampleBean() {
+		TestParameterizedContainer<CustomExampleBean> customExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
-		public CustomExampleBean conditionalCustomExampleBean() {
+		@ConditionalOnMissingBean(value = CustomExampleBean.class,
+				parameterizedContainer = TestParameterizedContainer.class)
+		CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnTypeConfig {
 
 		@Bean
 		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
-		public CustomExampleBean conditionalCustomExampleBean() {
+		CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
 
 		@Bean
 		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
-		public TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
+		TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
@@ -805,17 +741,17 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	public static class CustomExampleBean extends ExampleBean {
+	static class CustomExampleBean extends ExampleBean {
 
-		public CustomExampleBean() {
+		CustomExampleBean() {
 			super("custom subclass");
 		}
 
 	}
 
-	public static class OtherExampleBean extends ExampleBean {
+	static class OtherExampleBean extends ExampleBean {
 
-		public OtherExampleBean() {
+		OtherExampleBean() {
 			super("other subclass");
 		}
 
@@ -824,7 +760,7 @@ public class ConditionalOnMissingBeanTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	public @interface TestAnnotation {
+	@interface TestAnnotation {
 
 	}
 

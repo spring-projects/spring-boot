@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,8 +78,7 @@ public class FileSystemWatcher {
 	 * @param quietPeriod the amount of time required after a change has been detected to
 	 * ensure that updates have completed
 	 */
-	public FileSystemWatcher(boolean daemon, Duration pollInterval,
-			Duration quietPeriod) {
+	public FileSystemWatcher(boolean daemon, Duration pollInterval, Duration quietPeriod) {
 		Assert.notNull(pollInterval, "PollInterval must not be null");
 		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
 		Assert.isTrue(pollInterval.toMillis() > 0, "PollInterval must be positive");
@@ -155,11 +154,9 @@ public class FileSystemWatcher {
 		synchronized (this.monitor) {
 			saveInitialSnapshots();
 			if (this.watchThread == null) {
-				Map<File, FolderSnapshot> localFolders = new HashMap<>();
-				localFolders.putAll(this.folders);
-				this.watchThread = new Thread(new Watcher(this.remainingScans,
-						new ArrayList<>(this.listeners), this.triggerFilter,
-						this.pollInterval, this.quietPeriod, localFolders));
+				Map<File, FolderSnapshot> localFolders = new HashMap<>(this.folders);
+				this.watchThread = new Thread(new Watcher(this.remainingScans, new ArrayList<>(this.listeners),
+						this.triggerFilter, this.pollInterval, this.quietPeriod, localFolders));
 				this.watchThread.setName("File Watcher");
 				this.watchThread.setDaemon(this.daemon);
 				this.watchThread.start();
@@ -168,9 +165,7 @@ public class FileSystemWatcher {
 	}
 
 	private void saveInitialSnapshots() {
-		for (File folder : this.folders.keySet()) {
-			this.folders.put(folder, new FolderSnapshot(folder));
-		}
+		this.folders.replaceAll((f, v) -> new FolderSnapshot(f));
 	}
 
 	/**
@@ -220,9 +215,8 @@ public class FileSystemWatcher {
 
 		private Map<File, FolderSnapshot> folders;
 
-		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners,
-				FileFilter triggerFilter, long pollInterval, long quietPeriod,
-				Map<File, FolderSnapshot> folders) {
+		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
+				long pollInterval, long quietPeriod, Map<File, FolderSnapshot> folders) {
 			this.remainingScans = remainingScans;
 			this.listeners = listeners;
 			this.triggerFilter = triggerFilter;
@@ -263,8 +257,7 @@ public class FileSystemWatcher {
 			}
 		}
 
-		private boolean isDifferent(Map<File, FolderSnapshot> previous,
-				Map<File, FolderSnapshot> current) {
+		private boolean isDifferent(Map<File, FolderSnapshot> previous, Map<File, FolderSnapshot> current) {
 			if (!previous.keySet().equals(current.keySet())) {
 				return true;
 			}
@@ -292,8 +285,7 @@ public class FileSystemWatcher {
 			for (FolderSnapshot snapshot : snapshots) {
 				FolderSnapshot previous = this.folders.get(snapshot.getFolder());
 				updated.put(snapshot.getFolder(), snapshot);
-				ChangedFiles changedFiles = previous.getChangedFiles(snapshot,
-						this.triggerFilter);
+				ChangedFiles changedFiles = previous.getChangedFiles(snapshot, this.triggerFilter);
 				if (!changedFiles.getFiles().isEmpty()) {
 					changeSet.add(changedFiles);
 				}

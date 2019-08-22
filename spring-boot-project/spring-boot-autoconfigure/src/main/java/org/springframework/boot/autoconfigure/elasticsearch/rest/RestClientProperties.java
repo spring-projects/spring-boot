@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,8 +35,7 @@ public class RestClientProperties {
 	/**
 	 * Comma-separated list of the Elasticsearch instances to use.
 	 */
-	private List<String> uris = new ArrayList<>(
-			Collections.singletonList("http://localhost:9200"));
+	private List<String> uris = new ArrayList<>(Collections.singletonList("http://localhost:9200"));
 
 	/**
 	 * Credentials username.
@@ -46,6 +46,16 @@ public class RestClientProperties {
 	 * Credentials password.
 	 */
 	private String password;
+
+	/**
+	 * Connection timeout.
+	 */
+	private Duration connectionTimeout = Duration.ofSeconds(1);
+
+	/**
+	 * Read timeout.
+	 */
+	private Duration readTimeout = Duration.ofSeconds(30);
 
 	public List<String> getUris() {
 		return this.uris;
@@ -69,6 +79,22 @@ public class RestClientProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Duration getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Duration connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 
 }

@@ -33,7 +33,7 @@ Spring Boot Maven Plugin
   more specific use cases are described in the examples given below.
 
   In case you still have questions regarding the plugin's usage, please have a look at the existing
-  {{{http://stackoverflow.com/questions/tagged/spring-boot}stack overflow issue}}. If you still don't get an
+  {{{https://stackoverflow.com/questions/tagged/spring-boot}stack overflow issue}}. If you still don't get an
   answer, feel free to create a new thread with the <<<#spring-boot>>> tag.
 
   If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report
@@ -45,6 +45,8 @@ Spring Boot Maven Plugin
   the following examples:
 
   * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
+
+  * {{{./examples/repackage-name.html}Custom repackage name}}
 
   * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
 

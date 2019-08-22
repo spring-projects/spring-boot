@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,28 +25,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class AccessLevelTests {
+class AccessLevelTests {
 
 	@Test
-	public void accessToHealthEndpointShouldNotBeRestricted() {
+	void accessToHealthEndpointShouldNotBeRestricted() {
 		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("health")).isTrue();
 		assertThat(AccessLevel.FULL.isAccessAllowed("health")).isTrue();
 	}
 
 	@Test
-	public void accessToInfoEndpointShouldNotBeRestricted() {
+	void accessToInfoEndpointShouldNotBeRestricted() {
 		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("info")).isTrue();
 		assertThat(AccessLevel.FULL.isAccessAllowed("info")).isTrue();
 	}
 
 	@Test
-	public void accessToDiscoveryEndpointShouldNotBeRestricted() {
+	void accessToDiscoveryEndpointShouldNotBeRestricted() {
 		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("")).isTrue();
 		assertThat(AccessLevel.FULL.isAccessAllowed("")).isTrue();
 	}
 
 	@Test
-	public void accessToAnyOtherEndpointShouldBeRestricted() {
+	void accessToAnyOtherEndpointShouldBeRestricted() {
 		assertThat(AccessLevel.RESTRICTED.isAccessAllowed("env")).isFalse();
 		assertThat(AccessLevel.FULL.isAccessAllowed("")).isTrue();
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,14 +40,13 @@ abstract class AbstractApplicationLauncher implements ApplicationLauncher {
 	protected final void copyApplicationTo(File location) throws IOException {
 		FileSystemUtils.deleteRecursively(location);
 		location.mkdirs();
-		FileSystemUtils.copyRecursively(
-				new File(this.directories.getTestClassesDirectory(), "com"),
+		FileSystemUtils.copyRecursively(new File(this.directories.getTestClassesDirectory(), "com"),
 				new File(location, "com"));
 	}
 
 	protected final List<String> getDependencyJarPaths() {
-		return Stream.of(this.directories.getDependenciesDirectory().listFiles())
-				.map(File::getAbsolutePath).collect(Collectors.toList());
+		return Stream.of(this.directories.getDependenciesDirectory().listFiles()).map(File::getAbsolutePath)
+				.collect(Collectors.toList());
 	}
 
 	protected final Directories getDirectories() {

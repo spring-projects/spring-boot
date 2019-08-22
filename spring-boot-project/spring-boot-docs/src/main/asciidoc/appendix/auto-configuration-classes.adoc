@@ -1,6 +1,9 @@
 [appendix]
 [[auto-configuration-classes]]
 == Auto-configuration classes
+
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 Here is a list of all auto-configuration classes provided by Spring Boot, with links to
 documentation and source code. Remember to also look at the conditions report in your
 application for more details of which features are switched on.
@@ -13,7 +16,7 @@ the `conditions` endpoint).
 === From the "`spring-boot-autoconfigure`" module
 The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
 
-include::../../../target/generated-resources/auto-configuration-classes-spring-boot-autoconfigure.adoc[]
+include::{generated-resources-root}/auto-configuration-classes-spring-boot-autoconfigure.adoc[]
 
 
 
@@ -21,4 +24,4 @@ include::../../../target/generated-resources/auto-configuration-classes-spring-b
 === From the "`spring-boot-actuator-autoconfigure`" module
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 
-include::../../../target/generated-resources/auto-configuration-classes-spring-boot-actuator-autoconfigure.adoc[]
+include::{generated-resources-root}/auto-configuration-classes-spring-boot-actuator-autoconfigure.adoc[]

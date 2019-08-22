@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,8 +39,8 @@ import org.gradle.api.tasks.bundling.War;
  */
 public class BootWar extends War implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.WarLauncher", this::resolveZipCompression);
+	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.WarLauncher",
+			this::resolveZipCompression);
 
 	private String mainClassName;
 
@@ -51,14 +51,22 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		getWebInf().into("lib-provided",
-				(copySpec) -> copySpec.from(
-						(Callable<Iterable<File>>) () -> (this.providedClasspath != null)
-								? this.providedClasspath : Collections.emptyList()));
+				(copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.providedClasspath != null)
+						? this.providedClasspath : Collections.emptyList()));
+		getRootSpec().filesMatching("module-info.class",
+				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+		getRootSpec().eachFile((details) -> {
+			String pathString = details.getRelativePath().getPathString();
+			if ((pathString.startsWith("WEB-INF/lib/") || pathString.startsWith("WEB-INF/lib-provided/"))
+					&& !this.support.isZip(details.getFile())) {
+				details.exclude();
+			}
+		});
 	}
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName());
+		this.support.configureManifest(this, getMainClassName(), "WEB-INF/classes/", "WEB-INF/lib/");
 		super.copy();
 	}
 
@@ -70,8 +78,7 @@ public class BootWar extends War implements BootArchive {
 	@Override
 	public String getMainClassName() {
 		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes()
-					.get("Start-Class");
+			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
 			if (manifestStartClass != null) {
 				setMainClassName(manifestStartClass);
 			}
@@ -128,9 +135,8 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public void providedClasspath(Object... classpath) {
 		FileCollection existingClasspath = this.providedClasspath;
-		this.providedClasspath = getProject().files(
-				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
-				classpath);
+		this.providedClasspath = getProject()
+				.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
 	}
 
 	/**
@@ -175,8 +181,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
 		String relativePath = details.getRelativePath().getPathString();
-		if (relativePath.startsWith("WEB-INF/lib/")
-				|| relativePath.startsWith("WEB-INF/lib-provided/")) {
+		if (relativePath.startsWith("WEB-INF/lib/") || relativePath.startsWith("WEB-INF/lib-provided/")) {
 			return ZipCompression.STORED;
 		}
 		return ZipCompression.DEFLATED;

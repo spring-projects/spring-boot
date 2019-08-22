@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -57,6 +57,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-docs</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
 		</dependency>
 		<dependency>
@@ -64,8 +69,34 @@
 			<artifactId>spring-boot-test-autoconfigure</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-library</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -110,6 +141,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-cbor</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -165,11 +201,6 @@
 		<dependency>
 			<groupId>com.sendgrid</groupId>
 			<artifactId>sendgrid-java</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.timgroup</groupId>
-			<artifactId>java-statsd-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -283,13 +314,28 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-registry-wavefront</artifactId>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-wavefront</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-tools</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -330,34 +376,45 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.json.bind</groupId>
+			<artifactId>jakarta.json.bind-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.json.bind</groupId>
-			<artifactId>javax.json.bind-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -439,9 +496,20 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.ws.rs</groupId>
+					<artifactId>javax.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -492,6 +560,12 @@
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.transaction</groupId>
+					<artifactId>jta</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -527,6 +601,24 @@
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>javax-websocket-server-impl</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-client-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -542,6 +634,12 @@
 			<groupId>org.eclipse.jetty.http2</groupId>
 			<artifactId>http2-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
@@ -562,6 +660,17 @@
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring5</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -570,7 +679,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
+			<artifactId>hamcrest</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -584,14 +693,48 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-reflect</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.persistence</groupId>
+					<artifactId>javax.persistence-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -602,6 +745,12 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
@@ -610,7 +759,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring4-embedded</artifactId>
+			<artifactId>infinispan-spring5-embedded</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -772,6 +921,16 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -797,6 +956,12 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-hazelcast</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
@@ -882,6 +1047,12 @@
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -892,6 +1063,12 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -943,14 +1120,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<!-- Documentation generation -->
-		<dependency>
-			<groupId>io.spring.docresources</groupId>
-			<artifactId>spring-doc-resources</artifactId>
-			<version>0.1.0.BUILD-SNAPSHOT</version>
-			<type>zip</type>
-			<optional>true</optional>
 		</dependency>
 	</dependencies>
 	<build>
@@ -1004,6 +1173,24 @@
 										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
 										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}</link>
 									</links>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-doc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+									<unpack>true</unpack>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
@@ -1159,20 +1346,6 @@
 									</artifactItems>
 								</configuration>
 							</execution>
-							<execution>
-								<id>unpack-doc-resources</id>
-								<goals>
-									<goal>unpack-dependencies</goal>
-								</goals>
-								<phase>generate-resources</phase>
-								<configuration>
-									<includeGroupIds>io.spring.docresources</includeGroupIds>
-									<includeArtifactIds>spring-doc-resources</includeArtifactIds>
-									<includeTypes>zip</includeTypes>
-									<excludeTransitive>true</excludeTransitive>
-									<outputDirectory>${refdocs.build.directory}</outputDirectory>
-								</configuration>
-							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -1243,6 +1416,7 @@
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateConfigurationPropertyTables.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>
@@ -1268,17 +1442,28 @@
 						<artifactId>asciidoctor-maven-plugin</artifactId>
 						<configuration>
 							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${refdocs.build.directory}</directory>
+									<excludes>
+										<exclude>**/*.*adoc</exclude>
+									</excludes>
+								</resource>
+							</resources>
 							<attributes>
-								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+								<sources-root>${project.basedir}/src</sources-root>
+								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
+								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
 								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+								<github-tag>${github-tag}</github-tag>
+								<jooq-version>${jooq.version}</jooq-version>
+								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+								<spring-boot-version>${revision}</spring-boot-version>
+								<spring-docs-version>${spring-framework.version}</spring-docs-version>
+								<spring-framework-version>${spring-framework.version}</spring-framework-version>
+								<spring-integration-docs-version>${spring-integration.version}</spring-integration-docs-version>
 								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
-								<github-tag>${github-tag}</github-tag>
-								<spring-version>${spring.version}</spring-version>
-								<spring-docs-version>${spring.version}</spring-docs-version>
-								<spring-boot-version>${revision}</spring-boot-version>
-								<sources-root>${project.basedir}/src/</sources-root>
 							</attributes>
 						</configuration>
 						<executions>
@@ -1290,6 +1475,43 @@
 								</goals>
 								<configuration>
 									<backend>html5</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>.adoc</sourceDocumentExtension>
+										<sourceDocumentExtension>.htmladoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
+										<attribute-missing>warn</attribute-missing>
+									</attributes>
+									<logHandler>
+										<outputToConsole>true</outputToConsole>
+										<failIf>
+											<severity>DEBUG</severity>
+										</failIf>
+									</logHandler>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-htmlsingle-documentation</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>html5</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>.htmlsingleadoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/htmlsingle</outputDirectory>
 									<sourceHighlighter>highlight.js</sourceHighlighter>
 									<doctype>book</doctype>
 									<attributes>
@@ -1301,6 +1523,28 @@
 										<stylesdir>css/</stylesdir>
 										<stylesheet>spring.css</stylesheet>
 									</attributes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-pdf-documentation</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<backend>pdf</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>pdfadoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${refdocs.build.directory}</directory>
+											<excludes>
+												<exclude>**/*</exclude>
+											</excludes>
+										</resource>
+									</resources>
 								</configuration>
 							</execution>
 						</executions>

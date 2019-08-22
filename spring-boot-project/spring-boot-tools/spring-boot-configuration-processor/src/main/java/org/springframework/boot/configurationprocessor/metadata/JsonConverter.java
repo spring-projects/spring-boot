@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +37,10 @@ class JsonConverter {
 
 	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
 
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType)
-			throws Exception {
+	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<ItemMetadata> items = metadata.getItems().stream()
-				.filter((item) -> item.isOfItemType(itemType)).sorted(ITEM_COMPARATOR)
-				.collect(Collectors.toList());
+		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
+				.sorted(ITEM_COMPARATOR).collect(Collectors.toList());
 		for (ItemMetadata item : items) {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));
@@ -51,7 +49,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
 			jsonArray.put(toJsonObject(hint));
@@ -59,13 +57,13 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONObject toJsonObject(ItemMetadata item) throws Exception {
+	JSONObject toJsonObject(ItemMetadata item) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
-		putIfPresent(jsonObject, "type", item.getType());
-		putIfPresent(jsonObject, "description", item.getDescription());
-		putIfPresent(jsonObject, "sourceType", item.getSourceType());
-		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
+		jsonObject.putOpt("type", item.getType());
+		jsonObject.putOpt("description", item.getDescription());
+		jsonObject.putOpt("sourceType", item.getSourceType());
+		jsonObject.putOpt("sourceMethod", item.getSourceMethod());
 		Object defaultValue = item.getDefaultValue();
 		if (defaultValue != null) {
 			putDefaultValue(jsonObject, defaultValue);
@@ -111,7 +109,7 @@ class JsonConverter {
 	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
 		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
-		putIfPresent(result, "description", value.getDescription());
+		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
@@ -123,8 +121,7 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider)
-			throws Exception {
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
 		JSONObject result = new JSONObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
@@ -135,13 +132,6 @@ class JsonConverter {
 			result.put("parameters", parameters);
 		}
 		return result;
-	}
-
-	private void putIfPresent(JSONObject jsonObject, String name, Object value)
-			throws Exception {
-		if (value != null) {
-			jsonObject.put(name, value);
-		}
 	}
 
 	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {

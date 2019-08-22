@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,33 +49,25 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
  * @author Nakul Mishra
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(KafkaTemplate.class)
 @EnableConfigurationProperties(KafkaProperties.class)
-@Import({ KafkaAnnotationDrivenConfiguration.class,
-		KafkaStreamsAnnotationDrivenConfiguration.class })
+@Import({ KafkaAnnotationDrivenConfiguration.class, KafkaStreamsAnnotationDrivenConfiguration.class })
 public class KafkaAutoConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final RecordMessageConverter messageConverter;
-
-	public KafkaAutoConfiguration(KafkaProperties properties,
-			ObjectProvider<RecordMessageConverter> messageConverter) {
+	public KafkaAutoConfiguration(KafkaProperties properties) {
 		this.properties = properties;
-		this.messageConverter = messageConverter.getIfUnique();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
-	public KafkaTemplate<?, ?> kafkaTemplate(
-			ProducerFactory<Object, Object> kafkaProducerFactory,
-			ProducerListener<Object, Object> kafkaProducerListener) {
-		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(
-				kafkaProducerFactory);
-		if (this.messageConverter != null) {
-			kafkaTemplate.setMessageConverter(this.messageConverter);
-		}
+	public KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
+			ProducerListener<Object, Object> kafkaProducerListener,
+			ObjectProvider<RecordMessageConverter> messageConverter) {
+		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
+		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
 		return kafkaTemplate;
@@ -90,8 +82,7 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public ConsumerFactory<?, ?> kafkaConsumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(
-				this.properties.buildConsumerProperties());
+		return new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties());
 	}
 
 	@Bean
@@ -99,8 +90,7 @@ public class KafkaAutoConfiguration {
 	public ProducerFactory<?, ?> kafkaProducerFactory() {
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
-		String transactionIdPrefix = this.properties.getProducer()
-				.getTransactionIdPrefix();
+		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
 		if (transactionIdPrefix != null) {
 			factory.setTransactionIdPrefix(transactionIdPrefix);
 		}
@@ -110,8 +100,7 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.producer.transaction-id-prefix")
 	@ConditionalOnMissingBean
-	public KafkaTransactionManager<?, ?> kafkaTransactionManager(
-			ProducerFactory<?, ?> producerFactory) {
+	public KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
 		return new KafkaTransactionManager<>(producerFactory);
 	}
 

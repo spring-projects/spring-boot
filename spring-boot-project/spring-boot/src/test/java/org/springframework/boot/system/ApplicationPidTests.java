@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,67 +17,61 @@
 package org.springframework.boot.system;
 
 import java.io.File;
-import java.io.FileReader;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import org.springframework.util.FileCopyUtils;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link ApplicationPid}.
  *
  * @author Phillip Webb
  */
-public class ApplicationPidTests {
+class ApplicationPidTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void toStringWithPid() {
+	void toStringWithPid() {
 		assertThat(new ApplicationPid("123").toString()).isEqualTo("123");
 	}
 
 	@Test
-	public void toStringWithoutPid() {
+	void toStringWithoutPid() {
 		assertThat(new ApplicationPid(null).toString()).isEqualTo("???");
 	}
 
 	@Test
-	public void throwIllegalStateWritingMissingPid() throws Exception {
+	void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+		assertThatIllegalStateException().isThrownBy(() -> pid.write(new File(this.tempDir, "pid")))
 				.withMessageContaining("No PID available");
 	}
 
 	@Test
-	public void writePid() throws Exception {
+	void writePid() throws Exception {
 		ApplicationPid pid = new ApplicationPid("123");
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		pid.write(file);
-		String actual = FileCopyUtils.copyToString(new FileReader(file));
-		assertThat(actual).isEqualTo("123");
+		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test
-	public void writeNewPid() throws Exception {
+	void writeNewPid() throws Exception {
 		// gh-10784
 		ApplicationPid pid = new ApplicationPid("123");
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		file.delete();
 		pid.write(file);
-		String actual = FileCopyUtils.copyToString(new FileReader(file));
-		assertThat(actual).isEqualTo("123");
+		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test
-	public void getPidFromJvm() {
+	void getPidFromJvm() {
 		assertThat(new ApplicationPid().toString()).isNotEmpty();
 	}
 

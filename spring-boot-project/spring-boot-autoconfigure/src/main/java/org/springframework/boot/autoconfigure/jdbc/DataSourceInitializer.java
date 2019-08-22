@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,12 +64,10 @@ class DataSourceInitializer {
 	 * @param properties the matching configuration
 	 * @param resourceLoader the resource loader to use (can be null)
 	 */
-	DataSourceInitializer(DataSource dataSource, DataSourceProperties properties,
-			ResourceLoader resourceLoader) {
+	DataSourceInitializer(DataSource dataSource, DataSourceProperties properties, ResourceLoader resourceLoader) {
 		this.dataSource = dataSource;
 		this.properties = properties;
-		this.resourceLoader = (resourceLoader != null) ? resourceLoader
-				: new DefaultResourceLoader();
+		this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
 	}
 
 	/**
@@ -82,7 +80,7 @@ class DataSourceInitializer {
 		this(dataSource, properties, null);
 	}
 
-	public DataSource getDataSource() {
+	DataSource getDataSource() {
 		return this.dataSource;
 	}
 
@@ -91,9 +89,8 @@ class DataSourceInitializer {
 	 * @return {@code true} if the schema was created
 	 * @see DataSourceProperties#getSchema()
 	 */
-	public boolean createSchema() {
-		List<Resource> scripts = getScripts("spring.datasource.schema",
-				this.properties.getSchema(), "schema");
+	boolean createSchema() {
+		List<Resource> scripts = getScripts("spring.datasource.schema", this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {
 				logger.debug("Initialization disabled (not running DDL scripts)");
@@ -110,9 +107,8 @@ class DataSourceInitializer {
 	 * Initialize the schema if necessary.
 	 * @see DataSourceProperties#getData()
 	 */
-	public void initSchema() {
-		List<Resource> scripts = getScripts("spring.datasource.data",
-				this.properties.getData(), "data");
+	void initSchema() {
+		List<Resource> scripts = getScripts("spring.datasource.data", this.properties.getData(), "data");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {
 				logger.debug("Initialization disabled (not running data scripts)");
@@ -145,8 +141,7 @@ class DataSourceInitializer {
 		}
 	}
 
-	private List<Resource> getScripts(String propertyName, List<String> resources,
-			String fallback) {
+	private List<Resource> getScripts(String propertyName, List<String> resources, String fallback) {
 		if (resources != null) {
 			return getResources(propertyName, resources, true);
 		}
@@ -157,8 +152,7 @@ class DataSourceInitializer {
 		return getResources(propertyName, fallbackResources, false);
 	}
 
-	private List<Resource> getResources(String propertyName, List<String> locations,
-			boolean validate) {
+	private List<Resource> getResources(String propertyName, List<String> locations, boolean validate) {
 		List<Resource> resources = new ArrayList<>();
 		for (String location : locations) {
 			for (Resource resource : doGetResources(location)) {
@@ -166,8 +160,8 @@ class DataSourceInitializer {
 					resources.add(resource);
 				}
 				else if (validate) {
-					throw new InvalidConfigurationPropertyValueException(propertyName,
-							resource, "The specified resource does not exist.");
+					throw new InvalidConfigurationPropertyValueException(propertyName, resource,
+							"The specified resource does not exist.");
 				}
 			}
 		}
@@ -176,14 +170,13 @@ class DataSourceInitializer {
 
 	private Resource[] doGetResources(String location) {
 		try {
-			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
-					this.resourceLoader, Collections.singletonList(location));
+			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(this.resourceLoader,
+					Collections.singletonList(location));
 			factory.afterPropertiesSet();
 			return factory.getObject();
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to load resources from " + location,
-					ex);
+			throw new IllegalStateException("Unable to load resources from " + location, ex);
 		}
 	}
 
@@ -203,9 +196,8 @@ class DataSourceInitializer {
 		DataSource dataSource = this.dataSource;
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
-					.driverClassName(this.properties.determineDriverClassName())
-					.url(this.properties.determineUrl()).username(username)
-					.password(password).build();
+					.driverClassName(this.properties.determineDriverClassName()).url(this.properties.determineUrl())
+					.username(username).password(password).build();
 		}
 		DatabasePopulatorUtils.execute(populator, dataSource);
 	}

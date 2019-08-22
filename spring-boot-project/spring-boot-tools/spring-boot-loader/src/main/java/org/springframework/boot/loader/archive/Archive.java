@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,9 +28,10 @@ import org.springframework.boot.loader.Launcher;
  * An archive that can be launched by the {@link Launcher}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see JarFileArchive
  */
-public interface Archive extends Iterable<Archive.Entry> {
+public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
@@ -53,6 +54,16 @@ public interface Archive extends Iterable<Archive.Entry> {
 	 * @throws IOException if nested archives cannot be read
 	 */
 	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
+
+	/**
+	 * Closes the {@code Archive}, releasing any open resources.
+	 * @throws Exception if an error occurs during close processing
+	 * @since 2.2.0
+	 */
+	@Override
+	default void close() throws Exception {
+
+	}
 
 	/**
 	 * Represents a single entry in the archive.

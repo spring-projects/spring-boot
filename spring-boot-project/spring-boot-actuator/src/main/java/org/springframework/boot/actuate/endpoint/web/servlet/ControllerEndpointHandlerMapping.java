@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,8 +59,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableControllerEndpoint> endpoints,
-			CorsConfiguration corsConfiguration) {
+			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
 		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
 		Assert.notNull(endpoints, "Endpoints must not be null");
 		this.endpointMapping = endpointMapping;
@@ -70,8 +69,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		setUseSuffixPatternMatch(false);
 	}
 
-	private Map<Object, ExposableControllerEndpoint> getHandlers(
-			Collection<ExposableControllerEndpoint> endpoints) {
+	private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
 		Map<Object, ExposableControllerEndpoint> handlers = new LinkedHashMap<>();
 		endpoints.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
 		return Collections.unmodifiableMap(handlers);
@@ -83,44 +81,42 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method,
-			RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		ExposableControllerEndpoint endpoint = this.handlers.get(handler);
 		mapping = withEndpointMappedPatterns(endpoint, mapping);
 		super.registerHandlerMethod(handler, method, mapping);
 	}
 
-	private RequestMappingInfo withEndpointMappedPatterns(
-			ExposableControllerEndpoint endpoint, RequestMappingInfo mapping) {
+	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
+			RequestMappingInfo mapping) {
 		Set<String> patterns = mapping.getPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
 			patterns = Collections.singleton("");
 		}
 		String[] endpointMappedPatterns = patterns.stream()
-				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))
-				.toArray(String[]::new);
+				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);
 		return withNewPatterns(mapping, endpointMappedPatterns);
 	}
 
-	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint,
-			String pattern) {
+	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, String pattern) {
 		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 
-	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping,
-			String[] patterns) {
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-				patterns, null, null, useSuffixPatternMatch(), useTrailingSlashMatch(),
-				null);
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(),
-				mapping.getParamsCondition(), mapping.getHeadersCondition(),
-				mapping.getConsumesCondition(), mapping.getProducesCondition(),
+	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping, String[] patterns) {
+		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(patterns, null, null,
+				useSuffixPatternMatch(), useTrailingSlashMatch(), null);
+		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
+				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
 				mapping.getCustomCondition());
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
-			RequestMappingInfo mapping) {
+	protected boolean hasCorsConfigurationSource(Object handler) {
+		return this.corsConfiguration != null;
+	}
+
+	@Override
+	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 

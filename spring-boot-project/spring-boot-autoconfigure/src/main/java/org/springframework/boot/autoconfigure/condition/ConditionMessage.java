@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -106,8 +106,7 @@ public final class ConditionMessage {
 	 * @see #andCondition(String, Object...)
 	 * @see #forCondition(Class, Object...)
 	 */
-	public Builder andCondition(Class<? extends Annotation> condition,
-			Object... details) {
+	public Builder andCondition(Class<? extends Annotation> condition, Object... details) {
 		Assert.notNull(condition, "Condition must not be null");
 		return andCondition("@" + ClassUtils.getShortName(condition), details);
 	}
@@ -177,8 +176,7 @@ public final class ConditionMessage {
 	 * @see #forCondition(String, Object...)
 	 * @see #andCondition(String, Object...)
 	 */
-	public static Builder forCondition(Class<? extends Annotation> condition,
-			Object... details) {
+	public static Builder forCondition(Class<? extends Annotation> condition, Object... details) {
 		return new ConditionMessage().andCondition(condition, details);
 	}
 
@@ -301,8 +299,8 @@ public final class ConditionMessage {
 			if (StringUtils.isEmpty(reason)) {
 				return new ConditionMessage(ConditionMessage.this, this.condition);
 			}
-			return new ConditionMessage(ConditionMessage.this, this.condition
-					+ (StringUtils.isEmpty(this.condition) ? "" : " ") + reason);
+			return new ConditionMessage(ConditionMessage.this,
+					this.condition + (StringUtils.isEmpty(this.condition) ? "" : " ") + reason);
 		}
 
 	}
@@ -320,8 +318,7 @@ public final class ConditionMessage {
 
 		private final String plural;
 
-		private ItemsBuilder(Builder condition, String reason, String singular,
-				String plural) {
+		private ItemsBuilder(Builder condition, String reason, String singular, String plural) {
 			this.condition = condition;
 			this.reason = reason;
 			this.singular = singular;
@@ -384,16 +381,14 @@ public final class ConditionMessage {
 			Assert.notNull(style, "Style must not be null");
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
-			if ((this.condition == null || items.size() <= 1)
-					&& StringUtils.hasLength(this.singular)) {
-				message.append(" " + this.singular);
+			if ((this.condition == null || items.size() <= 1) && StringUtils.hasLength(this.singular)) {
+				message.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {
-				message.append(" " + this.plural);
+				message.append(" ").append(this.plural);
 			}
 			if (items != null && !items.isEmpty()) {
-				message.append(
-						" " + StringUtils.collectionToDelimitedString(items, ", "));
+				message.append(" ").append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
 			return this.condition.because(message.toString());
 		}

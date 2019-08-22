@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +29,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
  *
  * @author Madhura Bhave
  */
-@SupportedAnnotationTypes({
-		"org.springframework.boot.autoconfigureprocessor.TestConfiguration",
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigureprocessor.TestConfiguration",
 		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.TestConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.TestConditionalOnSingleCandidate",
@@ -38,8 +37,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
-public class TestAutoConfigureAnnotationProcessor
-		extends AutoConfigureAnnotationProcessor {
+public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotationProcessor {
 
 	private final File outputLocation;
 
@@ -52,10 +50,8 @@ public class TestAutoConfigureAnnotationProcessor
 		put(annotations, "Configuration", TestConfiguration.class);
 		put(annotations, "ConditionalOnClass", TestConditionalOnClass.class);
 		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
-		put(annotations, "ConditionalOnSingleCandidate",
-				TestConditionalOnSingleCandidate.class);
-		put(annotations, "ConditionalOnWebApplication",
-				TestConditionalOnWebApplication.class);
+		put(annotations, "ConditionalOnSingleCandidate", TestConditionalOnSingleCandidate.class);
+		put(annotations, "ConditionalOnWebApplication", TestConditionalOnWebApplication.class);
 		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
 		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
 		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);

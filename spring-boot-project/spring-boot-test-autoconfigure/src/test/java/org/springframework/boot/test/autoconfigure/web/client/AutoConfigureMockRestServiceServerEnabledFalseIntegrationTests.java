@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,31 +16,33 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link AutoConfigureMockRestServiceServer} with {@code enabled=false}.
+ * Tests for
+ * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer} with
+ * {@code enabled=false}.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @RestClientTest
 @AutoConfigureMockRestServiceServer(enabled = false)
-public class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
+class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
-		this.applicationContext.getBean(MockServerRestTemplateCustomizer.class);
+	@Test
+	void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
 	}
 
 }

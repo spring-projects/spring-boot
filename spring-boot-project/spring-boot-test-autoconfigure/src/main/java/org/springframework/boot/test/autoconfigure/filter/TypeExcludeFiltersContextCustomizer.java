@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,13 +38,11 @@ import org.springframework.util.ReflectionUtils;
  */
 class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 
-	private static final String EXCLUDE_FILTER_BEAN_NAME = TypeExcludeFilters.class
-			.getName();
+	private static final String EXCLUDE_FILTER_BEAN_NAME = TypeExcludeFilters.class.getName();
 
 	private final Set<TypeExcludeFilter> filters;
 
-	TypeExcludeFiltersContextCustomizer(Class<?> testClass,
-			Set<Class<? extends TypeExcludeFilter>> filterClasses) {
+	TypeExcludeFiltersContextCustomizer(Class<?> testClass, Set<Class<? extends TypeExcludeFilter>> filterClasses) {
 		this.filters = instantiateTypeExcludeFilters(testClass, filterClasses);
 	}
 
@@ -57,8 +55,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 		return Collections.unmodifiableSet(filters);
 	}
 
-	private TypeExcludeFilter instantiateTypeExcludeFilter(Class<?> testClass,
-			Class<?> filterClass) {
+	private TypeExcludeFilter instantiateTypeExcludeFilter(Class<?> testClass, Class<?> filterClass) {
 		try {
 			Constructor<?> constructor = getTypeExcludeFilterConstructor(filterClass);
 			ReflectionUtils.makeAccessible(constructor);
@@ -68,15 +65,14 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 			return (TypeExcludeFilter) constructor.newInstance();
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create filter for " + filterClass,
-					ex);
+			throw new IllegalStateException("Unable to create filter for " + filterClass, ex);
 		}
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && getClass() == obj.getClass() && this.filters
-				.equals(((TypeExcludeFiltersContextCustomizer) obj).filters));
+		return (obj != null && getClass() == obj.getClass()
+				&& this.filters.equals(((TypeExcludeFiltersContextCustomizer) obj).filters));
 	}
 
 	@Override
@@ -88,8 +84,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (!this.filters.isEmpty()) {
-			context.getBeanFactory().registerSingleton(EXCLUDE_FILTER_BEAN_NAME,
-					createDelegatingTypeExcludeFilter());
+			context.getBeanFactory().registerSingleton(EXCLUDE_FILTER_BEAN_NAME, createDelegatingTypeExcludeFilter());
 		}
 	}
 
@@ -97,8 +92,8 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 		return new TypeExcludeFilter() {
 
 			@Override
-			public boolean match(MetadataReader metadataReader,
-					MetadataReaderFactory metadataReaderFactory) throws IOException {
+			public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+					throws IOException {
 				for (TypeExcludeFilter filter : TypeExcludeFiltersContextCustomizer.this.filters) {
 					if (filter.match(metadataReader, metadataReaderFactory)) {
 						return true;
@@ -110,8 +105,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 		};
 	}
 
-	private Constructor<?> getTypeExcludeFilterConstructor(Class<?> type)
-			throws NoSuchMethodException {
+	private Constructor<?> getTypeExcludeFilterConstructor(Class<?> type) throws NoSuchMethodException {
 		try {
 			return type.getDeclaredConstructor(Class.class);
 		}

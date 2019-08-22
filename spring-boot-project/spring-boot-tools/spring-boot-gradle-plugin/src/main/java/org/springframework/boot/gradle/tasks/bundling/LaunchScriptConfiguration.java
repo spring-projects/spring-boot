@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,10 +51,10 @@ public class LaunchScriptConfiguration implements Serializable {
 	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
 		Project project = archiveTask.getProject();
 		putIfMissing(this.properties, "initInfoProvides", archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoShortDescription",
-				removeLineBreaks(project.getDescription()), archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoDescription",
-				augmentLineBreaks(project.getDescription()), archiveTask.getBaseName());
+		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()),
+				archiveTask.getBaseName());
+		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()),
+				archiveTask.getBaseName());
 	}
 
 	/**
@@ -106,17 +106,14 @@ public class LaunchScriptConfiguration implements Serializable {
 			return false;
 		}
 		if (this.script == null) {
-			if (other.script != null) {
-				return false;
-			}
+			return other.script == null;
 		}
 		else if (!this.script.equals(other.script)) {
 			return false;
 		}
-		else if (!equalContents(this.script, other.script)) {
-			return false;
+		else {
+			return equalContents(this.script, other.script);
 		}
-		return true;
 	}
 
 	private boolean equalContents(File one, File two) {
@@ -132,24 +129,20 @@ public class LaunchScriptConfiguration implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((this.properties == null) ? 0 : this.properties.hashCode());
+		result = prime * result + this.properties.hashCode();
 		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
 		return result;
 	}
 
 	private String removeLineBreaks(String string) {
-		return (string != null) ? WHITE_SPACE_PATTERN.matcher(string).replaceAll(" ")
-				: null;
+		return (string != null) ? WHITE_SPACE_PATTERN.matcher(string).replaceAll(" ") : null;
 	}
 
 	private String augmentLineBreaks(String string) {
-		return (string != null) ? LINE_FEED_PATTERN.matcher(string).replaceAll("\n#  ")
-				: null;
+		return (string != null) ? LINE_FEED_PATTERN.matcher(string).replaceAll("\n#  ") : null;
 	}
 
-	private void putIfMissing(Map<String, String> properties, String key,
-			String... valueCandidates) {
+	private void putIfMissing(Map<String, String> properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (candidate != null && !candidate.isEmpty()) {

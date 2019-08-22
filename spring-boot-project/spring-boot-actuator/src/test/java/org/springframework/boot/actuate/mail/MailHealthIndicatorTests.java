@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,8 +27,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.URLName;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -45,17 +45,16 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Stephane Nicoll
  */
-public class MailHealthIndicatorTests {
+class MailHealthIndicatorTests {
 
 	private JavaMailSenderImpl mailSender;
 
 	private MailHealthIndicator indicator;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		Session session = Session.getDefaultInstance(new Properties());
-		session.addProvider(new Provider(Type.TRANSPORT, "success",
-				SuccessTransport.class.getName(), "Test", "1.0.0"));
+		session.addProvider(new Provider(Type.TRANSPORT, "success", SuccessTransport.class.getName(), "Test", "1.0.0"));
 		this.mailSender = mock(JavaMailSenderImpl.class);
 		given(this.mailSender.getHost()).willReturn("smtp.acme.org");
 		given(this.mailSender.getPort()).willReturn(25);
@@ -64,7 +63,7 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsUp() {
+	void smtpIsUp() {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -72,9 +71,8 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsDown() throws MessagingException {
-		willThrow(new MessagingException("A test exception")).given(this.mailSender)
-				.testConnection();
+	void smtpIsDown() throws MessagingException {
+		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");
@@ -83,9 +81,9 @@ public class MailHealthIndicatorTests {
 		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
 	}
 
-	public static class SuccessTransport extends Transport {
+	static class SuccessTransport extends Transport {
 
-		public SuccessTransport(Session session, URLName urlName) {
+		SuccessTransport(Session session, URLName urlName) {
 			super(session, urlName);
 		}
 

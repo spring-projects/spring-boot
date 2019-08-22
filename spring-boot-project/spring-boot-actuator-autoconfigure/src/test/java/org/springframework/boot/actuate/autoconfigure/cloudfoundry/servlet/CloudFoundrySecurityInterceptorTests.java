@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundrySecurityInterceptorTests {
+class CloudFoundrySecurityInterceptorTests {
 
 	@Mock
 	private TokenValidator tokenValidator;
@@ -53,106 +53,86 @@ public class CloudFoundrySecurityInterceptorTests {
 
 	private MockHttpServletRequest request;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
-				this.securityService, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 		this.request = new MockHttpServletRequest();
 	}
 
 	@Test
-	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() {
+	void preHandleWhenRequestIsPreFlightShouldReturnTrue() {
 		this.request.setMethod("OPTIONS");
-		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
+		this.request.addHeader(HttpHeaders.ORIGIN, "https://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void preHandleWhenTokenIsMissingShouldReturnFalse() {
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
-		assertThat(response.getStatus())
-				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
+	void preHandleWhenTokenIsMissingShouldReturnFalse() {
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
+		assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() {
+	void preHandleWhenTokenIsNotBearerShouldReturnFalse() {
 		this.request.addHeader("Authorization", mockAccessToken());
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
-		assertThat(response.getStatus())
-				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
+		assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
-				this.securityService, null);
+	void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
-		assertThat(response.getStatus())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
+		assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
-				"my-app-id");
+	void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
-		assertThat(response.getStatus())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
+		assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenAccessIsNotAllowedShouldReturnFalse() {
+	void preHandleWhenAccessIsNotAllowedShouldReturnFalse() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "bearer " + accessToken);
-		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
-				.willReturn(AccessLevel.RESTRICTED);
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
+		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.RESTRICTED);
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus());
 	}
 
 	@Test
-	public void preHandleSuccessfulWithFullAccess() {
+	void preHandleSuccessfulWithFullAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
-		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
-				.willReturn(AccessLevel.FULL);
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("test"));
+		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.FULL);
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
 		assertThat(token.toString()).isEqualTo(accessToken);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
-		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
-				.isEqualTo(AccessLevel.FULL);
+		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
 	}
 
 	@Test
-	public void preHandleSuccessfulWithRestrictedAccess() {
+	void preHandleSuccessfulWithRestrictedAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
-		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
-				.willReturn(AccessLevel.RESTRICTED);
-		SecurityResponse response = this.interceptor.preHandle(this.request,
-				EndpointId.of("info"));
+		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.RESTRICTED);
+		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("info"));
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
 		assertThat(token.toString()).isEqualTo(accessToken);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
-		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
-				.isEqualTo(AccessLevel.RESTRICTED);
+		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.RESTRICTED);
 	}
 
 	private String mockAccessToken() {

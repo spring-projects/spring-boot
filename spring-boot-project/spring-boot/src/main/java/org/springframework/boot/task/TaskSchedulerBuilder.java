@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.task;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -42,19 +43,27 @@ public class TaskSchedulerBuilder {
 
 	private final Integer poolSize;
 
+	private final Boolean awaitTermination;
+
+	private final Duration awaitTerminationPeriod;
+
 	private final String threadNamePrefix;
 
 	private final Set<TaskSchedulerCustomizer> customizers;
 
 	public TaskSchedulerBuilder() {
 		this.poolSize = null;
+		this.awaitTermination = null;
+		this.awaitTerminationPeriod = null;
 		this.threadNamePrefix = null;
 		this.customizers = null;
 	}
 
-	public TaskSchedulerBuilder(Integer poolSize, String threadNamePrefix,
-			Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+	public TaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
+			String threadNamePrefix, Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
+		this.awaitTermination = awaitTermination;
+		this.awaitTerminationPeriod = awaitTerminationPeriod;
 		this.threadNamePrefix = threadNamePrefix;
 		this.customizers = taskSchedulerCustomizers;
 	}
@@ -65,8 +74,35 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder poolSize(int poolSize) {
-		return new TaskSchedulerBuilder(poolSize, this.threadNamePrefix,
-				this.customizers);
+		return new TaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
+	}
+
+	/**
+	 * Set whether the executor should wait for scheduled tasks to complete on shutdown,
+	 * not interrupting running tasks and executing all tasks in the queue.
+	 * @param awaitTermination whether the executor needs to wait for the tasks to
+	 * complete on shutdown
+	 * @return a new builder instance
+	 * @see #awaitTerminationPeriod(Duration)
+	 */
+	public TaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
+		return new TaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
+	}
+
+	/**
+	 * Set the maximum time the executor is supposed to block on shutdown. When set, the
+	 * executor blocks on shutdown in order to wait for remaining tasks to complete their
+	 * execution before the rest of the container continues to shut down. This is
+	 * particularly useful if your remaining tasks are likely to need access to other
+	 * resources that are also managed by the container.
+	 * @param awaitTerminationPeriod the await termination period to set
+	 * @return a new builder instance
+	 */
+	public TaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -75,8 +111,8 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
-		return new TaskSchedulerBuilder(this.poolSize, threadNamePrefix,
-				this.customizers);
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -102,11 +138,10 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder customizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				append(null, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, append(null, customizers));
 	}
 
 	/**
@@ -117,8 +152,7 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			TaskSchedulerCustomizer... customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(TaskSchedulerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
@@ -131,11 +165,10 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				append(this.customizers, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, append(this.customizers, customizers));
 	}
 
 	/**
@@ -158,6 +191,8 @@ public class TaskSchedulerBuilder {
 	public <T extends ThreadPoolTaskScheduler> T configure(T taskScheduler) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.poolSize).to(taskScheduler::setPoolSize);
+		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
+		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
 		if (!CollectionUtils.isEmpty(this.customizers)) {
 			this.customizers.forEach((customizer) -> customizer.customize(taskScheduler));

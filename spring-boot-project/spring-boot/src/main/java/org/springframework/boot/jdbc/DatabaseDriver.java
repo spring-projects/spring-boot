@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,7 @@ public enum DatabaseDriver {
 	/**
 	 * Apache Derby.
 	 */
-	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver",
-			"org.apache.derby.jdbc.EmbeddedXADataSource",
+	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver", "org.apache.derby.jdbc.EmbeddedXADataSource",
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1"),
 
 	/**
@@ -55,8 +54,7 @@ public enum DatabaseDriver {
 	/**
 	 * HyperSQL DataBase.
 	 */
-	HSQLDB("HSQL Database Engine", "org.hsqldb.jdbc.JDBCDriver",
-			"org.hsqldb.jdbc.pool.JDBCXADataSource",
+	HSQLDB("HSQL Database Engine", "org.hsqldb.jdbc.JDBCDriver", "org.hsqldb.jdbc.pool.JDBCXADataSource",
 			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS"),
 
 	/**
@@ -67,14 +65,12 @@ public enum DatabaseDriver {
 	/**
 	 * MySQL.
 	 */
-	MYSQL("MySQL", "com.mysql.cj.jdbc.Driver", "com.mysql.cj.jdbc.MysqlXADataSource",
-			"/* ping */ SELECT 1"),
+	MYSQL("MySQL", "com.mysql.cj.jdbc.Driver", "com.mysql.cj.jdbc.MysqlXADataSource", "/* ping */ SELECT 1"),
 
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource",
-			"SELECT 1") {
+	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
 
 		@Override
 		public String getId() {
@@ -90,21 +86,25 @@ public enum DatabaseDriver {
 	/**
 	 * Oracle.
 	 */
-	ORACLE("Oracle", "oracle.jdbc.OracleDriver",
-			"oracle.jdbc.xa.client.OracleXADataSource", "SELECT 'Hello' from DUAL"),
+	ORACLE("Oracle", "oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource",
+			"SELECT 'Hello' from DUAL"),
 
 	/**
 	 * Postgres.
 	 */
-	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource",
-			"SELECT 1"),
+	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource", "SELECT 1"),
+
+	/**
+	 * Amazon Redshift.
+	 * @since 2.2.0
+	 */
+	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
 
 	/**
 	 * HANA - SAP HANA Database - HDB.
 	 * @since 2.1.0
 	 */
-	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
-			"SELECT 1 FROM SYS.DUMMY") {
+	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM SYS.DUMMY") {
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("sap");
@@ -125,8 +125,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected boolean matchProductName(String productName) {
-			return super.matchProductName(productName)
-					|| "SQL SERVER".equalsIgnoreCase(productName);
+			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
 
 		}
 
@@ -135,12 +134,12 @@ public enum DatabaseDriver {
 	/**
 	 * Firebird.
 	 */
-	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver",
-			"org.firebirdsql.ds.FBXADataSource", "SELECT 1 FROM RDB$DATABASE") {
+	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver", "org.firebirdsql.ds.FBXADataSource",
+			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Collections.singleton("firebirdsql");
+			return Arrays.asList("firebirdsql", "firebird");
 		}
 
 		@Override
@@ -153,13 +152,11 @@ public enum DatabaseDriver {
 	/**
 	 * DB2 Server.
 	 */
-	DB2("DB2", "com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource",
-			"SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+	DB2("DB2", "com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
 		@Override
 		protected boolean matchProductName(String productName) {
-			return super.matchProductName(productName)
-					|| productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
+			return super.matchProductName(productName) || productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
 		}
 	},
 
@@ -167,8 +164,7 @@ public enum DatabaseDriver {
 	 * DB2 AS400 Server.
 	 */
 	DB2_AS400("DB2 UDB for AS/400", "com.ibm.as400.access.AS400JDBCDriver",
-			"com.ibm.as400.access.AS400JDBCXADataSource",
-			"SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+			"com.ibm.as400.access.AS400JDBCXADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
 		@Override
 		public String getId() {
@@ -182,8 +178,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected boolean matchProductName(String productName) {
-			return super.matchProductName(productName)
-					|| productName.toLowerCase(Locale.ENGLISH).contains("as/400");
+			return super.matchProductName(productName) || productName.toLowerCase(Locale.ENGLISH).contains("as/400");
 		}
 	},
 
@@ -195,8 +190,7 @@ public enum DatabaseDriver {
 	/**
 	 * Informix.
 	 */
-	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null,
-			"select count(*) from systables") {
+	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null, "select count(*) from systables") {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
@@ -217,13 +211,11 @@ public enum DatabaseDriver {
 		this(productName, driverClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName,
-			String xaDataSourceClassName) {
+	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName) {
 		this(productName, driverClassName, xaDataSourceClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName,
-			String xaDataSourceClassName, String validationQuery) {
+	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName, String validationQuery) {
 		this.productName = productName;
 		this.driverClassName = driverClassName;
 		this.xaDataSourceClassName = xaDataSourceClassName;
@@ -278,8 +270,7 @@ public enum DatabaseDriver {
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
-			String urlWithoutPrefix = url.substring("jdbc".length())
-					.toLowerCase(Locale.ENGLISH);
+			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {
 					String prefix = ":" + urlPrefix + ":";

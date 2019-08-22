@@ -1,0 +1,42 @@
+ -----
+ Repackage classifier
+ -----
+ Stephane Nicoll
+ -----
+ 2019-03-29
+ -----
+
+  If you need the repackaged jar to have a different local name than the one defined by
+  the <<<artifactId>>> attribute of the project, simply use the standard <<<finalName>>>
+  as shown in the following example:
+
+---
+<project>
+  ...
+  <build>
+    <finalName>my-app</finalName>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>repackage</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  This configuration will generate the repackaged artifact in <<<target/my-app.jar>>>.

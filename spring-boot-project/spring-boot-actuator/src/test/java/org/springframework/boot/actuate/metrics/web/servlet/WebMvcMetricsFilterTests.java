@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,18 +50,19 @@ import io.micrometer.core.lang.NonNull;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -76,11 +77,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -92,9 +95,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Jon Schneider
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class WebMvcMetricsFilterTests {
+class WebMvcMetricsFilterTests {
 
 	@Autowired
 	private SimpleMeterRegistry registry;
@@ -118,129 +121,126 @@ public class WebMvcMetricsFilterTests {
 	@Qualifier("completableFutureBarrier")
 	private CyclicBarrier completableFutureBarrier;
 
-	@Before
-	public void setupMockMvc() {
+	@BeforeEach
+	void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.addFilters(this.filter, new RedirectAndNotFoundFilter()).build();
 	}
 
 	@Test
-	public void timedMethod() throws Exception {
+	void timedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/10")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests")
-				.tags("status", "200", "uri", "/api/c1/{id}", "public", "true").timer()
-				.count()).isEqualTo(1);
+				.tags("status", "200", "uri", "/api/c1/{id}", "public", "true").timer().count()).isEqualTo(1);
 	}
 
 	@Test
-	public void subclassedTimedMethod() throws Exception {
+	void subclassedTimedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/metaTimed/10")).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests")
-				.tags("status", "200", "uri", "/api/c1/metaTimed/{id}").timer().count())
-						.isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests").tags("status", "200", "uri", "/api/c1/metaTimed/{id}")
+				.timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void untimedMethod() throws Exception {
+	void untimedMethod() throws Exception {
 		this.mvc.perform(get("/api/c1/untimed/10")).andExpect(status().isOk());
-		assertThat(this.registry.find("http.server.requests")
-				.tags("uri", "/api/c1/untimed/10").timer()).isNull();
+		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/c1/untimed/10").timer()).isNull();
 	}
 
 	@Test
-	public void timedControllerClass() throws Exception {
+	void timedControllerClass() throws Exception {
 		this.mvc.perform(get("/api/c2/10")).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer()
-				.count()).isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void badClientRequest() throws Exception {
+	void badClientRequest() throws Exception {
 		this.mvc.perform(get("/api/c1/oops")).andExpect(status().is4xxClientError());
-		assertThat(this.registry.get("http.server.requests").tags("status", "400").timer()
-				.count()).isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests").tags("status", "400").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void redirectRequest() throws Exception {
-		this.mvc.perform(get("/api/redirect")
-				.header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "302"))
+	void redirectRequest() throws Exception {
+		this.mvc.perform(get("/api/redirect").header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "302"))
 				.andExpect(status().is3xxRedirection());
-		assertThat(this.registry.get("http.server.requests").tags("uri", "REDIRECTION")
-				.tags("status", "302").timer()).isNotNull();
+		assertThat(this.registry.get("http.server.requests").tags("uri", "REDIRECTION").tags("status", "302").timer())
+				.isNotNull();
 	}
 
 	@Test
-	public void notFoundRequest() throws Exception {
-		this.mvc.perform(get("/api/not/found")
-				.header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "404"))
+	void notFoundRequest() throws Exception {
+		this.mvc.perform(get("/api/not/found").header(RedirectAndNotFoundFilter.TEST_MISBEHAVE_HEADER, "404"))
 				.andExpect(status().is4xxClientError());
-		assertThat(this.registry.get("http.server.requests").tags("uri", "NOT_FOUND")
-				.tags("status", "404").timer()).isNotNull();
+		assertThat(this.registry.get("http.server.requests").tags("uri", "NOT_FOUND").tags("status", "404").timer())
+				.isNotNull();
 	}
 
 	@Test
-	public void unhandledError() {
-		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10"))
-				.andExpect(status().isOk()))
-						.hasRootCauseInstanceOf(RuntimeException.class);
-		assertThat(this.registry.get("http.server.requests")
-				.tags("exception", "RuntimeException").timer().count()).isEqualTo(1L);
+	void unhandledError() {
+		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10")).andExpect(status().isOk()))
+				.hasRootCauseInstanceOf(RuntimeException.class);
+		assertThat(this.registry.get("http.server.requests").tags("exception", "RuntimeException").timer().count())
+				.isEqualTo(1L);
 	}
 
 	@Test
-	public void anonymousError() {
+	void streamingError() throws Exception {
+		MvcResult result = this.mvc.perform(get("/api/c1/streamingError")).andExpect(request().asyncStarted())
+				.andReturn();
+		assertThatIOException().isThrownBy(() -> this.mvc.perform(asyncDispatch(result)).andReturn());
+		assertThat(this.registry.get("http.server.requests").tags("exception", "IOException").timer().count())
+				.isEqualTo(1L);
+	}
+
+	@Test
+	void anonymousError() {
 		try {
 			this.mvc.perform(get("/api/c1/anonymousError/10"));
 		}
 		catch (Throwable ignore) {
 		}
-		assertThat(this.registry.get("http.server.requests")
-				.tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
+		assertThat(this.registry.get("http.server.requests").tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
 				.getTag("exception")).endsWith("$1");
 	}
 
 	@Test
-	public void asyncCallableRequest() throws Exception {
+	void asyncCallableRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
-				result.set(this.mvc.perform(get("/api/c1/callable/10"))
-						.andExpect(request().asyncStarted()).andReturn());
+				result.set(
+						this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
 			}
 			catch (Exception ex) {
 				fail("Failed to execute async request", ex);
 			}
 		});
 		backgroundRequest.start();
-		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/c1/async")
-				.timer()).describedAs("Request isn't prematurely recorded as complete")
-						.isNull();
+		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/c1/async").timer())
+				.describedAs("Request isn't prematurely recorded as complete").isNull();
 		// once the mapping completes, we can gather information about status, etc.
 		this.callableBarrier.await();
 		MockClock.clock(this.registry).add(Duration.ofSeconds(2));
 		this.callableBarrier.await();
 		backgroundRequest.join();
 		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests").tags("status", "200")
-				.tags("uri", "/api/c1/callable/{id}").timer().totalTime(TimeUnit.SECONDS))
-						.isEqualTo(2L);
+		assertThat(this.registry.get("http.server.requests").tags("status", "200").tags("uri", "/api/c1/callable/{id}")
+				.timer().totalTime(TimeUnit.SECONDS)).isEqualTo(2L);
 	}
 
 	@Test
-	public void asyncRequestThatThrowsUncheckedException() throws Exception {
+	void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
 				.andExpect(request().asyncStarted()).andReturn();
 		assertThatExceptionOfType(NestedServletException.class)
 				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
 				.withRootCauseInstanceOf(RuntimeException.class);
-		assertThat(this.registry.get("http.server.requests")
-				.tags("uri", "/api/c1/completableFutureException").timer().count())
-						.isEqualTo(1);
+		assertThat(this.registry.get("http.server.requests").tags("uri", "/api/c1/completableFutureException").timer()
+				.count()).isEqualTo(1);
 	}
 
 	@Test
-	public void asyncCompletableFutureRequest() throws Exception {
+	void asyncCompletableFutureRequest() throws Exception {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
@@ -257,35 +257,33 @@ public class WebMvcMetricsFilterTests {
 		this.completableFutureBarrier.await();
 		backgroundRequest.join();
 		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests")
-				.tags("uri", "/api/c1/completableFuture/{id}").timer()
+		assertThat(this.registry.get("http.server.requests").tags("uri", "/api/c1/completableFuture/{id}").timer()
 				.totalTime(TimeUnit.SECONDS)).isEqualTo(2);
 	}
 
 	@Test
-	public void endpointThrowsError() throws Exception {
+	void endpointThrowsError() throws Exception {
 		this.mvc.perform(get("/api/c1/error/10")).andExpect(status().is4xxClientError());
-		assertThat(this.registry.get("http.server.requests").tags("status", "422").timer()
-				.count()).isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests").tags("status", "422").timer().count()).isEqualTo(1L);
 	}
 
 	@Test
-	public void regexBasedRequestMapping() throws Exception {
+	void regexBasedRequestMapping() throws Exception {
 		this.mvc.perform(get("/api/c1/regex/.abc")).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests")
-				.tags("uri", "/api/c1/regex/{id:\\.[a-z]+}").timer().count())
+		assertThat(
+				this.registry.get("http.server.requests").tags("uri", "/api/c1/regex/{id:\\.[a-z]+}").timer().count())
 						.isEqualTo(1L);
 	}
 
 	@Test
-	public void recordQuantiles() throws Exception {
+	void recordQuantiles() throws Exception {
 		this.mvc.perform(get("/api/c1/percentiles/10")).andExpect(status().isOk());
 		assertThat(this.prometheusRegistry.scrape()).contains("quantile=\"0.5\"");
 		assertThat(this.prometheusRegistry.scrape()).contains("quantile=\"0.95\"");
 	}
 
 	@Test
-	public void recordHistogram() throws Exception {
+	void recordHistogram() throws Exception {
 		this.mvc.perform(get("/api/c1/histogram/10")).andExpect(status().isOk());
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"0.001\"");
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"30.0\"");
@@ -294,11 +292,11 @@ public class WebMvcMetricsFilterTests {
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Timed(percentiles = 0.95)
-	public @interface Timed95 {
+	@interface Timed95 {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import({ Controller1.class, Controller2.class })
 	static class MetricsFilterApp {
@@ -323,16 +321,15 @@ public class WebMvcMetricsFilterTests {
 
 		@Bean
 		PrometheusMeterRegistry prometheus(Clock clock) {
-			PrometheusMeterRegistry r = new PrometheusMeterRegistry(
-					PrometheusConfig.DEFAULT, new CollectorRegistry(), clock);
+			PrometheusMeterRegistry r = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT, new CollectorRegistry(),
+					clock);
 			r.config().meterFilter(new MeterFilter() {
 				@Override
 				@NonNull
 				public MeterFilterReply accept(@NonNull Meter.Id id) {
 					for (Tag tag : id.getTags()) {
 						if (tag.getKey().equals("uri")
-								&& (tag.getValue().contains("histogram")
-										|| tag.getValue().contains("percentiles"))) {
+								&& (tag.getValue().contains("histogram") || tag.getValue().contains("percentiles"))) {
 							return MeterFilterReply.ACCEPT;
 						}
 					}
@@ -358,10 +355,9 @@ public class WebMvcMetricsFilterTests {
 		}
 
 		@Bean
-		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
-				WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true);
+		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
+					AutoTimer.ENABLED);
 		}
 
 	}
@@ -380,15 +376,14 @@ public class WebMvcMetricsFilterTests {
 
 		@Timed(extraTags = { "public", "true" })
 		@GetMapping("/{id}")
-		public String successfulWithExtraTags(@PathVariable Long id) {
+		String successfulWithExtraTags(@PathVariable Long id) {
 			return id.toString();
 		}
 
 		@Timed
-		@Timed(value = "my.long.request", extraTags = { "region",
-				"test" }, longTask = true)
+		@Timed(value = "my.long.request", extraTags = { "region", "test" }, longTask = true)
 		@GetMapping("/callable/{id}")
-		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
+		Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
 			this.callableBarrier.await();
 			return () -> {
 				try {
@@ -403,8 +398,7 @@ public class WebMvcMetricsFilterTests {
 
 		@Timed
 		@GetMapping("/completableFuture/{id}")
-		CompletableFuture<String> asyncCompletableFuture(@PathVariable Long id)
-				throws Exception {
+		CompletableFuture<String> asyncCompletableFuture(@PathVariable Long id) throws Exception {
 			this.completableFutureBarrier.await();
 			return CompletableFuture.supplyAsync(() -> {
 				try {
@@ -427,51 +421,57 @@ public class WebMvcMetricsFilterTests {
 		}
 
 		@GetMapping("/untimed/{id}")
-		public String successfulButUntimed(@PathVariable Long id) {
+		String successfulButUntimed(@PathVariable Long id) {
 			return id.toString();
 		}
 
 		@Timed
 		@GetMapping("/error/{id}")
-		public String alwaysThrowsException(@PathVariable Long id) {
+		String alwaysThrowsException(@PathVariable Long id) {
 			throw new IllegalStateException("Boom on " + id + "!");
 		}
 
 		@Timed
 		@GetMapping("/anonymousError/{id}")
-		public String alwaysThrowsAnonymousException(@PathVariable Long id)
-				throws Exception {
+		String alwaysThrowsAnonymousException(@PathVariable Long id) throws Exception {
 			throw new Exception("this exception won't have a simple class name") {
 			};
 		}
 
 		@Timed
 		@GetMapping("/unhandledError/{id}")
-		public String alwaysThrowsUnhandledException(@PathVariable Long id) {
+		String alwaysThrowsUnhandledException(@PathVariable Long id) {
 			throw new RuntimeException("Boom on " + id + "!");
+		}
+
+		@GetMapping("/streamingError")
+		ResponseBodyEmitter streamingError() {
+			ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+			emitter.completeWithError(new IOException("error while writing to the response"));
+			return emitter;
 		}
 
 		@Timed
 		@GetMapping("/regex/{id:\\.[a-z]+}")
-		public String successfulRegex(@PathVariable String id) {
+		String successfulRegex(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed(percentiles = { 0.50, 0.95 })
 		@GetMapping("/percentiles/{id}")
-		public String percentiles(@PathVariable String id) {
+		String percentiles(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed(histogram = true)
 		@GetMapping("/histogram/{id}")
-		public String histogram(@PathVariable String id) {
+		String histogram(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed95
 		@GetMapping("/metaTimed/{id}")
-		public String meta(@PathVariable String id) {
+		String meta(@PathVariable String id) {
 			return id;
 		}
 
@@ -489,7 +489,7 @@ public class WebMvcMetricsFilterTests {
 	static class Controller2 {
 
 		@GetMapping("/{id}")
-		public String successful(@PathVariable Long id) {
+		String successful(@PathVariable Long id) {
 			return id.toString();
 		}
 
@@ -500,9 +500,8 @@ public class WebMvcMetricsFilterTests {
 		static final String TEST_MISBEHAVE_HEADER = "x-test-misbehave-status";
 
 		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+				FilterChain filterChain) throws ServletException, IOException {
 			String misbehave = request.getHeader(TEST_MISBEHAVE_HEADER);
 			if (misbehave != null) {
 				response.setStatus(Integer.parseInt(misbehave));

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,13 +29,28 @@ import org.springframework.jdbc.core.JdbcOperations;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Andrii Hrytsiuk
  * @since 2.0.4
  * @see BeanDefinition#setDependsOn(String[])
  */
-public class JdbcOperationsDependsOnPostProcessor
-		extends AbstractDependsOnBeanFactoryPostProcessor {
+public class JdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
+	/**
+	 * Creates a new {@code JdbcOperationsDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given names.
+	 * @param dependsOn names of the beans to depend upon
+	 */
 	public JdbcOperationsDependsOnPostProcessor(String... dependsOn) {
+		super(JdbcOperations.class, dependsOn);
+	}
+
+	/**
+	 * Creates a new {@code JdbcOperationsDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 * @since 2.1.8
+	 */
+	public JdbcOperationsDependsOnPostProcessor(Class<?>... dependsOn) {
 		super(JdbcOperations.class, dependsOn);
 	}
 

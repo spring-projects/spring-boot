@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE suppressions PUBLIC
-    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
-    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+		"-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+		"https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
@@ -13,11 +13,12 @@
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
 	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
@@ -35,4 +36,10 @@
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
+	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
+	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
+	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
 </suppressions>

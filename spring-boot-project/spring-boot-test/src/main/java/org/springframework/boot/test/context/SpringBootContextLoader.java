@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -36,7 +37,8 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.SpringVersion;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
@@ -58,7 +60,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
  * normally startup using {@link SpringApplication}). Although this loader can be used
- * directly, most test will instead want to use it with {@link SpringBootTest}.
+ * directly, most test will instead want to use it with
+ * {@link SpringBootTest @SpringBootTest}.
  * <p>
  * The loader supports both standard {@link MergedContextConfiguration} as well as
  * {@link WebMergedContextConfiguration}. If {@link WebMergedContextConfiguration} is used
@@ -73,23 +76,21 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @since 1.4.0
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
 
+	private static final String[] NO_ARGS = new String[0];
+
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration config)
-			throws Exception {
+	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
 		Class<?>[] configClasses = config.getClasses();
 		String[] configLocations = config.getLocations();
-		Assert.state(
-				!ObjectUtils.isEmpty(configClasses)
-						|| !ObjectUtils.isEmpty(configLocations),
-				() -> "No configuration classes "
-						+ "or locations found in @SpringApplicationConfiguration. "
-						+ "For default configuration detection to work you need "
-						+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion()
-						+ ").");
+		Assert.state(!ObjectUtils.isEmpty(configClasses) || !ObjectUtils.isEmpty(configLocations),
+				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
+						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
+						+ SpringVersion.getVersion() + ").");
 		SpringApplication application = getSpringApplication();
 		application.setMainApplicationClass(config.getTestClass());
 		application.addPrimarySources(Arrays.asList(configClasses));
@@ -98,16 +99,13 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
-		ResourceLoader resourceLoader = (application.getResourceLoader() != null)
-				? application.getResourceLoader()
+		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(getClass().getClassLoader());
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment,
-				resourceLoader, config.getPropertySourceLocations());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				getInlinedProperties(config));
+		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
+				config.getPropertySourceLocations());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
 		application.setEnvironment(environment);
-		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
-				application);
+		List<ApplicationContextInitializer<?>> initializers = getInitializers(config, application);
 		if (config instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
 			if (!isEmbeddedWebEnvironment(config)) {
@@ -124,7 +122,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		return application.run();
+		return application.run(getArgs(config));
 	}
 
 	/**
@@ -145,11 +143,20 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return new StandardEnvironment();
 	}
 
-	private void setActiveProfiles(ConfigurableEnvironment environment,
-			String[] profiles) {
-		TestPropertyValues
-				.of("spring.profiles.active="
-						+ StringUtils.arrayToCommaDelimitedString(profiles))
+	/**
+	 * Return the application arguments to use. If no arguments are available, return an
+	 * empty array.
+	 * @param config the source context configuration
+	 * @return the application arguments to use
+	 * @see SpringApplication#run(String...)
+	 */
+	protected String[] getArgs(MergedContextConfiguration config) {
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
+				.getValue("args", String[].class).orElse(NO_ARGS);
+	}
+
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
+		TestPropertyValues.of("spring.profiles.active=" + StringUtils.arrayToCommaDelimitedString(profiles))
 				.applyTo(environment);
 	}
 
@@ -173,10 +180,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return binder.bind("server.port", Bindable.of(String.class)).isBound();
 	}
 
-	private ConfigurationPropertySource convertToConfigurationPropertySource(
-			List<String> properties) {
-		return new MapConfigurationPropertySource(TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
+	private ConfigurationPropertySource convertToConfigurationPropertySource(List<String> properties) {
+		return new MapConfigurationPropertySource(
+				TestPropertySourceUtils.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
 	}
 
 	/**
@@ -191,8 +197,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @return the initializers to apply
 	 * @since 2.0.0
 	 */
-	protected List<ApplicationContextInitializer<?>> getInitializers(
-			MergedContextConfiguration config, SpringApplication application) {
+	protected List<ApplicationContextInitializer<?>> getInitializers(MergedContextConfiguration config,
+			SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
 			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
@@ -203,28 +209,21 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
 		if (config.getParent() != null) {
-			initializers.add(new ParentContextApplicationContextInitializer(
-					config.getParentApplicationContext()));
+			initializers.add(new ParentContextApplicationContextInitializer(config.getParentApplicationContext()));
 		}
 		return initializers;
 	}
 
 	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration config) {
-		SpringBootTest annotation = AnnotatedElementUtils
-				.findMergedAnnotation(config.getTestClass(), SpringBootTest.class);
-		if (annotation != null && annotation.webEnvironment().isEmbedded()) {
-			return true;
-		}
-		return false;
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
+				.getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE).isEmbedded();
 	}
 
 	@Override
-	public void processContextConfiguration(
-			ContextConfigurationAttributes configAttributes) {
+	public void processContextConfiguration(ContextConfigurationAttributes configAttributes) {
 		super.processContextConfiguration(configAttributes);
 		if (!configAttributes.hasResources()) {
-			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(
-					configAttributes.getDeclaringClass());
+			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes.getDeclaringClass());
 			configAttributes.setClasses(defaultConfigClasses);
 		}
 	}
@@ -239,14 +238,13 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @see AnnotationConfigContextLoaderUtils
 	 */
 	protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
-		return AnnotationConfigContextLoaderUtils
-				.detectDefaultConfigurationClasses(declaringClass);
+		return AnnotationConfigContextLoaderUtils.detectDefaultConfigurationClasses(declaringClass);
 	}
 
 	@Override
 	public ApplicationContext loadContext(String... locations) throws Exception {
-		throw new UnsupportedOperationException("SpringApplicationContextLoader "
-				+ "does not support the loadContext(String...) method");
+		throw new UnsupportedOperationException(
+				"SpringApplicationContextLoader does not support the loadContext(String...) method");
 	}
 
 	@Override
@@ -266,21 +264,18 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 		private static final Class<GenericWebApplicationContext> WEB_CONTEXT_CLASS = GenericWebApplicationContext.class;
 
-		void configure(MergedContextConfiguration configuration,
-				SpringApplication application,
+		void configure(MergedContextConfiguration configuration, SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
 			addMockServletContext(initializers, webConfiguration);
 			application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 		}
 
-		private void addMockServletContext(
-				List<ApplicationContextInitializer<?>> initializers,
+		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
 				WebMergedContextConfiguration webConfiguration) {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
 					webConfiguration.getResourceBasePath());
-			initializers.add(0, new ServletContextApplicationContextInitializer(
-					servletContext, true));
+			initializers.add(0, new ServletContextApplicationContextInitializer(servletContext, true));
 		}
 
 	}
@@ -309,8 +304,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 		private final MergedContextConfiguration config;
 
-		ContextCustomizerAdapter(ContextCustomizer contextCustomizer,
-				MergedContextConfiguration config) {
+		ContextCustomizerAdapter(ContextCustomizer contextCustomizer, MergedContextConfiguration config) {
 			this.contextCustomizer = contextCustomizer;
 			this.config = config;
 		}

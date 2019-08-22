@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,21 +16,21 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import org.elasticsearch.client.Client;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,72 +40,54 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Brian Clozel
  */
-public class ElasticsearchRepositoriesAutoConfigurationTests {
+@DisabledWithoutDockerTestcontainers
+class ElasticsearchRepositoriesAutoConfigurationTests {
 
-	@ClassRule
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	@Container
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
-	private AnnotationConfigApplicationContext context;
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
+							ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
+			.withPropertyValues("spring.elasticsearch.rest.uris=" + elasticsearch.getHttpHostAddress());
 
-	@After
-	public void close() {
-		this.context.close();
+	@Test
+	void testDefaultRepositoryConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(CityRepository.class).hasSingleBean(ElasticsearchRestTemplate.class));
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
-		load(TestConfiguration.class);
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(Client.class)).isNotNull();
-
+	void testNoRepositoryConfiguration() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class));
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
-		load(EmptyConfiguration.class);
-		assertThat(this.context.getBean(Client.class)).isNotNull();
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(CityElasticsearchDbRepository.class));
 	}
 
-	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		load(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(CityElasticsearchDbRepository.class)).isNotNull();
-	}
-
-	private void load(Class<?> config) {
-		this.context = new AnnotationConfigApplicationContext();
-		addElasticsearchProperties(this.context);
-		this.context.register(config, ElasticsearchAutoConfiguration.class,
-				ElasticsearchRepositoriesAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-	}
-
-	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
-		TestPropertyValues.of(
-				"spring.data.elasticsearch.cluster-nodes:localhost:"
-						+ elasticsearch.getMappedTransportPort(),
-				"spring.data.elasticsearch.cluster-name:docker-cluster").applyTo(context);
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
 	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
-	protected static class CustomizedConfiguration {
+	static class CustomizedConfiguration {
 
 	}
 

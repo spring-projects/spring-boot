@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -33,11 +34,25 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Andy Wilkinson
  * @author Jon Schneider
+ * @author Nishant Raut
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public final class RestTemplateExchangeTags {
 
 	private static final Pattern STRIP_URI_PATTERN = Pattern.compile("^https?://[^/]+/");
+
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private RestTemplateExchangeTags() {
 	}
@@ -113,6 +128,40 @@ public final class RestTemplateExchangeTags {
 			host = "none";
 		}
 		return Tag.of("clientName", host);
+	}
+
+	/**
+	 * Creates an {@code outcome} {@code Tag} derived from the
+	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
+	 * @param response the response
+	 * @return the outcome tag
+	 * @since 2.2.0
+	 */
+	public static Tag outcome(ClientHttpResponse response) {
+		try {
+			if (response != null) {
+				HttpStatus statusCode = response.getStatusCode();
+				if (statusCode.is1xxInformational()) {
+					return OUTCOME_INFORMATIONAL;
+				}
+				if (statusCode.is2xxSuccessful()) {
+					return OUTCOME_SUCCESS;
+				}
+				if (statusCode.is3xxRedirection()) {
+					return OUTCOME_REDIRECTION;
+				}
+				if (statusCode.is4xxClientError()) {
+					return OUTCOME_CLIENT_ERROR;
+				}
+				if (statusCode.is5xxServerError()) {
+					return OUTCOME_SERVER_ERROR;
+				}
+			}
+			return OUTCOME_UNKNOWN;
+		}
+		catch (IOException | IllegalArgumentException ex) {
+			return OUTCOME_UNKNOWN;
+		}
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,25 +57,21 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Dmytro Nosan
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		TransactionAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataSourceConnectionProvider dataSourceConnectionProvider(
-			DataSource dataSource) {
-		return new DataSourceConnectionProvider(
-				new TransactionAwareDataSourceProxy(dataSource));
+	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
+		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
-	public SpringTransactionProvider transactionProvider(
-			PlatformTransactionManager txManager) {
+	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
 
@@ -85,60 +81,10 @@ public class JooqAutoConfiguration {
 		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DSLContext.class)
 	@EnableConfigurationProperties(JooqProperties.class)
 	public static class DslContextConfiguration {
-
-		private final JooqProperties properties;
-
-		private final ConnectionProvider connection;
-
-		private final DataSource dataSource;
-
-		private final TransactionProvider transactionProvider;
-
-		private final RecordMapperProvider recordMapperProvider;
-
-		private final RecordUnmapperProvider recordUnmapperProvider;
-
-		private final Settings settings;
-
-		private final RecordListenerProvider[] recordListenerProviders;
-
-		private final ExecuteListenerProvider[] executeListenerProviders;
-
-		private final VisitListenerProvider[] visitListenerProviders;
-
-		private final TransactionListenerProvider[] transactionListenerProviders;
-
-		private final ExecutorProvider executorProvider;
-
-		public DslContextConfiguration(JooqProperties properties,
-				ConnectionProvider connectionProvider, DataSource dataSource,
-				ObjectProvider<TransactionProvider> transactionProvider,
-				ObjectProvider<RecordMapperProvider> recordMapperProvider,
-				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider,
-				ObjectProvider<Settings> settings,
-				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
-				ExecuteListenerProvider[] executeListenerProviders,
-				ObjectProvider<VisitListenerProvider[]> visitListenerProviders,
-				ObjectProvider<TransactionListenerProvider[]> transactionListenerProviders,
-				ObjectProvider<ExecutorProvider> executorProvider) {
-			this.properties = properties;
-			this.connection = connectionProvider;
-			this.dataSource = dataSource;
-			this.transactionProvider = transactionProvider.getIfAvailable();
-			this.recordMapperProvider = recordMapperProvider.getIfAvailable();
-			this.recordUnmapperProvider = recordUnmapperProvider.getIfAvailable();
-			this.settings = settings.getIfAvailable();
-			this.recordListenerProviders = recordListenerProviders.getIfAvailable();
-			this.executeListenerProviders = executeListenerProviders;
-			this.visitListenerProviders = visitListenerProviders.getIfAvailable();
-			this.transactionListenerProviders = transactionListenerProviders
-					.getIfAvailable();
-			this.executorProvider = executorProvider.getIfAvailable();
-		}
 
 		@Bean
 		public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
@@ -147,30 +93,28 @@ public class JooqAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
-		public DefaultConfiguration jooqConfiguration() {
+		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
+				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
+				ObjectProvider<RecordMapperProvider> recordMapperProvider,
+				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider, ObjectProvider<Settings> settings,
+				ObjectProvider<RecordListenerProvider> recordListenerProviders,
+				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+				ObjectProvider<VisitListenerProvider> visitListenerProviders,
+				ObjectProvider<TransactionListenerProvider> transactionListenerProviders,
+				ObjectProvider<ExecutorProvider> executorProvider) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
-			configuration.set(this.properties.determineSqlDialect(this.dataSource));
-			configuration.set(this.connection);
-			if (this.transactionProvider != null) {
-				configuration.set(this.transactionProvider);
-			}
-			if (this.recordMapperProvider != null) {
-				configuration.set(this.recordMapperProvider);
-			}
-			if (this.recordUnmapperProvider != null) {
-				configuration.set(this.recordUnmapperProvider);
-			}
-			if (this.settings != null) {
-				configuration.set(this.settings);
-			}
-			if (this.executorProvider != null) {
-				configuration.set(this.executorProvider);
-			}
-			configuration.set(this.recordListenerProviders);
-			configuration.set(this.executeListenerProviders);
-			configuration.set(this.visitListenerProviders);
-			configuration
-					.setTransactionListenerProvider(this.transactionListenerProviders);
+			configuration.set(properties.determineSqlDialect(dataSource));
+			configuration.set(connectionProvider);
+			transactionProvider.ifAvailable(configuration::set);
+			recordMapperProvider.ifAvailable(configuration::set);
+			recordUnmapperProvider.ifAvailable(configuration::set);
+			settings.ifAvailable(configuration::set);
+			executorProvider.ifAvailable(configuration::set);
+			configuration.set(recordListenerProviders.orderedStream().toArray(RecordListenerProvider[]::new));
+			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
+			configuration.set(visitListenerProviders.orderedStream().toArray(VisitListenerProvider[]::new));
+			configuration.setTransactionListenerProvider(
+					transactionListenerProviders.orderedStream().toArray(TransactionListenerProvider[]::new));
 			return configuration;
 		}
 

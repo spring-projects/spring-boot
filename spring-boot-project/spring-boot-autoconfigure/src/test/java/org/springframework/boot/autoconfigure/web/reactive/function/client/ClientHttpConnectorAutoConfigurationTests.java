@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -39,66 +39,57 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  */
-public class ClientHttpConnectorAutoConfigurationTests {
+class ClientHttpConnectorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateHttpClientBeans() {
+	void shouldCreateHttpClientBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
 			assertThat(context).hasSingleBean(ReactorClientHttpConnector.class);
-			WebClientCustomizer clientCustomizer = context
-					.getBean(WebClientCustomizer.class);
+			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			verify(builder, times(1))
-					.clientConnector(any(ReactorClientHttpConnector.class));
+			verify(builder, times(1)).clientConnector(any(ReactorClientHttpConnector.class));
 		});
 	}
 
 	@Test
-	public void shouldNotOverrideCustomClientConnector() {
-		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorConfig.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ClientHttpConnector.class)
-							.hasBean("customConnector")
-							.doesNotHaveBean(ReactorResourceFactory.class);
-					WebClientCustomizer clientCustomizer = context
-							.getBean(WebClientCustomizer.class);
-					WebClient.Builder builder = mock(WebClient.Builder.class);
-					clientCustomizer.customize(builder);
-					verify(builder, times(1))
-							.clientConnector(any(ClientHttpConnector.class));
-				});
+	void shouldNotOverrideCustomClientConnector() {
+		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(ClientHttpConnector.class).hasBean("customConnector")
+					.doesNotHaveBean(ReactorResourceFactory.class);
+			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
+			WebClient.Builder builder = mock(WebClient.Builder.class);
+			clientCustomizer.customize(builder);
+			verify(builder, times(1)).clientConnector(any(ClientHttpConnector.class));
+		});
 	}
 
 	@Test
-	public void shouldUseCustomReactorResourceFactory() {
+	void shouldUseCustomReactorResourceFactory() {
 		this.contextRunner.withUserConfiguration(CustomReactorResourceConfig.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ReactorClientHttpConnector.class)
-						.hasSingleBean(ReactorResourceFactory.class)
-						.hasBean("customReactorResourceFactory"));
+				.run((context) -> assertThat(context).hasSingleBean(ReactorClientHttpConnector.class)
+						.hasSingleBean(ReactorResourceFactory.class).hasBean("customReactorResourceFactory"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomClientHttpConnectorConfig {
 
 		@Bean
-		public ClientHttpConnector customConnector() {
+		ClientHttpConnector customConnector() {
 			return mock(ClientHttpConnector.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomReactorResourceConfig {
 
 		@Bean
-		public ReactorResourceFactory customReactorResourceFactory() {
+		ReactorResourceFactory customReactorResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 

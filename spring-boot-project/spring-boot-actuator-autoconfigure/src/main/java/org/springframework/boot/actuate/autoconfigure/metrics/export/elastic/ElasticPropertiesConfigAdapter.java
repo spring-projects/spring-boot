@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,8 +25,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  *
  * @author Andy Wilkinson
  */
-class ElasticPropertiesConfigAdapter extends
-		StepRegistryPropertiesConfigAdapter<ElasticProperties> implements ElasticConfig {
+class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<ElasticProperties>
+		implements ElasticConfig {
 
 	ElasticPropertiesConfigAdapter(ElasticProperties properties) {
 		super(properties);
@@ -44,20 +44,17 @@ class ElasticPropertiesConfigAdapter extends
 
 	@Override
 	public String indexDateFormat() {
-		return get(ElasticProperties::getIndexDateFormat,
-				ElasticConfig.super::indexDateFormat);
+		return get(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
 	}
 
 	@Override
 	public String timestampFieldName() {
-		return get(ElasticProperties::getTimestampFieldName,
-				ElasticConfig.super::timestampFieldName);
+		return get(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
 	}
 
 	@Override
 	public boolean autoCreateIndex() {
-		return get(ElasticProperties::isAutoCreateIndex,
-				ElasticConfig.super::autoCreateIndex);
+		return get(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
 	}
 
 	@Override

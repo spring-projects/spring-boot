@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,20 +39,17 @@ public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndi
 	 * Create a new {@link CassandraHealthIndicator} instance.
 	 * @param reactiveCassandraOperations the Cassandra operations
 	 */
-	public CassandraReactiveHealthIndicator(
-			ReactiveCassandraOperations reactiveCassandraOperations) {
-		Assert.notNull(reactiveCassandraOperations,
-				"ReactiveCassandraOperations must not be null");
+	public CassandraReactiveHealthIndicator(ReactiveCassandraOperations reactiveCassandraOperations) {
+		super("Cassandra health check failed");
+		Assert.notNull(reactiveCassandraOperations, "ReactiveCassandraOperations must not be null");
 		this.reactiveCassandraOperations = reactiveCassandraOperations;
 	}
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		Select select = QueryBuilder.select("release_version").from("system", "local");
-		return this.reactiveCassandraOperations.getReactiveCqlOperations()
-				.queryForObject(select, String.class)
-				.map((version) -> builder.up().withDetail("version", version).build())
-				.single();
+		return this.reactiveCassandraOperations.getReactiveCqlOperations().queryForObject(select, String.class)
+				.map((version) -> builder.up().withDetail("version", version).build()).single();
 	}
 
 }

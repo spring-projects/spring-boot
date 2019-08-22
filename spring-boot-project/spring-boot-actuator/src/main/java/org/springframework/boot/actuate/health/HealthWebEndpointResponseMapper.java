@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,10 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HealthEndpointWebExtension} or
+ * {@link ReactiveHealthEndpointWebExtension}
  */
+@Deprecated
 public class HealthWebEndpointResponseMapper {
 
 	private final HealthStatusHttpMapper statusHttpMapper;
@@ -37,8 +40,8 @@ public class HealthWebEndpointResponseMapper {
 
 	private final Set<String> authorizedRoles;
 
-	public HealthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper,
-			ShowDetails showDetails, Set<String> authorizedRoles) {
+	public HealthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper, ShowDetails showDetails,
+			Set<String> authorizedRoles) {
 		this.statusHttpMapper = statusHttpMapper;
 		this.showDetails = showDetails;
 		this.authorizedRoles = authorizedRoles;
@@ -55,8 +58,7 @@ public class HealthWebEndpointResponseMapper {
 	 * @param securityContext the security context
 	 * @return the mapped response
 	 */
-	public WebEndpointResponse<Health> mapDetails(Supplier<Health> health,
-			SecurityContext securityContext) {
+	public WebEndpointResponse<Health> mapDetails(Supplier<Health> health, SecurityContext securityContext) {
 		if (canSeeDetails(securityContext, this.showDetails)) {
 			Health healthDetails = health.get();
 			if (healthDetails != null) {
@@ -73,8 +75,7 @@ public class HealthWebEndpointResponseMapper {
 	 * @param securityContext the security context
 	 * @return the mapped response
 	 */
-	public WebEndpointResponse<Health> map(Health health,
-			SecurityContext securityContext) {
+	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext) {
 		return map(health, securityContext, this.showDetails);
 	}
 
@@ -86,12 +87,8 @@ public class HealthWebEndpointResponseMapper {
 	 * @param showDetails when to show details in the response
 	 * @return the mapped response
 	 */
-	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext,
-			ShowDetails showDetails) {
-		if (showDetails == ShowDetails.NEVER
-				|| (showDetails == ShowDetails.WHEN_AUTHORIZED
-						&& (securityContext.getPrincipal() == null
-								|| !isUserInRole(securityContext)))) {
+	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext, ShowDetails showDetails) {
+		if (!canSeeDetails(securityContext, showDetails)) {
 			health = Health.status(health.getStatus()).build();
 		}
 		return createWebEndpointResponse(health);
@@ -102,12 +99,9 @@ public class HealthWebEndpointResponseMapper {
 		return new WebEndpointResponse<>(health, status);
 	}
 
-	private boolean canSeeDetails(SecurityContext securityContext,
-			ShowDetails showDetails) {
-		if (showDetails == ShowDetails.NEVER
-				|| (showDetails == ShowDetails.WHEN_AUTHORIZED
-						&& (securityContext.getPrincipal() == null
-								|| !isUserInRole(securityContext)))) {
+	private boolean canSeeDetails(SecurityContext securityContext, ShowDetails showDetails) {
+		if (showDetails == ShowDetails.NEVER || (showDetails == ShowDetails.WHEN_AUTHORIZED
+				&& (securityContext.getPrincipal() == null || !isUserInRole(securityContext)))) {
 			return false;
 		}
 		return true;

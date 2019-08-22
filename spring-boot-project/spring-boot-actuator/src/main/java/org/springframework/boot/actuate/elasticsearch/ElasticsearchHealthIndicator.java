@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,10 @@ import org.springframework.util.StringUtils;
  * @author Binwei Yang
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 2.2.0 as {@literal org.elasticsearch.client:transport} has been
+ * deprecated upstream
  */
+@Deprecated
 public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
 	private static final String[] ALL_INDICES = { "_all" };
@@ -52,10 +55,8 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 * @param responseTimeout the request timeout in milliseconds
 	 * @param indices the indices to check
 	 */
-	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
-			List<String> indices) {
-		this(client, responseTimeout,
-				(indices != null) ? StringUtils.toStringArray(indices) : null);
+	public ElasticsearchHealthIndicator(Client client, long responseTimeout, List<String> indices) {
+		this(client, responseTimeout, (indices != null) ? StringUtils.toStringArray(indices) : null);
 	}
 
 	/**
@@ -64,8 +65,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 * @param responseTimeout the request timeout in milliseconds
 	 * @param indices the indices to check
 	 */
-	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
-			String... indices) {
+	public ElasticsearchHealthIndicator(Client client, long responseTimeout, String... indices) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 		this.responseTimeout = responseTimeout;
@@ -74,10 +74,9 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterHealthRequest request = Requests.clusterHealthRequest(
-				ObjectUtils.isEmpty(this.indices) ? ALL_INDICES : this.indices);
-		ClusterHealthResponse response = this.client.admin().cluster().health(request)
-				.actionGet(this.responseTimeout);
+		ClusterHealthRequest request = Requests
+				.clusterHealthRequest(ObjectUtils.isEmpty(this.indices) ? ALL_INDICES : this.indices);
+		ClusterHealthResponse response = this.client.admin().cluster().health(request).actionGet(this.responseTimeout);
 		switch (response.getStatus()) {
 		case GREEN:
 		case YELLOW:

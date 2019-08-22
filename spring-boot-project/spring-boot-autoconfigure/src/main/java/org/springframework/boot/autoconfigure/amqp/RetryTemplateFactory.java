@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,8 +38,7 @@ class RetryTemplateFactory {
 		this.customizers = customizers;
 	}
 
-	public RetryTemplate createRetryTemplate(RabbitProperties.Retry properties,
-			RabbitRetryTemplateCustomizer.Target target) {
+	RetryTemplate createRetryTemplate(RabbitProperties.Retry properties, RabbitRetryTemplateCustomizer.Target target) {
 		PropertyMapper map = PropertyMapper.get();
 		RetryTemplate template = new RetryTemplate();
 		SimpleRetryPolicy policy = new SimpleRetryPolicy();
@@ -49,8 +48,7 @@ class RetryTemplateFactory {
 		map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
 				.to(backOffPolicy::setInitialInterval);
 		map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
-				.to(backOffPolicy::setMaxInterval);
+		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis).to(backOffPolicy::setMaxInterval);
 		template.setBackOffPolicy(backOffPolicy);
 		if (this.customizers != null) {
 			for (RabbitRetryTemplateCustomizer customizer : this.customizers) {

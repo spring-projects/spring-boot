@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,6 +33,7 @@ import java.util.Set;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
+ * @since 1.0.0
  * @see System#getProperty(String)
  */
 public abstract class SystemPropertyUtils {
@@ -87,8 +88,8 @@ public abstract class SystemPropertyUtils {
 		return parseStringValue(properties, text, text, new HashSet<>());
 	}
 
-	private static String parseStringValue(Properties properties, String value,
-			String current, Set<String> visitedPlaceholders) {
+	private static String parseStringValue(Properties properties, String value, String current,
+			Set<String> visitedPlaceholders) {
 
 		StringBuilder buf = new StringBuilder(current);
 
@@ -96,29 +97,24 @@ public abstract class SystemPropertyUtils {
 		while (startIndex != -1) {
 			int endIndex = findPlaceholderEndIndex(buf, startIndex);
 			if (endIndex != -1) {
-				String placeholder = buf
-						.substring(startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
+				String placeholder = buf.substring(startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
 				String originalPlaceholder = placeholder;
 				if (!visitedPlaceholders.add(originalPlaceholder)) {
-					throw new IllegalArgumentException("Circular placeholder reference '"
-							+ originalPlaceholder + "' in property definitions");
+					throw new IllegalArgumentException(
+							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
 				// Recursive invocation, parsing placeholders contained in the
 				// placeholder
 				// key.
-				placeholder = parseStringValue(properties, value, placeholder,
-						visitedPlaceholders);
+				placeholder = parseStringValue(properties, value, placeholder, visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
 				String propVal = resolvePlaceholder(properties, value, placeholder);
-				if (propVal == null && VALUE_SEPARATOR != null) {
+				if (propVal == null) {
 					int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
 					if (separatorIndex != -1) {
-						String actualPlaceholder = placeholder.substring(0,
-								separatorIndex);
-						String defaultValue = placeholder
-								.substring(separatorIndex + VALUE_SEPARATOR.length());
-						propVal = resolvePlaceholder(properties, value,
-								actualPlaceholder);
+						String actualPlaceholder = placeholder.substring(0, separatorIndex);
+						String defaultValue = placeholder.substring(separatorIndex + VALUE_SEPARATOR.length());
+						propVal = resolvePlaceholder(properties, value, actualPlaceholder);
 						if (propVal == null) {
 							propVal = defaultValue;
 						}
@@ -127,17 +123,13 @@ public abstract class SystemPropertyUtils {
 				if (propVal != null) {
 					// Recursive invocation, parsing placeholders contained in the
 					// previously resolved placeholder value.
-					propVal = parseStringValue(properties, value, propVal,
-							visitedPlaceholders);
-					buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(),
-							propVal);
-					startIndex = buf.indexOf(PLACEHOLDER_PREFIX,
-							startIndex + propVal.length());
+					propVal = parseStringValue(properties, value, propVal, visitedPlaceholders);
+					buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(), propVal);
+					startIndex = buf.indexOf(PLACEHOLDER_PREFIX, startIndex + propVal.length());
 				}
 				else {
 					// Proceed with unprocessed value.
-					startIndex = buf.indexOf(PLACEHOLDER_PREFIX,
-							endIndex + PLACEHOLDER_SUFFIX.length());
+					startIndex = buf.indexOf(PLACEHOLDER_PREFIX, endIndex + PLACEHOLDER_SUFFIX.length());
 				}
 				visitedPlaceholders.remove(originalPlaceholder);
 			}
@@ -149,8 +141,7 @@ public abstract class SystemPropertyUtils {
 		return buf.toString();
 	}
 
-	private static String resolvePlaceholder(Properties properties, String text,
-			String placeholderName) {
+	private static String resolvePlaceholder(Properties properties, String text, String placeholderName) {
 		String propVal = getProperty(placeholderName, null, text);
 		if (propVal != null) {
 			return propVal;
@@ -228,8 +219,7 @@ public abstract class SystemPropertyUtils {
 		return -1;
 	}
 
-	private static boolean substringMatch(CharSequence str, int index,
-			CharSequence substring) {
+	private static boolean substringMatch(CharSequence str, int index, CharSequence substring) {
 		for (int j = 0; j < substring.length(); j++) {
 			int i = index + j;
 			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {

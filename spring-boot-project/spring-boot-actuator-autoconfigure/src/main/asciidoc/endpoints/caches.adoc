@@ -30,7 +30,7 @@ include::{snippets}caches/all/response-fields.adoc[]
 
 [[caches-named]]
 == Retrieving Caches by Name
-To retrieve a cache by name, make a `GET` request to `/actuator/caches/{name}`,
+To retrieve a cache by name, make a `GET` request to `/actuator/caches/\{name}`,
 as shown in the following curl-based example:
 
 include::{snippets}caches/named/curl-request.adoc[]
@@ -74,7 +74,7 @@ include::{snippets}caches/evict-all/curl-request.adoc[]
 
 [[caches-evict-named]]
 == Evict a Cache by Name
-To evict a particular cache, make a `DELETE` request to `/actuator/caches/{name}` as shown
+To evict a particular cache, make a `DELETE` request to `/actuator/caches/\{name}` as shown
 in the following curl-based example:
 
 include::{snippets}caches/evict-named/curl-request.adoc[]

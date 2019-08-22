@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,11 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.zip.CRC32;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -34,12 +32,9 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.internal.file.CopyActionProcessingStreamAction;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
-import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
@@ -50,11 +45,12 @@ import org.springframework.boot.loader.tools.FileUtils;
  * Stores jar files without compression as required by Spring Boot's loader.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class BootZipCopyAction implements CopyAction {
 
-	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980,
-			Calendar.FEBRUARY, 1, 0, 0, 0).getTimeInMillis();
+	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
+			.getTimeInMillis();
 
 	private final File output;
 
@@ -72,10 +68,9 @@ class BootZipCopyAction implements CopyAction {
 
 	private final String encoding;
 
-	BootZipCopyAction(File output, boolean preserveFileTimestamps,
-			boolean includeDefaultLoader, Spec<FileTreeElement> requiresUnpack,
-			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript,
-			Function<FileCopyDetails, ZipCompression> compressionResolver,
+	BootZipCopyAction(File output, boolean preserveFileTimestamps, boolean includeDefaultLoader,
+			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
+			LaunchScriptConfiguration launchScript, Function<FileCopyDetails, ZipCompression> compressionResolver,
 			String encoding) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -89,202 +84,154 @@ class BootZipCopyAction implements CopyAction {
 
 	@Override
 	public WorkResult execute(CopyActionProcessingStream stream) {
-		ZipArchiveOutputStream zipStream;
-		Spec<FileTreeElement> loaderEntries;
 		try {
-			FileOutputStream fileStream = new FileOutputStream(this.output);
-			writeLaunchScriptIfNecessary(fileStream);
-			zipStream = new ZipArchiveOutputStream(fileStream);
-			if (this.encoding != null) {
-				zipStream.setEncoding(this.encoding);
-			}
-			loaderEntries = writeLoaderClassesIfNecessary(zipStream);
+			writeArchive(stream);
+			return () -> true;
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to create " + this.output, ex);
 		}
+	}
+
+	private void writeArchive(CopyActionProcessingStream stream) throws IOException {
+		OutputStream outputStream = new FileOutputStream(this.output);
 		try {
-			stream.process(new ZipStreamAction(zipStream, this.output,
-					this.preserveFileTimestamps, this.requiresUnpack,
-					createExclusionSpec(loaderEntries), this.compressionResolver));
+			writeLaunchScriptIfNecessary(outputStream);
+			ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(outputStream);
+			try {
+				if (this.encoding != null) {
+					zipOutputStream.setEncoding(this.encoding);
+				}
+				Processor processor = new Processor(zipOutputStream);
+				stream.process(processor::process);
+				processor.finish();
+			}
+			finally {
+				closeQuietly(zipOutputStream);
+			}
 		}
 		finally {
-			try {
-				zipStream.close();
-			}
-			catch (IOException ex) {
-				// Continue
-			}
-		}
-		return () -> true;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Spec<FileTreeElement> createExclusionSpec(
-			Spec<FileTreeElement> loaderEntries) {
-		return Specs.union(loaderEntries, this.exclusions);
-	}
-
-	private Spec<FileTreeElement> writeLoaderClassesIfNecessary(
-			ZipArchiveOutputStream out) {
-		if (!this.includeDefaultLoader) {
-			return Specs.satisfyNone();
-		}
-		return writeLoaderClasses(out);
-	}
-
-	private Spec<FileTreeElement> writeLoaderClasses(ZipArchiveOutputStream out) {
-		try (ZipInputStream in = new ZipInputStream(getClass()
-				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
-			Set<String> entries = new HashSet<>();
-			java.util.zip.ZipEntry entry;
-			while ((entry = in.getNextEntry()) != null) {
-				if (entry.isDirectory() && !entry.getName().startsWith("META-INF/")) {
-					writeDirectory(new ZipArchiveEntry(entry), out);
-					entries.add(entry.getName());
-				}
-				else if (entry.getName().endsWith(".class")) {
-					writeClass(new ZipArchiveEntry(entry), in, out);
-				}
-			}
-			return (element) -> {
-				String path = element.getRelativePath().getPathString();
-				if (element.isDirectory() && !path.endsWith(("/"))) {
-					path += "/";
-				}
-				return entries.contains(path);
-			};
-		}
-		catch (IOException ex) {
-			throw new GradleException("Failed to write loader classes", ex);
+			closeQuietly(outputStream);
 		}
 	}
 
-	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out)
-			throws IOException {
-		prepareEntry(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
-		out.putArchiveEntry(entry);
-		out.closeArchiveEntry();
-	}
-
-	private void writeClass(ZipArchiveEntry entry, ZipInputStream in,
-			ZipArchiveOutputStream out) throws IOException {
-		prepareEntry(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
-		out.putArchiveEntry(entry);
-		byte[] buffer = new byte[4096];
-		int read;
-		while ((read = in.read(buffer)) > 0) {
-			out.write(buffer, 0, read);
+	private void writeLaunchScriptIfNecessary(OutputStream outputStream) {
+		if (this.launchScript == null) {
+			return;
 		}
-		out.closeArchiveEntry();
-	}
-
-	private void prepareEntry(ZipArchiveEntry entry, int unixMode) {
-		if (!this.preserveFileTimestamps) {
-			entry.setTime(CONSTANT_TIME_FOR_ZIP_ENTRIES);
-		}
-		entry.setUnixMode(unixMode);
-	}
-
-	private void writeLaunchScriptIfNecessary(FileOutputStream fileStream) {
 		try {
-			if (this.launchScript != null) {
-				fileStream.write(new DefaultLaunchScript(this.launchScript.getScript(),
-						this.launchScript.getProperties()).toByteArray());
-				this.output.setExecutable(true);
-			}
+			File file = this.launchScript.getScript();
+			Map<String, String> properties = this.launchScript.getProperties();
+			outputStream.write(new DefaultLaunchScript(file, properties).toByteArray());
+			outputStream.flush();
+			this.output.setExecutable(true);
 		}
 		catch (IOException ex) {
-			throw new GradleException("Failed to write launch script to " + this.output,
-					ex);
+			throw new GradleException("Failed to write launch script to " + this.output, ex);
 		}
 	}
 
-	private static final class ZipStreamAction
-			implements CopyActionProcessingStreamAction {
+	private void closeQuietly(OutputStream outputStream) {
+		try {
+			outputStream.close();
+		}
+		catch (IOException ex) {
+		}
+	}
 
-		private final ZipArchiveOutputStream zipStream;
+	/**
+	 * Internal process used to copy {@link FileCopyDetails file details} to the zip file.
+	 */
+	private class Processor {
 
-		private final File output;
+		private ZipArchiveOutputStream outputStream;
 
-		private final boolean preserveFileTimestamps;
+		private Spec<FileTreeElement> writtenLoaderEntries;
 
-		private final Spec<FileTreeElement> requiresUnpack;
-
-		private final Spec<FileTreeElement> exclusions;
-
-		private final Function<FileCopyDetails, ZipCompression> compressionType;
-
-		private ZipStreamAction(ZipArchiveOutputStream zipStream, File output,
-				boolean preserveFileTimestamps, Spec<FileTreeElement> requiresUnpack,
-				Spec<FileTreeElement> exclusions,
-				Function<FileCopyDetails, ZipCompression> compressionType) {
-			this.zipStream = zipStream;
-			this.output = output;
-			this.preserveFileTimestamps = preserveFileTimestamps;
-			this.requiresUnpack = requiresUnpack;
-			this.exclusions = exclusions;
-			this.compressionType = compressionType;
+		Processor(ZipArchiveOutputStream outputStream) {
+			this.outputStream = outputStream;
 		}
 
-		@Override
-		public void processFile(FileCopyDetailsInternal details) {
-			if (this.exclusions.isSatisfiedBy(details)) {
+		void process(FileCopyDetails details) {
+			if (BootZipCopyAction.this.exclusions.isSatisfiedBy(details)
+					|| (this.writtenLoaderEntries != null && this.writtenLoaderEntries.isSatisfiedBy(details))) {
 				return;
 			}
 			try {
+				writeLoaderEntriesIfNecessary(details);
 				if (details.isDirectory()) {
-					createDirectory(details);
+					processDirectory(details);
 				}
 				else {
-					createFile(details);
+					processFile(details);
 				}
 			}
 			catch (IOException ex) {
-				throw new GradleException(
-						"Failed to add " + details + " to " + this.output, ex);
+				throw new GradleException("Failed to add " + details + " to " + BootZipCopyAction.this.output, ex);
 			}
 		}
 
-		private void createDirectory(FileCopyDetailsInternal details) throws IOException {
-			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(
-					details.getRelativePath().getPathString() + '/');
-			archiveEntry.setUnixMode(UnixStat.DIR_FLAG | details.getMode());
-			archiveEntry.setTime(getTime(details));
-			this.zipStream.putArchiveEntry(archiveEntry);
-			this.zipStream.closeArchiveEntry();
+		void finish() throws IOException {
+			writeLoaderEntriesIfNecessary(null);
 		}
 
-		private void createFile(FileCopyDetailsInternal details) throws IOException {
+		private void writeLoaderEntriesIfNecessary(FileCopyDetails details) throws IOException {
+			if (!BootZipCopyAction.this.includeDefaultLoader || this.writtenLoaderEntries != null) {
+				return;
+			}
+			if (isInMetaInf(details)) {
+				// Don't write loader entries until after META-INF folder (see gh-16698)
+				return;
+			}
+			LoaderZipEntries loaderEntries = new LoaderZipEntries(
+					BootZipCopyAction.this.preserveFileTimestamps ? null : CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			this.writtenLoaderEntries = loaderEntries.writeTo(this.outputStream);
+		}
+
+		private boolean isInMetaInf(FileCopyDetails details) {
+			if (details == null) {
+				return false;
+			}
+			String[] segments = details.getRelativePath().getSegments();
+			return segments.length > 0 && "META-INF".equals(segments[0]);
+		}
+
+		private void processDirectory(FileCopyDetails details) throws IOException {
+			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(details.getRelativePath().getPathString() + '/');
+			archiveEntry.setUnixMode(UnixStat.DIR_FLAG | details.getMode());
+			archiveEntry.setTime(getTime(details));
+			this.outputStream.putArchiveEntry(archiveEntry);
+			this.outputStream.closeArchiveEntry();
+		}
+
+		private void processFile(FileCopyDetails details) throws IOException {
 			String relativePath = details.getRelativePath().getPathString();
 			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(relativePath);
 			archiveEntry.setUnixMode(UnixStat.FILE_FLAG | details.getMode());
 			archiveEntry.setTime(getTime(details));
-			ZipCompression compression = this.compressionType.apply(details);
+			ZipCompression compression = BootZipCopyAction.this.compressionResolver.apply(details);
 			if (compression == ZipCompression.STORED) {
 				prepareStoredEntry(details, archiveEntry);
 			}
-			this.zipStream.putArchiveEntry(archiveEntry);
-			details.copyTo(this.zipStream);
-			this.zipStream.closeArchiveEntry();
+			this.outputStream.putArchiveEntry(archiveEntry);
+			details.copyTo(this.outputStream);
+			this.outputStream.closeArchiveEntry();
 		}
 
-		private void prepareStoredEntry(FileCopyDetailsInternal details,
-				ZipArchiveEntry archiveEntry) throws IOException {
+		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {
 			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
 			archiveEntry.setSize(details.getSize());
 			archiveEntry.setCompressedSize(details.getSize());
 			Crc32OutputStream crcStream = new Crc32OutputStream();
 			details.copyTo(crcStream);
 			archiveEntry.setCrc(crcStream.getCrc());
-			if (this.requiresUnpack.isSatisfiedBy(details)) {
-				archiveEntry
-						.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
+			if (BootZipCopyAction.this.requiresUnpack.isSatisfiedBy(details)) {
+				archiveEntry.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
 			}
 		}
 
 		private long getTime(FileCopyDetails details) {
-			return this.preserveFileTimestamps ? details.getLastModified()
+			return BootZipCopyAction.this.preserveFileTimestamps ? details.getLastModified()
 					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
 		}
 
@@ -295,25 +242,25 @@ class BootZipCopyAction implements CopyAction {
 	 */
 	private static final class Crc32OutputStream extends OutputStream {
 
-		private final CRC32 crc32 = new CRC32();
+		private final CRC32 crc = new CRC32();
 
 		@Override
 		public void write(int b) throws IOException {
-			this.crc32.update(b);
+			this.crc.update(b);
 		}
 
 		@Override
 		public void write(byte[] b) throws IOException {
-			this.crc32.update(b);
+			this.crc.update(b);
 		}
 
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
-			this.crc32.update(b, off, len);
+			this.crc.update(b, off, len);
 		}
 
 		private long getCrc() {
-			return this.crc32.getValue();
+			return this.crc.getValue();
 		}
 
 	}

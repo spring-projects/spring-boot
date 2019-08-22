@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,8 +45,7 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	private final Collection<ExposableServletEndpoint> servletEndpoints;
 
-	public ServletEndpointRegistrar(String basePath,
-			Collection<ExposableServletEndpoint> servletEndpoints) {
+	public ServletEndpointRegistrar(String basePath, Collection<ExposableServletEndpoint> servletEndpoints) {
 		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
 		this.basePath = cleanBasePath(basePath);
 		this.servletEndpoints = servletEndpoints;
@@ -61,20 +60,18 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		this.servletEndpoints
-				.forEach((servletEndpoint) -> register(servletContext, servletEndpoint));
+		this.servletEndpoints.forEach((servletEndpoint) -> register(servletContext, servletEndpoint));
 	}
 
-	private void register(ServletContext servletContext,
-			ExposableServletEndpoint endpoint) {
+	private void register(ServletContext servletContext, ExposableServletEndpoint endpoint) {
 		String name = endpoint.getEndpointId().toLowerCaseString() + "-actuator-endpoint";
 		String path = this.basePath + "/" + endpoint.getRootPath();
 		String urlMapping = path.endsWith("/") ? path + "*" : path + "/*";
 		EndpointServlet endpointServlet = endpoint.getEndpointServlet();
-		Dynamic registration = servletContext.addServlet(name,
-				endpointServlet.getServlet());
+		Dynamic registration = servletContext.addServlet(name, endpointServlet.getServlet());
 		registration.addMapping(urlMapping);
 		registration.setInitParameters(endpointServlet.getInitParameters());
+		registration.setLoadOnStartup(endpointServlet.getLoadOnStartup());
 		logger.info("Registered '" + path + "' to " + name);
 	}
 

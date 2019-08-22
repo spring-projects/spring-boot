@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,11 @@
 
 package org.springframework.boot.context.properties.bind.validation;
 
-import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,8 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
+import org.springframework.core.ResolvableType;
+import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.Validator;
 
 /**
@@ -43,6 +44,10 @@ import org.springframework.validation.Validator;
 public class ValidationBindHandler extends AbstractBindHandler {
 
 	private final Validator[] validators;
+
+	private final Map<ConfigurationPropertyName, ResolvableType> boundTypes = new LinkedHashMap<>();
+
+	private final Map<ConfigurationPropertyName, Object> boundResults = new LinkedHashMap<>();
 
 	private final Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 
@@ -58,8 +63,14 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+		this.boundTypes.put(name, target.getType());
+		return super.onStart(name, target, context);
+	}
+
+	@Override
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+		this.boundResults.put(name, result);
 		if (context.getConfigurationProperty() != null) {
 			this.boundProperties.add(context.getConfigurationProperty());
 		}
@@ -67,24 +78,43 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
-		validate(name, target, context, result);
-		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
-			throw this.exceptions.pop();
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
+		Object result = super.onFailure(name, target, context, error);
+		if (result != null) {
+			clear();
+			this.boundResults.put(name, result);
 		}
+		validate(name, target, context, result);
+		return result;
+	}
+
+	private void clear() {
+		this.boundTypes.clear();
+		this.boundResults.clear();
+		this.boundProperties.clear();
+		this.exceptions.clear();
+	}
+
+	@Override
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
+		validate(name, target, context, result);
 		super.onFinish(name, target, context, result);
 	}
 
-	private void validate(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		Object validationTarget = getValidationTarget(target, context, result);
 		Class<?> validationType = target.getBoxedType().resolve();
-		validate(name, validationTarget, validationType);
+		if (validationTarget != null) {
+			validateAndPush(name, validationTarget, validationType);
+		}
+		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
+			throw this.exceptions.pop();
+		}
 	}
 
-	private Object getValidationTarget(Bindable<?> target, BindContext context,
-			Object result) {
+	private Object getValidationTarget(Bindable<?> target, BindContext context, Object result) {
 		if (result != null) {
 			return result;
 		}
@@ -94,25 +124,79 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		return null;
 	}
 
-	private void validate(ConfigurationPropertyName name, Object target, Class<?> type) {
-		if (target != null) {
-			BindingResult errors = new BeanPropertyBindingResult(target, name.toString());
-			Arrays.stream(this.validators).filter((validator) -> validator.supports(type))
-					.forEach((validator) -> validator.validate(target, errors));
-			if (errors.hasErrors()) {
-				this.exceptions.push(getBindValidationException(name, errors));
+	private void validateAndPush(ConfigurationPropertyName name, Object target, Class<?> type) {
+		ValidationResult result = null;
+		for (Validator validator : this.validators) {
+			if (validator.supports(type)) {
+				result = (result != null) ? result : new ValidationResult(name, target);
+				validator.validate(target, result);
 			}
+		}
+		if (result != null && result.hasErrors()) {
+			this.exceptions.push(new BindValidationException(result.getValidationErrors()));
 		}
 	}
 
-	private BindValidationException getBindValidationException(
-			ConfigurationPropertyName name, BindingResult errors) {
-		Set<ConfigurationProperty> boundProperties = this.boundProperties.stream()
-				.filter((property) -> name.isAncestorOf(property.getName()))
-				.collect(Collectors.toCollection(LinkedHashSet::new));
-		ValidationErrors validationErrors = new ValidationErrors(name, boundProperties,
-				errors.getAllErrors());
-		return new BindValidationException(validationErrors);
+	/**
+	 * {@link AbstractBindingResult} implementation backed by the bound properties.
+	 */
+	private class ValidationResult extends AbstractBindingResult {
+
+		private final ConfigurationPropertyName name;
+
+		private Object target;
+
+		protected ValidationResult(ConfigurationPropertyName name, Object target) {
+			super(null);
+			this.name = name;
+			this.target = target;
+		}
+
+		@Override
+		public String getObjectName() {
+			return this.name.toString();
+		}
+
+		@Override
+		public Object getTarget() {
+			return this.target;
+		}
+
+		@Override
+		public Class<?> getFieldType(String field) {
+			try {
+				ResolvableType type = ValidationBindHandler.this.boundTypes.get(getName(field));
+				Class<?> resolved = (type != null) ? type.resolve() : null;
+				if (resolved != null) {
+					return resolved;
+				}
+			}
+			catch (Exception ex) {
+			}
+			return super.getFieldType(field);
+		}
+
+		@Override
+		protected Object getActualFieldValue(String field) {
+			try {
+				return ValidationBindHandler.this.boundResults.get(getName(field));
+			}
+			catch (Exception ex) {
+			}
+			return null;
+		}
+
+		private ConfigurationPropertyName getName(String field) {
+			return this.name.append(field);
+		}
+
+		ValidationErrors getValidationErrors() {
+			Set<ConfigurationProperty> boundProperties = ValidationBindHandler.this.boundProperties.stream()
+					.filter((property) -> this.name.isAncestorOf(property.getName()))
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+			return new ValidationErrors(this.name, boundProperties, getAllErrors());
+		}
+
 	}
 
 }

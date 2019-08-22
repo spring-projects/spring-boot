@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,10 +46,8 @@ import org.springframework.util.ClassUtils;
  */
 public final class DataSourceBuilder<T extends DataSource> {
 
-	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
-			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.tomcat.jdbc.pool.DataSource",
-			"org.apache.commons.dbcp2.BasicDataSource" };
+	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] { "com.zaxxer.hikari.HikariDataSource",
+			"org.apache.tomcat.jdbc.pool.DataSource", "org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
 
@@ -79,8 +77,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private void maybeGetDriverClassName() {
-		if (!this.properties.containsKey("driverClassName")
-				&& this.properties.containsKey("url")) {
+		if (!this.properties.containsKey("driverClassName") && this.properties.containsKey("url")) {
 			String url = this.properties.get("url");
 			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
 			this.properties.put("driverClassName", driverClass);
@@ -88,8 +85,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private void bind(DataSource result) {
-		ConfigurationPropertySource source = new MapConfigurationPropertySource(
-				this.properties);
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(this.properties);
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("url", "jdbc-url");
 		aliases.addAliases("username", "user");
@@ -127,8 +123,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
 			try {
-				return (Class<? extends DataSource>) ClassUtils.forName(name,
-						classLoader);
+				return (Class<? extends DataSource>) ClassUtils.forName(name, classLoader);
 			}
 			catch (Exception ex) {
 				// Swallow and continue
@@ -138,8 +133,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private Class<? extends DataSource> getType() {
-		Class<? extends DataSource> type = (this.type != null) ? this.type
-				: findType(this.classLoader);
+		Class<? extends DataSource> type = (this.type != null) ? this.type : findType(this.classLoader);
 		if (type != null) {
 			return type;
 		}

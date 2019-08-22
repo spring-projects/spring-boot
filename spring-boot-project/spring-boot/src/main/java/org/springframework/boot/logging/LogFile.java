@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,8 +85,7 @@ public class LogFile {
 	 * @param path a reference to the logging path to use if {@code file} is not specified
 	 */
 	LogFile(String file, String path) {
-		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path),
-				"File or Path must not be empty");
+		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path), "File or Path must not be empty");
 		this.file = file;
 		this.path = path;
 	}
@@ -128,20 +127,17 @@ public class LogFile {
 	 * @return a {@link LogFile} or {@code null} if the environment didn't contain any
 	 * suitable properties
 	 */
-	@SuppressWarnings("deprecation")
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY,
-				FILE_PROPERTY);
-		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY,
-				PATH_PROPERTY);
+		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY, FILE_PROPERTY);
+		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY, PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}
 		return null;
 	}
 
-	private static String getLogFileProperty(PropertyResolver propertyResolver,
-			String propertyName, String deprecatedPropertyName) {
+	private static String getLogFileProperty(PropertyResolver propertyResolver, String propertyName,
+			String deprecatedPropertyName) {
 		String property = propertyResolver.getProperty(propertyName);
 		if (property != null) {
 			return property;

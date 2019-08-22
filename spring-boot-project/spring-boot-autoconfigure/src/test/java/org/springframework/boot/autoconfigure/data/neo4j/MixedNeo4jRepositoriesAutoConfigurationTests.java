@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -49,45 +49,45 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vince Bickers
  * @author Stephane Nicoll
  */
-public class MixedNeo4jRepositoriesAutoConfigurationTests {
+class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testMixedRepositoryConfiguration() {
+	void testMixedRepositoryConfiguration() {
 		load(MixedConfiguration.class);
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithNeo4jTemplate() {
+	void testJpaRepositoryConfigurationWithNeo4jTemplate() {
 		load(JpaConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	@Ignore
-	public void testJpaRepositoryConfigurationWithNeo4jOverlap() {
+	@Disabled
+	void testJpaRepositoryConfigurationWithNeo4jOverlap() {
 		load(OverlapConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() {
+	void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() {
 		load(OverlapConfiguration.class, "spring.data.neo4j.repositories.enabled:false");
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
@@ -95,48 +95,46 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
-		TestPropertyValues.of(environment)
-				.and("spring.datasource.initialization-mode=never").applyTo(context);
+		TestPropertyValues.of(environment).and("spring.datasource.initialization-mode=never").applyTo(context);
 		context.register(config);
-		context.register(DataSourceAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
+		context.register(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class MixedConfiguration {
+	static class MixedConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class JpaConfiguration {
+	static class JpaConfiguration {
 
 	}
 
 	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Neo4j will try and configure the same repositories
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CityRepository.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class OverlapConfiguration {
+	static class OverlapConfiguration {
 
 	}
 

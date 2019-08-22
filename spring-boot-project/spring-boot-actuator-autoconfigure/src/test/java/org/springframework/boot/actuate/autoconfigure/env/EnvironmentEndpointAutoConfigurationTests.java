@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.env;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
@@ -36,50 +36,51 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class EnvironmentEndpointAutoConfigurationTests {
+class EnvironmentEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.run(validateSystemProperties("******", "******"));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(EnvironmentEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withSystemProperties("dbPassword=123456", "apiKey=123456")
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
+	}
+
+	@Test
+	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
 				.run(validateSystemProperties("******", "123456"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(
-			String dbPassword, String apiKey) {
+	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 			EnvironmentDescriptor env = endpoint.environment(null);
-			Map<String, PropertyValueDescriptor> systemProperties = getSource(
-					"systemProperties", env).getProperties();
-			assertThat(systemProperties.get("dbPassword").getValue())
-					.isEqualTo(dbPassword);
+			Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env).getProperties();
+			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo(dbPassword);
 			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo(apiKey);
 		};
 	}
 
-	private PropertySourceDescriptor getSource(String name,
-			EnvironmentDescriptor descriptor) {
-		return descriptor.getPropertySources().stream()
-				.filter((source) -> name.equals(source.getName())).findFirst().get();
+	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
+		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
+				.get();
 	}
 
 }

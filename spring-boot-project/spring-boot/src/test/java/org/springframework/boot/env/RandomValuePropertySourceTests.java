@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.env;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -31,35 +31,35 @@ import static org.mockito.Mockito.spy;
  * @author Dave Syer
  * @author Matt Benson
  */
-public class RandomValuePropertySourceTests {
+class RandomValuePropertySourceTests {
 
 	private RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
-	public void notRandom() {
+	void notRandom() {
 		assertThat(this.source.getProperty("foo")).isNull();
 	}
 
 	@Test
-	public void string() {
+	void string() {
 		assertThat(this.source.getProperty("random.string")).isNotNull();
 	}
 
 	@Test
-	public void intValue() {
+	void intValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
 		assertThat(value).isNotNull();
 	}
 
 	@Test
-	public void uuidValue() {
+	void uuidValue() {
 		String value = (String) this.source.getProperty("random.uuid");
 		assertThat(value).isNotNull();
 		assertThat(UUID.fromString(value)).isNotNull();
 	}
 
 	@Test
-	public void intRange() {
+	void intRange() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertThat(value).isNotNull();
 		assertThat(value >= 4).isTrue();
@@ -67,31 +67,31 @@ public class RandomValuePropertySourceTests {
 	}
 
 	@Test
-	public void intMax() {
+	void intMax() {
 		Integer value = (Integer) this.source.getProperty("random.int(10)");
 		assertThat(value).isNotNull().isLessThan(10);
 	}
 
 	@Test
-	public void longValue() {
+	void longValue() {
 		Long value = (Long) this.source.getProperty("random.long");
 		assertThat(value).isNotNull();
 	}
 
 	@Test
-	public void longRange() {
+	void longRange() {
 		Long value = (Long) this.source.getProperty("random.long[4,10]");
 		assertThat(value).isNotNull().isBetween(4L, 10L);
 	}
 
 	@Test
-	public void longMax() {
+	void longMax() {
 		Long value = (Long) this.source.getProperty("random.long(10)");
 		assertThat(value).isNotNull().isLessThan(10L);
 	}
 
 	@Test
-	public void longOverflow() {
+	void longOverflow() {
 		RandomValuePropertySource source = spy(this.source);
 		given(source.getSource()).willReturn(new Random() {
 

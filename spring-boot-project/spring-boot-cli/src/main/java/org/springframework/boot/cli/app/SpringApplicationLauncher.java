@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,12 +59,11 @@ public class SpringApplicationLauncher {
 	public Object launch(Class<?>[] sources, String[] args) throws Exception {
 		Map<String, Object> defaultProperties = new HashMap<>();
 		defaultProperties.put("spring.groovy.template.check-template-location", "false");
-		Class<?> applicationClass = this.classLoader
-				.loadClass(getSpringApplicationClassName());
-		Constructor<?> constructor = applicationClass.getConstructor(Class[].class);
+		Class<?> applicationClass = this.classLoader.loadClass(getSpringApplicationClassName());
+		Constructor<?> constructor = applicationClass.getDeclaredConstructor(Class[].class);
+		constructor.setAccessible(true);
 		Object application = constructor.newInstance((Object) sources);
-		applicationClass.getMethod("setDefaultProperties", Map.class).invoke(application,
-				defaultProperties);
+		applicationClass.getMethod("setDefaultProperties", Map.class).invoke(application, defaultProperties);
 		Method method = applicationClass.getMethod("run", String[].class);
 		return method.invoke(application, (Object) args);
 	}

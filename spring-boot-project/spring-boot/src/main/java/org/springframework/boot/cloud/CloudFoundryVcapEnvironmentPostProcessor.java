@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,12 +87,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
-public class CloudFoundryVcapEnvironmentPostProcessor
-		implements EnvironmentPostProcessor, Ordered {
+public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-	private static final Log logger = LogFactory
-			.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
+	private static final Log logger = LogFactory.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
@@ -111,26 +110,19 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 	}
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
 			Properties properties = new Properties();
 			JsonParser jsonParser = JsonParserFactory.getJsonParser();
-			addWithPrefix(properties,
-					getPropertiesFromApplication(environment, jsonParser),
-					"vcap.application.");
-			addWithPrefix(properties, getPropertiesFromServices(environment, jsonParser),
-					"vcap.services.");
+			addWithPrefix(properties, getPropertiesFromApplication(environment, jsonParser), "vcap.application.");
+			addWithPrefix(properties, getPropertiesFromServices(environment, jsonParser), "vcap.services.");
 			MutablePropertySources propertySources = environment.getPropertySources();
-			if (propertySources.contains(
-					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-				propertySources.addAfter(
-						CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+			if (propertySources.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+				propertySources.addAfter(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
 						new PropertiesPropertySource("vcap", properties));
 			}
 			else {
-				propertySources
-						.addFirst(new PropertiesPropertySource("vcap", properties));
+				propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
 			}
 		}
 	}
@@ -142,8 +134,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		}
 	}
 
-	private Properties getPropertiesFromApplication(Environment environment,
-			JsonParser parser) {
+	private Properties getPropertiesFromApplication(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_APPLICATION, "{}");
@@ -156,8 +147,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		return properties;
 	}
 
-	private Properties getPropertiesFromServices(Environment environment,
-			JsonParser parser) {
+	private Properties getPropertiesFromServices(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
 			String property = environment.getProperty(VCAP_SERVICES, "{}");
@@ -170,15 +160,13 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		return properties;
 	}
 
-	private void extractPropertiesFromApplication(Properties properties,
-			Map<String, Object> map) {
+	private void extractPropertiesFromApplication(Properties properties, Map<String, Object> map) {
 		if (map != null) {
 			flatten(properties, map, "");
 		}
 	}
 
-	private void extractPropertiesFromServices(Properties properties,
-			Map<String, Object> map) {
+	private void extractPropertiesFromServices(Properties properties, Map<String, Object> map) {
 		if (map != null) {
 			for (Object services : map.values()) {
 				@SuppressWarnings("unchecked")
@@ -207,8 +195,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			else if (value instanceof Collection) {
 				// Need a compound key
 				Collection<Object> collection = (Collection<Object>) value;
-				properties.put(name,
-						StringUtils.collectionToCommaDelimitedString(collection));
+				properties.put(name, StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object item : collection) {
 					String itemKey = "[" + (count++) + "]";

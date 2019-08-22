@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,16 +26,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class WebEndpointPropertiesTests {
+class WebEndpointPropertiesTests {
 
 	@Test
-	public void defaultBasePathShouldBeApplication() {
+	void defaultBasePathShouldBeApplication() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
 
 	@Test
-	public void basePathShouldBeCleaned() {
+	void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
 		assertThat(properties.getBasePath()).isEqualTo("");
@@ -44,15 +44,14 @@ public class WebEndpointPropertiesTests {
 	}
 
 	@Test
-	public void basePathMustStartWithSlash() {
+	void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> properties.setBasePath("admin"))
+		assertThatIllegalArgumentException().isThrownBy(() -> properties.setBasePath("admin"))
 				.withMessageContaining("Base path must start with '/' or be empty");
 	}
 
 	@Test
-	public void basePathCanBeEmpty() {
+	void basePathCanBeEmpty() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("");
 		assertThat(properties.getBasePath()).isEqualTo("");

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,19 +51,18 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
+	private Collection<TypeExcludeFilter> delegates;
+
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		if (this.beanFactory instanceof ListableBeanFactory
-				&& getClass() == TypeExcludeFilter.class) {
-			Collection<TypeExcludeFilter> delegates = ((ListableBeanFactory) this.beanFactory)
-					.getBeansOfType(TypeExcludeFilter.class).values();
-			for (TypeExcludeFilter delegate : delegates) {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		if (this.beanFactory instanceof ListableBeanFactory && getClass() == TypeExcludeFilter.class) {
+			for (TypeExcludeFilter delegate : getDelegates()) {
 				if (delegate.match(metadataReader, metadataReaderFactory)) {
 					return true;
 				}
@@ -72,16 +71,23 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 		return false;
 	}
 
+	private Collection<TypeExcludeFilter> getDelegates() {
+		Collection<TypeExcludeFilter> delegates = this.delegates;
+		if (delegates == null) {
+			delegates = ((ListableBeanFactory) this.beanFactory).getBeansOfType(TypeExcludeFilter.class).values();
+			this.delegates = delegates;
+		}
+		return delegates;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
-		throw new IllegalStateException(
-				"TypeExcludeFilter " + getClass() + " has not implemented equals");
+		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented equals");
 	}
 
 	@Override
 	public int hashCode() {
-		throw new IllegalStateException(
-				"TypeExcludeFilter " + getClass() + " has not implemented hashCode");
+		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented hashCode");
 	}
 
 }

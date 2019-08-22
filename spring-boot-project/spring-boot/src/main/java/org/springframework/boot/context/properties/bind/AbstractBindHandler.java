@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,26 +47,24 @@ public abstract class AbstractBindHandler implements BindHandler {
 	}
 
 	@Override
-	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
-			BindContext context) {
+	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		return this.parent.onStart(name, target, context);
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		return this.parent.onSuccess(name, target, context, result);
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		return this.parent.onFailure(name, target, context, error);
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 		this.parent.onFinish(name, target, context, result);
 	}
 

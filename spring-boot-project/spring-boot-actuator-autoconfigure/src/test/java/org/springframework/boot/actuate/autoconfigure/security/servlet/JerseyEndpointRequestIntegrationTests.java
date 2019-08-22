@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -56,61 +56,50 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Madhura Bhave
  */
-public class JerseyEndpointRequestIntegrationTests
-		extends AbstractEndpointRequestIntegrationTests {
+class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
 
 	@Override
 	protected WebApplicationContextRunner getContextRunner() {
-		return new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(
-								"org.springframework.web.servlet.DispatcherServlet"))
-						.withUserConfiguration(JerseyEndpointConfiguration.class,
-								SecurityConfiguration.class, BaseConfiguration.class)
-						.withConfiguration(AutoConfigurations.of(
-								SecurityAutoConfiguration.class,
-								UserDetailsServiceAutoConfiguration.class,
-								SecurityRequestMatcherProviderAutoConfiguration.class,
-								JacksonAutoConfiguration.class,
-								JerseyAutoConfiguration.class));
+		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
+				.withUserConfiguration(JerseyEndpointConfiguration.class, SecurityConfiguration.class,
+						BaseConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+						UserDetailsServiceAutoConfiguration.class,
+						SecurityRequestMatcherProviderAutoConfiguration.class, JacksonAutoConfiguration.class,
+						JerseyAutoConfiguration.class));
 	}
 
 	@Test
-	public void toLinksWhenApplicationPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/").exchange().expectStatus()
-							.isOk();
-					webTestClient.get().uri("/admin/actuator").exchange().expectStatus()
-							.isOk();
-				});
+	void toLinksWhenApplicationPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
+			webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
+		});
 	}
 
 	@Test
-	public void toEndpointWhenApplicationPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin")
+	void toEndpointWhenApplicationPathSetShouldMatch() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
+		});
+	}
+
+	@Test
+	void toAnyEndpointWhenApplicationPathSetShouldMatch() {
+		getContextRunner()
+				.withPropertyValues("spring.jersey.application-path=/admin", "spring.security.user.password=password")
 				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/e1").exchange()
+					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/e2").header("Authorization", getBasicAuth()).exchange()
 							.expectStatus().isOk();
 				});
 	}
 
-	@Test
-	public void toAnyEndpointWhenApplicationPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin",
-				"spring.security.user.password=password").run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/e2").exchange()
-							.expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/e2")
-							.header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-				});
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebEndpointProperties.class)
 	static class JerseyEndpointConfiguration {
 
@@ -121,34 +110,30 @@ public class JerseyEndpointRequestIntegrationTests
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig() {
+		ResourceConfig resourceConfig() {
 			return new ResourceConfig();
 		}
 
 		@Bean
-		public ResourceConfigCustomizer webEndpointRegistrar() {
+		ResourceConfigCustomizer webEndpointRegistrar() {
 			return this::customize;
 		}
 
 		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(
-					javax.ws.rs.core.MediaType.APPLICATION_JSON,
+			List<String> mediaTypes = Arrays.asList(javax.ws.rs.core.MediaType.APPLICATION_JSON,
 					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, Arrays.asList(EndpointId::toString),
-					Collections.emptyList(), Collections.emptyList());
-			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(new EndpointMapping("/actuator"),
-							discoverer.getEndpoints(), endpointMediaTypes,
-							new EndpointLinksResolver(discoverer.getEndpoints()));
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes,
+					Arrays.asList(EndpointId::toString), Collections.emptyList(), Collections.emptyList());
+			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
+					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
+					new EndpointLinksResolver(discoverer.getEndpoints()), true);
 			config.registerResources(new HashSet<>(resources));
 		}
 

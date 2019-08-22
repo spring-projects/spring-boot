@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,57 +25,55 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationMetadataTests {
+class ConfigurationMetadataTests {
 
 	@Test
-	public void toDashedCaseCamelCase() {
+	void toDashedCaseCamelCase() {
 		assertThat(toDashedCase("simpleCamelCase")).isEqualTo("simple-camel-case");
 	}
 
 	@Test
-	public void toDashedCaseUpperCamelCaseSuffix() {
+	void toDashedCaseUpperCamelCaseSuffix() {
 		assertThat(toDashedCase("myDLQ")).isEqualTo("my-d-l-q");
 	}
 
 	@Test
-	public void toDashedCaseUpperCamelCaseMiddle() {
+	void toDashedCaseUpperCamelCaseMiddle() {
 		assertThat(toDashedCase("someDLQKey")).isEqualTo("some-d-l-q-key");
 	}
 
 	@Test
-	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"))
-				.isEqualTo("word-with-underscore");
+	void toDashedCaseWordsUnderscore() {
+		assertThat(toDashedCase("Word_With_underscore")).isEqualTo("word-with-underscore");
 	}
 
 	@Test
-	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"))
-				.isEqualTo("word---with--underscore");
+	void toDashedCaseWordsSeveralUnderscores() {
+		assertThat(toDashedCase("Word___With__underscore")).isEqualTo("word---with--underscore");
 	}
 
 	@Test
-	public void toDashedCaseLowerCaseUnderscore() {
+	void toDashedCaseLowerCaseUnderscore() {
 		assertThat(toDashedCase("lower_underscore")).isEqualTo("lower-underscore");
 	}
 
 	@Test
-	public void toDashedCaseUpperUnderscoreSuffix() {
+	void toDashedCaseUpperUnderscoreSuffix() {
 		assertThat(toDashedCase("my_DLQ")).isEqualTo("my-d-l-q");
 	}
 
 	@Test
-	public void toDashedCaseUpperUnderscoreMiddle() {
+	void toDashedCaseUpperUnderscoreMiddle() {
 		assertThat(toDashedCase("some_DLQ_key")).isEqualTo("some-d-l-q-key");
 	}
 
 	@Test
-	public void toDashedCaseMultipleUnderscores() {
+	void toDashedCaseMultipleUnderscores() {
 		assertThat(toDashedCase("super___crazy")).isEqualTo("super---crazy");
 	}
 
 	@Test
-	public void toDashedCaseLowercase() {
+	void toDashedCaseLowercase() {
 		assertThat(toDashedCase("lowercase")).isEqualTo("lowercase");
 	}
 

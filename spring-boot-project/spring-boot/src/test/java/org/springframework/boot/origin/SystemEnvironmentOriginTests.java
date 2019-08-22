@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.origin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,31 +26,28 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class SystemEnvironmentOriginTests {
+class SystemEnvironmentOriginTests {
 
 	@Test
-	public void createWhenPropertyIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SystemEnvironmentOrigin(null));
+	void createWhenPropertyIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(null));
 	}
 
 	@Test
-	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SystemEnvironmentOrigin(""));
+	void createWhenPropertyNameIsEmptyShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(""));
 	}
 
 	@Test
-	public void getPropertyShouldReturnProperty() {
+	void getPropertyShouldReturnProperty() {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR");
 	}
 
 	@Test
-	public void toStringShouldReturnStringWithDetails() {
+	void toStringShouldReturnStringWithDetails() {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
-		assertThat(origin.toString())
-				.isEqualTo("System Environment Property \"FOO_BAR\"");
+		assertThat(origin.toString()).isEqualTo("System Environment Property \"FOO_BAR\"");
 	}
 
 }

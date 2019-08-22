@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose liquibase info.
+ * {@link Endpoint @Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
  * @since 2.0.0
@@ -65,18 +65,17 @@ public class LiquibaseEndpoint {
 			DatabaseFactory factory = DatabaseFactory.getInstance();
 			StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 			this.context.getBeansOfType(SpringLiquibase.class)
-					.forEach((name, liquibase) -> liquibaseBeans.put(name,
-							createReport(liquibase, service, factory)));
+					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, service, factory)));
 			ApplicationContext parent = target.getParent();
-			contextBeans.put(target.getId(), new ContextLiquibaseBeans(liquibaseBeans,
-					(parent != null) ? parent.getId() : null));
+			contextBeans.put(target.getId(),
+					new ContextLiquibaseBeans(liquibaseBeans, (parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationLiquibaseBeans(contextBeans);
 	}
 
-	private LiquibaseBean createReport(SpringLiquibase liquibase,
-			ChangeLogHistoryService service, DatabaseFactory factory) {
+	private LiquibaseBean createReport(SpringLiquibase liquibase, ChangeLogHistoryService service,
+			DatabaseFactory factory) {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
@@ -87,9 +86,11 @@ public class LiquibaseEndpoint {
 				if (StringUtils.hasText(defaultSchema)) {
 					database.setDefaultSchemaName(defaultSchema);
 				}
+				database.setDatabaseChangeLogTableName(liquibase.getDatabaseChangeLogTable());
+				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
 				service.setDatabase(database);
-				return new LiquibaseBean(service.getRanChangeSets().stream()
-						.map(ChangeSet::new).collect(Collectors.toList()));
+				return new LiquibaseBean(
+						service.getRanChangeSets().stream().map(ChangeSet::new).collect(Collectors.toList()));
 			}
 			finally {
 				if (database != null) {
@@ -133,8 +134,7 @@ public class LiquibaseEndpoint {
 
 		private final String parentId;
 
-		private ContextLiquibaseBeans(Map<String, LiquibaseBean> liquibaseBeans,
-				String parentId) {
+		private ContextLiquibaseBeans(Map<String, LiquibaseBean> liquibaseBeans, String parentId) {
 			this.liquibaseBeans = liquibaseBeans;
 			this.parentId = parentId;
 		}
@@ -203,15 +203,14 @@ public class LiquibaseEndpoint {
 			this.changeLog = ranChangeSet.getChangeLog();
 			this.comments = ranChangeSet.getComments();
 			this.contexts = ranChangeSet.getContextExpression().getContexts();
-			this.dateExecuted = Instant
-					.ofEpochMilli(ranChangeSet.getDateExecuted().getTime());
+			this.dateExecuted = Instant.ofEpochMilli(ranChangeSet.getDateExecuted().getTime());
 			this.deploymentId = ranChangeSet.getDeploymentId();
 			this.description = ranChangeSet.getDescription();
 			this.execType = ranChangeSet.getExecType();
 			this.id = ranChangeSet.getId();
 			this.labels = ranChangeSet.getLabels().getLabels();
-			this.checksum = ((ranChangeSet.getLastCheckSum() != null)
-					? ranChangeSet.getLastCheckSum().toString() : null);
+			this.checksum = ((ranChangeSet.getLastCheckSum() != null) ? ranChangeSet.getLastCheckSum().toString()
+					: null);
 			this.orderExecuted = ranChangeSet.getOrderExecuted();
 			this.tag = ranChangeSet.getTag();
 		}

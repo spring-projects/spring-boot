@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	public Map<String, OriginTrackedValue> load() throws IOException {
+	Map<String, OriginTrackedValue> load() throws IOException {
 		return load(true);
 	}
 
@@ -70,7 +70,7 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	public Map<String, OriginTrackedValue> load(boolean expandLists) throws IOException {
+	Map<String, OriginTrackedValue> load(boolean expandLists) throws IOException {
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
 			Map<String, OriginTrackedValue> result = new LinkedHashMap<>();
 			StringBuilder buffer = new StringBuilder();
@@ -97,15 +97,13 @@ class OriginTrackedPropertiesLoader {
 		}
 	}
 
-	private void put(Map<String, OriginTrackedValue> result, String key,
-			OriginTrackedValue value) {
+	private void put(Map<String, OriginTrackedValue> result, String key, OriginTrackedValue value) {
 		if (!key.isEmpty()) {
 			result.put(key, value);
 		}
 	}
 
-	private String loadKey(StringBuilder buffer, CharacterReader reader)
-			throws IOException {
+	private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
 		buffer.setLength(0);
 		boolean previousWhitespace = false;
 		while (!reader.isEndOfLine()) {
@@ -123,8 +121,8 @@ class OriginTrackedPropertiesLoader {
 		return buffer.toString();
 	}
 
-	private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader,
-			boolean splitLists) throws IOException {
+	private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader, boolean splitLists)
+			throws IOException {
 		buffer.setLength(0);
 		while (reader.isWhiteSpace() && !reader.isEndOfLine()) {
 			reader.read();
@@ -155,8 +153,8 @@ class OriginTrackedPropertiesLoader {
 		private int character;
 
 		CharacterReader(Resource resource) throws IOException {
-			this.reader = new LineNumberReader(new InputStreamReader(
-					resource.getInputStream(), StandardCharsets.ISO_8859_1));
+			this.reader = new LineNumberReader(
+					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
 		}
 
 		@Override
@@ -164,11 +162,11 @@ class OriginTrackedPropertiesLoader {
 			this.reader.close();
 		}
 
-		public boolean read() throws IOException {
+		boolean read() throws IOException {
 			return read(false);
 		}
 
-		public boolean read(boolean wrappedLine) throws IOException {
+		boolean read(boolean wrappedLine) throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
@@ -239,32 +237,31 @@ class OriginTrackedPropertiesLoader {
 			}
 		}
 
-		public boolean isWhiteSpace() {
-			return !this.escaped && (this.character == ' ' || this.character == '\t'
-					|| this.character == '\f');
+		boolean isWhiteSpace() {
+			return !this.escaped && (this.character == ' ' || this.character == '\t' || this.character == '\f');
 		}
 
-		public boolean isEndOfFile() {
+		boolean isEndOfFile() {
 			return this.character == -1;
 		}
 
-		public boolean isEndOfLine() {
+		boolean isEndOfLine() {
 			return this.character == -1 || (!this.escaped && this.character == '\n');
 		}
 
-		public boolean isListDelimiter() {
+		boolean isListDelimiter() {
 			return !this.escaped && this.character == ',';
 		}
 
-		public boolean isPropertyDelimiter() {
+		boolean isPropertyDelimiter() {
 			return !this.escaped && (this.character == '=' || this.character == ':');
 		}
 
-		public char getCharacter() {
+		char getCharacter() {
 			return (char) this.character;
 		}
 
-		public Location getLocation() {
+		Location getLocation() {
 			return new Location(this.reader.getLineNumber(), this.columnNumber);
 		}
 

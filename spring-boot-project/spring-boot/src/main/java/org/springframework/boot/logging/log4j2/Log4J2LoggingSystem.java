@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
+ * {@link LoggingSystem} for <a href="https://logging.apache.org/log4j/2.x/">Log4j 2</a>.
  *
  * @author Daniel Fullarton
  * @author Andy Wilkinson
@@ -82,20 +82,17 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		}
 
 		@Override
-		public Result filter(Logger logger, Level level, Marker marker, Message msg,
-				Throwable t) {
+		public Result filter(Logger logger, Level level, Marker marker, Message msg, Throwable t) {
 			return Result.DENY;
 		}
 
 		@Override
-		public Result filter(Logger logger, Level level, Marker marker, Object msg,
-				Throwable t) {
+		public Result filter(Logger logger, Level level, Marker marker, Object msg, Throwable t) {
 			return Result.DENY;
 		}
 
 		@Override
-		public Result filter(Logger logger, Level level, Marker marker, String msg,
-				Object... params) {
+		public Result filter(Logger logger, Level level, Marker marker, String msg, Object... params) {
 			return Result.DENY;
 		}
 
@@ -112,6 +109,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private String[] getCurrentlySupportedConfigLocations() {
 		List<String> supportedConfigLocations = new ArrayList<>();
+		supportedConfigLocations.add("log4j2.properties");
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
 			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
 		}
@@ -137,8 +135,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void initialize(LoggingInitializationContext initializationContext,
-			String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
@@ -149,8 +146,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LoggingInitializationContext initializationContext,
-			LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
@@ -160,8 +156,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(LoggingInitializationContext initializationContext,
-			String location, LogFile logFile) {
+	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
 		super.loadConfiguration(initializationContext, location, logFile);
 		loadConfiguration(location, logFile);
 	}
@@ -175,8 +171,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(ctx, source));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Could not initialize Log4J2 logging from " + location, ex);
+			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,43 +59,46 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Björn Lindström
+ * @since 1.0.0
  */
-@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
+		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("\\s+");
 
 	/**
 	 * The Maven project.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Maven project helper utils.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Component
 	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Directory containing the generated archive.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File outputDirectory;
 
 	/**
 	 * Name of the generated archive.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
 	 * Skip the execution.
-	 * @since 1.2
+	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.repackage.skip", defaultValue = "false")
 	private boolean skip;
@@ -108,16 +111,16 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * the main artifact will be used as source and the repackaged archive will be
 	 * attached as a supplemental artifact with that classifier. Attaching the artifact
 	 * allows to deploy it alongside to the original one, see <a href=
-	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
+	 * "https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter
 	private String classifier;
 
 	/**
 	 * Attach the repackaged archive to be installed and deployed.
-	 * @since 1.4
+	 * @since 1.4.0
 	 */
 	@Parameter(defaultValue = "true")
 	private boolean attach = true;
@@ -125,7 +128,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter
 	private String mainClass;
@@ -134,16 +137,16 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
 	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
 	 * archive type.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.repackage.layout")
 	private LayoutType layout;
 
 	/**
 	 * The layout factory that will be used to create the executable archive if no
 	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
 	 * parties.
-	 * @since 1.5
+	 * @since 1.5.0
 	 */
 	@Parameter
 	private LayoutFactory layoutFactory;
@@ -152,7 +155,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
 	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
 	 * {@code <artifactId>} and they will be unpacked at runtime.
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter
 	private List<Dependency> requiresUnpack;
@@ -166,7 +169,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * or war that has been made fully-executable. It is recommended that you only enable
 	 * this option if you intend to execute it directly, rather than running it with
 	 * {@code java -jar} or deploying it to a servlet container.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(defaultValue = "false")
 	private boolean executable;
@@ -174,28 +177,28 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The embedded launch script to prepend to the front of the jar if it is fully
 	 * executable. If not specified the 'Spring Boot' default script will be used.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter
 	private File embeddedLaunchScript;
 
 	/**
 	 * Properties that should be expanded in the embedded launch script.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
 	/**
 	 * Exclude Spring Boot devtools from the repackaged archive.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
-	@Parameter(defaultValue = "true")
+	@Parameter(property = "spring-boot.repackage.excludeDevtools", defaultValue = "true")
 	private boolean excludeDevtools = true;
 
 	/**
 	 * Include system scoped dependencies.
-	 * @since 1.4
+	 * @since 1.4.0
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean includeSystemScope;
@@ -217,10 +220,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Artifact source = getSourceArtifact();
 		File target = getTargetFile();
 		Repackager repackager = getRepackager(source.getFile());
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				getFilters(getAdditionalFilters()));
-		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
-				getLog());
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(getAdditionalFilters()));
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack, getLog());
 		try {
 			LaunchScript launchScript = getLaunchScript();
 			repackager.repackage(target, libraries, launchScript);
@@ -245,8 +246,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Artifact getArtifact(String classifier) {
 		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (classifier.equals(attachedArtifact.getClassifier())
-						&& attachedArtifact.getFile() != null
+				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
 						&& attachedArtifact.getFile().isFile()) {
 					return attachedArtifact;
 				}
@@ -263,14 +263,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
-				+ this.project.getArtifact().getArtifactHandler().getExtension());
+		return new File(this.outputDirectory,
+				this.finalName + classifier + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new Repackager(source, this.layoutFactory);
-		repackager.addMainClassTimeoutWarningListener(
-				new LoggingMainClassTimeoutWarningListener());
+		repackager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener());
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
@@ -296,8 +295,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
-			return new DefaultLaunchScript(this.embeddedLaunchScript,
-					buildLaunchScriptProperties());
+			return new DefaultLaunchScript(this.embeddedLaunchScript, buildLaunchScriptProperties());
 		}
 		return null;
 	}
@@ -308,21 +306,17 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			properties.putAll(this.embeddedLaunchScriptProperties);
 		}
 		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
-		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
-				this.project.getArtifactId());
-		putIfMissing(properties, "initInfoDescription",
-				removeLineBreaks(this.project.getDescription()), this.project.getName(),
-				this.project.getArtifactId());
+		putIfMissing(properties, "initInfoShortDescription", this.project.getName(), this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription", removeLineBreaks(this.project.getDescription()),
+				this.project.getName(), this.project.getArtifactId());
 		return properties;
 	}
 
 	private String removeLineBreaks(String description) {
-		return (description != null)
-				? WHITE_SPACE_PATTERN.matcher(description).replaceAll(" ") : null;
+		return (description != null) ? WHITE_SPACE_PATTERN.matcher(description).replaceAll(" ") : null;
 	}
 
-	private void putIfMissing(Properties properties, String key,
-			String... valueCandidates) {
+	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (candidate != null && !candidate.isEmpty()) {
@@ -338,40 +332,35 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			attachArtifact(source, target);
 		}
 		else if (source.getFile().equals(target) && original.exists()) {
-			String artifactId = (this.classifier != null)
-					? "artifact with classifier " + this.classifier : "main artifact";
-			getLog().info(String.format("Updating %s %s to %s", artifactId,
-					source.getFile(), original));
+			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
+					: "main artifact";
+			getLog().info(String.format("Updating %s %s to %s", artifactId, source.getFile(), original));
 			source.setFile(original);
 		}
 		else if (this.classifier != null) {
-			getLog().info("Creating repackaged archive " + target + " with classifier "
-					+ this.classifier);
+			getLog().info("Creating repackaged archive " + target + " with classifier " + this.classifier);
 		}
 	}
 
 	private void attachArtifact(Artifact source, File target) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
-			getLog().info("Attaching repackaged archive " + target + " with classifier "
-					+ this.classifier);
-			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
-					this.classifier, target);
+			getLog().info("Attaching repackaged archive " + target + " with classifier " + this.classifier);
+			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, target);
 		}
 		else {
-			String artifactId = (this.classifier != null)
-					? "artifact with classifier " + this.classifier : "main artifact";
+			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
+					: "main artifact";
 			getLog().info("Replacing " + artifactId + " with repackaged archive");
 			source.setFile(target);
 		}
 	}
 
-	private class LoggingMainClassTimeoutWarningListener
-			implements MainClassTimeoutWarningListener {
+	private class LoggingMainClassTimeoutWarningListener implements MainClassTimeoutWarningListener {
 
 		@Override
 		public void handleTimeoutWarning(long duration, String mainMethod) {
 			getLog().warn("Searching for the main-class is taking some time, "
-					+ "consider using the mainClass configuration " + "parameter");
+					+ "consider using the mainClass configuration parameter");
 		}
 
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,8 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to JPA tests.
  * <p>
- * By default, tests annotated with {@code @DataJpaTest} will use an embedded in-memory
- * database (replacing any explicit or usually auto-configured DataSource). The
+ * By default, tests annotated with {@code @DataJpaTest} are transactional and roll back
+ * at the end of each test. They also use an embedded in-memory database (replacing any
+ * explicit or usually auto-configured DataSource). The
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
  * override these settings.
  * <p>
@@ -60,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @since 1.4.0
  * @see AutoConfigureDataJpa
  * @see AutoConfigureTestDatabase
  * @see AutoConfigureTestEntityManager

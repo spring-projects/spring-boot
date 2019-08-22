@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,11 +33,11 @@ import org.codehaus.groovy.control.CompilationFailedException;
  * Helpful utilities for working with Groovy {@link Template}s.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public abstract class GroovyTemplate {
 
-	public static String template(String name)
-			throws IOException, CompilationFailedException, ClassNotFoundException {
+	public static String template(String name) throws IOException, CompilationFailedException, ClassNotFoundException {
 		return template(name, Collections.emptyMap());
 	}
 
@@ -46,8 +46,7 @@ public abstract class GroovyTemplate {
 		return template(new GStringTemplateEngine(), name, model);
 	}
 
-	public static String template(TemplateEngine engine, String name,
-			Map<String, ?> model)
+	public static String template(TemplateEngine engine, String name, Map<String, ?> model)
 			throws IOException, CompilationFailedException, ClassNotFoundException {
 		Writable writable = getTemplate(engine, name).make(model);
 		StringWriter result = new StringWriter();

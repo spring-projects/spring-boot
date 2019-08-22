@@ -34,7 +34,8 @@ org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,\
-org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor
+org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor,\
+org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
@@ -49,6 +50,7 @@ org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\
+ org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertiesFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer
 

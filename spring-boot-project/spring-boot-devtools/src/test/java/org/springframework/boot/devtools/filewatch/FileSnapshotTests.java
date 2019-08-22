@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,11 @@ package org.springframework.boot.devtools.filewatch;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -35,31 +35,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class FileSnapshotTests {
+class FileSnapshotTests {
 
 	private static final long TWO_MINS = TimeUnit.MINUTES.toMillis(2);
 
-	private static final long MODIFIED = new Date().getTime()
-			- TimeUnit.DAYS.toMillis(10);
+	private static final long MODIFIED = new Date().getTime() - TimeUnit.DAYS.toMillis(10);
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void fileMustNotBeNull() {
+	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(null))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
-	public void fileMustNotBeAFolder() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+	void fileMustNotBeAFolder() throws Exception {
+		File file = new File(this.tempDir, "file");
+		file.mkdir();
+		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(file))
 				.withMessageContaining("File must not be a folder");
 	}
 
 	@Test
-	public void equalsIfTheSame() throws Exception {
+	void equalsIfTheSame() throws Exception {
 		File file = createNewFile("abc", MODIFIED);
 		File fileCopy = new File(file, "x").getParentFile();
 		FileSnapshot snapshot1 = new FileSnapshot(file);
@@ -69,7 +69,7 @@ public class FileSnapshotTests {
 	}
 
 	@Test
-	public void notEqualsIfDeleted() throws Exception {
+	void notEqualsIfDeleted() throws Exception {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		file.delete();
@@ -77,7 +77,7 @@ public class FileSnapshotTests {
 	}
 
 	@Test
-	public void notEqualsIfLengthChanges() throws Exception {
+	void notEqualsIfLengthChanges() throws Exception {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abcd", MODIFIED);
@@ -85,7 +85,7 @@ public class FileSnapshotTests {
 	}
 
 	@Test
-	public void notEqualsIfLastModifiedChanges() throws Exception {
+	void notEqualsIfLastModifiedChanges() throws Exception {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abc", MODIFIED + TWO_MINS);
@@ -93,13 +93,12 @@ public class FileSnapshotTests {
 	}
 
 	private File createNewFile(String content, long lastModified) throws IOException {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		setupFile(file, content, lastModified);
 		return file;
 	}
 
-	private void setupFile(File file, String content, long lastModified)
-			throws IOException {
+	private void setupFile(File file, String content, long lastModified) throws IOException {
 		FileCopyUtils.copy(content.getBytes(), file);
 		file.setLastModified(lastModified);
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
@@ -52,7 +52,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Madhura Bhave
  */
-public class ReactiveTokenValidatorTests {
+class ReactiveTokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
 
@@ -83,8 +83,8 @@ public class ReactiveTokenValidatorTests {
 
 	private static final Map<String, String> VALID_KEYS = new ConcurrentHashMap<>();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		VALID_KEYS.put("valid-key", VALID_KEY);
 		INVALID_KEYS.put("invalid-key", INVALID_KEY);
@@ -92,197 +92,152 @@ public class ReactiveTokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException()
-			throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
-				.of(Mono.just(VALID_KEYS));
+	void validateTokenWhenKidValidationFailsTwiceShouldThrowException() throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
 		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", VALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"invalid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
-					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-							.isEqualTo(Reason.INVALID_KEY_ID);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
-				VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt()
-			throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
-				.of(Mono.just(VALID_KEYS));
-		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys",
-				INVALID_KEYS);
+	void validateTokenWhenKidValidationSucceedsInTheSecondAttempt() throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
+		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
-				VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenCacheIsEmptyShouldFetchTokenKeys() throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
-				.of(Mono.just(VALID_KEYS));
+	void validateTokenWhenCacheIsEmptyShouldFetchTokenKeys() throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
-		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
-				VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenCacheEmptyAndInvalidKeyShouldThrowException()
-			throws Exception {
-		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe
-				.of(Mono.just(VALID_KEYS));
+	void validateTokenWhenCacheEmptyAndInvalidKeyShouldThrowException() throws Exception {
+		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.of(Mono.just(VALID_KEYS));
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"invalid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
-					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-							.isEqualTo(Reason.INVALID_KEY_ID);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_KEY_ID);
 				}).verify();
-		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys",
-				VALID_KEYS);
+		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenCacheValidShouldNotFetchTokenKeys() throws Exception {
+	void validateTokenWhenCacheValidShouldNotFetchTokenKeys() throws Exception {
 		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.empty();
 		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", VALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.verifyComplete();
 		fetchTokenKeys.assertWasNotSubscribed();
 	}
 
 	@Test
-	public void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
+	void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
 		Map<String, String> KEYS = Collections.singletonMap("valid-key", INVALID_KEY);
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(KEYS));
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_SIGNATURE);
 				}).verify();
 	}
 
 	@Test
-	public void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException()
-			throws Exception {
+	void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"HS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM);
 				}).verify();
 	}
 
 	@Test
-	public void validateTokenWhenExpiredShouldThrowException() throws Exception {
+	void validateTokenWhenExpiredShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"jti\": \"0236399c350c47f3ae77e67a75e75e7d\", \"exp\": 1477509977, \"scope\": [\"actuator.read\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
-					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-							.isEqualTo(Reason.TOKEN_EXPIRED);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.TOKEN_EXPIRED);
 				}).verify();
 	}
 
 	@Test
-	public void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
+	void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://other-uaa.com"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("https://other-uaa.com"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
-					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
-							.isEqualTo(Reason.INVALID_ISSUER);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
+					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_ISSUER);
 				}).verify();
 	}
 
 	@Test
-	public void validateTokenWhenAudienceIsNotValidShouldThrowException()
-			throws Exception {
+	void validateTokenWhenAudienceIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(Mono.just(VALID_KEYS));
-		given(this.securityService.getUaaUrl())
-				.willReturn(Mono.just("http://localhost:8080/uaa"));
+		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
 		StepVerifier
-				.create(this.tokenValidator.validate(
-						new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
+				.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
 				.consumeErrorWith((ex) -> {
-					assertThat(ex).isExactlyInstanceOf(
-							CloudFoundryAuthorizationException.class);
+					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_AUDIENCE);
 				}).verify();
@@ -292,17 +247,15 @@ public class ReactiveTokenValidatorTests {
 		PrivateKey privateKey = getPrivateKey();
 		Signature signature = Signature.getInstance("SHA256WithRSA");
 		signature.initSign(privateKey);
-		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header),
-				Base64Utils.encode(claims));
+		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encode(claims));
 		signature.update(content);
 		byte[] crypto = signature.sign();
-		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header),
-				Base64Utils.encodeUrlSafe(claims), Base64Utils.encodeUrlSafe(crypto));
+		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encodeUrlSafe(claims),
+				Base64Utils.encodeUrlSafe(crypto));
 		return new String(token, StandardCharsets.UTF_8);
 	}
 
-	private PrivateKey getPrivateKey()
-			throws InvalidKeySpecException, NoSuchAlgorithmException {
+	private PrivateKey getPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
 		String signingKey = "-----BEGIN PRIVATE KEY-----\n"
 				+ "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDSbn2Xa72IOcxu\n"
 				+ "tcd+qQ6ufZ1VDe98EmpwO4VQrTd37U9kZtWU0KqeSkgnyzIWmlbyWOdbB4/v4uJa\n"

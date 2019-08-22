@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -38,75 +38,70 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
+class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 
 	private ConditionEvaluationReportAutoConfigurationImportListener listener;
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.listener = new ConditionEvaluationReportAutoConfigurationImportListener();
 		this.listener.setBeanFactory(this.beanFactory);
 	}
 
 	@Test
-	public void shouldBeInSpringFactories() {
+	void shouldBeInSpringFactories() {
 		List<AutoConfigurationImportListener> factories = SpringFactoriesLoader
 				.loadFactories(AutoConfigurationImportListener.class, null);
-		assertThat(factories).hasAtLeastOneElementOfType(
-				ConditionEvaluationReportAutoConfigurationImportListener.class);
+		assertThat(factories)
+				.hasAtLeastOneElementOfType(ConditionEvaluationReportAutoConfigurationImportListener.class);
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordCandidates() {
+	void onAutoConfigurationImportEventShouldRecordCandidates() {
 		List<String> candidateConfigurations = Collections.singletonList("Test");
 		Set<String> exclusions = Collections.emptySet();
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				candidateConfigurations, exclusions);
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
+				exclusions);
 		this.listener.onAutoConfigurationImportEvent(event);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
-		assertThat(report.getUnconditionalClasses())
-				.containsExactlyElementsOf(candidateConfigurations);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
+		assertThat(report.getUnconditionalClasses()).containsExactlyElementsOf(candidateConfigurations);
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordExclusions() {
+	void onAutoConfigurationImportEventShouldRecordExclusions() {
 		List<String> candidateConfigurations = Collections.emptyList();
 		Set<String> exclusions = Collections.singleton("Test");
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				candidateConfigurations, exclusions);
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
+				exclusions);
 		this.listener.onAutoConfigurationImportEvent(event);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(report.getExclusions()).containsExactlyElementsOf(exclusions);
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				Arrays.asList("First", "Second"), Collections.emptySet());
+	void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
+				Collections.emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
-		AutoConfigurationImportEvent anotherEvent = new AutoConfigurationImportEvent(this,
-				Collections.emptyList(), Collections.singleton("First"));
+		AutoConfigurationImportEvent anotherEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
+				Collections.singleton("First"));
 		this.listener.onAutoConfigurationImportEvent(anotherEvent);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(report.getUnconditionalClasses()).containsExactly("Second");
 		assertThat(report.getExclusions()).containsExactly("First");
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldApplyExclusionsGloballyWhenExclusionIsAlreadyApplied() {
-		AutoConfigurationImportEvent excludeEvent = new AutoConfigurationImportEvent(this,
-				Collections.emptyList(), Collections.singleton("First"));
+	void onAutoConfigurationImportEventShouldApplyExclusionsGloballyWhenExclusionIsAlreadyApplied() {
+		AutoConfigurationImportEvent excludeEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
+				Collections.singleton("First"));
 		this.listener.onAutoConfigurationImportEvent(excludeEvent);
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				Arrays.asList("First", "Second"), Collections.emptySet());
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
+				Collections.emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(report.getUnconditionalClasses()).containsExactly("Second");
 		assertThat(report.getExclusions()).containsExactly("First");
 	}

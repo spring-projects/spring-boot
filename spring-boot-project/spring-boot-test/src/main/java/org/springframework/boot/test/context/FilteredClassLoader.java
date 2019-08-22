@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.test.context;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.function.Predicate;
 
 import org.springframework.core.io.ClassPathResource;
@@ -45,8 +48,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @param hiddenClasses the classes to hide
 	 */
 	public FilteredClassLoader(Class<?>... hiddenClasses) {
-		this(Collections.singleton(ClassFilter.of(hiddenClasses)),
-				Collections.emptyList());
+		this(Collections.singleton(ClassFilter.of(hiddenClasses)), Collections.emptyList());
 	}
 
 	/**
@@ -54,8 +56,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @param hiddenPackages the packages to hide
 	 */
 	public FilteredClassLoader(String... hiddenPackages) {
-		this(Collections.singleton(PackageFilter.of(hiddenPackages)),
-				Collections.emptyList());
+		this(Collections.singleton(PackageFilter.of(hiddenPackages)), Collections.emptyList());
 	}
 
 	/**
@@ -65,8 +66,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @since 2.1.0
 	 */
 	public FilteredClassLoader(ClassPathResource... hiddenResources) {
-		this(Collections.emptyList(),
-				Collections.singleton(ClassPathResourceFilter.of(hiddenResources)));
+		this(Collections.emptyList(), Collections.singleton(ClassPathResourceFilter.of(hiddenResources)));
 	}
 
 	/**
@@ -89,8 +89,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	}
 
 	@Override
-	protected Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		for (Predicate<String> filter : this.classesFilters) {
 			if (filter.test(name)) {
 				throw new ClassNotFoundException();
@@ -107,6 +106,26 @@ public class FilteredClassLoader extends URLClassLoader {
 			}
 		}
 		return super.getResource(name);
+	}
+
+	@Override
+	public Enumeration<URL> getResources(String name) throws IOException {
+		for (Predicate<String> filter : this.resourcesFilters) {
+			if (filter.test(name)) {
+				return Collections.emptyEnumeration();
+			}
+		}
+		return super.getResources(name);
+	}
+
+	@Override
+	public InputStream getResourceAsStream(String name) {
+		for (Predicate<String> filter : this.resourcesFilters) {
+			if (filter.test(name)) {
+				return null;
+			}
+		}
+		return super.getResourceAsStream(name);
 	}
 
 	/**
@@ -179,8 +198,7 @@ public class FilteredClassLoader extends URLClassLoader {
 		@Override
 		public boolean test(String resourceName) {
 			for (ClassPathResource hiddenResource : this.hiddenResources) {
-				if (hiddenResource.getFilename() != null
-						&& resourceName.equals(hiddenResource.getPath())) {
+				if (hiddenResource.getFilename() != null && resourceName.equals(hiddenResource.getPath())) {
 					return true;
 				}
 			}

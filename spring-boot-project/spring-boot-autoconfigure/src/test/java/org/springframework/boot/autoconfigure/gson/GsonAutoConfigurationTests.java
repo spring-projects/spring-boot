@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.gson;
 
-import java.lang.reflect.Field;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,8 +28,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
-import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,13 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Ivan Golovko
  * @author Stephane Nicoll
  */
-public class GsonAutoConfigurationTests {
+class GsonAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class));
 
 	@Test
-	public void gsonRegistration() {
+	void gsonRegistration() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
 			assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":1}");
@@ -58,22 +58,17 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void generateNonExecutableJson() {
-		this.contextRunner
-				.withPropertyValues("spring.gson.generate-non-executable-json:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject()))
-							.isNotEqualTo("{\"data\":1}");
-					assertThat(gson.toJson(new DataObject())).endsWith("{\"data\":1}");
-				});
+	void generateNonExecutableJson() {
+		this.contextRunner.withPropertyValues("spring.gson.generate-non-executable-json:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.toJson(new DataObject())).isNotEqualTo("{\"data\":1}");
+			assertThat(gson.toJson(new DataObject())).endsWith("{\"data\":1}");
+		});
 	}
 
 	@Test
-	public void excludeFieldsWithoutExposeAnnotation() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.gson.exclude-fields-without-expose-annotation:true")
+	void excludeFieldsWithoutExposeAnnotation() {
+		this.contextRunner.withPropertyValues("spring.gson.exclude-fields-without-expose-annotation:true")
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
 					assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
@@ -81,19 +76,24 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void serializeNulls() {
-		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.serializeNulls()).isTrue();
-				});
+	void serializeNullsTrue() {
+		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.serializeNulls()).isTrue();
+		});
 	}
 
 	@Test
-	public void enableComplexMapKeySerialization() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.gson.enable-complex-map-key-serialization:true")
+	void serializeNullsFalse() {
+		this.contextRunner.withPropertyValues("spring.gson.serialize-nulls:false").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.serializeNulls()).isFalse();
+		});
+	}
+
+	@Test
+	void enableComplexMapKeySerialization() {
+		this.contextRunner.withPropertyValues("spring.gson.enable-complex-map-key-serialization:true")
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
 					Map<DataObject, String> original = new LinkedHashMap<>();
@@ -103,114 +103,83 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void notDisableInnerClassSerialization() {
+	void notDisableInnerClassSerialization() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
 			WrapperObject wrapperObject = new WrapperObject();
-			assertThat(gson.toJson(wrapperObject.new NestedObject()))
-					.isEqualTo("{\"data\":\"nested\"}");
+			assertThat(gson.toJson(wrapperObject.new NestedObject())).isEqualTo("{\"data\":\"nested\"}");
 		});
 	}
 
 	@Test
-	public void disableInnerClassSerialization() {
-		this.contextRunner
-				.withPropertyValues("spring.gson.disable-inner-class-serialization:true")
+	void disableInnerClassSerialization() {
+		this.contextRunner.withPropertyValues("spring.gson.disable-inner-class-serialization:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			WrapperObject wrapperObject = new WrapperObject();
+			assertThat(gson.toJson(wrapperObject.new NestedObject())).isEqualTo("null");
+		});
+	}
+
+	@Test
+	void withLongSerializationPolicy() {
+		this.contextRunner.withPropertyValues("spring.gson.long-serialization-policy:" + LongSerializationPolicy.STRING)
 				.run((context) -> {
 					Gson gson = context.getBean(Gson.class);
-					WrapperObject wrapperObject = new WrapperObject();
-					assertThat(gson.toJson(wrapperObject.new NestedObject()))
-							.isEqualTo("null");
+					assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"1\"}");
 				});
 	}
 
 	@Test
-	public void withLongSerializationPolicy() {
-		this.contextRunner.withPropertyValues(
-				"spring.gson.long-serialization-policy:" + LongSerializationPolicy.STRING)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject()))
-							.isEqualTo("{\"data\":\"1\"}");
-				});
-	}
-
-	@Test
-	public void withFieldNamingPolicy() {
+	void withFieldNamingPolicy() {
 		FieldNamingPolicy fieldNamingPolicy = FieldNamingPolicy.UPPER_CAMEL_CASE;
-		this.contextRunner
-				.withPropertyValues(
-						"spring.gson.field-naming-policy:" + fieldNamingPolicy)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.fieldNamingStrategy()).isEqualTo(fieldNamingPolicy);
-				});
+		this.contextRunner.withPropertyValues("spring.gson.field-naming-policy:" + fieldNamingPolicy).run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.fieldNamingStrategy()).isEqualTo(fieldNamingPolicy);
+		});
 	}
 
 	@Test
-	public void additionalGsonBuilderCustomization() {
-		this.contextRunner.withUserConfiguration(GsonBuilderCustomizerConfig.class)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
-				});
+	void additionalGsonBuilderCustomization() {
+		this.contextRunner.withUserConfiguration(GsonBuilderCustomizerConfig.class).run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
+		});
 	}
 
 	@Test
-	public void customGsonBuilder() {
-		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject()))
-							.isEqualTo("{\"data\":1,\"owner\":null}");
-				});
+	void customGsonBuilder() {
+		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class).run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":1,\"owner\":null}");
+		});
 	}
 
 	@Test
-	public void withPrettyPrinting() {
-		this.contextRunner.withPropertyValues("spring.gson.pretty-printing:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject()))
-							.isEqualTo("{\n  \"data\": 1\n}");
-				});
+	void withPrettyPrinting() {
+		this.contextRunner.withPropertyValues("spring.gson.pretty-printing:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.toJson(new DataObject())).isEqualTo("{\n  \"data\": 1\n}");
+		});
 	}
 
 	@Test
-	public void withoutLenient() {
+	void withoutLenient() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			/*
-			 * It seems that lenient setting not work in version 2.8.2. We get access to
-			 * it via reflection
-			 */
-			Field lenientField = gson.getClass().getDeclaredField("lenient");
-			lenientField.setAccessible(true);
-			boolean lenient = lenientField.getBoolean(gson);
-
-			assertThat(lenient).isFalse();
+			assertThat(gson).hasFieldOrPropertyWithValue("lenient", false);
 		});
 	}
 
 	@Test
-	public void withLenient() {
-		this.contextRunner.withPropertyValues("spring.gson.lenient:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					/*
-					 * It seems that lenient setting not work in version 2.8.2. We get
-					 * access to it via reflection
-					 */
-					Field lenientField = gson.getClass().getDeclaredField("lenient");
-					lenientField.setAccessible(true);
-					boolean lenient = lenientField.getBoolean(gson);
-
-					assertThat(lenient).isTrue();
-				});
+	void withLenient() {
+		this.contextRunner.withPropertyValues("spring.gson.lenient:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson).hasFieldOrPropertyWithValue("lenient", true);
+		});
 	}
 
 	@Test
-	public void withHtmlEscaping() {
+	void withHtmlEscaping() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
 			assertThat(gson.htmlSafe()).isTrue();
@@ -218,52 +187,48 @@ public class GsonAutoConfigurationTests {
 	}
 
 	@Test
-	public void withoutHtmlEscaping() {
-		this.contextRunner.withPropertyValues("spring.gson.disable-html-escaping:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.htmlSafe()).isFalse();
-				});
+	void withoutHtmlEscaping() {
+		this.contextRunner.withPropertyValues("spring.gson.disable-html-escaping:true").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson.htmlSafe()).isFalse();
+		});
 
 	}
 
 	@Test
-	public void customDateFormat() {
-		this.contextRunner.withPropertyValues("spring.gson.date-format:H")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					DateTime dateTime = new DateTime(1988, 6, 25, 20, 30);
-					Date date = dateTime.toDate();
-					assertThat(gson.toJson(date)).isEqualTo("\"20\"");
-				});
+	void customDateFormat() {
+		this.contextRunner.withPropertyValues("spring.gson.date-format:H").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			ZonedDateTime dateTime = ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault());
+			assertThat(gson.toJson(Date.from(dateTime.toInstant()))).isEqualTo("\"20\"");
+		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class GsonBuilderCustomizerConfig {
 
 		@Bean
-		public GsonBuilderCustomizer customSerializationExclusionStrategy() {
-			return (gsonBuilder) -> gsonBuilder
-					.addSerializationExclusionStrategy(new ExclusionStrategy() {
-						@Override
-						public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-							return "data".equals(fieldAttributes.getName());
-						}
+		GsonBuilderCustomizer customSerializationExclusionStrategy() {
+			return (gsonBuilder) -> gsonBuilder.addSerializationExclusionStrategy(new ExclusionStrategy() {
+				@Override
+				public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+					return "data".equals(fieldAttributes.getName());
+				}
 
-						@Override
-						public boolean shouldSkipClass(Class<?> aClass) {
-							return false;
-						}
-					});
+				@Override
+				public boolean shouldSkipClass(Class<?> aClass) {
+					return false;
+				}
+			});
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class GsonBuilderConfig {
 
 		@Bean
-		public GsonBuilder customGsonBuilder() {
+		GsonBuilder customGsonBuilder() {
 			return new GsonBuilder().serializeNulls();
 		}
 

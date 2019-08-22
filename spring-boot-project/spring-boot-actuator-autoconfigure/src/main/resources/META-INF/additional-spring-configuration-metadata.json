@@ -34,6 +34,10 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
+      "name": "management.endpoints.jmx.domain",
+      "defaultValue": "org.springframework.boot"
+    },
+    {
       "name": "management.endpoints.jmx.exposure.include",
       "defaultValue": "*"
     },
@@ -60,6 +64,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.",
       "defaultValue": false
+    },
+    {
+      "name": "management.auditevents.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable storage of audit events.",
+      "defaultValue": true
     },
     {
       "name": "management.health.cassandra.enabled",
@@ -189,54 +199,6 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.metrics.binders.files.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable files metrics.",
-      "defaultValue": true,
-      "deprecation": {
-        "replacement": "management.metrics.enable.process.files",
-        "reason": "Instead, filter 'process.files' metrics."
-      }
-    },
-    {
-      "name": "management.metrics.binders.jvm.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable JVM metrics.",
-      "defaultValue": true,
-      "deprecation": {
-        "replacement": "management.metrics.enable.jvm",
-        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
-      }
-    },
-    {
-      "name": "management.metrics.binders.logback.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Logback metrics.",
-      "defaultValue": true,
-      "deprecation": {
-        "replacement": "management.metrics.enable.logback",
-        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
-      }
-    },
-    {
-      "name": "management.metrics.binders.processor.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable processor metrics.",
-      "defaultValue": true,
-      "deprecation": {
-        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics."
-      }
-    },
-    {
-      "name": "management.metrics.binders.uptime.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable uptime metrics.",
-      "defaultValue": true,
-      "deprecation": {
-        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
-      }
-    },
-    {
       "name": "management.metrics.export.jmx.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether exporting of metrics to JMX is enabled.",
@@ -296,6 +258,34 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.enabled",
+      "description": "Whether to automatically time web client requests.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish."
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.enabled",
+      "description": "Whether to automatically time web server requests.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish."
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false
     },
     {
       "name": "management.server.ssl.ciphers",
@@ -1276,6 +1266,59 @@
       "defaultValue": "1000ms",
       "deprecation": {
         "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.binders.files.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable files metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.enable.process.files",
+        "reason": "Instead, filter 'process.files' metrics."
+      }
+    },
+    {
+      "name": "management.metrics.binders.jvm.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JVM metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.enable.jvm",
+        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
+      }
+    },
+    {
+      "name": "management.metrics.binders.logback.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Logback metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.enable.logback",
+        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
+      }
+    },
+    {
+      "name": "management.metrics.binders.processor.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable processor metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics."
+      }
+    },
+    {
+      "name": "management.metrics.binders.uptime.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable uptime metrics.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
       }
     },
     {

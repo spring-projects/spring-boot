@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -51,8 +50,8 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
-		GenericApplicationListener, EnvironmentAware, InitializingBean, DisposableBean {
+public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware, GenericApplicationListener,
+		EnvironmentAware, InitializingBean, DisposableBean {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
@@ -66,14 +65,12 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	private boolean embeddedWebApplication = false;
 
-	public SpringApplicationAdminMXBeanRegistrar(String name)
-			throws MalformedObjectNameException {
+	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
 				"ApplicationContext does not implement ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
@@ -95,7 +92,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	}
 
 	@Override
-	public boolean supportsSourceType(@Nullable Class<?> sourceType) {
+	public boolean supportsSourceType(Class<?> sourceType) {
 		return true;
 	}
 
@@ -131,8 +128,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 		server.registerMBean(new SpringApplicationAdmin(), this.objectName);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application Admin MBean registered with name '"
-					+ this.objectName + "'");
+			logger.debug("Application Admin MBean registered with name '" + this.objectName + "'");
 		}
 	}
 
@@ -155,8 +151,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 		@Override
 		public String getProperty(String key) {
-			return SpringApplicationAdminMXBeanRegistrar.this.environment
-					.getProperty(key);
+			return SpringApplicationAdminMXBeanRegistrar.this.environment.getProperty(key);
 		}
 
 		@Override

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,16 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.boot.loader.TestJarCreator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class HandlerTests {
+@ExtendWith(JarUrlProtocolHandler.class)
+class HandlerTests {
 
 	private final Handler handler = new Handler();
 
 	@Test
-	public void parseUrlWithJarRootContextAndAbsoluteSpecThatUsesContext()
-			throws MalformedURLException {
+	void parseUrlWithJarRootContextAndAbsoluteSpecThatUsesContext() throws MalformedURLException {
 		String spec = "/entry.txt";
 		URL context = createUrl("file:example.jar!/");
 		this.handler.parseURL(context, spec, 0, spec.length());
@@ -42,8 +48,7 @@ public class HandlerTests {
 	}
 
 	@Test
-	public void parseUrlWithDirectoryEntryContextAndAbsoluteSpecThatUsesContext()
-			throws MalformedURLException {
+	void parseUrlWithDirectoryEntryContextAndAbsoluteSpecThatUsesContext() throws MalformedURLException {
 		String spec = "/entry.txt";
 		URL context = createUrl("file:example.jar!/dir/");
 		this.handler.parseURL(context, spec, 0, spec.length());
@@ -51,8 +56,7 @@ public class HandlerTests {
 	}
 
 	@Test
-	public void parseUrlWithJarRootContextAndRelativeSpecThatUsesContext()
-			throws MalformedURLException {
+	void parseUrlWithJarRootContextAndRelativeSpecThatUsesContext() throws MalformedURLException {
 		String spec = "entry.txt";
 		URL context = createUrl("file:example.jar!/");
 		this.handler.parseURL(context, spec, 0, spec.length());
@@ -60,121 +64,138 @@ public class HandlerTests {
 	}
 
 	@Test
-	public void parseUrlWithDirectoryEntryContextAndRelativeSpecThatUsesContext()
-			throws MalformedURLException {
+	void parseUrlWithDirectoryEntryContextAndRelativeSpecThatUsesContext() throws MalformedURLException {
 		String spec = "entry.txt";
 		URL context = createUrl("file:example.jar!/dir/");
 		this.handler.parseURL(context, spec, 0, spec.length());
-		assertThat(context.toExternalForm())
-				.isEqualTo("jar:file:example.jar!/dir/entry.txt");
+		assertThat(context.toExternalForm()).isEqualTo("jar:file:example.jar!/dir/entry.txt");
 	}
 
 	@Test
-	public void parseUrlWithFileEntryContextAndRelativeSpecThatUsesContext()
-			throws MalformedURLException {
+	void parseUrlWithFileEntryContextAndRelativeSpecThatUsesContext() throws MalformedURLException {
 		String spec = "entry.txt";
 		URL context = createUrl("file:example.jar!/dir/file");
 		this.handler.parseURL(context, spec, 0, spec.length());
-		assertThat(context.toExternalForm())
-				.isEqualTo("jar:file:example.jar!/dir/entry.txt");
+		assertThat(context.toExternalForm()).isEqualTo("jar:file:example.jar!/dir/entry.txt");
 	}
 
 	@Test
-	public void parseUrlWithSpecThatIgnoresContext() throws MalformedURLException {
+	void parseUrlWithSpecThatIgnoresContext() throws MalformedURLException {
 		JarFile.registerUrlProtocolHandler();
 		String spec = "jar:file:/other.jar!/nested!/entry.txt";
 		URL context = createUrl("file:example.jar!/dir/file");
 		this.handler.parseURL(context, spec, 0, spec.length());
-		assertThat(context.toExternalForm())
-				.isEqualTo("jar:jar:file:/other.jar!/nested!/entry.txt");
+		assertThat(context.toExternalForm()).isEqualTo("jar:jar:file:/other.jar!/nested!/entry.txt");
 	}
 
 	@Test
-	public void sameFileReturnsFalseForUrlsWithDifferentProtocols()
-			throws MalformedURLException {
-		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/content.txt"),
-				new URL("file:/foo.jar"))).isFalse();
+	void sameFileReturnsFalseForUrlsWithDifferentProtocols() throws MalformedURLException {
+		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/content.txt"), new URL("file:/foo.jar"))).isFalse();
 	}
 
 	@Test
-	public void sameFileReturnsFalseForDifferentFileInSameJar()
-			throws MalformedURLException {
-		assertThat(this.handler.sameFile(
-				new URL("jar:file:foo.jar!/the/path/to/the/first/content.txt"),
+	void sameFileReturnsFalseForDifferentFileInSameJar() throws MalformedURLException {
+		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/the/path/to/the/first/content.txt"),
 				new URL("jar:file:/foo.jar!/content.txt"))).isFalse();
 	}
 
 	@Test
-	public void sameFileReturnsFalseForSameFileInDifferentJars()
-			throws MalformedURLException {
-		assertThat(this.handler.sameFile(
-				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
+	void sameFileReturnsFalseForSameFileInDifferentJars() throws MalformedURLException {
+		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
 				new URL("jar:file:/second.jar!/content.txt"))).isFalse();
 	}
 
 	@Test
-	public void sameFileReturnsTrueForSameFileInSameJar() throws MalformedURLException {
-		assertThat(this.handler.sameFile(
-				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
+	void sameFileReturnsTrueForSameFileInSameJar() throws MalformedURLException {
+		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
 				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"))).isTrue();
 	}
 
 	@Test
-	public void sameFileReturnsTrueForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
+	void sameFileReturnsTrueForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
 			throws MalformedURLException {
-		assertThat(this.handler.sameFile(
-				new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt"),
+		assertThat(this.handler.sameFile(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt"),
 				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt"))).isTrue();
 	}
 
 	@Test
-	public void hashCodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
-			throws MalformedURLException {
-		assertThat(this.handler
-				.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt")))
-						.isEqualTo(this.handler.hashCode(
-								new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
+	void hashCodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar() throws MalformedURLException {
+		assertThat(this.handler.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt")))
+				.isEqualTo(this.handler.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
 	}
 
 	@Test
-	public void urlWithSpecReferencingParentDirectory() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual(
-				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"../folderB/b.xsd");
+	void urlWithSpecReferencingParentDirectory() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+				"../folderB/c/d/e.xsd");
 	}
 
 	@Test
-	public void urlWithSpecReferencingAncestorDirectoryOutsideJarStopsAtJarRoot()
-			throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual(
-				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+	void urlWithSpecReferencingAncestorDirectoryOutsideJarStopsAtJarRoot() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
 				"../../../../../../folderB/b.xsd");
 	}
 
 	@Test
-	public void urlWithSpecReferencingCurrentDirectory() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual(
-				"file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"./folderB/./b.xsd");
+	void urlWithSpecReferencingCurrentDirectory() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
+				"./folderB/c/d/e.xsd");
 	}
 
 	@Test
-	public void urlWithRef() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes",
-				"!/foo.txt#alpha");
+	void urlWithRef() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes", "!/foo.txt#alpha");
 	}
 
 	@Test
-	public void urlWithQuery() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes",
-				"!/foo.txt?alpha");
+	void urlWithQuery() throws MalformedURLException {
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes", "!/foo.txt?alpha");
 	}
 
-	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec)
-			throws MalformedURLException {
+	@Test
+	void fallbackToJdksJarUrlStreamHandler(@TempDir File tempDir) throws Exception {
+		File testJar = new File(tempDir, "test.jar");
+		TestJarCreator.createTestJar(testJar);
+		URLConnection connection = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/", this.handler)
+				.openConnection();
+		assertThat(connection).isInstanceOf(JarURLConnection.class);
+		((JarURLConnection) connection).getJarFile().close();
+		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
+				this.handler).openConnection();
+		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
+	}
+
+	@Test
+	void whenJarHasAPlusInItsPathConnectionJarFileMatchesOriginalJarFile(@TempDir File tempDir) throws Exception {
+		File testJar = new File(tempDir, "t+e+s+t.jar");
+		TestJarCreator.createTestJar(testJar);
+		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
+		JarURLConnection connection = (JarURLConnection) url.openConnection();
+		try {
+			assertThat(connection.getJarFile().getRootJarFile().getFile()).isEqualTo(testJar);
+		}
+		finally {
+			connection.getJarFile().close();
+		}
+	}
+
+	@Test
+	void whenJarHasASpaceInItsPathConnectionJarFileMatchesOriginalJarFile(@TempDir File tempDir) throws Exception {
+		File testJar = new File(tempDir, "t e s t.jar");
+		TestJarCreator.createTestJar(testJar);
+		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
+		JarURLConnection connection = (JarURLConnection) url.openConnection();
+		try {
+			assertThat(connection.getJarFile().getRootJarFile().getFile()).isEqualTo(testJar);
+		}
+		finally {
+			connection.getJarFile().close();
+		}
+	}
+
+	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec) throws MalformedURLException {
 		URL standardUrl = new URL(new URL("jar:" + context), spec);
-		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler),
-				spec);
+		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler), spec);
 		assertThat(customHandlerUrl.toString()).isEqualTo(standardUrl.toString());
 		assertThat(customHandlerUrl.getFile()).isEqualTo(standardUrl.getFile());
 		assertThat(customHandlerUrl.getPath()).isEqualTo(standardUrl.getPath());

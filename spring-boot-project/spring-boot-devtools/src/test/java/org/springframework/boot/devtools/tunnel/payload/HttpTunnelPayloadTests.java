@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -46,37 +46,35 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class HttpTunnelPayloadTests {
+class HttpTunnelPayloadTests {
 
 	@Test
-	public void sequenceMustBePositive() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
+	void sequenceMustBePositive() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
 				.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
-	public void dataMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelPayload(1, null))
+	void dataMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(1, null))
 				.withMessageContaining("Data must not be null");
 	}
 
 	@Test
-	public void getSequence() {
+	void getSequence() {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
 		assertThat(payload.getSequence()).isEqualTo(1L);
 	}
 
 	@Test
-	public void getData() throws Exception {
+	void getData() throws Exception {
 		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, data);
 		assertThat(getData(payload)).isEqualTo(data.array());
 	}
 
 	@Test
-	public void assignTo() throws Exception {
+	void assignTo() throws Exception {
 		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(2, data);
 		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
@@ -87,7 +85,7 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void getNoData() throws Exception {
+	void getNoData() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
@@ -95,7 +93,7 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void getWithMissingHeader() throws Exception {
+	void getWithMissingHeader() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
@@ -104,7 +102,7 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void getWithData() throws Exception {
+	void getWithData() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		servletRequest.addHeader("x-seq", 123);
@@ -115,9 +113,8 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void getPayloadData() throws Exception {
-		ReadableByteChannel channel = Channels
-				.newChannel(new ByteArrayInputStream("hello".getBytes()));
+	void getPayloadData() throws Exception {
+		ReadableByteChannel channel = Channels.newChannel(new ByteArrayInputStream("hello".getBytes()));
 		ByteBuffer payloadData = HttpTunnelPayload.getPayloadData(channel);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel writeChannel = Channels.newChannel(out);
@@ -128,10 +125,9 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void getPayloadDataWithTimeout() throws Exception {
+	void getPayloadDataWithTimeout() throws Exception {
 		ReadableByteChannel channel = mock(ReadableByteChannel.class);
-		given(channel.read(any(ByteBuffer.class)))
-				.willThrow(new SocketTimeoutException());
+		given(channel.read(any(ByteBuffer.class))).willThrow(new SocketTimeoutException());
 		ByteBuffer payload = HttpTunnelPayload.getPayloadData(channel);
 		assertThat(payload).isNull();
 	}

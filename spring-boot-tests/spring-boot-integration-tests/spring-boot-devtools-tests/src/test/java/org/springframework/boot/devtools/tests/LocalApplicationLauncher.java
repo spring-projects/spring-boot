@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
@@ -35,14 +36,22 @@ public class LocalApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher,
-			File serverPortFile) throws Exception {
+	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile) throws Exception {
 		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(),
-				"com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(),
-				"--server.port=0");
-		return new LaunchedApplication(getDirectories().getAppDirectory(),
-				jvm.getStandardOut(), jvm.getStandardError(), jvm.getProcess(), null,
-				null);
+				"com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(), "--server.port=0");
+		return new LaunchedApplication(getDirectories().getAppDirectory(), jvm.getStandardOut(), jvm.getStandardError(),
+				jvm.getProcess(), null, null);
+	}
+
+	@Override
+	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile, String... additionalArgs)
+			throws Exception {
+		List<String> args = new ArrayList<>(Arrays.asList("com.example.DevToolsTestApplication",
+				serverPortFile.getAbsolutePath(), "--server.port=0"));
+		args.addAll(Arrays.asList(additionalArgs));
+		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(), args.toArray(new String[] {}));
+		return new LaunchedApplication(getDirectories().getAppDirectory(), jvm.getStandardOut(), jvm.getStandardError(),
+				jvm.getProcess(), null, null);
 	}
 
 	protected String createApplicationClassPath() throws Exception {

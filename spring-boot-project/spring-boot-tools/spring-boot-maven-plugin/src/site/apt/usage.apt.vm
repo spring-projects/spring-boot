@@ -62,7 +62,7 @@ Usage
 
   Devtools is automatically excluded by default (you can control that using the
   <<<excludeDevtools>>> property). In order to make that work with <<<war>>> packaging,
-  the `spring-boot-devtools` dependency must be set as <<<optional>>> or with the
+  the <<<spring-boot-devtools>>> dependency must be set as <<<optional>>> or with the
   <<<provided>>> scope.
 
   The original (i.e. non executable) artifact is renamed to <<<.original>>> by default but it is also
@@ -130,19 +130,22 @@ Usage
 mvn spring-boot:run
 ---
 
-  By default the application is executed directly from the Maven JVM. If you need to run
-  in a forked process you can use the 'fork' option. Forking will also occur if the
-  'jvmArguments', 'systemPropertyVariables', 'environmentVariables'  or 'agent' options
-  are specified, or if devtools is present.
-
-  If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
-  the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details. There is also explicit support for
-  {{{./examples/run-system-properties.html}system properties}} and
+  By default the application is executed in a forked process and setting properties on the
+  command-line will not affect the application. If you need to specify some JVM arguments
+  (i.e. for debugging purposes), you can use the <<<jvmArguments>>> parameter, see
+  {{{./examples/run-debug.html}Debug the application}} for more details. There is also
+  explicit support for {{{./examples/run-system-properties.html}system properties}} and
   {{{./examples/run-env-variables.html}environment variables}}.
 
-  As a convenience, the profiles to enable are handled by a specific property (
-  <<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
+  As enabling a profile is quite common, there is dedicated <<<profiles>>> property that
+  offers a shortcut for
+  <<<-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev">>>,
+  see {{{./examples/run-profiles.html}Specify active profiles}}.
+
+  Although this is not recommended, it is possible to execute the application directly
+  from the Maven JVM by disabling the <<<fork>>> property. Doing so means that the
+  <<<jvmArguments>>>, <<<systemPropertyVariables>>>, <<<environmentVariables>>> and
+  <<<agents>>> options are ignored.
 
   Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
   experience when working on Spring Boot applications. To enable it, just add the following
@@ -219,7 +222,7 @@ spring.devtools.remote.restart.enabled=false
 * Working with integration tests
 
   While you may start your Spring Boot application very easily from your test (or test suite) itself,
-  it may be desirable to handle that in the build itself. To make sure that the lifecycle of you Spring
+  it may be desirable to handle that in the build itself. To make sure that the lifecycle of your Spring
   Boot application is properly managed <around> your integration tests, you can use the <<<start>>> and
   <<<stop>>> goals as described below:
 
@@ -253,7 +256,7 @@ spring.devtools.remote.restart.enabled=false
 </build>
 ---
 
-  Such setup can now use the {{{http://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
+  Such setup can now use the {{{https://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
   run your integration tests as you would expect.
 
   You could also configure a more advanced setup to skip the integration tests when a specific property has

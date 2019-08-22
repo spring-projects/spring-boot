@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.util.Set;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
@@ -40,18 +40,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EntityScannerTests {
+class EntityScannerTests {
 
 	@Test
-	public void createWhenContextIsNullShouldThrowException() {
+	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EntityScanner(null))
 				.withMessageContaining("Context must not be null");
 	}
 
 	@Test
-	public void scanShouldScanFromSinglePackage() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanConfig.class);
+	void scanShouldScanFromSinglePackage() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
 		assertThat(scanned).containsOnly(EntityA.class, EntityB.class, EntityC.class);
@@ -59,9 +58,9 @@ public class EntityScannerTests {
 	}
 
 	@Test
-	public void scanShouldScanFromMultiplePackages() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanAConfig.class, ScanBConfig.class);
+	void scanShouldScanFromMultiplePackages() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanAConfig.class,
+				ScanBConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
 		assertThat(scanned).containsOnly(EntityA.class, EntityB.class);
@@ -69,33 +68,30 @@ public class EntityScannerTests {
 	}
 
 	@Test
-	public void scanShouldFilterOnAnnotation() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanConfig.class);
+	void scanShouldFilterOnAnnotation() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
-		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, EntityB.class,
-				EntityC.class);
-		assertThat(scanner.scan(Embeddable.class)).containsOnly(EmbeddableA.class,
-				EmbeddableB.class, EmbeddableC.class);
-		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(
-				EntityA.class, EntityB.class, EntityC.class, EmbeddableA.class,
-				EmbeddableB.class, EmbeddableC.class);
+		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, EntityB.class, EntityC.class);
+		assertThat(scanner.scan(Embeddable.class)).containsOnly(EmbeddableA.class, EmbeddableB.class,
+				EmbeddableC.class);
+		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(EntityA.class, EntityB.class,
+				EntityC.class, EmbeddableA.class, EmbeddableB.class, EmbeddableC.class);
 		context.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.domain.scan")
 	static class ScanConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = EntityA.class)
 	static class ScanAConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = EntityB.class)
 	static class ScanBConfig {
 

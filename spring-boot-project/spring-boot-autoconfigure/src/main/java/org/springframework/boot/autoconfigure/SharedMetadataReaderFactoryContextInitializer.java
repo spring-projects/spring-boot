@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,18 +44,16 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  * {@link ConfigurationClassPostProcessor} and Spring Boot.
  *
  * @author Phillip Webb
- * @since 1.4.0
  */
-class SharedMetadataReaderFactoryContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+class SharedMetadataReaderFactoryContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure."
 			+ "internalCachingMetadataReaderFactory";
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addBeanFactoryPostProcessor(
-				new CachingMetadataReaderFactoryPostProcessor());
+		applicationContext.addBeanFactoryPostProcessor(new CachingMetadataReaderFactoryPostProcessor());
 	}
 
 	@Override
@@ -78,32 +76,27 @@ class SharedMetadataReaderFactoryContextInitializer implements
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			register(registry);
 			configureConfigurationClassPostProcessor(registry);
 		}
 
 		private void register(BeanDefinitionRegistry registry) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(SharedMetadataReaderFactoryBean.class,
-							SharedMetadataReaderFactoryBean::new)
+					.genericBeanDefinition(SharedMetadataReaderFactoryBean.class, SharedMetadataReaderFactoryBean::new)
 					.getBeanDefinition();
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 
-		private void configureConfigurationClassPostProcessor(
-				BeanDefinitionRegistry registry) {
+		private void configureConfigurationClassPostProcessor(BeanDefinitionRegistry registry) {
 			try {
-				BeanDefinition definition = registry.getBeanDefinition(
-						AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
-				definition.getPropertyValues().add("metadataReaderFactory",
-						new RuntimeBeanReference(BEAN_NAME));
+				BeanDefinition definition = registry
+						.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
+				definition.getPropertyValues().add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 			}
@@ -115,20 +108,18 @@ class SharedMetadataReaderFactoryContextInitializer implements
 	 * {@link FactoryBean} to create the shared {@link MetadataReaderFactory}.
 	 */
 	static class SharedMetadataReaderFactoryBean
-			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>,
-			BeanClassLoaderAware, ApplicationListener<ContextRefreshedEvent> {
+			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>, BeanClassLoaderAware,
+			ApplicationListener<ContextRefreshedEvent> {
 
 		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
 
 		@Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(
-					classLoader);
+			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(classLoader);
 		}
 
 		@Override
-		public ConcurrentReferenceCachingMetadataReaderFactory getObject()
-				throws Exception {
+		public ConcurrentReferenceCachingMetadataReaderFactory getObject() throws Exception {
 			return this.metadataReaderFactory;
 		}
 

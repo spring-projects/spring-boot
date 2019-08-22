@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,7 +87,7 @@ class WebDriverScope implements Scope {
 	 * Reset all instances in the scope.
 	 * @return {@code true} if items were reset
 	 */
-	public boolean reset() {
+	boolean reset() {
 		boolean reset = false;
 		synchronized (this.instances) {
 			for (Object instance : this.instances.values()) {
@@ -106,7 +106,7 @@ class WebDriverScope implements Scope {
 	 * definitions to used it.
 	 * @param context the application context
 	 */
-	public static void registerWith(ConfigurableApplicationContext context) {
+	static void registerWith(ConfigurableApplicationContext context) {
 		if (!ClassUtils.isPresent(WEB_DRIVER_CLASS, null)) {
 			return;
 		}
@@ -117,11 +117,9 @@ class WebDriverScope implements Scope {
 		context.addBeanFactoryPostProcessor(WebDriverScope::postProcessBeanFactory);
 	}
 
-	private static void postProcessBeanFactory(
-			ConfigurableListableBeanFactory beanFactory) {
+	private static void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanClass : BEAN_CLASSES) {
-			for (String beanName : beanFactory
-					.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
+			for (String beanName : beanFactory.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 				if (!StringUtils.hasLength(definition.getScope())) {
 					definition.setScope(NAME);
@@ -135,10 +133,9 @@ class WebDriverScope implements Scope {
 	 * @param context the application context
 	 * @return the web driver scope or {@code null}
 	 */
-	public static WebDriverScope getFrom(ApplicationContext context) {
+	static WebDriverScope getFrom(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext) {
-			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory()
-					.getRegisteredScope(NAME);
+			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory().getRegisteredScope(NAME);
 			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;
 		}
 		return null;

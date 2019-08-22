@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.annotation.AliasFor;
 
@@ -32,77 +32,69 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AnnotationsPropertySourceTests {
+class AnnotationsPropertySourceTests {
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AnnotationsPropertySource(null))
+	void createWhenSourceIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new AnnotationsPropertySource(null))
 				.withMessageContaining("Property source must not be null");
 	}
 
 	@Test
-	public void propertiesWhenHasNoAnnotationShouldBeEmpty() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NoAnnotation.class);
+	void propertiesWhenHasNoAnnotationShouldBeEmpty() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NoAnnotation.class);
 		assertThat(source.getPropertyNames()).isEmpty();
 		assertThat(source.getProperty("value")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() {
+	void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				TypeLevelWithPrefix.class);
+	void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.value");
 		assertThat(source.getProperty("test.value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				AttributeLevelWithPrefix.class);
+	void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(AttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test");
 		assertThat(source.getProperty("test")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				TypeAndAttributeLevelWithPrefix.class);
+	void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeAndAttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.example");
 		assertThat(source.getProperty("test.example")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NotMappedAtTypeLevel.class);
+	void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtTypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NotMappedAtAttributeLevel.class);
+	void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtAttributeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenContainsArraysShouldExpandNames() {
+	void propertiesWhenContainsArraysShouldExpandNames() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(Arrays.class);
-		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]",
-				"classes[0]", "classes[1]", "ints[0]", "ints[1]", "longs[0]", "longs[1]",
-				"floats[0]", "floats[1]", "doubles[0]", "doubles[1]", "booleans[0]",
-				"booleans[1]");
+		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]", "classes[0]", "classes[1]",
+				"ints[0]", "ints[1]", "longs[0]", "longs[1]", "floats[0]", "floats[1]", "doubles[0]", "doubles[1]",
+				"booleans[0]", "booleans[1]");
 		assertThat(source.getProperty("strings[0]")).isEqualTo("a");
 		assertThat(source.getProperty("strings[1]")).isEqualTo("b");
 		assertThat(source.getProperty("classes[0]")).isEqualTo(Integer.class);
@@ -120,54 +112,48 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasCamelCaseShouldConvertToKebabCase() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				CamelCaseToKebabCase.class);
+	void propertiesWhenHasCamelCaseShouldConvertToKebabCase() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(CamelCaseToKebabCase.class);
 		assertThat(source.getPropertyNames()).contains("camel-case-to-kebab-case");
 	}
 
 	@Test
-	public void propertiesFromMetaAnnotationsAreMapped() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertiesFromSingleMetaAnnotation.class);
+	void propertiesFromMetaAnnotationsAreMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromSingleMetaAnnotation.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("foo");
 	}
 
 	@Test
-	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertiesFromMultipleMetaAnnotations.class);
-		assertThat(source.getPropertyNames()).containsExactly("value", "test.value",
-				"test.example");
+	void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromMultipleMetaAnnotations.class);
+		assertThat(source.getPropertyNames()).containsExactly("value", "test.value", "test.example");
 		assertThat(source.getProperty("value")).isEqualTo("alpha");
 		assertThat(source.getProperty("test.value")).isEqualTo("bravo");
 		assertThat(source.getProperty("test.example")).isEqualTo("charlie");
 	}
 
 	@Test
-	public void propertyMappedAttributesCanBeAliased() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertyMappedAttributeWithAnAlias.class);
+	void propertyMappedAttributesCanBeAliased() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAttributeWithAnAlias.class);
 		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
 	@Test
-	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
 		new AnnotationsPropertySource(PropertyMappedWithSelfAnnotatingAnnotation.class);
 	}
 
 	@Test
-	public void typeLevelAnnotationOnSuperClass() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertyMappedAnnotationOnSuperClass.class);
+	void typeLevelAnnotationOnSuperClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAnnotationOnSuperClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void aliasedPropertyMappedAttributeOnSuperClass() {
+	void aliasedPropertyMappedAttributeOnSuperClass() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				AliasedPropertyMappedAnnotationOnSuperClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
@@ -175,16 +161,14 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void enumValueMapped() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				EnumValueMapped.class);
+	void enumValueMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueMapped.class);
 		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
 	}
 
 	@Test
-	public void enumValueNotMapped() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				EnumValueNotMapped.class);
+	void enumValueNotMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueNotMapped.class);
 		assertThat(source.containsProperty("testenum.value")).isFalse();
 	}
 
@@ -199,7 +183,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface TypeLevelAnnotation {
+	@interface TypeLevelAnnotation {
 
 		String value();
 
@@ -212,7 +196,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("test")
-	static @interface TypeLevelWithPrefixAnnotation {
+	@interface TypeLevelWithPrefixAnnotation {
 
 		String value();
 
@@ -224,7 +208,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface AttributeLevelWithPrefixAnnotation {
+	@interface AttributeLevelWithPrefixAnnotation {
 
 		@PropertyMapping("test")
 		String value();
@@ -238,7 +222,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("test")
-	static @interface TypeAndAttributeLevelWithPrefixAnnotation {
+	@interface TypeAndAttributeLevelWithPrefixAnnotation {
 
 		@PropertyMapping("example")
 		String value();
@@ -252,7 +236,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping(skip = SkipPropertyMapping.YES)
-	static @interface NotMappedAtTypeLevelAnnotation {
+	@interface NotMappedAtTypeLevelAnnotation {
 
 		@PropertyMapping
 		String value();
@@ -268,7 +252,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface NotMappedAtAttributeLevelAnnotation {
+	@interface NotMappedAtAttributeLevelAnnotation {
 
 		String value();
 
@@ -277,16 +261,15 @@ public class AnnotationsPropertySourceTests {
 
 	}
 
-	@ArraysAnnotation(strings = { "a", "b" }, classes = { Integer.class,
-			Long.class }, ints = { 1, 2 }, longs = { 1, 2 }, floats = { 1.0f,
-					2.0f }, doubles = { 1.0, 2.0 }, booleans = { false, true })
+	@ArraysAnnotation(strings = { "a", "b" }, classes = { Integer.class, Long.class }, ints = { 1, 2 },
+			longs = { 1, 2 }, floats = { 1.0f, 2.0f }, doubles = { 1.0, 2.0 }, booleans = { false, true })
 	static class Arrays {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface ArraysAnnotation {
+	@interface ArraysAnnotation {
 
 		String[] strings();
 
@@ -311,7 +294,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping
-	static @interface CamelCaseToKebabCaseAnnotation {
+	@interface CamelCaseToKebabCaseAnnotation {
 
 		String camelCaseToKebabCase() default "abc";
 
@@ -324,7 +307,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@TypeLevelAnnotation("foo")
-	static @interface PropertiesFromSingleMetaAnnotationAnnotation {
+	@interface PropertiesFromSingleMetaAnnotationAnnotation {
 
 	}
 
@@ -337,7 +320,7 @@ public class AnnotationsPropertySourceTests {
 	@TypeLevelAnnotation("alpha")
 	@TypeLevelWithPrefixAnnotation("bravo")
 	@TypeAndAttributeLevelWithPrefixAnnotation("charlie")
-	static @interface PropertiesFromMultipleMetaAnnotationsAnnotation {
+	@interface PropertiesFromMultipleMetaAnnotationsAnnotation {
 
 	}
 
@@ -348,7 +331,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@AliasedAttributeAnnotation
-	static @interface AttributeWithAliasAnnotation {
+	@interface AttributeWithAliasAnnotation {
 
 		@AliasFor(annotation = AliasedAttributeAnnotation.class)
 		String value() default "foo";
@@ -359,7 +342,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("aliasing")
-	static @interface AliasedAttributeAnnotation {
+	@interface AliasedAttributeAnnotation {
 
 		String value() default "bar";
 
@@ -367,7 +350,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@SelfAnnotating
-	static @interface SelfAnnotating {
+	@interface SelfAnnotating {
 
 	}
 
@@ -380,8 +363,7 @@ public class AnnotationsPropertySourceTests {
 
 	}
 
-	static class AliasedPropertyMappedAnnotationOnSuperClass
-			extends PropertyMappedAttributeWithAnAlias {
+	static class AliasedPropertyMappedAnnotationOnSuperClass extends PropertyMappedAttributeWithAnAlias {
 
 	}
 
@@ -397,7 +379,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@PropertyMapping("testenum")
-	static @interface EnumAnnotation {
+	@interface EnumAnnotation {
 
 		@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 		EnumItem value() default EnumItem.DEFAULT;

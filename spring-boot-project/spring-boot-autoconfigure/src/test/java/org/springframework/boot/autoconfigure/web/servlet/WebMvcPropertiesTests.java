@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
-import org.testcontainers.shaded.com.google.common.base.Throwables;
+import org.assertj.core.util.Throwables;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -36,31 +36,29 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class WebMvcPropertiesTests {
+class WebMvcPropertiesTests {
 
 	private final WebMvcProperties properties = new WebMvcProperties();
 
 	@Test
-	public void servletPathWhenEndsWithSlashHasValidMappingAndPrefix() {
+	void servletPathWhenEndsWithSlashHasValidMappingAndPrefix() {
 		bind("spring.mvc.servlet.path", "/foo/");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void servletPathWhenDoesNotEndWithSlashHasValidMappingAndPrefix() {
+	void servletPathWhenDoesNotEndWithSlashHasValidMappingAndPrefix() {
 		bind("spring.mvc.servlet.path", "/foo");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void servletPathWhenHasWildcardThrowsException() {
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
-				.withRootCauseInstanceOf(IllegalArgumentException.class)
-				.satisfies((ex) -> assertThat(Throwables.getRootCause(ex))
-						.hasMessage("Path must not contain wildcards"));
+	void servletPathWhenHasWildcardThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
+				.withRootCauseInstanceOf(IllegalArgumentException.class).satisfies(
+						(ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("Path must not contain wildcards"));
 	}
 
 	private void bind(String name, String value) {

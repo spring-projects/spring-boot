@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,9 +28,10 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 in favor of {@link DefaultContributorRegistry}
  */
-public class DefaultReactiveHealthIndicatorRegistry
-		implements ReactiveHealthIndicatorRegistry {
+@Deprecated
+public class DefaultReactiveHealthIndicatorRegistry implements ReactiveHealthIndicatorRegistry {
 
 	private final Object monitor = new Object();
 
@@ -49,8 +50,7 @@ public class DefaultReactiveHealthIndicatorRegistry
 	 * @param healthIndicators a map of {@link HealthIndicator}s with the key being used
 	 * as an indicator name.
 	 */
-	public DefaultReactiveHealthIndicatorRegistry(
-			Map<String, ReactiveHealthIndicator> healthIndicators) {
+	public DefaultReactiveHealthIndicatorRegistry(Map<String, ReactiveHealthIndicator> healthIndicators) {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		this.healthIndicators = new LinkedHashMap<>(healthIndicators);
 	}
@@ -60,11 +60,9 @@ public class DefaultReactiveHealthIndicatorRegistry
 		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
 		Assert.notNull(name, "Name must not be null");
 		synchronized (this.monitor) {
-			ReactiveHealthIndicator existing = this.healthIndicators.putIfAbsent(name,
-					healthIndicator);
+			ReactiveHealthIndicator existing = this.healthIndicators.putIfAbsent(name, healthIndicator);
 			if (existing != null) {
-				throw new IllegalStateException(
-						"HealthIndicator with name '" + name + "' already registered");
+				throw new IllegalStateException("HealthIndicator with name '" + name + "' already registered");
 			}
 		}
 	}
@@ -88,8 +86,7 @@ public class DefaultReactiveHealthIndicatorRegistry
 	@Override
 	public Map<String, ReactiveHealthIndicator> getAll() {
 		synchronized (this.monitor) {
-			return Collections
-					.unmodifiableMap(new LinkedHashMap<>(this.healthIndicators));
+			return Collections.unmodifiableMap(new LinkedHashMap<>(this.healthIndicators));
 		}
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ class UnresolvedDependenciesAnalyzer {
 
 	void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
 		this.dependenciesWithNoVersion = unresolvedDependencies.stream()
-				.map((unresolvedDependency) -> unresolvedDependency.getSelector())
-				.filter(this::hasNoVersion).collect(Collectors.toSet());
+				.map((unresolvedDependency) -> unresolvedDependency.getSelector()).filter(this::hasNoVersion)
+				.collect(Collectors.toSet());
 	}
 
 	void buildFinished(Project project) {
@@ -53,10 +53,9 @@ class UnresolvedDependenciesAnalyzer {
 			message.append("\nDuring the build, one or more dependencies that were "
 					+ "declared without a version failed to resolve:\n");
 			this.dependenciesWithNoVersion
-					.forEach((dependency) -> message.append("    " + dependency + "\n"));
-			message.append("\nDid you forget to apply the "
-					+ "io.spring.dependency-management plugin to the " + project.getName()
-					+ " project?\n");
+					.forEach((dependency) -> message.append("    ").append(dependency).append("\n"));
+			message.append("\nDid you forget to apply the io.spring.dependency-management plugin to the ");
+			message.append(project.getName()).append(" project?\n");
 			logger.warn(message.toString());
 		}
 	}

@@ -2,14 +2,11 @@
 = Getting Started
 include::attributes.adoc[]
 
-[partintro]
---
 If you are getting started with Spring Boot, or "`Spring`" in general, start by reading
 this section. It answers the basic "`what?`", "`how?`" and "`why?`" questions. It
 includes an introduction to Spring Boot, along with installation instructions. We then
 walk you through building your first Spring Boot application, discussing some core
 principles as we go.
---
 
 
 
@@ -40,7 +37,7 @@ configuration).
 [[getting-started-system-requirements]]
 == System Requirements
 Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible
-up to Java 11 (included). {spring-reference}[Spring Framework {spring-framework-version}]
+up to Java 12 (included). {spring-reference}[Spring Framework {spring-framework-version}]
 or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -52,7 +49,7 @@ Explicit build support is provided for the following build tools:
 |3.3+
 
 |Gradle
-|4.4+
+|5.x (4.10 is also supported but in a deprecated form)
 |===
 
 
@@ -131,7 +128,7 @@ The following listing shows a typical `pom.xml` file:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -201,8 +198,9 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4.4 and later. If you do not already have Gradle
-installed, you can follow the instructions at https://gradle.org.
+Spring Boot is compatible with 5.x. 4.10 is also supported but this support is deprecated
+and will be removed in a future release. If you do not already have Gradle installed, you
+can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
@@ -259,7 +257,7 @@ classpath is set correctly).
 ==== Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions
 of various binary SDKs, including Groovy and the Spring Boot CLI.
-Get SDKMAN! from http://sdkman.io and install Spring Boot by using the following
+Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following
 commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -307,7 +305,7 @@ You can see it by running the following command:
 
 [[getting-started-homebrew-cli-installation]]
 ==== OSX Homebrew Installation
-If you are on a Mac and use http://brew.sh/[Homebrew], you can install the Spring Boot
+If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -325,7 +323,7 @@ that case, run `brew update` and try again.
 
 [[getting-started-macports-cli-installation]]
 ==== MacPorts Installation
-If you are on a Mac and use http://www.macports.org/[MacPorts], you can install the
+If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the
 Spring Boot CLI by using the following command:
 
 [indent=0]
@@ -360,7 +358,7 @@ completion scripts are automatically registered with your shell.
 
 [[getting-started-scoop-cli-installation]]
 ==== Windows Scoop Installation
-If you are on a Windows and use http://scoop.sh/[Scoop], you can install the Spring Boot
+If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -501,7 +499,7 @@ used to build your project. Open your favorite text editor and add the following
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -556,7 +554,7 @@ editor for this example.
 [[getting-started-first-application-dependencies]]
 === Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
-Our sample application has already used `spring-boot-starter-parent` in the `parent`
+Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent`
 section of the POM. The `spring-boot-starter-parent` is a special starter that provides
 useful Maven defaults. It also provides a
 <<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>>
@@ -615,7 +613,7 @@ then add a file named `src/main/java/Example.java` to contain the following code
 			return "Hello World!";
 		}
 
-		public static void main(String[] args) throws Exception {
+		public static void main(String[] args) {
 			SpringApplication.run(Example.class, args);
 		}
 
@@ -728,8 +726,8 @@ this approach is that it becomes hard to see which libraries are in your applica
 can also be problematic if the same filename is used (but with different content) in
 multiple jars.
 
-Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
-approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<appendix.adoc#executable-jar, different approach>> and lets you
+actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our
@@ -817,11 +815,6 @@ want to jump over to https://spring.io and check out some of the
 https://spring.io/guides/[getting started] guides that solve specific "`How do I do that
 with Spring?`" problems. We also have Spring Boot-specific
 "`<<howto.adoc#howto, How-to>>`" reference documentation.
-
-The https://github.com/{github-repo}[Spring Boot repository] also has a
-{github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
-independent of the rest of the code (that is, you do not need to build the rest to run or
-use the samples).
 
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_. If
 you are really impatient, you could also jump ahead and read about

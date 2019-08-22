@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,12 +27,13 @@ import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ResourceTransformer;
 
 /**
- * Extension for the <a href="http://maven.apache.org/plugins/maven-shade-plugin/">Maven
+ * Extension for the <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven
  * shade plugin</a> to allow properties files (e.g. {@literal META-INF/spring.factories})
  * to be merged without losing any information.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
 
@@ -51,15 +52,12 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public boolean canTransformResource(String resource) {
-		if (this.resource != null && this.resource.equalsIgnoreCase(resource)) {
-			return true;
-		}
-		return false;
+		return this.resource != null && this.resource.equalsIgnoreCase(resource);
 	}
 
 	@Override
-	public void processResource(String resource, InputStream inputStream,
-			List<Relocator> relocators) throws IOException {
+	public void processResource(String resource, InputStream inputStream, List<Relocator> relocators)
+			throws IOException {
 		Properties properties = new Properties();
 		properties.load(inputStream);
 		inputStream.close();

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.bind.BindHandler;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
@@ -34,6 +36,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
@@ -43,52 +46,88 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * Internal class by the {@link ConfigurationPropertiesBindingPostProcessor} to handle the
- * actual {@link ConfigurationProperties} binding.
+ * actual {@link ConfigurationProperties @ConfigurationProperties} binding.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class ConfigurationPropertiesBinder {
+class ConfigurationPropertiesBinder implements ApplicationContextAware {
 
-	private final ApplicationContext applicationContext;
+	/**
+	 * The bean name that this binder is registered with.
+	 */
+	static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
-	private final PropertySources propertySources;
+	private final String validatorBeanName;
 
-	private final Validator configurationPropertiesValidator;
+	private ApplicationContext applicationContext;
 
-	private final boolean jsr303Present;
+	private PropertySources propertySources;
+
+	private Validator configurationPropertiesValidator;
+
+	private boolean jsr303Present;
 
 	private volatile Validator jsr303Validator;
 
 	private volatile Binder binder;
 
-	ConfigurationPropertiesBinder(ApplicationContext applicationContext,
-			String validatorBeanName) {
+	ConfigurationPropertiesBinder(String validatorBeanName) {
+		this.validatorBeanName = validatorBeanName;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-		this.propertySources = new PropertySourcesDeducer(applicationContext)
-				.getPropertySources();
-		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
-				applicationContext, validatorBeanName);
-		this.jsr303Present = ConfigurationPropertiesJsr303Validator
-				.isJsr303Present(applicationContext);
+		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,
+				this.validatorBeanName);
+		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
-	public void bind(Bindable<?> target) {
-		ConfigurationProperties annotation = target
-				.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null,
-				() -> "Missing @ConfigurationProperties on " + target);
-		List<Validator> validators = getValidators(target);
-		BindHandler bindHandler = getBindHandler(annotation, validators);
-		getBinder().bind(annotation.prefix(), target, bindHandler);
+	<T> BindResult<T> bind(Bindable<T> target) {
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
+		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator getConfigurationPropertiesValidator(
-			ApplicationContext applicationContext, String validatorBeanName) {
+	<T> T bindOrCreate(Bindable<T> target) {
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
+		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
+	}
+
+	private <T> ConfigurationProperties getAnnotation(Bindable<?> target) {
+		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
+		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
+		return annotation;
+	}
+
+	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
+			String validatorBeanName) {
 		if (applicationContext.containsBean(validatorBeanName)) {
 			return applicationContext.getBean(validatorBeanName, Validator.class);
 		}
 		return null;
+	}
+
+	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
+		List<Validator> validators = getValidators(target);
+		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		if (annotation.ignoreInvalidFields()) {
+			handler = new IgnoreErrorsBindHandler(handler);
+		}
+		if (!annotation.ignoreUnknownFields()) {
+			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
+			handler = new NoUnboundElementsBindHandler(handler, filter);
+		}
+		if (!validators.isEmpty()) {
+			handler = new ValidationBindHandler(handler, validators.toArray(new Validator[0]));
+		}
+		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
+			handler = advisor.apply(handler);
+		}
+		return handler;
 	}
 
 	private List<Validator> getValidators(Bindable<?> target) {
@@ -107,43 +146,20 @@ class ConfigurationPropertiesBinder {
 
 	private Validator getJsr303Validator() {
 		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(
-					this.applicationContext);
+			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return this.jsr303Validator;
 	}
 
-	private BindHandler getBindHandler(ConfigurationProperties annotation,
-			List<Validator> validators) {
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
-		if (annotation.ignoreInvalidFields()) {
-			handler = new IgnoreErrorsBindHandler(handler);
-		}
-		if (!annotation.ignoreUnknownFields()) {
-			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
-			handler = new NoUnboundElementsBindHandler(handler, filter);
-		}
-		if (!validators.isEmpty()) {
-			handler = new ValidationBindHandler(handler,
-					validators.toArray(new Validator[0]));
-		}
-		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
-			handler = advisor.apply(handler);
-		}
-		return handler;
-	}
-
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext
-				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
-				.orderedStream().collect(Collectors.toList());
+		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class).orderedStream()
+				.collect(Collectors.toList());
 	}
 
 	private Binder getBinder() {
 		if (this.binder == null) {
-			this.binder = new Binder(getConfigurationPropertySources(),
-					getPropertySourcesPlaceholdersResolver(), getConversionService(),
-					getPropertyEditorInitializer());
+			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
+					getConversionService(), getPropertyEditorInitializer());
 		}
 		return this.binder;
 	}
@@ -157,14 +173,12 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private ConversionService getConversionService() {
-		return new ConversionServiceDeducer(this.applicationContext)
-				.getConversionService();
+		return new ConversionServiceDeducer(this.applicationContext).getConversionService();
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.applicationContext)
-					.getBeanFactory()::copyRegisteredEditorsTo;
+			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}

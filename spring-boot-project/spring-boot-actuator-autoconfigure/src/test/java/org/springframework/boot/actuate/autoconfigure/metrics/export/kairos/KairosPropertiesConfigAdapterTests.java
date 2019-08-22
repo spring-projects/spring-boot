@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.kairos;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
@@ -27,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class KairosPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
+class KairosPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
 
 	@Override
 	protected KairosProperties createProperties() {
@@ -36,13 +36,12 @@ public class KairosPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected KairosPropertiesConfigAdapter createConfigAdapter(
-			KairosProperties properties) {
+	protected KairosPropertiesConfigAdapter createConfigAdapter(KairosProperties properties) {
 		return new KairosPropertiesConfigAdapter(properties);
 	}
 
 	@Test
-	public void whenPropertiesUrisIsSetAdapterUriReturnsIt() {
+	void whenPropertiesUrisIsSetAdapterUriReturnsIt() {
 		KairosProperties properties = createProperties();
 		properties.setUri("https://kairos.example.com:8080/api/v1/datapoints");
 		assertThat(createConfigAdapter(properties).uri())
@@ -50,14 +49,14 @@ public class KairosPropertiesConfigAdapterTests extends
 	}
 
 	@Test
-	public void whenPropertiesUserNameIsSetAdapterUserNameReturnsIt() {
+	void whenPropertiesUserNameIsSetAdapterUserNameReturnsIt() {
 		KairosProperties properties = createProperties();
 		properties.setUserName("alice");
 		assertThat(createConfigAdapter(properties).userName()).isEqualTo("alice");
 	}
 
 	@Test
-	public void whenPropertiesPasswordIsSetAdapterPasswordReturnsIt() {
+	void whenPropertiesPasswordIsSetAdapterPasswordReturnsIt() {
 		KairosProperties properties = createProperties();
 		properties.setPassword("secret");
 		assertThat(createConfigAdapter(properties).password()).isEqualTo("secret");

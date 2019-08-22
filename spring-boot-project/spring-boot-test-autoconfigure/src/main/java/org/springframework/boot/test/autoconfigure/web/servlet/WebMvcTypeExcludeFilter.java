@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,12 +23,10 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
+import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -37,6 +35,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -45,9 +44,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebMvcTest> {
 
-	private static final String SECURITY_CONFIGURER = "org.springframework.security.config.annotation.web.WebSecurityConfigurer";
+	private static final Class<?>[] NO_CONTROLLERS = {};
+
+	private static final String[] OPTIONAL_INCLUDES = {
+			"org.springframework.security.config.annotation.web.WebSecurityConfigurer" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -64,19 +66,16 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(ErrorAttributes.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		includes.add(HandlerInterceptor.class);
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
+			try {
+				includes.add(ClassUtils.forName(optionalInclude, null));
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	}
-
-	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
-
-	static {
-		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
-		try {
-			includes.add(ClassUtils.forName(SECURITY_CONFIGURER, null));
-		}
-		catch (Exception ex) {
-		}
-		DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER = Collections.unmodifiableSet(includes);
 	}
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
@@ -87,54 +86,16 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
 	}
 
-	private static final Set<Class<?>> DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
-
-	static {
-		Set<Class<?>> includes = new LinkedHashSet<>(
-				DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER);
-		includes.add(Controller.class);
-		DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER = Collections
-				.unmodifiableSet(includes);
-	}
-
-	private final WebMvcTest annotation;
+	private final Class<?>[] controllers;
 
 	WebMvcTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebMvcTest.class);
+		super(testClass);
+		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
 	@Override
-	protected boolean hasAnnotation() {
-		return this.annotation != null;
-	}
-
-	@Override
-	protected Filter[] getFilters(FilterType type) {
-		switch (type) {
-		case INCLUDE:
-			return this.annotation.includeFilters();
-		case EXCLUDE:
-			return this.annotation.excludeFilters();
-		}
-		throw new IllegalStateException("Unsupported type " + type);
-	}
-
-	@Override
-	protected boolean isUseDefaultFilters() {
-		return this.annotation.useDefaultFilters();
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
 	protected Set<Class<?>> getDefaultIncludes() {
-		if (this.annotation.secure()) {
-			if (ObjectUtils.isEmpty(this.annotation.controllers())) {
-				return DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
-			}
-			return DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
-		}
-		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
+		if (ObjectUtils.isEmpty(this.controllers)) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}
 		return DEFAULT_INCLUDES;
@@ -142,7 +103,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.annotation.controllers()));
+		return new LinkedHashSet<>(Arrays.asList(this.controllers));
 	}
 
 }

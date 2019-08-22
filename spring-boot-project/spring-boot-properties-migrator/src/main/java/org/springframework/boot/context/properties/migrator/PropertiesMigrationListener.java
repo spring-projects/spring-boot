@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,11 +41,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class PropertiesMigrationListener
-		implements ApplicationListener<SpringApplicationEvent> {
+public class PropertiesMigrationListener implements ApplicationListener<SpringApplicationEvent> {
 
-	private static final Log logger = LogFactory
-			.getLog(PropertiesMigrationListener.class);
+	private static final Log logger = LogFactory.getLog(PropertiesMigrationListener.class);
 
 	private PropertiesMigrationReport report;
 
@@ -56,8 +54,7 @@ public class PropertiesMigrationListener
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		if (event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent) {
+		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			logLegacyPropertiesReport();
 		}
 	}
@@ -78,8 +75,8 @@ public class PropertiesMigrationListener
 		}
 	}
 
-	private ConfigurationMetadataRepository loadRepository(
-			ConfigurationMetadataRepositoryJsonBuilder builder) throws IOException {
+	private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
+			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver()
 				.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
 		for (Resource resource : resources) {

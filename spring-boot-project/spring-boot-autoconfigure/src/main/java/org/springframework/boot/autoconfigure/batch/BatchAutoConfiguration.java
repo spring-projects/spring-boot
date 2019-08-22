@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,43 +57,23 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @since 1.0.0
  */
-@Configuration
-@ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ JobLauncher.class, DataSource.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
 @EnableConfigurationProperties(BatchProperties.class)
 @Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
-	private final BatchProperties properties;
-
-	private final JobParametersConverter jobParametersConverter;
-
-	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverter) {
-		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
-		return new BatchDataSourceInitializer(dataSource, resourceLoader,
-				this.properties);
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
-	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer,
-			JobRepository jobRepository) {
-		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer, jobRepository);
-		String jobNames = this.properties.getJob().getNames();
+	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
+			JobRepository jobRepository, BatchProperties properties) {
+		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(jobLauncher, jobExplorer, jobRepository);
+		String jobNames = properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
 		}
@@ -108,18 +88,32 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
-	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository)
-			throws Exception {
+	public SimpleJobOperator jobOperator(ObjectProvider<JobParametersConverter> jobParametersConverter,
+			JobExplorer jobExplorer, JobLauncher jobLauncher, ListableJobLocator jobRegistry,
+			JobRepository jobRepository) throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
 		factory.setJobRegistry(jobRegistry);
 		factory.setJobRepository(jobRepository);
-		if (this.jobParametersConverter != null) {
-			factory.setJobParametersConverter(this.jobParametersConverter);
-		}
+		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
 		return factory;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnClass(DatabasePopulator.class)
+	static class DataSourceInitializerConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,
+				BatchProperties properties) {
+			return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
+					properties);
+		}
+
 	}
 
 }

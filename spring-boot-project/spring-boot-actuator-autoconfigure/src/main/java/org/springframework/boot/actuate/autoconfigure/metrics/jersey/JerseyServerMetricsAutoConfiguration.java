@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,9 +53,8 @@ import org.springframework.core.annotation.Order;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-@Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
@@ -75,22 +74,22 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(
-			MeterRegistry meterRegistry, JerseyTagsProvider tagsProvider) {
+	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
+			JerseyTagsProvider tagsProvider) {
 		Server server = this.properties.getWeb().getServer();
-		return (config) -> config.register(new MetricsApplicationEventListener(
-				meterRegistry, tagsProvider, server.getRequestsMetricName(),
-				server.isAutoTimeRequests(), new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(
+				new MetricsApplicationEventListener(meterRegistry, tagsProvider, server.getRequest().getMetricName(),
+						server.getRequest().getAutotime().isEnabled(), new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean
 	@Order(0)
 	public MeterFilter jerseyMetricsUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+		String metricName = this.properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 	/**
@@ -99,8 +98,7 @@ public class JerseyServerMetricsAutoConfiguration {
 	private static class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
 
 		@Override
-		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
-				Class<A> annotationType) {
+		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
 		}
 

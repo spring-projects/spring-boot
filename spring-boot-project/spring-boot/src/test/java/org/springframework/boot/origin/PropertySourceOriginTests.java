@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.origin;
 
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -34,47 +34,43 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  */
-public class PropertySourceOriginTests {
+class PropertySourceOriginTests {
 
 	@Test
-	public void createWhenPropertySourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PropertySourceOrigin(null, "name"))
+	void createWhenPropertySourceIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(null, "name"))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
-	public void createWhenPropertyNameIsNullShouldThrowException() {
+	void createWhenPropertyNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+				.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
-	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
+	void createWhenPropertyNameIsEmptyShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
-	public void getPropertySourceShouldReturnPropertySource() {
+	void getPropertySourceShouldReturnPropertySource() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
 		assertThat(origin.getPropertySource()).isEqualTo(propertySource);
 	}
 
 	@Test
-	public void getPropertyNameShouldReturnPropertyName() {
+	void getPropertyNameShouldReturnPropertyName() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
 		assertThat(origin.getPropertyName()).isEqualTo("foo");
 	}
 
 	@Test
-	public void toStringShouldShowDetails() {
+	void toStringShouldShowDetails() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
 		assertThat(origin.toString()).isEqualTo("\"foo\" from property source \"test\"");
@@ -82,7 +78,7 @@ public class PropertySourceOriginTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void getWhenPropertySourceSupportsOriginLookupShouldReturnOrigin() {
+	void getWhenPropertySourceSupportsOriginLookupShouldReturnOrigin() {
 		Origin origin = mock(Origin.class);
 		PropertySource<?> propertySource = mock(PropertySource.class,
 				withSettings().extraInterfaces(OriginLookup.class));
@@ -92,15 +88,14 @@ public class PropertySourceOriginTests {
 	}
 
 	@Test
-	public void getWhenPropertySourceSupportsOriginLookupButNoOriginShouldWrap() {
+	void getWhenPropertySourceSupportsOriginLookupButNoOriginShouldWrap() {
 		PropertySource<?> propertySource = mock(PropertySource.class,
 				withSettings().extraInterfaces(OriginLookup.class));
-		assertThat(PropertySourceOrigin.get(propertySource, "foo"))
-				.isInstanceOf(PropertySourceOrigin.class);
+		assertThat(PropertySourceOrigin.get(propertySource, "foo")).isInstanceOf(PropertySourceOrigin.class);
 	}
 
 	@Test
-	public void getWhenPropertySourceIsNotOriginAwareShouldWrap() {
+	void getWhenPropertySourceIsNotOriginAwareShouldWrap() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
 		assertThat(origin.getPropertySource()).isEqualTo(propertySource);

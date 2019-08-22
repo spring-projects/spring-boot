@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -37,31 +38,23 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * @author Vedran Pavic
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ContextSource.class)
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {
 
-	private final LdapProperties properties;
-
-	private final Environment environment;
-
-	public LdapAutoConfiguration(LdapProperties properties, Environment environment) {
-		this.properties = properties;
-		this.environment = environment;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment) {
 		LdapContextSource source = new LdapContextSource();
-		source.setUserDn(this.properties.getUsername());
-		source.setPassword(this.properties.getPassword());
-		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
-		source.setBase(this.properties.getBase());
-		source.setUrls(this.properties.determineUrls(this.environment));
-		source.setBaseEnvironmentProperties(
-				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
+		propertyMapper.from(properties.getPassword()).to(source::setPassword);
+		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
+		propertyMapper.from(properties.getBase()).to(source::setBase);
+		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
+		propertyMapper.from(properties.getBaseEnvironment()).to(
+				(baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}
 

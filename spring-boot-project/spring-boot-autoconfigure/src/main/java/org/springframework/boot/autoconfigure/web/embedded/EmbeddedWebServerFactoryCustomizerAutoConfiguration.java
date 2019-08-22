@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(ServerProperties.class)
 public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
@@ -49,13 +49,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	/**
 	 * Nested configuration if Tomcat is being used.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
 	public static class TomcatWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new TomcatWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
@@ -64,13 +64,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	/**
 	 * Nested configuration if Jetty is being used.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Server.class, Loader.class, WebAppContext.class })
 	public static class JettyWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
@@ -79,13 +79,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	/**
 	 * Nested configuration if Undertow is being used.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Undertow.class, SslClientAuthMode.class })
 	public static class UndertowWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
@@ -94,13 +94,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	/**
 	 * Nested configuration if Netty is being used.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HttpServer.class)
 	public static class NettyWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public NettyWebServerFactoryCustomizer nettyWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public NettyWebServerFactoryCustomizer nettyWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new NettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 

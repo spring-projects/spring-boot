@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
@@ -43,9 +44,8 @@ import org.springframework.core.annotation.Order;
  * @author Dmytro Nosan
  * @since 2.0.0
  */
-@Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class WebFluxMetricsAutoConfiguration {
@@ -63,21 +63,19 @@ public class WebFluxMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			WebFluxTagsProvider tagConfigurer) {
-		return new MetricsWebFilter(registry, tagConfigurer,
-				this.properties.getWeb().getServer().getRequestsMetricName(),
-				this.properties.getWeb().getServer().isAutoTimeRequests());
+	public MetricsWebFilter webfluxMetrics(MeterRegistry registry, WebFluxTagsProvider tagConfigurer) {
+		ServerRequest request = this.properties.getWeb().getServer().getRequest();
+		return new MetricsWebFilter(registry, tagConfigurer, request.getMetricName(), request.getAutotime());
 	}
 
 	@Bean
 	@Order(0)
 	public MeterFilter metricsHttpServerUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+		String metricName = this.properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 }

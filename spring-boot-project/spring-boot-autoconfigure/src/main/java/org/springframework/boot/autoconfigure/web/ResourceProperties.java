@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,9 +38,8 @@ import org.springframework.http.CacheControl;
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
 public class ResourceProperties {
 
-	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:/static/", "classpath:/public/" };
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/",
+			"classpath:/resources/", "classpath:/static/", "classpath:/public/" };
 
 	/**
 	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/,
@@ -126,8 +125,8 @@ public class ResourceProperties {
 		 * settings are present.
 		 */
 		public Boolean getEnabled() {
-			return getEnabled(getStrategy().getFixed().isEnabled(),
-					getStrategy().getContent().isEnabled(), this.enabled);
+			return getEnabled(getStrategy().getFixed().isEnabled(), getStrategy().getContent().isEnabled(),
+					this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -162,8 +161,7 @@ public class ResourceProperties {
 			this.compressed = compressed;
 		}
 
-		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
-				Boolean chainEnabled) {
+		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
 			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 		}
 
@@ -462,20 +460,21 @@ public class ResourceProperties {
 			public CacheControl toHttpCacheControl() {
 				PropertyMapper map = PropertyMapper.get();
 				CacheControl control = createCacheControl();
-				map.from(this::getMustRevalidate).whenTrue()
-						.toCall(control::mustRevalidate);
+				map.from(this::getMustRevalidate).whenTrue().toCall(control::mustRevalidate);
 				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
 				map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
 				map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
-				map.from(this::getProxyRevalidate).whenTrue()
-						.toCall(control::proxyRevalidate);
-				map.from(this::getStaleWhileRevalidate).whenNonNull().to(
-						(duration) -> control.staleWhileRevalidate(duration.getSeconds(),
-								TimeUnit.SECONDS));
-				map.from(this::getStaleIfError).whenNonNull().to((duration) -> control
-						.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
-				map.from(this::getSMaxAge).whenNonNull().to((duration) -> control
-						.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
+				map.from(this::getStaleWhileRevalidate).whenNonNull()
+						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getStaleIfError).whenNonNull()
+						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getSMaxAge).whenNonNull()
+						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				// check if cacheControl remained untouched
+				if (control.getHeaderValue() == null) {
+					return null;
+				}
 				return control;
 			}
 
@@ -487,8 +486,7 @@ public class ResourceProperties {
 					return CacheControl.noCache();
 				}
 				if (this.maxAge != null) {
-					return CacheControl.maxAge(this.maxAge.getSeconds(),
-							TimeUnit.SECONDS);
+					return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 				}
 				return CacheControl.empty();
 			}

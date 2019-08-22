@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,16 +41,23 @@ public enum ManagementPortType {
 	 */
 	DIFFERENT;
 
-	static ManagementPortType get(Environment environment) {
+	/**
+	 * Look at the given environment to determine if the {@link ManagementPortType} is
+	 * {@link #DISABLED}, {@link #SAME} or {@link #DIFFERENT}.
+	 * @param environment the Spring environment
+	 * @return {@link #DISABLED} if {@code management.server.port} is set to a negative
+	 * value, {@link #SAME} if {@code management.server.port} is not specified or equal to
+	 * {@code server.port} and {@link #DIFFERENT} otherwise.
+	 * @since 2.1.4
+	 */
+	public static ManagementPortType get(Environment environment) {
 		Integer managementPort = getPortProperty(environment, "management.server.");
 		if (managementPort != null && managementPort < 0) {
 			return DISABLED;
 		}
 		Integer serverPort = getPortProperty(environment, "server.");
-		return ((managementPort == null
-				|| (serverPort == null && managementPort.equals(8080))
-				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME
-						: DIFFERENT);
+		return ((managementPort == null || (serverPort == null && managementPort.equals(8080))
+				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME : DIFFERENT);
 	}
 
 	private static Integer getPortProperty(Environment environment, String prefix) {

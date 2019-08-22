@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,16 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractConfigurationMetadataTests {
 
-	protected void assertSource(ConfigurationMetadataSource actual, String groupId,
-			String type, String sourceType) {
+	protected void assertSource(ConfigurationMetadataSource actual, String groupId, String type, String sourceType) {
 		assertThat(actual).isNotNull();
 		assertThat(actual.getGroupId()).isEqualTo(groupId);
 		assertThat(actual.getType()).isEqualTo(type);
 		assertThat(actual.getSourceType()).isEqualTo(sourceType);
 	}
 
-	protected void assertProperty(ConfigurationMetadataProperty actual, String id,
-			String name, Class<?> type, Object defaultValue) {
+	protected void assertProperty(ConfigurationMetadataProperty actual, String id, String name, Class<?> type,
+			Object defaultValue) {
 		assertThat(actual).isNotNull();
 		assertThat(actual.getId()).isEqualTo(id);
 		assertThat(actual.getName()).isEqualTo(name);
@@ -55,8 +54,7 @@ public abstract class AbstractConfigurationMetadataTests {
 	}
 
 	protected InputStream getInputStreamFor(String name) throws IOException {
-		Resource r = new ClassPathResource(
-				"metadata/configuration-metadata-" + name + ".json");
+		Resource r = new ClassPathResource("metadata/configuration-metadata-" + name + ".json");
 		return r.getInputStream();
 	}
 

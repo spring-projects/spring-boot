@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -49,10 +49,10 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class EndpointRequestTests {
+class EndpointRequestTests {
 
 	@Test
-	public void toAnyEndpointShouldMatchEndpointPath() {
+	void toAnyEndpointShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, "/actuator").matches("/actuator/foo");
 		assertMatcher(matcher, "/actuator").matches("/actuator/foo/zoo/");
@@ -62,7 +62,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toAnyEndpointShouldMatchEndpointPathWithTrailingSlash() {
+	void toAnyEndpointShouldMatchEndpointPathWithTrailingSlash() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, "/actuator").matches("/actuator/foo/");
 		assertMatcher(matcher, "/actuator").matches("/actuator/bar/");
@@ -70,7 +70,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toAnyEndpointWhenBasePathIsEmptyShouldNotMatchLinks() {
+	void toAnyEndpointWhenBasePathIsEmptyShouldNotMatchLinks() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
 		assertMatcher.doesNotMatch("/");
@@ -79,13 +79,13 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toAnyEndpointShouldNotMatchOtherPath() {
+	void toAnyEndpointShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher).doesNotMatch("/actuator/baz");
 	}
 
 	@Test
-	public void toAnyEndpointWhenDispatcherServletPathProviderNotAvailableUsesEmptyPath() {
+	void toAnyEndpointWhenDispatcherServletPathProviderNotAvailableUsesEmptyPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, "/actuator").matches("/actuator/foo");
 		assertMatcher(matcher, "/actuator").matches("/actuator/bar");
@@ -94,33 +94,33 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toEndpointClassShouldMatchEndpointPath() {
+	void toEndpointClassShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).matches("/actuator/foo");
 	}
 
 	@Test
-	public void toEndpointClassShouldNotMatchOtherPath() {
+	void toEndpointClassShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
 
 	@Test
-	public void toEndpointIdShouldMatchEndpointPath() {
+	void toEndpointIdShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).matches("/actuator/foo");
 	}
 
 	@Test
-	public void toEndpointIdShouldNotMatchOtherPath() {
+	void toEndpointIdShouldNotMatchOtherPath() {
 		RequestMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
 
 	@Test
-	public void toLinksShouldOnlyMatchLinks() {
+	void toLinksShouldOnlyMatchLinks() {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
@@ -129,7 +129,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toLinksWhenBasePathEmptyShouldNotMatch() {
+	void toLinksWhenBasePathEmptyShouldNotMatch() {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
 		assertMatcher.doesNotMatch("/actuator/foo");
@@ -138,15 +138,13 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void excludeByClassShouldNotMatchExcluded() {
-		RequestMatcher matcher = EndpointRequest.toAnyEndpoint()
-				.excluding(FooEndpoint.class, BazServletEndpoint.class);
+	void excludeByClassShouldNotMatchExcluded() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding(FooEndpoint.class, BazServletEndpoint.class);
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 		endpoints.add(mockEndpoint(EndpointId.of("foo"), "foo"));
 		endpoints.add(mockEndpoint(EndpointId.of("bar"), "bar"));
 		endpoints.add(mockEndpoint(EndpointId.of("baz"), "baz"));
-		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator",
-				() -> endpoints);
+		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator", () -> endpoints);
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz");
 		assertMatcher(matcher).matches("/actuator/bar");
@@ -154,15 +152,14 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void excludeByClassShouldNotMatchLinksIfExcluded() {
-		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks()
-				.excluding(FooEndpoint.class);
+	void excludeByClassShouldNotMatchLinksIfExcluded() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks().excluding(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
 
 	@Test
-	public void excludeByIdShouldNotMatchExcluded() {
+	void excludeByIdShouldNotMatchExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).matches("/actuator/bar");
@@ -170,15 +167,14 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void excludeByIdShouldNotMatchLinksIfExcluded() {
-		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks()
-				.excluding("foo");
+	void excludeByIdShouldNotMatchLinksIfExcluded() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks().excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
 
 	@Test
-	public void excludeLinksShouldNotMatchBasePath() {
+	void excludeLinksShouldNotMatchBasePath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks();
 		assertMatcher(matcher).doesNotMatch("/actuator");
 		assertMatcher(matcher).matches("/actuator/foo");
@@ -186,7 +182,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void excludeLinksShouldNotMatchBasePathIfEmptyAndExcluded() {
+	void excludeLinksShouldNotMatchBasePathIfEmptyAndExcluded() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
 		assertMatcher.doesNotMatch("/");
@@ -195,26 +191,26 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void endpointRequestMatcherShouldUseCustomRequestMatcherProvider() {
+	void endpointRequestMatcherShouldUseCustomRequestMatcherProvider() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcher mockRequestMatcher = (request) -> false;
-		RequestMatcherAssert assertMatcher = assertMatcher(matcher,
-				mockPathMappedEndpoints(""), (pattern) -> mockRequestMatcher);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints(""),
+				(pattern) -> mockRequestMatcher);
 		assertMatcher.doesNotMatch("/foo");
 		assertMatcher.doesNotMatch("/bar");
 	}
 
 	@Test
-	public void linksRequestMatcherShouldUseCustomRequestMatcherProvider() {
+	void linksRequestMatcherShouldUseCustomRequestMatcherProvider() {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcher mockRequestMatcher = (request) -> false;
-		RequestMatcherAssert assertMatcher = assertMatcher(matcher,
-				mockPathMappedEndpoints("/actuator"), (pattern) -> mockRequestMatcher);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, mockPathMappedEndpoints("/actuator"),
+				(pattern) -> mockRequestMatcher);
 		assertMatcher.doesNotMatch("/actuator");
 	}
 
 	@Test
-	public void noEndpointPathsBeansShouldNeverMatch() {
+	void noEndpointPathsBeansShouldNeverMatch() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/bar");
@@ -242,20 +238,17 @@ public class EndpointRequestTests {
 		return endpoint;
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints) {
 		return assertMatcher(matcher, pathMappedEndpoints, null);
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints,
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints,
 			RequestMatcherProvider matcherProvider) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
 			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
-			WebEndpointProperties properties = context
-					.getBean(WebEndpointProperties.class);
+			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
 			if (!properties.getBasePath().equals(pathMappedEndpoints.getBasePath())) {
 				properties.setBasePath(pathMappedEndpoints.getBasePath());
 			}
@@ -266,7 +259,7 @@ public class EndpointRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -277,29 +270,25 @@ public class EndpointRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String servletPath) {
+		void matches(String servletPath) {
 			matches(mockRequest(servletPath));
 		}
 
 		private void matches(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Matches " + getRequestPath(request)).isTrue();
+			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String servletPath) {
+		void doesNotMatch(String servletPath) {
 			doesNotMatch(mockRequest(servletPath));
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Does not match " + getRequestPath(request)).isFalse();
+			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
 		private MockHttpServletRequest mockRequest(String servletPath) {
 			MockServletContext servletContext = new MockServletContext();
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					this.context);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);
@@ -318,12 +307,12 @@ public class EndpointRequestTests {
 	}
 
 	@Endpoint(id = "foo")
-	private static class FooEndpoint {
+	static class FooEndpoint {
 
 	}
 
 	@ServletEndpoint(id = "baz")
-	private static class BazServletEndpoint {
+	static class BazServletEndpoint {
 
 	}
 

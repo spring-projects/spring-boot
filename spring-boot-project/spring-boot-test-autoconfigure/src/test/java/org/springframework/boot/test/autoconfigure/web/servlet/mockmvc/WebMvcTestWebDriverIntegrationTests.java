@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
@@ -28,21 +27,19 @@ import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link WebMvcTest} with {@link WebDriver}.
+ * Tests for {@link WebMvcTest @WebMvcTest} with {@link WebDriver}.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @WithMockUser
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WebMvcTestWebDriverIntegrationTests {
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+class WebMvcTestWebDriverIntegrationTests {
 
 	private static WebDriver previousWebDriver;
 
@@ -50,7 +47,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 	private WebDriver webDriver;
 
 	@Test
-	public void shouldAutoConfigureWebClient() {
+	void shouldAutoConfigureWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
@@ -58,17 +55,11 @@ public class WebMvcTestWebDriverIntegrationTests {
 	}
 
 	@Test
-	public void shouldBeADifferentWebClient() {
+	void shouldBeADifferentWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		try {
-			previousWebDriver.getWindowHandle();
-			fail("Did not call quit()");
-		}
-		catch (NoSuchWindowException ex) {
-			// Expected
-		}
+		assertThatExceptionOfType(NoSuchWindowException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 

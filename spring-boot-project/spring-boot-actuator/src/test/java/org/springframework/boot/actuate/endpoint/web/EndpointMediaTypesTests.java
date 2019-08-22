@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,35 +30,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EndpointMediaTypesTests {
+class EndpointMediaTypesTests {
 
 	@Test
-	public void createWhenProducedIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
+	void createWhenProducedIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
 				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
-	public void createWhenConsumedIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
+	void createWhenConsumedIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
 				.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test
-	public void getProducedShouldReturnProduced() {
+	void getProducedShouldReturnProduced() {
 		List<String> produced = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(produced,
-				Collections.emptyList());
+		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
-	public void getConsumedShouldReturnConsumed() {
+	void getConsumedShouldReturnConsumed() {
 		List<String> consumed = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(),
-				consumed);
+		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);
 	}
 

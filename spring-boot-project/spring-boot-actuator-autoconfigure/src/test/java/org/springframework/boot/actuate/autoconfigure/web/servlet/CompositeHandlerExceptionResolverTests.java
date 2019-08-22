@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CompositeHandlerExceptionResolverTests {
+class CompositeHandlerExceptionResolverTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -48,22 +48,22 @@ public class CompositeHandlerExceptionResolverTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void resolverShouldDelegateToOtherResolversInContext() {
+	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
 	}
 
 	@Test
-	public void resolverShouldAddDefaultResolverIfNonePresent() {
+	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved).isNotNull();
 	}
 
@@ -74,22 +74,22 @@ public class CompositeHandlerExceptionResolverTests {
 		this.context = context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-		public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+		CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 			return new CompositeHandlerExceptionResolver();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public HandlerExceptionResolver testResolver() {
+		HandlerExceptionResolver testResolver() {
 			return new TestHandlerExceptionResolver();
 		}
 
@@ -98,8 +98,8 @@ public class CompositeHandlerExceptionResolverTests {
 	static class TestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 		@Override
-		public ModelAndView resolveException(HttpServletRequest request,
-				HttpServletResponse response, Object handler, Exception ex) {
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Exception ex) {
 			return new ModelAndView("test-view");
 		}
 

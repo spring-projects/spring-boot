@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,13 +40,13 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(GraphiteMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.graphite", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.graphite", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(GraphiteProperties.class)
 public class GraphiteMetricsExportAutoConfiguration {
 
@@ -58,8 +58,7 @@ public class GraphiteMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig,
-			Clock clock) {
+	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig, Clock clock) {
 		return new GraphiteMeterRegistry(graphiteConfig, clock);
 	}
 

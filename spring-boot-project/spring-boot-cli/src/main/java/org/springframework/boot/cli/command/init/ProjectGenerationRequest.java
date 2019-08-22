@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 1.2.0
  */
 class ProjectGenerationRequest {
 
@@ -79,11 +78,11 @@ class ProjectGenerationRequest {
 	 * @return the service URL
 	 * @see #DEFAULT_SERVICE_URL
 	 */
-	public String getServiceUrl() {
+	String getServiceUrl() {
 		return this.serviceUrl;
 	}
 
-	public void setServiceUrl(String serviceUrl) {
+	void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
 
@@ -91,11 +90,11 @@ class ProjectGenerationRequest {
 	 * The location of the generated project.
 	 * @return the location of the generated project
 	 */
-	public String getOutput() {
+	String getOutput() {
 		return this.output;
 	}
 
-	public void setOutput(String output) {
+	void setOutput(String output) {
 		if (output != null && output.endsWith("/")) {
 			this.output = output.substring(0, output.length() - 1);
 			this.extract = true;
@@ -111,11 +110,11 @@ class ProjectGenerationRequest {
 	 * automatically.
 	 * @return {@code true} if the archive should be extracted, otherwise {@code false}
 	 */
-	public boolean isExtract() {
+	boolean isExtract() {
 		return this.extract;
 	}
 
-	public void setExtract(boolean extract) {
+	void setExtract(boolean extract) {
 		this.extract = extract;
 	}
 
@@ -123,11 +122,11 @@ class ProjectGenerationRequest {
 	 * The groupId to use or {@code null} if it should not be customized.
 	 * @return the groupId or {@code null}
 	 */
-	public String getGroupId() {
+	String getGroupId() {
 		return this.groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
@@ -135,11 +134,11 @@ class ProjectGenerationRequest {
 	 * The artifactId to use or {@code null} if it should not be customized.
 	 * @return the artifactId or {@code null}
 	 */
-	public String getArtifactId() {
+	String getArtifactId() {
 		return this.artifactId;
 	}
 
-	public void setArtifactId(String artifactId) {
+	void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
 
@@ -147,11 +146,11 @@ class ProjectGenerationRequest {
 	 * The artifact version to use or {@code null} if it should not be customized.
 	 * @return the artifact version or {@code null}
 	 */
-	public String getVersion() {
+	String getVersion() {
 		return this.version;
 	}
 
-	public void setVersion(String version) {
+	void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -159,11 +158,11 @@ class ProjectGenerationRequest {
 	 * The name to use or {@code null} if it should not be customized.
 	 * @return the name or {@code null}
 	 */
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	void setName(String name) {
 		this.name = name;
 	}
 
@@ -171,11 +170,11 @@ class ProjectGenerationRequest {
 	 * The description to use or {@code null} if it should not be customized.
 	 * @return the description or {@code null}
 	 */
-	public String getDescription() {
+	String getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -183,11 +182,11 @@ class ProjectGenerationRequest {
 	 * Return the package name or {@code null} if it should not be customized.
 	 * @return the package name or {@code null}
 	 */
-	public String getPackageName() {
+	String getPackageName() {
 		return this.packageName;
 	}
 
-	public void setPackageName(String packageName) {
+	void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
 
@@ -196,11 +195,11 @@ class ProjectGenerationRequest {
 	 * service supports. If not set, the default is retrieved from the service metadata.
 	 * @return the project type
 	 */
-	public String getType() {
+	String getType() {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	void setType(String type) {
 		this.type = type;
 	}
 
@@ -208,11 +207,11 @@ class ProjectGenerationRequest {
 	 * The packaging type or {@code null} if it should not be customized.
 	 * @return the packaging type or {@code null}
 	 */
-	public String getPackaging() {
+	String getPackaging() {
 		return this.packaging;
 	}
 
-	public void setPackaging(String packaging) {
+	void setPackaging(String packaging) {
 		this.packaging = packaging;
 	}
 
@@ -221,11 +220,11 @@ class ProjectGenerationRequest {
 	 * {@link #getFormat() format} to identify the type to use.
 	 * @return the build type
 	 */
-	public String getBuild() {
+	String getBuild() {
 		return this.build;
 	}
 
-	public void setBuild(String build) {
+	void setBuild(String build) {
 		this.build = build;
 	}
 
@@ -234,11 +233,11 @@ class ProjectGenerationRequest {
 	 * {@link #getBuild() build} to identify the type to use.
 	 * @return the project format
 	 */
-	public String getFormat() {
+	String getFormat() {
 		return this.format;
 	}
 
-	public void setFormat(String format) {
+	void setFormat(String format) {
 		this.format = format;
 	}
 
@@ -246,11 +245,11 @@ class ProjectGenerationRequest {
 	 * Whether or not the type should be detected based on the build and format value.
 	 * @return {@code true} if type detection will be performed, otherwise {@code false}
 	 */
-	public boolean isDetectType() {
+	boolean isDetectType() {
 		return this.detectType;
 	}
 
-	public void setDetectType(boolean detectType) {
+	void setDetectType(boolean detectType) {
 		this.detectType = detectType;
 	}
 
@@ -258,11 +257,11 @@ class ProjectGenerationRequest {
 	 * The Java version to use or {@code null} if it should not be customized.
 	 * @return the Java version or {@code null}
 	 */
-	public String getJavaVersion() {
+	String getJavaVersion() {
 		return this.javaVersion;
 	}
 
-	public void setJavaVersion(String javaVersion) {
+	void setJavaVersion(String javaVersion) {
 		this.javaVersion = javaVersion;
 	}
 
@@ -270,11 +269,11 @@ class ProjectGenerationRequest {
 	 * The programming language to use or {@code null} if it should not be customized.
 	 * @return the programming language or {@code null}
 	 */
-	public String getLanguage() {
+	String getLanguage() {
 		return this.language;
 	}
 
-	public void setLanguage(String language) {
+	void setLanguage(String language) {
 		this.language = language;
 	}
 
@@ -282,11 +281,11 @@ class ProjectGenerationRequest {
 	 * The Spring Boot version to use or {@code null} if it should not be customized.
 	 * @return the Spring Boot version or {@code null}
 	 */
-	public String getBootVersion() {
+	String getBootVersion() {
 		return this.bootVersion;
 	}
 
-	public void setBootVersion(String bootVersion) {
+	void setBootVersion(String bootVersion) {
 		this.bootVersion = bootVersion;
 	}
 
@@ -294,7 +293,7 @@ class ProjectGenerationRequest {
 	 * The identifiers of the dependencies to include in the project.
 	 * @return the dependency identifiers
 	 */
-	public List<String> getDependencies() {
+	List<String> getDependencies() {
 		return this.dependencies;
 	}
 
@@ -317,8 +316,7 @@ class ProjectGenerationRequest {
 			builder.setPath(sb.toString());
 
 			if (!this.dependencies.isEmpty()) {
-				builder.setParameter("dependencies",
-						StringUtils.collectionToCommaDelimitedString(this.dependencies));
+				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
 			}
 
 			if (this.groupId != null) {
@@ -359,8 +357,7 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException ex) {
-			throw new ReportableException(
-					"Invalid service URL (" + ex.getMessage() + ")");
+			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
 		}
 	}
 
@@ -368,8 +365,8 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ReportableException(("No project type with id '" + this.type
-						+ "' - check the service capabilities (--list)"));
+				throw new ReportableException(
+						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
 			}
 			return result;
 		}
@@ -385,22 +382,19 @@ class ProjectGenerationRequest {
 				return types.values().iterator().next();
 			}
 			else if (types.isEmpty()) {
-				throw new ReportableException("No type found with build '" + this.build
-						+ "' and format '" + this.format
+				throw new ReportableException("No type found with build '" + this.build + "' and format '" + this.format
 						+ "' check the service capabilities (--list)");
 			}
 			else {
-				throw new ReportableException("Multiple types found with build '"
-						+ this.build + "' and format '" + this.format
-						+ "' use --type with a more specific value " + types.keySet());
+				throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
+						+ this.format + "' use --type with a more specific value " + types.keySet());
 			}
 		}
 		else {
 			ProjectType defaultType = metadata.getDefaultType();
 			if (defaultType == null) {
-				throw new ReportableException(
-						("No project type is set and no default is defined. "
-								+ "Check the service capabilities (--list)"));
+				throw new ReportableException(("No project type is set and no default is defined. "
+						+ "Check the service capabilities (--list)"));
 			}
 			return defaultType;
 		}
@@ -421,10 +415,8 @@ class ProjectGenerationRequest {
 		return null;
 	}
 
-	private static void filter(Map<String, ProjectType> projects, String tag,
-			String tagValue) {
-		projects.entrySet().removeIf(
-				(entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
+	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
+		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
 	}
 
 }

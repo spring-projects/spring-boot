@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,7 @@ public final class Bindable<T> {
 
 	private final Annotation[] annotations;
 
-	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value,
-			Annotation[] annotations) {
+	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations) {
 		this.type = type;
 		this.boxedType = boxedType;
 		this.value = value;
@@ -160,8 +159,7 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withExistingValue(T existingValue) {
 		Assert.isTrue(
-				existingValue == null || this.type.isArray()
-						|| this.boxedType.resolve().isInstance(existingValue),
+				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);

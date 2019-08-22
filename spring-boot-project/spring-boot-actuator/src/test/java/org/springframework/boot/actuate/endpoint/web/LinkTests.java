@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,31 +26,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class LinkTests {
+class LinkTests {
 
 	@Test
-	public void createWhenHrefIsNullShouldThrowException() {
+	void createWhenHrefIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Link(null))
 				.withMessageContaining("HREF must not be null");
 	}
 
 	@Test
-	public void getHrefShouldReturnHref() {
-		String href = "http://example.com";
+	void getHrefShouldReturnHref() {
+		String href = "https://example.com";
 		Link link = new Link(href);
 		assertThat(link.getHref()).isEqualTo(href);
 	}
 
 	@Test
-	public void isTemplatedWhenContainsPlaceholderShouldReturnTrue() {
-		String href = "http://example.com/{path}";
+	void isTemplatedWhenContainsPlaceholderShouldReturnTrue() {
+		String href = "https://example.com/{path}";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isTrue();
 	}
 
 	@Test
-	public void isTemplatedWhenContainsNoPlaceholderShouldReturnFalse() {
-		String href = "http://example.com/path";
+	void isTemplatedWhenContainsNoPlaceholderShouldReturnFalse() {
+		String href = "https://example.com/path";
 		Link link = new Link(href);
 		assertThat(link.isTemplated()).isFalse();
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Raja Kolli
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
 @AutoConfigureBefore(LdapAutoConfiguration.class)
 @ConditionalOnClass(InMemoryDirectoryServer.class)
@@ -80,53 +80,41 @@ public class EmbeddedLdapAutoConfiguration {
 
 	private final EmbeddedLdapProperties embeddedProperties;
 
-	private final LdapProperties properties;
-
-	private final ConfigurableApplicationContext applicationContext;
-
-	private final Environment environment;
-
 	private InMemoryDirectoryServer server;
 
-	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties,
-			LdapProperties properties, ConfigurableApplicationContext applicationContext,
-			Environment environment) {
+	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
 		this.embeddedProperties = embeddedProperties;
-		this.properties = properties;
-		this.applicationContext = applicationContext;
-		this.environment = environment;
 	}
 
 	@Bean
 	@DependsOn("directoryServer")
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties) {
 		LdapContextSource source = new LdapContextSource();
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
 			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
 			source.setPassword(this.embeddedProperties.getCredential().getPassword());
 		}
-		source.setUrls(this.properties.determineUrls(this.environment));
+		source.setUrls(properties.determineUrls(environment));
 		return source;
 	}
 
 	@Bean
-	public InMemoryDirectoryServer directoryServer() throws LDAPException {
+	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
-			config.addAdditionalBindCredentials(
-					this.embeddedProperties.getCredential().getUsername(),
+			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
 		setSchema(config);
-		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig
-				.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig.createLDAPConfig("LDAP",
+				this.embeddedProperties.getPort());
 		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
-		importLdif();
+		importLdif(applicationContext);
 		this.server.startListening();
-		setPortProperty(this.applicationContext, this.server.getListenPort());
+		setPortProperty(applicationContext, this.server.getListenPort());
 		return this.server;
 	}
 
@@ -148,21 +136,19 @@ public class EmbeddedLdapAutoConfiguration {
 			config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to load schema " + resource.getDescription(), ex);
+			throw new IllegalStateException("Unable to load schema " + resource.getDescription(), ex);
 		}
 	}
 
 	private boolean hasCredentials(Credential credential) {
-		return StringUtils.hasText(credential.getUsername())
-				&& StringUtils.hasText(credential.getPassword());
+		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
 	}
 
-	private void importLdif() throws LDAPException {
+	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {
-				Resource resource = this.applicationContext.getResource(location);
+				Resource resource = applicationContext.getResource(location);
 				if (resource.exists()) {
 					try (InputStream inputStream = resource.getInputStream()) {
 						this.server.importFromLDIF(true, new LDIFReader(inputStream));
@@ -177,8 +163,8 @@ public class EmbeddedLdapAutoConfiguration {
 
 	private void setPortProperty(ApplicationContext context, int port) {
 		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context)
-					.getEnvironment().getPropertySources();
+			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
+					.getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
 		}
 		if (context.getParent() != null) {
@@ -209,16 +195,13 @@ public class EmbeddedLdapAutoConfiguration {
 	 */
 	static class EmbeddedLdapCondition extends SpringBootCondition {
 
-		private static final Bindable<List<String>> STRING_LIST = Bindable
-				.listOf(String.class);
+		private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Builder message = ConditionMessage.forCondition("Embedded LDAP");
 			Environment environment = context.getEnvironment();
-			if (environment != null && !Binder.get(environment)
-					.bind("spring.ldap.embedded.base-dn", STRING_LIST)
+			if (environment != null && !Binder.get(environment).bind("spring.ldap.embedded.base-dn", STRING_LIST)
 					.orElseGet(Collections::emptyList).isEmpty()) {
 				return ConditionOutcome.match(message.because("Found base-dn property"));
 			}

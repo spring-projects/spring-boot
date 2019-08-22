@@ -54,7 +54,7 @@
 
 
 ---
-mvn spring-boot:run -Dspring-boot.jvmArguments="-Dproperty1=overridden"
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
 ---
 
 

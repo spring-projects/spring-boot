@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author MyeongHyeon Lee
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class OAuth2ClientProperties {
@@ -161,16 +162,6 @@ public class OAuth2ClientProperties {
 			this.redirectUri = redirectUri;
 		}
 
-		@Deprecated
-		public String getRedirectUriTemplate() {
-			return getRedirectUri();
-		}
-
-		@Deprecated
-		public void setRedirectUriTemplate(String redirectUri) {
-			setRedirectUri(redirectUri);
-		}
-
 		public Set<String> getScope() {
 			return this.scope;
 		}
@@ -223,7 +214,8 @@ public class OAuth2ClientProperties {
 		private String jwkSetUri;
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,32 +34,29 @@ import org.springframework.util.StringUtils;
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended
  * {@link BeanDefinition#setDependsOn(String[]) dependsOn} settings for
- * <a href="http://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
+ * <a href="https://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
  * ordering</a>.
  *
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class AtomikosDependsOnBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor, Ordered {
+public class AtomikosDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	private static final String[] NO_BEANS = {};
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
-		String[] transactionManagers = beanFactory
-				.getBeanNamesForType(UserTransactionManager.class, true, false);
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		String[] transactionManagers = beanFactory.getBeanNamesForType(UserTransactionManager.class, true, false);
 		for (String transactionManager : transactionManagers) {
 			addTransactionManagerDependencies(beanFactory, transactionManager);
 		}
 		addMessageDrivenContainerDependencies(beanFactory, transactionManagers);
 	}
 
-	private void addTransactionManagerDependencies(
-			ConfigurableListableBeanFactory beanFactory, String transactionManager) {
+	private void addTransactionManagerDependencies(ConfigurableListableBeanFactory beanFactory,
+			String transactionManager) {
 		BeanDefinition bean = beanFactory.getBeanDefinition(transactionManager);
 		Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
 		int initialSize = dependsOn.size();
@@ -70,8 +67,8 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		}
 	}
 
-	private void addMessageDrivenContainerDependencies(
-			ConfigurableListableBeanFactory beanFactory, String[] transactionManagers) {
+	private void addMessageDrivenContainerDependencies(ConfigurableListableBeanFactory beanFactory,
+			String[] transactionManagers) {
 		String[] messageDrivenContainers = getBeanNamesForType(beanFactory,
 				"com.atomikos.jms.extra.MessageDrivenContainer");
 		for (String messageDrivenContainer : messageDrivenContainers) {
@@ -82,13 +79,11 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		}
 	}
 
-	private void addDependencies(ConfigurableListableBeanFactory beanFactory, String type,
-			Set<String> dependsOn) {
+	private void addDependencies(ConfigurableListableBeanFactory beanFactory, String type, Set<String> dependsOn) {
 		dependsOn.addAll(asList(getBeanNamesForType(beanFactory, type)));
 	}
 
-	private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory,
-			String type) {
+	private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory, String type) {
 		try {
 			return beanFactory.getBeanNamesForType(Class.forName(type), true, false);
 		}

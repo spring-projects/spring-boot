@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,42 +38,42 @@ public class DeferredLog implements Log {
 	@Override
 	public boolean isTraceEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isTraceEnabled() : true;
+			return (this.destination == null) || this.destination.isTraceEnabled();
 		}
 	}
 
 	@Override
 	public boolean isDebugEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isDebugEnabled() : true;
+			return (this.destination == null) || this.destination.isDebugEnabled();
 		}
 	}
 
 	@Override
 	public boolean isInfoEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isInfoEnabled() : true;
+			return (this.destination == null) || this.destination.isInfoEnabled();
 		}
 	}
 
 	@Override
 	public boolean isWarnEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isWarnEnabled() : true;
+			return (this.destination == null) || this.destination.isWarnEnabled();
 		}
 	}
 
 	@Override
 	public boolean isErrorEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isErrorEnabled() : true;
+			return (this.destination == null) || this.destination.isErrorEnabled();
 		}
 	}
 
 	@Override
 	public boolean isFatalEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isFatalEnabled() : true;
+			return (this.destination == null) || this.destination.isFatalEnabled();
 		}
 	}
 
@@ -184,8 +184,7 @@ public class DeferredLog implements Log {
 	public void replayTo(Log destination) {
 		synchronized (this.lines) {
 			for (Line line : this.lines) {
-				logTo(destination, line.getLevel(), line.getMessage(),
-						line.getThrowable());
+				logTo(destination, line.getLevel(), line.getMessage(), line.getThrowable());
 			}
 			this.lines.clear();
 		}
@@ -214,8 +213,7 @@ public class DeferredLog implements Log {
 		return destination;
 	}
 
-	private static void logTo(Log log, LogLevel level, Object message,
-			Throwable throwable) {
+	private static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
 		switch (level) {
 		case TRACE:
 			log.trace(message, throwable);
@@ -252,15 +250,15 @@ public class DeferredLog implements Log {
 			this.throwable = throwable;
 		}
 
-		public LogLevel getLevel() {
+		LogLevel getLevel() {
 			return this.level;
 		}
 
-		public Object getMessage() {
+		Object getMessage() {
 			return this.message;
 		}
 
-		public Throwable getThrowable() {
+		Throwable getThrowable() {
 			return this.throwable;
 		}
 

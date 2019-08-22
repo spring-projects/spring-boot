@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,8 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -91,7 +92,7 @@ class BeanDefinitionLoader {
 	 * Set the bean name generator to be used by the underlying readers and scanner.
 	 * @param beanNameGenerator the bean name generator
 	 */
-	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
@@ -101,7 +102,7 @@ class BeanDefinitionLoader {
 	 * Set the resource loader to be used by the underlying readers and scanner.
 	 * @param resourceLoader the resource loader
 	 */
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.xmlReader.setResourceLoader(resourceLoader);
 		this.scanner.setResourceLoader(resourceLoader);
@@ -111,7 +112,7 @@ class BeanDefinitionLoader {
 	 * Set the environment to be used by the underlying readers and scanner.
 	 * @param environment the environment
 	 */
-	public void setEnvironment(ConfigurableEnvironment environment) {
+	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.xmlReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
@@ -121,7 +122,7 @@ class BeanDefinitionLoader {
 	 * Load the sources into the reader.
 	 * @return the number of loaded beans
 	 */
-	public int load() {
+	int load() {
 		int count = 0;
 		for (Object source : this.sources) {
 			count += load(source);
@@ -147,11 +148,9 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Class<?> source) {
-		if (isGroovyPresent()
-				&& GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
-			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
-					GroovyBeanDefinitionSource.class);
+			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			load(loader);
 		}
 		if (isComponent(source)) {
@@ -171,8 +170,7 @@ class BeanDefinitionLoader {
 	private int load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
-				throw new BeanDefinitionStoreException(
-						"Cannot load Groovy beans without Groovy on classpath");
+				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
 			return this.groovyReader.loadBeanDefinitions(source);
 		}
@@ -184,8 +182,7 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-		String resolvedSource = this.xmlReader.getEnvironment()
-				.resolvePlaceholders(source.toString());
+		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -261,14 +258,11 @@ class BeanDefinitionLoader {
 		}
 		try {
 			// Attempt to find a class in this package
-			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-					getClass().getClassLoader());
-			Resource[] resources = resolver.getResources(
-					ClassUtils.convertClassNameToResourcePath(source.toString())
-							+ "/*.class");
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
+			Resource[] resources = resolver
+					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils
-						.stripFilenameExtension(resource.getFilename());
+				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
@@ -282,24 +276,20 @@ class BeanDefinitionLoader {
 	private boolean isComponent(Class<?> type) {
 		// This has to be a bit of a guess. The only way to be sure that this type is
 		// eligible is to make a bean definition out of it and try to instantiate it.
-		if (AnnotationUtils.findAnnotation(type, Component.class) != null) {
+		if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
 			return true;
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
-				|| type.getConstructors() == null || type.getConstructors().length == 0) {
-			return false;
-		}
-		return true;
+		return !type.getName().matches(".*\\$_.*closure.*") && !type.isAnonymousClass()
+				&& type.getConstructors() != null && type.getConstructors().length != 0;
 	}
 
 	/**
 	 * Simple {@link TypeFilter} used to ensure that specified {@link Class} sources are
 	 * not accidentally re-added during scanning.
 	 */
-	private static class ClassExcludeFilter
-			extends AbstractTypeHierarchyTraversingFilter {
+	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
 
 		private final Set<String> classNames = new HashSet<>();
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ public final class EndpointId {
 
 	private static final Log logger = LogFactory.getLog(EndpointId.class);
 
-	private static Set<String> loggedWarnings = new HashSet<>();
+	private static final Set<String> loggedWarnings = new HashSet<>();
 
 	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
 
@@ -52,12 +52,9 @@ public final class EndpointId {
 
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(VALID_PATTERN.matcher(value).matches(),
-				"Value must only contain valid chars");
-		Assert.isTrue(!Character.isDigit(value.charAt(0)),
-				"Value must not start with a number");
-		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),
-				"Value must not start with an uppercase letter");
+		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "Value must only contain valid chars");
+		Assert.isTrue(!Character.isDigit(value.charAt(0)), "Value must not start with a number");
+		Assert.isTrue(!Character.isUpperCase(value.charAt(0)), "Value must not start with an uppercase letter");
 		if (WARNING_PATTERN.matcher(value).find()) {
 			logWarning(value);
 		}
@@ -85,8 +82,7 @@ public final class EndpointId {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return this.lowerCaseAlphaNumeric
-				.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
+		return this.lowerCaseAlphaNumeric.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
 	}
 
 	@Override
@@ -132,8 +128,7 @@ public final class EndpointId {
 
 	private static void logWarning(String value) {
 		if (logger.isWarnEnabled() && loggedWarnings.add(value)) {
-			logger.warn("Endpoint ID '" + value
-					+ "' contains invalid characters, please migrate to a valid format.");
+			logger.warn("Endpoint ID '" + value + "' contains invalid characters, please migrate to a valid format.");
 		}
 	}
 

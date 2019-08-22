@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,27 +49,24 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 		File appJar = new File(appDirectory, "app.jar");
-		JarOutputStream output = new JarOutputStream(new FileOutputStream(appJar),
-				manifest);
+		JarOutputStream output = new JarOutputStream(new FileOutputStream(appJar), manifest);
 		addToJar(output, appDirectory, appDirectory);
 		output.close();
 		List<String> entries = new ArrayList<>();
 		entries.add(appJar.getAbsolutePath());
 		entries.addAll(getDependencyJarPaths());
-		String classpath = StringUtils.collectionToDelimitedString(entries,
-				File.pathSeparator);
+		String classpath = StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 		return classpath;
 	}
 
-	private void addToJar(JarOutputStream output, File root, File current)
-			throws IOException {
+	private void addToJar(JarOutputStream output, File root, File current) throws IOException {
 		for (File file : current.listFiles()) {
 			if (file.isDirectory()) {
 				addToJar(output, root, file);
 			}
 			output.putNextEntry(new ZipEntry(
-					file.getAbsolutePath().substring(root.getAbsolutePath().length() + 1)
-							.replace("\\", "/") + (file.isDirectory() ? "/" : "")));
+					file.getAbsolutePath().substring(root.getAbsolutePath().length() + 1).replace("\\", "/")
+							+ (file.isDirectory() ? "/" : "")));
 			if (file.isFile()) {
 				try (FileInputStream input = new FileInputStream(file)) {
 					StreamUtils.copy(input, output);

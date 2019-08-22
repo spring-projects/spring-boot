@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,15 +24,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,14 +42,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class SpringBootMockMvcBuilderCustomizerTests {
+class SpringBootMockMvcBuilderCustomizerTests {
 
 	private SpringBootMockMvcBuilderCustomizer customizer;
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void customizeShouldAddFilters() {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	void customizeShouldAddFilters() {
+		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
 		context.setServletContext(servletContext);
 		context.register(ServletConfiguration.class, FilterConfiguration.class);
@@ -60,29 +61,30 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 				.getBean("filterRegistrationBean");
 		Filter testFilter = (Filter) context.getBean("testFilter");
 		Filter otherTestFilter = registrationBean.getFilter();
-		List<Filter> filters = (List<Filter>) ReflectionTestUtils.getField(builder,
-				"filters");
+		List<Filter> filters = (List<Filter>) ReflectionTestUtils.getField(builder, "filters");
 		assertThat(filters).containsExactlyInAnyOrder(testFilter, otherTestFilter);
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	static class ServletConfiguration {
 
 		@Bean
-		public TestServlet testServlet() {
+		TestServlet testServlet() {
 			return new TestServlet();
 		}
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	static class FilterConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
+		FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
 			return new FilterRegistrationBean<>(new OtherTestFilter());
 		}
 
 		@Bean
-		public TestFilter testFilter() {
+		TestFilter testFilter() {
 			return new TestFilter();
 		}
 
@@ -100,8 +102,7 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 		}
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) {
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
 
 		}
 
@@ -120,8 +121,7 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 		}
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) {
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
 
 		}
 

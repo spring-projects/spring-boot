@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,8 +38,8 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.JarLauncher", this::resolveZipCompression);
+	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.JarLauncher",
+			this::resolveZipCompression);
 
 	private final CopySpec bootInf;
 
@@ -55,18 +55,24 @@ public class BootJar extends Jar implements BootArchive {
 		getMainSpec().with(this.bootInf);
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
 		this.bootInf.into("lib", classpathFiles(File::isFile));
+		this.bootInf.filesMatching("module-info.class",
+				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+		getRootSpec().eachFile((details) -> {
+			String pathString = details.getRelativePath().getPathString();
+			if (pathString.startsWith("BOOT-INF/lib/") && !this.support.isZip(details.getFile())) {
+				details.exclude();
+			}
+		});
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return (copySpec) -> copySpec
-				.from((Callable<Iterable<File>>) () -> (this.classpath != null)
-						? this.classpath.filter(filter) : Collections.emptyList());
-
+		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.classpath != null)
+				? this.classpath.filter(filter) : Collections.emptyList());
 	}
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName());
+		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
 		super.copy();
 	}
 
@@ -78,8 +84,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public String getMainClassName() {
 		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes()
-					.get("Start-Class");
+			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
 			if (manifestStartClass != null) {
 				setMainClassName(manifestStartClass);
 			}
@@ -125,8 +130,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void classpath(Object... classpath) {
 		FileCollection existingClasspath = this.classpath;
-		this.classpath = getProject().files(
-				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
+		this.classpath = getProject().files((existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -33,42 +33,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AutoConfigurationImportSelectorIntegrationTests {
+class AutoConfigurationImportSelectorIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void singleSelectorWithNoImports() {
+	void singleSelectorWithNoImports() {
 		this.contextRunner.withUserConfiguration(NoConfig.class)
 				.run((context) -> assertThat(getImportedConfigBeans(context)).isEmpty());
 	}
 
 	@Test
-	public void singleSelector() {
+	void singleSelector() {
 		this.contextRunner.withUserConfiguration(SingleConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigC"));
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigC"));
 	}
 
 	@Test
-	public void multipleSelectorsShouldMergeAndSortCorrectly() {
+	void multipleSelectorsShouldMergeAndSortCorrectly() {
 		this.contextRunner.withUserConfiguration(Config.class, AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD"));
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+						"ConfigC", "ConfigD"));
 	}
 
 	@Test
-	public void multipleSelectorsWithRedundantImportsShouldMergeAndSortCorrectly() {
-		this.contextRunner
-				.withUserConfiguration(SingleConfig.class, Config.class,
-						AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD"));
+	void multipleSelectorsWithRedundantImportsShouldMergeAndSortCorrectly() {
+		this.contextRunner.withUserConfiguration(SingleConfig.class, Config.class, AnotherConfig.class)
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+						"ConfigC", "ConfigD"));
 	}
 
 	private List<String> getImportedConfigBeans(AssertableApplicationContext context) {
-		String shortName = ClassUtils
-				.getShortName(AutoConfigurationImportSelectorIntegrationTests.class);
+		String shortName = ClassUtils.getShortName(AutoConfigurationImportSelectorIntegrationTests.class);
 		int beginIndex = shortName.length() + 1;
 		List<String> orderedConfigBeans = new ArrayList<>();
 		for (String bean : context.getBeanDefinitionNames()) {
@@ -100,24 +96,24 @@ public class AutoConfigurationImportSelectorIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConfigA {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@AutoConfigureAfter(ConfigA.class)
 	@AutoConfigureBefore(ConfigC.class)
 	static class ConfigB {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConfigC {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@AutoConfigureAfter(ConfigC.class)
 	static class ConfigD {
 

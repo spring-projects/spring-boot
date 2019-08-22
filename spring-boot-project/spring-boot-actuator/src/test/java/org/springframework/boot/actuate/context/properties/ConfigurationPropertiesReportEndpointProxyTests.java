@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.context.properties;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
@@ -45,59 +45,56 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointProxyTests {
+class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(Config.class, SqlExecutor.class);
+	void testWithProxyClass() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class,
+				SqlExecutor.class);
 		contextRunner.run((context) -> {
 			ApplicationConfigurationProperties applicationProperties = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class)
-					.configurationProperties();
-			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans()
-					.values().stream()
-					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
-					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
+					.getBean(ConfigurationPropertiesReportEndpoint.class).configurationProperties();
+			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans().values().stream()
+					.map(ConfigurationPropertiesBeanDescriptor::getPrefix).filter("executor.sql"::equals).findFirst())
+							.isNotEmpty();
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableTransactionManagement(proxyTargetClass = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
-		public PlatformTransactionManager transactionManager() {
-			return new DataSourceTransactionManager(dataSource());
+		PlatformTransactionManager transactionManager(DataSource dataSource) {
+			return new DataSourceTransactionManager(dataSource);
 		}
 
 		@Bean
-		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-					.build();
+		DataSource dataSource() {
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}
 
-	public interface Executor {
+	interface Executor {
 
 		void execute();
 
 	}
 
-	public abstract static class AbstractExecutor implements Executor {
+	abstract static class AbstractExecutor implements Executor {
 
 	}
 
 	@Component
 	@ConfigurationProperties("executor.sql")
-	public static class SqlExecutor extends AbstractExecutor {
+	static class SqlExecutor extends AbstractExecutor {
 
 		@Override
 		@Transactional(propagation = Propagation.REQUIRES_NEW)

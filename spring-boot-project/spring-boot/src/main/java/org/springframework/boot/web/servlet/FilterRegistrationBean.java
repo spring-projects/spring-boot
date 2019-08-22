@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,16 +40,7 @@ import org.springframework.util.Assert;
  * @see ServletContext#addFilter(String, Filter)
  * @see DelegatingFilterProxyRegistrationBean
  */
-public class FilterRegistrationBean<T extends Filter>
-		extends AbstractFilterRegistrationBean<T> {
-
-	/**
-	 * Filters that wrap the servlet request should be ordered less than or equal to this.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@code OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER}
-	 */
-	@Deprecated
-	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = AbstractFilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER;
+public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegistrationBean<T> {
 
 	private T filter;
 
@@ -65,8 +56,7 @@ public class FilterRegistrationBean<T extends Filter>
 	 * @param filter the filter to register
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
-	public FilterRegistrationBean(T filter,
-			ServletRegistrationBean<?>... servletRegistrationBeans) {
+	public FilterRegistrationBean(T filter, ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
 		Assert.notNull(filter, "Filter must not be null");
 		this.filter = filter;

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @since 1.0.0
  */
 public abstract class LoggingSystem {
 
@@ -58,12 +60,10 @@ public abstract class LoggingSystem {
 
 	static {
 		Map<String, String> systems = new LinkedHashMap<>();
-		systems.put("ch.qos.logback.core.Appender",
-				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
+		systems.put("ch.qos.logback.core.Appender", "org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("java.util.logging.LogManager",
-				"org.springframework.boot.logging.java.JavaLoggingSystem");
+		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}
 
@@ -82,8 +82,7 @@ public abstract class LoggingSystem {
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public void initialize(LoggingInitializationContext initializationContext,
-			String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 	}
 
 	/**
@@ -156,18 +155,17 @@ public abstract class LoggingSystem {
 			}
 			return get(classLoader, loggingSystem);
 		}
-		return SYSTEMS.entrySet().stream()
-				.filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader))
+		return SYSTEMS.entrySet().stream().filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader))
 				.map((entry) -> get(classLoader, entry.getValue())).findFirst()
-				.orElseThrow(() -> new IllegalStateException(
-						"No suitable logging system located"));
+				.orElseThrow(() -> new IllegalStateException("No suitable logging system located"));
 	}
 
 	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
 		try {
 			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
-			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-					.newInstance(classLoader);
+			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
+			constructor.setAccessible(true);
+			return (LoggingSystem) constructor.newInstance(classLoader);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

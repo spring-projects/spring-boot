@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -56,8 +57,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
- * annotated beans.
+ * {@link Endpoint @Endpoint} to expose application properties from
+ * {@link ConfigurationProperties @ConfigurationProperties} annotated beans.
  *
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
@@ -99,31 +100,27 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
-			contextProperties.put(target.getId(),
-					describeConfigurationProperties(target, getObjectMapper()));
+			contextProperties.put(target.getId(), describeConfigurationProperties(target, getObjectMapper()));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contextProperties);
 	}
 
-	private ContextConfigurationProperties describeConfigurationProperties(
-			ApplicationContext context, ObjectMapper mapper) {
-		ConfigurationBeanFactoryMetadata beanFactoryMetadata = getBeanFactoryMetadata(
-				context);
-		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
-				beanFactoryMetadata);
+	private ContextConfigurationProperties describeConfigurationProperties(ApplicationContext context,
+			ObjectMapper mapper) {
+		ConfigurationBeanFactoryMetadata beanFactoryMetadata = getBeanFactoryMetadata(context);
+		Map<String, Object> beans = getConfigurationPropertiesBeans(context, beanFactoryMetadata);
 		Map<String, ConfigurationPropertiesBeanDescriptor> beanDescriptors = new HashMap<>();
 		beans.forEach((beanName, bean) -> {
 			String prefix = extractPrefix(context, beanFactoryMetadata, beanName);
-			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
-					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
+			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
+					sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		});
 		return new ContextConfigurationProperties(beanDescriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
-	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(
-			ApplicationContext context) {
+	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(ApplicationContext context) {
 		Map<String, ConfigurationBeanFactoryMetadata> beans = context
 				.getBeansOfType(ConfigurationBeanFactoryMetadata.class);
 		if (beans.size() == 1) {
@@ -132,14 +129,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return null;
 	}
 
-	private Map<String, Object> getConfigurationPropertiesBeans(
-			ApplicationContext context,
+	private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext context,
 			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
-		Map<String, Object> beans = new HashMap<>();
-		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
+		Map<String, Object> beans = new HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
 		if (beanFactoryMetadata != null) {
-			beans.putAll(beanFactoryMetadata
-					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+			beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
 		}
 		return beans;
 	}
@@ -153,28 +147,29 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @return the serialized instance
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
-			String prefix) {
+	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}
 		catch (Exception ex) {
-			return new HashMap<>(Collections.singletonMap("error",
-					"Cannot serialize '" + prefix + "'"));
+			return new HashMap<>(Collections.singletonMap("error", "Cannot serialize '" + prefix + "'"));
 		}
 	}
 
 	/**
 	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
-	 * {@link ConfigurationProperties} objects into a {@link Map} structure.
+	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
+	 * structure.
 	 * @param mapper the object mapper
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyConfigurationPropertiesFilter(mapper);
 		applySerializationModifier(mapper);
+		mapper.registerModule(new JavaTimeModule());
 	}
 
 	private ObjectMapper getObjectMapper() {
@@ -196,26 +191,25 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(
-				new ConfigurationPropertiesAnnotationIntrospector());
-		mapper.setFilterProvider(new SimpleFilterProvider()
-				.setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
+		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
+		mapper.setFilterProvider(
+				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
 	}
 
 	/**
-	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
+	 * Extract configuration prefix from
+	 * {@link ConfigurationProperties @ConfigurationProperties} annotation.
 	 * @param context the application context
 	 * @param beanFactoryMetaData the bean factory meta-data
 	 * @param beanName the bean name
 	 * @return the prefix
 	 */
-	private String extractPrefix(ApplicationContext context,
-			ConfigurationBeanFactoryMetadata beanFactoryMetaData, String beanName) {
-		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
-				ConfigurationProperties.class);
+	private String extractPrefix(ApplicationContext context, ConfigurationBeanFactoryMetadata beanFactoryMetaData,
+			String beanName) {
+		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName, ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData
-					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
+			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(beanName,
+					ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one
@@ -274,8 +268,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class ConfigurationPropertiesAnnotationIntrospector
-			extends JacksonAnnotationIntrospector {
+	private static class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -290,7 +283,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	/**
 	 * {@link SimpleBeanPropertyFilter} for serialization of
-	 * {@link ConfigurationProperties} beans. The filter hides:
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. The filter hides:
 	 *
 	 * <ul>
 	 * <li>Properties that have a name starting with '$$'.
@@ -298,11 +291,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * <li>Properties that throw an exception when retrieving their value.
 	 * </ul>
 	 */
-	private static class ConfigurationPropertiesPropertyFilter
-			extends SimpleBeanPropertyFilter {
+	private static class ConfigurationPropertiesPropertyFilter extends SimpleBeanPropertyFilter {
 
-		private static final Log logger = LogFactory
-				.getLog(ConfigurationPropertiesPropertyFilter.class);
+		private static final Log logger = LogFactory.getLog(ConfigurationPropertiesPropertyFilter.class);
 
 		@Override
 		protected boolean include(BeanPropertyWriter writer) {
@@ -319,14 +310,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		}
 
 		@Override
-		public void serializeAsField(Object pojo, JsonGenerator jgen,
-				SerializerProvider provider, PropertyWriter writer) throws Exception {
+		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider,
+				PropertyWriter writer) throws Exception {
 			if (writer instanceof BeanPropertyWriter) {
 				try {
 					if (pojo == ((BeanPropertyWriter) writer).get(pojo)) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Skipping '" + writer.getFullName() + "' on '"
-									+ pojo.getClass().getName()
+							logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
 									+ "' as it is self-referential");
 						}
 						return;
@@ -334,9 +324,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				}
 				catch (Exception ex) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Skipping '" + writer.getFullName() + "' on '"
-								+ pojo.getClass().getName() + "' as an exception "
-								+ "was thrown when retrieving its value", ex);
+						logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
+								+ "' as an exception was thrown when retrieving its value", ex);
 					}
 					return;
 				}
@@ -352,8 +341,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			for (BeanPropertyWriter writer : beanProperties) {
 				boolean readable = isReadable(beanDesc, writer);
@@ -374,15 +363,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			// should be kosher. Lists and Maps are also auto-detected by default since
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
-			return (setter != null)
-					|| ClassUtils.getPackageName(parentType)
-							.equals(ClassUtils.getPackageName(type))
-					|| Map.class.isAssignableFrom(type)
-					|| Collection.class.isAssignableFrom(type);
+			return (setter != null) || ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
+					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 		}
 
-		private AnnotatedMethod findSetter(BeanDescription beanDesc,
-				BeanPropertyWriter writer) {
+		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String name = "set" + determineAccessorSuffix(writer.getName());
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
@@ -402,8 +387,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		 * @return the accessor suffix for {@code propertyName}
 		 */
 		private String determineAccessorSuffix(String propertyName) {
-			if (propertyName.length() > 1
-					&& Character.isUpperCase(propertyName.charAt(1))) {
+			if (propertyName.length() > 1 && Character.isUpperCase(propertyName.charAt(1))) {
 				return propertyName;
 			}
 			return StringUtils.capitalize(propertyName);
@@ -412,15 +396,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of an application's {@link ConfigurationProperties} beans. Primarily
-	 * intended for serialization to JSON.
+	 * A description of an application's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
+	 * for serialization to JSON.
 	 */
 	public static final class ApplicationConfigurationProperties {
 
 		private final Map<String, ContextConfigurationProperties> contexts;
 
-		private ApplicationConfigurationProperties(
-				Map<String, ContextConfigurationProperties> contexts) {
+		private ApplicationConfigurationProperties(Map<String, ContextConfigurationProperties> contexts) {
 			this.contexts = contexts;
 		}
 
@@ -431,8 +415,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of an application context's {@link ConfigurationProperties} beans.
-	 * Primarily intended for serialization to JSON.
+	 * A description of an application context's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
+	 * for serialization to JSON.
 	 */
 	public static final class ContextConfigurationProperties {
 
@@ -440,8 +425,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final String parentId;
 
-		private ContextConfigurationProperties(
-				Map<String, ConfigurationPropertiesBeanDescriptor> beans,
+		private ContextConfigurationProperties(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
 				String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
@@ -458,8 +442,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of a {@link ConfigurationProperties} bean. Primarily intended for
-	 * serialization to JSON.
+	 * A description of a {@link ConfigurationProperties @ConfigurationProperties} bean.
+	 * Primarily intended for serialization to JSON.
 	 */
 	public static final class ConfigurationPropertiesBeanDescriptor {
 
@@ -467,8 +451,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, Object> properties;
 
-		private ConfigurationPropertiesBeanDescriptor(String prefix,
-				Map<String, Object> properties) {
+		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties) {
 			this.prefix = prefix;
 			this.properties = properties;
 		}

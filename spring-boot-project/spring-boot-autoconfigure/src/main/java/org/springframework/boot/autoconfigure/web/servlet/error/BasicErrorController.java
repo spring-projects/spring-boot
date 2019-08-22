@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Basic global error {@link Controller}, rendering {@link ErrorAttributes}. More specific
- * errors can be handled either using Spring MVC abstractions (e.g.
+ * Basic global error {@link Controller @Controller}, rendering {@link ErrorAttributes}.
+ * More specific errors can be handled either using Spring MVC abstractions (e.g.
  * {@code @ExceptionHandler}) or by adding servlet
  * {@link AbstractServletWebServerFactory#setErrorPages server error pages}.
  *
@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @since 1.0.0
  * @see ErrorAttributes
  * @see ErrorProperties
  */
@@ -59,8 +60,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param errorAttributes the error attributes
 	 * @param errorProperties configuration properties
 	 */
-	public BasicErrorController(ErrorAttributes errorAttributes,
-			ErrorProperties errorProperties) {
+	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
 		this(errorAttributes, errorProperties, Collections.emptyList());
 	}
 
@@ -70,8 +70,8 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param errorProperties configuration properties
 	 * @param errorViewResolvers error view resolvers
 	 */
-	public BasicErrorController(ErrorAttributes errorAttributes,
-			ErrorProperties errorProperties, List<ErrorViewResolver> errorViewResolvers) {
+	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
+			List<ErrorViewResolver> errorViewResolvers) {
 		super(errorAttributes, errorViewResolvers);
 		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorProperties = errorProperties;
@@ -83,11 +83,10 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
-	public ModelAndView errorHtml(HttpServletRequest request,
-			HttpServletResponse response) {
+	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
-		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(
-				request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+		Map<String, Object> model = Collections
+				.unmodifiableMap(getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -95,8 +94,7 @@ public class BasicErrorController extends AbstractErrorController {
 
 	@RequestMapping
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
+		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<>(body, status);
 	}
@@ -107,8 +105,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	protected boolean isIncludeStackTrace(HttpServletRequest request,
-			MediaType produces) {
+	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
 		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
 		if (include == IncludeStacktrace.ALWAYS) {
 			return true;

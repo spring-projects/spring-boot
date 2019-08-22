@@ -1,6 +1,9 @@
 [appendix]
 [[executable-jar]]
 == The Executable Jar Format
+
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 The `spring-boot-loader` modules lets Spring Boot support executable jar and
 war files. If you use the Maven plugin or the Gradle plugin, executable jars are
 automatically generated, and you generally do not need to know the details of how
@@ -206,7 +209,7 @@ properties (System properties, environment variables, manifest entries, or
 |Key |Purpose
 
 |`loader.path`
-|Comma-separated Classpath, such as `lib,${HOME}/app/lib`. Earlier entries take
+|Comma-separated Classpath, such as `lib,$\{HOME}/app/lib`. Earlier entries take
  precedence, like a regular `-classpath` on the `javac` command line.
 
 |`loader.home`
@@ -330,6 +333,6 @@ following alternatives:
 
 * https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
-* http://one-jar.sourceforge.net[OneJar]
+* https://sourceforge.net/projects/one-jar/[OneJar]
 * https://imperceptiblethoughts.com/shadow/[Gradle Shadow Plugin]
 

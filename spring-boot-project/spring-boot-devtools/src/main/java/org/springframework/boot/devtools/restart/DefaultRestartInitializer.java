@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,8 @@
 package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+
+import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
@@ -32,26 +31,13 @@ import java.util.Set;
  */
 public class DefaultRestartInitializer implements RestartInitializer {
 
-	private static final Set<String> SKIPPED_STACK_ELEMENTS;
-
-	static {
-		Set<String> skipped = new LinkedHashSet<>();
-		skipped.add("org.junit.runners.");
-		skipped.add("org.junit.platform.");
-		skipped.add("org.springframework.boot.test.");
-		skipped.add("cucumber.runtime.");
-		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
-	}
-
 	@Override
 	public URL[] getInitialUrls(Thread thread) {
 		if (!isMain(thread)) {
 			return null;
 		}
-		for (StackTraceElement element : thread.getStackTrace()) {
-			if (isSkippedStackElement(element)) {
-				return null;
-			}
+		if (!DevToolsEnablementDeducer.shouldEnable(thread)) {
+			return null;
 		}
 		return getUrls(thread);
 	}
@@ -63,24 +49,8 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the thread is a main invocation
 	 */
 	protected boolean isMain(Thread thread) {
-		return thread.getName().equals("main") && thread.getContextClassLoader()
-				.getClass().getName().contains("AppClassLoader");
-	}
-
-	/**
-	 * Checks if a specific {@link StackTraceElement} should cause the initializer to be
-	 * skipped.
-	 * @param element the stack element to check
-	 * @return {@code true} if the stack element means that the initializer should be
-	 * skipped
-	 */
-	private boolean isSkippedStackElement(StackTraceElement element) {
-		for (String skipped : SKIPPED_STACK_ELEMENTS) {
-			if (element.getClassName().startsWith(skipped)) {
-				return true;
-			}
-		}
-		return false;
+		return thread.getName().equals("main")
+				&& thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
 	}
 
 	/**

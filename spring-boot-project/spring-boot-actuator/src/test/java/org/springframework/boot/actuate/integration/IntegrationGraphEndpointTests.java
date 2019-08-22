@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.integration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Tim Ysewyn
  */
-public class IntegrationGraphEndpointTests {
+class IntegrationGraphEndpointTests {
 
 	@Mock
 	private IntegrationGraphServer integrationGraphServer;
@@ -43,13 +43,13 @@ public class IntegrationGraphEndpointTests {
 	@InjectMocks
 	private IntegrationGraphEndpoint integrationGraphEndpoint;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void readOperationShouldReturnGraph() {
+	void readOperationShouldReturnGraph() {
 		Graph mockedGraph = mock(Graph.class);
 		given(this.integrationGraphServer.getGraph()).willReturn(mockedGraph);
 		Graph graph = this.integrationGraphEndpoint.graph();
@@ -58,7 +58,7 @@ public class IntegrationGraphEndpointTests {
 	}
 
 	@Test
-	public void writeOperationShouldRebuildGraph() {
+	void writeOperationShouldRebuildGraph() {
 		this.integrationGraphEndpoint.rebuild();
 		verify(this.integrationGraphServer).rebuild();
 	}

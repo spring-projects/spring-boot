@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,14 +20,14 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,25 +36,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Import(CompleteTwoDataSourcesExample.CompleteDataSourcesConfiguration.class)
-public class CompleteTwoDataSourcesExampleTests {
+class CompleteTwoDataSourcesExampleTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void validateConfiguration() throws SQLException {
+	void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.startsWith("jdbc:h2:mem:");
-		DataSource secondDataSource = this.context.getBean("secondDataSource",
-				DataSource.class);
-		assertThat(secondDataSource.getConnection().getMetaData().getURL())
-				.startsWith("jdbc:h2:mem:");
+		assertThat(dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		DataSource secondDataSource = this.context.getBean("secondDataSource", DataSource.class);
+		assertThat(secondDataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 	}
 
 }

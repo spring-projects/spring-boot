@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
 
 /**
- * {@link Endpoint} to expose flyway info.
+ * {@link Endpoint @Endpoint} to expose flyway info.
  *
  * @author Eddú Meléndez
  * @author Phillip Webb
@@ -57,11 +57,11 @@ public class FlywayEndpoint {
 		Map<String, ContextFlywayBeans> contextFlywayBeans = new HashMap<>();
 		while (target != null) {
 			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
-			target.getBeansOfType(Flyway.class).forEach((name, flyway) -> flywayBeans
-					.put(name, new FlywayDescriptor(flyway.info().all())));
+			target.getBeansOfType(Flyway.class)
+					.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
-			contextFlywayBeans.put(target.getId(), new ContextFlywayBeans(flywayBeans,
-					(parent != null) ? parent.getId() : null));
+			contextFlywayBeans.put(target.getId(),
+					new ContextFlywayBeans(flywayBeans, (parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationFlywayBeans(contextFlywayBeans);
@@ -95,8 +95,7 @@ public class FlywayEndpoint {
 
 		private final String parentId;
 
-		private ContextFlywayBeans(Map<String, FlywayDescriptor> flywayBeans,
-				String parentId) {
+		private ContextFlywayBeans(Map<String, FlywayDescriptor> flywayBeans, String parentId) {
 			this.flywayBeans = flywayBeans;
 			this.parentId = parentId;
 		}
@@ -119,8 +118,7 @@ public class FlywayEndpoint {
 		private final List<FlywayMigration> migrations;
 
 		private FlywayDescriptor(MigrationInfo[] migrations) {
-			this.migrations = Stream.of(migrations).map(FlywayMigration::new)
-					.collect(Collectors.toList());
+			this.migrations = Stream.of(migrations).map(FlywayMigration::new).collect(Collectors.toList());
 		}
 
 		public FlywayDescriptor(List<FlywayMigration> migrations) {

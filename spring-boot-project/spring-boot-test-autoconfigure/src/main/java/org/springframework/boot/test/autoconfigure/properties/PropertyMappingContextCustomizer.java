@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,14 +16,15 @@
 
 package org.springframework.boot.test.autoconfigure.properties;
 
-import java.lang.annotation.Annotation;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextCustomizer;
@@ -50,15 +51,14 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		if (!this.propertySource.isEmpty()) {
 			context.getEnvironment().getPropertySources().addFirst(this.propertySource);
 		}
-		context.getBeanFactory().registerSingleton(
-				PropertyMappingCheckBeanPostProcessor.class.getName(),
+		context.getBeanFactory().registerSingleton(PropertyMappingCheckBeanPostProcessor.class.getName(),
 				new PropertyMappingCheckBeanPostProcessor());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && getClass() == obj.getClass() && this.propertySource
-				.equals(((PropertyMappingContextCustomizer) obj).propertySource));
+		return (obj != null && getClass() == obj.getClass()
+				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource));
 	}
 
 	@Override
@@ -67,49 +67,29 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to check that {@link PropertyMapping} is only used on
-	 * test classes.
+	 * {@link BeanPostProcessor} to check that {@link PropertyMapping @PropertyMapping} is
+	 * only used on test classes.
 	 */
 	static class PropertyMappingCheckBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			Class<?> beanClass = bean.getClass();
-			Set<Class<?>> components = new LinkedHashSet<>();
-			Set<Class<?>> propertyMappings = new LinkedHashSet<>();
-			while (beanClass != null) {
-				Annotation[] annotations = AnnotationUtils.getAnnotations(beanClass);
-				if (annotations != null) {
-					for (Annotation annotation : annotations) {
-						if (isAnnotated(annotation, Component.class)) {
-							components.add(annotation.annotationType());
-						}
-						if (isAnnotated(annotation, PropertyMapping.class)) {
-							propertyMappings.add(annotation.annotationType());
-						}
-					}
-				}
-				beanClass = beanClass.getSuperclass();
-			}
+			MergedAnnotations annotations = MergedAnnotations.from(beanClass, SearchStrategy.SUPERCLASS);
+			Set<Class<?>> components = annotations.stream(Component.class).map(this::getRoot)
+					.collect(Collectors.toSet());
+			Set<Class<?>> propertyMappings = annotations.stream(PropertyMapping.class).map(this::getRoot)
+					.collect(Collectors.toSet());
 			if (!components.isEmpty() && !propertyMappings.isEmpty()) {
-				throw new IllegalStateException("The @PropertyMapping "
-						+ getAnnotationsDescription(propertyMappings)
+				throw new IllegalStateException("The @PropertyMapping " + getAnnotationsDescription(propertyMappings)
 						+ " cannot be used in combination with the @Component "
 						+ getAnnotationsDescription(components));
 			}
 			return bean;
 		}
 
-		private boolean isAnnotated(Annotation element,
-				Class<? extends Annotation> annotationType) {
-			try {
-				return element.annotationType().equals(annotationType) || AnnotationUtils
-						.findAnnotation(element.annotationType(), annotationType) != null;
-			}
-			catch (Throwable ex) {
-				return false;
-			}
+		private Class<?> getRoot(MergedAnnotation<?> annotation) {
+			return annotation.getRoot().getType();
 		}
 
 		private String getAnnotationsDescription(Set<Class<?>> annotations) {
@@ -125,8 +105,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 

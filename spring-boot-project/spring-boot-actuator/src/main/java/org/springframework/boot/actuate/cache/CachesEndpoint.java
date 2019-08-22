@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.lang.Nullable;
 
 /**
- * {@link Endpoint} to expose available {@link Cache caches}.
+ * {@link Endpoint @Endpoint} to expose available {@link Cache caches}.
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll
@@ -61,14 +61,12 @@ public class CachesEndpoint {
 		getCacheEntries(matchAll(), matchAll()).forEach((entry) -> {
 			String cacheName = entry.getName();
 			String cacheManager = entry.getCacheManager();
-			Map<String, CacheDescriptor> cacheManagerDescriptors = descriptors
-					.computeIfAbsent(cacheManager, (key) -> new LinkedHashMap<>());
-			cacheManagerDescriptors.put(cacheName,
-					new CacheDescriptor(entry.getTarget()));
+			Map<String, CacheDescriptor> cacheManagerDescriptors = descriptors.computeIfAbsent(cacheManager,
+					(key) -> new LinkedHashMap<>());
+			cacheManagerDescriptors.put(cacheName, new CacheDescriptor(entry.getTarget()));
 		});
 		Map<String, CacheManagerDescriptor> cacheManagerDescriptors = new LinkedHashMap<>();
-		descriptors.forEach((name, entries) -> cacheManagerDescriptors.put(name,
-				new CacheManagerDescriptor(entries)));
+		descriptors.forEach((name, entries) -> cacheManagerDescriptors.put(name, new CacheManagerDescriptor(entries)));
 		return new CachesReport(cacheManagerDescriptors);
 	}
 
@@ -82,8 +80,7 @@ public class CachesEndpoint {
 	 */
 	@ReadOperation
 	public CacheEntry cache(@Selector String cache, @Nullable String cacheManager) {
-		return extractUniqueCacheEntry(cache,
-				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
+		return extractUniqueCacheEntry(cache, getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 	}
 
 	/**
@@ -113,25 +110,21 @@ public class CachesEndpoint {
 	private List<CacheEntry> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
 		return this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName,
-						cacheNamePredicate).stream())
+				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream())
 				.collect(Collectors.toList());
 	}
 
-	private List<CacheEntry> getCacheEntries(String cacheManagerName,
-			Predicate<String> cacheNamePredicate) {
+	private List<CacheEntry> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
-		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate)
-				.map(cacheManager::getCache).filter(Objects::nonNull)
-				.map((cache) -> new CacheEntry(cache, cacheManagerName))
+		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate).map(cacheManager::getCache)
+				.filter(Objects::nonNull).map((cache) -> new CacheEntry(cache, cacheManagerName))
 				.collect(Collectors.toList());
 	}
 
 	private CacheEntry extractUniqueCacheEntry(String cache, List<CacheEntry> entries) {
 		if (entries.size() > 1) {
 			throw new NonUniqueCacheException(cache,
-					entries.stream().map(CacheEntry::getCacheManager).distinct()
-							.collect(Collectors.toList()));
+					entries.stream().map(CacheEntry::getCacheManager).distinct().collect(Collectors.toList()));
 		}
 		return (!entries.isEmpty() ? entries.get(0) : null);
 	}

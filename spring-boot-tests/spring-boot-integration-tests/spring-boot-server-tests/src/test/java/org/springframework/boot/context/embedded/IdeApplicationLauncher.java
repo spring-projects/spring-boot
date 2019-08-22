@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,7 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final File exploded;
 
-	IdeApplicationLauncher(ApplicationBuilder applicationBuilder,
-			BuildOutput buildOutput) {
+	IdeApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
 		super(applicationBuilder, buildOutput);
 		this.exploded = new File(buildOutput.getRootLocation(), "the+ide application");
 	}
@@ -76,11 +75,8 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 				classpath.add(dependency.getAbsolutePath());
 			}
 			classpath.add(resourcesProject.getAbsolutePath());
-			return Arrays.asList("-cp",
-					StringUtils.collectionToDelimitedString(classpath,
-							File.pathSeparator),
-					"com.example.ResourceHandlingApplication",
-					serverPortFile.getAbsolutePath());
+			return Arrays.asList("-cp", StringUtils.collectionToDelimitedString(classpath, File.pathSeparator),
+					"com.example.ResourceHandlingApplication", serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -111,8 +107,7 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private File explodedResourcesProject(File dependencies) throws IOException {
-		File resourcesProject = new File(this.exploded,
-				"resources-project/built/classes");
+		File resourcesProject = new File(this.exploded, "resources-project/built/classes");
 		File resourcesJar = new File(dependencies, "resources-1.0.jar");
 		explodeArchive(resourcesJar, resourcesProject);
 		resourcesJar.delete();
@@ -132,13 +127,11 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private String getClassesPath(File archive) {
-		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes"
-				: "WEB-INF/classes");
+		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes" : "WEB-INF/classes");
 	}
 
 	private List<String> getLibPaths(File archive) {
-		return (archive.getName().endsWith(".jar")
-				? Collections.singletonList("BOOT-INF/lib")
+		return (archive.getName().endsWith(".jar") ? Collections.singletonList("BOOT-INF/lib")
 				: Arrays.asList("WEB-INF/lib", "WEB-INF/lib-provided"));
 	}
 

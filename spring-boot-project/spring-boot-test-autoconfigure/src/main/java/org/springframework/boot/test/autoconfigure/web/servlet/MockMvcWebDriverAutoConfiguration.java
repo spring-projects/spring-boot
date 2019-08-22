@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,27 +42,20 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
 public class MockMvcWebDriverAutoConfiguration {
 
-	private final Environment environment;
-
 	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";
-
-	MockMvcWebDriverAutoConfiguration(Environment environment) {
-		this.environment = environment;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc) {
+	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(this.environment,
-						BrowserVersion.CHROME));
+				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
 	}
 
 	@Bean
@@ -70,10 +63,8 @@ public class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnBean(MockMvcHtmlUnitDriverBuilder.class)
 	public HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {
 		HtmlUnitDriver driver = builder.build();
-		if (ClassUtils.isPresent(SECURITY_CONTEXT_EXECUTOR,
-				getClass().getClassLoader())) {
-			driver.setExecutor(new DelegatingSecurityContextExecutor(
-					Executors.newSingleThreadExecutor()));
+		if (ClassUtils.isPresent(SECURITY_CONTEXT_EXECUTOR, getClass().getClassLoader())) {
+			driver.setExecutor(new DelegatingSecurityContextExecutor(Executors.newSingleThreadExecutor()));
 		}
 		return driver;
 	}

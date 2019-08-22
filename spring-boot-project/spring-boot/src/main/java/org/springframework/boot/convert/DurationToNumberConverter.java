@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,13 +41,11 @@ final class DurationToNumberConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
-		return convert((Duration) source, getDurationUnit(sourceType),
-				targetType.getObjectType());
+		return convert((Duration) source, getDurationUnit(sourceType), targetType.getObjectType());
 	}
 
 	private ChronoUnit getDurationUnit(TypeDescriptor sourceType) {
@@ -57,8 +55,8 @@ final class DurationToNumberConverter implements GenericConverter {
 
 	private Object convert(Duration source, ChronoUnit unit, Class<?> type) {
 		try {
-			return type.getConstructor(String.class).newInstance(String
-					.valueOf(DurationStyle.Unit.fromChronoUnit(unit).longValue(source)));
+			return type.getConstructor(String.class)
+					.newInstance(String.valueOf(DurationStyle.Unit.fromChronoUnit(unit).longValue(source)));
 		}
 		catch (Exception ex) {
 			ReflectionUtils.rethrowRuntimeException(ex);

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -32,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BeanDefinitionOverrideFailureAnalyzerTests {
+class BeanDefinitionOverrideFailureAnalyzerTests {
 
 	@Test
-	public void analyzeBeanDefinitionOverrideException() {
+	void analyzeBeanDefinitionOverrideException() {
 		FailureAnalysis analysis = performAnalysis(BeanOverrideConfiguration.class);
 		String description = analysis.getDescription();
-		assertThat(description).contains("The bean 'testBean', defined in "
-				+ SecondConfiguration.class.getName() + ", could not be registered.");
+		assertThat(description).contains("The bean 'testBean', defined in " + SecondConfiguration.class.getName()
+				+ ", could not be registered.");
 		assertThat(description).contains(FirstConfiguration.class.getName());
 	}
 
@@ -63,27 +63,27 @@ public class BeanDefinitionOverrideFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ FirstConfiguration.class, SecondConfiguration.class })
 	static class BeanOverrideConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FirstConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecondConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 

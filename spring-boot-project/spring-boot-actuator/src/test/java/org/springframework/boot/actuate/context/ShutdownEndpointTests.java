@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -42,18 +42,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ShutdownEndpointTests {
+class ShutdownEndpointTests {
 
 	@Test
-	public void shutdown() {
+	void shutdown() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfig.class);
 		contextRunner.run((context) -> {
 			EndpointConfig config = context.getBean(EndpointConfig.class);
 			ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
 			Map<String, String> result;
-			Thread.currentThread().setContextClassLoader(
-					new URLClassLoader(new URL[0], getClass().getClassLoader()));
+			Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()));
 			try {
 				result = context.getBean(ShutdownEndpoint.class).shutdown();
 			}
@@ -63,68 +62,61 @@ public class ShutdownEndpointTests {
 			assertThat(result.get("message")).startsWith("Shutting down");
 			assertThat(((ConfigurableApplicationContext) context).isActive()).isTrue();
 			assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
-			assertThat(config.threadContextClassLoader)
-					.isEqualTo(getClass().getClassLoader());
+			assertThat(config.threadContextClassLoader).isEqualTo(getClass().getClassLoader());
 		});
 	}
 
 	@Test
-	public void shutdownChild() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				EmptyConfig.class).child(EndpointConfig.class)
-						.web(WebApplicationType.NONE).run();
+	void shutdownChild() throws Exception {
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(EmptyConfig.class)
+				.child(EndpointConfig.class).web(WebApplicationType.NONE).run();
 		CountDownLatch latch = context.getBean(EndpointConfig.class).latch;
-		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message"))
-				.startsWith("Shutting down");
+		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message")).startsWith("Shutting down");
 		assertThat(context.isActive()).isTrue();
 		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test
-	public void shutdownParent() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				EndpointConfig.class).child(EmptyConfig.class)
-						.web(WebApplicationType.NONE).run();
+	void shutdownParent() throws Exception {
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(EndpointConfig.class)
+				.child(EmptyConfig.class).web(WebApplicationType.NONE).run();
 		CountDownLatch parentLatch = context.getBean(EndpointConfig.class).latch;
 		CountDownLatch childLatch = context.getBean(EmptyConfig.class).latch;
-		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message"))
-				.startsWith("Shutting down");
+		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().get("message")).startsWith("Shutting down");
 		assertThat(context.isActive()).isTrue();
 		assertThat(parentLatch.await(10, TimeUnit.SECONDS)).isTrue();
 		assertThat(childLatch.await(10, TimeUnit.SECONDS)).isTrue();
 	}
 
-	@Configuration
-	public static class EndpointConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class EndpointConfig {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		private volatile ClassLoader threadContextClassLoader;
 
 		@Bean
-		public ShutdownEndpoint endpoint() {
-			ShutdownEndpoint endpoint = new ShutdownEndpoint();
-			return endpoint;
+		ShutdownEndpoint endpoint() {
+			return new ShutdownEndpoint();
 		}
 
 		@Bean
-		public ApplicationListener<ContextClosedEvent> listener() {
+		ApplicationListener<ContextClosedEvent> listener() {
 			return (event) -> {
-				EndpointConfig.this.threadContextClassLoader = Thread.currentThread()
-						.getContextClassLoader();
+				EndpointConfig.this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 				EndpointConfig.this.latch.countDown();
 			};
 		}
 
 	}
 
-	@Configuration
-	public static class EmptyConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class EmptyConfig {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Bean
-		public ApplicationListener<ContextClosedEvent> listener() {
+		ApplicationListener<ContextClosedEvent> listener() {
 			return (event) -> EmptyConfig.this.latch.countDown();
 		}
 
