@@ -58,11 +58,17 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private HibernateProperties hibernateProperties;
 
+	private DataSourceSchemaCreatedPublisher schemaCreatedPublisher;
+
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
 			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
-			factory.setJpaVendorAdapter(new DataSourceSchemaCreatedPublisher(factory));
+			if (factory.getBootstrapExecutor() != null && factory.getJpaVendorAdapter() != null) {
+				this.schemaCreatedPublisher = new DataSourceSchemaCreatedPublisher(factory.getBootstrapExecutor(),
+						factory.getJpaVendorAdapter());
+				factory.setJpaVendorAdapter(this.schemaCreatedPublisher);
+			}
 		}
 		return bean;
 	}
@@ -79,11 +85,9 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof HibernateProperties) {
 			this.hibernateProperties = (HibernateProperties) bean;
 		}
-		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
+		if (bean instanceof LocalContainerEntityManagerFactoryBean && this.schemaCreatedPublisher == null) {
 			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
-			if (factory.getBootstrapExecutor() == null) {
-				publishEventIfRequired(factory.getNativeEntityManagerFactory());
-			}
+			publishEventIfRequired(factory.getNativeEntityManagerFactory());
 		}
 		return bean;
 	}
@@ -141,13 +145,14 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	final class DataSourceSchemaCreatedPublisher implements JpaVendorAdapter {
 
+		private final AsyncTaskExecutor bootstrapExecutor;
+
 		private final JpaVendorAdapter delegate;
 
-		private final LocalContainerEntityManagerFactoryBean factory;
-
-		private DataSourceSchemaCreatedPublisher(LocalContainerEntityManagerFactoryBean factory) {
-			this.delegate = factory.getJpaVendorAdapter();
-			this.factory = factory;
+		private DataSourceSchemaCreatedPublisher(AsyncTaskExecutor bootstrapExecutor,
+				JpaVendorAdapter jpaVendorAdapter) {
+			this.bootstrapExecutor = bootstrapExecutor;
+			this.delegate = jpaVendorAdapter;
 		}
 
 		@Override
@@ -188,9 +193,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		@Override
 		public void postProcessEntityManagerFactory(EntityManagerFactory emf) {
 			this.delegate.postProcessEntityManagerFactory(emf);
-			AsyncTaskExecutor bootstrapExecutor = this.factory.getBootstrapExecutor();
-			if (bootstrapExecutor != null) {
-				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(emf));
+			if (this.bootstrapExecutor != null) {
+				this.bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(emf));
 			}
 		}
 

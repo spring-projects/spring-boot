@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -42,6 +44,7 @@ import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -393,6 +396,18 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				});
 	}
 
+	@Test
+	void whenLocalContanerEntityManagerFactoryBeanHasNoJpaVendorAdapterAutoConfigurationSucceeds() {
+		contextRunner()
+				.withUserConfiguration(
+						TestConfigurationWithLocalContainerEntityManagerFactoryBeanWithNoJpaVendorAdapter.class)
+				.run((context) -> {
+					EntityManagerFactory factoryBean = context.getBean(EntityManagerFactory.class);
+					Map<String, Object> map = factoryBean.getProperties();
+					assertThat(map.get("configured")).isEqualTo("manually");
+				});
+	}
+
 	private boolean dataSourceSchemaCreatedEventReceived(EventCapturingApplicationListener listener) {
 		for (ApplicationEvent event : listener.events) {
 			if (event instanceof DataSourceSchemaCreatedEvent) {
@@ -552,6 +567,25 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		@Bean
 		EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(ThreadPoolTaskExecutor executor) {
 			return (builder) -> builder.setBootstrapExecutor(executor);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfigurationWithLocalContainerEntityManagerFactoryBeanWithNoJpaVendorAdapter
+			extends TestConfiguration {
+
+		@Bean
+		LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+			factoryBean.setDataSource(dataSource);
+			factoryBean.setPersistenceUnitName("manually-configured");
+			factoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			factoryBean.setJpaPropertyMap(properties);
+			return factoryBean;
 		}
 
 	}
