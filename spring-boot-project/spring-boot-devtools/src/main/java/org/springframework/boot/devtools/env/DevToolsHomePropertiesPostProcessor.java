@@ -18,14 +18,17 @@ package org.springframework.boot.devtools.env;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
+import java.util.function.Function;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StringUtils;
@@ -37,46 +40,52 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author HaiTao Zhang
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProcessor {
 
+	private static final String LEGACY_FILE_NAME = ".spring-boot-devtools.properties";
+
 	private static final String[] FILE_NAMES = new String[] { ".spring-boot-devtools.yml", ".spring-boot-devtools.yaml",
 			".spring-boot-devtools.properties" };
 
-	private Logger logger = Logger.getLogger(getClass().getName());
+	private static final String CONFIG_PATH = "/.config/spring-boot/";
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
-			File home = getHomeFolder();
-			Properties properties = processDir(home, "/.config/spring-boot/", environment);
-			if (properties.isEmpty()) {
-				processDir(home, "", environment);
+			List<PropertySource> propertySources = getPropertySources();
+			if (propertySources.isEmpty()) {
+				addPropertySource(LEGACY_FILE_NAME, (file) -> "devtools-local", propertySources);
 			}
+			propertySources.forEach((source) -> environment.getPropertySources().addFirst(source));
 		}
 	}
 
-	private Properties processDir(File home, String configPath, ConfigurableEnvironment environment) {
-		Properties properties = new Properties();
+	private List<PropertySource> getPropertySources() {
+		List<PropertySource> propertySources = new ArrayList<>();
 		for (String fileName : FILE_NAMES) {
-			File propertyFile = (home != null) ? new File(home, configPath + fileName) : null;
-			if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
-				addProperty(propertyFile, environment, fileName, properties);
-			}
+			addPropertySource(CONFIG_PATH + fileName, (file) -> "devtools-local: [" + file.toURI() + "]",
+					propertySources);
 		}
-		return properties;
+		return propertySources;
 	}
 
-	private void addProperty(File propertyFile, ConfigurableEnvironment environment, String fileName,
-			Properties properties) {
-		FileSystemResource resource = new FileSystemResource(propertyFile);
-		try {
-			PropertiesLoaderUtils.fillProperties(properties, resource);
-			environment.getPropertySources().addFirst(new PropertiesPropertySource("devtools-local", properties));
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Unable to load " + fileName, ex);
+	private void addPropertySource(String fileName, Function<File, String> propertySourceName,
+			List<PropertySource> propertySources) {
+		Properties properties;
+		File home = getHomeFolder();
+		File propertyFile = (home != null) ? new File(home, fileName) : null;
+		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
+			FileSystemResource resource = new FileSystemResource(propertyFile);
+			try {
+				properties = PropertiesLoaderUtils.loadProperties(resource);
+				propertySources.add(new PropertiesPropertySource(propertySourceName.apply(propertyFile), properties));
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Unable to load " + fileName, ex);
+			}
 		}
 	}
 
