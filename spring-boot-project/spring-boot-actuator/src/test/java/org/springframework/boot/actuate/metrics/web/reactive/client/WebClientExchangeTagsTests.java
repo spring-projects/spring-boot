@@ -51,7 +51,6 @@ public class WebClientExchangeTagsTests {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
 		this.response = mock(ClientResponse.class);
-		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 	}
 
 	@Test
@@ -85,6 +84,7 @@ public class WebClientExchangeTagsTests {
 
 	@Test
 	public void status() {
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
 		assertThat(WebClientExchangeTags.status(this.response)).isEqualTo(Tag.of("status", "200"));
 	}
 
@@ -97,6 +97,12 @@ public class WebClientExchangeTagsTests {
 	public void statusWhenClientException() {
 		assertThat(WebClientExchangeTags.status(new IllegalArgumentException()))
 				.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+	}
+
+	@Test
+	public void statusWhenNonStandard() {
+		given(this.response.rawStatusCode()).willReturn(490);
+		assertThat(WebClientExchangeTags.status(this.response)).isEqualTo(Tag.of("status", "490"));
 	}
 
 }
