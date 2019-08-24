@@ -80,6 +80,7 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author HaiTao Zhang
  */
 class RabbitAutoConfigurationTests {
 

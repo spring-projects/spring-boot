@@ -88,17 +88,12 @@ public class RabbitProperties {
 	private Duration requestedHeartbeat;
 
 	/**
-	 * Whether to enable publisher confirms.
-	 */
-	private boolean publisherConfirms;
-
-	/**
 	 * Whether to enable publisher returns.
 	 */
 	private boolean publisherReturns;
 
 	/**
-	 * The type of publisher confirms to use.
+	 * Type of publisher confirms to use.
 	 */
 	private ConfirmType publisherConfirmType;
 
@@ -280,17 +275,15 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "replaced to support additional confirm types",
+			replacement = "spring.rabbitmq.publisher-confirm-type")
 	public boolean isPublisherConfirms() {
 		return this.publisherConfirmType.equals(ConfirmType.CORRELATED);
 	}
 
 	@Deprecated
 	public void setPublisherConfirms(boolean publisherConfirms) {
-		if (publisherConfirms) {
-			this.publisherConfirmType = ConfirmType.CORRELATED;
-			return;
-		}
-		this.publisherConfirmType = ConfirmType.NONE;
+		this.publisherConfirmType = (publisherConfirms) ? ConfirmType.CORRELATED : ConfirmType.NONE;
 	}
 
 	public boolean isPublisherReturns() {
