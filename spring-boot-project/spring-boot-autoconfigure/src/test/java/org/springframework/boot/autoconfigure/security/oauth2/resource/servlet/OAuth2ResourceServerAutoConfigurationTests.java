@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -41,7 +43,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -108,6 +115,34 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
 					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS384);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
+				});
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void autoConfigurationShouldConfigureResourceServerUsingJwkSetUriAndIssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://" + this.server.getHostName() + ":"
+								+ this.server.getPort() + "/" + path)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator) ReflectionUtils
+							.tryToReadFieldValue(NimbusJwtDecoder.class.getDeclaredField("jwtValidator"), jwtDecoder)
+							.get();
+					Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionUtils
+							.tryToReadFieldValue(
+									DelegatingOAuth2TokenValidator.class.getDeclaredField("tokenValidators"),
+									jwtValidator)
+							.get();
+					assertThat(tokenValidators.stream()).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 				});
 	}
 
