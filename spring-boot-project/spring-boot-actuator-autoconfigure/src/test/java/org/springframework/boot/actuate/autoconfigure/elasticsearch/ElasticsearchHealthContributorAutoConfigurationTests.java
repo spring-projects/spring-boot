@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchJestHealthIndicator;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -49,8 +48,7 @@ class ElasticsearchHealthContributorAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.elasticsearch.cluster-nodes:localhost:0")
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
 				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchHealthIndicator.class)
-						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class)
-						.doesNotHaveBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class));
 	}
 
 	@Test
@@ -58,16 +56,14 @@ class ElasticsearchHealthContributorAutoConfigurationTests {
 		this.contextRunner.withBean(JestClient.class, () -> mock(JestClient.class))
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
 				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchJestHealthIndicator.class)
-						.doesNotHaveBean(ElasticsearchHealthIndicator.class)
-						.doesNotHaveBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(ElasticsearchHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.elasticsearch.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchHealthIndicator.class)
-						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class));
 	}
 
 }

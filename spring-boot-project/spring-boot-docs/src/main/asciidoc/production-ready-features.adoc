@@ -787,6 +787,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/neo4j/Neo4jHealthIndicator.{sc-ext}[`Neo4jHealthIndicator`]
 |Checks that a Neo4j server is up.
 
+|{sc-spring-boot-actuator}/health/PingHealthIndicator.{sc-ext}[`PingHealthIndicator`]
+|Always responds with `UP`.
+
 |{sc-spring-boot-actuator}/amqp/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
 |Checks that a Rabbit server is up.
 

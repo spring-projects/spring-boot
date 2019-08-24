@@ -21,9 +21,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -57,8 +55,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> {
 			context.getBean(DataSourceHealthIndicator.class);
-			assertThat(context).hasSingleBean(DataSourceHealthIndicator.class)
-					.doesNotHaveBean(ApplicationHealthIndicator.class);
+			assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
 		});
 	}
 
@@ -85,7 +82,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(DataSourceConfig.class, DataSourcePoolMetadataProvidersConfiguration.class)
 				.withPropertyValues("spring.datasource.test.validation-query:SELECT from FOOBAR").run((context) -> {
-					assertThat(context).hasSingleBean(HealthIndicator.class);
+					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
 					DataSourceHealthIndicator indicator = context.getBean(DataSourceHealthIndicator.class);
 					assertThat(indicator.getQuery()).isEqualTo("SELECT from FOOBAR");
 				});
@@ -96,8 +93,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("management.health.db.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DataSourceHealthIndicator.class)
-						.doesNotHaveBean(CompositeHealthContributor.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(CompositeHealthContributor.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

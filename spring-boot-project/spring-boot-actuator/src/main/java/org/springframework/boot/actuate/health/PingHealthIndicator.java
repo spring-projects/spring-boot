@@ -21,16 +21,10 @@ package org.springframework.boot.actuate.health;
  *
  * @author Dave Syer
  * @author Christian Dupuis
- * @since 1.2.0
+ * @since 2.2.0
  * @see Status#UP
- * @deprecated since 2.2 in favor of {@link PingHealthIndicator}.
  */
-@Deprecated
-public class ApplicationHealthIndicator extends AbstractHealthIndicator {
-
-	public ApplicationHealthIndicator() {
-		super("Application health check failed");
-	}
+public class PingHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {

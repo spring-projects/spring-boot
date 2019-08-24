@@ -175,7 +175,7 @@ class HealthEndpointAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
 			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
-			assertThat(names).containsExactlyInAnyOrder("simple", "additional");
+			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "ping");
 		});
 	}
 
@@ -210,7 +210,7 @@ class HealthEndpointAutoConfigurationTests {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthContributorRegistry registry = context.getBean(ReactiveHealthContributorRegistry.class);
 			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
-			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "reactive");
+			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "reactive", "ping");
 		});
 	}
 
