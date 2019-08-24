@@ -99,8 +99,8 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory factory = new CachingConnectionFactory(
 					getRabbitConnectionFactoryBean(properties).getObject());
 			map.from(properties::determineAddresses).to(factory::setAddresses);
-			map.from(properties::isPublisherConfirms).to(factory::setPublisherConfirms);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
+			map.from(properties::getPublisherConfirmType).whenNonNull().to(factory::setPublisherConfirmType);
 			RabbitProperties.Cache.Channel channel = properties.getCache().getChannel();
 			map.from(channel::getSize).whenNonNull().to(factory::setChannelCacheSize);
 			map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)

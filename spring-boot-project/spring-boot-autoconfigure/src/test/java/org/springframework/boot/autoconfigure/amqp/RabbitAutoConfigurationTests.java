@@ -80,6 +80,7 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author HaiTao Zhang
  */
 class RabbitAutoConfigurationTests {
 
@@ -205,6 +206,34 @@ class RabbitAutoConfigurationTests {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+					assertThat(connectionFactory.isPublisherReturns()).isTrue();
+					assertThat(getMandatory(rabbitTemplate)).isTrue();
+				});
+	}
+
+	@Test
+	void testConnectionFactorPublisherSettingsUsingConfirmType() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.publisher-confirm-type=correlated",
+						"spring.rabbitmq.publisher-returns=true")
+				.run((context) -> {
+					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+					assertThat(connectionFactory.isPublisherReturns()).isTrue();
+					assertThat(getMandatory(rabbitTemplate)).isTrue();
+				});
+	}
+
+	@Test
+	void testConnectionFactorySimplePublisherSettingsUsingConfirmType() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.publisher-confirm-type=simple",
+						"spring.rabbitmq.publisher-returns=true")
+				.run((context) -> {
+					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(connectionFactory.isSimplePublisherConfirms()).isTrue();
 					assertThat(connectionFactory.isPublisherReturns()).isTrue();
 					assertThat(getMandatory(rabbitTemplate)).isTrue();
 				});
