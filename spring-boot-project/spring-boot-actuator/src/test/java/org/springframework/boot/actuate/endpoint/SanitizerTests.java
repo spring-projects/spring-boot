@@ -45,6 +45,19 @@ class SanitizerTests {
 	}
 
 	@Test
+	void uriWithNoPasswordShouldNotBeSanitized() {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("my.uri", "http://localhost:8080")).isEqualTo("http://localhost:8080");
+	}
+
+	@Test
+	void uriWithPasswordMatchingOtherPartsOfString() {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("my.uri", "http://user://@localhost:8080"))
+				.isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@Test
 	void regex() {
 		Sanitizer sanitizer = new Sanitizer(".*lock.*");
 		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");

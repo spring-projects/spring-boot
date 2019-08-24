@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.net.URI;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
@@ -37,6 +37,8 @@ import org.springframework.util.StringUtils;
 public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
+
+	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("[A-Za-z]+://.+:(.*)@.+$");
 
 	private Pattern[] keysToSanitize;
 
@@ -99,17 +101,10 @@ public class Sanitizer {
 	}
 
 	private Object sanitizeUri(Object value) {
-		URI uri = URI.create(value.toString());
-		String userInfo = uri.getUserInfo();
-		if (!StringUtils.hasText(userInfo) || userInfo.split(":").length == 0) {
-			return value;
-		}
-		String[] parts = userInfo.split(":");
-		String userName = parts[0];
-		if (StringUtils.hasText(userName)) {
-			String sanitizedPassword = "******";
-			return uri.getScheme() + "://" + userName + ":" + sanitizedPassword + "@" + uri.getHost() + ":"
-					+ uri.getPort() + uri.getPath();
+		Matcher matcher = URI_USERINFO_PATTERN.matcher(value.toString());
+		String password = matcher.matches() ? matcher.group(1) : null;
+		if (password != null) {
+			return StringUtils.replace(value.toString(), ":" + password + "@", ":******@");
 		}
 		return value;
 	}

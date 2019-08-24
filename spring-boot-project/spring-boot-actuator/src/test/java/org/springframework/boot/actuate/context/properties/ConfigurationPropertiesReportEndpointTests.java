@@ -286,7 +286,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private URI sensitiveUri = URI.create("http://user:password@localhost:8080");
 
-		private URI noPasswordUri = URI.create("http://user:p@localhost:8080");
+		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
 
 		TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
