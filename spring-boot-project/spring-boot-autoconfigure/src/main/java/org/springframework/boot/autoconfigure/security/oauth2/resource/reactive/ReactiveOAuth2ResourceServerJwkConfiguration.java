@@ -32,6 +32,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 @Configuration
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -48,9 +49,9 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	public ReactiveJwtDecoder jwtDecoder() {
 		NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = new NimbusReactiveJwtDecoder(
 				this.properties.getJwt().getJwkSetUri());
-		if (this.properties.getJwt().getIssuerUri() != null) {
-			nimbusReactiveJwtDecoder
-					.setJwtValidator(JwtValidators.createDefaultWithIssuer(this.properties.getJwt().getIssuerUri()));
+		String issuerUri = this.properties.getJwt().getIssuerUri();
+		if (issuerUri != null) {
+			nimbusReactiveJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
 		}
 		return nimbusReactiveJwtDecoder;
 	}

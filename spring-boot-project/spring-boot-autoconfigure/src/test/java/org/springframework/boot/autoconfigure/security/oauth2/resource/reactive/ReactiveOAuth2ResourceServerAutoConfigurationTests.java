@@ -65,6 +65,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 

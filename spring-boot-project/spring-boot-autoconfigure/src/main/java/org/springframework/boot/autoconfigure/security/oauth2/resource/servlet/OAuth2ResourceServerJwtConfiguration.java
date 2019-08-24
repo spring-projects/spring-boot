@@ -33,6 +33,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 @Configuration
 class OAuth2ResourceServerJwtConfiguration {
@@ -49,9 +50,9 @@ class OAuth2ResourceServerJwtConfiguration {
 	public JwtDecoder jwtDecoderByJwkKeySetUri() {
 		NimbusJwtDecoderJwkSupport nimbusJwtDecoder = new NimbusJwtDecoderJwkSupport(
 				this.properties.getJwt().getJwkSetUri());
-		if (this.properties.getJwt().getIssuerUri() != null) {
-			nimbusJwtDecoder
-					.setJwtValidator(JwtValidators.createDefaultWithIssuer(this.properties.getJwt().getIssuerUri()));
+		String issuerUri = this.properties.getJwt().getIssuerUri();
+		if (issuerUri != null) {
+			nimbusJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
 		}
 		return nimbusJwtDecoder;
 	}
