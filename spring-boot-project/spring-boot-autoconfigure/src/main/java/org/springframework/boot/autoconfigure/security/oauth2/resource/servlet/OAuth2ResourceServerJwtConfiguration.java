@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 @Configuration
 class OAuth2ResourceServerJwtConfiguration {
@@ -46,7 +48,13 @@ class OAuth2ResourceServerJwtConfiguration {
 	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByJwkKeySetUri() {
-		return new NimbusJwtDecoderJwkSupport(this.properties.getJwt().getJwkSetUri());
+		NimbusJwtDecoderJwkSupport nimbusJwtDecoder = new NimbusJwtDecoderJwkSupport(
+				this.properties.getJwt().getJwkSetUri());
+		String issuerUri = this.properties.getJwt().getIssuerUri();
+		if (issuerUri != null) {
+			nimbusJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+		}
+		return nimbusJwtDecoder;
 	}
 
 	@Bean
