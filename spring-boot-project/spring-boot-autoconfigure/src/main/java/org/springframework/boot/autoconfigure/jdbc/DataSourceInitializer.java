@@ -125,10 +125,7 @@ class DataSourceInitializer {
 		if (mode == DataSourceInitializationMode.NEVER) {
 			return false;
 		}
-		if (mode == DataSourceInitializationMode.EMBEDDED && !isEmbedded()) {
-			return false;
-		}
-		return true;
+		return mode != DataSourceInitializationMode.EMBEDDED || isEmbedded();
 	}
 
 	private boolean isEmbedded() {

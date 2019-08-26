@@ -17,11 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -192,9 +188,7 @@ class AutoConfigurationSorterTests {
 		for (Class<?> type : value) {
 			items.add(type.getName());
 		}
-		for (String type : name) {
-			items.add(type);
-		}
+		Collections.addAll(items, name);
 		return StringUtils.collectionToCommaDelimitedString(items);
 	}
 
