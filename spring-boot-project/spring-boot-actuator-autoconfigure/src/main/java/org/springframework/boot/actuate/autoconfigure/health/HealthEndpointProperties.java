@@ -47,12 +47,12 @@ public class HealthEndpointProperties extends HealthProperties {
 	public static class Group extends HealthProperties {
 
 		/**
-		 * The health indicator IDs to include. Use '*' if you want to include all.
+		 * Health indicator IDs that should be included or '*' for all.
 		 */
 		private Set<String> include;
 
 		/**
-		 * The health indicator IDs to exclude. Use '*' if you want to exclude all.
+		 * Health indicator IDs that should be excluded or '*' for all.
 		 */
 		private Set<String> exclude;
 

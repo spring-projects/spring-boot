@@ -40,6 +40,21 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my.uri", "http://user:password@localhost:8080"))
+				.isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@Test
+	void uriWithNoPasswordShouldNotBeSanitized() {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("my.uri", "http://localhost:8080")).isEqualTo("http://localhost:8080");
+	}
+
+	@Test
+	void uriWithPasswordMatchingOtherPartsOfString() {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("my.uri", "http://user://@localhost:8080"))
+				.isEqualTo("http://user:******@localhost:8080");
 	}
 
 	@Test

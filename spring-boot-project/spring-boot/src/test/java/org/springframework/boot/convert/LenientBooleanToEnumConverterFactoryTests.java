@@ -25,11 +25,11 @@ import org.springframework.core.convert.ConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BooleanToEnumConverterFactory}.
+ * Tests for {@link LenientBooleanToEnumConverterFactory}.
  *
  * @author Madhura Bhave
  */
-class BooleanToEnumConverterFactoryTests {
+class LenientBooleanToEnumConverterFactoryTests {
 
 	@ConversionServiceTest
 	void convertFromBooleanToEnumWhenShouldConvertValue(ConversionService conversionService) {
@@ -41,7 +41,7 @@ class BooleanToEnumConverterFactoryTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverterFactory(new BooleanToEnumConverterFactory()));
+				.with((service) -> service.addConverterFactory(new LenientBooleanToEnumConverterFactory()));
 	}
 
 	enum TestOnOffEnum {

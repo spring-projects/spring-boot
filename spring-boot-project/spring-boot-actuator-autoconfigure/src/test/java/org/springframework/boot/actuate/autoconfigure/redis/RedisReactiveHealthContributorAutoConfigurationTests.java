@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.redis;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.redis.RedisHealthIndicator;
 import org.springframework.boot.actuate.redis.RedisReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,14 +42,14 @@ class RedisReactiveHealthContributorAutoConfigurationTests {
 	void runShouldCreateIndicator() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(RedisReactiveHealthContributorAutoConfiguration.class)
-						.doesNotHaveBean(RedisHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(RedisHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(RedisReactiveHealthIndicator.class)
-						.doesNotHaveBean(RedisHealthIndicator.class).hasSingleBean(ApplicationHealthIndicator.class));
+						.doesNotHaveBean(RedisHealthIndicator.class));
 	}
 
 }

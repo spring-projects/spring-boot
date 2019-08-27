@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Deprecated
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 public class HealthIndicatorAutoConfiguration {
 
 }

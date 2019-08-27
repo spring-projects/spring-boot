@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.PingHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -40,32 +40,31 @@ class HealthContributorAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class));
 
 	@Test
-	void runWhenNoOtherIndicatorsCreatesDefaultApplicationHealthIndicator() {
+	void runWhenNoOtherIndicatorsCreatesPingHealthIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-				.isInstanceOf(ApplicationHealthIndicator.class));
+				.isInstanceOf(PingHealthIndicator.class));
 	}
 
 	@Test
-	void runWhenHasDefinedIndicatorDoesNotCreateDefaultApplicationHealthIndicator() {
+	void runWhenHasDefinedIndicatorCreatesPingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-						.isInstanceOf(CustomHealthIndicator.class));
+				.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class)
+						.hasSingleBean(CustomHealthIndicator.class));
 	}
 
 	@Test
-	void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledCreatesDefaultApplicationHealthIndicator() {
+	void runWhenHasDefaultsDisabledDoesNotCreatePingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false").run((context) -> assertThat(context)
-						.getBean(HealthIndicator.class).isInstanceOf(ApplicationHealthIndicator.class));
+				.withPropertyValues("management.health.defaults.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(HealthIndicator.class));
 
 	}
 
 	@Test
-	void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledDoesNotCreateEnabledIndicator() {
+	void runWhenHasDefaultsDisabledAndPingIndicatorEnabledCreatesPingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false", "management.health.custom.enabled:true")
-				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-						.isInstanceOf(CustomHealthIndicator.class));
+				.withPropertyValues("management.health.defaults.enabled:false", "management.health.ping.enabled:true")
+				.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class));
 
 	}
 

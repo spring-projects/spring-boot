@@ -21,7 +21,6 @@ import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -47,22 +46,19 @@ class Neo4jHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.neo4j.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	void defaultIndicatorCanBeReplaced() {
 		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
-			assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);
 			Health health = context.getBean(Neo4jHealthIndicator.class).health();
 			assertThat(health.getDetails()).containsOnly(entry("test", true));
 		});

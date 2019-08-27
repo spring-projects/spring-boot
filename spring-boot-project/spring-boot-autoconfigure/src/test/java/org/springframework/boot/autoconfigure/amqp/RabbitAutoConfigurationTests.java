@@ -80,6 +80,7 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author HaiTao Zhang
  */
 class RabbitAutoConfigurationTests {
 
@@ -198,13 +199,42 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void testConnectionFactoryPublisherSettings() {
+	@Deprecated
+	void testConnectionFactoryPublisherConfirmTypeUsingDeprecatedProperty() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.publisher-confirms=true", "spring.rabbitmq.publisher-returns=true")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.publisher-confirms=true").run((context) -> {
+					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+					assertThat(connectionFactory.isSimplePublisherConfirms()).isFalse();
+				});
+	}
+
+	@Test
+	void testConnectionFactoryPublisherConfirmTypeCorrelated() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.publisher-confirm-type=correlated").run((context) -> {
+					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+					assertThat(connectionFactory.isSimplePublisherConfirms()).isFalse();
+				});
+	}
+
+	@Test
+	void testConnectionFactoryPublisherConfirmTypeSimple() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.publisher-confirm-type=simple").run((context) -> {
+					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.isPublisherConfirms()).isFalse();
+					assertThat(connectionFactory.isSimplePublisherConfirms()).isTrue();
+				});
+	}
+
+	@Test
+	void testConnectionFactoryPublisherReturns() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.publisher-returns=true").run((context) -> {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
 					assertThat(connectionFactory.isPublisherReturns()).isTrue();
 					assertThat(getMandatory(rabbitTemplate)).isTrue();
 				});

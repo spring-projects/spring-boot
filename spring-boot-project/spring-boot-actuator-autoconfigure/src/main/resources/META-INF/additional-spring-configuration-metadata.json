@@ -132,6 +132,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.ping.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable ping health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.health.rabbit.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable RabbitMQ health check.",

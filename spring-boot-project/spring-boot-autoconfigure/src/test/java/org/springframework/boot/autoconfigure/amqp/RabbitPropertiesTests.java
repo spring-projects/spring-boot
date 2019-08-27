@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 
@@ -238,6 +239,26 @@ class RabbitPropertiesTests {
 		RabbitProperties.DirectContainer direct = this.properties.getListener().getDirect();
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", direct.isMissingQueuesFatal());
+	}
+
+	@Test
+	@Deprecated
+	void isPublisherConfirmsShouldDefaultToFalse() {
+		assertThat(this.properties.isPublisherConfirms()).isEqualTo(false);
+	}
+
+	@Test
+	@Deprecated
+	void isPublisherConfirmsWhenPublisherConfirmsTypeSimpleShouldBeFalse() {
+		this.properties.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.SIMPLE);
+		assertThat(this.properties.isPublisherConfirms()).isEqualTo(false);
+	}
+
+	@Test
+	@Deprecated
+	void isPublisherConfirmsWhenPublisherConfirmsTypeCorrelatedShouldBeTrue() {
+		this.properties.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
+		assertThat(this.properties.isPublisherConfirms()).isEqualTo(true);
 	}
 
 }

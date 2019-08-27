@@ -22,11 +22,9 @@ import org.influxdb.InfluxDB;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.influx.InfluxDbHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -45,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(InfluxDB.class)
 @ConditionalOnBean(InfluxDB.class)
 @ConditionalOnEnabledHealthIndicator("influxdb")
-@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 @AutoConfigureAfter(InfluxDbAutoConfiguration.class)
 public class InfluxDbHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<InfluxDbHealthIndicator, InfluxDB> {
