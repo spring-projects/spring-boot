@@ -278,7 +278,7 @@ public class RabbitProperties {
 	@DeprecatedConfigurationProperty(reason = "replaced to support additional confirm types",
 			replacement = "spring.rabbitmq.publisher-confirm-type")
 	public boolean isPublisherConfirms() {
-		return this.publisherConfirmType.equals(ConfirmType.CORRELATED);
+		return ConfirmType.CORRELATED.equals(this.publisherConfirmType);
 	}
 
 	@Deprecated
