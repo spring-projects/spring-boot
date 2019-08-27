@@ -942,7 +942,7 @@ following example:
 
 Logs are stored in a `logs` directory relative to the working directory of the
 application. You can customize this location by setting the
-`server.undertow.accesslog.directory` property.
+`server.undertow.accesslog.dir` property.
 
 Finally, access logging for Jetty can also be configured as follows:
 
