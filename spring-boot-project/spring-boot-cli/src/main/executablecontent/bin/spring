@@ -113,4 +113,4 @@ if $cygwin; then
 fi
 
 IFS=" " read -r -a javaOpts <<< "$JAVA_OPTS"
-"${JAVA_HOME}/bin/java" "${javaOpts[@]}" -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher "$@"
+exec "${JAVA_HOME}/bin/java" "${javaOpts[@]}" -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher "$@"
