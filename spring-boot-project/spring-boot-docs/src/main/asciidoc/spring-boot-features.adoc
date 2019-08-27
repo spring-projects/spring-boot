@@ -264,7 +264,7 @@ application and command-line runners have been called.
 been called. It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
-The above list only includes `SpringApplicationEvent`s that are tied to a `SpringApplication`.
+The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
 In addition to these, the following events are also published after `ApplicationPreparedEvent`
 and before `ApplicationStartedEvent`:
 
