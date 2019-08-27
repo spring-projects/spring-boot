@@ -71,7 +71,7 @@ public class RSocketServerAutoConfiguration {
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.serverResponder());
+					messageHandler.responder());
 		}
 
 	}
@@ -104,7 +104,7 @@ public class RSocketServerAutoConfiguration {
 		@ConditionalOnMissingBean
 		RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
 				RSocketMessageHandler rSocketMessageHandler) {
-			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.serverResponder());
+			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.responder());
 		}
 
 		@Bean
