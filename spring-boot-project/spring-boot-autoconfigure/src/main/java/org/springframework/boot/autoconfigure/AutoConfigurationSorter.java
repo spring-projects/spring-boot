@@ -136,8 +136,7 @@ class AutoConfigurationSorter {
 		}
 
 		Set<String> getClassesRequestedAfter(String className) {
-			Set<String> setOfClassesRequestedAfter = get(className).getAfter();
-			Set<String> classesRequestedAfter = new LinkedHashSet<>(setOfClassesRequestedAfter);
+			Set<String> classesRequestedAfter = new LinkedHashSet<>(get(className).getAfter());
 			this.classes.forEach((name, autoConfigurationClass) -> {
 				if (autoConfigurationClass.getBefore().contains(className)) {
 					classesRequestedAfter.add(name);

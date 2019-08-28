@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jmx;
 
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -58,8 +57,7 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	@Override
 	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
-		Map<String, String> keyPropertyList = name.getKeyPropertyList();
-		Hashtable<String, String> properties = new Hashtable<>(keyPropertyList);
+		Hashtable<String, String> properties = new Hashtable<>(name.getKeyPropertyList());
 		if (this.ensureUniqueRuntimeObjectNames) {
 			properties.put("identity", ObjectUtils.getIdentityHexString(managedBean));
 		}
