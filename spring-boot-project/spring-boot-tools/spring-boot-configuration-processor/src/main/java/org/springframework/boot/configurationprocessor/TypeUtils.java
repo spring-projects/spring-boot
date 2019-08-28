@@ -16,6 +16,9 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +50,8 @@ import javax.tools.Diagnostic.Kind;
  * @author Phillip Webb
  */
 class TypeUtils {
+
+	private static final Log logger = LogFactory.getLog(TypeUtils.class);
 
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
 
@@ -248,6 +253,7 @@ class TypeUtils {
 			}
 		}
 		catch (Exception ex) {
+			logger.warn("Failed to generated type descriptor for " + type, ex);
 			this.env.getMessager().printMessage(Kind.WARNING, "Failed to generated type descriptor for " + type,
 					this.types.asElement(type));
 		}
