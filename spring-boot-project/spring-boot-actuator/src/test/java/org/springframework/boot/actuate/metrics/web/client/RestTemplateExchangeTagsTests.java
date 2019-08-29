@@ -95,7 +95,7 @@ class RestTemplateExchangeTagsTests {
 	}
 
 	@Test
-	void outcomeTagIsClientErrorWhenResponseIsNonStandardInKnownSeries() throws IOException {
+	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() throws IOException {
 		ClientHttpResponse response = mock(ClientHttpResponse.class);
 		given(response.getRawStatusCode()).willReturn(490);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
