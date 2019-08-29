@@ -175,22 +175,21 @@ public final class WebMvcTags {
 	 */
 	public static Tag outcome(HttpServletResponse response) {
 		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null) {
-				if (status.is1xxInformational()) {
+			HttpStatus.Series series = HttpStatus.Series.resolve(response.getStatus());
+			if (series != null) {
+				switch (series) {
+				case INFORMATIONAL:
 					return OUTCOME_INFORMATIONAL;
-				}
-				if (status.is2xxSuccessful()) {
+				case SUCCESSFUL:
 					return OUTCOME_SUCCESS;
-				}
-				if (status.is3xxRedirection()) {
+				case REDIRECTION:
 					return OUTCOME_REDIRECTION;
-				}
-				if (status.is4xxClientError()) {
+				case CLIENT_ERROR:
 					return OUTCOME_CLIENT_ERROR;
+				case SERVER_ERROR:
+					return OUTCOME_SERVER_ERROR;
 				}
 			}
-			return OUTCOME_SERVER_ERROR;
 		}
 		return OUTCOME_UNKNOWN;
 	}
