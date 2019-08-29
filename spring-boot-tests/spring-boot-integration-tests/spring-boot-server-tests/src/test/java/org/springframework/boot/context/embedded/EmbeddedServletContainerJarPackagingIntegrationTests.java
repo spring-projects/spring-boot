@@ -55,6 +55,15 @@ public class EmbeddedServletContainerJarPackagingIntegrationTests
 	}
 
 	@Test
+	public void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp() {
+		ResponseEntity<String> entity = this.rest.getForEntity(
+				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("encoded-name");
+	}
+
+	@Test
 	public void nestedMetaInfResourceIsAvailableViaServletContext() {
 		ResponseEntity<String> entity = this.rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);

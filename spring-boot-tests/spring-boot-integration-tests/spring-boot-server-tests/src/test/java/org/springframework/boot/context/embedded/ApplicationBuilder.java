@@ -90,6 +90,10 @@ class ApplicationBuilder {
 			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
 			resourcesJarStream.write("nested".getBytes());
 			resourcesJarStream.closeEntry();
+			resourcesJarStream.putNextEntry(
+					new ZipEntry("META-INF/resources/nested-reserved-!#$%&()*+,:=?@[]-meta-inf-resource.txt"));
+			resourcesJarStream.write("encoded-name".getBytes());
+			resourcesJarStream.closeEntry();
 			return resourcesJar;
 		}
 	}
