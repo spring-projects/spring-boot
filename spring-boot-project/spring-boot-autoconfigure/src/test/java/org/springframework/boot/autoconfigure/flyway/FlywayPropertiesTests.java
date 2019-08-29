@@ -96,10 +96,9 @@ class FlywayPropertiesTests {
 		ignoreProperties(properties, "url", "user", "password", "enabled", "checkLocation", "createDataSource");
 
 		// High level object we can't set with properties
-		ignoreProperties(configuration, "classLoader", "dataSource", "resolvers", "callbacks", "javaMigrations");
+		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "tablespace",
-				"oracleSqlplusWarn");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

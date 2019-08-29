@@ -70,7 +70,6 @@ import static org.mockito.Mockito.mock;
  * @author Dominic Gunn
  * @author András Deák
  */
-@SuppressWarnings("deprecation")
 class FlywayAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -408,6 +407,17 @@ class FlywayAutoConfigurationTests {
 					Throwable failure = context.getStartupFailure();
 					assertThat(failure).hasRootCauseInstanceOf(FlywayProUpgradeRequiredException.class);
 					assertThat(failure).hasMessageContaining(" oracle.sqlplus ");
+				});
+	}
+
+	@Test
+	void oracleSqlplusWarnIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-sqlplus-warn=true").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayProUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" oracle.sqlplusWarn ");
 				});
 	}
 

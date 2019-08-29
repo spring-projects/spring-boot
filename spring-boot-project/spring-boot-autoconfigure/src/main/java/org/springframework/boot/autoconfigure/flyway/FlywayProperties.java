@@ -75,6 +75,13 @@ public class FlywayProperties {
 	private String table = "flyway_schema_history";
 
 	/**
+	 * Tablespace in which the schema history table is created. Ignored when using a
+	 * database that does not support tablespaces. Defaults to the default tablespace of
+	 * the connection used by Flyway.
+	 */
+	private String tablespace;
+
+	/**
 	 * Description to tag an existing schema with when applying a baseline.
 	 */
 	private String baselineDescription = "<< Flyway Baseline >>";
@@ -253,6 +260,12 @@ public class FlywayProperties {
 	private Boolean oracleSqlplus;
 
 	/**
+	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
+	 * SQL*Plus statement is encountered. Requires Flyway Pro or Flyway Enterprise.
+	 */
+	private Boolean oracleSqlplusWarn;
+
+	/**
 	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
 	 * Enterprise.
 	 */
@@ -317,6 +330,14 @@ public class FlywayProperties {
 
 	public void setTable(String table) {
 		this.table = table;
+	}
+
+	public String getTablespace() {
+		return this.tablespace;
+	}
+
+	public void setTablespace(String tablespace) {
+		this.tablespace = tablespace;
 	}
 
 	public String getBaselineDescription() {
@@ -593,6 +614,14 @@ public class FlywayProperties {
 
 	public void setOracleSqlplus(Boolean oracleSqlplus) {
 		this.oracleSqlplus = oracleSqlplus;
+	}
+
+	public Boolean getOracleSqlplusWarn() {
+		return this.oracleSqlplusWarn;
+	}
+
+	public void setOracleSqlplusWarn(Boolean oracleSqlplusWarn) {
+		this.oracleSqlplusWarn = oracleSqlplusWarn;
 	}
 
 	public Boolean getStream() {

@@ -83,7 +83,6 @@ import org.springframework.util.StringUtils;
  * @author Semyon Danilov
  * @since 1.1.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
@@ -166,6 +165,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
 			map.from(properties.getTable()).to(configuration::table);
+			map.from(properties.getTablespace()).to(configuration::tablespace);
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(properties.getInstalledBy()).to(configuration::installedBy);
@@ -198,6 +198,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getErrorOverrides()).whenNonNull().to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).whenNonNull().to(configuration::licenseKey);
 			map.from(properties.getOracleSqlplus()).whenNonNull().to(configuration::oracleSqlplus);
+			map.from(properties.getOracleSqlplusWarn()).whenNonNull().to(configuration::oracleSqlplusWarn);
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
 		}
