@@ -155,7 +155,7 @@
 		<mockito.version>3.0.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.12.0-rc0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.11.0-rc0</mongodb.version>
-		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
+		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.17</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.2.0-RC1</neo4j-ogm.version>
