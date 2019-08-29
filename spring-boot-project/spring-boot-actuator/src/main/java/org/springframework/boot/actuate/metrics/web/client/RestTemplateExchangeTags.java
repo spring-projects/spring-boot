@@ -18,6 +18,9 @@ package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
@@ -53,6 +56,18 @@ public final class RestTemplateExchangeTags {
 	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
 
 	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
+
+	private static final Map<HttpStatus.Series, Tag> SERIES_OUTCOMES;
+
+	static {
+		Map<HttpStatus.Series, Tag> seriesOutcomes = new HashMap<>();
+		seriesOutcomes.put(HttpStatus.Series.INFORMATIONAL, OUTCOME_INFORMATIONAL);
+		seriesOutcomes.put(HttpStatus.Series.SUCCESSFUL, OUTCOME_SUCCESS);
+		seriesOutcomes.put(HttpStatus.Series.REDIRECTION, OUTCOME_REDIRECTION);
+		seriesOutcomes.put(HttpStatus.Series.CLIENT_ERROR, OUTCOME_CLIENT_ERROR);
+		seriesOutcomes.put(HttpStatus.Series.SERVER_ERROR, OUTCOME_SERVER_ERROR);
+		SERIES_OUTCOMES = Collections.unmodifiableMap(seriesOutcomes);
+	}
 
 	private RestTemplateExchangeTags() {
 	}
@@ -132,7 +147,7 @@ public final class RestTemplateExchangeTags {
 
 	/**
 	 * Creates an {@code outcome} {@code Tag} derived from the
-	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
+	 * {@link ClientHttpResponse#getRawStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the outcome tag
 	 * @since 2.2.0
@@ -140,28 +155,16 @@ public final class RestTemplateExchangeTags {
 	public static Tag outcome(ClientHttpResponse response) {
 		try {
 			if (response != null) {
-				HttpStatus statusCode = response.getStatusCode();
-				if (statusCode.is1xxInformational()) {
-					return OUTCOME_INFORMATIONAL;
-				}
-				if (statusCode.is2xxSuccessful()) {
-					return OUTCOME_SUCCESS;
-				}
-				if (statusCode.is3xxRedirection()) {
-					return OUTCOME_REDIRECTION;
-				}
-				if (statusCode.is4xxClientError()) {
-					return OUTCOME_CLIENT_ERROR;
-				}
-				if (statusCode.is5xxServerError()) {
-					return OUTCOME_SERVER_ERROR;
+				HttpStatus.Series series = HttpStatus.Series.resolve(response.getRawStatusCode());
+				if (series != null) {
+					return SERIES_OUTCOMES.getOrDefault(series, OUTCOME_UNKNOWN);
 				}
 			}
-			return OUTCOME_UNKNOWN;
 		}
 		catch (IOException | IllegalArgumentException ex) {
-			return OUTCOME_UNKNOWN;
+			// Continue
 		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }
