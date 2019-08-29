@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import java.util.function.Function;
+
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
- * {@link RequestMatcherProvider} that provides an {@link MvcRequestMatcher} that can be
- * used for Spring MVC applications.
+ * {@link RequestMatcherProvider} that provides an {@link AntPathRequestMatcher}.
  *
  * @author Madhura Bhave
- * @since 2.0.5
+ * @since 2.1.8
  */
-public class MvcRequestMatcherProvider implements RequestMatcherProvider {
+public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 
-	private final HandlerMappingIntrospector introspector;
+	private final Function<String, String> pathFactory;
 
-	public MvcRequestMatcherProvider(HandlerMappingIntrospector introspector) {
-		this.introspector = introspector;
+	public AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+		this.pathFactory = pathFactory;
 	}
 
 	@Override
 	public RequestMatcher getRequestMatcher(String pattern) {
-		return new MvcRequestMatcher(this.introspector, pattern);
+		return new AntPathRequestMatcher(this.pathFactory.apply(pattern));
 	}
 
 }

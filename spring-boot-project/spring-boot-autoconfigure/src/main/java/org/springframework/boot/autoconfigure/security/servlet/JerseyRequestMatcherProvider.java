@@ -25,7 +25,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @since 2.0.7
+ * @deprecated since 2.1.8 in favor of {@link AntPathRequestMatcher}
  */
+@Deprecated
 public class JerseyRequestMatcherProvider implements RequestMatcherProvider {
 
 	private final JerseyApplicationPath jerseyApplicationPath;
