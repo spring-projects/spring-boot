@@ -123,8 +123,8 @@ public class FlywayAutoConfiguration {
 			configureCallbacks(configuration, orderedCallbacks);
 			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			configureFlywayCallbacks(configuration, orderedCallbacks);
-			JavaMigration[] migrations = javaMigrations.stream().toArray(JavaMigration[]::new);
-			configuration.javaMigrations(migrations);
+			List<JavaMigration> migrations = javaMigrations.stream().collect(Collectors.toList());
+			configureJavaMigrations(configuration, migrations);
 			return configuration.load();
 		}
 
@@ -215,6 +215,12 @@ public class FlywayAutoConfiguration {
 		private void configureFlywayCallbacks(FluentConfiguration flyway, List<Callback> callbacks) {
 			if (!callbacks.isEmpty()) {
 				flyway.callbacks(callbacks.toArray(new Callback[0]));
+			}
+		}
+
+		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
+			if (!migrations.isEmpty()) {
+				flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
 			}
 		}
 
