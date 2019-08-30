@@ -3711,7 +3711,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch]
 * https://projects.spring.io/spring-data-solr/[Solr]
 * https://projects.spring.io/spring-data-redis/[Redis]
-* https://projects.spring.io/spring-data-gemfire/[Gemfire]
+* https://projects.spring.io/spring-data-gemfire/[Gemfire] or https://projects.spring.io/spring-data-geode/[Geode]
 * https://projects.spring.io/spring-data-cassandra/[Cassandra]
 * https://projects.spring.io/spring-data-couchbase/[Couchbase]
 * https://projects.spring.io/spring-data-ldap/[LDAP]
@@ -4025,15 +4025,6 @@ The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support 
 You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
 TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the https://projects.spring.io/spring-data-neo4j/[reference documentation].
-
-
-
-[[boot-features-gemfire]]
-=== Gemfire
-https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides convenient Spring-friendly tools for accessing the https://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management platform.
-There is a `spring-boot-starter-data-gemfire` "`Starter`" for collecting the dependencies in a convenient way.
-There is currently no auto-configuration support for Gemfire, but you can enable Spring Data Repositories with a
-https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation: `@EnableGemfireRepositories`].
 
 
 
