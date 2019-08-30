@@ -62,9 +62,6 @@ class JooqExceptionTranslatorTests {
 				new Object[] { SQLDialect.MARIADB, sqlException(1054) },
 				new Object[] { SQLDialect.MYSQL, sqlException(1054) },
 				new Object[] { SQLDialect.POSTGRES, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_3, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_4, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_5, sqlException("03000") },
 				new Object[] { SQLDialect.SQLITE, sqlException("21000") } };
 	}
 
