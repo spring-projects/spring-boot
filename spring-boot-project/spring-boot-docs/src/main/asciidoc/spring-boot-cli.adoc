@@ -48,8 +48,6 @@ You can type `spring help` to get more details about any of the supported comman
 	--autoconfigure [Boolean]  Add autoconfigure compiler
 	                             transformations (default: true)
 	--classpath, -cp           Additional classpath entries
-	-e, --edit                 Open the file with the default system
-	                             editor
 	--no-guess-dependencies    Do not attempt to guess dependencies
 	--no-guess-imports         Do not attempt to guess imports
 	-q, --quiet                Quiet logging
