@@ -339,6 +339,22 @@ The `Application.java` file would declare the `main` method, along with the basi
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    package com.example.myapplication;
+
+    import org.springframework.boot.autoconfigure.SpringBootApplication
+    import org.springframework.boot.runApplication
+
+    @SpringBootApplication
+    class Application
+
+    fun main(args: Array<String>) {
+        runApplication<Application>(*args)
+    }
+----
+
 
 
 [[using-boot-configuration-classes]]
@@ -395,7 +411,8 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 === Disabling Specific Auto-configuration Classes
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@EnableAutoConfiguration` to disable them, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	import org.springframework.boot.autoconfigure.*;
 	import org.springframework.boot.autoconfigure.jdbc.*;
@@ -407,6 +424,16 @@ If you find that specific auto-configuration classes that you do not want are be
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    import org.springframework.boot.autoconfigure.*;
+    import org.springframework.boot.autoconfigure.jdbc.*;
+    import org.springframework.context.annotation.*;
+
+    @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
+    class MyConfiguration
+----
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
 Finally, you can also control the list of auto-configuration classes to exclude by using the `spring.autoconfigure.exclude` property.
 
@@ -427,7 +454,8 @@ All of your application components (`@Component`, `@Service`, `@Repository`, `@C
 
 The following example shows a `@Service` Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	package com.example.service;
 
@@ -449,9 +477,25 @@ The following example shows a `@Service` Bean that uses constructor injection to
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    package com.example.service;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Service;
+
+    @Service
+    class DatabaseAccountService(@Autowired private val riskAssessor: RiskAssessor): AccountService {
+
+        // ...
+    }
+----
+
 If a bean has one constructor, you can omit the `@Autowired`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@Service
 	public class DatabaseAccountService implements AccountService {
@@ -465,6 +509,15 @@ If a bean has one constructor, you can omit the `@Autowired`, as shown in the fo
 		// ...
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    @Service
+	class DatabaseAccountService(private val riskAssessor: RiskAssessor): AccountService {
+        // ...
+    }
 ----
 
 TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as `final`, indicating that it cannot be subsequently changed.
@@ -481,7 +534,8 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 * `@ConfigurationPropertiesScan`: enable `@ConfigurationProperties` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional configuration classes
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	package com.example.myapplication;
 
@@ -498,6 +552,22 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    package com.example.myapplication;
+
+    import org.springframework.boot.autoconfigure.SpringBootApplication
+    import org.springframework.boot.runApplication
+
+    @SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan
+    class Application
+
+    fun main(args: Array<String>) {
+        runApplication<Application>(*args)
+    }
+----
+
 NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of `@EnableAutoConfiguration` and `@ComponentScan`.
 
 [NOTE]
@@ -505,7 +575,8 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 None of these features are mandatory and you may choose to replace this single annotation by any of the features that it enables.
 For instance, you may not want to use component scan or configuration properties scan in your application:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	package com.example.myapplication;
 
@@ -524,6 +595,22 @@ For instance, you may not want to use component scan or configuration properties
 		}
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    package com.example.myapplication;
+
+    import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+    import org.springframework.context.annotation.Configuration
+    import org.springframework.context.annotation.Import
+
+    class Application
+
+    fun main(args: Array<String>) {
+        runApplication<Application>(*args)
+    }
 ----
 
 In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
@@ -782,12 +869,22 @@ In most cases, you can set this property in your `application.properties` (doing
 
 If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the `spring.devtools.restart.enabled` `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	public static void main(String[] args) {
 		System.setProperty("spring.devtools.restart.enabled", "false");
 		SpringApplication.run(MyApp.class, args);
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+    fun main(args: Array<String>) {
+        System.setProperty("spring.devtools.restart.enabled", "false")
+        runApplication<Application>(*args)
+    }
 ----
 
 
