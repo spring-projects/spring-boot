@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -45,7 +46,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Factory that can be used to create a {@link RequestMatcher} for actuator endpoint
@@ -129,23 +129,19 @@ public final class EndpointRequest {
 		}
 
 		@Override
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
+			ManagementPortType type = ManagementPortType.get(applicationContext.getEnvironment());
+			return type == ManagementPortType.DIFFERENT
+					&& WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+		}
+
+		@Override
 		protected final void initialized(Supplier<WebApplicationContext> context) {
 			this.delegate = createDelegate(context.get());
 		}
 
 		@Override
 		protected final boolean matches(HttpServletRequest request, Supplier<WebApplicationContext> context) {
-			WebApplicationContext applicationContext = WebApplicationContextUtils
-					.getRequiredWebApplicationContext(request.getServletContext());
-			if (ManagementPortType.get(applicationContext.getEnvironment()) == ManagementPortType.DIFFERENT) {
-				if (applicationContext.getParent() == null) {
-					return false;
-				}
-				String managementContextId = applicationContext.getParent().getId() + ":management";
-				if (!managementContextId.equals(applicationContext.getId())) {
-					return false;
-				}
-			}
 			return this.delegate.matches(request);
 		}
 
