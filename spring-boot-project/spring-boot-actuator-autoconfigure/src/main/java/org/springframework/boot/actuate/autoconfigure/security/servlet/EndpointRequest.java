@@ -131,7 +131,7 @@ public final class EndpointRequest {
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
 			ManagementPortType type = ManagementPortType.get(applicationContext.getEnvironment());
 			return type == ManagementPortType.DIFFERENT
-					&& WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+					&& !WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
 		@Override
