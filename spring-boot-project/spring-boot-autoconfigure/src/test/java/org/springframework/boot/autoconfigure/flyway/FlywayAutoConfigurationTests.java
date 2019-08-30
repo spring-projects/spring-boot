@@ -29,6 +29,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
+import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.license.FlywayProUpgradeRequiredException;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.Test;
@@ -265,6 +266,16 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void flywayJavaMigrations() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class)
+				.run((context) -> {
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getConfiguration().getJavaMigrations().length).isEqualTo(2);
+				});
+	}
+
+	@Test
 	void customFlywayMigrationInitializer() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayMigrationInitializer.class)
@@ -472,6 +483,21 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class FlywayJavaMigrationsConfiguration {
+
+		@Bean
+		TestMigration migration1() {
+			return new TestMigration("2", "M1");
+		}
+
+		@Bean
+		TestMigration migration2() {
+			return new TestMigration("3", "M2");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class ResourceLoaderConfiguration {
 
 		@Bean
@@ -579,6 +605,49 @@ class FlywayAutoConfigurationTests {
 
 		private CustomClassLoader(ClassLoader parent) {
 			super(parent);
+		}
+
+	}
+
+	private static final class TestMigration implements JavaMigration {
+
+		private final MigrationVersion version;
+
+		private final String description;
+
+		private TestMigration(String version, String description) {
+			this.version = MigrationVersion.fromVersion(version);
+			this.description = description;
+		}
+
+		@Override
+		public MigrationVersion getVersion() {
+			return this.version;
+		}
+
+		@Override
+		public String getDescription() {
+			return this.description;
+		}
+
+		@Override
+		public Integer getChecksum() {
+			return 1;
+		}
+
+		@Override
+		public boolean isUndo() {
+			return false;
+		}
+
+		@Override
+		public boolean canExecuteInTransaction() {
+			return true;
+		}
+
+		@Override
+		public void migrate(org.flywaydb.core.api.migration.Context context) {
+
 		}
 
 	}

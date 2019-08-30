@@ -31,6 +31,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.migration.JavaMigration;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -112,7 +113,7 @@ public class FlywayAutoConfiguration {
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
-				ObjectProvider<Callback> callbacks) {
+				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			DataSource dataSourceToMigrate = configureDataSource(configuration, properties, dataSourceProperties,
 					flywayDataSource.getIfAvailable(), dataSource.getIfAvailable());
@@ -122,6 +123,8 @@ public class FlywayAutoConfiguration {
 			configureCallbacks(configuration, orderedCallbacks);
 			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			configureFlywayCallbacks(configuration, orderedCallbacks);
+			List<JavaMigration> migrations = javaMigrations.stream().collect(Collectors.toList());
+			configureJavaMigrations(configuration, migrations);
 			return configuration.load();
 		}
 
@@ -212,6 +215,12 @@ public class FlywayAutoConfiguration {
 		private void configureFlywayCallbacks(FluentConfiguration flyway, List<Callback> callbacks) {
 			if (!callbacks.isEmpty()) {
 				flyway.callbacks(callbacks.toArray(new Callback[0]));
+			}
+		}
+
+		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
+			if (!migrations.isEmpty()) {
+				flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
 			}
 		}
 
