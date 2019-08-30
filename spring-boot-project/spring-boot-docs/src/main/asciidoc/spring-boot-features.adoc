@@ -4440,7 +4440,7 @@ To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` a
 	spring.ldap.embedded.base-dn=dc=spring,dc=io
 ----
 
-NOTE
+[NOTE]
 ====
 It is possible to define multiple base-dn values, however, since distinguished names usually contain commas, they must be defined using the correct notation.
 
