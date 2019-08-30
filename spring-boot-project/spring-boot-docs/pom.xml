@@ -15,13 +15,13 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
-	<repositories>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring Release</name>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>springio</id>
+			<name>Spring IO releases repository</name>
 			<url>https://repo.spring.io/release</url>
-		</repository>
-	</repositories>
+		</pluginRepository>
+	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
