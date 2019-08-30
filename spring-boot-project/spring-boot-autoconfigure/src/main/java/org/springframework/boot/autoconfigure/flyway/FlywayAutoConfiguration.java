@@ -30,7 +30,6 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
-import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -81,9 +80,9 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @author Dan Zheng
  * @author András Deák
+ * @author Semyon Danilov
  * @since 1.1.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
@@ -113,7 +112,7 @@ public class FlywayAutoConfiguration {
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
-				ObjectProvider<Callback> callbacks, ObjectProvider<FlywayCallback> flywayCallbacks) {
+				ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			DataSource dataSourceToMigrate = configureDataSource(configuration, properties, dataSourceProperties,
 					flywayDataSource.getIfAvailable(), dataSource.getIfAvailable());
@@ -122,10 +121,8 @@ public class FlywayAutoConfiguration {
 			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());
 			configureCallbacks(configuration, orderedCallbacks);
 			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
-			Flyway flyway = configuration.load();
-			List<FlywayCallback> orderedFlywayCallbacks = flywayCallbacks.orderedStream().collect(Collectors.toList());
-			configureFlywayCallbacks(flyway, orderedCallbacks, orderedFlywayCallbacks);
-			return flyway;
+			configureFlywayCallbacks(configuration, orderedCallbacks);
+			return configuration.load();
 		}
 
 		private DataSource configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
@@ -168,6 +165,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
 			map.from(properties.getTable()).to(configuration::table);
+			map.from(properties.getTablespace()).to(configuration::tablespace);
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(properties.getInstalledBy()).to(configuration::installedBy);
@@ -200,6 +198,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getErrorOverrides()).whenNonNull().to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).whenNonNull().to(configuration::licenseKey);
 			map.from(properties.getOracleSqlplus()).whenNonNull().to(configuration::oracleSqlplus);
+			map.from(properties.getOracleSqlplusWarn()).whenNonNull().to(configuration::oracleSqlplusWarn);
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
 		}
@@ -210,14 +209,9 @@ public class FlywayAutoConfiguration {
 			}
 		}
 
-		private void configureFlywayCallbacks(Flyway flyway, List<Callback> callbacks,
-				List<FlywayCallback> flywayCallbacks) {
-			if (!flywayCallbacks.isEmpty()) {
-				if (!callbacks.isEmpty()) {
-					throw new IllegalStateException("Found a mixture of Callback and FlywayCallback beans."
-							+ " One type must be used exclusively.");
-				}
-				flyway.setCallbacks(flywayCallbacks.toArray(new FlywayCallback[0]));
+		private void configureFlywayCallbacks(FluentConfiguration flyway, List<Callback> callbacks) {
+			if (!callbacks.isEmpty()) {
+				flyway.callbacks(callbacks.toArray(new Callback[0]));
 			}
 		}
 
