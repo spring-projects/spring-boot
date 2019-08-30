@@ -69,6 +69,42 @@ public class ApplicationContextRequestMatcherTests {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
+	@Test // gh-18012
+	public void machesWhenCalledWithDifferentApplicationContextDoesNotCache() {
+		StaticWebApplicationContext context1 = createWebApplicationContext();
+		StaticWebApplicationContext context2 = createWebApplicationContext();
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
+				ApplicationContext.class);
+		assertThat(matcher.callMatchesAndReturnProvidedContext(context1).get()).isEqualTo(context1);
+		assertThat(matcher.callMatchesAndReturnProvidedContext(context2).get()).isEqualTo(context2);
+	}
+
+	@Test
+	public void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
+		StaticWebApplicationContext context = createWebApplicationContext();
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<ApplicationContext>(
+				ApplicationContext.class) {
+
+			@Override
+			protected boolean ignoreApplicationContext(WebApplicationContext webApplicationContext) {
+				return true;
+			}
+
+			@Override
+			protected void initialized(Supplier<ApplicationContext> context) {
+				throw new IllegalStateException();
+			}
+
+			@Override
+			protected boolean matches(HttpServletRequest request, Supplier<ApplicationContext> context) {
+				throw new IllegalStateException();
+			}
+
+		};
+		MockHttpServletRequest request = new MockHttpServletRequest(context.getServletContext());
+		assertThat(matcher.matches(request)).isFalse();
+	}
+
 	private StaticWebApplicationContext createWebApplicationContext() {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
