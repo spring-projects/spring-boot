@@ -6931,7 +6931,8 @@ Resources can be specified by using the usual Spring conventions, as shown in th
 [[boot-features-web-application-conditions]]
 ==== Web Application Conditions
 The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a "`web application`".
-A web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `StandardServletEnvironment`.
+A servlet based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `StandardServletEnvironment`.
+A reactive web application is any application that uses a `ReactiveWebApplicationContext`, defines a `session` scope, or has a `ConfigurableReactiveWebEnvironment`.
 
 
 
