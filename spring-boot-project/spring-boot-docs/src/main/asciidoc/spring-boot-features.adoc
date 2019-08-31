@@ -2770,7 +2770,11 @@ It is usually safe to leave Filter beans unordered.
 However, if a specific order is required, you should avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
 If a Servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
-TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`). Details of the registered filters, including their order and URL patterns, will then be logged at startup.
+TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`).
+Details of the registered filters, including their order and URL patterns, will then be logged at startup.
+
+WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifectyle.
+If you need to register a `Filter` that interacts with other beans, consider using a {spring-boot-module-api}/web/servlet/DelegatingFilterProxyRegistrationBean.html[`DelegatingFilterProxyRegistrationBean`] instead.
 
 
 
