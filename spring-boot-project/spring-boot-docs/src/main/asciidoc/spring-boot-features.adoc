@@ -388,6 +388,7 @@ On your application classpath (for example, inside your jar) you can have an `ap
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
 For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
+[[boot-features-external-config-application-json]]
 [TIP]
 ====
 The `SPRING_APPLICATION_JSON` properties can be supplied on the command line with an environment variable.
@@ -1627,10 +1628,17 @@ The following example shows potential logging settings in `application.propertie
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.level.root=WARN
-	logging.level.org.springframework.web=DEBUG
-	logging.level.org.hibernate=ERROR
+	logging.level.root=warn
+	logging.level.org.springframework.web=debug
+	logging.level.org.hibernate=error
 ----
+
+It's also possible to set logging levels using environment variables.
+For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
+
+NOTE: The above approach will only work for package level logging.
+Since relaxed binding always converts environment variables to lowercase, it's not possible to configure logging for an individual class in this way.
+If you need to configure logging for a class, you can use <<boot-features-external-config-application-json, the APPLICATION_JSON>> variable.
 
 
 
