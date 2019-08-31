@@ -1616,6 +1616,15 @@ The most common options to set are shown in the following example:
 
 In addition, all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
+[WARNING]
+====
+You need to ensure that names defined under `+spring.jpa.properties.*+` exactly match those expected by your JPA provider.
+Spring Boot will not attempt any kind of relaxed binding for these entries.
+
+For example, if you want to configure Hibernate's batch size you must use `+spring.jpa.properties.hibernate.jdbc.batch_size+`.
+If you use other forms, such as `batchSize` or `batch-size`, Hibernate will not apply the setting.
+====
+
 TIP: If you need to apply advanced customization to Hibernate properties, consider registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating the `EntityManagerFactory`.
 This takes precedence to anything that is applied by the auto-configuration.
 
