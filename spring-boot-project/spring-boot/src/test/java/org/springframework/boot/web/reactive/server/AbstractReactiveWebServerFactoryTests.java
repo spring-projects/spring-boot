@@ -51,6 +51,7 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -268,6 +269,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	void noCompressionForMimeType() {
 		Compression compression = new Compression();
+		compression.setEnabled(true);
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
@@ -300,9 +302,13 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected WebClient prepareCompressionTest(Compression compression) {
+		return prepareCompressionTest(compression, MediaType.TEXT_PLAIN_VALUE);
+	}
+
+	protected WebClient prepareCompressionTest(Compression compression, String responseContentType) {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setCompression(compression);
-		this.webServer = factory.getWebServer(new CharsHandler(3000, MediaType.TEXT_PLAIN));
+		this.webServer = factory.getWebServer(new CharsHandler(3000, responseContentType));
 		this.webServer.start();
 
 		HttpClient client = HttpClient.create().wiretap(true).compress(true)
@@ -363,9 +369,9 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		private final DataBuffer bytes;
 
-		private final MediaType mediaType;
+		private final String mediaType;
 
-		CharsHandler(int contentSize, MediaType mediaType) {
+		CharsHandler(int contentSize, String mediaType) {
 			char[] chars = new char[contentSize];
 			Arrays.fill(chars, 'F');
 			this.bytes = factory.wrap(new String(chars).getBytes(StandardCharsets.UTF_8));
@@ -375,7 +381,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
-			response.getHeaders().setContentType(this.mediaType);
+			response.getHeaders().set(HttpHeaders.CONTENT_TYPE, this.mediaType);
 			response.getHeaders().setContentLength(this.bytes.readableByteCount());
 			return response.writeWith(Mono.just(this.bytes));
 		}
