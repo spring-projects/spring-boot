@@ -1278,7 +1278,7 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 
 [[production-ready-metrics-export-appoptics]]
 ==== AppOptics
-By default, the AppOptics registry pushes metrics to https://api.appoptics.com/v1/measurements periodically.
+By default, the AppOptics registry pushes metrics to `https://api.appoptics.com/v1/measurements` periodically.
 To export metrics to SaaS {micrometer-registry-docs}/appoptics[AppOptics], your API token must be provided:
 
 [source,properties,indent=0]
