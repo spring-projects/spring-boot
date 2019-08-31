@@ -32,7 +32,7 @@ Our primary goals are:
 [[getting-started-system-requirements]]
 == System Requirements
 Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 12 (included).
-{spring-reference}[Spring Framework {spring-framework-version}] or above is also required.
+{spring-framework-docs}[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
 
@@ -195,10 +195,10 @@ Spring Boot provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradl
 ****
 The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a project.
 It is a small script and library that you commit alongside your code to bootstrap the build process.
-See {gradle-user-guide}/gradle_wrapper.html for details.
+See {gradle-docs}/gradle_wrapper.html for details.
 ****
 
-More details on getting started with Spring Boot and Gradle can be found in the {spring-boot-gradle-plugin-reference}/#getting-started[Getting Started section] of the Gradle plugin's reference guide.
+More details on getting started with Spring Boot and Gradle can be found in the {spring-boot-gradle-plugin-docs}/#getting-started[Getting Started section] of the Gradle plugin's reference guide.
 
 
 
@@ -413,7 +413,7 @@ If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
 Doing so generates a new project structure so that you can <<getting-started-first-application-code,start coding right away>>.
-Check the {spring-initializr-reference}/#user-guide[Spring Initializr documentation] for more details.
+Check the {spring-initializr-docs}/#user-guide[Spring Initializr documentation] for more details.
 ====
 
 Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:
@@ -579,7 +579,7 @@ It tells Spring that any HTTP request with the `/` path should be mapped to the 
 The `@RestController` annotation tells Spring to render the resulting string directly back to the caller.
 
 TIP: The `@RestController` and `@RequestMapping` annotations are Spring MVC annotations (they are not specific to Spring Boot).
-See the {spring-reference}web.html#mvc[MVC section] in the Spring Reference Documentation for more details.
+See the {spring-framework-docs}web.html#mvc[MVC section] in the Spring Reference Documentation for more details.
 
 
 
@@ -679,7 +679,7 @@ To do so, insert the following lines just below the `dependencies` section:
 
 NOTE: The `spring-boot-starter-parent` POM includes `<executions>` configuration to bind the `repackage` goal.
 If you do not use the parent POM, you need to declare this configuration yourself.
-See the {spring-boot-maven-plugin-site}/usage.html[plugin documentation] for details.
+See the {spring-boot-maven-plugin-docs}/usage.html[plugin documentation] for details.
 
 Save your `pom.xml` and run `mvn package` from the command line, as follows:
 
@@ -743,7 +743,7 @@ Hopefully, this section provided some of the Spring Boot basics and got you on y
 If you are a task-oriented type of developer, you might want to jump over to https://spring.io and check out some of the https://spring.io/guides/[getting started] guides that solve specific "`How do I do that with Spring?`" problems.
 We also have Spring Boot-specific "`<<howto.adoc#howto, How-to>>`" reference documentation.
 
-The https://github.com/{github-repo}[Spring Boot repository] also has a {github-code}/spring-boot-samples[bunch of samples] you can run.
+The https://github.com/{github-repo}[Spring Boot repository] also has a {spring-boot-code}/spring-boot-samples[bunch of samples] you can run.
 The samples are independent of the rest of the code (that is, you do not need to build the rest to run or use the samples).
 
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_.

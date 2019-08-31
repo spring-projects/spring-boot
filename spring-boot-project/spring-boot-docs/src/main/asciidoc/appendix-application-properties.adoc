@@ -49,10 +49,10 @@ Rather, pick only the properties that you need.
 	spring.aop.auto=true # Add @EnableAspectJAutoProxy.
 	spring.aop.proxy-target-class=true # Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).
 
-	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
+	# IDENTITY ({spring-boot-module-code}/context/ContextIdApplicationContextInitializer.java[ContextIdApplicationContextInitializer])
 	spring.application.name= # Application name.
 
-	# ADMIN ({sc-spring-boot-autoconfigure}/admin/SpringApplicationAdminJmxAutoConfiguration.{sc-ext}[SpringApplicationAdminJmxAutoConfiguration])
+	# ADMIN ({spring-boot-autoconfigure-module-code}/admin/SpringApplicationAdminJmxAutoConfiguration.java[SpringApplicationAdminJmxAutoConfiguration])
 	spring.application.admin.enabled=false # Whether to enable admin features for the application.
 	spring.application.admin.jmx-name=org.springframework.boot:type=Admin,name=SpringApplication # JMX name of the application admin MBean.
 
@@ -71,7 +71,7 @@ Rather, pick only the properties that you need.
 	# SPRING CORE
 	spring.beaninfo.ignore=true # Whether to skip search of BeanInfo classes.
 
-	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
+	# SPRING CACHE ({spring-boot-autoconfigure-module-code}/cache/CacheProperties.java[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. See CaffeineSpec for more details on the spec format.
 	spring.cache.couchbase.expiration= # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
@@ -85,15 +85,15 @@ Rather, pick only the properties that you need.
 	spring.cache.redis.use-key-prefix=true # Whether to use the key prefix when writing to Redis.
 	spring.cache.type= # Cache type. By default, auto-detected according to the environment.
 
-	# SPRING CONFIG - using environment property only ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
+	# SPRING CONFIG - using environment property only ({spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[ConfigFileApplicationListener])
 	spring.config.additional-location= # Config file locations used in addition to the defaults.
 	spring.config.location= # Config file locations that replace the defaults.
 	spring.config.name=application # Config file name.
 
-	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
+	# HAZELCAST ({spring-boot-autoconfigure-module-code}/hazelcast/HazelcastProperties.java[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
-	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
+	# PROJECT INFORMATION ({spring-boot-autoconfigure-module-code}/info/ProjectInfoProperties.java[ProjectInfoProperties])
 	spring.info.build.encoding=UTF-8 # File encoding.
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
 	spring.info.git.encoding=UTF-8 # File encoding.
@@ -105,7 +105,7 @@ Rather, pick only the properties that you need.
 	spring.jmx.server=mbeanServer # MBeanServer bean name.
 	spring.jmx.unique-names=false # Whether unique runtime object names should be ensured.
 
-	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
+	# Email ({spring-boot-autoconfigure-module-code}/mail/MailProperties.java[MailProperties])
 	spring.mail.default-encoding=UTF-8 # Default MimeMessage encoding.
 	spring.mail.host= # SMTP server host. For instance, `smtp.example.com`.
 	spring.mail.jndi-name= # Session JNDI name. When set, takes precedence over other Session settings.
@@ -116,16 +116,16 @@ Rather, pick only the properties that you need.
 	spring.mail.test-connection=false # Whether to test that the mail server is available on startup.
 	spring.mail.username= # Login user of the SMTP server.
 
-	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
+	# APPLICATION SETTINGS ({spring-boot-module-code}/SpringApplication.java[SpringApplication])
 	spring.main.allow-bean-definition-overriding=false # Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.
 	spring.main.banner-mode=console # Mode used to display the banner when the application runs.
 	spring.main.sources= # Sources (class names, package names, or XML resource locations) to include in the ApplicationContext.
 	spring.main.web-application-type= # Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath.
 
-	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
+	# FILE ENCODING ({spring-boot-module-code}/context/FileEncodingApplicationListener.java[FileEncodingApplicationListener])
 	spring.mandatory-file-encoding= # Expected character encoding the application must use.
 
-	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/context/MessageSourceProperties.{sc-ext}[MessageSourceProperties])
+	# INTERNATIONALIZATION ({spring-boot-autoconfigure-module-code}/context/MessageSourceProperties.java[MessageSourceProperties])
 	spring.messages.always-use-message-format=false # Whether to always apply the MessageFormat rules, parsing even messages without arguments.
 	spring.messages.basename=messages # Comma-separated list of basenames (essentially a fully-qualified classpath location), each following the ResourceBundle convention with relaxed support for slash based locations.
 	spring.messages.cache-duration= # Loaded resource bundle files cache duration. When not set, bundles are cached forever. If a duration suffix is not specified, seconds will be used.
@@ -136,7 +136,7 @@ Rather, pick only the properties that you need.
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configures the ANSI output.
 
-	# PID FILE ({sc-spring-boot}/context/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
+	# PID FILE ({spring-boot-module-code}/context/ApplicationPidFileWriter.java[ApplicationPidFileWriter])
 	spring.pid.fail-on-write-error= # Fails if ApplicationPidFileWriter is used but it cannot write the PID file.
 	spring.pid.file= # Location of the PID file to write (if ApplicationPidFileWriter is used).
 
@@ -144,7 +144,7 @@ Rather, pick only the properties that you need.
 	spring.profiles.active= # Comma-separated list of active profiles. Can be overridden by a command line switch.
 	spring.profiles.include= # Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML).
 
-	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
+	# QUARTZ SCHEDULER ({spring-boot-autoconfigure-module-code}/quartz/QuartzProperties.java[QuartzProperties])
 	spring.quartz.auto-startup=true # Whether to automatically start the scheduler after initialization.
 	spring.quartz.jdbc.comment-prefix=-- # Prefix for single-line comments in SQL initialization scripts.
 	spring.quartz.jdbc.initialize-schema=embedded # Database schema initialization mode.
@@ -156,15 +156,15 @@ Rather, pick only the properties that you need.
 	spring.quartz.startup-delay=0s # Delay after which the scheduler is started once initialization completes.
 	spring.quartz.wait-for-jobs-to-complete-on-shutdown=false # Whether to wait for running jobs to complete on shutdown.
 
-	# REACTOR ({sc-spring-boot-autoconfigure}/reactor/core/ReactorCoreProperties.{sc-ext}[ReactorCoreProperties])
+	# REACTOR ({spring-boot-autoconfigure-module-code}/reactor/core/ReactorCoreProperties.java[ReactorCoreProperties])
 	spring.reactor.stacktrace-mode.enabled=false # Whether Reactor should collect stacktrace information at runtime.
 
-	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
+	# SENDGRID ({spring-boot-autoconfigure-module-code}/sendgrid/SendGridAutoConfiguration.java[SendGridAutoConfiguration])
 	spring.sendgrid.api-key= # SendGrid API key.
 	spring.sendgrid.proxy.host= # SendGrid proxy host.
 	spring.sendgrid.proxy.port= # SendGrid proxy port.
 
-	# TASK EXECUTION  ({sc-spring-boot-autoconfigure}/task/TaskExecutionProperties.{sc-ext}[TaskExecutionProperties])
+	# TASK EXECUTION  ({spring-boot-autoconfigure-module-code}/task/TaskExecutionProperties.java[TaskExecutionProperties])
 	spring.task.execution.pool.allow-core-thread-timeout=true # Whether core threads are allowed to time out. This enables dynamic growing and shrinking of the pool.
 	spring.task.execution.pool.core-size=8 # Core number of threads.
 	spring.task.execution.pool.keep-alive=60s # Time limit for which threads may remain idle before being terminated.
@@ -172,7 +172,7 @@ Rather, pick only the properties that you need.
 	spring.task.execution.pool.queue-capacity= # Queue capacity. An unbounded capacity does not increase the pool and therefore ignores the "max-size" property.
 	spring.task.execution.thread-name-prefix=task- # Prefix to use for the names of newly created threads.
 
-	# TASK SCHEDULING  ({sc-spring-boot-autoconfigure}/task/TaskSchedulingProperties.{sc-ext}[TaskSchedulingProperties])
+	# TASK SCHEDULING  ({spring-boot-autoconfigure-module-code}/task/TaskSchedulingProperties.java[TaskSchedulingProperties])
 	spring.task.scheduling.pool.size=1 # Maximum allowed number of threads.
 	spring.task.scheduling.thread-name-prefix=scheduling- # Prefix to use for the names of newly created threads.
 
@@ -180,7 +180,7 @@ Rather, pick only the properties that you need.
 	# WEB PROPERTIES
 	# ----------------------------------------
 
-	# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
+	# EMBEDDED SERVER CONFIGURATION ({spring-boot-autoconfigure-module-code}/web/ServerProperties.java[ServerProperties])
 	server.address= # Network address to which the server should bind.
 	server.compression.enabled=false # Whether response compression is enabled.
 	server.compression.excluded-user-agents= # Comma-separated list of user agents for which responses should not be compressed.
@@ -293,7 +293,7 @@ Rather, pick only the properties that you need.
 	server.undertow.max-http-post-size=-1B # Maximum size of the HTTP post content. When the value is -1, the default, the size is unlimited.
 	server.undertow.worker-threads= # Number of worker threads. The default is 8 times the number of I/O threads.
 
-	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerProperties.{sc-ext}[FreeMarkerProperties])
+	# FREEMARKER ({spring-boot-autoconfigure-module-code}/freemarker/FreeMarkerProperties.java[FreeMarkerProperties])
 	spring.freemarker.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.freemarker.allow-session-override=false # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.freemarker.cache=false # Whether to enable template caching.
@@ -312,7 +312,7 @@ Rather, pick only the properties that you need.
 	spring.freemarker.template-loader-path=classpath:/templates/ # Comma-separated list of template paths.
 	spring.freemarker.view-names= # White list of view names that can be resolved.
 
-	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateProperties.{sc-ext}[GroovyTemplateProperties])
+	# GROOVY TEMPLATES ({spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateProperties.java[GroovyTemplateProperties])
 	spring.groovy.template.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.groovy.template.allow-session-override=false # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.groovy.template.cache=false # Whether to enable template caching.
@@ -330,10 +330,10 @@ Rather, pick only the properties that you need.
 	spring.groovy.template.suffix=.tpl # Suffix that gets appended to view names when building a URL.
 	spring.groovy.template.view-names= # White list of view names that can be resolved.
 
-	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
+	# SPRING HATEOAS ({spring-boot-autoconfigure-module-code}/hateoas/HateoasProperties.java[HateoasProperties])
 	spring.hateoas.use-hal-as-default-json-media-type=true # Whether application/hal+json responses should be sent to requests that accept application/json.
 
-	# HTTP ({sc-spring-boot-autoconfigure}/http/HttpProperties.{sc-ext}[HttpProperties])
+	# HTTP ({spring-boot-autoconfigure-module-code}/http/HttpProperties.java[HttpProperties])
 	spring.http.converters.preferred-json-mapper= # Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Whether to enable http encoding support.
@@ -343,7 +343,7 @@ Rather, pick only the properties that you need.
 	spring.http.encoding.mapping= # Locale in which to encode mapping.
 	spring.http.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
 
-	# MULTIPART ({sc-spring-boot-autoconfigure}/web/servlet/MultipartProperties.{sc-ext}[MultipartProperties])
+	# MULTIPART ({spring-boot-autoconfigure-module-code}/web/servlet/MultipartProperties.java[MultipartProperties])
 	spring.servlet.multipart.enabled=true # Whether to enable support of multipart uploads.
 	spring.servlet.multipart.file-size-threshold=0B # Threshold after which files are written to disk.
 	spring.servlet.multipart.location= # Intermediate location of uploaded files.
@@ -351,7 +351,7 @@ Rather, pick only the properties that you need.
 	spring.servlet.multipart.max-request-size=10MB # Max request size.
 	spring.servlet.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
-	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
+	# JACKSON ({spring-boot-autoconfigure-module-code}/jackson/JacksonProperties.java[JacksonProperties])
 	spring.jackson.date-format= # Date format string or a fully-qualified date format class name. For instance, `yyyy-MM-dd HH:mm:ss`.
 	spring.jackson.default-property-inclusion= # Controls the inclusion of properties during serialization. Configured with one of the values in Jackson's JsonInclude.Include enumeration.
 	spring.jackson.deserialization.*= # Jackson on/off features that affect the way Java objects are deserialized.
@@ -365,7 +365,7 @@ Rather, pick only the properties that you need.
 	spring.jackson.time-zone= #  Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
 	spring.jackson.visibility.*= # Jackson visibility thresholds that can be used to limit which methods (and fields) are auto-detected.
 
-	# GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
+	# GSON ({spring-boot-autoconfigure-module-code}/gson/GsonProperties.java[GsonProperties])
 	spring.gson.date-format= # Format to use when serializing Date objects.
 	spring.gson.disable-html-escaping= # Whether to disable the escaping of HTML characters such as '<', '>', etc.
 	spring.gson.disable-inner-class-serialization= # Whether to exclude inner classes during serialization.
@@ -378,14 +378,14 @@ Rather, pick only the properties that you need.
 	spring.gson.pretty-printing= # Whether to output serialized JSON that fits in a page for pretty printing.
 	spring.gson.serialize-nulls= # Whether to serialize null fields.
 
-	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
+	# JERSEY ({spring-boot-autoconfigure-module-code}/jersey/JerseyProperties.java[JerseyProperties])
 	spring.jersey.application-path= # Path that serves as the base URI for the application. If specified, overrides the value of "@ApplicationPath".
 	spring.jersey.filter.order=0 # Jersey filter chain order.
 	spring.jersey.init.*= # Init parameters to pass to Jersey through the servlet or filter.
 	spring.jersey.servlet.load-on-startup=-1 # Load on startup priority of the Jersey servlet.
 	spring.jersey.type=servlet # Jersey integration type.
 
-	# SPRING LDAP ({sc-spring-boot-autoconfigure}/ldap/LdapProperties.{sc-ext}[LdapProperties])
+	# SPRING LDAP ({spring-boot-autoconfigure-module-code}/ldap/LdapProperties.java[LdapProperties])
 	spring.ldap.anonymous-read-only=false # Whether read-only operations should use an anonymous environment.
 	spring.ldap.base= # Base suffix from which all operations should originate.
 	spring.ldap.base-environment.*= # LDAP specification settings.
@@ -393,7 +393,7 @@ Rather, pick only the properties that you need.
 	spring.ldap.urls= # LDAP URLs of the server.
 	spring.ldap.username= # Login username of the server.
 
-	# EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
+	# EMBEDDED LDAP ({spring-boot-autoconfigure-module-code}/ldap/embedded/EmbeddedLdapProperties.java[EmbeddedLdapProperties])
 	spring.ldap.embedded.base-dn= # List of base DNs.
 	spring.ldap.embedded.credential.username= # Embedded LDAP username.
 	spring.ldap.embedded.credential.password= # Embedded LDAP password.
@@ -402,7 +402,7 @@ Rather, pick only the properties that you need.
 	spring.ldap.embedded.validation.enabled=true # Whether to enable LDAP schema validation.
 	spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
-	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
+	# MUSTACHE TEMPLATES ({spring-boot-autoconfigure-module-code}/mustache/MustacheAutoConfiguration.java[MustacheAutoConfiguration])
 	spring.mustache.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.mustache.allow-session-override=false # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.mustache.cache=false # Whether to enable template caching.
@@ -418,7 +418,7 @@ Rather, pick only the properties that you need.
 	spring.mustache.suffix=.mustache # Suffix to apply to template names.
 	spring.mustache.view-names= # White list of view names that can be resolved.
 
-	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
+	# SPRING MVC ({spring-boot-autoconfigure-module-code}/web/servlet/WebMvcProperties.java[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
 	spring.mvc.contentnegotiation.favor-parameter=false # Whether a request parameter ("format" by default) should be used to determine the requested media type.
 	spring.mvc.contentnegotiation.favor-path-extension=false # Whether the path extension in the URL path should be used to determine the requested media type.
@@ -444,7 +444,7 @@ Rather, pick only the properties that you need.
 	spring.mvc.view.prefix= # Spring MVC view prefix.
 	spring.mvc.view.suffix= # Spring MVC view suffix.
 
-	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
+	# SPRING RESOURCES HANDLING ({spring-boot-autoconfigure-module-code}/web/ResourceProperties.java[ResourceProperties])
 	spring.resources.add-mappings=true # Whether to enable default resource handling.
 	spring.resources.cache.cachecontrol.cache-private= # Indicate that the response message is intended for a single user and must not be stored by a shared cache.
 	spring.resources.cache.cachecontrol.cache-public= # Indicate that any cache may store the response.
@@ -469,31 +469,31 @@ Rather, pick only the properties that you need.
 	spring.resources.chain.strategy.fixed.version= # Version string to use for the fixed Version Strategy.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
-	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
+	# SPRING SESSION ({spring-boot-autoconfigure-module-code}/session/SessionProperties.java[SessionProperties])
 	spring.session.store-type= # Session store type.
 	spring.session.timeout= # Session timeout. If a duration suffix is not specified, seconds will be used.
 	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
 	spring.session.servlet.filter-dispatcher-types=async,error,request # Session repository filter dispatcher types.
 
-	# SPRING SESSION HAZELCAST ({sc-spring-boot-autoconfigure}/session/HazelcastSessionProperties.{sc-ext}[HazelcastSessionProperties])
+	# SPRING SESSION HAZELCAST ({spring-boot-autoconfigure-module-code}/session/HazelcastSessionProperties.java[HazelcastSessionProperties])
 	spring.session.hazelcast.flush-mode=on-save # Sessions flush mode.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 
-	# SPRING SESSION JDBC ({sc-spring-boot-autoconfigure}/session/JdbcSessionProperties.{sc-ext}[JdbcSessionProperties])
+	# SPRING SESSION JDBC ({spring-boot-autoconfigure-module-code}/session/JdbcSessionProperties.java[JdbcSessionProperties])
 	spring.session.jdbc.cleanup-cron=0 * * * * * # Cron expression for expired session cleanup job.
 	spring.session.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of the database table used to store sessions.
 
-	# SPRING SESSION MONGODB ({sc-spring-boot-autoconfigure}/session/MongoSessionProperties.{sc-ext}[MongoSessionProperties])
+	# SPRING SESSION MONGODB ({spring-boot-autoconfigure-module-code}/session/MongoSessionProperties.java[MongoSessionProperties])
 	spring.session.mongodb.collection-name=sessions # Collection name used to store sessions.
 
-	# SPRING SESSION REDIS ({sc-spring-boot-autoconfigure}/session/RedisSessionProperties.{sc-ext}[RedisSessionProperties])
+	# SPRING SESSION REDIS ({spring-boot-autoconfigure-module-code}/session/RedisSessionProperties.java[RedisSessionProperties])
 	spring.session.redis.cleanup-cron=0 * * * * * # Cron expression for expired session cleanup job.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace=spring:session # Namespace for keys used to store sessions.
 
-	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
+	# THYMELEAF ({spring-boot-autoconfigure-module-code}/thymeleaf/ThymeleafAutoConfiguration.java[ThymeleafAutoConfiguration])
 	spring.thymeleaf.cache=true # Whether to enable template caching.
 	spring.thymeleaf.check-template=true # Whether to check that the template exists before rendering it.
 	spring.thymeleaf.check-template-location=true # Whether to check that the templates location exists.
@@ -514,12 +514,12 @@ Rather, pick only the properties that you need.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names (patterns allowed) that can be resolved.
 
-	# SPRING WEBFLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
+	# SPRING WEBFLUX ({spring-boot-autoconfigure-module-code}/web/reactive/WebFluxProperties.java[WebFluxProperties])
 	spring.webflux.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
 	spring.webflux.hiddenmethod.filter.enabled=true # Whether to enable Spring's HiddenHttpMethodFilter.
 	spring.webflux.static-path-pattern=/** # Path pattern used for static resources.
 
-	# SPRING WEB SERVICES ({sc-spring-boot-autoconfigure}/webservices/WebServicesProperties.{sc-ext}[WebServicesProperties])
+	# SPRING WEB SERVICES ({spring-boot-autoconfigure-module-code}/webservices/WebServicesProperties.java[WebServicesProperties])
 	spring.webservices.path=/services # Path that serves as the base URI for the services.
 	spring.webservices.servlet.init= # Servlet init parameters to pass to Spring Web Services.
 	spring.webservices.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
@@ -529,18 +529,18 @@ Rather, pick only the properties that you need.
 	# ----------------------------------------
 	# SECURITY PROPERTIES
 	# ----------------------------------------
-	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
+	# SECURITY ({spring-boot-autoconfigure-module-code}/security/SecurityProperties.java[SecurityProperties])
 	spring.security.filter.order=-100 # Security filter chain order.
 	spring.security.filter.dispatcher-types=async,error,request # Security filter chain dispatcher types.
 	spring.security.user.name=user # Default user name.
 	spring.security.user.password= # Password for the default user name.
 	spring.security.user.roles= # Granted roles for the default user name.
 
-	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
+	# SECURITY OAUTH2 CLIENT ({spring-boot-autoconfigure-module-code}/security/oauth2/client/OAuth2ClientProperties.java[OAuth2ClientProperties])
 	spring.security.oauth2.client.provider.*= # OAuth provider details.
 	spring.security.oauth2.client.registration.*= # OAuth client registrations.
 
-	# SECURITY OAUTH2 RESOURCE SERVER ({sc-spring-boot-autoconfigure}/security/oauth2/resource/OAuth2ResourceServerProperties.{sc-ext}[OAuth2ResourceServerProperties])
+	# SECURITY OAUTH2 RESOURCE SERVER ({spring-boot-autoconfigure-module-code}/security/oauth2/resource/OAuth2ResourceServerProperties.java[OAuth2ResourceServerProperties])
 	spring.security.oauth2.resourceserver.jwt.jwk-set-uri= # JSON Web Key URI to use to verify the JWT token.
 	spring.security.oauth2.resourceserver.jwt.issuer-uri= # URI that an OpenID Connect Provider asserts as its Issuer Identifier.
 
@@ -548,7 +548,7 @@ Rather, pick only the properties that you need.
 	# DATA PROPERTIES
 	# ----------------------------------------
 
-	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
+	# FLYWAY ({spring-boot-autoconfigure-module-code}/flyway/FlywayProperties.java[FlywayProperties])
 	spring.flyway.baseline-description=<< Flyway Baseline >> # Description to tag an existing schema with when applying a baseline.
 	spring.flyway.baseline-on-migrate=false # Whether to automatically call baseline when migrating a non-empty schema.
 	spring.flyway.baseline-version=1 # Version to tag an existing schema with when executing baseline.
@@ -586,7 +586,7 @@ Rather, pick only the properties that you need.
 	spring.flyway.user= # Login user of the database to migrate.
 	spring.flyway.validate-on-migrate=true # Whether to automatically call validate when performing a migration.
 
-	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
+	# LIQUIBASE ({spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[LiquibaseProperties])
 	spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml # Change log configuration path.
 	spring.liquibase.contexts= # Comma-separated list of runtime contexts to use.
 	spring.liquibase.database-change-log-lock-table=DATABASECHANGELOGLOCK # Name of table to use for tracking concurrent Liquibase usage.
@@ -604,7 +604,7 @@ Rather, pick only the properties that you need.
 	spring.liquibase.url= # JDBC URL of the database to migrate. If not set, the primary configured data source is used.
 	spring.liquibase.user= # Login user of the database to migrate.
 
-	# COUCHBASE ({sc-spring-boot-autoconfigure}/couchbase/CouchbaseProperties.{sc-ext}[CouchbaseProperties])
+	# COUCHBASE ({spring-boot-autoconfigure-module-code}/couchbase/CouchbaseProperties.java[CouchbaseProperties])
 	spring.couchbase.bootstrap-hosts= # Couchbase nodes (host or IP address) to bootstrap from.
 	spring.couchbase.bucket.name=default # Name of the bucket to connect to.
 	spring.couchbase.bucket.password=  # Password of the bucket.
@@ -622,10 +622,10 @@ Rather, pick only the properties that you need.
 	spring.couchbase.env.timeouts.socket-connect=1000ms # Socket connect connections timeout.
 	spring.couchbase.env.timeouts.view=7500ms # Regular and geospatial view operations timeout.
 
-	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
+	# DAO ({spring-boot-autoconfigure-module-code}/dao/PersistenceExceptionTranslationAutoConfiguration.java[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true # Whether to enable the PersistenceExceptionTranslationPostProcessor.
 
-	# CASSANDRA ({sc-spring-boot-autoconfigure}/cassandra/CassandraProperties.{sc-ext}[CassandraProperties])
+	# CASSANDRA ({spring-boot-autoconfigure-module-code}/cassandra/CassandraProperties.java[CassandraProperties])
 	spring.data.cassandra.cluster-name= # Name of the Cassandra cluster.
 	spring.data.cassandra.compression=none # Compression supported by the Cassandra binary protocol.
 	spring.data.cassandra.connect-timeout= # Socket option: connection time out.
@@ -647,12 +647,12 @@ Rather, pick only the properties that you need.
 	spring.data.cassandra.ssl=false # Enable SSL support.
 	spring.data.cassandra.username= # Login user of the server.
 
-	# DATA COUCHBASE ({sc-spring-boot-autoconfigure}/data/couchbase/CouchbaseDataProperties.{sc-ext}[CouchbaseDataProperties])
+	# DATA COUCHBASE ({spring-boot-autoconfigure-module-code}/data/couchbase/CouchbaseDataProperties.java[CouchbaseDataProperties])
 	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
 	spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
 	spring.data.couchbase.repositories.type=auto # Type of Couchbase repositories to enable.
 
-	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/data/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
+	# ELASTICSEARCH ({spring-boot-autoconfigure-module-code}/data/elasticsearch/ElasticsearchProperties.java[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
 	spring.data.elasticsearch.cluster-nodes= # Comma-separated list of cluster node addresses.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client.
@@ -664,7 +664,7 @@ Rather, pick only the properties that you need.
 	# DATA LDAP
 	spring.data.ldap.repositories.enabled=true # Whether to enable LDAP repositories.
 
-	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
+	# MONGODB ({spring-boot-autoconfigure-module-code}/mongo/MongoProperties.java[MongoProperties])
 	spring.data.mongodb.authentication-database= # Authentication database name.
 	spring.data.mongodb.database= # Database name.
 	spring.data.mongodb.field-naming-strategy= # Fully qualified name of the FieldNamingStrategy to use.
@@ -679,7 +679,7 @@ Rather, pick only the properties that you need.
 	# DATA REDIS
 	spring.data.redis.repositories.enabled=true # Whether to enable Redis repositories.
 
-	# NEO4J ({sc-spring-boot-autoconfigure}/data/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
+	# NEO4J ({spring-boot-autoconfigure-module-code}/data/neo4j/Neo4jProperties.java[Neo4jProperties])
 	spring.data.neo4j.auto-index=none # Auto index mode.
 	spring.data.neo4j.embedded.enabled=true # Whether to enable embedded mode if the embedded driver is available.
 	spring.data.neo4j.open-in-view=true # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
@@ -688,7 +688,7 @@ Rather, pick only the properties that you need.
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
 	spring.data.neo4j.username= # Login user of the server.
 
-	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
+	# DATA REST ({spring-boot-autoconfigure-module-code}/data/rest/RepositoryRestProperties.java[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
 	spring.data.rest.default-media-type= # Content type to use as a default when none is specified.
 	spring.data.rest.default-page-size= # Default size of pages.
@@ -701,12 +701,12 @@ Rather, pick only the properties that you need.
 	spring.data.rest.return-body-on-update= # Whether to return a response body after updating an entity.
 	spring.data.rest.sort-param-name= # Name of the URL query string parameter that indicates what direction to sort results.
 
-	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties])
+	# SOLR ({spring-boot-autoconfigure-module-code}/solr/SolrProperties.java[SolrProperties])
 	spring.data.solr.host=http://127.0.0.1:8983/solr # Solr host. Ignored if "zk-host" is set.
 	spring.data.solr.repositories.enabled=true # Whether to enable Solr repositories.
 	spring.data.solr.zk-host= # ZooKeeper host address in the form HOST:PORT.
 
-	# DATA WEB ({sc-spring-boot-autoconfigure}/data/web/SpringDataWebProperties.{sc-ext}[SpringDataWebProperties])
+	# DATA WEB ({spring-boot-autoconfigure-module-code}/data/web/SpringDataWebProperties.java[SpringDataWebProperties])
 	spring.data.web.pageable.default-page-size=20 # Default page size.
 	spring.data.web.pageable.max-page-size=2000 # Maximum page size to be accepted.
 	spring.data.web.pageable.one-indexed-parameters=false # Whether to expose and assume 1-based page number indexes.
@@ -716,7 +716,7 @@ Rather, pick only the properties that you need.
 	spring.data.web.pageable.size-parameter=size # Page size parameter name.
 	spring.data.web.sort.sort-parameter=sort # Sort parameter name.
 
-	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
+	# DATASOURCE ({spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[DataSourceAutoConfiguration] & {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[DataSourceProperties])
 	spring.datasource.continue-on-error=false # Whether to stop if an error occurs while initializing the database.
 	spring.datasource.data= # Data (DML) script resource references.
 	spring.datasource.data-username= # Username of the database to execute DML scripts (if different).
@@ -743,7 +743,7 @@ Rather, pick only the properties that you need.
 	spring.datasource.xa.data-source-class-name= # XA datasource fully qualified name.
 	spring.datasource.xa.properties= # Properties to pass to the XA data source.
 
-	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/elasticsearch/jest/JestProperties.{sc-ext}[JestProperties])
+	# JEST (Elasticsearch HTTP client) ({spring-boot-autoconfigure-module-code}/elasticsearch/jest/JestProperties.java[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3s # Connection timeout.
 	spring.elasticsearch.jest.multi-threaded=true # Whether to enable connection requests from multiple execution threads.
 	spring.elasticsearch.jest.password= # Login password.
@@ -753,31 +753,31 @@ Rather, pick only the properties that you need.
 	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
 	spring.elasticsearch.jest.username= # Login username.
 
-	# Elasticsearch REST clients ({sc-spring-boot-autoconfigure}/elasticsearch/rest/RestClientProperties.{sc-ext}[RestClientProperties])
+	# Elasticsearch REST clients ({spring-boot-autoconfigure-module-code}/elasticsearch/rest/RestClientProperties.java[RestClientProperties])
 	spring.elasticsearch.rest.password= # Credentials password.
     spring.elasticsearch.rest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
     spring.elasticsearch.rest.username= # Credentials username.
 
-	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
+	# H2 Web Console ({spring-boot-autoconfigure-module-code}/h2/H2ConsoleProperties.java[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Whether to enable the console.
 	spring.h2.console.path=/h2-console # Path at which the console is available.
 	spring.h2.console.settings.trace=false # Whether to enable trace output.
 	spring.h2.console.settings.web-allow-others=false # Whether to enable remote access.
 
-	# InfluxDB ({sc-spring-boot-autoconfigure}/influx/InfluxDbProperties.{sc-ext}[InfluxDbProperties])
+	# InfluxDB ({spring-boot-autoconfigure-module-code}/influx/InfluxDbProperties.java[InfluxDbProperties])
 	spring.influx.password= # Login password.
 	spring.influx.url= # URL of the InfluxDB instance to which to connect.
 	spring.influx.user= # Login user.
 
-	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqProperties.{sc-ext}[JooqProperties])
+	# JOOQ ({spring-boot-autoconfigure-module-code}/jooq/JooqProperties.java[JooqProperties])
 	spring.jooq.sql-dialect= # SQL dialect to use. Auto-detected by default.
 
-	# JDBC ({sc-spring-boot-autoconfigure}/jdbc/JdbcProperties.{sc-ext}[JdbcProperties])
+	# JDBC ({spring-boot-autoconfigure-module-code}/jdbc/JdbcProperties.java[JdbcProperties])
 	spring.jdbc.template.fetch-size=-1 # Number of rows that should be fetched from the database when more rows are needed.
 	spring.jdbc.template.max-rows=-1 # Maximum number of rows.
 	spring.jdbc.template.query-timeout= # Query timeout. Default is to use the JDBC driver's default configuration. If a duration suffix is not specified, seconds will be used.
 
-	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
+	# JPA ({spring-boot-autoconfigure-module-code}/orm/jpa/JpaBaseConfiguration.java[JpaBaseConfiguration], {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguration.java[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.bootstrap-mode=default # Bootstrap mode for JPA repositories.
 	spring.data.jpa.repositories.enabled=true # Whether to enable JPA repositories.
 	spring.jpa.database= # Target database to operate on, auto-detected by default. Can be alternatively set using the "databasePlatform" property.
@@ -792,12 +792,12 @@ Rather, pick only the properties that you need.
 	spring.jpa.properties.*= # Additional native properties to set on the JPA provider.
 	spring.jpa.show-sql=false # Whether to enable logging of SQL statements.
 
-	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
+	# JTA ({spring-boot-autoconfigure-module-code}/transaction/jta/JtaAutoConfiguration.java[JtaAutoConfiguration])
 	spring.jta.enabled=true # Whether to enable JTA support.
 	spring.jta.log-dir= # Transaction logs directory.
 	spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
-	# ATOMIKOS ({sc-spring-boot}/jta/atomikos/AtomikosProperties.{sc-ext}[AtomikosProperties])
+	# ATOMIKOS ({spring-boot-module-code}/jta/atomikos/AtomikosProperties.java[AtomikosProperties])
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
 	spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag=true # Whether to ignore the transacted flag when creating session.
 	spring.jta.atomikos.connectionfactory.local-transaction-mode=false # Whether local transactions are desired.
@@ -914,14 +914,14 @@ Rather, pick only the properties that you need.
 	spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
 	spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Whether to log a warning for transactions executed without a single enlisted resource.
 
-	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
+	# EMBEDDED MONGODB ({spring-boot-autoconfigure-module-code}/mongo/embedded/EmbeddedMongoProperties.java[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=sync_delay # Comma-separated list of features to enable.
 	spring.mongodb.embedded.storage.database-dir= # Directory used for data storage.
 	spring.mongodb.embedded.storage.oplog-size= # Maximum size of the oplog.
 	spring.mongodb.embedded.storage.repl-set-name= # Name of the replica set.
 	spring.mongodb.embedded.version=3.5.5 # Version of Mongo to use.
 
-	# REDIS ({sc-spring-boot-autoconfigure}/data/redis/RedisProperties.{sc-ext}[RedisProperties])
+	# REDIS ({spring-boot-autoconfigure-module-code}/data/redis/RedisProperties.java[RedisProperties])
 	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
 	spring.redis.cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
 	spring.redis.database=0 # Database index used by the connection factory.
@@ -943,7 +943,7 @@ Rather, pick only the properties that you need.
 	spring.redis.ssl=false # Whether to enable SSL support.
 	spring.redis.timeout= # Connection timeout.
 
-	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
+	# TRANSACTION ({spring-boot-autoconfigure-module-code}/transaction/TransactionProperties.java[TransactionProperties])
 	spring.transaction.default-timeout= # Default transaction timeout. If a duration suffix is not specified, seconds will be used.
 	spring.transaction.rollback-on-commit-failure= # Whether to roll back on commit failures.
 
@@ -953,7 +953,7 @@ Rather, pick only the properties that you need.
 	# INTEGRATION PROPERTIES
 	# ----------------------------------------
 
-	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
+	# ACTIVEMQ ({spring-boot-autoconfigure-module-code}/jms/activemq/ActiveMQProperties.java[ActiveMQProperties])
 	spring.activemq.broker-url= # URL of the ActiveMQ broker. Auto-generated by default.
 	spring.activemq.close-timeout=15s # Time to wait before considering a close complete.
 	spring.activemq.in-memory=true # Whether the default broker URL should be in memory. Ignored if an explicit broker has been specified.
@@ -972,7 +972,7 @@ Rather, pick only the properties that you need.
 	spring.activemq.pool.time-between-expiration-check=-1ms # Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.activemq.pool.use-anonymous-producers=true # Whether to use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 
-	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
+	# ARTEMIS ({spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[ArtemisProperties])
 	spring.artemis.embedded.cluster-password= # Cluster password. Randomly generated on startup by default.
 	spring.artemis.embedded.data-directory= # Journal file directory. Not necessary if persistence is turned off.
 	spring.artemis.embedded.enabled=true # Whether to enable embedded mode if the Artemis server APIs are available.
@@ -994,18 +994,18 @@ Rather, pick only the properties that you need.
 	spring.artemis.port=61616 # Artemis broker port.
 	spring.artemis.user= # Login user of the broker.
 
-	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
+	# SPRING BATCH ({spring-boot-autoconfigure-module-code}/batch/BatchProperties.java[BatchProperties])
 	spring.batch.initialize-schema=embedded # Database schema initialization mode.
 	spring.batch.job.enabled=true # Execute all Spring Batch jobs in the context on startup.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (for instance, `job1,job2`). By default, all Jobs found in the context are executed.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 
-	# SPRING INTEGRATION ({sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[IntegrationProperties])
+	# SPRING INTEGRATION ({spring-boot-autoconfigure-module-code}/integration/IntegrationProperties.java[IntegrationProperties])
 	spring.integration.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 
-	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
+	# JMS ({spring-boot-autoconfigure-module-code}/jms/JmsProperties.java[JmsProperties])
 	spring.jms.cache.consumers=false # Whether to cache message consumers.
 	spring.jms.cache.enabled=true # Whether to cache sessions.
 	spring.jms.cache.producers=true # Whether to cache message producers.
@@ -1024,7 +1024,7 @@ Rather, pick only the properties that you need.
 	spring.jms.template.receive-timeout= # Timeout to use for receive calls.
 	spring.jms.template.time-to-live= # Time-to-live of a message when sending. Enables QoS (Quality of Service) when set.
 
-	# APACHE KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
+	# APACHE KAFKA ({spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[KafkaProperties])
 	spring.kafka.admin.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.admin.fail-fast=false # Whether to fail fast if the broker is not available on startup.
 	spring.kafka.admin.properties.*= # Additional admin-specific properties used to configure the client.
@@ -1120,7 +1120,7 @@ Rather, pick only the properties that you need.
 	spring.kafka.streams.state-dir= # Directory location for the state store.
 	spring.kafka.template.default-topic= # Default topic to which messages are sent.
 
-	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
+	# RABBIT ({spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
 	spring.rabbitmq.cache.channel.checkout-timeout= # Duration to wait to obtain a channel if the cache size has been reached.
 	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
@@ -1192,7 +1192,7 @@ Rather, pick only the properties that you need.
 	# ACTUATOR PROPERTIES
 	# ----------------------------------------
 
-	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
+	# MANAGEMENT HTTP SERVER ({spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[ManagementServerProperties])
 	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
 	management.server.address= # Network address to which the management endpoints should bind. Requires a custom management.server.port.
 	management.server.port= # Management endpoint HTTP port (uses the same port as the application by default). Configure a different port to use management-specific SSL.
@@ -1220,19 +1220,19 @@ Rather, pick only the properties that you need.
 	# ENDPOINTS GENERAL CONFIGURATION
 	management.endpoints.enabled-by-default= # Whether to enable or disable all endpoints by default.
 
-	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
+	# ENDPOINTS JMX CONFIGURATION ({spring-boot-actuator-autoconfigure-module-code}/endpoint/jmx/JmxEndpointProperties.java[JmxEndpointProperties])
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	management.endpoints.jmx.exposure.include=* # Endpoint IDs that should be included or '*' for all.
 	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded or '*' for all.
 	management.endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 
-	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
+	# ENDPOINTS WEB CONFIGURATION ({spring-boot-actuator-autoconfigure-module-code}/endpoint/web/WebEndpointProperties.java[WebEndpointProperties])
 	management.endpoints.web.exposure.include=health,info # Endpoint IDs that should be included or '*' for all.
 	management.endpoints.web.exposure.exclude= # Endpoint IDs that should be excluded or '*' for all.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
-	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties])
+	# ENDPOINTS CORS CONFIGURATION ({spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[CorsEndpointProperties])
 	management.endpoints.web.cors.allow-credentials= # Whether credentials are supported. When not set, credentials are not supported.
 	management.endpoints.web.cors.allowed-headers= # Comma-separated list of headers to allow in a request. '*' allows all headers.
 	management.endpoints.web.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
@@ -1240,99 +1240,99 @@ Rather, pick only the properties that you need.
 	management.endpoints.web.cors.exposed-headers= # Comma-separated list of headers to include in a response.
 	management.endpoints.web.cors.max-age=1800s # How long the response from a pre-flight request can be cached by clients. If a duration suffix is not specified, seconds will be used.
 
-	# AUDIT EVENTS ENDPOINT ({sc-spring-boot-actuator}/audit/AuditEventsEndpoint.{sc-ext}[AuditEventsEndpoint])
+	# AUDIT EVENTS ENDPOINT ({spring-boot-actuator-module-code}/audit/AuditEventsEndpoint.java[AuditEventsEndpoint])
 	management.endpoint.auditevents.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.auditevents.enabled=true # Whether to enable the auditevents endpoint.
 
-	# BEANS ENDPOINT ({sc-spring-boot-actuator}/beans/BeansEndpoint.{sc-ext}[BeansEndpoint])
+	# BEANS ENDPOINT ({spring-boot-actuator-module-code}/beans/BeansEndpoint.java[BeansEndpoint])
 	management.endpoint.beans.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.beans.enabled=true # Whether to enable the beans endpoint.
 
-	# CACHES ENDPOINT ({sc-spring-boot-actuator}/cache/CachesEndpoint.{sc-ext}[CachesEndpoint])
+	# CACHES ENDPOINT ({spring-boot-actuator-module-code}/cache/CachesEndpoint.java[CachesEndpoint])
 	management.endpoint.caches.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.caches.enabled=true # Whether to enable the caches endpoint.
 
-	# CONDITIONS REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/ConditionsReportEndpoint.{sc-ext}[ConditionsReportEndpoint])
+	# CONDITIONS REPORT ENDPOINT ({spring-boot-actuator-autoconfigure-module-code}/condition/ConditionsReportEndpoint.java[ConditionsReportEndpoint])
 	management.endpoint.conditions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.conditions.enabled=true # Whether to enable the conditions endpoint.
 
-	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint], {sc-spring-boot-actuator-autoconfigure}/context/properties/ConfigurationPropertiesReportEndpointProperties.{sc-ext}[ConfigurationPropertiesReportEndpointProperties])
+	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({spring-boot-actuator-module-code}/context/properties/ConfigurationPropertiesReportEndpoint.java[ConfigurationPropertiesReportEndpoint], {spring-boot-actuator-autoconfigure-module-code}/context/properties/ConfigurationPropertiesReportEndpointProperties.java[ConfigurationPropertiesReportEndpointProperties])
 	management.endpoint.configprops.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.configprops.enabled=true # Whether to enable the configprops endpoint.
 	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services,sun.java.command # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
-	# ENVIRONMENT ENDPOINT ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint], {sc-spring-boot-actuator-autoconfigure}/env/EnvironmentEndpointProperties.{sc-ext}[EnvironmentEndpointProperties])
+	# ENVIRONMENT ENDPOINT ({spring-boot-actuator-module-code}/env/EnvironmentEndpoint.java[EnvironmentEndpoint], {spring-boot-actuator-autoconfigure-module-code}/env/EnvironmentEndpointProperties.java[EnvironmentEndpointProperties])
 	management.endpoint.env.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.env.enabled=true # Whether to enable the env endpoint.
 	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services,sun.java.command # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
-	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/flyway/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
+	# FLYWAY ENDPOINT ({spring-boot-actuator-module-code}/flyway/FlywayEndpoint.java[FlywayEndpoint])
 	management.endpoint.flyway.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.flyway.enabled=true # Whether to enable the flyway endpoint.
 
-	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint], {sc-spring-boot-actuator-autoconfigure}/health/HealthEndpointProperties.{sc-ext}[HealthEndpointProperties])
+	# HEALTH ENDPOINT ({spring-boot-actuator-module-code}/health/HealthEndpoint.java[HealthEndpoint], {spring-boot-actuator-autoconfigure-module-code}/health/HealthEndpointProperties.java[HealthEndpointProperties])
 	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.health.enabled=true # Whether to enable the health endpoint.
 	management.endpoint.health.roles= # Roles used to determine whether or not a user is authorized to be shown details. When empty, all authenticated users are authorized.
 	management.endpoint.health.show-details=never # When to show full health details.
 
-	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
+	# HEAP DUMP ENDPOINT ({spring-boot-actuator-module-code}/management/HeapDumpWebEndpoint.java[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.heapdump.enabled=true # Whether to enable the heapdump endpoint.
 
-	# HTTP TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/http/HttpTraceEndpoint.{sc-ext}[HttpTraceEndpoint])
+	# HTTP TRACE ENDPOINT ({spring-boot-actuator-module-code}/trace/http/HttpTraceEndpoint.java[HttpTraceEndpoint])
 	management.endpoint.httptrace.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.httptrace.enabled=true # Whether to enable the httptrace endpoint.
 
-	# INFO ENDPOINT ({sc-spring-boot-actuator}/info/InfoEndpoint.{sc-ext}[InfoEndpoint])
+	# INFO ENDPOINT ({spring-boot-actuator-module-code}/info/InfoEndpoint.java[InfoEndpoint])
 	info= # Arbitrary properties to add to the info endpoint.
 	management.endpoint.info.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.info.enabled=true # Whether to enable the info endpoint.
 
-	# INTEGRATION GRAPH ENDPOINT ({sc-spring-boot-actuator}/integration/IntegrationGraphEndpoint.{sc-ext}[IntegrationGraphEndpoint])
+	# INTEGRATION GRAPH ENDPOINT ({spring-boot-actuator-module-code}/integration/IntegrationGraphEndpoint.java[IntegrationGraphEndpoint])
 	management.endpoint.integrationgraph.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.integrationgraph.enabled=true # Whether to enable the integrationgraph endpoint.
 
-	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	# JOLOKIA ENDPOINT ({spring-boot-actuator-autoconfigure-module-code}/jolokia/JolokiaProperties.java[JolokiaProperties])
 	management.endpoint.jolokia.config.*= # Jolokia settings. Refer to the documentation of Jolokia for more details.
 	management.endpoint.jolokia.enabled=true # Whether to enable the jolokia endpoint.
 
-	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/liquibase/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
+	# LIQUIBASE ENDPOINT ({spring-boot-actuator-module-code}/liquibase/LiquibaseEndpoint.java[LiquibaseEndpoint])
 	management.endpoint.liquibase.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.liquibase.enabled=true # Whether to enable the liquibase endpoint.
 
-	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint], {sc-spring-boot-actuator-autoconfigure}/logging/LogFileWebEndpointProperties.{sc-ext}[LogFileWebEndpointProperties])
+	# LOG FILE ENDPOINT ({spring-boot-actuator-module-code}/logging/LogFileWebEndpoint.java[LogFileWebEndpoint], {spring-boot-actuator-autoconfigure-module-code}/logging/LogFileWebEndpointProperties.java[LogFileWebEndpointProperties])
 	management.endpoint.logfile.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.logfile.enabled=true # Whether to enable the logfile endpoint.
 	management.endpoint.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
 
-	# LOGGERS ENDPOINT ({sc-spring-boot-actuator}/logging/LoggersEndpoint.{sc-ext}[LoggersEndpoint])
+	# LOGGERS ENDPOINT ({spring-boot-actuator-module-code}/logging/LoggersEndpoint.java[LoggersEndpoint])
 	management.endpoint.loggers.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.loggers.enabled=true # Whether to enable the loggers endpoint.
 
-	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator}/web/mappings/MappingsEndpoint.{sc-ext}[MappingsEndpoint])
+	# REQUEST MAPPING ENDPOINT  ({spring-boot-actuator-module-code}/web/mappings/MappingsEndpoint.java[MappingsEndpoint])
 	management.endpoint.mappings.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.mappings.enabled=true # Whether to enable the mappings endpoint.
 
-	# METRICS ENDPOINT ({sc-spring-boot-actuator}/metrics/MetricsEndpoint.{sc-ext}[MetricsEndpoint])
+	# METRICS ENDPOINT ({spring-boot-actuator-module-code}/metrics/MetricsEndpoint.java[MetricsEndpoint])
 	management.endpoint.metrics.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.metrics.enabled=true # Whether to enable the metrics endpoint.
 
-	# PROMETHEUS ENDPOINT ({sc-spring-boot-actuator}/metrics/export/prometheus/PrometheusScrapeEndpoint.{sc-ext}[PrometheusScrapeEndpoint])
+	# PROMETHEUS ENDPOINT ({spring-boot-actuator-module-code}/metrics/export/prometheus/PrometheusScrapeEndpoint.java[PrometheusScrapeEndpoint])
 	management.endpoint.prometheus.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.prometheus.enabled=true # Whether to enable the prometheus endpoint.
 
-	# SCHEDULED TASKS ENDPOINT ({sc-spring-boot-actuator}/scheduling/ScheduledTasksEndpoint.{sc-ext}[ScheduledTasksEndpoint])
+	# SCHEDULED TASKS ENDPOINT ({spring-boot-actuator-module-code}/scheduling/ScheduledTasksEndpoint.java[ScheduledTasksEndpoint])
 	management.endpoint.scheduledtasks.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.scheduledtasks.enabled=true # Whether to enable the scheduledtasks endpoint.
 
-	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
+	# SESSIONS ENDPOINT ({spring-boot-actuator-module-code}/session/SessionsEndpoint.java[SessionsEndpoint])
 	management.endpoint.sessions.enabled=true # Whether to enable the sessions endpoint.
 
-	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
+	# SHUTDOWN ENDPOINT ({spring-boot-actuator-module-code}/context/ShutdownEndpoint.java[ShutdownEndpoint])
 	management.endpoint.shutdown.enabled=false # Whether to enable the shutdown endpoint.
 
-	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
+	# THREAD DUMP ENDPOINT ({spring-boot-actuator-module-code}/management/ThreadDumpEndpoint.java[ThreadDumpEndpoint])
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled=true # Whether to enable the threaddump endpoint.
 
@@ -1359,11 +1359,11 @@ Rather, pick only the properties that you need.
 	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (for example, UP maps to 200).
 	management.health.status.order=DOWN,OUT_OF_SERVICE,UP,UNKNOWN # Comma-separated list of health statuses in order of severity.
 
-	# HTTP TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/http/HttpTraceProperties.{sc-ext}[HttpTraceProperties])
+	# HTTP TRACING ({spring-boot-actuator-autoconfigure-module-code}/trace/http/HttpTraceProperties.java[HttpTraceProperties])
 	management.trace.http.enabled=true # Whether to enable HTTP request-response tracing.
 	management.trace.http.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
-	# INFO CONTRIBUTORS ({sc-spring-boot-actuator-autoconfigure}/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
+	# INFO CONTRIBUTORS ({spring-boot-actuator-autoconfigure-module-code}/info/InfoContributorProperties.java[InfoContributorProperties])
 	management.info.build.enabled=true # Whether to enable build info.
 	management.info.defaults.enabled=true # Whether to enable default info contributors.
 	management.info.env.enabled=true # Whether to enable environment info.
@@ -1549,7 +1549,7 @@ Rather, pick only the properties that you need.
 	# DEVTOOLS PROPERTIES
 	# ----------------------------------------
 
-	# DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/DevToolsProperties.{sc-ext}[DevToolsProperties])
+	# DEVTOOLS ({spring-boot-devtools-module-code}/autoconfigure/DevToolsProperties.java[DevToolsProperties])
 	spring.devtools.add-properties=true # Whether to enable development property defaults.
 	spring.devtools.livereload.enabled=true # Whether to enable a livereload.com-compatible server.
 	spring.devtools.livereload.port=35729 # Server port.
@@ -1562,7 +1562,7 @@ Rather, pick only the properties that you need.
 	spring.devtools.restart.quiet-period=400ms # Amount of quiet time required without any classpath changes before a restart is triggered.
 	spring.devtools.restart.trigger-file= # Name of a specific file that, when changed, triggers the restart check. If not specified, any classpath file change triggers the restart.
 
-	# REMOTE DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/RemoteDevToolsProperties.{sc-ext}[RemoteDevToolsProperties])
+	# REMOTE DEVTOOLS ({spring-boot-devtools-module-code}/autoconfigure/RemoteDevToolsProperties.java[RemoteDevToolsProperties])
 	spring.devtools.remote.context-path=/.~~spring-boot!~ # Context path used to handle the remote connection.
 	spring.devtools.remote.proxy.host= # The host of the proxy to use to connect to the remote application.
 	spring.devtools.remote.proxy.port= # The port of the proxy to use to connect to the remote application.

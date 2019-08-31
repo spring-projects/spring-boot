@@ -45,7 +45,7 @@ The parent project provides the following features:
 * UTF-8 source encoding.
 * A <<using-boot-dependency-management,Dependency Management section>>, inherited from the spring-boot-dependencies pom, that manages the versions of common dependencies.
 This dependency management lets you omit <version> tags for those dependencies when used in your own pom.
-* An execution of the {spring-boot-maven-plugin-site}/repackage-mojo.html[`repackage` goal] with a `repackage` execution id.
+* An execution of the {spring-boot-maven-plugin-docs}/repackage-mojo.html[`repackage` goal] with a `repackage` execution id.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin], https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
@@ -82,7 +82,7 @@ For instance, to upgrade to another Spring Data release train, you would add the
 	</properties>
 ----
 
-TIP: Check the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom] for a list of supported properties.
+TIP: Check the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom] for a list of supported properties.
 
 
 
@@ -166,8 +166,8 @@ There is no need to configure it unless you want to change the settings defined 
 === Gradle
 To learn about using Spring Boot with Gradle, please refer to the documentation for Spring Boot's Gradle plugin:
 
-* Reference ({spring-boot-gradle-plugin}/reference/html[HTML] and {spring-boot-gradle-plugin}/reference/pdf/spring-boot-gradle-plugin-reference.pdf[PDF])
-* {spring-boot-gradle-plugin}/api[API]
+* Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
+* {spring-boot-gradle-plugin-api}[API]
 
 
 
@@ -271,7 +271,7 @@ Finally, Spring Boot also includes the following starters that can be used if yo
 .Spring Boot technical starters
 include::../../../target/generated-resources/technical-starters.adoc[]
 
-TIP: For a list of additional community contributed starters, see the {github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
+TIP: For a list of additional community contributed starters, see the {spring-boot-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
 
 
 
@@ -551,7 +551,7 @@ Most IDEs can import Maven projects directly.
 For example, Eclipse users can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you cannot directly import your project into your IDE, you may be able to generate IDE metadata by using a build plugin. Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IDEA].
-Gradle offers plugins for {gradle-user-guide}/userguide.html[various IDEs].
+Gradle offers plugins for {gradle-docs}/userguide.html[various IDEs].
 
 TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error. STS users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
 
@@ -689,7 +689,7 @@ If you wish to log all request details (including potentially sensitive informat
 
 NOTE: If you don't want property defaults to be applied you can set `spring.devtools.add-properties` to `false` in your `application.properties`.
 
-TIP: For a complete list of the properties that are applied by the devtools, see {sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
+TIP: For a complete list of the properties that are applied by the devtools, see {spring-boot-devtools-module-code}/env/DevToolsPropertyDefaultsPostProcessor.java[DevToolsPropertyDefaultsPostProcessor].
 
 
 
@@ -965,7 +965,7 @@ If you change a file before starting the remote client, it is not pushed to the 
 
 [[configuring-file-system-watcher]]
 ==== Configuring File System Watcher
-{sc-spring-boot-devtools}/filewatch/FileSystemWatcher.{sc-ext}[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
+{spring-boot-devtools-module-code}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
 The changes are then uploaded to the remote application.
 On a slower development environment, it may happen that the quiet period is not enough, and the changes in the classes may be split into batches.
 The server is restarted after the first batch of class changes is uploaded.

@@ -1239,16 +1239,14 @@
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
-										<jooq-version>${jooq.version}</jooq-version>
-										<spring-framework-version>${spring-framework.version}</spring-framework-version>
-										<spring-boot-version>${revision}</spring-boot-version>
-										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring-framework.version}</spring-docs-version>
-										<spring-integration-docs-version>${spring-integration.version}</spring-integration-docs-version>
-										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
-										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 										<github-tag>${github-tag}</github-tag>
+										<jooq-version>${jooq.version}</jooq-version>
+										<spring-boot-version>${revision}</spring-boot-version>
+										<spring-framework-version>${spring-framework.version}</spring-framework-version>
+										<spring-integration-version>${spring-integration.version}</spring-integration-version>
+										<spring-security-version>${spring-security.version}</spring-security-version>
+										<spring-webservices-version>${spring-ws.version}</spring-webservices-version>
 									</attributes>
 								</configuration>
 							</execution>
@@ -1456,7 +1454,7 @@
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />
 										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="2.1.x" />
 									</target>
 								</configuration>
 							</execution>

@@ -12,7 +12,7 @@ Auditing, health, and metrics gathering can also be automatically applied to you
 
 [[production-ready-enabling]]
 == Enabling Production-ready Features
-The {github-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
+The {spring-boot-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
 The simplest way to enable the features is to add a dependency to the `spring-boot-starter-actuator` '`Starter`'.
 
 .Definition of Actuator
@@ -164,7 +164,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Yes
 |===
 
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-api}/html[HTML] or {spring-boot-actuator-api}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
+To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
@@ -380,7 +380,7 @@ A typical Spring Security configuration might look something like the following 
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
-See the API documentation ({spring-boot-actuator-api}/html[HTML] or {spring-boot-actuator-api}/pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
+See the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the `management.endpoints.web.exposure.include` property, as follows:
@@ -451,7 +451,7 @@ The following configuration permits `GET` and `POST` calls from the `example.com
 	management.endpoints.web.cors.allowed-methods=GET,POST
 ----
 
-TIP: See {sc-spring-boot-actuator-autoconfigure}/endpoint/web/CorsEndpointProperties.{sc-ext}[CorsEndpointProperties] for a complete list of options.
+TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[CorsEndpointProperties] for a complete list of options.
 
 
 
@@ -647,7 +647,7 @@ The roles can be configured using the `management.endpoint.health.roles` propert
 
 NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
 
-Health information is collected from the content of a {sc-spring-boot-actuator}/health/HealthIndicatorRegistry.{sc-ext}[`HealthIndicatorRegistry`] (by default all {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] instances defined in your `ApplicationContext`.
+Health information is collected from the content of a {spring-boot-actuator-module-code}/health/HealthIndicatorRegistry.java[`HealthIndicatorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] instances defined in your `ApplicationContext`.
 Spring Boot includes a number of auto-configured `HealthIndicators` and you can also write your own.
 By default, the final system state is derived by the `HealthAggregator` which sorts the statuses from each `HealthIndicator` based on an ordered list of statuses.
 The first status in the sorted list is used as the overall health status.
@@ -664,43 +664,43 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 | Name | Description
 
-| {sc-spring-boot-actuator}/cassandra/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
 | Checks that a Cassandra database is up.
 
-| {sc-spring-boot-actuator}/couchbase/CouchbaseHealthIndicator.{sc-ext}[`CouchbaseHealthIndicator`]
+| {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
-| {sc-spring-boot-actuator}/system/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
+| {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
 | Checks for low disk space.
 
-| {sc-spring-boot-actuator}/jdbc/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
+| {spring-boot-actuator-module-code}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
 | Checks that a connection to `DataSource` can be obtained.
 
-| {sc-spring-boot-actuator}/elasticsearch/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
+| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchHealthIndicator.java[`ElasticsearchHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
-| {sc-spring-boot-actuator}/influx/InfluxDbHealthIndicator.{sc-ext}[`InfluxDbHealthIndicator`]
+| {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.
 
-| {sc-spring-boot-actuator}/jms/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
+| {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
 
-| {sc-spring-boot-actuator}/mail/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
+| {spring-boot-actuator-module-code}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
 | Checks that a mail server is up.
 
-| {sc-spring-boot-actuator}/mongo/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
+| {spring-boot-actuator-module-code}/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
 | Checks that a Mongo database is up.
 
-| {sc-spring-boot-actuator}/neo4j/Neo4jHealthIndicator.{sc-ext}[`Neo4jHealthIndicator`]
+| {spring-boot-actuator-module-code}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
 | Checks that a Neo4j server is up.
 
-| {sc-spring-boot-actuator}/amqp/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
+| {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
 
-| {sc-spring-boot-actuator}/redis/RedisHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
+| {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
 
-| {sc-spring-boot-actuator}/solr/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
+| {spring-boot-actuator-module-code}/solr/SolrHealthIndicator.java[`SolrHealthIndicator`]
 | Checks that a Solr server is up.
 |===
 
@@ -708,7 +708,7 @@ TIP: You can disable them all by setting the `management.health.defaults.enabled
 
 
 ==== Writing Custom HealthIndicators
-To provide custom health information, you can register Spring beans that implement the {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] interface.
+To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
@@ -737,8 +737,8 @@ The following code shows a sample `HealthIndicator` implementation:
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
 In the preceding example, the health information is available in an entry named `my`.
 
-In addition to Spring Boot's predefined {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`] types, it is also possible for `Health` to return a custom `Status` that represents a new system state.
-In such cases, a custom implementation of the {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`] interface also needs to be provided, or the default implementation has to be configured by using the `management.health.status.order` configuration property.
+In addition to Spring Boot's predefined {spring-boot-actuator-module-code}/health/Status.java[`Status`] types, it is also possible for `Health` to return a custom `Status` that represents a new system state.
+In such cases, a custom implementation of the {spring-boot-actuator-module-code}/health/HealthAggregator.java[`HealthAggregator`] interface also needs to be provided, or the default implementation has to be configured by using the `management.health.status.order` configuration property.
 
 For example, assume a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
@@ -782,12 +782,12 @@ The following table shows the default status mappings for the built-in statuses:
 [[reactive-health-indicators]]
 ==== Reactive Health Indicators
 For reactive applications, such as those using Spring WebFlux, `ReactiveHealthIndicator` provides a non-blocking contract for getting application health.
-Similar to a traditional `HealthIndicator`, health information is collected from the content of a {sc-spring-boot-actuator}/health/ReactiveHealthIndicatorRegistry.{sc-ext}[`ReactiveHealthIndicatorRegistry`] (by default all {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] and {sc-spring-boot-actuator}/health/ReactiveHealthIndicator.{sc-ext}[`ReactiveHealthIndicator`] instances defined in your `ApplicationContext`.
+Similar to a traditional `HealthIndicator`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthIndicatorRegistry.java[`ReactiveHealthIndicatorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] and {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] instances defined in your `ApplicationContext`.
 Regular `HealthIndicator` that do not check against a reactive API are executed on the elastic scheduler.
 
 TIP: In a reactive application, The `ReactiveHealthIndicatorRegistry` can be used to register and unregister health indicators at runtime.
 
-To provide custom health information from a reactive API, you can register Spring beans that implement the {sc-spring-boot-actuator}/health/ReactiveHealthIndicator.{sc-ext}[`ReactiveHealthIndicator`] interface.
+To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
 [source,java,indent=0]
@@ -815,16 +815,16 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 |===
 | Name | Description
 
-| {sc-spring-boot-actuator}/cassandra/CassandraReactiveHealthIndicator.{sc-ext}[`CassandraReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
-| {sc-spring-boot-actuator}/couchbase/CouchbaseReactiveHealthIndicator.{sc-ext}[`CouchbaseReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
-| {sc-spring-boot-actuator}/mongo/MongoReactiveHealthIndicator.{sc-ext}[`MongoReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
-| {sc-spring-boot-actuator}/redis/RedisReactiveHealthIndicator.{sc-ext}[`RedisReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
 | Checks that a Redis server is up.
 |===
 
@@ -835,7 +835,7 @@ Also, any `HealthIndicator` that is not handled explicitly is wrapped automatica
 
 [[production-ready-application-info]]
 === Application Information
-Application information exposes various information collected from all {sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] beans defined in your `ApplicationContext`.
+Application information exposes various information collected from all {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
 Spring Boot includes a number of auto-configured `InfoContributor` beans, and you can write your own.
 
 
@@ -848,13 +848,13 @@ The following `InfoContributor` beans are auto-configured by Spring Boot, when a
 |===
 | Name | Description
 
-| {sc-spring-boot-actuator}/info/EnvironmentInfoContributor.{sc-ext}[`EnvironmentInfoContributor`]
+| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
 | Exposes any key from the `Environment` under the `info` key.
 
-| {sc-spring-boot-actuator}/info/GitInfoContributor.{sc-ext}[`GitInfoContributor`]
+| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
 | Exposes git information if a `git.properties` file is available.
 
-| {sc-spring-boot-actuator}/info/BuildInfoContributor.{sc-ext}[`BuildInfoContributor`]
+| {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
 | Exposes build information if a `META-INF/build-info.properties` file is available.
 |===
 
@@ -920,7 +920,7 @@ See "<<howto.adoc#howto-build-info,Generate build information>>" for more detail
 
 [[production-ready-application-info-custom]]
 ==== Writing Custom InfoContributors
-To provide custom application information, you can register Spring beans that implement the {sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] interface.
+To provide custom application information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] interface.
 
 The following example contributes an `example` entry with a single value:
 
@@ -1215,7 +1215,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<production-ready-metrics-export-statsd,StatsD>>
 - <<production-ready-metrics-export-wavefront,Wavefront>>
 
-TIP: To learn more about Micrometer's capabilities, please refer to its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-documentation}[concepts section].
+TIP: To learn more about Micrometer's capabilities, please refer to its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
 
 
 
@@ -1279,7 +1279,7 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 [[production-ready-metrics-export-appoptics]]
 ==== AppOptics
 By default, the AppOptics registry pushes metrics to https://api.appoptics.com/v1/measurements periodically.
-To export metrics to SaaS {micrometer-registry-documentation}/appoptics[AppOptics], your API token must be provided:
+To export metrics to SaaS {micrometer-registry-docs}/appoptics[AppOptics], your API token must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1290,7 +1290,7 @@ To export metrics to SaaS {micrometer-registry-documentation}/appoptics[AppOptic
 
 [[production-ready-metrics-export-atlas]]
 ==== Atlas
-By default, metrics are exported to {micrometer-registry-documentation}/atlas[Atlas] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
 The location of the https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
 
 [source,properties,indent=0]
@@ -1303,7 +1303,7 @@ The location of the https://github.com/Netflix/atlas[Atlas server] to use can be
 [[production-ready-metrics-export-datadog]]
 ==== Datadog
 Datadog registry pushes metrics to https://www.datadoghq.com[datadoghq] periodically.
-To export metrics to {micrometer-registry-documentation}/datadog[Datadog], your API key must be provided:
+To export metrics to {micrometer-registry-docs}/datadog[Datadog], your API key must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1322,7 +1322,7 @@ You can also change the interval at which metrics are sent to Datadog:
 [[production-ready-metrics-export-dynatrace]]
 ==== Dynatrace
 Dynatrace registry pushes metrics to the configured URI periodically.
-To export metrics to {micrometer-registry-documentation}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
+To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1342,7 +1342,7 @@ You can also change the interval at which metrics are sent to Dynatrace:
 
 [[production-ready-metrics-export-elastic]]
 ==== Elastic
-By default, metrics are exported to {micrometer-registry-documentation}/elastic[Elastic] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
 The location of the Elastic server to use can be provided using the following property:
 
 [source,properties,indent=0]
@@ -1354,7 +1354,7 @@ The location of the Elastic server to use can be provided using the following pr
 
 [[production-ready-metrics-export-ganglia]]
 ==== Ganglia
-By default, metrics are exported to {micrometer-registry-documentation}/ganglia[Ganglia] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
 The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be provided using:
 
 [source,properties,indent=0]
@@ -1367,7 +1367,7 @@ The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be p
 
 [[production-ready-metrics-export-graphite]]
 ==== Graphite
-By default, metrics are exported to {micrometer-registry-documentation}/graphite[Graphite] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
 The https://graphiteapp.org[Graphite server] host and port to use can be provided using:
 
 [source,properties,indent=0]
@@ -1376,7 +1376,7 @@ The https://graphiteapp.org[Graphite server] host and port to use can be provide
 	management.metrics.export.graphite.port=9004
 ----
 
-Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-documentation}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
 TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
@@ -1394,7 +1394,7 @@ public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock 
 [[production-ready-metrics-export-humio]]
 ==== Humio
 By default, the Humio registry pushes metrics to https://cloud.humio.com periodically.
-To export metrics to SaaS {micrometer-registry-documentation}/humio[Humio], your API token must be provided:
+To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], your API token must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1413,7 +1413,7 @@ You should also configure one or more tags to identify the data source to which 
 
 [[production-ready-metrics-export-influx]]
 ==== Influx
-By default, metrics are exported to {micrometer-registry-documentation}/influx[Influx] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/influx[Influx] running on your local machine.
 The location of the https://www.influxdata.com[Influx server] to use can be provided using:
 
 [source,properties,indent=0]
@@ -1425,7 +1425,7 @@ The location of the https://www.influxdata.com[Influx server] to use can be prov
 
 [[production-ready-metrics-export-jmx]]
 ==== JMX
-Micrometer provides a hierarchical mapping to {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
+Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
 By default, metrics are exported to the `metrics` JMX domain.
 The domain to use can be provided using:
 
@@ -1434,7 +1434,7 @@ The domain to use can be provided using:
 	management.metrics.export.jmx.domain=com.example.app.metrics
 ----
 
-Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-documentation}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
@@ -1451,7 +1451,7 @@ public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 
 [[production-ready-metrics-export-kairos]]
 ==== KairosDB
-By default, metrics are exported to {micrometer-registry-documentation}/kairos[KairosDB] running on your local machine.
+By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
 The location of the https://kairosdb.github.io/[KairosDB server] to use can be provided using:
 
 [source,properties,indent=0]
@@ -1463,7 +1463,7 @@ The location of the https://kairosdb.github.io/[KairosDB server] to use can be p
 
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic
-New Relic registry pushes metrics to {micrometer-registry-documentation}/new-relic[New Relic] periodically.
+New Relic registry pushes metrics to {micrometer-registry-docs}/new-relic[New Relic] periodically.
 To export metrics to https://newrelic.com[New Relic], your API key and account id must be provided:
 
 [source,properties,indent=0]
@@ -1483,7 +1483,7 @@ You can also change the interval at which metrics are sent to New Relic:
 
 [[production-ready-metrics-export-prometheus]]
 ==== Prometheus
-{micrometer-registry-documentation}/prometheus[Prometheus] expects to scrape or poll individual app instances for metrics.
+{micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual app instances for metrics.
 Spring Boot provides an actuator endpoint available at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
 
 TIP: The endpoint is not available by default and must be exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
@@ -1519,7 +1519,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 
 [[production-ready-metrics-export-signalfx]]
 ==== SignalFx
-SignalFx registry pushes metrics to {micrometer-registry-documentation}/signalfx[SignalFx] periodically.
+SignalFx registry pushes metrics to {micrometer-registry-docs}/signalfx[SignalFx] periodically.
 To export metrics to https://signalfx.com[SignalFx], your access token must be provided:
 
 [source,properties,indent=0]
@@ -1554,7 +1554,7 @@ You can also disable it explicitly:
 [[production-ready-metrics-export-statsd]]
 ==== StatsD
 The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
-By default, metrics are exported to a {micrometer-registry-documentation}/statsd[StatsD] agent running on your local machine.
+By default, metrics are exported to a {micrometer-registry-docs}/statsd[StatsD] agent running on your local machine.
 The StatsD agent host and port to use can be provided using:
 
 [source,properties,indent=0]
@@ -1574,7 +1574,7 @@ You can also change the StatsD line protocol to use (default to Datadog):
 
 [[production-ready-metrics-export-wavefront]]
 ==== Wavefront
-Wavefront registry pushes metrics to {micrometer-registry-documentation}/wavefront[Wavefront] periodically.
+Wavefront registry pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront] periodically.
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, your API token must be provided:
 
 [source,properties,indent=0]
@@ -1616,7 +1616,7 @@ Spring Boot registers the following core metrics when applicable:
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
 * Tomcat metrics
-* {spring-integration-reference}#micrometer-integration[Spring Integration] metrics
+* {spring-integration-docs}#micrometer-integration[Spring Integration] metrics
 
 
 
@@ -1918,7 +1918,7 @@ The following properties allow per-meter customization:
 | Publish a cumulative histogram with buckets defined by your SLAs.
 |===
 
-For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-documentation}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
+For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
 
 
 
@@ -2065,7 +2065,7 @@ include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[
 
 [[production-ready-whats-next]]
 == What to Read Next
-If you want to explore some of the concepts discussed in this chapter, you can take a look at the actuator {github-code}/spring-boot-samples[sample applications].
+If you want to explore some of the concepts discussed in this chapter, you can take a look at the actuator {spring-boot-code}/spring-boot-samples[sample applications].
 You also might want to read about graphing tools such as https://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment options`'>> or jump ahead for some in-depth information about Spring Boot's _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.
