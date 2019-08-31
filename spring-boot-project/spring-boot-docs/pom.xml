@@ -1451,19 +1451,17 @@
 								</resource>
 							</resources>
 							<attributes>
+								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+								<github-tag>${github-tag}</github-tag>
 								<sources-root>${project.basedir}/src</sources-root>
 								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
 								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
-								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-								<github-tag>${github-tag}</github-tag>
 								<jooq-version>${jooq.version}</jooq-version>
-								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 								<spring-boot-version>${revision}</spring-boot-version>
-								<spring-docs-version>${spring-framework.version}</spring-docs-version>
 								<spring-framework-version>${spring-framework.version}</spring-framework-version>
-								<spring-integration-docs-version>${spring-integration.version}</spring-integration-docs-version>
-								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
-								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
+								<spring-integration-version>${spring-integration.version}</spring-integration-version>
+								<spring-security-version>${spring-security.version}</spring-security-version>
+								<spring-webservices-version>${spring-ws.version}</spring-webservices-version>
 							</attributes>
 						</configuration>
 						<executions>
@@ -1620,7 +1618,7 @@
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />
 										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="2.1.x" />
 									</target>
 								</configuration>
 							</execution>
