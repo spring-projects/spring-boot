@@ -54,10 +54,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 		if (names == null) {
 			return Collections.emptySet();
 		}
-		Set<String> cleaned = new LinkedHashSet<>(names.size());
-		for (String name : names) {
-			cleaned.add(name);
-		}
+		Set<String> cleaned = new LinkedHashSet<>(names);
 		return Collections.unmodifiableSet(cleaned);
 	}
 
