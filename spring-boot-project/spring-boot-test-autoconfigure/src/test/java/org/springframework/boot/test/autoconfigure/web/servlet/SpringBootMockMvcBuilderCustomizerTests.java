@@ -109,10 +109,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 		@Override
 		public void write(List<String> lines) {
-			List<String> written = new ArrayList<>();
-			for (String line : lines) {
-				written.add(line);
-			}
+			List<String> written = new ArrayList<>(lines);
 			synchronized (this.monitor) {
 				this.allWritten.add(written);
 			}
