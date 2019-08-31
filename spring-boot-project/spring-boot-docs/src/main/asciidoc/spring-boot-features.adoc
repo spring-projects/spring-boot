@@ -318,8 +318,6 @@ This feature could also be useful for any service wrapper implementation.
 
 TIP: If you want to know on which HTTP port the application is running, get the property with a key of `local.server.port`.
 
-CAUTION: Take care when enabling this feature, as the MBean exposes a method to shutdown the application.
-
 
 
 [[boot-features-external-config]]
