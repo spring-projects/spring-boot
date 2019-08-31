@@ -47,7 +47,7 @@
 		<cassandra-driver.version>3.7.2</cassandra-driver.version>
 		<classmate.version>1.5.0</classmate.version>
 		<commons-codec.version>1.13</commons-codec.version>
-		<commons-dbcp2.version>2.6.0</commons-dbcp2.version>
+		<commons-dbcp2.version>2.7.0</commons-dbcp2.version>
 		<commons-lang3.version>3.9</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.7.0</commons-pool2.version>
