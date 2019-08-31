@@ -2025,7 +2025,7 @@ If you do so and want two data sources, remember to create another one and mark 
 To take greater control, implement `BatchConfigurer`.
 See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[The Javadoc of `@EnableBatchProcessing`] for more details.
 
-For more about Spring Batch, see the https://projects.spring.io/spring-batch/[Spring Batch project page].
+For more about Spring Batch, see the {spring-batch}[Spring Batch project page].
 
 
 

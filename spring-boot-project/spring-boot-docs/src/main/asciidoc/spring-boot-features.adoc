@@ -3225,7 +3225,7 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0 Authorization Server.
-However, this functionality is available from the https://projects.spring.io/spring-security-oauth/[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
+However, this functionality is available from the {spring-security-oauth2}[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
 Until then, you can use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server; see its https://docs.spring.io/spring-security-oauth2-boot[documentation] for instructions.
 
 
@@ -3575,7 +3575,7 @@ Spring Boot will auto-configure Spring Data's JDBC repositories when the necessa
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
 If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or a `JdbcConfiguration` subclass to your application.
 
-TIP: For complete details of Spring Data JDBC, please refer to the https://projects.spring.io/spring-data-jdbc/[reference documentation].
+TIP: For complete details of Spring Data JDBC, please refer to the {spring-data-jdbc-docs}[reference documentation].
 
 
 
@@ -3707,19 +3707,19 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 == Working with NoSQL Technologies
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 
-* https://spring.io/projects/spring-data-mongodb[MongoDB]
-* https://spring.io/projects/spring-data-neo4j[Neo4J]
-* https://spring.io/projects/spring-data-elasticsearch[Elasticsearch]
-* https://spring.io/projects/spring-data-solr[Solr]
-* https://spring.io/projects/spring-data-redis[Redis]
-* https://spring.io/projects/spring-data-gemfire[Gemfire] or https://spring.io/projects/spring-data-geode[Geode]
-* https://spring.io/projects/spring-data-cassandra[Cassandra]
-* https://spring.io/projects/spring-data-couchbase[Couchbase]
-* https://spring.io/projects/spring-data-ldap[LDAP]
+* {spring-data-mongodb}[MongoDB]
+* {spring-data-neo4j}[Neo4J]
+* {spring-data-elasticsearch}[Elasticsearch]
+* {spring-data-solr}[Solr]
+* {spring-data-redis}[Redis]
+* {spring-data-gemfire}[Gemfire] or {spring-data-geode}[Geode]
+* {spring-data-cassandra}[Cassandra]
+* {spring-data-couchbase}[Couchbase]
+* {spring-data-ldap}[LDAP]
 
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr Cassandra, Couchbase, and LDAP.
 You can make use of the other projects, but you must configure them yourself.
-Refer to the appropriate reference documentation at https://projects.spring.io/spring-data[projects.spring.io/spring-data].
+Refer to the appropriate reference documentation at {spring-data}.
 
 
 
@@ -4026,7 +4026,7 @@ You could take the JPA example from earlier and define `City` as Neo4j OGM `@Nod
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
 You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
-TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the https://projects.spring.io/spring-data-neo4j/[reference documentation].
+TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the {spring-data-neo4j-docs}[reference documentation].
 
 
 
@@ -4073,7 +4073,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data Solr share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a `@SolrDocument` class rather than a JPA `@Entity`, it works in the same way.
 
-IP: For complete details of Spring Data Solr, refer to the https://projects.spring.io/spring-data-solr/[reference documentation].
+IP: For complete details of Spring Data Solr, refer to the {spring-data-solr-docs}[reference documentation].
 
 
 

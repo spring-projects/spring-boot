@@ -1451,7 +1451,7 @@
 								</resource>
 							</resources>
 							<attributes>
-								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+								<spring-boot-artifactory-repo>${spring-boot-artifactory-repo}</spring-boot-artifactory-repo>
 								<github-tag>${github-tag}</github-tag>
 								<sources-root>${project.basedir}/src</sources-root>
 								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
@@ -1613,7 +1613,7 @@
 											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
 										<propertyregex property="version-type" override="true"
 											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
-										<stringutil string="${version-type}" property="spring-boot-repo">
+										<stringutil string="${version-type}" property="spring-boot-artifactory-repo">
 											<lowercase />
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />

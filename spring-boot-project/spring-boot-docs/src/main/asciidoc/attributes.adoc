@@ -11,7 +11,7 @@
 :hide-uri-scheme:
 :docinfo: shared,private
 
-:spring-boot-repo: snapshot
+:spring-boot-artifactory-repo: snapshot
 :github-tag: master
 :spring-boot-version: current
 
@@ -52,28 +52,44 @@
 :spring-boot-test-autoconfigure-module-api: {spring-boot-api}/org/springframework/boot/test/autoconfigure
 
 :spring-amqp-api: https://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
+:spring-batch: https://spring.io/projects/spring-batch
 :spring-batch-api: https://docs.spring.io/spring-batch/apidocs/org/springframework/batch
-:spring-data: https://projects.spring.io/spring-data/
+:spring-data: https://spring.io/projects/spring-data
+:spring-data-cassandra: https://spring.io/projects/spring-data-cassandra
 :spring-data-commons-api: https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
+:spring-data-couchbase: https://spring.io/projects/spring-data-couchbase
 :spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
 :spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
-:spring-data-jpa: https://projects.spring.io/spring-data-jpa/
+:spring-data-gemfire: https://spring.io/projects/spring-data-gemfire
+:spring-data-geode: https://spring.io/projects/spring-data-geode
+:spring-data-jpa: https://spring.io/projects/spring-data-jpa
 :spring-data-jpa-api: https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
-:spring-data-mongodb: https://projects.spring.io/spring-data-mongodb/
+:spring-data-jdbc-docs: https://docs.spring.io/spring-data/jdbc/docs/current/reference/html/
+:spring-data-ldap: https://spring.io/projects/spring-data-ldap
+:spring-data-mongodb: https://spring.io/projects/spring-data-mongodb
 :spring-data-mongodb-api: https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:spring-data-neo4j: https://spring.io/projects/spring-data-neo4j
+:spring-data-neo4j-docs: https://docs.spring.io/spring-data/neo4j/docs/current/reference/html/
+:spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
-:spring-framework: https://projects.spring.io/spring-framework/
+:spring-data-solr: https://spring.io/projects/spring-data-solr
+:spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/current/reference/html/
+:spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/spring-framework-reference/
 :spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
-:spring-integration: https://projects.spring.io/spring-integration/
+:spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html
-:spring-restdocs: https://projects.spring.io/spring-restdocs/
-:spring-security: https://projects.spring.io/spring-security/
+:spring-restdocs: https://spring.io/projects/spring-restdocs
+:spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/htmlsingle
+:spring-security-oauth2: https://spring.io/projects/spring-security-oauth
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
-:spring-session: https://projects.spring.io/spring-session/
+:spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
+
+
+
 
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
