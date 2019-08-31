@@ -985,12 +985,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-couchbase</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -1376,29 +1386,55 @@
 						<version>1.0.1</version>
 						<executions>
 							<execution>
+								<id>transform-effective-pom</id>
 								<goals>
 									<goal>transform</goal>
 								</goals>
+								<configuration>
+									<transformationSets>
+										<transformationSet>
+											<dir>${project.build.directory}/external-resources</dir>
+											<includes>
+												<include>effective-pom.xml</include>
+											</includes>
+											<stylesheet>src/main/xslt/dependencyVersions.xsl</stylesheet>
+											<fileMappers>
+												<fileMapper
+													implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+													<targetExtension>.adoc</targetExtension>
+												</fileMapper>
+											</fileMappers>
+											<outputDir>${project.build.directory}/generated-resources</outputDir>
+										</transformationSet>
+									</transformationSets>
+								</configuration>
+							</execution>
+							<execution>
+								<id>transform-flattened-pom</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>transform</goal>
+								</goals>
+								<configuration>
+									<transformationSets>
+										<transformationSet>
+											<dir>${project.basedir}</dir>
+											<includes>
+												<include>.flattened-pom.xml</include>
+											</includes>
+											<stylesheet>src/main/xslt/versionProperties.xsl</stylesheet>
+											<fileMappers>
+												<fileMapper
+													implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+													<targetExtension>.properties</targetExtension>
+												</fileMapper>
+											</fileMappers>
+											<outputDir>${project.build.directory}/generated-resources</outputDir>
+										</transformationSet>
+									</transformationSets>
+								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<transformationSets>
-								<transformationSet>
-									<dir>${project.build.directory}/external-resources</dir>
-									<includes>
-										<include>effective-pom.xml</include>
-									</includes>
-									<stylesheet>src/main/xslt/dependencyVersions.xsl</stylesheet>
-									<fileMappers>
-										<fileMapper
-											implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-											<targetExtension>.adoc</targetExtension>
-										</fileMapper>
-									</fileMappers>
-									<outputDir>${project.build.directory}/generated-resources</outputDir>
-								</transformationSet>
-							</transformationSets>
-						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.codehaus.gmavenplus</groupId>
@@ -1438,6 +1474,26 @@
 						</dependencies>
 					</plugin>
 					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<id>read-flattenedpom-versions</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<inherited>false</inherited>
+								<configuration>
+									<files>
+										<file>${project.build.directory}/generated-resources/.flattened-pom.properties</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
 						<configuration>
@@ -1458,11 +1514,19 @@
 								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
 								<jooq-version>${jooq.version}</jooq-version>
 								<spring-boot-version>${revision}</spring-boot-version>
+								<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
+								<spring-data-couchbase-version>${flattenedpom.version.org.springframework.data.spring-data-couchbase}</spring-data-couchbase-version>
+								<spring-data-commons-version>${flattenedpom.version.org.springframework.data.spring-data-commons}</spring-data-commons-version>
+								<spring-data-jpa-version>${flattenedpom.version.org.springframework.data.spring-data-jpa}</spring-data-jpa-version>
+								<spring-data-jdbc-version>${flattenedpom.version.org.springframework.data.spring-data-jdbc}</spring-data-jdbc-version>
+								<spring-data-mongodb-version>${flattenedpom.version.org.springframework.data.spring-data-mongodb}</spring-data-mongodb-version>
+								<spring-data-neo4j-version>${flattenedpom.version.org.springframework.data.spring-data-neo4j}</spring-data-neo4j-version>
+								<spring-data-rest-version>${flattenedpom.version.org.springframework.data.spring-data-rest-core}</spring-data-rest-version>
+								<spring-data-solr-version>${flattenedpom.version.org.springframework.data.spring-data-solr}</spring-data-solr-version>
 								<spring-framework-version>${spring-framework.version}</spring-framework-version>
 								<spring-integration-version>${spring-integration.version}</spring-integration-version>
 								<spring-security-version>${spring-security.version}</spring-security-version>
-								<spring-webservices-version>${spring-ws.version}</spring-webservices-version>
-							</attributes>
+								<spring-webservices-version>${spring-ws.version}</spring-webservices-version>							</attributes>
 						</configuration>
 						<executions>
 							<execution>

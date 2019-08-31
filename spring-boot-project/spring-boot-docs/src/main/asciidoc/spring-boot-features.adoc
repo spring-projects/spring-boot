@@ -3528,7 +3528,7 @@ When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFac
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
 TIP: We have barely scratched the surface of Spring Data JPA.
-For complete details, see the https://docs.spring.io/spring-data/jpa/docs/current/reference/html/[Spring Data JPA reference documentation].
+For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
 
 
 
