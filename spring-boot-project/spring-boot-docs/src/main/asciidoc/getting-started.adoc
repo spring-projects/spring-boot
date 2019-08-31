@@ -148,7 +148,7 @@ The following listing shows a typical `pom.xml` file:
 			</plugins>
 		</build>
 
-ifeval::["{spring-boot-repo}" != "release"]
+ifeval::["{spring-boot-artifactory-repo}" != "release"]
 		<!-- Add Spring repositories -->
 		<!-- (you don't need this if you are using a .RELEASE version) -->
 		<repositories>
@@ -215,8 +215,8 @@ You do not need to use the CLI to work with Spring Boot, but it is definitely th
 ==== Manual Installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
 Cutting edge
 https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions] are also available.
@@ -464,7 +464,7 @@ Open your favorite text editor and add the following:
 
 		<!-- Additional lines to be added here... -->
 
-ifeval::["{spring-boot-repo}" != "release"]
+ifeval::["{spring-boot-artifactory-repo}" != "release"]
 		<!-- (you don't need this if you are using a .RELEASE version) -->
 		<repositories>
 			<repository>

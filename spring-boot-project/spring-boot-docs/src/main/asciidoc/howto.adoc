@@ -2019,7 +2019,7 @@ NOTE: By default, batch applications require a `DataSource` to store job details
 If you want to deviate from that, you need to implement `BatchConfigurer`.
 See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[The Javadoc of `@EnableBatchProcessing`] for more details.
 
-For more about Spring Batch, see the https://projects.spring.io/spring-batch/[Spring Batch project page].
+For more about Spring Batch, see the {spring-batch}[Spring Batch project page].
 
 
 

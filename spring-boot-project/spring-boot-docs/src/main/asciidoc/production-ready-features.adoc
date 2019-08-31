@@ -521,7 +521,6 @@ A request predicate is automatically generated for each operation on a web-expos
 
 [[production-ready-endpoints-custom-web-predicate-path]]
 ===== Path
-
 The path of the predicate is determined by the ID of the endpoint and the base path of web-exposed endpoints.
 The default base path is `/actuator`.
 For example, an endpoint with the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
@@ -705,6 +704,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 
 TIP: You can disable them all by setting the `management.health.defaults.enabled` property.
+
 
 
 ==== Writing Custom HealthIndicators

@@ -1239,7 +1239,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
-										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+										<spring-boot-artifactory-repo>${spring-boot-artifactory-repo}</spring-boot-artifactory-repo>
 										<github-tag>${github-tag}</github-tag>
 										<jooq-version>${jooq.version}</jooq-version>
 										<spring-boot-version>${revision}</spring-boot-version>
@@ -1449,7 +1449,7 @@
 											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
 										<propertyregex property="version-type" override="true"
 											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
-										<stringutil string="${version-type}" property="spring-boot-repo">
+										<stringutil string="${version-type}" property="spring-boot-artifactory-repo">
 											<lowercase />
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />
