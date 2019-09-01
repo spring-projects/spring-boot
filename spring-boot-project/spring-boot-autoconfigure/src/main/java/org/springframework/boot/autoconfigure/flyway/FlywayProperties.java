@@ -70,7 +70,7 @@ public class FlywayProperties {
 	private List<String> schemas = new ArrayList<>();
 
 	/**
-	 * Name of the schema schema history table that will be used by Flyway.
+	 * Name of the schema history table that will be used by Flyway.
 	 */
 	private String table = "flyway_schema_history";
 
