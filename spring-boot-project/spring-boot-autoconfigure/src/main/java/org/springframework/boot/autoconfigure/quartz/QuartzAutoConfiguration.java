@@ -22,14 +22,12 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.flywaydb.core.Flyway;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -163,6 +161,7 @@ public class QuartzAutoConfiguration {
 				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader, properties);
+
 		}
 
 		/**
@@ -171,64 +170,37 @@ public class QuartzAutoConfiguration {
 		 * bean(s).
 		 */
 		@Configuration
-		protected static class SchedulerQuartzDataSourceInitializerDependencyConfiguration
-				extends AbstractSchedulerDependsOnBeanFactoryPostProcessor {
+		static class QuartzSchedulerDependencyConfiguration {
 
-			SchedulerQuartzDataSourceInitializerDependencyConfiguration() {
-				super(QuartzDataSourceInitializer.class);
+			@Bean
+			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerDataSourceInitializerDependsOnBeanFactoryPostProcessor() {
+				return new SchedulerDependsOnBeanFactoryPostProcessor(QuartzDataSourceInitializer.class);
+			}
+
+			@Bean
+			@ConditionalOnBean(FlywayMigrationInitializer.class)
+			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerFilywayDependsOnBeanFactoryPostProcessor() {
+				return new SchedulerDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class);
+			}
+
+			@Bean
+			@ConditionalOnBean(SpringLiquibase.class)
+			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerLiquibaseDependsOnBeanFactoryPostProcessor() {
+				return new SchedulerDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
 			}
 
 		}
 
-		/**
-		 * Additional configuration to ensure that {@link SchedulerFactoryBean} and
-		 * {@link Scheduler} beans depend on the {@link SpringLiquibase} bean(s).
-		 */
-		@Configuration
-		@ConditionalOnClass(SpringLiquibase.class)
-		@ConditionalOnBean(SpringLiquibase.class)
-		protected static class SchedulerSpringLiquibaseDependencyConfiguration
-				extends AbstractSchedulerDependsOnBeanFactoryPostProcessor {
+	}
 
-			SchedulerSpringLiquibaseDependencyConfiguration() {
-				super(SpringLiquibase.class);
-			}
+	/**
+	 * {@link AbstractDependsOnBeanFactoryPostProcessor} for Quartz {@link Scheduler} and
+	 * {@link SchedulerFactoryBean}.
+	 */
+	private static class SchedulerDependsOnBeanFactoryPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
-		}
-
-		/**
-		 * Additional configuration to ensure that {@link SchedulerFactoryBean} and
-		 * {@link Scheduler} beans depend on the {@link FlywayMigrationInitializer}
-		 * bean(s).
-		 */
-		@Configuration
-		@ConditionalOnClass(Flyway.class)
-		@ConditionalOnBean(FlywayMigrationInitializer.class)
-		protected static class SchedulerFlywayMigrationInitializerDependencyConfiguration
-				extends AbstractSchedulerDependsOnBeanFactoryPostProcessor {
-
-			SchedulerFlywayMigrationInitializerDependencyConfiguration() {
-				super(FlywayMigrationInitializer.class);
-			}
-
-		}
-
-		/**
-		 * {@link BeanFactoryPostProcessor} that can be used to declare that all
-		 * {@link Scheduler} and {@link SchedulerFactoryBean} beans should "depend on" one
-		 * or more specific beans.
-		 */
-		protected abstract static class AbstractSchedulerDependsOnBeanFactoryPostProcessor
-				extends AbstractDependsOnBeanFactoryPostProcessor {
-
-			/**
-			 * Create an instance with dependency types.
-			 * @param dependencyTypes dependency types
-			 */
-			protected AbstractSchedulerDependsOnBeanFactoryPostProcessor(Class<?>... dependencyTypes) {
-				super(Scheduler.class, SchedulerFactoryBean.class, dependencyTypes);
-			}
-
+		SchedulerDependsOnBeanFactoryPostProcessor(Class<?>... dependencyTypes) {
+			super(Scheduler.class, SchedulerFactoryBean.class, dependencyTypes);
 		}
 
 	}
