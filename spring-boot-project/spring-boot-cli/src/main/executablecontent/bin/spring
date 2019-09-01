@@ -87,10 +87,10 @@ if [ -z "${SPRING_HOME}" ]; then
 		fi
 	done
 	SAVED="$(pwd)"
-	cd "$(dirname "${PRG}")/../" >&- || exit 1
+	cd "$(dirname "${PRG}")/../" > /dev/null || exit 1
 	SPRING_HOME="$(pwd -P)"
 	export SPRING_HOME
-	cd "$SAVED" >&- || exit 1
+	cd "$SAVED" > /dev/null || exit 1
 fi
 
 if [ ! -d "${SPRING_HOME}" ]; then
