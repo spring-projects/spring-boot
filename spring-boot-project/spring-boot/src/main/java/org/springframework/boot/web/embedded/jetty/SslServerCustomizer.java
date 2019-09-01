@@ -68,7 +68,8 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	@Override
 	public void customize(Server server) {
-		SslContextFactory sslContextFactory = new SslContextFactory();
+		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+		sslContextFactory.setEndpointIdentificationAlgorithm(null);
 		configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
 		ServerConnector connector = createConnector(server, sslContextFactory, this.address);
 		server.setConnectors(new Connector[] { connector });
@@ -131,7 +132,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	 * @param ssl the ssl details.
 	 * @param sslStoreProvider the ssl store provider
 	 */
-	protected void configureSsl(SslContextFactory factory, Ssl ssl, SslStoreProvider sslStoreProvider) {
+	protected void configureSsl(SslContextFactory.Server factory, Ssl ssl, SslStoreProvider sslStoreProvider) {
 		factory.setProtocol(ssl.getProtocol());
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
@@ -158,7 +159,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
+	private void configureSslClientAuth(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
 			factory.setNeedClientAuth(true);
 			factory.setWantClientAuth(true);

@@ -81,7 +81,8 @@ public class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> customizer.configureSsl(new SslContextFactory(), ssl, null)).satisfies((ex) -> {
+				.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
+				.satisfies((ex) -> {
 					assertThat(ex).isInstanceOf(WebServerException.class);
 					assertThat(ex).hasMessageContaining("Could not load key store 'null'");
 				});
