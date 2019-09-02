@@ -194,7 +194,8 @@ class TypeUtils {
 			}
 		}
 		catch (Exception ex) {
-			this.env.getMessager().printMessage(Kind.WARNING, "Failed to generated type descriptor for " + type,
+			this.env.getMessager().printMessage(Kind.WARNING,
+					"Failed to generated type descriptor for " + type + ": " + ex.getMessage(),
 					this.types.asElement(type));
 		}
 	}
