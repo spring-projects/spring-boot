@@ -17,6 +17,8 @@
 package org.springframework.boot.context.embedded;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,7 @@ public class EmbeddedServletContainerJarDevelopmentIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
 	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(
 			RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity(

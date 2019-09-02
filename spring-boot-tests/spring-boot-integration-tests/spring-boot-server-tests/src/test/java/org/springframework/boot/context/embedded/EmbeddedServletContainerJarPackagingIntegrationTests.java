@@ -17,6 +17,8 @@
 package org.springframework.boot.context.embedded;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,7 @@ public class EmbeddedServletContainerJarPackagingIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
 	public void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity(
 				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
