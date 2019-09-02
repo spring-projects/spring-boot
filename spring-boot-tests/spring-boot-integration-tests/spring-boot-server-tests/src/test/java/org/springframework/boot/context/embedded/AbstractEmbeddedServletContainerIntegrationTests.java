@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -108,6 +109,10 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 			}
 
 		});
+	}
+
+	protected boolean isWindows() {
+		return File.separatorChar == '\\';
 	}
 
 }

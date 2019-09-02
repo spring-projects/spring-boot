@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded;
 
 import java.util.Arrays;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -56,6 +57,7 @@ public class EmbeddedServletContainerJarDevelopmentIntegrationTests
 
 	@Test
 	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp() {
+		Assume.assumeFalse(isWindows());
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
 				String.class);
