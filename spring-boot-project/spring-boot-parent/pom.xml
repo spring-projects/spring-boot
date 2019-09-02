@@ -26,7 +26,7 @@
 		<maven.version>3.5.4</maven.version>
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
-		<testcontainers.version>1.10.6</testcontainers.version>
+		<testcontainers.version>1.12.0</testcontainers.version>
 		<testng.version>6.14.3</testng.version>
 		<spring-doc-resources.version>0.1.2.RELEASE</spring-doc-resources.version>
 	</properties>
