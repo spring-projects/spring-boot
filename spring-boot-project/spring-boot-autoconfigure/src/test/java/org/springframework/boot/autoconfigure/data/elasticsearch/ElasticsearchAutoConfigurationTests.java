@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.elasticsearch.client.Client;
@@ -46,7 +47,8 @@ import static org.mockito.Mockito.mock;
 class ElasticsearchAutoConfigurationTests {
 
 	@Container
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private AnnotationConfigApplicationContext context;
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -46,7 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(

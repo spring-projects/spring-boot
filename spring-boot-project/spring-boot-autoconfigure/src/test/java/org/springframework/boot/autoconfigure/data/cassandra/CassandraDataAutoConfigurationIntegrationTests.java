@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.time.Duration;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>();
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private AnnotationConfigApplicationContext context;
 

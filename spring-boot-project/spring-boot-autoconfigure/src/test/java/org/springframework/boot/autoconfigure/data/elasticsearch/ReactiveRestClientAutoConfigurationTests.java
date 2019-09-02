@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,8 @@ import static org.mockito.Mockito.mock;
 public class ReactiveRestClientAutoConfigurationTests {
 
 	@Container
-	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));

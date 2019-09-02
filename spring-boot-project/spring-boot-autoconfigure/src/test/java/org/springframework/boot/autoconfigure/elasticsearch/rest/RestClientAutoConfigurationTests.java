@@ -50,7 +50,8 @@ import static org.mockito.Mockito.mock;
 class RestClientAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));

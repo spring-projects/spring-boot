@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,8 @@ import static org.assertj.core.api.Assertions.entry;
 class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer();
+	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

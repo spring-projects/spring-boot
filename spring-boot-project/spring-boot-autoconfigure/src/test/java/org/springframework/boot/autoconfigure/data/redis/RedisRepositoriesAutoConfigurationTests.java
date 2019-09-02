@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisRepositoriesAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer();
+	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +55,8 @@ import static org.mockito.Mockito.mock;
 class JestAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class, JestAutoConfiguration.class));
