@@ -517,7 +517,6 @@ class JmsAutoConfigurationTests {
 			configurer.configure(factory, connectionFactory);
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;
-
 		}
 
 	}

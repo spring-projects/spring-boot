@@ -129,7 +129,6 @@ public class QuartzAutoConfiguration {
 				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader, properties);
-
 		}
 
 		/**

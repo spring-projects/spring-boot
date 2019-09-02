@@ -75,7 +75,6 @@ public class TestEntityManager {
 	public <T> T persistAndGetId(Object entity, Class<T> idType) {
 		persist(entity);
 		return getId(entity, idType);
-
 	}
 
 	/**
