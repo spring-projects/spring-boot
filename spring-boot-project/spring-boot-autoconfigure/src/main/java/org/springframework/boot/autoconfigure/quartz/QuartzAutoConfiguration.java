@@ -173,19 +173,19 @@ public class QuartzAutoConfiguration {
 		static class QuartzSchedulerDependencyConfiguration {
 
 			@Bean
-			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerDataSourceInitializerDependsOnBeanFactoryPostProcessor() {
+			static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerDataSourceInitializerDependsOnBeanFactoryPostProcessor() {
 				return new SchedulerDependsOnBeanFactoryPostProcessor(QuartzDataSourceInitializer.class);
 			}
 
 			@Bean
 			@ConditionalOnBean(FlywayMigrationInitializer.class)
-			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerFilywayDependsOnBeanFactoryPostProcessor() {
+			static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerFilywayDependsOnBeanFactoryPostProcessor() {
 				return new SchedulerDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class);
 			}
 
 			@Bean
 			@ConditionalOnBean(SpringLiquibase.class)
-			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerLiquibaseDependsOnBeanFactoryPostProcessor() {
+			static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerLiquibaseDependsOnBeanFactoryPostProcessor() {
 				return new SchedulerDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
 			}
 
