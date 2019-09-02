@@ -124,7 +124,6 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		context.register(ClassUtils.toClassArray(classes));
 		context.refresh();
 		return context;
-
 	}
 
 	static class WebEndpointsInvocationContext

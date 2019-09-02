@@ -243,7 +243,6 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 				copyProtocolResolvers(applicationContext, resourceLoader);
 			}
 			return new ServletContextResourcePatternResolver(resourceLoader);
-
 		}
 
 	}

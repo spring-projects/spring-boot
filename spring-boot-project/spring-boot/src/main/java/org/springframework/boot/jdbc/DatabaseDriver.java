@@ -126,7 +126,6 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
-
 		}
 
 	},

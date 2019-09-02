@@ -284,7 +284,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return isFilterMatch(instance, endpoint);
 		}
 		return false;
-
 	}
 
 	private boolean isFilterMatch(EndpointFilter<E> filter, EndpointBean endpointBean) {

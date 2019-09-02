@@ -7094,7 +7094,6 @@ The following code shows a typical example:
 
 		public DetailsResp someWsCall(DetailsReq detailsReq) {
 			 return (DetailsResp) this.webServiceTemplate.marshalSendAndReceive(detailsReq, new SoapActionCallback(ACTION));
-
 		}
 
 	}

@@ -104,7 +104,6 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return new LoggingLinesWriter();
 		}
 		return new SystemLinesWriter(this.print);
-
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
