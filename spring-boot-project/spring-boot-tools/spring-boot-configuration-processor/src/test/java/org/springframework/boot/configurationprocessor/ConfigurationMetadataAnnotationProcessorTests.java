@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
+import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
@@ -165,6 +166,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("singledeprecated.new-name", String.class).fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class).fromSource(type)
 				.withDeprecation("renamed", "singledeprecated.new-name"));
+	}
+
+	@Test
+	void singleDeprecatedFieldProperty() {
+		Class<?> type = DeprecatedFieldSingleProperty.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("singlefielddeprecated").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("singlefielddeprecated.name", String.class).fromSource(type)
+				.withDeprecation(null, null));
 	}
 
 	@Test
