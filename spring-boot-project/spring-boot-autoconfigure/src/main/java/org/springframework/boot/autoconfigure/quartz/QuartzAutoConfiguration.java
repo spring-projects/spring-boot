@@ -179,7 +179,7 @@ public class QuartzAutoConfiguration {
 
 			@Bean
 			@ConditionalOnBean(FlywayMigrationInitializer.class)
-			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerFilywayDependsOnBeanFactoryPostProcessor() {
+			public static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerFlywayDependsOnBeanFactoryPostProcessor() {
 				return new SchedulerDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class);
 			}
 
