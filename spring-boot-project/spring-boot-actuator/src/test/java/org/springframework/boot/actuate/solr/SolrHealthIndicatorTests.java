@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.solr;
 import java.io.IOException;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.util.NamedList;
@@ -43,6 +43,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Tests for {@link SolrHealthIndicator}
  *
  * @author Andy Wilkinson
+ * @author Markus Schuch
+ * @author Phillip Webb
  */
 public class SolrHealthIndicatorTests {
 
@@ -56,40 +58,69 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void solrIsUpWithBaseUrlPointsToRoot() throws Exception {
+	public void healthWhenSolrStatusUpAndBaseUrlPointsToRootReturnsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("status")).isEqualTo(0);
-		assertThat(health.getDetails().get("detectedPathType")).isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
+		assertHealth(healthIndicator, Status.UP, 0, "root");
 		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
 		verifyNoMoreInteractions(solrClient);
 	}
 
 	@Test
-	public void solrIsUpWithBaseUrlPointsToParticularCore() throws Exception {
+	public void healthWhenSolrStatusDownAndBaseUrlPointsToRootReturnsDown() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		assertHealth(healthIndicator, Status.DOWN, 400, "root");
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	public void healthWhenSolrStatusUpAndBaseUrlPointsToParticularCoreReturnsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
+				.willThrow(new RemoteSolrException("mock", 404, "", null));
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("status")).isEqualTo(0);
-		assertThat(health.getDetails().get("detectedPathType"))
-				.isEqualTo(SolrHealthIndicator.PathType.PARTICULAR_CORE.toString());
+		assertHealth(healthIndicator, Status.UP, 0, "particular core");
 		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
 		verify(solrClient, times(1)).ping();
 		verifyNoMoreInteractions(solrClient);
 	}
 
 	@Test
-	public void pathTypeIsRememberedForConsecutiveChecks() throws Exception {
+	public void healthWhenSolrStatusDownAndBaseUrlPointsToParticularCoreReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
+				.willThrow(new RemoteSolrException("mock", 404, "", null));
+		given(solrClient.ping()).willReturn(mockPingResponse(400));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		assertHealth(healthIndicator, Status.DOWN, 400, "particular core");
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verify(solrClient, times(1)).ping();
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	public void healthWhenSolrConnectionFailsReturnsDown() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new IOException("Connection failed"));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
+		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
+		verifyNoMoreInteractions(solrClient);
+	}
+
+	@Test
+	public void healthWhenMakingMultipleCallsRemembersStatusStrategy() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new RemoteSolrException("mock", 404, "", null));
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		healthIndicator.health();
@@ -101,47 +132,12 @@ public class SolrHealthIndicatorTests {
 		verifyNoMoreInteractions(solrClient);
 	}
 
-	@Test
-	public void solrIsUpAndRequestFailedWithBaseUrlPointsToRoot() throws Exception {
-		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+	private void assertHealth(SolrHealthIndicator healthIndicator, Status expectedStatus, int expectedStatusCode,
+			String expectedPathType) {
 		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("status")).isEqualTo(400);
-		assertThat(health.getDetails().get("detectedPathType")).isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verifyNoMoreInteractions(solrClient);
-	}
-
-	@Test
-	public void solrIsUpAndRequestFailedWithBaseUrlPointsToParticularCore() throws Exception {
-		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
-		given(solrClient.ping()).willReturn(mockPingResponse(400));
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("status")).isEqualTo(400);
-		assertThat(health.getDetails().get("detectedPathType"))
-				.isEqualTo(SolrHealthIndicator.PathType.PARTICULAR_CORE.toString());
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verify(solrClient, times(1)).ping();
-		verifyNoMoreInteractions(solrClient);
-	}
-
-	@Test
-	public void solrIsDown() throws Exception {
-		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new IOException("Connection failed"));
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
-		verifyNoMoreInteractions(solrClient);
+		assertThat(health.getStatus()).isEqualTo(expectedStatus);
+		assertThat(health.getDetails().get("status")).isEqualTo(expectedStatusCode);
+		assertThat(health.getDetails().get("detectedPathType")).isEqualTo(expectedPathType);
 	}
 
 	private NamedList<Object> mockResponse(int status) {
