@@ -99,13 +99,13 @@ if [ ! -d "${SPRING_HOME}" ]; then
 	exit 2
 fi
 
-[[ $cygwin ]] && SPRINGPATH=$(cygpath "${SPRING_HOME}") || SPRINGPATH=$SPRING_HOME
+[[ "${cygwin}" == "true" ]] && SPRINGPATH=$(cygpath "${SPRING_HOME}") || SPRINGPATH=$SPRING_HOME
 CLASSPATH=.:${SPRINGPATH}/bin
 if [ -d "${SPRINGPATH}/ext" ]; then
 	CLASSPATH=$CLASSPATH:${SPRINGPATH}/ext
 fi
 for f in "${SPRINGPATH}"/lib/*; do
-	[[ $cygwin ]] && LIBFILE=$(cygpath "$f") || LIBFILE=$f
+	[[ "${cygwin}" == "true" ]] && LIBFILE=$(cygpath "$f") || LIBFILE=$f
 	CLASSPATH=$CLASSPATH:$LIBFILE
 done
 
