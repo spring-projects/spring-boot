@@ -71,7 +71,6 @@ class JooqExceptionTranslatorTests {
 
 	private static SQLException sqlException(int vendorCode) {
 		return new SQLException(null, null, vendorCode);
-
 	}
 
 }

@@ -283,7 +283,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		return prepareCompressionTest(compression);
-
 	}
 
 	protected WebClient prepareCompressionTest(Compression compression) {

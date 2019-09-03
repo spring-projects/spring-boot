@@ -272,7 +272,6 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			name = Logger.ROOT_LOGGER_NAME;
 		}
 		return factory.getLogger(name);
-
 	}
 
 	private LoggerContext getLoggerContext() {

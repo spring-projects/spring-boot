@@ -72,7 +72,6 @@ class RedisCacheConfiguration {
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ClassLoader classLoader) {
 		return redisCacheConfiguration.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
-
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
