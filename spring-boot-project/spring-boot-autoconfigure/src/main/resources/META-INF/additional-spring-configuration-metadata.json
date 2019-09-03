@@ -976,7 +976,7 @@
       "description": "Check the change log location exists.",
       "defaultValue": true,
       "deprecation": {
-        "reason": "Liquibase has it's own check that checks if the change log location exists making this property redundant.",
+        "reason": "Liquibase has its own check that checks if the change log location exists making this property redundant.",
         "level": "error"
       }
     },
