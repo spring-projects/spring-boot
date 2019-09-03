@@ -49,6 +49,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
@@ -294,6 +298,13 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void customFlywayWithJdbc() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJdbcConfiguration.class)
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	void overrideBaselineVersionString() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.baseline-version=0").run((context) -> {
@@ -530,7 +541,7 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Bean
-		Flyway flyway() {
+		Flyway customFlyway() {
 			return Flyway.configure().load();
 		}
 
@@ -541,6 +552,32 @@ class FlywayAutoConfigurationTests {
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), properties, null)
 					.dataSource(this.dataSource).build();
+		}
+
+	}
+
+	@Configuration
+	static class CustomFlywayWithJdbcConfiguration {
+
+		private final DataSource dataSource;
+
+		protected CustomFlywayWithJdbcConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Bean
+		Flyway customFlyway() {
+			return Flyway.configure().load();
+		}
+
+		@Bean
+		JdbcOperations jdbcOperations() {
+			return new JdbcTemplate(this.dataSource);
+		}
+
+		@Bean
+		NamedParameterJdbcOperations namedParameterJdbcOperations() {
+			return new NamedParameterJdbcTemplate(this.dataSource);
 		}
 
 	}
