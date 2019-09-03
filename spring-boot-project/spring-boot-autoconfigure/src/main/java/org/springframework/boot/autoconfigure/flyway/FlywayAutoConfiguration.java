@@ -265,7 +265,7 @@ public class FlywayAutoConfiguration {
 
 		/**
 		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-		 * depend on the {@code flywayInitializer} bean.
+		 * depend on any {@link FlywayMigrationInitializer} beans.
 		 */
 		@Configuration
 		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
@@ -274,14 +274,14 @@ public class FlywayAutoConfiguration {
 				extends EntityManagerFactoryDependsOnPostProcessor {
 
 			public FlywayInitializerJpaDependencyConfiguration() {
-				super("flywayInitializer");
+				super(FlywayMigrationInitializer.class);
 			}
 
 		}
 
 		/**
 		 * Additional configuration to ensure that {@link JdbcOperations} beans depend on
-		 * the {@code flywayInitializer} bean.
+		 * any {@link FlywayMigrationInitializer} beans.
 		 */
 		@Configuration
 		@ConditionalOnClass(JdbcOperations.class)
@@ -290,14 +290,14 @@ public class FlywayAutoConfiguration {
 				extends JdbcOperationsDependsOnPostProcessor {
 
 			public FlywayInitializerJdbcOperationsDependencyConfiguration() {
-				super("flywayInitializer");
+				super(FlywayMigrationInitializer.class);
 			}
 
 		}
 
 		/**
 		 * Additional configuration to ensure that {@link NamedParameterJdbcOperations}
-		 * beans depend on the {@code flywayInitializer} bean.
+		 * beans depend on any {@link FlywayMigrationInitializer} beans.
 		 */
 		@Configuration
 		@ConditionalOnClass(NamedParameterJdbcOperations.class)
@@ -306,7 +306,7 @@ public class FlywayAutoConfiguration {
 				extends NamedParameterJdbcOperationsDependsOnPostProcessor {
 
 			public FlywayInitializerNamedParameterJdbcOperationsDependencyConfiguration() {
-				super("flywayInitializer");
+				super(FlywayMigrationInitializer.class);
 			}
 
 		}

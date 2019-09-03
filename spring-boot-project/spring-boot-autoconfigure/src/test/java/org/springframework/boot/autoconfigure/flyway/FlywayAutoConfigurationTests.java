@@ -267,6 +267,22 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void customFlywayMigrationInitializerWithJpa() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+						CustomFlywayMigrationInitializerWithJpaConfiguration.class)
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void customFlywayMigrationInitializerWithJdbc() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+						CustomFlywayMigrationInitializerWithJdbcConfiguration.class)
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	public void customFlywayWithJpa() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJpaConfiguration.class)
@@ -407,6 +423,25 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration
+	protected static class CustomFlywayMigrationInitializerWithJpaConfiguration {
+
+		@Bean
+		public FlywayMigrationInitializer customFlywayMigrationInitializer(Flyway flyway) {
+			return new FlywayMigrationInitializer(flyway);
+		}
+
+		@Bean
+		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource) {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), properties, null)
+					.dataSource(dataSource).build();
+		}
+
+	}
+
+	@Configuration
 	protected static class CustomFlywayWithJpaConfiguration {
 
 		private final DataSource dataSource;
@@ -443,6 +478,32 @@ public class FlywayAutoConfigurationTests {
 		@Bean
 		public Flyway customFlyway() {
 			return new Flyway();
+		}
+
+		@Bean
+		public JdbcOperations jdbcOperations() {
+			return new JdbcTemplate(this.dataSource);
+		}
+
+		@Bean
+		public NamedParameterJdbcOperations namedParameterJdbcOperations() {
+			return new NamedParameterJdbcTemplate(this.dataSource);
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomFlywayMigrationInitializerWithJdbcConfiguration {
+
+		private final DataSource dataSource;
+
+		protected CustomFlywayMigrationInitializerWithJdbcConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Bean
+		public FlywayMigrationInitializer customFlywayMigrationInitializer(Flyway flyway) {
+			return new FlywayMigrationInitializer(flyway);
 		}
 
 		@Bean
