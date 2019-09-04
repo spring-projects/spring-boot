@@ -1240,6 +1240,19 @@ The following example configures `HttpComponentsClientRequestFactory` with an `H
 include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
 
+[[howto-webclient-reactor-netty-customization]]
+=== Configure the TcpClient used by a Reactor Netty-based WebClient
+When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto-configured.
+To customize the client's handling of network connections, provide a `ClientHttpConnector` bean.
+The following example configures a 60 second read timeout and adds a `ReadTimeoutHandler`:
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/reactive/function/client/ReactorNettyClientCustomizationExample.java[tag=custom-http-connector]
+----
+
+TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.
+This ensures efficient sharing of resources for the server receiving requests and the client making requests.
 
 
 [[howto-logging]]
