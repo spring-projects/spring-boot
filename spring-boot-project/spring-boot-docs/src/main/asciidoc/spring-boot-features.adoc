@@ -6019,7 +6019,7 @@ include::{code-examples}/test/web/MockWebTestClientExampleTests.java[tag=test-mo
 [TIP]
 ====
 Testing within a mocked environment is usually faster than running with a full Servlet container.
-However, since mocking occurs at the Spring MVC layer, code that relies on on lower level Servlet concerns cannot be directly tested with MockMvc.
+However, since mocking occurs at the Spring MVC layer, code that relies on lower-level Servlet container behavor cannot be directly tested with MockMvc.
 
 For example, Spring Boot's error handling is based on the "`error page`" support provided by the Servlet container.
 This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<#boot-features-error-handling-custom-error-pages, custom error page>> is rendered.
