@@ -1269,19 +1269,39 @@ By default, Spring Boot picks up the native configuration from its default locat
 
 [[howto-configure-logback-for-logging]]
 === Configure Logback for Logging
-If you put a `logback.xml` in the root of your classpath, it is picked up from there (or from `logback-spring.xml`, to take advantage of the templating features provided by Boot).
-Spring Boot provides a default base configuration that you can include if you want to set levels, as shown in the following example:
+If you need to apply customizations to logback beyond those that can be achieved with `application.properties`, you'll need to add a standard logback configuration file.
+You can add a `logback.xml` file to the root of your classpath for logback to find.
+You can also use `logback-spring.xml` if you want to use the <<spring-boot-features.adoc#boot-features-logback-extensions,Spring Boot Logback extensions>>)
+
+TIP: The Logback documentation has a https://logback.qos.ch/manual/configuration.html[dedicated section that covers configuration] in some detail.
+
+Spring Boot provides a number of logback configurations that be `included` from your own configuration.
+These includes are designed to allow certain common Spring Boot conventions to be re-applied.
+
+The following files are provided under `org/springframework/boot/logging/logback/`:
+
+* `defaults.xml` - Provides conversion rules, pattern properties and common logger configurations.
+* `console-appender.xml` - Adds a `ConsoleAppender` using the `CONSOLE_LOG_PATTERN`.
+* `file-appender.xml` - Adds a `RollingFileAppender` using the `FILE_LOG_PATTERN` with appropriate settings.
+
+In addition, a legacy `base.xml` file is provided for compatibility with earlier versions of Spring Boot.
+
+A typical custom `logback.xml` file would look something like this:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<configuration>
-		<include resource="org/springframework/boot/logging/logback/base.xml"/>
+		<include resource="org/springframework/boot/logging/logback/default.xml"/>
+		<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+		<root level="INFO">
+			<appender-ref ref="CONSOLE" />
+		</root>
 		<logger name="org.springframework.web" level="DEBUG"/>
 	</configuration>
 ----
 
-If you look at `base.xml` in the spring-boot jar, you can see that it uses some useful System properties that the `LoggingSystem` takes care of creating for you:
+Your logback configuration file can also make use of System properties that the `LoggingSystem` takes care of creating for you:
 
 * `$\{PID}`: The current process ID.
 * `$\{LOG_FILE}`: Whether `logging.file` was set in Boot's external configuration.
@@ -1289,10 +1309,13 @@ If you look at `base.xml` in the spring-boot jar, you can see that it uses some 
 * `$\{LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set in Boot's external configuration.
 
 Spring Boot also provides some nice ANSI color terminal output on a console (but not in a log file) by using a custom Logback converter.
-See the default `base.xml` configuration for details.
+See the `CONSOLE_LOG_PATTERN` in the `default.xml` configuration for an example.
 
 If Groovy is on the classpath, you should be able to configure Logback with `logback.groovy` as well.
 If present, this setting is given preference.
+
+NOTE: Spring extensions are not supported with Groovy configuration.
+Any `logback-spring.groovy` files will not be detected.
 
 
 
