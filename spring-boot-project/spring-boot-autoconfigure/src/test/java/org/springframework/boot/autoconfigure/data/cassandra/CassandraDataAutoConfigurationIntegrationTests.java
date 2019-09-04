@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.time.Duration;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.After;
@@ -45,7 +47,7 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
 	public static SkippableContainer<CassandraContainer<?>> cassandra = new SkippableContainer<>(
-			CassandraContainer::new);
+			() -> new CassandraContainer<>().withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(2)));
 
 	private AnnotationConfigApplicationContext context;
 

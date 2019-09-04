@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
+import java.time.Duration;
+
 import org.testcontainers.containers.GenericContainer;
 
 /**
@@ -28,7 +30,8 @@ import org.testcontainers.containers.GenericContainer;
 public class RedisContainer extends Container {
 
 	public RedisContainer() {
-		super("redis:4.0.6", 6379);
+		super("redis:4.0.6", 6379,
+				(container) -> container.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(2)));
 	}
 
 }
