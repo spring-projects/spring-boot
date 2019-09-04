@@ -1113,8 +1113,16 @@ class SpringApplicationTests {
 				.getBean(AtomicInteger.class)).hasValue(1);
 	}
 
+	@Test
+	void lazyInitializationShouldNotApplyToBeansThatMatchPredicate() {
+		assertThat(new SpringApplication(NotLazyInitializationPredicateConfig.class)
+				.run("--spring.main.web-application-type=none", "--spring.main.lazy-initialization=true")
+				.getBean(AtomicInteger.class)).hasValue(1);
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final Class<?> propertySourceClass,
 			final String name) {
+
 		return new Condition<ConfigurableEnvironment>("has property source") {
 
 			@Override
@@ -1409,6 +1417,34 @@ class SpringApplicationTests {
 		@Lazy(false)
 		NotLazyBean NotLazyBean(AtomicInteger counter) {
 			return new NotLazyBean(counter);
+		}
+
+		static class NotLazyBean {
+
+			NotLazyBean(AtomicInteger counter) {
+				counter.getAndIncrement();
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotLazyInitializationPredicateConfig {
+
+		@Bean
+		AtomicInteger counter() {
+			return new AtomicInteger(0);
+		}
+
+		@Bean
+		NotLazyBean notLazyBean(AtomicInteger counter) {
+			return new NotLazyBean(counter);
+		}
+
+		@Bean
+		static EagerLoadingBeanDefinitionPredicate eagerLoadingBeanDefinitionPredicate() {
+			return NotLazyBean.class::isAssignableFrom;
 		}
 
 		static class NotLazyBean {
