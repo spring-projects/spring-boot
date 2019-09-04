@@ -19,14 +19,14 @@ package org.springframework.boot.configurationsample.method;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Sample for testing simple method configuration.
+ * Sample for testing private method configuration.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-public class SimpleMethodConfig {
+public class PrivateMethodConfig {
 
 	@ConfigurationProperties(prefix = "foo")
-	public Foo foo() {
+	private Foo foo() {
 		return new Foo();
 	}
 
