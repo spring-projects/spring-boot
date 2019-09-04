@@ -1,0 +1,18 @@
+== Concourse pipeline
+
+Ensure that you've setup the spring-boot target and can login
+
+[source]
+----
+$ fly -t spring-boot login -n spring-boot -c https://ci.spring.io
+----
+
+The pipeline can be deployed using the following command:
+
+[source]
+----
+$ fly -t spring-boot set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml
+----
+
+NOTE: This assumes that you have credhub integration configured with the appropriate
+secrets.

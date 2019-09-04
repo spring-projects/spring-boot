@@ -1,0 +1,19 @@
+[[spring-boot-reference-documentation]]
+= Spring Boot Reference Documentation
+Phillip Webb, Dave Syer, Josh Long, Stéphane Nicoll, Rob Winch, Andy Wilkinson, Marcel Overdijk, Christian Dupuis, Sébastien Deleuze, Michael Simons, Vedran Pavić, Jay Bryant, Madhura Bhave
+:docinfo: shared
+
+The reference documentation consists of the following sections:
+
+[horizontal]
+<<legal.adoc#legal,Legal>> :: Legal information.
+<<documentation-overview.adoc#boot-documentation,Documentation Overview>> :: About the Documentation, Getting Help, First Steps, and more.
+<<getting-started.adoc#getting-started,Getting Started>> :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, Developing Your First Spring Boot Application
+<<using-spring-boot.adoc#using-boot,Using Spring Boot>> :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.
+<<spring-boot-features.adoc#boot-features,Spring Boot Features>> :: Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
+<<production-ready-features.adoc#production-ready,Spring Boot Actuator>> :: Monitoring, Metrics, Auditing, and more.
+<<deployment.adoc#deployment,Deploying Spring Boot Applications>> :: Deploying to the Cloud, Installing as a Unix application.
+<<spring-boot-cli.adoc#cli,Spring Boot CLI>> :: Installing the CLI, Using the CLI, Configuring the CLI, and more.
+<<build-tool-plugins.adoc#build-tool-plugins,Build Tool Plugins>> :: Maven Plugin, Gradle Plugin, Antlib, and more.
+<<howto.adoc#howto,"`How-to`" Guides>> :: Application Development, Configuration, Embedded Servers, Data Access, and many more.
+<<appendix.adoc#appendix,Appendices>> :: Properties, Metadata, Configuration, Dependencies, and more.

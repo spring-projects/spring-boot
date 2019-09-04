@@ -1,0 +1,17 @@
+dn: cn=schema
+attributeTypes: ( 1.3.6.1.4.1.32473.1.1.1
+  NAME 'exampleAttributeName'
+  DESC 'An example attribute type definition'
+  EQUALITY caseIgnoreMatch
+  ORDERING caseIgnoreOrderingMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN 'Managing Schema Document' )
+objectClasses: ( 1.3.6.1.4.1.32473.1.2.2
+  NAME 'exampleAuxiliaryClass'
+  DESC 'An example auxiliary object class definition'
+  SUP top
+  AUXILIARY
+  MAY exampleAttributeName
+  X-ORIGIN 'Managing Schema Document' )

@@ -1,0 +1,1 @@
+spring.data.rest.base-path=/api

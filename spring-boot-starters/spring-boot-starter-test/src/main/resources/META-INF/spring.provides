@@ -1,1 +1,0 @@
-provides: spring-test,spring-boot,junit,mockito,hamcrest-library,assertj,jsonassert,json-path

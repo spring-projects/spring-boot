@@ -1,0 +1,1 @@
+INSERT INTO BAR VALUES (1, 'Andy');

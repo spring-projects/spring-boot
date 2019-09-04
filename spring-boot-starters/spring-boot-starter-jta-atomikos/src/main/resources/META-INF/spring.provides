@@ -1,1 +1,0 @@
-provides: transactions-jms,transactions-jta,transactions-jdbc

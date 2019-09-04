@@ -1,9 +1,0 @@
-== Spring Boot Liquibase Sample
-
-This sample demonstrates the liquibase auto-configuration support.
-
-You can look at `http://localhost:8080/liquibase` to review the list of scripts.
-
-This sample also enables the H2 console (at `http://localhost:8080/h2-console`)
-so that you can review the state of the database (the default jdbc url is
-`jdbc:h2:mem:testdb`).
