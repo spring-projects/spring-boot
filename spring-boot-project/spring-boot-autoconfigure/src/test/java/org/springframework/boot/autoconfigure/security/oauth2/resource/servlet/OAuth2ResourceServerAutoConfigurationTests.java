@@ -47,8 +47,8 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
@@ -287,7 +287,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationWhenIntrospectionUriAvailableShouldBeConditionalOnClass() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(OAuth2IntrospectionAuthenticationToken.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(BearerTokenAuthenticationToken.class))
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",

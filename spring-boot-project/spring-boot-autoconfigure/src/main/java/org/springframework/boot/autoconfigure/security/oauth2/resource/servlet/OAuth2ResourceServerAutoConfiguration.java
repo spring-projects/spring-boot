@@ -26,8 +26,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
@@ -52,7 +52,7 @@ public class OAuth2ResourceServerAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ OAuth2IntrospectionAuthenticationToken.class, OpaqueTokenIntrospector.class })
+	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, OpaqueTokenIntrospector.class })
 	@Import({ OAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
 			OAuth2ResourceServerOpaqueTokenConfiguration.OAuth2WebSecurityConfigurerAdapter.class })
 	static class OpaqueTokenConfiguration {
