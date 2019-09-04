@@ -213,6 +213,15 @@ jobs:
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java12
       image: spring-boot-ci-image
+    - task: detect-jdk13-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java13
+      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
