@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @author Eddú Meléndez
  */
 class CloudFoundryVcapEnvironmentPostProcessorTests {
 
@@ -51,8 +50,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(getProperty("vcap.application.instance_id"))
-				.isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
+		assertThat(getProperty("vcap.application.instance_id")).isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
 	}
 
 	@Test
