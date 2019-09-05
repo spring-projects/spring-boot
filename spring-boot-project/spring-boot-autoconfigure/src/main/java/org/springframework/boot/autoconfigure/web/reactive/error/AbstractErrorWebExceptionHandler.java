@@ -263,6 +263,25 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 				.flatMap((response) -> write(exchange, response));
 	}
 
+	private boolean isDisconnectedClientError(Throwable ex) {
+		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
+				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
+	}
+
+	private boolean isDisconnectedClientErrorMessage(String message) {
+		message = (message != null) ? message.toLowerCase() : "";
+		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
+	}
+
+	/**
+	 * Logs the {@code throwable} error for the given {@code request} and {@code response}
+	 * exchange. The default implementation logs all errors at debug level. Additionally,
+	 * any internal server error (500) is logged at error level.
+	 * @param request the request that was being handled
+	 * @param response the response that was being sent
+	 * @param throwable the error to be logged
+	 * @since 2.2.0
+	 */
 	protected void logError(ServerRequest request, ServerResponse response, Throwable throwable) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
@@ -272,16 +291,6 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			logger.error(request.exchange().getLogPrefix() + "500 Server Error for " + formatRequest(request),
 					throwable);
 		}
-	}
-
-	private boolean isDisconnectedClientError(Throwable ex) {
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
-				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
-	}
-
-	private boolean isDisconnectedClientErrorMessage(String message) {
-		message = (message != null) ? message.toLowerCase() : "";
-		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
 	}
 
 	private String formatError(Throwable ex, ServerRequest request) {
