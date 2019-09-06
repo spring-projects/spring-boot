@@ -232,7 +232,6 @@ public class DeferredLog implements Log {
 			return;
 		case FATAL:
 			log.fatal(message, throwable);
-			return;
 		}
 	}
 

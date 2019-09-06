@@ -221,7 +221,7 @@ public enum DurationStyle {
 		}
 
 		public Duration parse(String value) {
-			return Duration.of(Long.valueOf(value), this.chronoUnit);
+			return Duration.of(Long.parseLong(value), this.chronoUnit);
 		}
 
 		public String print(Duration value) {
