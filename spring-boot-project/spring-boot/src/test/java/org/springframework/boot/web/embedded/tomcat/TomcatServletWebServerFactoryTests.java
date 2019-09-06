@@ -544,8 +544,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void registerJspServletWithDefaultLoadOnStartup() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
-		factory.addInitializers(
-				servletContext -> servletContext.addServlet("manually-registered-jsp-servlet", JspServlet.class));
+		factory.addInitializers((servletContext) -> servletContext.addServlet("manually-registered-jsp-servlet", JspServlet.class));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 	}
