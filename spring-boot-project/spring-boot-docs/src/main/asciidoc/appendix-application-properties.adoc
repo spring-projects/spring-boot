@@ -261,9 +261,9 @@ Rather, pick only the properties that you need.
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}\\
+			172\\.1[6-9]\{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.2[0-9]\{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.3[0-1]\{1}\\.\\d{1,3}\\.\\d{1,3}\\
 			0:0:0:0:0:0:0:1\\
 			::1 # Regular expression that matches proxies that are to be trusted.
 	server.tomcat.max-connections=10000 # Maximum number of connections that the server accepts and processes at any given time.
@@ -565,7 +565,7 @@ Rather, pick only the properties that you need.
 	spring.flyway.ignore-pending-migrations=false # Whether to ignore pending migrations when reading the schema history table.
 	spring.flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
 	spring.flyway.installed-by= # Username recorded in the schema history table as having applied the migration.
-	spring.flyway.locations=classpath:db/migration # Locations of migrations scripts. Can contain the special "{vendor}" placeholder to use vendor-specific locations.
+	spring.flyway.locations=classpath:db/migration # Locations of migrations scripts. Can contain the special "\{vendor}" placeholder to use vendor-specific locations.
 	spring.flyway.mixed=false # Whether to allow mixing transactional and non-transactional statements within the same migration.
 	spring.flyway.out-of-order=false # Whether to allow migrations to be run out of order.
 	spring.flyway.password= # Login password of the database to migrate.
@@ -730,7 +730,7 @@ Rather, pick only the properties that you need.
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
 	spring.datasource.name= # Name of the datasource. Default to "testdb" when using an embedded database.
 	spring.datasource.password= # Login password of the database.
-	spring.datasource.platform=all # Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or data-${platform}.sql).
+	spring.datasource.platform=all # Platform to use in the DDL or DML scripts (such as schema-$\{platform}.sql or data-$\{platform}.sql).
 	spring.datasource.schema= # Schema (DDL) script resource references.
 	spring.datasource.schema-username= # Username of the database to execute DDL scripts (if different).
 	spring.datasource.schema-password= # Password of the database to execute DDL scripts (if different).

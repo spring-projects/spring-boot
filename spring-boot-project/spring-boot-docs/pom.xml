@@ -1290,6 +1290,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
+										<attribute-missing>warn</attribute-missing>
 										<spring-boot-artifactory-repo>${spring-boot-artifactory-repo}</spring-boot-artifactory-repo>
 										<github-tag>${github-tag}</github-tag>
 										<jooq-version>${jooq.version}</jooq-version>

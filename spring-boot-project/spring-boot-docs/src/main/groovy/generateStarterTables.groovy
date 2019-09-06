@@ -11,7 +11,7 @@ def getStarters(File dir) {
 					'name': name,
 					'description': postProcessDescription(pom.description.text()),
 					'dependencies': dependencies,
-					'pomUrl': "{github-code}/spring-boot-project/spring-boot-starters/$name/pom.xml"
+					'pomUrl': "{spring-boot-code}/spring-boot-project/spring-boot-starters/$name/pom.xml"
 			]
 		}
 	}
