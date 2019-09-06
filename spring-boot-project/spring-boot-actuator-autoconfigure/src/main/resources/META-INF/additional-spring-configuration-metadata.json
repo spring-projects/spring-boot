@@ -29,6 +29,15 @@
       "defaultValue": "never"
     },
     {
+      "name": "management.endpoint.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
@@ -162,7 +171,10 @@
         "OUT_OF_SERVICE",
         "UP",
         "UNKNOWN"
-      ]
+      ],
+      "deprecation": {
+        "replacement": "management.endpoint.health.status.order"
+      }
     },
     {
       "name": "management.health.mail.enabled",
