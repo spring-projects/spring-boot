@@ -748,7 +748,7 @@ NOTE: The identifier for a given `HealthIndicator` is the name of the bean witho
 In the preceding example, the health information is available in an entry named `my`.
 
 In addition to Spring Boot's predefined {spring-boot-actuator-module-code}/health/Status.java[`Status`] types, it is also possible for `Health` to return a custom `Status` that represents a new system state.
-In such cases, a custom implementation of the{spring-boot-actuator-module-code}/health/StatusAggregator.java[`StatusAggregator`] interface also needs to be provided, or the default implementation has to be configured by using the `management.endpoint.health.status.order` configuration property.
+In such cases, a custom implementation of the {spring-boot-actuator-module-code}/health/StatusAggregator.java[`StatusAggregator`] interface also needs to be provided, or the default implementation has to be configured by using the `management.endpoint.health.status.order` configuration property.
 
 For example, assume a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
