@@ -41,6 +41,7 @@ public abstract class TestJarCreator {
 	public static void createTestJar(File file, boolean unpackNested) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+			jarOutputStream.setComment("outer");
 			writeManifest(jarOutputStream, "j1");
 			writeEntry(jarOutputStream, "1.dat", 1);
 			writeEntry(jarOutputStream, "2.dat", 2);
@@ -88,6 +89,7 @@ public abstract class TestJarCreator {
 	private static byte[] getNestedJarData(boolean multiRelease) throws Exception {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		JarOutputStream jarOutputStream = new JarOutputStream(byteArrayOutputStream);
+		jarOutputStream.setComment("nested");
 		writeManifest(jarOutputStream, "j2", multiRelease);
 		if (multiRelease) {
 			writeEntry(jarOutputStream, "multi-release.dat", 8);

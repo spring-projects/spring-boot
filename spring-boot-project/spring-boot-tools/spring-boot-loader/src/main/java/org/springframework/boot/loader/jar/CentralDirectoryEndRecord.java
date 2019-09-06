@@ -123,4 +123,10 @@ class CentralDirectoryEndRecord {
 		return (int) numberOfRecords;
 	}
 
+	String getComment() {
+		int commentLength = (int) Bytes.littleEndianValue(this.block, this.offset + COMMENT_LENGTH_OFFSET, 2);
+		AsciiBytes comment = new AsciiBytes(this.block, this.offset + COMMENT_LENGTH_OFFSET + 2, commentLength);
+		return comment.toString();
+	}
+
 }

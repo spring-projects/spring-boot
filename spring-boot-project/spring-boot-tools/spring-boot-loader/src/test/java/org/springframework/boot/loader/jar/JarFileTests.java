@@ -79,6 +79,7 @@ public class JarFileTests {
 	public void jdkJarFile() throws Exception {
 		// Sanity checks to see how the default jar file operates
 		java.util.jar.JarFile jarFile = new java.util.jar.JarFile(this.rootJarFile);
+		assertThat(jarFile.getComment()).isEqualTo("outer");
 		Enumeration<java.util.jar.JarEntry> entries = jarFile.entries();
 		assertThat(entries.nextElement().getName()).isEqualTo("META-INF/");
 		assertThat(entries.nextElement().getName()).isEqualTo("META-INF/MANIFEST.MF");
@@ -150,6 +151,11 @@ public class JarFileTests {
 		java.util.jar.JarEntry entry = this.jarFile.getJarEntry("1.dat");
 		assertThat(entry).isNotNull();
 		assertThat(entry.getName()).isEqualTo("1.dat");
+	}
+
+	@Test
+	public void getComment() {
+		assertThat(this.jarFile.getComment()).isEqualTo("outer");
 	}
 
 	@Test
@@ -245,6 +251,7 @@ public class JarFileTests {
 	@Test
 	public void getNestedJarFile() throws Exception {
 		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+		assertThat(nestedJarFile.getComment()).isEqualTo("nested");
 
 		Enumeration<java.util.jar.JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName()).isEqualTo("META-INF/");
