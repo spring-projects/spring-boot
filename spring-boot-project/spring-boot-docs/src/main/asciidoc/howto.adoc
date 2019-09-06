@@ -1967,7 +1967,7 @@ Assume the following:
 
 [source,properties,indent=0]
 ----
-	spring.flyway.locations=classpath:db/migration/\{vendor}
+	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the folder to use according to the type of the database (such as `db/migration/mysql` for MySQL).
