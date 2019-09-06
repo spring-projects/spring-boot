@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
@@ -36,6 +37,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -56,7 +58,7 @@ class MongoDbFactoryDependentConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(MongoOperations.class)
 	MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
 		return new MongoTemplate(mongoDbFactory, converter);
 	}
@@ -72,7 +74,7 @@ class MongoDbFactoryDependentConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory, this.properties),
 				mongoTemplate.getConverter());

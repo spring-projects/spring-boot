@@ -42,6 +42,7 @@ import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
@@ -118,7 +119,7 @@ public class CassandraDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(CassandraOperations.class)
 	public CassandraTemplate cassandraTemplate(Session session, CassandraConverter converter) {
 		return new CassandraTemplate(session, converter);
 	}
