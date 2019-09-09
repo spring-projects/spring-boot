@@ -171,7 +171,8 @@ TIP: See subclasses of {spring-boot-cli-module-code}/compiler/CompilerAutoConfig
 Spring Boot extends Groovy's standard `@Grab` support by letting you specify a dependency without a group or version (for example, `@Grab('freemarker')`).
 Doing so consults Spring Boot's default dependency metadata to deduce the artifact's group and version.
 
-NOTE: The default metadata is tied to the version of the CLI that you use. it changes only when you move to a new version of the CLI, putting you in control of when the versions of your dependencies may change.
+NOTE: The default metadata is tied to the version of the CLI that you use.
+It changes only when you move to a new version of the CLI, putting you in control of when the versions of your dependencies may change.
 A table showing the dependencies and their versions that are included in the default metadata can be found in the <<appendix-dependency-versions, appendix>>.
 
 
@@ -361,7 +362,8 @@ The command takes one or more sets of artifact coordinates in the format `group:
 
 In addition to installing the artifacts identified by the coordinates you supply, all of the artifacts' dependencies are also installed.
 
-To uninstall a dependency, use the `uninstall` command. As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
+To uninstall a dependency, use the `uninstall` command.
+As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----

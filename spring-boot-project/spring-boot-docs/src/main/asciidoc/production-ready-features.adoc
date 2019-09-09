@@ -326,7 +326,8 @@ For example, to stop exposing all endpoints over JMX and only expose the `health
 	management.endpoints.jmx.exposure.include=health,info
 ----
 
-`*` can be used to select all endpoints. For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
+`*` can be used to select all endpoints.
+For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
 
 [source,properties,indent=0]
 ----
@@ -429,7 +430,8 @@ NOTE: When making an authenticated HTTP request, the `Principal` is considered a
 
 [[production-ready-endpoints-hypermedia]]
 === Hypermedia for Actuator Web Endpoints
-A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is available on `/actuator` by default.
+A "`discovery page`" is added with links to all the endpoints.
+The "`discovery page`" is available on `/actuator` by default.
 
 When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
 For example, if the management context path is `/management`, then the discovery page is available from `/management`.
@@ -640,7 +642,8 @@ The information exposed by the `health` endpoint depends on the `management.endp
 | Details are shown to all users.
 |===
 
-The default value is `never`. A user is considered to be authorized when they are in one or more of the endpoint's roles.
+The default value is `never`.
+A user is considered to be authorized when they are in one or more of the endpoint's roles.
 If the endpoint has no configured roles (the default) all authenticated users are considered to be authorized.
 The roles can be configured using the `management.endpoint.health.roles` property.
 
@@ -749,7 +752,8 @@ To configure the severity order, add the following property to your application 
 ----
 
 The HTTP status code in the response reflects the overall health status (for example, `UP` maps to 200, while `OUT_OF_SERVICE` and `DOWN` map to 503).
-You might also want to register custom status mappings if you access the health endpoint over HTTP. For example, the following property maps `FATAL` to 503 (service unavailable):
+You might also want to register custom status mappings if you access the health endpoint over HTTP.
+For example, the following property maps `FATAL` to 503 (service unavailable):
 
 [source,properties,indent=0]
 ----
@@ -1660,7 +1664,8 @@ By default, Spring MVC-related metrics are tagged with the following information
 | Request's method (for example, `GET` or `POST`)
 
 | `outcome`
-| Request's outcome based on the status code of the response. 1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
 
 | `status`
 | Response's HTTP status code (for example, `200` or `500`)
@@ -1692,7 +1697,8 @@ By default, WebFlux-related metrics are tagged with the following information:
 | Request's method (for example, `GET` or `POST`)
 
 | `outcome`
-| Request's outcome based on the status code of the response. 1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
 
 | `status`
 | Response's HTTP status code (for example, `200` or `500`)
@@ -1744,7 +1750,8 @@ By default, Jersey server metrics are tagged with the following information:
 | Request's method (for example, `GET` or `POST`)
 
 | `outcome`
-| Request's outcome based on the status code of the response. 1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
 
 | `status`
 | Response's HTTP status code (for example, `200` or `500`)
@@ -2054,7 +2061,8 @@ If the server's context-path has been configured to anything other than `/`, the
 For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
 
 If you expect the Cloud Foundry endpoints to always be available at `/cloudfoundryapplication/*`, regardless of the server's context-path, you will need to explicitly configure that in your application.
-The configuration will differ depending on the web server in use. For Tomcat, the following configuration can be added:
+The configuration will differ depending on the web server in use.
+For Tomcat, the following configuration can be added:
 
 [source,java,indent=0]
 ----

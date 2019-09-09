@@ -88,7 +88,8 @@ For example, `server.port` and `server.address` might be specified in `applicati
 The "`groups`" are higher level items that do not themselves specify a value but instead provide a contextual grouping for properties.
 For example, the `server.port` and `server.address` properties are part of the `server` group.
 
-NOTE: It is not required that every "`property`" has a "`group`". Some properties might exist in their own right.
+NOTE: It is not required that every "`property`" has a "`group`".
+Some properties might exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a given property.
 For example, when a developer is configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
@@ -105,7 +106,8 @@ The JSON object contained in the `groups` array can contain the attributes shown
 
 | `name`
 | String
-| The full name of the group. This attribute is mandatory.
+| The full name of the group.
+  This attribute is mandatory.
 
 | `type`
 | String
@@ -315,7 +317,8 @@ The JSON object contained in the `providers` attribute of each `hint` element ca
 
 [[configuration-metadata-repeated-items]]
 ==== Repeated Metadata Items
-Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file. For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
+Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file.
+For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
 While the same names appearing in the metadata multiple times should not be common, consumers of metadata should take care to ensure that they support it.
 
 

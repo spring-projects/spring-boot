@@ -10,7 +10,8 @@ TIP: Spring Boot provides various conversion mechanism with advanced value forma
 NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
 Also, you can define your own properties.
 
-WARNING: This sample file is meant as a guide only. Do **not** copy and paste the entire content into your application.
+WARNING: This sample file is meant as a guide only.
+Do **not** copy and paste the entire content into your application.
 Rather, pick only the properties that you need.
 
 
