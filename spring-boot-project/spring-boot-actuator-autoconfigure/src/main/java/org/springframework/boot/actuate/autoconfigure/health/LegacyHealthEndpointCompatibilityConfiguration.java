@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("deprecation")
-class LegacyHealthEndpointCompatibiltyConfiguration {
+class LegacyHealthEndpointCompatibilityConfiguration {
 
 	@Bean
 	@ConfigurationProperties(prefix = "management.health.status")
