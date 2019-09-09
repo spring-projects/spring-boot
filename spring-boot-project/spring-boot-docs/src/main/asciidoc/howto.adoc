@@ -210,7 +210,8 @@ You can then refer to your Gradle project's properties by using placeholders, as
 	app.description=${description}
 ----
 
-NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine`, which transforms `${..}` tokens. The `${..}` style conflicts with Spring's own property placeholder mechanism.
+NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine`, which transforms `${..}` tokens.
+The `${..}` style conflicts with Spring's own property placeholder mechanism.
 To use Spring property placeholders together with automatic expansion, escape the Spring property placeholders as follows: `\${..}`.
 
 
@@ -644,7 +645,8 @@ Generally, you should first consider using one of the many available configurati
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
 See the list of <<common-application-properties>>.
 
-The previous sections covered already many common use cases, such as compression, SSL or HTTP/2. However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
+However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (Servlet or Reactive).
 
 The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
@@ -1167,7 +1169,8 @@ If you add your own, you have to be aware of the order and in which position you
   You can override `FreeMarkerViewResolver` by providing a bean of the same name.
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you also have a `GroovyMarkupViewResolver` named '`groovyMarkupViewResolver`'.
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
-  The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively. You can override `GroovyMarkupViewResolver` by providing a bean of the same name.
+  The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.
+  You can override `GroovyMarkupViewResolver` by providing a bean of the same name.
 
 For more detail, see the following sections:
 
@@ -1503,7 +1506,8 @@ The following example shows how to define a JDBC data source by setting properti
 
 However, there is a catch.
 Because the actual type of the connection pool is not exposed, no keys are generated in the metadata for your custom `DataSource` and no completion is available in your IDE (because the `DataSource` interface exposes no properties).
-Also, if you happen to have Hikari on the classpath, this basic setup does not work, because Hikari has no `url` property (but does have a `jdbcUrl` property). In that case, you must rewrite your configuration as follows:
+Also, if you happen to have Hikari on the classpath, this basic setup does not work, because Hikari has no `url` property (but does have a `jdbcUrl` property).
+In that case, you must rewrite your configuration as follows:
 
 [source,properties,indent=0]
 ----
@@ -1559,7 +1563,8 @@ See "`<<spring-boot-features.adoc#boot-features-configure-datasource>>`" in the 
 If you need to configure multiple data sources, you can apply the same tricks that are described in the previous section.
 You must, however, mark one of the `DataSource` instances as `@Primary`, because various auto-configurations down the road expect to be able to get one by type.
 
-If you create your own `DataSource`, the auto-configuration backs off. In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
+If you create your own `DataSource`, the auto-configuration backs off.
+In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1568,7 +1573,8 @@ include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration
 
 TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
 
-Both data sources are also bound for advanced customizations. For instance, you could configure them as follows:
+Both data sources are also bound for advanced customizations.
+For instance, you could configure them as follows:
 
 [source,properties,indent=0]
 ----
@@ -1704,7 +1710,8 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguratio
 Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
-If you're using JCache, this is pretty easy. First, make sure that `org.hibernate:hibernate-jcache` is available on the classpath.
+If you're using JCache, this is pretty easy.
+First, make sure that `org.hibernate:hibernate-jcache` is available on the classpath.
 Then, add a `HibernatePropertiesCustomizer` bean as shown in the following example:
 
 [source,java,indent=0]
@@ -1884,7 +1891,8 @@ This is controlled through two external properties:
 You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
 It defaults to `create-drop` if no schema manager has been detected or `none` in all other cases.
-An embedded database is detected by looking at the `Connection` type. `hsqldb`, `h2`, and `derby` are embedded, and others are not.
+An embedded database is detected by looking at the `Connection` type.
+`hsqldb`, `h2`, and `derby` are embedded, and others are not.
 Be careful when switching from in-memory to a '`real`' database that you do not make assumptions about the existence of the tables and data in the new platform.
 You either have to set `ddl-auto` explicitly or use one of the other mechanisms to initialize the database.
 
@@ -1973,7 +1981,8 @@ Assume the following:
 Rather than using `db/migration`, the preceding configuration sets the folder to use according to the type of the database (such as `db/migration/mysql` for MySQL).
 The list of supported databases is available in {spring-boot-module-code}/jdbc/DatabaseDriver.java[`DatabaseDriver`].
 
-Migrations can also be written in Java. Flyway will be auto-configured with any beans that implement `JavaMigration`.
+Migrations can also be written in Java.
+Flyway will be auto-configured with any beans that implement `JavaMigration`.
 
 {spring-boot-autoconfigure-module-code}/flyway/FlywayProperties.java[`FlywayProperties`] provides most of Flyway's settings and a small set of additional properties that can be used to disable the migrations or switch off the location checking.
 If you need more control over the configuration, consider registering a `FlywayConfigurationCustomizer` bean.
@@ -2096,7 +2105,8 @@ See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[Ba
 
 [[howto-actuator]]
 == Actuator
-Spring Boot includes the Spring Boot Actuator. This section answers questions that often arise from its use.
+Spring Boot includes the Spring Boot Actuator.
+This section answers questions that often arise from its use.
 
 
 
@@ -2175,7 +2185,8 @@ You can switch on the valve by adding some entries to `application.properties`, 
 	server.tomcat.protocol-header=x-forwarded-proto
 ----
 
-(The presence of either of those properties switches on the valve. Alternatively, you can add the `RemoteIpValve` by adding a `TomcatServletWebServerFactory` bean.)
+(The presence of either of those properties switches on the valve.
+Alternatively, you can add the `RemoteIpValve` by adding a `TomcatServletWebServerFactory` bean.)
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the following `HttpSecurity` configuration:
 
@@ -2197,7 +2208,8 @@ To configure Spring Security to require a secure channel for all (or some) reque
 
 [[howto-hotswapping]]
 == Hot Swapping
-Spring Boot supports hot swapping. This section answers questions about how it works.
+Spring Boot supports hot swapping.
+This section answers questions about how it works.
 
 
 
@@ -2749,7 +2761,8 @@ See the <<howto-build-an-application-context-hierarchy, entry on building a hier
 An existing parent context that contains web-specific features usually needs to be broken up so that all the `ServletContextAware` components are in the child context.
 
 Applications that are not already Spring applications might be convertible to Spring Boot applications, and the previously mentioned guidance may help.
-However, you may yet encounter problems. In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[asking questions on Stack Overflow with a tag of `spring-boot`].
+However, you may yet encounter problems.
+In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[asking questions on Stack Overflow with a tag of `spring-boot`].
 
 
 

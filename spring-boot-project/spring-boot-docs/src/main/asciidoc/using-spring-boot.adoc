@@ -30,7 +30,8 @@ NOTE: You can still specify a version and override Spring Boot's recommendations
 The curated list contains all the spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
 The list is available as a standard <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>> that can be used with both <<using-boot-maven-parent-pom,Maven>> and <<using-boot-gradle,Gradle>>.
 
-WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework. We **highly** recommend that you not specify its version.
+WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework.
+We **highly** recommend that you not specify its version.
 
 
 
@@ -275,7 +276,8 @@ TIP: For a list of additional community contributed starters, see the {spring-bo
 
 [[using-boot-structuring-your-code]]
 == Structuring Your Code
-Spring Boot does not require any specific code layout to work. However, there are some best practices that help.
+Spring Boot does not require any specific code layout to work.
+However, there are some best practices that help.
 
 
 
@@ -534,9 +536,11 @@ In this example, `Application` is just like any other Spring Boot application ex
 [[using-boot-running-your-application]]
 == Running Your Application
 One of the biggest advantages of packaging your application as a jar and using an embedded HTTP server is that you can run your application as you would any other.
-Debugging Spring Boot applications is also easy. You do not need any special IDE plugins or extensions.
+Debugging Spring Boot applications is also easy.
+You do not need any special IDE plugins or extensions.
 
-NOTE: This section only covers jar based packaging. If you choose to package your application as a war file, you should refer to your server and IDE documentation.
+NOTE: This section only covers jar based packaging.
+If you choose to package your application as a war file, you should refer to your server and IDE documentation.
 
 
 
@@ -548,10 +552,12 @@ Import steps vary depending on your IDE and build system.
 Most IDEs can import Maven projects directly.
 For example, Eclipse users can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
-If you cannot directly import your project into your IDE, you may be able to generate IDE metadata by using a build plugin. Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IDEA].
+If you cannot directly import your project into your IDE, you may be able to generate IDE metadata by using a build plugin.
+Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IDEA].
 Gradle offers plugins for {gradle-docs}/userguide.html[various IDEs].
 
-TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error. STS users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
+TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error.
+STS users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
 
 
 
@@ -663,7 +669,8 @@ If that does not apply to you (i.e. if you run your application from a container
 
 TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly` configuration in Gradle (as shown above) is a best practice that prevents devtools from being transitively applied to other modules that use your project.
 
-TIP: Repackaged archives do not contain devtools by default. If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the `excludeDevtools` build property to include it.
+TIP: Repackaged archives do not contain devtools by default.
+If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the `excludeDevtools` build property to include it.
 The property is supported with both the Maven and Gradle plugins.
 
 
@@ -710,7 +717,8 @@ NOTE: As long as forking is enabled, you can also start your application by usin
 By default, the Gradle and Maven plugins fork the application process.
 
 TIP: Automatic restart works very well when used with LiveReload.
-<<using-boot-devtools-livereload,See the LiveReload section>> for details. If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
+<<using-boot-devtools-livereload,See the LiveReload section>> for details.
+If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
 Other devtools features (such as LiveReload and property overrides) can still be used.
 
 NOTE: DevTools relies on the application context's shutdown hook to close it during a restart.
@@ -850,7 +858,8 @@ The value of the property is a regex pattern that is applied to the classpath, a
 	restart.include.projectcommon=/mycorp-myproj-[\\w\\d-\.]+\.jar
 ----
 
-NOTE: All property keys must be unique. As long as a property starts with `restart.include.` or `restart.exclude.` it is considered.
+NOTE: All property keys must be unique.
+As long as a property starts with `restart.include.` or `restart.exclude.` it is considered.
 
 TIP: All `META-INF/spring-devtools.properties` from the classpath are loaded.
 You can package files inside your project, or in the libraries that the project consumes.
@@ -874,7 +883,8 @@ LiveReload browser extensions are freely available for Chrome, Firefox and Safar
 
 If you do not want to start the LiveReload server when your application runs, you can set the `spring.devtools.livereload.enabled` property to `false`.
 
-NOTE: You can only run one LiveReload server at a time. Before starting your application, ensure that no other LiveReload servers are running.
+NOTE: You can only run one LiveReload server at a time.
+Before starting your application, ensure that no other LiveReload servers are running.
 If you start multiple applications from your IDE, only the first has LiveReload support.
 
 

@@ -119,10 +119,12 @@ Inside your `banner.txt` file, you can use any of the following placeholders:
   For example, `Implementation-Version: 1.0` is printed as `1.0`.
 
 | `${application.formatted-version}`
-| The version number of your application, as declared in `MANIFEST.MF` and formatted for display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
+| The version number of your application, as declared in `MANIFEST.MF` and formatted for display (surrounded with brackets and prefixed with `v`).
+  For example `(v1.0)`.
 
 | `${spring-boot.version}`
-| The Spring Boot version that you are using. For example `{spring-boot-version}`.
+| The Spring Boot version that you are using.
+  For example `{spring-boot-version}`.
 
 | `${spring-boot.formatted-version}`
 | The Spring Boot version that you are using, formatted for display (surrounded with brackets and prefixed with `v`).
@@ -522,7 +524,8 @@ NOTE: If your application runs in a container, then JNDI properties (in `java:co
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific Properties
 In addition to `application.properties` files, profile-specific properties can also be defined by using the following naming convention: `application-\{profile}.properties`.
-The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set. In other words, if no profiles are explicitly activated, then properties from `application-default.properties` are loaded.
+The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
+In other words, if no profiles are explicitly activated, then properties from `application-default.properties` are loaded.
 
 Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones, whether or not the profile-specific files are inside or outside your packaged jar.
 
@@ -904,12 +907,10 @@ Default values can be specified using `@DefaultValue` and the same conversion se
 
 [[boot-features-external-config-enabling]]
 ==== Enabling `@ConfigurationProperties`-annotated types
-Spring Boot provides an infrastructure to bind such types and register them as beans
-automatically. If your application uses `@SpringBootApplication`, classes annotated with
-`@ConfigurationProperties` will automatically be scanned and registered as beans. By default,
-scanning will occur from the package of the class that declares this annotation. If you want
-to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan`
-directive on your `@SpringBootApplication`-annotated class as shown in the following example:
+Spring Boot provides an infrastructure to bind such types and register them as beans automatically.
+If your application uses `@SpringBootApplication`, classes annotated with `@ConfigurationProperties` will automatically be scanned and registered as beans.
+By default, scanning will occur from the package of the class that declares this annotation.
+If you want to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan` directive on your `@SpringBootApplication`-annotated class as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -919,10 +920,8 @@ directive on your `@SpringBootApplication`-annotated class as shown in the follo
 	}
 ----
 
-Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable
-for scanning, for example, if you're developing your own auto-configuration. In these
-cases, you can specify the list of types to process on any `@Configuration` class as
-shown in the following example:
+Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration.
+In these cases, you can specify the list of types to process on any `@Configuration` class as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -946,10 +945,8 @@ In particular, it is not possible to inject other beans using the constructor as
 For corner cases, setter injection can be used or any of the `*Aware` interfaces provided
 by the framework (such as `EnvironmentAware` if you need access to the `Environment`).
 
-NOTE: Annotating a `@ConfigurationProperties` type with `@Component` will result in two
-beans of the same type if the type is also scanned as part of classpath scanning. If you want
-to register the bean yourself using `@Component`, consider disabling scanning of
-`@ConfigurationProperties`.
+NOTE: Annotating a `@ConfigurationProperties` type with `@Component` will result in two beans of the same type if the type is also scanned as part of classpath scanning.
+If you want to register the bean yourself using `@Component`, consider disabling scanning of `@ConfigurationProperties`.
 
 
 
@@ -1083,7 +1080,8 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard YAML list syntax or comma-separated values
 
 | Environment Variables
-| Upper case format with underscore as the delimiter. `_` should not be used within a property name
+| Upper case format with underscore as the delimiter.
+  `_` should not be used within a property name
 | Numeric values surrounded by underscores, such as `MY_ACME_1_OTHER = my.acme[1].other`
 
 | System properties
@@ -1249,7 +1247,8 @@ include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=ex
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
 A read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and `500ms`.
 
-You can also use any of the supported units. These are:
+You can also use any of the supported units.
+These are:
 
 * `ns` for nanoseconds
 * `us` for microseconds
@@ -1284,7 +1283,8 @@ include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=exampl
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
 A size threshold of 256 bytes can be specified as `256` or `256B`.
 
-You can also use any of the supported units. These are:
+You can also use any of the supported units.
+These are:
 
 * `B` for bytes
 * `KB` for kilobytes
@@ -1471,9 +1471,11 @@ Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all int
 Default configurations are provided for {java-api}/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4J2], and https://logback.qos.ch/[Logback].
 In each case, loggers are pre-configured to use console output with optional file output also available.
 
-By default, if you use the "`Starters`", Logback is used for logging. Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J, or SLF4J all work correctly.
+By default, if you use the "`Starters`", Logback is used for logging.
+Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J, or SLF4J all work correctly.
 
-TIP: There are a lot of logging frameworks available for Java. Do not worry if the above list seems confusing.
+TIP: There are a lot of logging frameworks available for Java.
+Do not worry if the above list seems confusing.
 Generally, you do not need to change your logging dependencies and the Spring Boot defaults work just fine.
 
 
@@ -1501,7 +1503,8 @@ The following items are output:
 * Logger name: This is usually the source class name (often abbreviated).
 * The log message.
 
-NOTE: Logback does not have a `FATAL` level. It is mapped to `ERROR`.
+NOTE: Logback does not have a `FATAL` level.
+It is mapped to `ERROR`.
 
 
 
@@ -2008,7 +2011,8 @@ If you want to take complete control of Spring MVC, you can add your own `@Confi
 [[boot-features-spring-mvc-message-converters]]
 ==== HttpMessageConverters
 Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and responses.
-Sensible defaults are included out of the box. For example, objects can be automatically converted to JSON (by using the Jackson library) or XML (by using the Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not available).
+Sensible defaults are included out of the box.
+For example, objects can be automatically converted to JSON (by using the Jackson library) or XML (by using the Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not available).
 By default, strings are encoded in `UTF-8`.
 
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
@@ -2109,7 +2113,8 @@ Although this directory is a common standard, it works *only* with war packaging
 Spring Boot also supports the advanced resource handling features provided by Spring MVC, allowing use cases such as cache-busting static resources or using version agnostic URLs for Webjars.
 
 To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
-Then declare your Webjar. Using jQuery as an example, adding `"/webjars/jquery/jquery.min.js"` results in `"/webjars/jquery/x.y.z/jquery.min.js"` where `x.y.z` is the Webjar version.
+Then declare your Webjar.
+Using jQuery as an example, adding `"/webjars/jquery/jquery.min.js"` results in `"/webjars/jquery/x.y.z/jquery.min.js"` where `x.y.z` is the Webjar version.
 
 NOTE: If you use JBoss, you need to declare the `webjars-locator-jboss-vfs` dependency instead of the `webjars-locator-core`.
 Otherwise, all Webjars resolve as a `404`.
@@ -2127,7 +2132,8 @@ You should manually declare this filter when using JSPs.
 Other template engines are currently not automatically supported but can be with custom template macros/helpers and the use of the {spring-framework-api}/web/servlet/resource/ResourceUrlProvider.html[`ResourceUrlProvider`].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming files is not an option.
-That is why other strategies are also supported and can be combined. A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
+That is why other strategies are also supported and can be combined.
+A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2149,7 +2155,8 @@ This feature has been thoroughly described in a dedicated https://spring.io/blog
 
 [[boot-features-spring-mvc-welcome-page]]
 ==== Welcome Page
-Spring Boot supports both static and templated welcome pages. It first looks for an `index.html` file in the configured static content locations.
+Spring Boot supports both static and templated welcome pages.
+It first looks for an `index.html` file in the configured static content locations.
 If one is not found, it then looks for an `index` template.
 If either is found, it is automatically used as the welcome page of the application.
 
@@ -2563,7 +2570,8 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 ----
 
 You can also customize the static resource locations by using `spring.resources.static-locations`.
-Doing so replaces the default values with a list of directory locations. If you do so, the default welcome page detection switches to your custom locations.
+Doing so replaces the default values with a list of directory locations.
+If you do so, the default welcome page detection switches to your custom locations.
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
 
 In addition to the "`standard`" static resource locations listed earlier, a special case is made for https://www.webjars.org/[Webjars content].
@@ -2729,7 +2737,8 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 ----
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
-By default, the Jersey servlet is registered and mapped to `/*`. You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
+By default, the Jersey servlet is registered and mapped to `/*`.
+You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
 
 By default, Jersey is set up as a Servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
 By default, the servlet is initialized lazily, but you can customize that behavior by setting `spring.jersey.servlet.load-on-startup`.
@@ -3045,7 +3054,8 @@ Spring Boot relies on Spring Security’s content-negotiation strategy to determ
 To add method-level security to a web application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
 Additional information can be found in the {spring-security-docs}#jc-method[Spring Security Reference Guide].
 
-The default `UserDetailsService` has a single user. The user name is `user`, and the password is random and is printed at INFO level when the application starts, as shown in the following example:
+The default `UserDetailsService` has a single user.
+The user name is `user`, and the password is random and is printed at INFO level when the application starts, as shown in the following example:
 
 [indent=0]
 ----
@@ -3085,7 +3095,8 @@ Spring Boot provides convenience methods that can be used to override access rul
 [[boot-features-security-webflux]]
 === WebFlux Security
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
-The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`. `ReactiveSecurityAutoConfiguration` imports `WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
+The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
+`ReactiveSecurityAutoConfiguration` imports `WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
 To switch off the default web application security configuration completely, you can add a bean of type `WebFilterChainProxy` (doing so does not disable the `UserDetailsService` configuration or Actuator's security).
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type `ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
@@ -3294,7 +3305,8 @@ You need to populate your database when your application starts and be prepared 
 TIP: The "`How-to`" section includes a <<howto.adoc#howto-database-initialization, section on how to initialize a database>>.
 
 Spring Boot can auto-configure embedded https://www.h2database.com[H2], http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
-You need not provide any connection URLs. You need only include a build dependency to the embedded database that you want to use.
+You need not provide any connection URLs.
+You need only include a build dependency to the embedded database that you want to use.
 
 [NOTE]
 ====
@@ -3439,7 +3451,8 @@ If more than one `JdbcTemplate` is defined and no primary candidate exists, the 
 [[boot-features-jpa-and-spring-data]]
 === JPA and Spring Data JPA
 The Java Persistence API is a standard technology that lets you "`map`" objects to relational databases.
-The `spring-boot-starter-data-jpa` POM provides a quick way to get started. It provides the following key dependencies:
+The `spring-boot-starter-data-jpa` POM provides a quick way to get started.
+It provides the following key dependencies:
 
 * Hibernate: One of the most popular JPA implementations.
 * Spring Data JPA: Makes it easy to implement JPA-based repositories.
@@ -3612,7 +3625,8 @@ NOTE: The H2 console is only intended for use during development, so you should 
 
 [[boot-features-sql-h2-console-custom-path]]
 ==== Changing the H2 Console's Path
-By default, the console is available at `/h2-console`. You can customize the console's path by using the `spring.h2.console.path` property.
+By default, the console is available at `/h2-console`.
+You can customize the console's path by using the `spring.h2.console.path` property.
 
 
 
@@ -3627,7 +3641,8 @@ Both the commercial and open source editions can be used with Spring Boot.
 In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
 You can follow the instructions in the {jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
 If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-starter-parent` "`parent POM`", you can safely omit the plugin's `<version>` tag.
-You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency. The following listing shows an example:
+You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency.
+The following listing shows an example:
 
 [source,xml,indent=0]
 ----
@@ -4134,10 +4149,8 @@ If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` 
 
 [[boot-features-connecting-to-elasticsearch-reactive-rest]]
 ==== Connecting to Elasticsearch using Reactive REST clients
-{spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient`
-for querying Elasticsearch instances in a reactive fashion. It is built on top of WebFlux's
-`WebClient`, so both `spring-boot-starter-elasticsearch` and `spring-boot-starter-webflux`
-dependencies are useful to enable this support.
+{spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
+It is built on top of WebFlux's `WebClient`, so both `spring-boot-starter-elasticsearch` and `spring-boot-starter-webflux` dependencies are useful to enable this support.
 
 By default, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`
 bean that targets `http://localhost:9200`.
@@ -4224,11 +4237,8 @@ TIP: For complete details of Spring Data Elasticsearch, refer to the {spring-dat
 Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.
 
-If you wish to use your own template for backing the Elasticsearch repositories, you can
-add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`,
-as long as it is named `"elasticsearchTemplate"`. Same applies to
-`ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperations`, with the bean
-name `"reactiveElasticsearchTemplate"`.
+If you wish to use your own template for backing the Elasticsearch repositories, you can add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`, as long as it is named `"elasticsearchTemplate"`.
+Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperations`, with the bean name `"reactiveElasticsearchTemplate"`.
 
 You can choose to disable the repositories support with the following property:
 
@@ -4249,7 +4259,8 @@ There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the d
 [[boot-features-connecting-to-cassandra]]
 ==== Connecting to Cassandra
 You can inject an auto-configured `CassandraTemplate` or a Cassandra `Session` instance as you would with any other Spring Bean.
-The `spring.data.cassandra.*` properties can be used to customize the connection. Generally, you provide `keyspace-name` and `contact-points` properties, as shown in the following example:
+The `spring.data.cassandra.*` properties can be used to customize the connection.
+Generally, you provide `keyspace-name` and `contact-points` properties, as shown in the following example:
 
 [source,properties,indent=0]
 ----
@@ -4679,7 +4690,8 @@ See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentat
 ==== Couchbase
 If the https://www.couchbase.com/[Couchbase] Java client and the `couchbase-spring-cache` implementation are available and Couchbase is <<boot-features-couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
 It is also possible to create additional caches on startup by setting the `spring.cache.cache-names` property.
-These caches operate on the `Bucket` that was auto-configured. You can _also_ create additional caches on another `Bucket` by using the customizer.
+These caches operate on the `Bucket` that was auto-configured.
+You can _also_ create additional caches on another `Bucket` by using the customizer.
 Assume you need two caches (`cache1` and `cache2`) on the "main" `Bucket` and one (`cache3`) cache with a custom time to live of 2 seconds on the "`another`" `Bucket`.
 You can create the first two caches through configuration, as follows:
 
@@ -4859,7 +4871,8 @@ If the broker is present, an embedded broker is automatically started and config
 The supported modes are `embedded` (to make explicit that an embedded broker is required and that an error should occur if the broker is not available on the classpath) and `native` (to connect to a broker using the `netty` transport protocol).
 When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
 
-NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS. Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
+NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
+Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
 
 Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
@@ -4899,7 +4912,8 @@ No JNDI lookup is involved, and destinations are resolved against their names, u
 
 [[boot-features-jms-jndi]]
 ==== Using a JNDI ConnectionFactory
-If you are running your application in an application server, Spring Boot tries to locate a JMS `ConnectionFactory` by using JNDI. By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
+If you are running your application in an application server, Spring Boot tries to locate a JMS `ConnectionFactory` by using JNDI.
+By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the `spring.jms.jndi-name` property if you need to specify an alternative location, as shown in the following example:
 
 [source,properties,indent=0]
@@ -5111,7 +5125,8 @@ TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@
 
 If you need to create more `RabbitListenerContainerFactory` instances or if you want to override the default, Spring Boot provides a `SimpleRabbitListenerContainerFactoryConfigurer` and a `DirectRabbitListenerContainerFactoryConfigurer` that you can use to initialize a `SimpleRabbitListenerContainerFactory` and a `DirectRabbitListenerContainerFactory` with the same settings as the factories used by the auto-configuration.
 
-TIP: It does not matter which container type you chose. Those two beans are exposed by the auto-configuration.
+TIP: It does not matter which container type you chose.
+Those two beans are exposed by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
 
@@ -5152,7 +5167,8 @@ Then you can use the factory in any `@RabbitListener`-annotated method, as follo
 You can enable retries to handle situations where your listener throws an exception.
 By default, `RejectAndDontRequeueRecoverer` is used, but you can define a `MessageRecoverer` of your own.
 When retries are exhausted, the message is rejected and either dropped or routed to a dead-letter exchange if the broker is configured to do so.
-By default, retries are disabled. You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
+By default, retries are disabled.
+You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
 
 IMPORTANT: By default, if retries are disabled and the listener throws an exception, the delivery is retried indefinitely.
 You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
@@ -5535,7 +5551,8 @@ You can customize the location of this directory by setting a `spring.jta.log-di
 Properties starting with `spring.jta.atomikos.properties` can also be used to customize the Atomikos `UserTransactionServiceImp`.
 See the {spring-boot-module-api}/jta/atomikos/AtomikosProperties.html[`AtomikosProperties` Javadoc] for complete details.
 
-NOTE: To ensure that multiple transaction managers can safely coordinate the same resource managers, each Atomikos instance must be configured with a unique ID. By default, this ID is the IP address of the machine on which Atomikos is running.
+NOTE: To ensure that multiple transaction managers can safely coordinate the same resource managers, each Atomikos instance must be configured with a unique ID.
+By default, this ID is the IP address of the machine on which Atomikos is running.
 To ensure uniqueness in production, you should configure the `spring.jta.transaction-manager-id` property with a different value for each instance of your application.
 
 
@@ -5647,7 +5664,8 @@ If Quartz is available, a `Scheduler` is auto-configured (through the `Scheduler
 
 Beans of the following types are automatically picked up and associated with the `Scheduler`:
 
-* `JobDetail`: defines a particular Job. `JobDetail` instances can be built with the `JobBuilder` API.
+* `JobDetail`: defines a particular Job.
+  `JobDetail` instances can be built with the `JobBuilder` API.
 * `Calendar`.
 * `Trigger`: defines when a particular job is triggered.
 
@@ -6415,7 +6433,8 @@ If that is not what you want, you can disable transaction management for a test 
 
 Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 If you want to use `TestEntityManager` outside of `@DataJpaTest` instances, you can also use the `@AutoConfigureTestEntityManager` annotation.
-A `JdbcTemplate` is also available if you need that. The following example shows the `@DataJpaTest` annotation in use:
+A `JdbcTemplate` is also available if you need that.
+The following example shows the `@DataJpaTest` annotation in use:
 
 [source,java,indent=0]
 ----
@@ -7490,7 +7509,8 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 
 [[boot-features-kotlin-requirements]]
 === Requirements
-Spring Boot supports Kotlin 1.3.x. To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
+Spring Boot supports Kotlin 1.3.x.
+To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
 Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin classes are final by default], you are likely to want to configure {kotlin-docs}compiler-plugins.html#spring-support[kotlin-spring] plugin in order to automatically open Spring-annotated classes so that they can be proxied.

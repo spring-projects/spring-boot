@@ -400,7 +400,8 @@ A fully executable jar can be executed like any other executable binary or it ca
 This makes it very easy to install and manage Spring Boot applications in common production environments.
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
-Currently, some tools do not accept this format, so you may not always be able to use this technique. For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
+Currently, some tools do not accept this format, so you may not always be able to use this technique.
+For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
 It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar`or deploying it to a servlet container.
 
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
@@ -520,7 +521,8 @@ One way to protect against this is to make it immutable by using `chattr`, as sh
 This will prevent any user, including root, from modifying the jar.
 
 If root is used to control the application's service and you <<deployment-script-customization-conf-file, use a `.conf` file>> to customize its startup, the `.conf` file is read and evaluated by the root user.
-It should be secured accordingly. Use `chmod` so that the file can only be read by the owner and use `chown` to make root the owner, as shown in the following example:
+It should be secured accordingly.
+Use `chmod` so that the file can only be read by the owner and use `chown` to make root the owner, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -650,17 +652,20 @@ The following property substitutions are supported with the default script:
 |
 
 | `logFolder`
-| Default value for `LOG_FOLDER`. Only valid for an `init.d` service
+| Default value for `LOG_FOLDER`.
+  Only valid for an `init.d` service
 |
 |
 
 | `logFilename`
-| Default value for `LOG_FILENAME`. Only valid for an `init.d` service
+| Default value for `LOG_FILENAME`.
+  Only valid for an `init.d` service
 |
 |
 
 | `pidFolder`
-| Default value for `PID_FOLDER`. Only valid for an `init.d` service
+| Default value for `PID_FOLDER`.
+  Only valid for an `init.d` service
 |
 |
 
@@ -676,7 +681,8 @@ The following property substitutions are supported with the default script:
 | `true`
 
 | `stopWaitTime`
-| Default value for `STOP_WAIT_TIME` in seconds. Only valid for an `init.d` service
+| Default value for `STOP_WAIT_TIME` in seconds.
+  Only valid for an `init.d` service
 | 60
 | 60
 |===
@@ -738,7 +744,8 @@ The following environment properties are supported with the default script:
 | The time in seconds to wait when stopping the application before forcing a shutdown (`60` by default).
 |===
 
-NOTE: The `PID_FOLDER`, `LOG_FOLDER`, and `LOG_FILENAME` variables are only valid for an `init.d` service. For `systemd`, the equivalent customizations are made by using the '`service`' script.
+NOTE: The `PID_FOLDER`, `LOG_FOLDER`, and `LOG_FILENAME` variables are only valid for an `init.d` service.
+For `systemd`, the equivalent customizations are made by using the '`service`' script.
 See the https://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit configuration man page] for more details.
 
 
