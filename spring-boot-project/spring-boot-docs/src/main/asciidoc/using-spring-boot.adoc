@@ -342,17 +342,7 @@ The `Application.java` file would declare the `main` method, along with the basi
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-    package com.example.myapplication;
-
-    import org.springframework.boot.autoconfigure.SpringBootApplication
-    import org.springframework.boot.runApplication
-
-    @SpringBootApplication
-    class Application
-
-    fun main(args: Array<String>) {
-        runApplication<Application>(*args)
-    }
+include::{code-examples}/KotlinApplication.kt[tag=customizer]
 ----
 
 
