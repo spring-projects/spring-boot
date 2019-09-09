@@ -903,6 +903,8 @@ In this setup one, and only one constructor must be defined with the list of pro
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 
+NOTE: To use constructor binding the class must not be annotated with `@Component` and must be enabled using `@EnableConfigurationProperties` or configuration property scanning instead.
+
 
 
 [[boot-features-external-config-enabling]]
@@ -933,20 +935,15 @@ In these cases, you can specify the list of types to process on any `@Configurat
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered using scanning or via `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
+When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
 The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
-In particular, it is not possible to inject other beans using the constructor as this would trigger the constructor binder that only deals with the environment.
-
-For corner cases, setter injection can be used or any of the `*Aware` interfaces provided
-by the framework (such as `EnvironmentAware` if you need access to the `Environment`).
-
-NOTE: Annotating a `@ConfigurationProperties` type with `@Component` will result in two beans of the same type if the type is also scanned as part of classpath scanning.
-If you want to register the bean yourself using `@Component`, consider disabling scanning of `@ConfigurationProperties`.
+For corner cases, setter injection can be used or any of the `*Aware` interfaces provided by the framework (such as `EnvironmentAware` if you need access to the `Environment`).
+If you still want to inject other beans using the constructor, the configuration properties bean must be annotated with `@Component` and use JavaBean-based property binding.
 
 
 

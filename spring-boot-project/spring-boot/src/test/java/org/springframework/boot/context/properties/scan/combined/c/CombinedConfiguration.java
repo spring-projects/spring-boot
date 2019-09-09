@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.springframework.boot.context.properties.scan.invalid.d;
+package org.springframework.boot.context.properties.scan.combined.c;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Madhura Bhave
  */
-public class OtherInvalidConfiguration {
+public class CombinedConfiguration {
 
-	@RestController
-	@ConfigurationProperties(prefix = "c")
-	static class MyControllerProperties {
+	@Component
+	@ConfigurationProperties(prefix = "b")
+	static class MyProperties {
 
 	}
 
