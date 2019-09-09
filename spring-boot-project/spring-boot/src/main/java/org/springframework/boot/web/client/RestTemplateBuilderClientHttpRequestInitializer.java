@@ -16,18 +16,15 @@
 
 package org.springframework.boot.web.client;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInitializer;
 
 /**
  * {@link ClientHttpRequestFactory} to apply customizations from the
@@ -36,7 +33,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Dmytro Nosan
  * @author Ilya Lukyanovich
  */
-class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientHttpRequestFactoryWrapper {
+class RestTemplateBuilderClientHttpRequestInitializer implements ClientHttpRequestInitializer {
 
 	private final BasicAuthentication basicAuthentication;
 
@@ -44,10 +41,8 @@ class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientH
 
 	private final Set<RestTemplateRequestCustomizer<?>> requestCustomizers;
 
-	RestTemplateBuilderClientHttpRequestFactoryWrapper(ClientHttpRequestFactory requestFactory,
-			BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
-			Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
-		super(requestFactory);
+	RestTemplateBuilderClientHttpRequestInitializer(BasicAuthentication basicAuthentication,
+			Map<String, List<String>> defaultHeaders, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.basicAuthentication = basicAuthentication;
 		this.defaultHeaders = defaultHeaders;
 		this.requestCustomizers = requestCustomizers;
@@ -55,9 +50,7 @@ class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientH
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod, ClientHttpRequestFactory requestFactory)
-			throws IOException {
-		ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
+	public void initialize(ClientHttpRequest request) {
 		HttpHeaders headers = request.getHeaders();
 		if (this.basicAuthentication != null) {
 			this.basicAuthentication.applyTo(headers);
@@ -65,7 +58,6 @@ class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientH
 		this.defaultHeaders.forEach(headers::putIfAbsent);
 		LambdaSafe.callbacks(RestTemplateRequestCustomizer.class, this.requestCustomizers, request)
 				.invoke((customizer) -> customizer.customize(request));
-		return request;
 	}
 
 }
