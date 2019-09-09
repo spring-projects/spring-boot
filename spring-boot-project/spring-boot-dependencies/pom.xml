@@ -140,7 +140,7 @@
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
 		<junit.version>4.12</junit.version>
-		<junit-jupiter.version>5.5.1</junit-jupiter.version>
+		<junit-jupiter.version>5.5.2</junit-jupiter.version>
 		<kafka.version>2.3.0</kafka.version>
 		<kotlin.version>1.3.50</kotlin.version>
 		<kotlin-coroutines.version>1.3.1</kotlin-coroutines.version>
