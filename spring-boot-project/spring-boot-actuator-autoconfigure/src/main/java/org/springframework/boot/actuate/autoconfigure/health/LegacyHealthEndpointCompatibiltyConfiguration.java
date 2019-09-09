@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 class LegacyHealthEndpointCompatibiltyConfiguration {
 
 	@Bean
+	@ConfigurationProperties(prefix = "management.health.status")
 	HealthIndicatorProperties healthIndicatorProperties(HealthEndpointProperties healthEndpointProperties) {
 		return new HealthIndicatorProperties(healthEndpointProperties);
 	}
