@@ -171,10 +171,7 @@
         "OUT_OF_SERVICE",
         "UP",
         "UNKNOWN"
-      ],
-      "deprecation": {
-        "replacement": "management.endpoint.health.status.order"
-      }
+      ]
     },
     {
       "name": "management.health.mail.enabled",
