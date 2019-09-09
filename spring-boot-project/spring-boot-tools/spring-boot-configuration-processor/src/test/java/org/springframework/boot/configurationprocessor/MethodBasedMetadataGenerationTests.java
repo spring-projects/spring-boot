@@ -28,6 +28,7 @@ import org.springframework.boot.configurationsample.method.PackagePrivateMethodC
 import org.springframework.boot.configurationsample.method.PrivateMethodConfig;
 import org.springframework.boot.configurationsample.method.ProtectedMethodConfig;
 import org.springframework.boot.configurationsample.method.PublicMethodConfig;
+import org.springframework.boot.configurationsample.method.SingleConstructorMethodConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,6 +85,17 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 				.fromSource(MethodAndClassConfig.Foo.class));
 		assertThat(metadata)
 				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
+	}
+
+	@Test
+	void singleConstructorMethodConfig() {
+		ConfigurationMetadata metadata = compile(SingleConstructorMethodConfig.class);
+		assertThat(metadata).doesNotHave(Metadata.withProperty("foo.my-service", Object.class)
+				.fromSource(SingleConstructorMethodConfig.Foo.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("foo.name", String.class).fromSource(SingleConstructorMethodConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(SingleConstructorMethodConfig.Foo.class));
 	}
 
 	@Test
