@@ -18,15 +18,12 @@ package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -44,30 +41,6 @@ import org.springframework.web.client.RestTemplate;
 public final class RestTemplateExchangeTags {
 
 	private static final Pattern STRIP_URI_PATTERN = Pattern.compile("^https?://[^/]+/");
-
-	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
-
-	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
-
-	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
-
-	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
-
-	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
-
-	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
-
-	private static final Map<HttpStatus.Series, Tag> SERIES_OUTCOMES;
-
-	static {
-		Map<HttpStatus.Series, Tag> seriesOutcomes = new HashMap<>();
-		seriesOutcomes.put(HttpStatus.Series.INFORMATIONAL, OUTCOME_INFORMATIONAL);
-		seriesOutcomes.put(HttpStatus.Series.SUCCESSFUL, OUTCOME_SUCCESS);
-		seriesOutcomes.put(HttpStatus.Series.REDIRECTION, OUTCOME_REDIRECTION);
-		seriesOutcomes.put(HttpStatus.Series.CLIENT_ERROR, OUTCOME_CLIENT_ERROR);
-		seriesOutcomes.put(HttpStatus.Series.SERVER_ERROR, OUTCOME_SERVER_ERROR);
-		SERIES_OUTCOMES = Collections.unmodifiableMap(seriesOutcomes);
-	}
 
 	private RestTemplateExchangeTags() {
 	}
@@ -155,16 +128,13 @@ public final class RestTemplateExchangeTags {
 	public static Tag outcome(ClientHttpResponse response) {
 		try {
 			if (response != null) {
-				HttpStatus.Series series = HttpStatus.Series.resolve(response.getRawStatusCode());
-				if (series != null) {
-					return SERIES_OUTCOMES.getOrDefault(series, OUTCOME_UNKNOWN);
-				}
+				return Outcome.forStatus(response.getRawStatusCode()).asTag();
 			}
 		}
-		catch (IOException | IllegalArgumentException ex) {
+		catch (IOException ex) {
 			// Continue
 		}
-		return OUTCOME_UNKNOWN;
+		return Outcome.UNKNOWN.asTag();
 	}
 
 }

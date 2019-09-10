@@ -90,8 +90,9 @@ public class DevToolsProperties {
 		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
-		 * Name of a specific file that, when changed, triggers the restart check. If not
-		 * specified, any classpath file change triggers the restart.
+		 * Name of a specific file that, when changed, triggers the restart check. Must be
+		 * a simple name (without any path) of a file that appears on your classpath. If
+		 * not specified, any classpath file change triggers the restart.
 		 */
 		private String triggerFile;
 

@@ -1677,7 +1677,7 @@
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />
 										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="2.1.x" />
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>

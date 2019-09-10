@@ -318,6 +318,20 @@ class BinderTests {
 		assertThat(value).isInstanceOf(JavaBean.class);
 	}
 
+	@Test
+	void bindToJavaBeanWhenHandlerOnStartReturnsNullShouldReturnUnbound() { // gh-18129
+		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar"));
+		BindResult<JavaBean> result = this.binder.bind("foo", Bindable.of(JavaBean.class), new BindHandler() {
+
+			@Override
+			public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+				return null;
+			}
+
+		});
+		assertThat(result.isBound()).isFalse();
+	}
+
 	static class JavaBean {
 
 		private String value;

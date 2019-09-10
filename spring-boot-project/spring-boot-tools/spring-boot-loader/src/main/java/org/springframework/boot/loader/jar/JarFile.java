@@ -80,6 +80,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private boolean signed;
 
+	private String comment;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -146,6 +148,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 			@Override
 			public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
+				JarFile.this.comment = endRecord.getComment();
 			}
 
 			@Override
@@ -288,6 +291,11 @@ public class JarFile extends java.util.jar.JarFile {
 		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(), entryData,
 				JarFileType.NESTED_JAR);
+	}
+
+	@Override
+	public String getComment() {
+		return this.comment;
 	}
 
 	@Override

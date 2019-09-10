@@ -133,8 +133,8 @@ public class QuartzAutoConfiguration {
 
 		/**
 		 * Additional configuration to ensure that {@link SchedulerFactoryBean} and
-		 * {@link Scheduler} beans depend on the {@link QuartzDataSourceInitializer}
-		 * bean(s).
+		 * {@link Scheduler} beans depend on any beans that perform data source
+		 * initialization.
 		 */
 		@Configuration(proxyBeanMethods = false)
 		static class QuartzSchedulerDependencyConfiguration {
@@ -150,10 +150,16 @@ public class QuartzAutoConfiguration {
 				return new SchedulerDependsOnBeanFactoryPostProcessor(FlywayMigrationInitializer.class);
 			}
 
-			@Bean
-			@ConditionalOnBean(SpringLiquibase.class)
-			static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerLiquibaseDependsOnBeanFactoryPostProcessor() {
-				return new SchedulerDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
+			@Configuration(proxyBeanMethods = false)
+			@ConditionalOnClass(SpringLiquibase.class)
+			static class LiquibaseQuartzSchedulerDependencyConfiguration {
+
+				@Bean
+				@ConditionalOnBean(SpringLiquibase.class)
+				static SchedulerDependsOnBeanFactoryPostProcessor quartzSchedulerLiquibaseDependsOnBeanFactoryPostProcessor() {
+					return new SchedulerDependsOnBeanFactoryPostProcessor(SpringLiquibase.class);
+				}
+
 			}
 
 		}

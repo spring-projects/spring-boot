@@ -182,7 +182,8 @@ In those cases, see <<using-boot-maven-without-a-parent>> for an alternative sol
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with 5.x. 4.10 is also supported but this support is deprecated and will be removed in a future release.
+Spring Boot is compatible with 5.x.
+4.10 is also supported but this support is deprecated and will be removed in a future release.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
