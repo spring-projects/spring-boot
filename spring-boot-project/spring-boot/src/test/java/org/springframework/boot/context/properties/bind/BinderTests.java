@@ -211,7 +211,7 @@ class BinderTests {
 	}
 
 	@Test
-	void bindWhenHasCustomDefultHandlerShouldTriggerOnSuccess() {
+	void bindWhenHasCustomDefaultHandlerShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Binder binder = new Binder(this.sources, null, null, null, handler);

@@ -779,7 +779,7 @@ In order to document default values for properties in the class above, you could
 	{"properties": [
 		{
 			"name": "acme.messaging.addresses",
-			"defaultValue": ["a, b"]
+			"defaultValue": ["a", "b"]
 		},
 		{
 			"name": "acme.messaging.container-type",

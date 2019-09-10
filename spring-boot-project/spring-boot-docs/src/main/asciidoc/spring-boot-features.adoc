@@ -3984,7 +3984,7 @@ You can configure the uri and credentials to use by setting the `spring.data.neo
 	spring.data.neo4j.password=secret
 ----
 
-You can take full control over the session creation by either adding a `org.neo4j.ogm.config.Configuration` bean or a `org.neo4j.ogm.session.SessionFactory` bean.
+You can take full control over the session creation by adding either an `org.neo4j.ogm.config.Configuration` bean or an `org.neo4j.ogm.session.SessionFactory` bean.
 
 
 
