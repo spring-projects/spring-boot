@@ -683,7 +683,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | Checks that an Elasticsearch cluster is up.
 
 | {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
-| Checks that an Hazelcast server is up.
+| Checks that a Hazelcast server is up.
 
 | {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.

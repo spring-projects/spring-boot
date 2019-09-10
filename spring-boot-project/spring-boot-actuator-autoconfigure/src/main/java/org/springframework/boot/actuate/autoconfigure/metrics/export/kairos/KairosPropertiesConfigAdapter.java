@@ -21,7 +21,7 @@ import io.micrometer.kairos.KairosConfig;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
- * Adapter to convert {@link KairosProperties} to an {@link KairosConfig}.
+ * Adapter to convert {@link KairosProperties} to a {@link KairosConfig}.
  *
  * @author Stephane Nicoll
  */
