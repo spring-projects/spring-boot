@@ -34,12 +34,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.HttpResources;
+import reactor.netty.resources.ConnectionProvider;
+import reactor.netty.resources.LoopResources;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.SocketUtils;
@@ -54,6 +58,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link NettyRSocketServerFactory}
  *
  * @author Brian Clozel
+ * @author Leo Li
  */
 class NettyRSocketServerFactoryTests {
 
@@ -110,6 +115,22 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
+	void websocketTransportWithReactorResourceFactory() {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
+		factory.setResourceFactory(createReactorResourceFactory());
+		int specificPort = SocketUtils.findAvailableTcpPort(41000);
+		factory.setPort(specificPort);
+		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
+		this.rSocketServer.start();
+		this.requester = createRSocketWebSocketClient();
+		String payload = "test payload";
+		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
+		assertThat(response).isEqualTo(payload);
+		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
+	}
+
+	@Test
 	void serverCustomizers() {
 		NettyRSocketServerFactory factory = getFactory();
 		ServerRSocketFactoryCustomizer[] customizers = new ServerRSocketFactoryCustomizer[2];
@@ -143,6 +164,15 @@ class NettyRSocketServerFactoryTests {
 				.encoder(CharSequenceEncoder.allMimeTypes())
 				.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT)).build();
 		return RSocketRequester.builder().rsocketStrategies(strategies);
+	}
+
+	private ReactorResourceFactory createReactorResourceFactory() {
+		ReactorResourceFactory reactorResourceFactory = new ReactorResourceFactory();
+		LoopResources loopResources = HttpResources.get();
+		ConnectionProvider connectionProvider = HttpResources.get();
+		reactorResourceFactory.setLoopResources(loopResources);
+		reactorResourceFactory.setConnectionProvider(connectionProvider);
+		return reactorResourceFactory;
 	}
 
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
