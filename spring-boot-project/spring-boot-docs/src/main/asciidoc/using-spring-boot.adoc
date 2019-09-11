@@ -528,17 +528,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-    package com.example.myapplication
-
-    import org.springframework.boot.autoconfigure.SpringBootApplication
-    import org.springframework.boot.runApplication
-
-    @SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan
-    class Application
-
-    fun main(args: Array<String>) {
-        runApplication<Application>(*args)
-    }
+include::{code-examples}/autoconfigure/KotlinAutoConfiguration.kt[tag=customizer]
 ----
 
 NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of `@EnableAutoConfiguration` and `@ComponentScan`.
@@ -573,17 +563,7 @@ For instance, you may not want to use component scan or configuration properties
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-    package com.example.myapplication
-
-    import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-    import org.springframework.context.annotation.Configuration
-    import org.springframework.context.annotation.Import
-
-    class Application
-
-    fun main(args: Array<String>) {
-        runApplication<Application>(*args)
-    }
+include::{code-examples}/autoconfigure/KotlinManualAutoConfiguration.kt[tag=customizer]
 ----
 
 In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
@@ -854,10 +834,7 @@ If you need to _completely_ disable restart support (for example, because it doe
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-    fun main(args: Array<String>) {
-        System.setProperty("spring.devtools.restart.enabled", "false")
-        runApplication<Application>(*args)
-    }
+include::{code-examples}/configuration/DisableDevToolsRestart.kt[tag=customizer]
 ----
 
 
