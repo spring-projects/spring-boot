@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.HealthAggregator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -58,6 +60,12 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 			mapper.setStatusMapping(healthIndicatorProperties.getHttpMapping());
 		}
 		return mapper;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	HealthIndicatorRegistry healthIndicatorRegistry() {
+		return new DefaultHealthIndicatorRegistry();
 	}
 
 }
