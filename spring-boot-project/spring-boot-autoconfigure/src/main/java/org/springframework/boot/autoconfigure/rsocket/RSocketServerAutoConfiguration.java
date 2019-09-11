@@ -68,10 +68,13 @@ public class RSocketServerAutoConfiguration {
 	static class WebFluxServerAutoConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
-				RSocketMessageHandler messageHandler) {
-			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder());
+				RSocketMessageHandler messageHandler, ObjectProvider<ServerRSocketFactoryCustomizer> customizers) {
+			RSocketWebSocketNettyRouteProvider routeProvider = new RSocketWebSocketNettyRouteProvider(
+					properties.getServer().getMappingPath(), messageHandler.responder());
+			routeProvider.setCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+			return routeProvider;
 		}
 
 	}

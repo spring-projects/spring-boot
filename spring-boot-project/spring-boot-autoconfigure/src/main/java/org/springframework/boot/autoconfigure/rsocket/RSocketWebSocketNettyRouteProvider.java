@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
+import java.util.Collections;
+import java.util.List;
+
 import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.WebsocketRouteTransport;
 import reactor.netty.http.server.HttpServerRoutes;
 
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 
 /**
@@ -35,15 +39,24 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final SocketAcceptor socketAcceptor;
 
+	private List<ServerRSocketFactoryCustomizer> customizers = Collections.emptyList();
+
 	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
 	}
 
+	void setCustomizers(List<ServerRSocketFactoryCustomizer> customizers) {
+		this.customizers = customizers;
+	}
+
 	@Override
 	public HttpServerRoutes apply(HttpServerRoutes httpServerRoutes) {
-		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive().acceptor(this.socketAcceptor)
-				.toConnectionAcceptor();
+		RSocketFactory.ServerRSocketFactory server = RSocketFactory.receive();
+		for (ServerRSocketFactoryCustomizer customizer : this.customizers) {
+			server = customizer.apply(server);
+		}
+		ServerTransport.ConnectionAcceptor acceptor = server.acceptor(this.socketAcceptor).toConnectionAcceptor();
 		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(acceptor));
 	}
 
