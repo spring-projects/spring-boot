@@ -14,7 +14,7 @@ import org.springframework.boot.runApplication
 class KotlinApplication
 
 fun main(args: Array<String>) {
-	runApplication<Application>(*args)
+	runApplication<KotlinApplication>(*args)
 }
 
 // end::customizer[]

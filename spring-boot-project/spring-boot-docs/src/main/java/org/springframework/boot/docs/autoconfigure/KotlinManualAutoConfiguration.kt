@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Import
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @Import(value = [MyConfig::class, MyAnotherConfig::class])
-class Application
+class ManualApplication
 
 fun main(args: Array<String>) {
-	runApplication<Application>(*args)
+	runApplication<ManualApplication>(*args)
 }
 // end::customizer[]

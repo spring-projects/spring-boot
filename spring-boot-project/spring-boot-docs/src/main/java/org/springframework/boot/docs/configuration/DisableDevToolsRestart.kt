@@ -1,6 +1,6 @@
 package org.springframework.boot.docs.configuration
 
-import org.springframework.boot.docs.Application
+import org.springframework.boot.docs.KotlinApplication
 import org.springframework.boot.runApplication
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.boot.runApplication
 // tag::customizer[]
 fun main(args: Array<String>) {
 	System.setProperty("spring.devtools.restart.enabled", "false")
-	runApplication<Application>(*args)
+	runApplication<KotlinApplication>(*args)
 }
 // end::customizer[]
