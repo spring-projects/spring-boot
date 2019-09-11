@@ -48,8 +48,6 @@ You can type `spring help` to get more details about any of the supported comman
 	--autoconfigure [Boolean]  Add autoconfigure compiler
 	                             transformations (default: true)
 	--classpath, -cp           Additional classpath entries
-	-e, --edit                 Open the file with the default system
-	                             editor
 	--no-guess-dependencies    Do not attempt to guess dependencies
 	--no-guess-imports         Do not attempt to guess imports
 	-q, --quiet                Quiet logging
@@ -162,7 +160,7 @@ The following items are used as "`grab hints`":
 | Spring Transaction Management.
 |===
 
-TIP: See subclasses of {sc-spring-boot-cli}/compiler/CompilerAutoConfiguration.{sc-ext}[`CompilerAutoConfiguration`] in the Spring Boot CLI source code to understand exactly how customizations are applied.
+TIP: See subclasses of {spring-boot-cli-module-code}/compiler/CompilerAutoConfiguration.java[`CompilerAutoConfiguration`] in the Spring Boot CLI source code to understand exactly how customizations are applied.
 
 
 
@@ -362,7 +360,8 @@ The command takes one or more sets of artifact coordinates in the format `group:
 
 In addition to installing the artifacts identified by the coordinates you supply, all of the artifacts' dependencies are also installed.
 
-To uninstall a dependency, use the `uninstall` command. As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
+To uninstall a dependency, use the `uninstall` command.
+As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -434,8 +433,8 @@ See https://maven.apache.org/settings.html[Maven's settings documentation] for f
 
 [[cli-whats-next]]
 == What to Read Next
-There are some {github-code}/spring-boot-project/spring-boot-cli/samples[sample groovy scripts] available from the GitHub repository that you can use to try out the Spring Boot CLI.
-There is also extensive Javadoc throughout the {sc-spring-boot-cli}[source code].
+There are some {spring-boot-code}/spring-boot-project/spring-boot-cli/samples[sample groovy scripts] available from the GitHub repository that you can use to try out the Spring Boot CLI.
+There is also extensive Javadoc throughout the {spring-boot-cli-module-code}[source code].
 
 If you find that you reach the limit of the CLI tool, you probably want to look at converting your application to a full Gradle or Maven built "`Groovy project`".
 The next section covers Spring Boot's "<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>", which you can use with Gradle or Maven.

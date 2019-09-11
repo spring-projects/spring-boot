@@ -14,27 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.testcontainers;
+package org.springframework.boot.configurationsample.method;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Customization of {@link Testcontainers @Testcontainers} that disables the tests when
- * Docker is not available.
+ * Sample for testing private method configuration.
  *
  * @author Andy Wilkinson
- * @since 2.2.0
  */
-@ExtendWith(DockerIsAvailableCondition.class)
-@Testcontainers
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface DisabledWithoutDockerTestcontainers {
+public class PrivateMethodConfig {
+
+	@ConfigurationProperties(prefix = "foo")
+	private Foo foo() {
+		return new Foo();
+	}
+
+	public static class Foo {
+
+		private String name;
+
+		private boolean flag;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public boolean isFlag() {
+			return this.flag;
+		}
+
+		public void setFlag(boolean flag) {
+			this.flag = flag;
+		}
+
+	}
 
 }

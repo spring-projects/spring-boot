@@ -23,15 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.context.properties.scan.invalid.c.InvalidConfiguration;
-import org.springframework.boot.context.properties.scan.invalid.d.OtherInvalidConfiguration;
+import org.springframework.boot.context.properties.scan.combined.c.CombinedConfiguration;
+import org.springframework.boot.context.properties.scan.combined.d.OtherCombinedConfiguration;
 import org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConfigurationPropertiesScanRegistrar}.
@@ -99,38 +98,33 @@ class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	void scanWhenComponentAnnotationPresentShouldThrowException() {
+	void scanWhenComponentAnnotationPresentShouldSkipType() throws IOException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
-		assertThatExceptionOfType(InvalidConfigurationPropertiesException.class)
-				.isThrownBy(() -> this.registrar
-						.registerBeanDefinitions(getAnnotationMetadata(InvalidScanConfiguration.class), beanFactory))
-				.withMessageContaining(
-						"Found @Component and @ConfigurationProperties on org.springframework.boot.context.properties.scan.invalid.c.InvalidConfiguration$MyProperties.");
+		this.registrar.registerBeanDefinitions(getAnnotationMetadata(CombinedScanConfiguration.class), beanFactory);
+		assertThat(beanFactory.getBeanDefinitionCount()).isEqualTo(0);
 	}
 
 	@Test
-	void scanWhenOtherComponentAnnotationPresentShouldThrowException() {
+	void scanWhenOtherComponentAnnotationPresentShouldSkipType() throws IOException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
-		assertThatExceptionOfType(InvalidConfigurationPropertiesException.class)
-				.isThrownBy(() -> this.registrar.registerBeanDefinitions(
-						getAnnotationMetadata(OtherInvalidScanConfiguration.class), beanFactory))
-				.withMessageContaining(
-						"Found @RestController and @ConfigurationProperties on org.springframework.boot.context.properties.scan.invalid.d.OtherInvalidConfiguration$MyControllerProperties.");
+		this.registrar.registerBeanDefinitions(getAnnotationMetadata(OtherCombinedScanConfiguration.class),
+				beanFactory);
+		assertThat(beanFactory.getBeanDefinitionCount()).isEqualTo(0);
 	}
 
 	private AnnotationMetadata getAnnotationMetadata(Class<?> source) throws IOException {
 		return new SimpleMetadataReaderFactory().getMetadataReader(source.getName()).getAnnotationMetadata();
 	}
 
-	@ConfigurationPropertiesScan(basePackageClasses = InvalidConfiguration.class)
-	static class InvalidScanConfiguration {
+	@ConfigurationPropertiesScan(basePackageClasses = CombinedConfiguration.class)
+	static class CombinedScanConfiguration {
 
 	}
 
-	@ConfigurationPropertiesScan(basePackageClasses = OtherInvalidConfiguration.class)
-	static class OtherInvalidScanConfiguration {
+	@ConfigurationPropertiesScan(basePackageClasses = OtherCombinedConfiguration.class)
+	static class OtherCombinedScanConfiguration {
 
 	}
 

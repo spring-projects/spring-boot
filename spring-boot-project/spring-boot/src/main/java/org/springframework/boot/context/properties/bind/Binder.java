@@ -285,10 +285,11 @@ public class Binder {
 			boolean allowRecursiveBinding, boolean create) {
 		context.clearConfigurationProperty();
 		try {
-			target = handler.onStart(name, target, context);
-			if (target == null) {
+			Bindable<T> replacementTarget = handler.onStart(name, target, context);
+			if (replacementTarget == null) {
 				return handleBindResult(name, target, handler, context, null, create);
 			}
+			target = replacementTarget;
 			Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
 			return handleBindResult(name, target, handler, context, bound, create);
 		}

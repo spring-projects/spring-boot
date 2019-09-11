@@ -362,7 +362,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		public PrintWriter getWriter() throws IOException {
 			sendErrorIfNecessary();
 			return super.getWriter();
-
 		}
 
 		@Override

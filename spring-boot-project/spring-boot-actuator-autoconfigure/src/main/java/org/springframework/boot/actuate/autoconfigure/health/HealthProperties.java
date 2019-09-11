@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Properties used to configure the health endpoint and endpoint groups.
@@ -33,6 +34,7 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
  */
 public abstract class HealthProperties {
 
+	@NestedConfigurationProperty
 	private final Status status = new Status();
 
 	/**

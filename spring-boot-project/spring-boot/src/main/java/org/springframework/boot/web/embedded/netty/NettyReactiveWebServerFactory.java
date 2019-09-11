@@ -100,7 +100,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the the
+	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the
 	 * handler for the Spring application.
 	 * @param routeProviders the route providers to add
 	 */

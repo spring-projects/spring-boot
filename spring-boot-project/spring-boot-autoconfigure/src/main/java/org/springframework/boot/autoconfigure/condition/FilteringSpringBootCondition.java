@@ -108,7 +108,6 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 			return classLoader.loadClass(className);
 		}
 		return Class.forName(className);
-
 	}
 
 	protected enum ClassNameFilter {

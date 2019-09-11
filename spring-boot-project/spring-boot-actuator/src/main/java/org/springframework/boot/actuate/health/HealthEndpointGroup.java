@@ -43,7 +43,7 @@ public interface HealthEndpointGroup {
 	boolean includeDetails(SecurityContext securityContext);
 
 	/**
-	 * Returns the status agreggator that should be used for this group.
+	 * Returns the status aggregator that should be used for this group.
 	 * @return the status aggregator for this group
 	 */
 	StatusAggregator getStatusAggregator();

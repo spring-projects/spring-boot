@@ -144,7 +144,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			}
 			else {
 				return TcpServerTransport.create(getListenAddress());
-
 			}
 		}
 	}

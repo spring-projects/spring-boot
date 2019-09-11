@@ -51,6 +51,9 @@ class PropertyDescriptorResolver {
 	 */
 	Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
+		if (factoryMethod != null) {
+			return resolveJavaBeanProperties(type, factoryMethod, members);
+		}
 		ExecutableElement constructor = resolveConstructor(type);
 		if (constructor != null) {
 			return resolveConstructorProperties(type, factoryMethod, members, constructor);

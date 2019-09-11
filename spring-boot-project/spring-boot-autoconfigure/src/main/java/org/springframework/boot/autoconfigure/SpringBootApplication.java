@@ -32,6 +32,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.data.repository.Repository;
 
 /**
  * Indicates a {@link Configuration configuration} class that declares one or more
@@ -77,6 +78,12 @@ public @interface SpringBootApplication {
 	/**
 	 * Base packages to scan for annotated components. Use {@link #scanBasePackageClasses}
 	 * for a type-safe alternative to String-based package names.
+	 * <p>
+	 * <strong>Note:</strong> this setting is an alias for
+	 * {@link ComponentScan @ComponentScan} only. It has no effect on {@code @Entity}
+	 * scanning or Spring Data {@link Repository} scanning. For those you should add
+	 * {@link org.springframework.boot.autoconfigure.domain.EntityScan @EntityScan} and
+	 * {@code @Enable...Repositories} annotations.
 	 * @return base packages to scan
 	 * @since 1.3.0
 	 */
@@ -89,6 +96,12 @@ public @interface SpringBootApplication {
 	 * <p>
 	 * Consider creating a special no-op marker class or interface in each package that
 	 * serves no purpose other than being referenced by this attribute.
+	 * <p>
+	 * <strong>Note:</strong> this setting is an alias for
+	 * {@link ComponentScan @ComponentScan} only. It has no effect on {@code @Entity}
+	 * scanning or Spring Data {@link Repository} scanning. For those you should add
+	 * {@link org.springframework.boot.autoconfigure.domain.EntityScan @EntityScan} and
+	 * {@code @Enable...Repositories} annotations.
 	 * @return base packages to scan
 	 * @since 1.3.0
 	 */

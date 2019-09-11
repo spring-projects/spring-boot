@@ -14,8 +14,8 @@ def generateAutoConfigurationClassTable(String module, File factories, PrintWrit
 
 	getAutoConfigurationClasses(factories).each {
 		writer.println ''
-		writer.println "| {github-code}/spring-boot-project/$module/src/main/java/$it.path.{sc-ext}[`$it.name`]"
-		writer.println "| {dc-root}/$it.path.{dc-ext}[javadoc]"
+		writer.println "| {spring-boot-code}/spring-boot-project/${module}/src/main/java/${it.path}.java[`${it.name}`]"
+		writer.println "| {spring-boot-api}/${it.path}.html[javadoc]"
 	}
 
 	writer.println '|==='

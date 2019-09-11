@@ -61,7 +61,6 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 	public ReactiveHealthContributor getContributor(String name) {
 		HealthContributor contributor = this.delegate.getContributor(name);
 		return (contributor != null) ? ReactiveHealthContributor.adapt(contributor) : null;
-
 	}
 
 }

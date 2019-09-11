@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HealthEndpointProperties.class)
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
-@Import({ LegacyHealthEndpointAdaptersConfiguration.class, LegacyHealthEndpointCompatibiltyConfiguration.class,
+@Import({ LegacyHealthEndpointAdaptersConfiguration.class, LegacyHealthEndpointCompatibilityConfiguration.class,
 		HealthEndpointConfiguration.class, ReactiveHealthEndpointConfiguration.class,
 		HealthEndpointWebExtensionConfiguration.class, HealthEndpointReactiveWebExtensionConfiguration.class })
 public class HealthEndpointAutoConfiguration {

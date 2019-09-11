@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
@@ -39,6 +40,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.gridfs.ReactiveGridFsOperations;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 
 /**
@@ -72,7 +74,7 @@ public class MongoReactiveDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ReactiveMongoOperations.class)
 	public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
@@ -88,13 +90,13 @@ public class MongoReactiveDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(DataBufferFactory.class)
 	public DefaultDataBufferFactory dataBufferFactory() {
 		return new DefaultDataBufferFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
 		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDbFactory, mappingMongoConverter, null);

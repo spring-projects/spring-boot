@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.scan.invalid.d;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.bind.annotation.RestController;
-
 /**
- * @author Madhura Bhave
+ * Support classes HTTP-related metrics.
  */
-public class OtherInvalidConfiguration {
-
-	@RestController
-	@ConfigurationProperties(prefix = "c")
-	static class MyControllerProperties {
-
-	}
-
-}
+package org.springframework.boot.actuate.metrics.http;

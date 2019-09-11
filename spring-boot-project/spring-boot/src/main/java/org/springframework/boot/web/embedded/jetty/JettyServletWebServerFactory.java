@@ -137,7 +137,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
-		int port = (getPort() >= 0) ? getPort() : 0;
+		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		configureWebAppContext(context, initializers);

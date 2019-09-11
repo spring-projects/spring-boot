@@ -28,8 +28,8 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -99,8 +99,9 @@ class ConfigurationPropertiesScanRegistrar
 			String beanClassName = candidate.getBeanClassName();
 			try {
 				Class<?> type = ClassUtils.forName(beanClassName, null);
-				validateScanConfiguration(type);
-				ConfigurationPropertiesBeanDefinitionRegistrar.register(registry, beanFactory, type);
+				if (!isComponent(type)) {
+					ConfigurationPropertiesBeanDefinitionRegistrar.register(registry, beanFactory, type);
+				}
 			}
 			catch (ClassNotFoundException ex) {
 				// Ignore
@@ -108,12 +109,8 @@ class ConfigurationPropertiesScanRegistrar
 		}
 	}
 
-	private void validateScanConfiguration(Class<?> type) {
-		MergedAnnotation<Component> component = MergedAnnotations
-				.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(Component.class);
-		if (component.isPresent()) {
-			throw new InvalidConfigurationPropertiesException(type, component.getRoot().getType());
-		}
+	private boolean isComponent(Class<?> type) {
+		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class);
 	}
 
 	@Override

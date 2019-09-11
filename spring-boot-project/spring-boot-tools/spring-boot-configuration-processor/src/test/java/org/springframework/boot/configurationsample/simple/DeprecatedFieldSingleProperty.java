@@ -13,20 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties.scan.invalid.c;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+package org.springframework.boot.configurationsample.simple;
+
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * @author Madhura Bhave
+ * Configuration properties with a single deprecated element.
+ *
+ * @author Andy Wilkinson
  */
-public class InvalidConfiguration {
+@ConfigurationProperties("singlefielddeprecated")
+public class DeprecatedFieldSingleProperty {
 
-	@Component
-	@ConfigurationProperties(prefix = "b")
-	static class MyProperties {
+	@Deprecated
+	private String name;
 
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

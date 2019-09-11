@@ -19,11 +19,11 @@ package org.springframework.boot.configurationsample.method;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Sample for testing simple method configuration.
+ * Sample for testing public method configuration.
  *
  * @author Stephane Nicoll
  */
-public class SimpleMethodConfig {
+public class PublicMethodConfig {
 
 	@ConfigurationProperties(prefix = "foo")
 	public Foo foo() {

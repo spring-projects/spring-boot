@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
@@ -30,7 +29,6 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @deprecated since 2.2.0 in favor of {@link HealthEndpointProperties}
  */
 @Deprecated
-@ConfigurationProperties(prefix = "management.health.status")
 public class HealthIndicatorProperties {
 
 	private final HealthEndpointProperties healthEndpointProperties;

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
@@ -53,18 +54,6 @@ public final class WebMvcTags {
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
 	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
-
-	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
-
-	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
-
-	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
-
-	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
-
-	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
-
-	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
 
@@ -174,25 +163,8 @@ public final class WebMvcTags {
 	 * @since 2.1.0
 	 */
 	public static Tag outcome(HttpServletResponse response) {
-		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null) {
-				if (status.is1xxInformational()) {
-					return OUTCOME_INFORMATIONAL;
-				}
-				if (status.is2xxSuccessful()) {
-					return OUTCOME_SUCCESS;
-				}
-				if (status.is3xxRedirection()) {
-					return OUTCOME_REDIRECTION;
-				}
-				if (status.is4xxClientError()) {
-					return OUTCOME_CLIENT_ERROR;
-				}
-			}
-			return OUTCOME_SERVER_ERROR;
-		}
-		return OUTCOME_UNKNOWN;
+		Outcome outcome = (response != null) ? Outcome.forStatus(response.getStatus()) : Outcome.UNKNOWN;
+		return outcome.asTag();
 	}
 
 }

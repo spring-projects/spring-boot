@@ -903,7 +903,6 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		ConfigurableWebBindingInitializer customConfigurableWebBindingInitializer() {
 			return new CustomWebBindingInitializer();
-
 		}
 
 	}

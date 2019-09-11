@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,7 @@ public class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
 	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(
 			RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity(
