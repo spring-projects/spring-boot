@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
  */
 // tag::customizer[]
 @Service
-class KotlinDatabaseAccountService(@Autowired private val riskAssessor: RiskAssessor) : AccountService {
+class KotlinDatabaseAccountService @Autowired constructor(private val riskAssessor: RiskAssessor) : AccountService {
 	//..
 }
 

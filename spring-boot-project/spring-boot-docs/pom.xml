@@ -14,7 +14,6 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
-		<kotlin.version>1.3.50</kotlin.version>
 	</properties>
 	<pluginRepositories>
 		<pluginRepository>
@@ -708,7 +707,6 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib-jdk8</artifactId>
-			<version>${kotlin.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -1138,7 +1136,6 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-test-junit</artifactId>
-			<version>${kotlin.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -1156,7 +1153,6 @@
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
 						<id>compile</id>

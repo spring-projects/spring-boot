@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import
 // tag::customizer[]
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
-@Import(value = [MyConfig::class, MyAnotherConfig::class])
+@Import(MyConfig::class, MyAnotherConfig::class)
 class ManualApplication
 
 fun main(args: Array<String>) {
