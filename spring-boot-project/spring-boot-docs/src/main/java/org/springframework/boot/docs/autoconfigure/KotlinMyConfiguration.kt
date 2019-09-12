@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 /**
  * Sample class showing how to disable specific Auto-configuration Classes
+ *
+ * @author Ibanga Enoobong Ime
  */
 // tag::customizer[]
 @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])

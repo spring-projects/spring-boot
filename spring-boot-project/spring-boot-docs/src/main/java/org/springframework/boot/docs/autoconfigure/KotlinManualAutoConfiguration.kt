@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Import
 
 /**
  * Sample using individual components of [org.springframework.boot.autoconfigure.SpringBootApplication]
+ *
+ * @author Ibanga Enoobong Ime
  */
 // tag::customizer[]
 @Configuration(proxyBeanMethods = false)

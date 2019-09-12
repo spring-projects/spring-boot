@@ -5,6 +5,8 @@ import org.springframework.boot.runApplication
 
 /**
  * Sample using the [org.springframework.boot.autoconfigure.SpringBootApplication]
+ *
+ * @author Ibanga Enoobong Ime
  */
 // tag::customizer[]
 @SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan

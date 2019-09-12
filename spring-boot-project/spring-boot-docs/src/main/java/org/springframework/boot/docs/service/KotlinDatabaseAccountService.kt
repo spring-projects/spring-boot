@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 /**
- * * Sample showing autowiring the [org.springframework.beans.factory.annotation.Autowired] annotation
+ * Sample showing autowiring the [org.springframework.beans.factory.annotation.Autowired] annotation
+ *
+ * @author Ibanga Enoobong Ime
  */
 // tag::customizer[]
 @Service

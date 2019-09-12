@@ -5,6 +5,8 @@ import org.springframework.boot.runApplication
 
 /**
  * Sample showing how to disable dev tools restart
+ *
+ * @author Ibanga Enoobong Ime
  */
 // tag::customizer[]
 fun main(args: Array<String>) {
