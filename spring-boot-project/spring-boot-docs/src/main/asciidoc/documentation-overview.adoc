@@ -51,7 +51,7 @@ If you are getting started with Spring Boot or 'Spring' in general, start with <
 
 
 == Working with Spring Boot
-Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, we have you covered>>:
+Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, We have you covered>>:
 
 * *Build systems:* <<using-spring-boot.adoc#using-boot-maven, Maven>> | <<using-spring-boot.adoc#using-boot-gradle, Gradle>> | <<using-spring-boot.adoc#using-boot-ant, Ant>> | <<using-spring-boot.adoc#using-boot-starter, Starters>>
 * *Best practices:* <<using-spring-boot.adoc#using-boot-structuring-your-code, Code Structure>> | <<using-spring-boot.adoc#using-boot-configuration-classes, @Configuration>> | <<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> | <<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and Dependency Injection>>
