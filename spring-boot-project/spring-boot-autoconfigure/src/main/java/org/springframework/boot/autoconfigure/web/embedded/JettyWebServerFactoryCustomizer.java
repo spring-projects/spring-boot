@@ -86,9 +86,8 @@ public class JettyWebServerFactoryCustomizer
 				.to((maxThreads) -> customizeThreadPool(factory, (threadPool) -> threadPool.setMaxThreads(maxThreads)));
 		propertyMapper.from(jettyProperties::getMinThreads).when(this::isPositive)
 				.to((minThreads) -> customizeThreadPool(factory, (threadPool) -> threadPool.setMinThreads(minThreads)));
-		propertyMapper.from(jettyProperties::getIdleTimeout).whenNonNull()
-				.to((idleTimeout) -> customizeThreadPool(factory,
-						(threadPool) -> threadPool.setIdleTimeout((int) idleTimeout.toMillis())));
+		propertyMapper.from(jettyProperties::getIdleTimeout).whenNonNull().asInt(Duration::toMillis).to(
+				(idleTimeout) -> customizeThreadPool(factory, (threadPool) -> threadPool.setIdleTimeout(idleTimeout)));
 		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
