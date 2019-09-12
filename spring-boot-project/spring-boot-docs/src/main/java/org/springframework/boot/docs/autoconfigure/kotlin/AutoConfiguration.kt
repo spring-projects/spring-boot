@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.autoconfigure
+package org.springframework.boot.docs.autoconfigure.kotlin
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

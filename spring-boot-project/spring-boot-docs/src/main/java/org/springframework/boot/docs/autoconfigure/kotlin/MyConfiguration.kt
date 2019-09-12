@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.autoconfigure
+package org.springframework.boot.docs.autoconfigure.kotlin
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -10,5 +10,5 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
  */
 // tag::customizer[]
 @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
-class KotlinMyConfiguration
+class MyConfiguration
 // end::customizer[]

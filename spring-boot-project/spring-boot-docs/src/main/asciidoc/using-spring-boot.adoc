@@ -419,7 +419,7 @@ If you find that specific auto-configuration classes that you do not want are be
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/autoconfigure/KotlinMyConfiguration.kt[tag=customizer]
+include::{code-examples}/autoconfigure/kotlin/MyConfiguration.kt[tag=customizer]
 ----
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
 Finally, you can also control the list of auto-configuration classes to exclude by using the `spring.autoconfigure.exclude` property.
@@ -467,7 +467,7 @@ The following example shows a `@Service` Bean that uses constructor injection to
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/service/KotlinDatabaseAccountService.kt[tag=customizer]
+include::{code-examples}/service/kotlin/DatabaseAccountService.kt[tag=customizer]
 ----
 
 If a bean has one constructor, you can omit the `@Autowired`, as shown in the following example:
@@ -492,7 +492,7 @@ If a bean has one constructor, you can omit the `@Autowired`, as shown in the fo
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/service/KotlinDatabaseAccountServiceWithoutAutowired.kt[tag=customizer]
+include::{code-examples}/service/kotlin/DatabaseAccountServiceWithoutAutowired.kt[tag=customizer]
 ----
 
 TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as `final`, indicating that it cannot be subsequently changed.
@@ -530,7 +530,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/autoconfigure/KotlinAutoConfiguration.kt[tag=customizer]
+include::{code-examples}/autoconfigure/kotlin/AutoConfiguration.kt[tag=customizer]
 ----
 
 NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of `@EnableAutoConfiguration` and `@ComponentScan`.
@@ -565,7 +565,7 @@ For instance, you may not want to use component scan or configuration properties
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/autoconfigure/KotlinManualAutoConfiguration.kt[tag=customizer]
+include::{code-examples}/autoconfigure/kotlin/ManualAutoConfiguration.kt[tag=customizer]
 ----
 
 In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
@@ -842,7 +842,7 @@ If you need to _completely_ disable restart support (for example, because it doe
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/configuration/DisableDevToolsRestart.kt[tag=customizer]
+include::{code-examples}/configuration/kotlin/DisableDevToolsRestart.kt[tag=customizer]
 ----
 
 

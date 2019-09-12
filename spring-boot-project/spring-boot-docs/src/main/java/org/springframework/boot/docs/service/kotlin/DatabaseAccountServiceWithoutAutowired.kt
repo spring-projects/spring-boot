@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.service
+package org.springframework.boot.docs.service.kotlin
 
 import org.springframework.stereotype.Service
 
@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service
  */
 // tag::customizer[]
 @Service
-class KotlinDatabaseAccountServiceWithoutAutowired(private val riskAssessor: RiskAssessor) : AccountService {
+class DatabaseAccountServiceWithoutAutowired(private val riskAssessor: RiskAssessor) :
+	AccountService {
 	//..
 }
 // end::customizer[]

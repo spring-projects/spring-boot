@@ -1,8 +1,8 @@
-package org.springframework.boot.docs.autoconfigure
+package org.springframework.boot.docs.autoconfigure.kotlin
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.docs.configuration.MyAnotherConfig
-import org.springframework.boot.docs.configuration.MyConfig
+import org.springframework.boot.docs.configuration.kotlin.MyAnotherConfig
+import org.springframework.boot.docs.configuration.kotlin.MyConfig
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import

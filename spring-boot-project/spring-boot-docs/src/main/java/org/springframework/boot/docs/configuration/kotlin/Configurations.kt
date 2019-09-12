@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.configuration
+package org.springframework.boot.docs.configuration.kotlin
 
 import org.springframework.context.annotation.Configuration
 

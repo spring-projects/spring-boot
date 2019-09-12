@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.configuration
+package org.springframework.boot.docs.configuration.kotlin
 
 import org.springframework.boot.docs.KotlinApplication
 import org.springframework.boot.runApplication

@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.service
+package org.springframework.boot.docs.service.kotlin
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
  */
 // tag::customizer[]
 @Service
-class KotlinDatabaseAccountService @Autowired constructor(private val riskAssessor: RiskAssessor) : AccountService {
+class DatabaseAccountService @Autowired constructor(private val riskAssessor: RiskAssessor) : AccountService {
 	//..
 }
 
