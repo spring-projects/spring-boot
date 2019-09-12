@@ -161,14 +161,14 @@ class BindableTests {
 	}
 
 	@Test // gh-18218
-	public void withExistingValueDoesNotForgetAnnotations() {
+	void withExistingValueDoesNotForgetAnnotations() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withExistingValue("");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
 	}
 
 	@Test // gh-18218
-	public void withSuppliedValueValueDoesNotForgetAnnotations() {
+	void withSuppliedValueValueDoesNotForgetAnnotations() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withSuppliedValue(() -> "");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
