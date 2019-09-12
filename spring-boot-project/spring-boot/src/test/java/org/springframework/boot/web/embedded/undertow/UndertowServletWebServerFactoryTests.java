@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +35,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
 import org.apache.jasper.servlet.JspServlet;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -49,6 +51,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -234,11 +237,8 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		return null; // Undertow does not support JSPs
 	}
 
-	private void awaitFile(File file) throws InterruptedException {
-		long end = System.currentTimeMillis() + 10000;
-		while (!file.exists() && System.currentTimeMillis() < end) {
-			Thread.sleep(100);
-		}
+	private void awaitFile(File file) {
+		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(file::exists, is(true));
 	}
 
 	private ServletContainer getServletContainerFromNewFactory() {

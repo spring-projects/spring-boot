@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -43,6 +45,9 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link LiveReloadServer}.
@@ -107,10 +112,7 @@ class LiveReloadServerTests {
 	}
 
 	private void awaitClosedException() throws InterruptedException {
-		long startTime = System.currentTimeMillis();
-		while (this.server.getClosedExceptions().isEmpty() && System.currentTimeMillis() - startTime < 10000) {
-			Thread.sleep(100);
-		}
+		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(this.server::getClosedExceptions, is(not(empty())));
 	}
 
 	@Test
