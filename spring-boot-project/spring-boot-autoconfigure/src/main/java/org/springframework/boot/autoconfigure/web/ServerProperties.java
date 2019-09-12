@@ -919,7 +919,7 @@ public class ServerProperties {
 		/**
 		 * Maximum thread idle time.
 		 */
-		private Integer idleTimeout = 60000;
+		private Duration idleTimeout = Duration.ofMillis(60000);
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
@@ -965,11 +965,11 @@ public class ServerProperties {
 			return this.maxThreads;
 		}
 
-		public void setIdleTimeout(Integer idleTimeout) {
+		public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public Integer getIdleTimeout() {
+		public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 
