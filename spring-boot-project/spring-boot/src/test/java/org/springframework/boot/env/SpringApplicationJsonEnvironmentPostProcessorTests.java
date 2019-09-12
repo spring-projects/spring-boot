@@ -170,8 +170,8 @@ class SpringApplicationJsonEnvironmentPostProcessorTests {
 		assertThat(this.environment.getPropertySources()).containsSequence(custom, json, servlet, jndi);
 	}
 
-	private void testServletPropertySource(String servletContextPropertySourceName) {
-		this.environment.getPropertySources().addFirst(getPropertySource(servletContextPropertySourceName, "servlet"));
+	private void testServletPropertySource(String servletPropertySourceName) {
+		this.environment.getPropertySources().addFirst(getPropertySource(servletPropertySourceName, "servlet"));
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);

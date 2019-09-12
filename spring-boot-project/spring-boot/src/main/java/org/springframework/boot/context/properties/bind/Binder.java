@@ -130,7 +130,7 @@ public class Binder {
 	 * @param propertyEditorInitializer initializer used to configure the property editors
 	 * that can convert values (or {@code null} if no initialization is required). Often
 	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
-	 * @param defaultBindHandler the default bind handler to use if non is specified when
+	 * @param defaultBindHandler the default bind handler to use if none is specified when
 	 * binding
 	 * @since 2.2.0
 	 */
@@ -469,7 +469,7 @@ public class Binder {
 	 * Create a new {@link Binder} instance from the specified environment.
 	 * @param environment the environment source (must have attached
 	 * {@link ConfigurationPropertySources})
-	 * @param defaultBindHandler the default bind handler to use if non is specified when
+	 * @param defaultBindHandler the default bind handler to use if none is specified when
 	 * binding
 	 * @return a {@link Binder} instance
 	 * @since 2.2.0
