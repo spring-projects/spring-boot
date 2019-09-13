@@ -22,6 +22,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariPoolMXBean;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.junit.After;
 import org.junit.Before;
@@ -122,8 +124,23 @@ public class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevT
 		ConfigurableApplicationContext context = createContext("org.apache.derby.jdbc.EmbeddedDriver",
 				"jdbc:derby:memory:test;create=true", DataSourceAutoConfiguration.class,
 				DataSourceSpyConfiguration.class);
-		JdbcTemplate jdbc = new JdbcTemplate(context.getBean(DataSource.class));
+		HikariDataSource dataSource = context.getBean(HikariDataSource.class);
+		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
 		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
+		HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
+		// Prevent a race between Hikari's initialization and Derby shutdown
+		long end = System.currentTimeMillis() + 30000;
+		while (pool.getIdleConnections() != dataSource.getMinimumIdle()) {
+			if (System.currentTimeMillis() >= end) {
+				throw new IllegalStateException("DataSource did not become idle within 30 seconds");
+			}
+			try {
+				Thread.sleep(100);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
 		context.close();
 		// Connect should fail as DB no longer exists
 		assertThatExceptionOfType(SQLException.class)
