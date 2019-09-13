@@ -168,7 +168,8 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
 			map.from(properties.getTable()).to(configuration::table);
-			map.from(properties.getTablespace()).to(configuration::tablespace);
+			// No method reference for compatibility with Flyway 5.x
+			map.from(properties.getTablespace()).whenNonNull().to((tablespace) -> configuration.tablespace(tablespace));
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(properties.getInstalledBy()).to(configuration::installedBy);
@@ -201,7 +202,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getErrorOverrides()).whenNonNull().to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).whenNonNull().to(configuration::licenseKey);
 			map.from(properties.getOracleSqlplus()).whenNonNull().to(configuration::oracleSqlplus);
-			map.from(properties.getOracleSqlplusWarn()).whenNonNull().to(configuration::oracleSqlplusWarn);
+			// No method reference for compatibility with Flyway 5.x
+			map.from(properties.getOracleSqlplusWarn()).whenNonNull()
+					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
 		}
@@ -220,7 +223,12 @@ public class FlywayAutoConfiguration {
 
 		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
 			if (!migrations.isEmpty()) {
-				flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
+				try {
+					flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
+				}
+				catch (NoSuchMethodError ex) {
+					// Flyway 5.x
+				}
 			}
 		}
 
