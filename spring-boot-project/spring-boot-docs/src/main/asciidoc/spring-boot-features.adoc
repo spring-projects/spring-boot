@@ -13,11 +13,18 @@ If you have not already done so, you might want to read the "<<getting-started.a
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	public static void main(String[] args) {
 		SpringApplication.run(MySpringConfiguration.class, args);
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/MySpringConfiguration.kt[tag=customizer]
 ----
 
 When your application starts, you should see something similar to the following output:
@@ -153,13 +160,20 @@ The printed banner is registered as a singleton bean under the following name: `
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
 		app.setBannerMode(Banner.Mode.OFF);
 		app.run(args);
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/CustomizedSpringConfiguration.kt[tag=customizer]
 ----
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
@@ -178,9 +192,16 @@ If you need to build an `ApplicationContext` hierarchy (multiple contexts with a
 
 The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::{code-examples}/builder/SpringApplicationBuilderExample.java[tag=hierarchy]
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/builder/kotlin/SpringApplicationBuilderExample.kt[tag=hierarchy]
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
@@ -260,7 +281,8 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	import org.springframework.boot.*;
 	import org.springframework.beans.factory.annotation.*;
@@ -279,6 +301,12 @@ The `ApplicationArguments` interface provides access to both the raw `String[]` 
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/MyBean.kt[tag=customizer]
+----
+
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
 This lets you also inject single application arguments by using the `@Value` annotation.
 
@@ -292,7 +320,8 @@ Both interfaces work in the same way and offer a single `run` method, which is c
 The `CommandLineRunner` interfaces provides access to application arguments as a simple string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	import org.springframework.boot.*;
 	import org.springframework.stereotype.*;
@@ -307,6 +336,11 @@ The following example shows a `CommandLineRunner` with a `run` method:
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/CommandLineRunnerBean.kt[tag=customizer]
+----
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 
 
@@ -319,9 +353,16 @@ All the standard Spring lifecycle callbacks (such as the `DisposableBean` interf
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator` interface if they wish to return a specific exit code when `SpringApplication.exit()` is called.
 This exit code can then be passed to `System.exit()` to return it as a status code, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::{code-examples}/ExitCodeApplication.java[tag=example]
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/KotlinExitCodeApplication.kt[tag=example]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
@@ -370,7 +411,8 @@ Properties are considered in the following order:
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	import org.springframework.stereotype.*;
 	import org.springframework.beans.factory.annotation.*;
@@ -384,6 +426,12 @@ To provide a concrete example, suppose you develop a `@Component` that uses a `n
 	    // ...
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/UsingExternalizedProperties.kt[tag=customizer]
 ----
 
 On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
@@ -750,7 +798,8 @@ TIP: See also the <<boot-features-external-config-vs-value,differences between `
 ==== JavaBean properties binding
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="secondary"]
+.Java
 ----
 	package com.example;
 
@@ -802,6 +851,12 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 
 		}
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/AcmeProperties.kt[tag=customizer]
 ----
 
 The preceding POJO defines the following properties:
@@ -3238,7 +3293,7 @@ In cases where opaque tokens are used instead of JWTs, you can configure the fol
 ----
 	spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
 	spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
-	spring.security.oauth2.resourceserver.opaquetoken.client-secret-my-client-secret
+	spring.security.oauth2.resourceserver.opaquetoken.client-secret-my-client-secret=
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
@@ -4379,7 +4434,7 @@ For instance, you can customize the converters to use, as follows:
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 		public CustomConversions myCustomConversions() {
-			return new CustomConversions(...);
+			return new CustomConversions(...)
 		}
 
 		// ...
