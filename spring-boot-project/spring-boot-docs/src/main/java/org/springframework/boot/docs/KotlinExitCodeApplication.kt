@@ -3,6 +3,7 @@ package org.springframework.boot.docs
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 
 /**
@@ -18,14 +19,10 @@ class KotlinExitCodeApplication {
 	fun exitCodeGenerator(): ExitCodeGenerator {
 		return ExitCodeGenerator { 42 }
 	}
+}
 
-	companion object {
 
-		@JvmStatic
-		fun main(args: Array<String>) {
-			System.exit(SpringApplication.exit(SpringApplication.run(KotlinExitCodeApplication::class.java, *args)))
-		}
-	}
-
+fun main(args: Array<String>) {
+	System.exit(SpringApplication.exit(runApplication<KotlinExitCodeApplication>(*args)))
 }
 // end::example[]

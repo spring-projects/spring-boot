@@ -17,4 +17,4 @@ class CommandLineRunnerBean : CommandLineRunner {
 		// Do something...
 	}
 }
-// end::hierarchy[]
+// end::customizer[]

@@ -2,6 +2,7 @@ package org.springframework.boot.docs.configuration.kotlin
 
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication
+import org.springframework.boot.runApplication
 
 /**
  * Example showing Application Class with [SpringApplication]
@@ -10,8 +11,8 @@ import org.springframework.boot.SpringApplication
  */
 // tag::customizer[]
 fun main(args: Array<String>) {
-	val app = SpringApplication(MySpringConfiguration::class.java)
-	app.setBannerMode(Banner.Mode.OFF)
-	app.run(*args)
+	runApplication<MySpringConfiguration>(*args) {
+		setBannerMode(Banner.Mode.OFF)
+	}
 }
 // end::customizer[]
