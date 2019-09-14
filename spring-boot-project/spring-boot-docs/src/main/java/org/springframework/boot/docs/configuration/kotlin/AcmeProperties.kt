@@ -7,23 +7,25 @@ package org.springframework.boot.docs.configuration.kotlin
  */
 // tag::customizer[]
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.net.InetAddress
+import java.net.InetSocketAddress
 
 @ConfigurationProperties("acme")
 class AcmeProperties {
 
-	private var enabled: Boolean = false
+	var enabled: Boolean = false
 
-	private lateinit var remoteAddress: InetAddress
+	lateinit var remoteAddress: InetSocketAddress
 
-	private val security = Security()
+	var port: Int = 0
+
+	val security = Security()
 
 	class Security {
-		private lateinit var username: String
+		lateinit var username: String
 
-		private lateinit var password: String
+		lateinit var password: String
 
-		private var roles = arrayListOf("USER")
+		var roles = arrayListOf("USER")
 	}
 }
 // end::customizer[]

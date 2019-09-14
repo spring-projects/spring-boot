@@ -817,6 +817,8 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 
 		private InetAddress remoteAddress;
 
+		private int port;
+
 		private final Security security = new Security();
 
 		public boolean isEnabled() { ... }
@@ -826,6 +828,10 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 		public InetAddress getRemoteAddress() { ... }
 
 		public void setRemoteAddress(InetAddress remoteAddress) { ... }
+
+		public int getPort() { ... }
+
+		public void setPort() { ... }
 
 		public Security getSecurity() { ... }
 
@@ -897,7 +903,8 @@ Finally, only standard Java Bean properties are considered and binding on static
 ==== Constructor binding
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="secondary"]
+.Java
 ----
 	package com.example;
 
@@ -914,17 +921,22 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 		private final InetAddress remoteAddress;
 
+		private final int port;
+
 		private final Security security;
 
-		public AcmeProperties(boolean enabled, InetAddress remoteAddress, Security security) {
+		public AcmeProperties(boolean enabled, InetAddress remoteAddress, int port, Security security) {
 			this.enabled = enabled;
 			this.remoteAddress = remoteAddress;
 			this.security = security;
+			this.port = port
 		}
 
 		public boolean isEnabled() { ... }
 
 		public InetAddress getRemoteAddress() { ... }
+
+		public int getPort() { ... }
 
 		public Security getSecurity() { ... }
 
@@ -954,6 +966,12 @@ The example in the previous section can be rewritten in an immutable fashion as 
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/ImmutableAcmeProperties.kt[tag=customizer]
+----
+
 In this setup one, and only one constructor must be defined with the list of properties that you wish to bind and not other properties than the ones in the constructor are bound.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
@@ -969,7 +987,8 @@ If your application uses `@SpringBootApplication`, classes annotated with `@Conf
 By default, scanning will occur from the package of the class that declares this annotation.
 If you want to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan` directive on your `@SpringBootApplication`-annotated class as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@SpringBootApplication
 	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
@@ -977,15 +996,28 @@ If you want to define specific packages to scan, you can do so using an explicit
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/MyApplication.kt[tag=customizer]
+----
+
 Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration.
 In these cases, you can specify the list of types to process on any `@Configuration` class as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AcmeProperties.class)
 	public class MyConfiguration {
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/MyConfiguration.kt[tag=customizer]
 ----
 
 [NOTE]
@@ -1012,6 +1044,7 @@ This style of configuration works particularly well with the `SpringApplication`
 
 	acme:
 		remote-address: 192.168.1.1
+        port: 8080
 		security:
 			username: admin
 			roles:
@@ -1023,7 +1056,8 @@ This style of configuration works particularly well with the `SpringApplication`
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@Service
 	public class MyService {
@@ -1044,6 +1078,12 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 		}
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/service/kotlin/MyService.kt[tag=customizer]
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
