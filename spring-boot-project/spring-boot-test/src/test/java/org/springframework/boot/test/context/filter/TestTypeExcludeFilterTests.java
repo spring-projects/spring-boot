@@ -80,6 +80,12 @@ public class TestTypeExcludeFilterTests {
 	}
 
 	@Test
+	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasTestable() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(AbstractJupiterTestWithConfigAndExtendWith.Config.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
 	public void matchesTestConfiguration() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(SampleTestConfig.class), this.metadataReaderFactory)).isTrue();
 	}
