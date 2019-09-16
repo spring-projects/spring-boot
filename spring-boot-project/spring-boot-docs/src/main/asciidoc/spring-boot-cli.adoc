@@ -219,12 +219,7 @@ The preceding example indicates that the dependency management in `another-bom` 
 
 You can use `@DependencyManagementBom` anywhere that you can use `@Grab`.
 However, to ensure consistent ordering of the dependency management, you can use `@DependencyManagementBom` at most once in your application.
-A useful source of dependency management (which is a superset of Spring Boot's dependency management) is the https://platform.spring.io/[Spring IO Platform], which you might include with the following line:
 
-[source,java,indent=0]
-----
-@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')
-----
 
 
 [[cli-multiple-source-files]]
