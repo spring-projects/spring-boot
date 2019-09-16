@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @Testable
 public abstract class AbstractJupiterTestWithConfigAndTestable {
 
-	@Configuration(proxyBeanMethods = false)
+	@Configuration
 	static class Config {
 
 	}
