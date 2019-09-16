@@ -3745,7 +3745,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-elasticsearch}[Elasticsearch]
 * {spring-data-solr}[Solr]
 * {spring-data-redis}[Redis]
-* {spring-data-gemfire}[Gemfire] or {spring-data-geode}[Geode]
+* {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-cassandra}[Cassandra]
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
