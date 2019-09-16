@@ -362,7 +362,11 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			context.getPipeline().addValve(valve);
 		}
 		for (ErrorPage errorPage : getErrorPages()) {
-			new TomcatErrorPage(errorPage).addToContext(context);
+			org.apache.tomcat.util.descriptor.web.ErrorPage tomcatErrorPage = new org.apache.tomcat.util.descriptor.web.ErrorPage();
+			tomcatErrorPage.setLocation(errorPage.getPath());
+			tomcatErrorPage.setErrorCode(errorPage.getStatusCode());
+			tomcatErrorPage.setExceptionType(errorPage.getExceptionName());
+			context.addErrorPage(tomcatErrorPage);
 		}
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
