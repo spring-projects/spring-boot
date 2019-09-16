@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LoggingSystemProperties}.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 class LoggingSystemPropertiesTests {
 
@@ -80,6 +81,15 @@ class LoggingSystemPropertiesTests {
 	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
+	}
+
+	@Test
+	void rollingFileNameIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.rolling-file-name", "rolling file pattern"))
+						.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
+				.isEqualTo("rolling file pattern");
 	}
 
 	private Environment environment(String key, Object value) {

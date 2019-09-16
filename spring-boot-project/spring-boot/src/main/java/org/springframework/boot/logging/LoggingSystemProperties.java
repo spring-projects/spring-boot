@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Vedran Pavic
  * @author Robert Thornton
+ * @author Eddú Meléndez
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -95,6 +96,12 @@ public class LoggingSystemProperties {
 	 */
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
+	/**
+	 * The name of the System property that contains the rolled-over log file name
+	 * pattern.
+	 */
+	public static final String ROLLING_FILE_NAME_PATTERN = "ROLLING_FILE_NAME_PATTERN";
+
 	private final Environment environment;
 
 	/**
@@ -122,6 +129,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_TOTAL_SIZE_CAP, "file.total-size-cap");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
 		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
+		setSystemProperty(resolver, ROLLING_FILE_NAME_PATTERN, "pattern.rolling-file-name");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}

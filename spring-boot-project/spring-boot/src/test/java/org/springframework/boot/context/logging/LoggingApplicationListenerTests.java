@@ -83,6 +83,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Ben Hale
  * @author Fahim Farook
+ * @author Eddú Meléndez
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("log4j*.jar")
@@ -134,6 +135,7 @@ class LoggingApplicationListenerTests {
 		System.clearProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN);
 		System.clearProperty(LoggingSystemProperties.FILE_LOG_PATTERN);
 		System.clearProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN);
+		System.clearProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN);
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
@@ -479,7 +481,8 @@ class LoggingApplicationListenerTests {
 	void systemPropertiesAreSetForLoggingConfiguration() {
 		addPropertiesToEnvironment(this.context, "logging.exception-conversion-word=conversion",
 				"logging.file.name=" + this.logFile, "logging.file.path=path", "logging.pattern.console=console",
-				"logging.pattern.file=file", "logging.pattern.level=level");
+				"logging.pattern.file=file", "logging.pattern.level=level",
+				"logging.pattern.rolling-file-name=my.log.%d{yyyyMMdd}.%i.gz");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console");
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file");
@@ -487,6 +490,8 @@ class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo(this.logFile.getAbsolutePath());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN)).isEqualTo("level");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
+				.isEqualTo("my.log.%d{yyyyMMdd}.%i.gz");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
