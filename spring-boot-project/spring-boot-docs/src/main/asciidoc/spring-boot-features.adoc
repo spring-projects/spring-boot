@@ -1777,7 +1777,7 @@ To help with the customization, some other properties are transferred from the S
 
 | `logging.pattern.rolling-file-name`
 | `ROLLING_FILE_NAME_PATTERN`
-| Pattern to use when roll-over log files (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
+| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
   (Only supported with the default Logback setup.)
 
 | `PID`

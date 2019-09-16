@@ -97,7 +97,8 @@ public class LoggingSystemProperties {
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
 	/**
-	 * The name of the System property that contains the rolled-over log file pattern.
+	 * The name of the System property that contains the rolled-over log file name
+	 * pattern.
 	 */
 	public static final String ROLLING_FILE_NAME_PATTERN = "ROLLING_FILE_NAME_PATTERN";
 

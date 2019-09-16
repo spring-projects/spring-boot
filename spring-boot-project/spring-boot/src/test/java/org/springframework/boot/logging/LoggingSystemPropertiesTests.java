@@ -84,7 +84,7 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void rollingFileIsSet() {
+	void rollingFileNameIsSet() {
 		new LoggingSystemProperties(
 				new MockEnvironment().withProperty("logging.pattern.rolling-file-name", "rolling file pattern"))
 						.apply(null);

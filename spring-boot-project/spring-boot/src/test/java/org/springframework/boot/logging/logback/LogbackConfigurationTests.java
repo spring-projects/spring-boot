@@ -69,7 +69,7 @@ class LogbackConfigurationTests {
 	}
 
 	@Test
-	void defaultFileNamePattern() throws JoranException {
+	void defaultRollingFileNamePattern() throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
@@ -82,7 +82,7 @@ class LogbackConfigurationTests {
 	}
 
 	@Test
-	void customFileNamePattern() throws JoranException {
+	void customRollingFileNamePattern() throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);

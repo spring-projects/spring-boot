@@ -539,7 +539,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void testRollingFileProperty() {
+	void testRollingFileNameProperty() {
 		MockEnvironment environment = new MockEnvironment();
 		String rollingFile = "my.log.%d{yyyyMMdd}.%i.gz";
 		environment.setProperty("logging.pattern.rolling-file-name", rollingFile);

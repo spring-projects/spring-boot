@@ -168,7 +168,7 @@
     {
       "name": "logging.pattern.rolling-file-name",
       "type": "java.lang.String",
-      "description": "Pattern for roll-over log files. Supported only with the default Logback setup.",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
     },
