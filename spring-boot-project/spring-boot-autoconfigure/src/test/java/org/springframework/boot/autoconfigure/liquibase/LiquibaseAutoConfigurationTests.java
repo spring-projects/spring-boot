@@ -68,6 +68,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Dominic Gunn
  * @author András Deák
  * @author Andrii Hrytsiuk
+ * @author Tristan Deloche
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -301,6 +302,19 @@ class LiquibaseAutoConfigurationTests {
 				.run((context) -> {
 					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 					assertThat(liquibase.getDataSource()).isEqualTo(context.getBean("liquibaseDataSource"));
+					assertThat(liquibase.getClass()).isNotInstanceOf(DataSourceClosingSpringLiquibase.class);
+				});
+	}
+
+	@Test
+	void liquibaseDataSourceWithAutoClosingProperty() {
+		this.contextRunner.withUserConfiguration(LiquibaseAutoClosingDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class).run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.getClass()).isEqualTo(DataSourceClosingSpringLiquibase.class);
+					HikariDataSource dataSource = (HikariDataSource) liquibase.getDataSource();
+					assertThat(dataSource.getPoolName())
+							.isEqualTo(LiquibaseAutoClosingDataSourceConfiguration.LIQUIBASE_POOL_NAME);
 				});
 	}
 
@@ -353,6 +367,28 @@ class LiquibaseAutoConfigurationTests {
 		@Bean
 		DataSource liquibaseDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class LiquibaseAutoClosingDataSourceConfiguration {
+
+		static final String LIQUIBASE_POOL_NAME = "liquibase-pool";
+
+		@Bean
+		@Primary
+		DataSource normalDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+		}
+
+		@Bean
+		@LiquibaseDataSource(closeDataSourceOnceMigrated = true)
+		DataSource liquibaseDataSource() {
+			HikariDataSource liquibaseDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
+					.url("jdbc:hsqldb:mem:liquibasetest").username("sa").build();
+			liquibaseDataSource.setPoolName(LIQUIBASE_POOL_NAME);
+			return liquibaseDataSource;
 		}
 
 	}

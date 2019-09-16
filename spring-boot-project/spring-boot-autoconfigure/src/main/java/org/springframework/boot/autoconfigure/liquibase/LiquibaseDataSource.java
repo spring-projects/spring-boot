@@ -34,7 +34,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Qualifier
+@Qualifier("liquibaseDataSource")
 public @interface LiquibaseDataSource {
+
+	/**
+	 * Defines whether this datasource should automatically be closed once migrations have
+	 * been applied.
+	 * @return whether the {@code SpringLiquibase} created with the annotated datasource
+	 * should specifically be a {@code DataSourceClosingSpringLiquibase}.
+	 */
+	boolean closeDataSourceOnceMigrated() default false;
 
 }

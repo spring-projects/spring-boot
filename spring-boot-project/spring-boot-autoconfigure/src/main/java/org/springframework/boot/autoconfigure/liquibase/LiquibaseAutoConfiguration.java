@@ -25,6 +25,8 @@ import liquibase.change.DatabaseChange;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -45,6 +47,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -61,6 +65,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Dominic Gunn
  * @author Dan Zheng
  * @author András Deák
+ * @author Tristan Deloche
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -84,8 +89,11 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		public LiquibaseConfiguration(LiquibaseProperties properties) {
+		private final ConfigurableListableBeanFactory beanFactory;
+
+		public LiquibaseConfiguration(LiquibaseProperties properties, ConfigurableListableBeanFactory beanFactory) {
 			this.properties = properties;
+			this.beanFactory = beanFactory;
 		}
 
 		@Bean
@@ -110,16 +118,23 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
-		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDatasource, DataSource dataSource,
+		private SpringLiquibase createSpringLiquibase(DataSource liquibaseAnnotatedDatasource, DataSource dataSource,
 				DataSourceProperties dataSourceProperties) {
-			DataSource liquibaseDataSource = getDataSource(liquibaseDatasource, dataSource);
-			if (liquibaseDataSource != null) {
-				SpringLiquibase liquibase = new SpringLiquibase();
-				liquibase.setDataSource(liquibaseDataSource);
-				return liquibase;
+			DataSource liquibaseDataSource = getDataSource(liquibaseAnnotatedDatasource, dataSource);
+			boolean closeDataSourceOnceMigrated = false;
+
+			if (liquibaseDataSource == null) {
+				liquibaseDataSource = createNewDataSource(dataSourceProperties);
+				closeDataSourceOnceMigrated = true;
 			}
-			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
-			liquibase.setDataSource(createNewDataSource(dataSourceProperties));
+
+			if (liquibaseAnnotatedDatasource != null) {
+				closeDataSourceOnceMigrated = findLiquibaseDataSourceAnnotation().closeDataSourceOnceMigrated();
+			}
+
+			SpringLiquibase liquibase = closeDataSourceOnceMigrated ? new DataSourceClosingSpringLiquibase()
+					: new SpringLiquibase();
+			liquibase.setDataSource(liquibaseDataSource);
 			return liquibase;
 		}
 
@@ -143,6 +158,21 @@ public class LiquibaseAutoConfiguration {
 		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
 			String value = property.get();
 			return (value != null) ? value : defaultValue.get();
+		}
+
+		/**
+		 * Finds the {@link LiquibaseDataSource} annotation on the single
+		 * liquibase-specific {@link DataSource} bean declaration.
+		 * @return the {@link LiquibaseDataSource} annotation on the bean declaration
+		 * @throws IllegalStateException if there such a bean declaration isn't present
+		 */
+		private LiquibaseDataSource findLiquibaseDataSourceAnnotation() {
+			String[] beanNames = this.beanFactory.getBeanNamesForAnnotation(LiquibaseDataSource.class);
+			String beanName = beanNames[0]; // assume only one such bean
+			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
+			AnnotatedTypeMetadata beanDefinitionSource = (AnnotatedTypeMetadata) beanDefinition.getSource();
+			MergedAnnotations beanDeclarationAnnotations = beanDefinitionSource.getAnnotations();
+			return beanDeclarationAnnotations.get(LiquibaseDataSource.class).synthesize();
 		}
 
 	}
