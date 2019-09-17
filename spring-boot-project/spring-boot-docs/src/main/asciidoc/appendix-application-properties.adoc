@@ -1,8 +1,7 @@
 :numbered!:
 [appendix]
 [[common-application-properties]]
-== Common application properties
-
+= Common Application properties
 include::{asciidoc-sources-root}/attributes.adoc[]
 
 Various properties can be specified inside your `application.properties` file, inside your `application.yml` file, or as command line switches.
@@ -14,66 +13,66 @@ NOTE: Property contributions can come from additional jar files on your classpat
 Also, you can define your own properties.
 
 
-=== Core properties
+== Core properties
 
 include::{generated-resources-root}/config-docs/core.adoc[]
 
-=== Cache properties
+== Cache properties
 
 include::{generated-resources-root}/config-docs/cache.adoc[]
 
-=== Mail properties
+== Mail properties
 
 include::{generated-resources-root}/config-docs/mail.adoc[]
 
-=== JSON properties
+== JSON properties
 
 include::{generated-resources-root}/config-docs/json.adoc[]
 
-=== Data properties
+== Data properties
 
 include::{generated-resources-root}/config-docs/data.adoc[]
 
-=== Transaction properties
+== Transaction properties
 
 include::{generated-resources-root}/config-docs/transaction.adoc[]
 
-=== Data migration properties
+== Data migration properties
 
 include::{generated-resources-root}/config-docs/data-migration.adoc[]
 
-=== Integration properties
+== Integration properties
 
 include::{generated-resources-root}/config-docs/integration.adoc[]
 
-=== Web properties
+== Web properties
 
 include::{generated-resources-root}/config-docs/web.adoc[]
 
-=== Templating properties
+== Templating properties
 
 include::{generated-resources-root}/config-docs/templating.adoc[]
 
-=== Server properties
+== Server properties
 
 include::{generated-resources-root}/config-docs/server.adoc[]
 
-=== Security properties
+== Security properties
 
 include::{generated-resources-root}/config-docs/security.adoc[]
 
-=== RSocket properties
+== RSocket properties
 
 include::{generated-resources-root}/config-docs/rsocket.adoc[]
 
-=== Actuator properties
+== Actuator properties
 
 include::{generated-resources-root}/config-docs/actuator.adoc[]
 
-=== Devtools properties
+== Devtools properties
 
 include::{generated-resources-root}/config-docs/devtools.adoc[]
 
-=== Testing properties
+== Testing properties
 
 include::{generated-resources-root}/config-docs/testing.adoc[]
