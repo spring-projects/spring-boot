@@ -42,8 +42,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Spring WebFlux test. Can be used when a test focuses
+ * Annotation that can be used for a Spring WebFlux test that focuses
  * <strong>only</strong> on Spring WebFlux components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
@@ -64,6 +63,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} rather than this
  * annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
