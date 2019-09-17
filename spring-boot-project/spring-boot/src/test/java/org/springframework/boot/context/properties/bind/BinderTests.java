@@ -211,7 +211,7 @@ class BinderTests {
 	}
 
 	@Test
-	void bindWhenHasCustomDefultHandlerShouldTriggerOnSuccess() {
+	void bindWhenHasCustomDefaultHandlerShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		Binder binder = new Binder(this.sources, null, null, null, handler);
@@ -316,6 +316,20 @@ class BinderTests {
 		JavaBean value = this.binder.bindOrCreate("foo", Bindable.of(JavaBean.class));
 		assertThat(value).isNotNull();
 		assertThat(value).isInstanceOf(JavaBean.class);
+	}
+
+	@Test
+	void bindToJavaBeanWhenHandlerOnStartReturnsNullShouldReturnUnbound() { // gh-18129
+		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar"));
+		BindResult<JavaBean> result = this.binder.bind("foo", Bindable.of(JavaBean.class), new BindHandler() {
+
+			@Override
+			public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+				return null;
+			}
+
+		});
+		assertThat(result.isBound()).isFalse();
 	}
 
 	static class JavaBean {

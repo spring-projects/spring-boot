@@ -205,7 +205,6 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		}
 		catch (Exception ignored) {
 			return Collections.emptyList();
-
 		}
 	}
 

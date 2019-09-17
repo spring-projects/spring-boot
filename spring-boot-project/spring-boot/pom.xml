@@ -362,6 +362,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.ibm.db2</groupId>
+			<artifactId>jcc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<scope>test</scope>
@@ -414,6 +419,11 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpasyncclient</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

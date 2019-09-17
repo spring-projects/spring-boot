@@ -16,74 +16,23 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
-import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistryFactory;
+import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthContributor health
+ * contributors}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Vedran Pavic
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HealthContributorAutoConfiguration}
  */
+@Deprecated
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean({ HealthIndicator.class, ReactiveHealthIndicator.class })
-	public ApplicationHealthIndicator applicationHealthIndicator() {
-		return new ApplicationHealthIndicator();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(HealthAggregator.class)
-	public OrderedHealthAggregator healthAggregator(HealthIndicatorProperties properties) {
-		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
-		if (properties.getOrder() != null) {
-			healthAggregator.setStatusOrder(properties.getOrder());
-		}
-		return healthAggregator;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
-	public HealthIndicatorRegistry healthIndicatorRegistry(ApplicationContext applicationContext) {
-		return HealthIndicatorRegistryBeans.get(applicationContext);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Flux.class)
-	static class ReactiveHealthIndicatorConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
-				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
-				Map<String, HealthIndicator> healthIndicators) {
-			return new ReactiveHealthIndicatorRegistryFactory()
-					.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators, healthIndicators);
-		}
-
-	}
 
 }

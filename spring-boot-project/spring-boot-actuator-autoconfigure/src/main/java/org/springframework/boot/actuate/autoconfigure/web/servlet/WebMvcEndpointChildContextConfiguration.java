@@ -24,11 +24,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -58,6 +63,12 @@ class WebMvcEndpointChildContextConfiguration {
 	@ConditionalOnBean(ErrorAttributes.class)
 	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
 		return new ManagementErrorEndpoint(errorAttributes);
+	}
+
+	@Bean
+	@ConditionalOnBean(ErrorAttributes.class)
+	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
+		return new ManagementErrorPageCustomizer(serverProperties);
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -95,6 +106,31 @@ class WebMvcEndpointChildContextConfiguration {
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
+	}
+
+	/**
+	 * {@link WebServerFactoryCustomizer} to add an {@link ErrorPage} so that the
+	 * {@link ManagementErrorEndpoint} can be used.
+	 */
+	private static class ManagementErrorPageCustomizer
+			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
+
+		private final ServerProperties properties;
+
+		ManagementErrorPageCustomizer(ServerProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(ConfigurableServletWebServerFactory factory) {
+			factory.addErrorPages(new ErrorPage(this.properties.getError().getPath()));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
 	}
 
 }

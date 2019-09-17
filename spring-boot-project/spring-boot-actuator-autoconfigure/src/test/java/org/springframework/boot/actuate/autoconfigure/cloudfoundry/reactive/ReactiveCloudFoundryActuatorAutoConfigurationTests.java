@@ -32,8 +32,8 @@ import reactor.netty.http.HttpResources;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryInfoEndpointWebExtension;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
@@ -87,7 +87,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
 					WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 					InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 					ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
@@ -237,7 +237,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				.run((context) -> {
 					Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(context).getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
-					assertThat(endpoint.getOperations()).hasSize(3);
+					assertThat(endpoint.getOperations()).hasSize(2);
 					WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
 					Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
 					assertThat(ReflectionTestUtils.getField(invoker, "target"))

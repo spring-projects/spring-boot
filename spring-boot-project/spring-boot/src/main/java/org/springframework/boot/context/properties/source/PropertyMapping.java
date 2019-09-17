@@ -49,7 +49,6 @@ class PropertyMapping {
 	 */
 	String getPropertySourceName() {
 		return this.propertySourceName;
-
 	}
 
 	/**
@@ -59,7 +58,6 @@ class PropertyMapping {
 	 */
 	ConfigurationPropertyName getConfigurationPropertyName() {
 		return this.configurationPropertyName;
-
 	}
 
 	/**

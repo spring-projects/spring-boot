@@ -71,7 +71,6 @@ public class DependencyCustomizer {
 
 	public String getVersion(String artifactId) {
 		return getVersion(artifactId, "");
-
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {

@@ -18,6 +18,7 @@ package org.springframework.boot.web.context;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Interface to be implemented by {@link ApplicationContext application contexts} that
@@ -43,5 +44,18 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @return the server namespace
 	 */
 	String getServerNamespace();
+
+	/**
+	 * Returns {@code true} if the specified context is a
+	 * {@link WebServerApplicationContext} with a matching server namespace.
+	 * @param context the context to check
+	 * @param serverNamespace the server namespace to match against
+	 * @return {@code true} if the server namespace of the context matches
+	 * @since 2.1.8
+	 */
+	static boolean hasServerNamespace(ApplicationContext context, String serverNamespace) {
+		return (context instanceof WebServerApplicationContext) && ObjectUtils
+				.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
+	}
 
 }

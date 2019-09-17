@@ -128,6 +128,18 @@ class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
+	void customProtocolResolverRegisteredAfterCreationIsUsedInNonWebApplication() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Resource resource = mock(Resource.class);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
+		context.addProtocolResolver(resolver);
+		Resource actual = this.resolver.getResource("foo:some-file.txt");
+		assertThat(actual).isSameAs(resource);
+		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+	}
+
+	@Test
 	void customResourceLoaderIsUsedInWebApplication() {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
@@ -144,6 +156,18 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
 		context.addProtocolResolver(resolver);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		Resource actual = this.resolver.getResource("foo:some-file.txt");
+		assertThat(actual).isSameAs(resource);
+		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+	}
+
+	@Test
+	void customProtocolResolverRegisteredAfterCreationIsUsedInWebApplication() {
+		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
+		Resource resource = mock(Resource.class);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
+		context.addProtocolResolver(resolver);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
 		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));

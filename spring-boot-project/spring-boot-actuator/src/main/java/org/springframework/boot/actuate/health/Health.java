@@ -22,15 +22,13 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import org.springframework.util.Assert;
 
 /**
- * Carries information about the health of a component or subsystem.
- * <p>
- * {@link Health} contains a {@link Status} to express the state of a component or
- * subsystem and some additional details to carry some contextual information.
+ * Carries information about the health of a component or subsystem. Extends
+ * {@link HealthComponent} so that additional contextual details about the system can be
+ * returned along with the {@link Status}.
  * <p>
  * {@link Health} instances can be created by using {@link Builder}'s fluent API. Typical
  * usage in a {@link HealthIndicator} would be:
@@ -38,10 +36,10 @@ import org.springframework.util.Assert;
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
- * 	return new Health.Builder().up().withDetail("version", "1.1.2").build();
+ * 	return Health.up().withDetail("version", "1.1.2").build();
  * }
  * catch (Exception ex) {
- * 	return new Health.Builder().down(ex).build();
+ * 	return Health.down(ex).build();
  * }
  * </pre>
  *
@@ -51,7 +49,7 @@ import org.springframework.util.Assert;
  * @since 1.1.0
  */
 @JsonInclude(Include.NON_EMPTY)
-public final class Health {
+public final class Health extends HealthComponent {
 
 	private final Status status;
 
@@ -71,7 +69,7 @@ public final class Health {
 	 * Return the status of the health.
 	 * @return the status (never {@code null})
 	 */
-	@JsonUnwrapped
+	@Override
 	public Status getStatus() {
 		return this.status;
 	}
@@ -80,8 +78,22 @@ public final class Health {
 	 * Return the details of the health.
 	 * @return the details (or an empty map)
 	 */
+	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> getDetails() {
 		return this.details;
+	}
+
+	/**
+	 * Return a new instance of this {@link Health} with all {@link #getDetails() details}
+	 * removed.
+	 * @return a new instance without details
+	 * @since 2.2.0
+	 */
+	Health withoutDetails() {
+		if (this.details.isEmpty()) {
+			return this;
+		}
+		return status(getStatus()).build();
 	}
 
 	@Override

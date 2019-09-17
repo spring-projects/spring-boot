@@ -28,7 +28,10 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HttpCodeStatusMapper} or
+ * {@link SimpleHttpCodeStatusMapper}
  */
+@Deprecated
 public class HealthStatusHttpMapper {
 
 	private Map<String, Integer> statusMapping = new HashMap<>();

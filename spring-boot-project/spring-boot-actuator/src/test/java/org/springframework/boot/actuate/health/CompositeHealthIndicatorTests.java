@@ -36,6 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
+@Deprecated
 class CompositeHealthIndicatorTests {
 
 	private HealthAggregator healthAggregator;

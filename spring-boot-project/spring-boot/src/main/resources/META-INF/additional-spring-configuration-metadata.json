@@ -166,6 +166,13 @@
       "defaultValue": "%5p"
     },
     {
+      "name": "logging.pattern.rolling-file-name",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+    },
+    {
       "name": "logging.register-shutdown-hook",
       "type": "java.lang.Boolean",
       "description": "Register a shutdown hook for the logging system when it is initialized.",

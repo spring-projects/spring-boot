@@ -34,6 +34,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.cli.common.PropertiesKt;
 import org.jetbrains.kotlin.compilerRunner.KotlinLogger;
+import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
@@ -85,6 +86,7 @@ public class GradleBuild {
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
 				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinCompilerClient.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}

@@ -69,6 +69,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	@Override
 	public void customize(Server server) {
 		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+		sslContextFactory.setEndpointIdentificationAlgorithm(null);
 		configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
 		ServerConnector connector = createConnector(server, sslContextFactory, this.address);
 		server.setConnectors(new Connector[] { connector });

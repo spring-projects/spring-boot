@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -28,7 +30,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -50,11 +51,12 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@DisabledWithoutDockerTestcontainers
+@Testcontainers(disabledWithoutDocker = true)
 class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer();
+	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

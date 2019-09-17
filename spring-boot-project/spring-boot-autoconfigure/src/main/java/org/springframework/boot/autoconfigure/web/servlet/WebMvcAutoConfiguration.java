@@ -332,19 +332,6 @@ public class WebMvcAutoConfiguration {
 			return new OrderedRequestContextFilter();
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
-		public static class FaviconConfiguration implements WebMvcConfigurer {
-
-			@Override
-			public void addResourceHandlers(ResourceHandlerRegistry registry) {
-				if (!registry.hasMappingForPattern("favicon.ico")) {
-					registry.addResourceHandler("favicon.ico").addResourceLocations("classpath:favicon.ico");
-				}
-			}
-
-		}
-
 	}
 
 	/**

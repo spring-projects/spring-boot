@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.jms.listener.AbstractPollingMessageListenerContainer;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -76,6 +78,12 @@ class JmsPropertiesTests {
 		JmsProperties properties = new JmsProperties();
 		properties.getTemplate().setTimeToLive(Duration.ofSeconds(5));
 		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
+	}
+
+	@Test
+	void defaultReceiveTimeoutMatchesListenerContainersDefault() {
+		assertThat(new JmsProperties().getListener().getReceiveTimeout())
+				.isEqualTo(Duration.ofMillis(AbstractPollingMessageListenerContainer.DEFAULT_RECEIVE_TIMEOUT));
 	}
 
 }

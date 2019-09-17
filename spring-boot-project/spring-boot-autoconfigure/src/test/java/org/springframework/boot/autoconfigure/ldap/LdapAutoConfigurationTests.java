@@ -88,6 +88,17 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void contextSourceWithNoCustomization() {
+		this.contextRunner.run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUserDn()).isEqualTo("");
+			assertThat(contextSource.getPassword()).isEqualTo("");
+			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("");
+		});
+	}
+
+	@Test
 	void templateExists() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
 				.run((context) -> assertThat(context).hasSingleBean(LdapTemplate.class));

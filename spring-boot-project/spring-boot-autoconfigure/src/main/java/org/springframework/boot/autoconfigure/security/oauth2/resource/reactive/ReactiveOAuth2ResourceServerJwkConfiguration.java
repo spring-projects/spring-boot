@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
@@ -43,6 +44,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -60,7 +62,13 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		ReactiveJwtDecoder jwtDecoder() {
-			return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
+			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = new NimbusReactiveJwtDecoder(
+					this.properties.getJwkSetUri());
+			String issuerUri = this.properties.getIssuerUri();
+			if (issuerUri != null) {
+				nimbusReactiveJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+			}
+			return nimbusReactiveJwtDecoder;
 		}
 
 		@Bean

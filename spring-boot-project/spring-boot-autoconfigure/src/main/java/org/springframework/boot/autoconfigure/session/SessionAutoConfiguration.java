@@ -134,8 +134,8 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Customization log for {@link SpringSessionRememberMeServices} that is only
-	 * instantiated when Spring Security is on the classpath.
+	 * Customization for {@link SpringSessionRememberMeServices} that is only instantiated
+	 * when Spring Security is on the classpath.
 	 */
 	static class RememberMeServicesCookieSerializerCustomizer {
 

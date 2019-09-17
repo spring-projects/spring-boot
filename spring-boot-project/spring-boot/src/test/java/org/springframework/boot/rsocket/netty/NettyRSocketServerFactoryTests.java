@@ -40,6 +40,7 @@ import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.SocketUtils;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link NettyRSocketServerFactory}
  *
  * @author Brian Clozel
+ * @author Leo Li
  */
 class NettyRSocketServerFactoryTests {
 
@@ -93,6 +95,7 @@ class NettyRSocketServerFactoryTests {
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 
+		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
 		assertThat(response).isEqualTo(payload);
 		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
 	}
@@ -106,7 +109,27 @@ class NettyRSocketServerFactoryTests {
 		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
+
 		assertThat(response).isEqualTo(payload);
+	}
+
+	@Test
+	void websocketTransportWithReactorResource() {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
+		ReactorResourceFactory resourceFactory = new ReactorResourceFactory();
+		resourceFactory.afterPropertiesSet();
+		factory.setResourceFactory(resourceFactory);
+		int specificPort = SocketUtils.findAvailableTcpPort(41000);
+		factory.setPort(specificPort);
+		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
+		this.rSocketServer.start();
+		this.requester = createRSocketWebSocketClient();
+		String payload = "test payload";
+		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
+
+		assertThat(response).isEqualTo(payload);
+		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
 	}
 
 	@Test

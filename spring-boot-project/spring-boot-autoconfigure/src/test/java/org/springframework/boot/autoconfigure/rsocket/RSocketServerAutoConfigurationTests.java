@@ -86,6 +86,15 @@ class RSocketServerAutoConfigurationTests {
 				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
 	}
 
+	@Test
+	void shouldUseCustomNettyRouteProvider() {
+		reactiveWebContextRunner().withUserConfiguration(CustomNettyRouteProviderConfig.class)
+				.withPropertyValues("spring.rsocket.server.transport=websocket",
+						"spring.rsocket.server.mapping-path=/rsocket")
+				.run((context) -> assertThat(context).getBeanNames(RSocketWebSocketNettyRouteProvider.class)
+						.containsExactly("customNettyRouteProvider"));
+	}
+
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner().withUserConfiguration(BaseConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class));
@@ -115,6 +124,16 @@ class RSocketServerAutoConfigurationTests {
 		@Bean
 		RSocketServerBootstrap customServerBootstrap() {
 			return mock(RSocketServerBootstrap.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomNettyRouteProviderConfig {
+
+		@Bean
+		RSocketWebSocketNettyRouteProvider customNettyRouteProvider() {
+			return mock(RSocketWebSocketNettyRouteProvider.class);
 		}
 
 	}

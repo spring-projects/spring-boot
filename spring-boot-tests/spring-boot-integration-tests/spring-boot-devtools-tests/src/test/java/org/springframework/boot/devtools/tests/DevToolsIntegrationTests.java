@@ -17,29 +17,13 @@
 package org.springframework.boot.devtools.tests;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.annotation.AnnotationDescription;
-import net.bytebuddy.description.modifier.Visibility;
-import net.bytebuddy.dynamic.DynamicType.Builder;
-import net.bytebuddy.implementation.FixedValue;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,29 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class DevToolsIntegrationTests {
-
-	@TempDir
-	static File temp;
-
-	private static final BuildOutput buildOutput = new BuildOutput(DevToolsIntegrationTests.class);
-
-	private LaunchedApplication launchedApplication;
-
-	private final File serverPortFile = new File(buildOutput.getRootLocation(), "server.port");
-
-	@RegisterExtension
-	final JvmLauncher javaLauncher = new JvmLauncher();
-
-	private void launchApplication(ApplicationLauncher applicationLauncher) throws Exception {
-		this.serverPortFile.delete();
-		this.launchedApplication = applicationLauncher.launchApplication(this.javaLauncher, this.serverPortFile);
-	}
-
-	@AfterEach
-	void stopApplication() throws InterruptedException {
-		this.launchedApplication.stop();
-	}
+public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
@@ -191,69 +153,11 @@ public class DevToolsIntegrationTests {
 				.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	private int awaitServerPort() throws Exception {
-		Duration timeToWait = Duration.ofSeconds(40);
-		long end = System.currentTimeMillis() + timeToWait.toMillis();
-		System.out.println("Reading server port from '" + this.serverPortFile + "'");
-		while (this.serverPortFile.length() == 0) {
-			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(String.format(
-						"server.port file '" + this.serverPortFile + "' was not written within " + timeToWait.toMillis()
-								+ "ms. Application output:%n%s%s",
-						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardOut())),
-						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardError()))));
-			}
-			Thread.sleep(100);
-		}
-		FileReader portReader = new FileReader(this.serverPortFile);
-		int port = Integer.valueOf(FileCopyUtils.copyToString(portReader));
-		this.serverPortFile.delete();
-		System.out.println("Got port " + port);
-		this.launchedApplication.restartRemote(port);
-		Thread.sleep(1000);
-		return port;
-	}
-
-	private ControllerBuilder controller(String name) {
-		return new ControllerBuilder(name, this.launchedApplication.getClassesDirectory());
-	}
-
 	static Object[] parameters() throws IOException {
 		Directories directories = new Directories(buildOutput, temp);
 		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
 				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },
 				new Object[] { new JarFileRemoteApplicationLauncher(directories) } };
-	}
-
-	private static final class ControllerBuilder {
-
-		private final List<String> mappings = new ArrayList<>();
-
-		private final String name;
-
-		private final File classesDirectory;
-
-		private ControllerBuilder(String name, File classesDirectory) {
-			this.name = name;
-			this.classesDirectory = classesDirectory;
-		}
-
-		ControllerBuilder withRequestMapping(String mapping) {
-			this.mappings.add(mapping);
-			return this;
-		}
-
-		void build() throws Exception {
-			Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
-					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
-			for (String mapping : this.mappings) {
-				builder = builder.defineMethod(mapping, String.class, Visibility.PUBLIC)
-						.intercept(FixedValue.value(mapping)).annotateMethod(AnnotationDescription.Builder
-								.ofType(RequestMapping.class).defineArray("value", mapping).build());
-			}
-			builder.make().saveIn(this.classesDirectory);
-		}
-
 	}
 
 }

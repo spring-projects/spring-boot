@@ -162,22 +162,23 @@ jobs:
   plan:
   - get: ci-images-git-repo
     trigger: true
-  - put: spring-boot-ci-image
-    params:
-      build: ci-images-git-repo/ci/images
-      dockerfile: ci-images-git-repo/ci/images/spring-boot-ci-image/Dockerfile
-  - put: spring-boot-jdk11-ci-image
-    params:
-      build: ci-images-git-repo/ci/images
-      dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
-  - put: spring-boot-jdk12-ci-image
-    params:
-      build: ci-images-git-repo/ci/images
-      dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk12-ci-image/Dockerfile
-  - put: spring-boot-jdk13-ci-image
-    params:
-      build: ci-images-git-repo/ci/images
-      dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk13-ci-image/Dockerfile
+  - in_parallel:
+    - put: spring-boot-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-ci-image/Dockerfile
+    - put: spring-boot-jdk11-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
+    - put: spring-boot-jdk12-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk12-ci-image/Dockerfile
+    - put: spring-boot-jdk13-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk13-ci-image/Dockerfile
 - name: detect-jdk-updates
   plan:
   - get: git-repo
@@ -211,6 +212,15 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java12
+      image: spring-boot-ci-image
+    - task: detect-jdk13-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java13
       image: spring-boot-ci-image
 - name: build
   serial: true

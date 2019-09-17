@@ -25,7 +25,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link LoggerGroups}
@@ -34,8 +33,6 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  */
 class LoggerGroupsTests {
-
-	private LoggingSystem loggingSystem = mock(LoggingSystem.class);
 
 	@Test
 	void putAllShouldAddLoggerGroups() {

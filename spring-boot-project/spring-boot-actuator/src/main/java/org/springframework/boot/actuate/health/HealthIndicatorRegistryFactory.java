@@ -26,7 +26,9 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 in favor of {@link DefaultHealthIndicatorRegistry}
  */
+@Deprecated
 public class HealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;

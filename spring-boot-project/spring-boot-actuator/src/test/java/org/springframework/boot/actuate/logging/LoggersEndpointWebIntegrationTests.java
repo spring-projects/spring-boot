@@ -118,7 +118,8 @@ class LoggersEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void setLoggerUsingApplicationJsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus()
+				.isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
@@ -126,7 +127,8 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerUsingActuatorV2JsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus()
+				.isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
@@ -134,7 +136,8 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerGroupUsingActuatorV2JsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/test")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus()
+				.isNoContent();
 		verify(this.loggingSystem).setLogLevel("test.member1", LogLevel.DEBUG);
 		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.DEBUG);
 	}
@@ -142,7 +145,8 @@ class LoggersEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void setLoggerGroupUsingApplicationJsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/test").contentType(MediaType.APPLICATION_JSON)
-				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus()
+				.isNoContent();
 		verify(this.loggingSystem).setLogLevel("test.member1", LogLevel.DEBUG);
 		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.DEBUG);
 	}
@@ -150,7 +154,8 @@ class LoggersEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void setLoggerOrLoggerGroupWithWrongLogLevelResultInBadRequestResponse() {
 		this.client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.body(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus().isBadRequest();
+				.bodyValue(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus()
+				.isBadRequest();
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
@@ -158,14 +163,14 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerWithNullLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.body(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 	@WebEndpointTest
 	void setLoggerWithNoLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).body(Collections.emptyMap())
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).bodyValue(Collections.emptyMap())
 				.exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
@@ -174,7 +179,7 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerGroupWithNullLogLevel() {
 		this.client.post().uri("/actuator/loggers/test")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.body(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
+				.bodyValue(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("test.member1", null);
 		verify(this.loggingSystem).setLogLevel("test.member2", null);
 	}
@@ -182,7 +187,7 @@ class LoggersEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void setLoggerGroupWithNoLogLevel() {
 		this.client.post().uri("/actuator/loggers/test")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).body(Collections.emptyMap())
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).bodyValue(Collections.emptyMap())
 				.exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("test.member1", null);
 		verify(this.loggingSystem).setLogLevel("test.member2", null);

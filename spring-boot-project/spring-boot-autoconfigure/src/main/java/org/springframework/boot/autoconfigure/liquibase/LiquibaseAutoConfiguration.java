@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -85,11 +84,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		private final ResourceLoader resourceLoader;
-
-		public LiquibaseConfiguration(LiquibaseProperties properties, ResourceLoader resourceLoader) {
+		public LiquibaseConfiguration(LiquibaseProperties properties) {
 			this.properties = properties;
-			this.resourceLoader = resourceLoader;
 		}
 
 		@Bean
@@ -161,7 +157,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -176,7 +172,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -192,7 +188,7 @@ public class LiquibaseAutoConfiguration {
 			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}

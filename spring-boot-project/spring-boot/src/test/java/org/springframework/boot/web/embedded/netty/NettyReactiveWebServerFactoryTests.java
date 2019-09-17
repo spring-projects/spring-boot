@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,10 @@ import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -81,6 +85,17 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		NettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void noCompressionForResponseWithInvalidContentType() {
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		compression.setMimeTypes(new String[] { "application/json" });
+		WebClient client = prepareCompressionTest(compression, "test~plain");
+		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
+				.block(Duration.ofSeconds(30));
+		assertResponseIsNotCompressed(response);
 	}
 
 }

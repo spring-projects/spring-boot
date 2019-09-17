@@ -223,7 +223,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			builder.append("<div style='white-space:pre-wrap;'>").append(htmlEscape(trace)).append("</div>");
 		}
 		builder.append("</body></html>");
-		return responseBody.body(builder.toString());
+		return responseBody.bodyValue(builder.toString());
 	}
 
 	private String htmlEscape(Object input) {
@@ -273,7 +273,16 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
 	}
 
-	private void logError(ServerRequest request, ServerResponse response, Throwable throwable) {
+	/**
+	 * Logs the {@code throwable} error for the given {@code request} and {@code response}
+	 * exchange. The default implementation logs all errors at debug level. Additionally,
+	 * any internal server error (500) is logged at error level.
+	 * @param request the request that was being handled
+	 * @param response the response that was being sent
+	 * @param throwable the error to be logged
+	 * @since 2.2.0
+	 */
+	protected void logError(ServerRequest request, ServerResponse response, Throwable throwable) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
 		}
