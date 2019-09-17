@@ -706,9 +706,6 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
 
-| {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
-| Checks that a Rabbit server is up.
-
 | {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
 
