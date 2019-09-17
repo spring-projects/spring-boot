@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Leo Li
  * @since 2.0.0
  */
 @Endpoint(id = "shutdown", enableByDefault = false)
@@ -58,6 +60,11 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 			thread.setContextClassLoader(getClass().getClassLoader());
 			thread.start();
 		}
+	}
+
+	@ReadOperation
+	public Map<String, String> shutdownGet() {
+		return shutdown();
 	}
 
 	private void performShutdown() {

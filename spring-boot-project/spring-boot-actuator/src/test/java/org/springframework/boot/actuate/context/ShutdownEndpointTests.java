@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Leo Li
  */
 class ShutdownEndpointTests {
 
@@ -55,6 +56,28 @@ class ShutdownEndpointTests {
 			Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()));
 			try {
 				result = context.getBean(ShutdownEndpoint.class).shutdown();
+			}
+			finally {
+				Thread.currentThread().setContextClassLoader(previousTccl);
+			}
+			assertThat(result.get("message")).startsWith("Shutting down");
+			assertThat(((ConfigurableApplicationContext) context).isActive()).isTrue();
+			assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
+			assertThat(config.threadContextClassLoader).isEqualTo(getClass().getClassLoader());
+		});
+	}
+
+	@Test
+	void shutdownGet() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withUserConfiguration(EndpointConfig.class);
+		contextRunner.run((context) -> {
+			EndpointConfig config = context.getBean(EndpointConfig.class);
+			ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
+			Map<String, String> result;
+			Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()));
+			try {
+				result = context.getBean(ShutdownEndpoint.class).shutdownGet();
 			}
 			finally {
 				Thread.currentThread().setContextClassLoader(previousTccl);
