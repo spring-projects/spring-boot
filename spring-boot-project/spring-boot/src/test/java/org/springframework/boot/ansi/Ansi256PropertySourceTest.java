@@ -22,21 +22,22 @@ class Ansi256PropertySourceTest {
 	@Test
 	void getPropertyShouldConvertAnsi256ColorForeground() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-		final Object property = source.getProperty("Ansi256Color.Foreground_100");
+		final Object property = this.source.getProperty("Ansi256Color.Foreground_100");
 		assertThat(property).isEqualTo("\033[38;5;100m");
 	}
 
 	@Test
 	void getPropertyShouldConvertAnsi256ColorBackground() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-		final Object property = source.getProperty("Ansi256Color.Background_100");
+		final Object property = this.source.getProperty("Ansi256Color.Background_100");
 		assertThat(property).isEqualTo("\033[48;5;100m");
 	}
 
 	@Test
 	void getMissingPropertyShouldReturnNull() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-		final Object property = source.getProperty("Ansi256Color.ForeGround_100");
+		final Object property = this.source.getProperty("Ansi256Color.ForeGround_100");
 		assertThat(property).isNull();
 	}
+
 }

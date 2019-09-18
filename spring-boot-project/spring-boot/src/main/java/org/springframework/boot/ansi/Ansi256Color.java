@@ -19,7 +19,8 @@ package org.springframework.boot.ansi;
 /**
  * {@link AnsiElement} implementation for Ansi 256 colors.
  * <p>
- * use {@link Ansi256Color.Foreground} or {@link Ansi256Color.Background} as a concrete class.
+ * use {@link Ansi256Color.Foreground} or {@link Ansi256Color.Background} as a concrete
+ * class.
  *
  * @author Toshiaki Maki
  * @since 2.2.0
@@ -58,6 +59,7 @@ public abstract class Ansi256Color implements AnsiElement {
 		public String toString() {
 			return "38;5;" + super.colorCode;
 		}
+
 	}
 
 	/**
@@ -76,5 +78,7 @@ public abstract class Ansi256Color implements AnsiElement {
 		public String toString() {
 			return "48;5;" + super.colorCode;
 		}
+
 	}
+
 }

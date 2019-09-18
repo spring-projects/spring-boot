@@ -21,8 +21,10 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link PropertyResolver} for {@link Ansi256Color.Background} and {@link Ansi256Color.Foreground} elements.
- * Supports properties of the form {@code Ansi256Color.Foreground_N} and {@code Ansi256Color.Background_N} ({@code N} must be between 0 and 255).
+ * {@link PropertyResolver} for {@link Ansi256Color.Background} and
+ * {@link Ansi256Color.Foreground} elements. Supports properties of the form
+ * {@code Ansi256Color.Foreground_N} and {@code Ansi256Color.Background_N} ({@code N} must
+ * be between 0 and 255).
  *
  * @author Toshiaki Maki
  * @since 2.2.0
@@ -37,7 +39,6 @@ public class Ansi256PropertySource extends PropertySource<AnsiElement> {
 
 	/**
 	 * Create a new {@link Ansi256PropertySource} instance.
-	 *
 	 * @param name the name of the property source
 	 */
 	public Ansi256PropertySource(String name) {
@@ -50,11 +51,13 @@ public class Ansi256PropertySource extends PropertySource<AnsiElement> {
 			if (name.startsWith(FOREGROUND_PREFIX)) {
 				final int colorCode = Integer.parseInt(name.substring(FOREGROUND_PREFIX.length()));
 				return AnsiOutput.encode(new Ansi256Color.Foreground(colorCode));
-			} else if (name.startsWith(BACKGROUND_PREFIX)) {
+			}
+			else if (name.startsWith(BACKGROUND_PREFIX)) {
 				final int colorCode = Integer.parseInt(name.substring(BACKGROUND_PREFIX.length()));
 				return AnsiOutput.encode(new Ansi256Color.Background(colorCode));
 			}
 		}
 		return null;
 	}
+
 }
