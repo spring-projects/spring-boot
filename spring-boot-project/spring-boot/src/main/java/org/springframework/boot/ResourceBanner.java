@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ansi.Ansi256PropertySource;
 import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -43,6 +44,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Toshiaki Maki
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
@@ -80,6 +82,7 @@ public class ResourceBanner implements Banner {
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
 		resolvers.add(getAnsiResolver());
+		resolvers.add(getAnsi256Resolver());
 		resolvers.add(getTitleResolver(sourceClass));
 		return resolvers;
 	}
@@ -120,6 +123,12 @@ public class ResourceBanner implements Banner {
 	private PropertyResolver getAnsiResolver() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(new AnsiPropertySource("ansi", true));
+		return new PropertySourcesPropertyResolver(sources);
+	}
+
+	private PropertyResolver getAnsi256Resolver() {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new Ansi256PropertySource("ansi256"));
 		return new PropertySourcesPropertyResolver(sources);
 	}
 
