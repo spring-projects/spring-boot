@@ -46,8 +46,8 @@ class Ansi256ColorTest {
 			new Ansi256Color.Foreground(256);
 			failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
 		}
-		catch (IllegalArgumentException e) {
-			assertThat(e.getMessage()).isEqualTo("'colorCode' must be between 0 and 255.");
+		catch (IllegalArgumentException ex) {
+			assertThat(ex.getMessage()).isEqualTo("'colorCode' must be between 0 and 255.");
 		}
 	}
 
