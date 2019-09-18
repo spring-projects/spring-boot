@@ -223,7 +223,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	/**
 	 * An {@link OperationInvoker} that performs the invocation of a blocking operation on
-	 * a separate thread using Reactor's {@link Schedulers#elastic() elastic scheduler}.
+	 * a separate thread using Reactor's {@link Schedulers#boundedElastic() bounded
+	 * elastic scheduler}.
 	 */
 	protected static final class ElasticSchedulerInvoker implements OperationInvoker {
 
@@ -235,7 +236,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public Object invoke(InvocationContext context) {
-			return Mono.fromCallable(() -> this.invoker.invoke(context)).subscribeOn(Schedulers.elastic());
+			return Mono.fromCallable(() -> this.invoker.invoke(context)).subscribeOn(Schedulers.boundedElastic());
 		}
 
 	}
