@@ -27,6 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
+import org.springframework.util.Assert;
 
 /**
  * Utility to deduce the {@link PropertySources} to use for configuration binding.
@@ -49,19 +50,9 @@ class PropertySourcesDeducer {
 			return configurer.getAppliedPropertySources();
 		}
 		MutablePropertySources sources = extractEnvironmentPropertySources();
-		if (sources != null) {
-			return sources;
-		}
-		throw new IllegalStateException(
+		Assert.state(sources != null,
 				"Unable to obtain PropertySources from PropertySourcesPlaceholderConfigurer or Environment");
-	}
-
-	private MutablePropertySources extractEnvironmentPropertySources() {
-		Environment environment = this.applicationContext.getEnvironment();
-		if (environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) environment).getPropertySources();
-		}
-		return null;
+		return sources;
 	}
 
 	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
@@ -74,6 +65,14 @@ class PropertySourcesDeducer {
 		if (beans.size() > 1 && logger.isWarnEnabled()) {
 			logger.warn("Multiple PropertySourcesPlaceholderConfigurer beans registered " + beans.keySet()
 					+ ", falling back to Environment");
+		}
+		return null;
+	}
+
+	private MutablePropertySources extractEnvironmentPropertySources() {
+		Environment environment = this.applicationContext.getEnvironment();
+		if (environment instanceof ConfigurableEnvironment) {
+			return ((ConfigurableEnvironment) environment).getPropertySources();
 		}
 		return null;
 	}

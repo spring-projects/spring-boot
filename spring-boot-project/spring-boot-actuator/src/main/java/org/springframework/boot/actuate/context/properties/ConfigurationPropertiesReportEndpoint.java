@@ -49,8 +49,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ClassUtils;
@@ -108,34 +108,15 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ContextConfigurationProperties describeConfigurationProperties(ApplicationContext context,
 			ObjectMapper mapper) {
-		ConfigurationBeanFactoryMetadata beanFactoryMetadata = getBeanFactoryMetadata(context);
-		Map<String, Object> beans = getConfigurationPropertiesBeans(context, beanFactoryMetadata);
-		Map<String, ConfigurationPropertiesBeanDescriptor> beanDescriptors = new HashMap<>();
+		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
+		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = new HashMap<>();
 		beans.forEach((beanName, bean) -> {
-			String prefix = extractPrefix(context, beanFactoryMetadata, beanName);
-			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
-					sanitize(prefix, safeSerialize(mapper, bean, prefix))));
+			String prefix = bean.getAnnotation().prefix();
+			descriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
+					sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix))));
 		});
-		return new ContextConfigurationProperties(beanDescriptors,
+		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
-	}
-
-	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(ApplicationContext context) {
-		Map<String, ConfigurationBeanFactoryMetadata> beans = context
-				.getBeansOfType(ConfigurationBeanFactoryMetadata.class);
-		if (beans.size() == 1) {
-			return beans.values().iterator().next();
-		}
-		return null;
-	}
-
-	private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext context,
-			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
-		Map<String, Object> beans = new HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
-		if (beanFactoryMetadata != null) {
-			beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
-		}
-		return beans;
 	}
 
 	/**
@@ -195,30 +176,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
 		mapper.setFilterProvider(
 				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
-	}
-
-	/**
-	 * Extract configuration prefix from
-	 * {@link ConfigurationProperties @ConfigurationProperties} annotation.
-	 * @param context the application context
-	 * @param beanFactoryMetaData the bean factory meta-data
-	 * @param beanName the bean name
-	 * @return the prefix
-	 */
-	private String extractPrefix(ApplicationContext context, ConfigurationBeanFactoryMetadata beanFactoryMetaData,
-			String beanName) {
-		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName, ConfigurationProperties.class);
-		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(beanName,
-					ConfigurationProperties.class);
-			if (override != null) {
-				// The @Bean-level @ConfigurationProperties overrides the one at type
-				// level when binding. Arguably we should render them both, but this one
-				// might be the most relevant for a starting point.
-				annotation = override;
-			}
-		}
-		return annotation.prefix();
 	}
 
 	/**

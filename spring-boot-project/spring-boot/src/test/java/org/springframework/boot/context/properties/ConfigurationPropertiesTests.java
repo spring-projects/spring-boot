@@ -82,7 +82,7 @@ import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -216,7 +216,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenBindingWithoutAndAnnotationShouldFail() {
-		assertThatIllegalArgumentException().isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
+		assertThatIllegalStateException().isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
 				.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
@@ -776,6 +776,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void loadWhenBindingOnBeanWithoutBeanDefinitionShouldBind() {
 		load(BasicConfiguration.class, "name=test");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
@@ -1119,7 +1120,7 @@ class ConfigurationPropertiesTests {
 	@EnableConfigurationProperties(WithCustomValidatorProperties.class)
 	static class WithCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME)
+		@Bean(name = EnableConfigurationProperties.VALIDATOR_BEAN_NAME)
 		CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}
@@ -1130,7 +1131,7 @@ class ConfigurationPropertiesTests {
 	@EnableConfigurationProperties(WithSetterThatThrowsValidationExceptionProperties.class)
 	static class WithUnsupportedCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME)
+		@Bean(name = EnableConfigurationProperties.VALIDATOR_BEAN_NAME)
 		CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}

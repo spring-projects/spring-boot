@@ -33,6 +33,10 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 
 	private final ConfigurationProperties annotation;
 
+	ConfigurationPropertiesBindException(ConfigurationPropertiesBean bean, Exception cause) {
+		this(bean.getName(), bean.getInstance().getClass(), bean.getAnnotation(), cause);
+	}
+
 	ConfigurationPropertiesBindException(String beanName, Class<?> beanType, ConfigurationProperties annotation,
 			Exception cause) {
 		super(beanName, getMessage(beanType, annotation), cause);
