@@ -1570,7 +1570,7 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 | Name | Loggers
 
 | web
-| `org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`
+| `org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`, `org.springframework.boot.actuate.endpoint.web`, `org.springframework.boot.web.servlet.ServletContextInitializerBeans`
 
 | sql
 | `org.springframework.jdbc.core`, `org.hibernate.SQL`
