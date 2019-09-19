@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import org.springframework.util.StopWatch;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -31,7 +33,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-class StartUpLoggerTests {
+class StartupInfoLoggerTests {
 
 	private final Log log = mock(Log.class);
 
@@ -42,6 +44,19 @@ class StartUpLoggerTests {
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
 		assertThat(captor.getValue().toString()).startsWith("Starting " + getClass().getSimpleName());
+	}
+
+	@Test
+	void startedFormat() {
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		given(this.log.isInfoEnabled()).willReturn(true);
+		stopWatch.stop();
+		new StartupInfoLogger(getClass()).logStarted(this.log, stopWatch);
+		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+		verify(this.log).info(captor.capture());
+		assertThat(captor.getValue().toString()).matches("Started " + getClass().getSimpleName()
+				+ " in \\d+\\.\\d{1,3} seconds \\(JVM running for \\d+\\.\\d{1,3}\\)");
 	}
 
 }
