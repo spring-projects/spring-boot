@@ -342,7 +342,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 							.getField(reactiveJwtDecoder, "jwtValidator");
 					Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 							.getField(jwtValidator, "tokenValidators");
-					assertThat(tokenValidators.stream()).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
+					assertThat(tokenValidators).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 				});
 	}
 
