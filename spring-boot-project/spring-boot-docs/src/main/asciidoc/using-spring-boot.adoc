@@ -805,7 +805,7 @@ If you need to _completely_ disable restart support (for example, because it doe
 If you work with an IDE that continuously compiles changed files, you might prefer to trigger restarts only at specific times.
 To do so, you can use a "`trigger file`", which is a special file that must be modified when you want to actually trigger a restart check.
 
-NOTE: Any update to the file file will trigger a check, but restart only actually occurs if Devtools has detected it has something to do.
+NOTE: Any update to the file will trigger a check, but restart only actually occurs if Devtools has detected it has something to do.
 
 To use a trigger file, set the `spring.devtools.restart.trigger-file` property to the name (excluding any path) of your trigger file.
 The trigger file must appear somewhere on your classpath.
