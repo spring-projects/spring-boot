@@ -1247,7 +1247,7 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 === Configure the TcpClient used by a Reactor Netty-based WebClient
 When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto-configured.
 To customize the client's handling of network connections, provide a `ClientHttpConnector` bean.
-The following example configures a 60 second read timeout and adds a `ReadTimeoutHandler`:
+The following example configures a 60 second connect timeout and adds a `ReadTimeoutHandler`:
 
 [source,java,indent=0]
 ----

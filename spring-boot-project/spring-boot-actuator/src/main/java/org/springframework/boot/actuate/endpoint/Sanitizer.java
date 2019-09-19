@@ -101,10 +101,11 @@ public class Sanitizer {
 	}
 
 	private Object sanitizeUri(Object value) {
-		Matcher matcher = URI_USERINFO_PATTERN.matcher(value.toString());
+		String uriString = value.toString();
+		Matcher matcher = URI_USERINFO_PATTERN.matcher(uriString);
 		String password = matcher.matches() ? matcher.group(1) : null;
 		if (password != null) {
-			return StringUtils.replace(value.toString(), ":" + password + "@", ":******@");
+			return StringUtils.replace(uriString, ":" + password + "@", ":******@");
 		}
 		return value;
 	}
