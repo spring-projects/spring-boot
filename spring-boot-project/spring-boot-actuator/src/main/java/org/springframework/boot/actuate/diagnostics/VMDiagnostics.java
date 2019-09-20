@@ -283,9 +283,8 @@ public final class VMDiagnostics {
 		else {
 			int newSize = values.length - trailingNulls;
 			String[] newValues = new String[newSize];
-			for (int i = 0; i < newSize; i++) {
-				newValues[i] = values[i];
-			}
+			System.arraycopy(values, 0, newValues, 0, newSize);
+
 			return newValues;
 		}
 	}
