@@ -47,8 +47,8 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private static final String LEGACY_FILE_NAME = ".spring-boot-devtools.properties";
 
-	private static final String[] FILE_NAMES = new String[] { ".spring-boot-devtools.yml", ".spring-boot-devtools.yaml",
-			".spring-boot-devtools.properties" };
+	private static final String[] FILE_NAMES = new String[] { "spring-boot-devtools.yml", "spring-boot-devtools.yaml",
+			"spring-boot-devtools.properties" };
 
 	private static final String CONFIG_PATH = "/.config/spring-boot/";
 

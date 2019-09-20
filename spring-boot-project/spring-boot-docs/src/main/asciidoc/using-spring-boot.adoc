@@ -891,16 +891,16 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 
 [[using-boot-devtools-globalsettings]]
 === Global Settings
-You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder (note that the filenames startswith "`.`"):
+You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder:
 
-. `.spring-boot-devtools.properties`
-. `.spring-boot-devtools.yaml`
-. `.spring-boot-devtools.yml`
+. `spring-boot-devtools.properties`
+. `spring-boot-devtools.yaml`
+. `spring-boot-devtools.yml`
 
 Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following property:
 
-.~/config/spring-boot/.spring-boot-devtools.properties
+.~/config/spring-boot/spring-boot-devtools.properties
 [source,properties,indent=0]
 ----
 	spring.devtools.reload.trigger-file=.reloadtrigger
