@@ -16,19 +16,26 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilePermission;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -510,6 +517,65 @@ class JarFileTests {
 			assertThat(inputStream.available()).isEqualTo(1);
 			assertThat(inputStream.read()).isEqualTo(getJavaVersion());
 		}
+	}
+
+	@Test
+	void zip64JarCanBeRead() throws Exception {
+		File zip64Jar = new File(this.tempDir, "zip64.jar");
+		FileCopyUtils.copy(zip64Jar(), zip64Jar);
+		try (JarFile zip64JarFile = new JarFile(zip64Jar)) {
+			List<JarEntry> entries = Collections.list(zip64JarFile.entries());
+			assertThat(entries).hasSize(65537);
+			for (int i = 0; i < entries.size(); i++) {
+				JarEntry entry = entries.get(i);
+				InputStream entryInput = zip64JarFile.getInputStream(entry);
+				String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
+				assertThat(contents).isEqualTo("Entry " + (i + 1));
+			}
+		}
+	}
+
+	@Test
+	void nestedZip64JarCanBeRead() throws Exception {
+		File outer = new File(this.tempDir, "outer.jar");
+		try (JarOutputStream jarOutput = new JarOutputStream(new FileOutputStream(outer))) {
+			JarEntry nestedEntry = new JarEntry("nested-zip64.jar");
+			byte[] contents = zip64Jar();
+			nestedEntry.setSize(contents.length);
+			nestedEntry.setCompressedSize(contents.length);
+			CRC32 crc32 = new CRC32();
+			crc32.update(contents);
+			nestedEntry.setCrc(crc32.getValue());
+			nestedEntry.setMethod(ZipEntry.STORED);
+			jarOutput.putNextEntry(nestedEntry);
+			jarOutput.write(contents);
+			jarOutput.closeEntry();
+		}
+		try (JarFile outerJarFile = new JarFile(outer)) {
+			try (JarFile nestedZip64JarFile = outerJarFile
+					.getNestedJarFile(outerJarFile.getJarEntry("nested-zip64.jar"))) {
+				List<JarEntry> entries = Collections.list(nestedZip64JarFile.entries());
+				assertThat(entries).hasSize(65537);
+				for (int i = 0; i < entries.size(); i++) {
+					JarEntry entry = entries.get(i);
+					InputStream entryInput = nestedZip64JarFile.getInputStream(entry);
+					String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
+					assertThat(contents).isEqualTo("Entry " + (i + 1));
+				}
+			}
+		}
+	}
+
+	private byte[] zip64Jar() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		JarOutputStream jarOutput = new JarOutputStream(bytes);
+		for (int i = 0; i < 65537; i++) {
+			jarOutput.putNextEntry(new JarEntry(i + ".dat"));
+			jarOutput.write(("Entry " + (i + 1)).getBytes(StandardCharsets.UTF_8));
+			jarOutput.closeEntry();
+		}
+		jarOutput.close();
+		return bytes.toByteArray();
 	}
 
 	private int getJavaVersion() {
