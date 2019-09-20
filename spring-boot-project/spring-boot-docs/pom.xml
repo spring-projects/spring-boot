@@ -1193,7 +1193,7 @@
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+									<url>https://repo.spring.io/snapshot/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
 									<unpack>true</unpack>
 									<outputDirectory>${refdocs.build.directory}</outputDirectory>
 								</configuration>
@@ -1541,7 +1541,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<highlightjsdir>js/highlight</highlightjsdir>
-										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<highlightjs-theme>github</highlightjs-theme>
 										<linkcss>true</linkcss>
 										<imagesdir>./images</imagesdir>
 										<icons>font</icons>
