@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * Expose diagnostics information from DiagnosticCommandMBean.
  *
  * @author Luis De Bello
- * @since 2.0.0
+ * @since 2.2.0
  */
 public final class VMDiagnostics {
 

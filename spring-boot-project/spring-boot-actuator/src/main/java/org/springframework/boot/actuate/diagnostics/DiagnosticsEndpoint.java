@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * {@link RestControllerEndpoint @RestControllerEndpoint} to expose diagnostics info.
  *
  * @author Luis De Bello
- * @since 2.0.0
+ * @since 2.2.0
  */
 @RestControllerEndpoint(id = "diagnostics")
 public class DiagnosticsEndpoint {
