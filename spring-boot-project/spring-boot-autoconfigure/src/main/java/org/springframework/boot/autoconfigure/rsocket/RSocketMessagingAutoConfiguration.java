@@ -28,8 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import org.springframework.util.ClassUtils;
-import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring RSocket support in Spring
@@ -43,16 +41,11 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketMessagingAutoConfiguration {
 
-	private static final String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
-
 	@Bean
 	@ConditionalOnMissingBean
 	public RSocketMessageHandler messageHandler(RSocketStrategies rSocketStrategies) {
 		RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 		messageHandler.setRSocketStrategies(rSocketStrategies);
-		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {
-			messageHandler.setRouteMatcher(new PathPatternRouteMatcher());
-		}
 		return messageHandler;
 	}
 
