@@ -48,7 +48,7 @@ public class DiagnosticsEndpoint {
 
 	private static final String CURRENT_DIRECTORY = ".";
 
-	private VMDiagnostics virtualMachineDiagnostics;
+	private final VMDiagnostics virtualMachineDiagnostics;
 
 	@Value("${management.endpoints.diagnostics.resources.extensions:}#{T(java.util.Collections).emptyList()}")
 	private List<String> extensions;
