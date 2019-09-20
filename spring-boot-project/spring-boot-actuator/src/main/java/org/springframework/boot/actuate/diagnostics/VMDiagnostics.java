@@ -24,6 +24,7 @@ import java.util.StringJoiner;
 import javax.management.Descriptor;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
+import javax.management.MBeanException;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -207,7 +208,7 @@ public final class VMDiagnostics {
 			result = (String) this.server.invoke(this.objectName, operation, params,
 					new String[] { String[].class.getName() });
 		}
-		catch (Exception ex) {
+		catch (ReflectionException | InstanceNotFoundException | MBeanException ex) {
 			logger.info(String.format("Unable to access operation: %s", operation), ex);
 			result = String.format("Unable to access operation: '%s' - %s", operation, ex.getMessage());
 		}
