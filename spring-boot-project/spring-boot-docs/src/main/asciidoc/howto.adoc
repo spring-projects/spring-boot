@@ -1317,7 +1317,7 @@ A typical custom `logback.xml` file would look something like this:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<configuration>
-		<include resource="org/springframework/boot/logging/logback/default.xml"/>
+		<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 		<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
@@ -1335,7 +1335,7 @@ Your logback configuration file can also make use of System properties that the 
 * `$\{ROLLING_FILE_NAME_PATTERN}`: Whether `logging.pattern.rolling-file-name` was set in Boot's external configuration.
 
 Spring Boot also provides some nice ANSI color terminal output on a console (but not in a log file) by using a custom Logback converter.
-See the `CONSOLE_LOG_PATTERN` in the `default.xml` configuration for an example.
+See the `CONSOLE_LOG_PATTERN` in the `defaults.xml` configuration for an example.
 
 If Groovy is on the classpath, you should be able to configure Logback with `logback.groovy` as well.
 If present, this setting is given preference.
