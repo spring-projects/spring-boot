@@ -143,14 +143,15 @@ class JarFileArchiveTests {
 	}
 
 	@Test
-	void filesInzip64ArchivesAreAllListed() throws IOException {
+	void filesInZip64ArchivesAreAllListed() throws IOException {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		JarFileArchive zip64Archive = new JarFileArchive(file);
-		Iterator<Entry> it = zip64Archive.iterator();
-		for (int i = 0; i < 65537; i++) {
-			assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
-			it.next();
+		try (JarFileArchive zip64Archive = new JarFileArchive(file)) {
+			Iterator<Entry> entries = zip64Archive.iterator();
+			for (int i = 0; i < 65537; i++) {
+				assertThat(entries.hasNext()).as(i + "nth file is present").isTrue();
+				entries.next();
+			}
 		}
 	}
 

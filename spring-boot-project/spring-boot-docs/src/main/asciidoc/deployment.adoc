@@ -404,6 +404,10 @@ Currently, some tools do not accept this format, so you may not always be able t
 For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
 It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar`or deploying it to a servlet container.
 
+CAUTION: A zip64-format jar file cannot be made fully executable.
+Attempting to do so will result in a jar file that is reported as corrupt when executed directly or with `java -jar`.
+A standard-format jar file that contains one or more zip64-format nested jars can be fully executable.
+
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
