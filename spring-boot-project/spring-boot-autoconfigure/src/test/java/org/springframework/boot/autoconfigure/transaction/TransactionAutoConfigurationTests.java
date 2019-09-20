@@ -16,24 +16,21 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,98 +48,83 @@ import static org.mockito.Mockito.mock;
  */
 class TransactionAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@AfterEach
-	void tearDown() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(TransactionAutoConfiguration.class));
 
 	@Test
 	void noTransactionManager() {
-		load(EmptyConfiguration.class);
-		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TransactionTemplate.class));
 	}
 
 	@Test
 	void singleTransactionManager() {
-		load(new Class<?>[] { DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class },
-				"spring.datasource.initialization-mode:never");
-		PlatformTransactionManager transactionManager = this.context.getBean(PlatformTransactionManager.class);
-		TransactionTemplate transactionTemplate = this.context.getBean(TransactionTemplate.class);
-		assertThat(transactionTemplate.getTransactionManager()).isSameAs(transactionManager);
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.initialization-mode:never").run((context) -> {
+					PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
+					TransactionTemplate transactionTemplate = context.getBean(TransactionTemplate.class);
+					assertThat(transactionTemplate.getTransactionManager()).isSameAs(transactionManager);
+				});
 	}
 
 	@Test
 	void severalTransactionManagers() {
-		load(SeveralTransactionManagersConfiguration.class);
-		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
+		this.contextRunner.withUserConfiguration(SeveralTransactionManagersConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(TransactionTemplate.class));
 	}
 
 	@Test
 	void customTransactionManager() {
-		load(CustomTransactionManagerConfiguration.class);
-		Map<String, TransactionTemplate> beans = this.context.getBeansOfType(TransactionTemplate.class);
-		assertThat(beans).hasSize(1);
-		assertThat(beans.containsKey("transactionTemplateFoo")).isTrue();
+		this.contextRunner.withUserConfiguration(CustomTransactionManagerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(TransactionTemplate.class);
+			assertThat(context.getBean("transactionTemplateFoo")).isInstanceOf(TransactionTemplate.class);
+		});
 	}
 
 	@Test
 	void platformTransactionManagerCustomizers() {
-		load(SeveralTransactionManagersConfiguration.class);
-		TransactionManagerCustomizers customizers = this.context.getBean(TransactionManagerCustomizers.class);
-		List<?> field = (List<?>) ReflectionTestUtils.getField(customizers, "customizers");
-		assertThat(field).hasSize(1).first().isInstanceOf(TransactionProperties.class);
+		this.contextRunner.withUserConfiguration(SeveralTransactionManagersConfiguration.class).run((context) -> {
+			TransactionManagerCustomizers customizers = context.getBean(TransactionManagerCustomizers.class);
+			assertThat(customizers).extracting("customizers").asList().hasSize(1).first()
+					.isInstanceOf(TransactionProperties.class);
+		});
 	}
 
 	@Test
 	void transactionNotManagedWithNoTransactionManager() {
-		load(BaseConfiguration.class);
-		assertThat(this.context.getBean(TransactionalService.class).isTransactionActive()).isFalse();
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run(
+				(context) -> assertThat(context.getBean(TransactionalService.class).isTransactionActive()).isFalse());
 	}
 
 	@Test
 	void transactionManagerUsesCglibByDefault() {
-		load(TransactionManagersConfiguration.class);
-		assertThat(this.context.getBean(AnotherServiceImpl.class).isTransactionActive()).isTrue();
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(1);
+		this.contextRunner.withUserConfiguration(TransactionManagersConfiguration.class).run((context) -> {
+			assertThat(context.getBean(AnotherServiceImpl.class).isTransactionActive()).isTrue();
+			assertThat(context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(1);
+		});
 	}
 
 	@Test
 	void transactionManagerCanBeConfiguredToJdkProxy() {
-		load(TransactionManagersConfiguration.class, "spring.aop.proxy-target-class=false");
-		assertThat(this.context.getBean(AnotherService.class).isTransactionActive()).isTrue();
-		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
+		this.contextRunner.withUserConfiguration(TransactionManagersConfiguration.class)
+				.withPropertyValues("spring.aop.proxy-target-class=false").run((context) -> {
+					assertThat(context.getBean(AnotherService.class).isTransactionActive()).isTrue();
+					assertThat(context).doesNotHaveBean(AnotherServiceImpl.class);
+					assertThat(context).doesNotHaveBean(TransactionalServiceImpl.class);
+				});
 	}
 
 	@Test
 	void customEnableTransactionManagementTakesPrecedence() {
-		load(new Class<?>[] { CustomTransactionManagementConfiguration.class, TransactionManagersConfiguration.class },
-				"spring.aop.proxy-target-class=true");
-		assertThat(this.context.getBean(AnotherService.class).isTransactionActive()).isTrue();
-		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		load(new Class<?>[] { config }, environment);
-	}
-
-	private void load(Class<?>[] configs, String... environment) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(configs);
-		applicationContext.register(TransactionAutoConfiguration.class);
-		TestPropertyValues.of(environment).applyTo(applicationContext);
-		applicationContext.refresh();
-		this.context = applicationContext;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class EmptyConfiguration {
-
+		this.contextRunner
+				.withUserConfiguration(CustomTransactionManagementConfiguration.class,
+						TransactionManagersConfiguration.class)
+				.withPropertyValues("spring.aop.proxy-target-class=true").run((context) -> {
+					assertThat(context.getBean(AnotherService.class).isTransactionActive()).isTrue();
+					assertThat(context).doesNotHaveBean(AnotherServiceImpl.class);
+					assertThat(context).doesNotHaveBean(TransactionalServiceImpl.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
