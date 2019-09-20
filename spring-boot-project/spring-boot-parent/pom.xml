@@ -293,17 +293,12 @@
 				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>1.5.7.1</version>
+					<version>1.6.0</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.asciidoctor</groupId>
-							<artifactId>asciidoctorj</artifactId>
-							<version>1.5.8</version>
-						</dependency>
-						<dependency>
-							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctorj-pdf</artifactId>
-							<version>1.5.0-alpha.11</version>
+							<version>1.5.0-alpha.18</version>
 						</dependency>
 					</dependencies>
 				</plugin>

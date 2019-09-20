@@ -799,7 +799,7 @@
 							<dependency>
 								<groupId>org.asciidoctor</groupId>
 								<artifactId>asciidoctorj-pdf</artifactId>
-								<version>1.5.0-alpha.11</version>
+								<version>1.5.0-alpha.18</version>
 							</dependency>
 						</dependencies>
 					</plugin>
