@@ -2989,6 +2989,8 @@ In case of a WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), t
 	#spring.rsocket.server.port= # no port is defined
 ----
 
+WARNING: Plugging RSocket into an existing web server is only supported with Reactor Netty, as RSocket itself is built with that library.
+
 The only other way to create an RSocket server is to start an independent, embedded RSocket server.
 Besides the dependency requirements, the only required configuration is to define a port for that server:
 
