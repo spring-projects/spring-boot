@@ -125,8 +125,7 @@ All Cloud Foundry properties are prefixed with `vcap`.
 You can use `vcap` properties to access application information (such as the public URL of the application) and service information (such as database credentials).
 See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`'] Javadoc for complete details.
 
-TIP: The https://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project is a better fit for tasks such as configuring a DataSource.
-Spring Boot includes auto-configuration support and a `spring-boot-starter-cloud-connectors` starter.
+TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
 
 
