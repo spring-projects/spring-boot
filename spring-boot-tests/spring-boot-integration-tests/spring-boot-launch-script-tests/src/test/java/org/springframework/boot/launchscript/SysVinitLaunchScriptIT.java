@@ -267,6 +267,38 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("Log written");
 	}
 
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRunAsUser(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user.sh");
+		assertThat(output).contains("wagner root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
+		assertThat(output).contains("Status: 2");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version)
+			throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user-preferred-to-jar-owner.sh");
+		assertThat(output).contains("wagner root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
+			String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user-root-required.sh");
+		assertThat(output).contains("Status: 4");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'wagner': current user is not root"));
+	}
+
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
