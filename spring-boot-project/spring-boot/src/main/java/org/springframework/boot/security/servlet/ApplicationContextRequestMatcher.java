@@ -89,7 +89,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	 * Method that can be implemented by subclasses that wish to initialize items the
 	 * first time that the matcher is called. This method will be called only once and
 	 * only if {@link #ignoreApplicationContext(WebApplicationContext)} returns
-	 * {@code true}. Note that the supplied context will be based on the
+	 * {@code false}. Note that the supplied context will be based on the
 	 * <strong>first</strong> request sent to the matcher.
 	 * @param context a supplier for the initialized context (may throw an exception)
 	 * @see #ignoreApplicationContext(WebApplicationContext)
