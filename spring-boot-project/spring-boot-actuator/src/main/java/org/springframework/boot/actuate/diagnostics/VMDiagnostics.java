@@ -52,7 +52,7 @@ public final class VMDiagnostics {
 	 */
 	static final String NO_HELP_AVAILABLE_ERROR_MESSAGE = "No help available";
 
-	private static final Log logger = LogFactory.getLog(DiagnosticsEndpoint.class);
+	private static final Log logger = LogFactory.getLog(VMDiagnostics.class);
 
 	/**
 	 * Object Name of DiagnosticCommandMBean.
