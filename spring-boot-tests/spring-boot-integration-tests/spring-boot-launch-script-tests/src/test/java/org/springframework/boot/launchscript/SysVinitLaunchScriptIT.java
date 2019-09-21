@@ -269,32 +269,34 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAs(String os, String version) throws Exception {
-		String output = doTest(os, version, "launch-with-run-as.sh");
+	public void launchWithRunAsUser(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAsInvalidUser(String os, String version) throws Exception {
+	public void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
-		assertThat(output).contains("Status: 5");
+		assertThat(output).contains("Status: 2");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAsPreferUserInformed(String os, String version) throws Exception {
-		String output = doTest(os, version, "launch-with-run-as-prefer-user-informed.sh");
+	public void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version)
+			throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user-preferred-to-jar-owner.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAsRootRequired(String os, String version) throws Exception {
-		String output = doTest(os, version, "launch-with-run-as-root-required.sh");
-		assertThat(output).contains("Status: 6");
-		assertThat(output).has(coloredString(AnsiColor.RED, "root required to run as 'wagner'"));
+	public void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
+			String version) throws Exception {
+		String output = doTest(os, version, "launch-with-run-as-user-root-required.sh");
+		assertThat(output).contains("Status: 4");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'wagner': current user is not root"));
 	}
 
 	static List<Object[]> parameters() {

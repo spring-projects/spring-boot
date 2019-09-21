@@ -128,23 +128,18 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
-# Force run as informed user (from environment variable)
+# Run as user specified in RUN_AS_USER
 if [[ -n "$RUN_AS_USER" ]]; then
-    # checks performed for all actions except 'status' and 'run'
     if ! [[ "$action" =~ ^(status|run)$ ]]; then
-        # Issue a error if informed user is not valid
         id -u "$RUN_AS_USER" || {
             echoRed "Cannot run as '$RUN_AS_USER': no such user"
-            exit 5
+            exit 2
         }
-
-        # Issue a error if we are not root
         [[ $(id -u) == 0 ]] || {
-            echoRed "root required to run as '$RUN_AS_USER'"
-            exit 6
+            echoRed "Cannot run as '$RUN_AS_USER': current user is not root"
+            exit 4
         }
     fi
-
     run_user="$RUN_AS_USER"
 fi
 
