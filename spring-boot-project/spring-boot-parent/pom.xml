@@ -29,6 +29,7 @@
 		<testcontainers.version>1.12.0</testcontainers.version>
 		<testng.version>6.14.3</testng.version>
 		<spring-doc-resources.version>0.1.3.BUILD-SNAPSHOT</spring-doc-resources.version>
+		<spring-doc-resources.url>https://repo.spring.io/snapshot/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
 	</properties>
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
