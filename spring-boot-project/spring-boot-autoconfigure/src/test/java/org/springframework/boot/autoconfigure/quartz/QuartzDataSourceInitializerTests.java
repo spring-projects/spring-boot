@@ -50,8 +50,8 @@ public class QuartzDataSourceInitializerTests {
 	@Test
 	public void commentPrefixCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
-				"spring.quartz.jdbc.comment-prefix=##",
-				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_@@platform@@.sql")
+				"spring.quartz.jdbc.comment-prefix=**",
+				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_**_comments.sql")
 				.run((context) -> {
 					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
 					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_TEST_TABLE", Integer.class))
