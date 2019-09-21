@@ -264,7 +264,7 @@ The JSON object contained in the `hints` array can contain the attributes shown 
 | String
 | The full name of the property to which this hint refers.
   Names are in lower-case period-separated form (such as `spring.mvc.servlet.path`).
-  If the property refers to a map (such as `system.contexts`), the hint either applies to the _keys_ of the map (`system.context.keys`) or the _values_ (`system.context.values`) of the map.
+  If the property refers to a map (such as `system.contexts`), the hint either applies to the _keys_ of the map (`system.contexts.keys`) or the _values_ (`system.contexts.values`) of the map.
   This attribute is mandatory.
 
 | `values`
