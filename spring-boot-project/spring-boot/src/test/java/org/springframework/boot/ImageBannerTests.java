@@ -184,7 +184,7 @@ class ImageBannerTests {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("gradient.gif", "spring.banner.image.width=6", "spring.banner.image.margin=0",
 				"spring.banner.image.pixelmode=block");
-		assertThat(banner).contains("\u2588\u2593\u2592\u2591 ");
+		assertThat(banner).inHexadecimal().contains("\u2588\u2593\u2592\u2591 ");
 	}
 
 	private int getBannerHeight(String banner) {
