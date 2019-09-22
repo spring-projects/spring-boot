@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -204,8 +205,13 @@ class ImageBannerTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, properties);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		banner.printBanner(environment, getClass(), new PrintStream(out));
-		return out.toString();
+		try {
+			banner.printBanner(environment, getClass(), new PrintStream(out, false, "UTF-8"));
+			return out.toString("UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }
