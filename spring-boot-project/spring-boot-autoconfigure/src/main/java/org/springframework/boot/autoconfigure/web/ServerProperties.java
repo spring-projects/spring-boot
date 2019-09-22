@@ -322,6 +322,11 @@ public class ServerProperties {
 		private String remoteIpHeader;
 
 		/**
+		 * Name of the HTTP header from which the remote host is extracted.
+		 */
+		private String hostHeader = "X-Forwarded-Host";
+
+		/**
 		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
@@ -517,6 +522,14 @@ public class ServerProperties {
 
 		public void setRemoteIpHeader(String remoteIpHeader) {
 			this.remoteIpHeader = remoteIpHeader;
+		}
+
+		public String getHostHeader() {
+			return this.hostHeader;
+		}
+
+		public void setHostHeader(String hostHeader) {
+			this.hostHeader = hostHeader;
 		}
 
 		public Charset getUriEncoding() {
