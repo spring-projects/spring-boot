@@ -179,6 +179,14 @@ class ImageBannerTests {
 		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(37))));
 	}
 
+	@Test
+	void printBannerWhenPixelModeIsBlockShouldRenderBlocks() {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("gradient.gif", "spring.banner.image.width=6", "spring.banner.image.margin=0",
+				"spring.banner.image.pixelmode=block");
+		assertThat(banner).contains("\u2588\u2593\u2592\u2591 ");
+	}
+
 	private int getBannerHeight(String banner) {
 		return banner.split(System.lineSeparator()).length - 3;
 	}

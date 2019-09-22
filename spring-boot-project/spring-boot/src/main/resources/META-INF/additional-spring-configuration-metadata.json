@@ -54,6 +54,12 @@
       "defaultValue": 4
     },
     {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
       "name": "debug",
       "type": "java.lang.Boolean",
       "description": "Enable debug logs.",
