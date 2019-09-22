@@ -66,7 +66,7 @@ class QuartzDataSourceInitializerTests {
 	void commentPrefixCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
 				"spring.quartz.jdbc.comment-prefix=**",
-				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_**_comments.sql")
+				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_custom_comment_prefix.sql")
 				.run(this::assertThatDataSourceHasBeenInitialized);
 	}
 
