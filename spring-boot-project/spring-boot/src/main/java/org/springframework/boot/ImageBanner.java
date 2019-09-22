@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiColors;
+import org.springframework.boot.ansi.AnsiColors.BitDepth;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
@@ -102,14 +103,20 @@ public class ImageBanner implements Banner {
 		int height = getProperty(environment, "height", Integer.class, 0);
 		int margin = getProperty(environment, "margin", Integer.class, 2);
 		boolean invert = getProperty(environment, "invert", Boolean.class, false);
+		BitDepth bitDepth = getBitDepthProperty(environment);
 		Frame[] frames = readFrames(width, height);
 		for (int i = 0; i < frames.length; i++) {
 			if (i > 0) {
 				resetCursor(frames[i - 1].getImage(), out);
 			}
-			printBanner(frames[i].getImage(), margin, invert, out);
+			printBanner(frames[i].getImage(), margin, invert, bitDepth, out);
 			sleep(frames[i].getDelayTime());
 		}
+	}
+
+	private BitDepth getBitDepthProperty(Environment environment) {
+		Integer bitDepth = getProperty(environment, "bitdepth", Integer.class, null);
+		return (bitDepth != null) ? BitDepth.of(bitDepth) : BitDepth.FOUR;
 	}
 
 	private <T> T getProperty(Environment environment, String name, Class<T> targetType, T defaultValue) {
@@ -190,20 +197,21 @@ public class ImageBanner implements Banner {
 		out.print("\033[" + lines + "A\r");
 	}
 
-	private void printBanner(BufferedImage image, int margin, boolean invert, PrintStream out) {
+	private void printBanner(BufferedImage image, int margin, boolean invert, BitDepth bitDepth, PrintStream out) {
 		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
 		out.println();
 		out.println();
-		AnsiColor lastColor = AnsiColor.DEFAULT;
+		AnsiElement lastColor = AnsiColor.DEFAULT;
+		AnsiColors colors = new AnsiColors(bitDepth);
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int i = 0; i < margin; i++) {
 				out.print(" ");
 			}
 			for (int x = 0; x < image.getWidth(); x++) {
 				Color color = new Color(image.getRGB(x, y), false);
-				AnsiColor ansiColor = AnsiColors.getClosest(color);
+				AnsiElement ansiColor = colors.findClosest(color);
 				if (ansiColor != lastColor) {
 					out.print(AnsiOutput.encode(ansiColor));
 					lastColor = ansiColor;

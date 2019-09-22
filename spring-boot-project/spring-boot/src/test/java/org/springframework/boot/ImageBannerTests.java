@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.ansi.Ansi8BitColor;
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
@@ -166,6 +167,16 @@ class ImageBannerTests {
 		int linesPerFrame = 36;
 		assertThat(banner).contains("\r");
 		assertThat(lines).hasSize(frames * linesPerFrame - 1);
+	}
+
+	@Test
+	void printBannerWhenBitDepthIs8ShouldUseColors() {
+		String banner = printBanner("colors.gif", "spring.banner.image.bitdepth=8");
+		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(124))));
+		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(130))));
+		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(19))));
+		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(127))));
+		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(37))));
 	}
 
 	private int getBannerHeight(String banner) {
