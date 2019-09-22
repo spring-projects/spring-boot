@@ -172,11 +172,11 @@ class ImageBannerTests {
 	@Test
 	void printBannerWhenBitDepthIs8ShouldUseColors() {
 		String banner = printBanner("colors.gif", "spring.banner.image.bitdepth=8");
-		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(124))));
-		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(130))));
-		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(19))));
-		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(127))));
-		assertThat(banner.contains(AnsiOutput.encode(Ansi8BitColor.foreground(37))));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(124)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(130)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(19)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(127)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(37)));
 	}
 
 	@Test
