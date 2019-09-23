@@ -2930,30 +2930,11 @@ You can learn more about the resource configuration on the client side in the <<
 https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
 It enables symmetric interaction models via async message passing over a single connection.
 
-Spring Framework, with the Spring Messaging module supports RSocket both on the server and the client side.
-On the server side, it lets you create special `@Controller` beans to handle incoming RSocket messages.
-Methods in your controller are mapped to RSocket routes by using `@MessageMapping` annotations.
 
-The following code shows a typical `@Controller`:
-
-[source,java,indent=0]
-----
-	@Controller
-	public class MyRSocketController {
-
-		@MessageMapping("chat.room.{name}")
-		public Flux<ChatMessages> enterChatRoom(@DestinationVariable String chatRoom,
-				Flux<ChatMessages> messages) {
-			// ...
-		}
-
-		@MessageMapping("users.\{user}.info")
-		Mono<ChatUserInfo> getUserInfo(@DestinationVariable String user) {
-			// ...
-		}
-
-	}
-----
+The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and
+responders, both on the client and on the server side. See the
+https://docs.spring.io/spring/docs/5.2.0.BUILD-SNAPSHOT/spring-framework-reference/web-reactive.html#rsocket-spring[RSocket section]
+of the Spring Framework reference for more details, including an overview of the RSocket protocol.
 
 
 
@@ -2974,13 +2955,13 @@ Note that their `@Order` is important, as it determines the order of codecs.
 
 [[boot-features-rsocket-server-auto-configuration]]
 === RSocket server Auto-configuration
-Spring Boot provides auto-configuration for RSocket servers.
+Spring Boot provides RSocket server auto-configuration.
 The required dependencies are provided by the `spring-boot-starter-rsocket`.
 
-Spring Boot will start an RSocket server as a new embedded server in your application, or will plug the RSocket infrastructure into an existing reactive Web server.
+Spring Boot allows exposing RSocket over WebSocket from a WebFlux server, or standing up an independent RSocket TCP server.
 This depends on the type of application and its configuration.
 
-In case of a WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the existing Web Server only if the following properties match:
+For WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2989,9 +2970,9 @@ In case of a WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), t
 	#spring.rsocket.server.port= # no port is defined
 ----
 
-WARNING: Plugging RSocket into an existing web server is only supported with Reactor Netty, as RSocket itself is built with that library.
+WARNING: Plugging RSocket into a web server is only supported with Reactor Netty, as RSocket itself is built with that library.
 
-The only other way to create an RSocket server is to start an independent, embedded RSocket server.
+Alternatively, an RSocket TCP server is started as an independent, embedded server.
 Besides the dependency requirements, the only required configuration is to define a port for that server:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
