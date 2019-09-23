@@ -6052,6 +6052,13 @@ include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[ta
 
 
 
+[[boot-features-testing-spring-boot-applications-customizing-web-test-client]]
+==== Customizing WebTestClient
+To customize the `WebTestClient` bean, configure a `WebTestClientBuilderCustomizer` bean.
+Any such beans are called with the `WebTestClient.Builder` that is used to create the `WebTestClient`.
+
+
+
 [[boot-features-testing-spring-boot-applications-jmx]]
 ==== Using JMX
 As the test context framework caches context, JMX is disabled by default to prevent identical components to register on the same domain.

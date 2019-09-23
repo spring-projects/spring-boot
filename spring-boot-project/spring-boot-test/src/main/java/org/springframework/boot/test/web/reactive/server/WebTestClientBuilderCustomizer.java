@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.reactive;
+package org.springframework.boot.test.web.reactive.server;
 
 import org.springframework.test.web.reactive.server.WebTestClient.Builder;
 
@@ -24,14 +24,15 @@ import org.springframework.test.web.reactive.server.WebTestClient.Builder;
  * auto-configured {@link Builder}.
  *
  * @author Andy Wilkinson
- * @since 2.0.0
- * @see WebTestClientAutoConfiguration
- * @deprecated since 2.2 in favor of
- * {@link org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer}
+ * @since 2.2.0
  */
 @FunctionalInterface
-@Deprecated
-public interface WebTestClientBuilderCustomizer
-		extends org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer {
+public interface WebTestClientBuilderCustomizer {
+
+	/**
+	 * Customize the given {@code builder}.
+	 * @param builder the builder
+	 */
+	void customize(Builder builder);
 
 }
