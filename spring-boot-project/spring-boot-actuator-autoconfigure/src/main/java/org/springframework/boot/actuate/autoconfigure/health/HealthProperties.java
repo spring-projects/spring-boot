@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +77,7 @@ public abstract class HealthProperties {
 		/**
 		 * Comma-separated list of health statuses in order of severity.
 		 */
-		private List<String> order = null;
+		private List<String> order = new ArrayList<>();
 
 		/**
 		 * Mapping of health statuses to HTTP status codes. By default, registered health
