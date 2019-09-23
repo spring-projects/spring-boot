@@ -1220,6 +1220,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.rest-assured</groupId>
+				<artifactId>spring-web-test-client</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
 				<artifactId>xml-path</artifactId>
 				<version>${rest-assured.version}</version>
 			</dependency>
