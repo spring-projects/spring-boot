@@ -51,4 +51,10 @@ public class SampleReactiveOAuth2ClientApplicationTests {
 		assertThat(bodyString).contains("/oauth2/authorization/github-client-2");
 	}
 
+	@Test
+	public void actuatorShouldBeSecuredByOAuth() {
+		this.webTestClient.get().uri("/actuator/health").exchange().expectStatus().isFound().expectHeader()
+				.valueEquals("Location", "/login");
+	}
+
 }

@@ -18,18 +18,27 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 
+import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -38,7 +47,11 @@ import org.springframework.security.oauth2.client.registration.InMemoryReactiveC
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.server.authentication.OAuth2LoginAuthenticationWebFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.WebFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,8 +62,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveOAuth2ClientAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+			.of(ReactiveOAuth2ClientAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class));
 
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
@@ -82,15 +95,19 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnClientRegistrationRepository() {
-		this.contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2AuthorizedClientService.class));
+	public void authorizedClientServiceAndRepositoryBeansAreConditionalOnClientRegistrationRepository() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(ReactiveOAuth2AuthorizedClientService.class);
+			assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class);
+		});
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientServiceBean() {
-		this.contextRunner.withUserConfiguration(ReactiveClientRepositoryConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(InMemoryReactiveClientRegistrationRepository.class));
+	public void configurationRegistersAuthorizedClientServiceAndRepositoryBeans() {
+		this.contextRunner.withUserConfiguration(ReactiveClientRepositoryConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(InMemoryReactiveOAuth2AuthorizedClientService.class);
+			assertThat(context).hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class);
+		});
 	}
 
 	@Test
@@ -125,6 +142,22 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
+	public void securityWebFilterChainBeanConditionalOnWebApplication() {
+		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(SecurityWebFilterChain.class));
+	}
+
+	@Test
+	public void configurationRegistersSecurityWebFilterChainBean() { // gh-17949
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
+				.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class,
+						ServerHttpSecurityConfiguration.class)
+				.run((context) -> assertThat(getFilters(context, OAuth2LoginAuthenticationWebFilter.class))
+						.isNotNull());
+	}
+
+	@Test
 	public void autoConfigurationConditionalOnClassFlux() {
 		assertWhenClassNotPresent(Flux.class);
 	}
@@ -145,6 +178,15 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
 						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<WebFilter> getFilters(AssertableReactiveWebApplicationContext context,
+			Class<? extends WebFilter> filter) {
+		SecurityWebFilterChain filterChain = (SecurityWebFilterChain) context
+				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
+		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
+		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
 	}
 
 	@Configuration
@@ -192,6 +234,26 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 		public ServerOAuth2AuthorizedClientRepository testAuthorizedClientRepository(
 				ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
+		}
+
+	}
+
+	@Configuration
+	static class ServerHttpSecurityConfiguration {
+
+		@Bean
+		ServerHttpSecurity http() {
+			TestServerHttpSecurity httpSecurity = new TestServerHttpSecurity();
+			return httpSecurity;
+		}
+
+		static class TestServerHttpSecurity extends ServerHttpSecurity implements ApplicationContextAware {
+
+			@Override
+			public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+				super.setApplicationContext(applicationContext);
+			}
+
 		}
 
 	}
