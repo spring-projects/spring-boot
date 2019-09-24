@@ -162,7 +162,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Yes
 |===
 
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
+To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
@@ -1562,7 +1562,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 [[production-ready-metrics-export-signalfx]]
 ==== SignalFx
 SignalFx registry pushes metrics to {micrometer-registry-docs}/signalfx[SignalFx] periodically.
-To export metrics to https://signalfx.com[SignalFx], your access token must be provided:
+To export metrics to https://www.signalfx.com[SignalFx], your access token must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1658,7 +1658,7 @@ Spring Boot registers the following core metrics when applicable:
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
 * Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
-* {spring-integration-docs}#micrometer-integration[Spring Integration] metrics
+* {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
 
 
 
@@ -2138,6 +2138,6 @@ include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[
 [[production-ready-whats-next]]
 == What to Read Next
 If you want to explore some of the concepts discussed in this chapter, you can take a look at the actuator {spring-boot-code}/spring-boot-samples[sample applications].
-You also might want to read about graphing tools such as https://graphite.wikidot.com/[Graphite].
+You also might want to read about graphing tools such as https://graphiteapp.org[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment options`'>> or jump ahead for some in-depth information about Spring Boot's _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

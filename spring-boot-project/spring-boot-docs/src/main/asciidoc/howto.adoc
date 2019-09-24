@@ -48,7 +48,7 @@ The Spring Boot auto-configuration tries its best to "`do the right thing`", but
 
 There is a really useful `ConditionEvaluationReport` available in any Spring Boot `ApplicationContext`.
 You can see it if you enable `DEBUG` logging output.
-If you use the `spring-boot-actuator` (see <<production-ready-features.adoc,the Actuator chapter>>), there is also a `conditions` endpoint that renders the report in JSON.
+If you use the `spring-boot-actuator` (see <<production-ready-features.adoc#production-ready,the Actuator chapter>>), there is also a `conditions` endpoint that renders the report in JSON.
 Use that endpoint to debug the application and see what features have been added (and which have not been added) by Spring Boot at runtime.
 
 Many more questions can be answered by looking at the source code and the Javadoc.
@@ -80,7 +80,7 @@ There is more than one way to register additional customizations:
 * Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.
-See "`<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>`" in the '`Spring Boot features`' section for a complete list.
+See "`<<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events and Listeners>>`" in the '`Spring Boot features`' section for a complete list.
 
 It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
@@ -397,7 +397,7 @@ There is not (and technically cannot be) an exhaustive list of all supported pro
 
 A running application with the Actuator features has a `configprops` endpoint that shows all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<application-properties.adoc#common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
+The appendix includes an <<appendix-application-properties.adoc#common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
 The definitive list comes from searching the source code for `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of `Binder`.
 For more about the exact ordering of loading properties, see "<<spring-boot-features#boot-features-external-config>>".
 
@@ -643,7 +643,7 @@ Developers can choose to import only the required dependencies using a classifie
 === Configure the Web Server
 Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` (or `application.yml`, or environment, etc. see "`<<howto-discover-build-in-options-for-external-properties>>`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
-See the list of <<common-application-properties>>.
+See the list of <<appendix-application-properties.adoc#common-application-properties>>.
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
@@ -1059,7 +1059,7 @@ These features are described in six enums (in Jackson) that map onto properties 
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
-Note that, thanks to the use of <<boot-features-external-config-relaxed-binding, relaxed binding>>, the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
+Note that, thanks to the use of <<spring-boot-features.adoc#boot-features-external-config-relaxed-binding, relaxed binding>>, the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
 
 This environment-based configuration is applied to the auto-configured `Jackson2ObjectMapperBuilder` bean and applies to any mappers created by using the builder, including the auto-configured `ObjectMapper` bean.
 
@@ -1373,7 +1373,7 @@ You also need to add `logging.file.name` to your `application.properties`, as sh
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for Logging
-Spring Boot supports https://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration if it is on the classpath.
+Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging configuration if it is on the classpath.
 If you use the starters for assembling dependencies, you have to exclude Logback and then include log4j 2 instead.
 If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
 
@@ -1898,7 +1898,7 @@ Be careful when switching from in-memory to a '`real`' database that you do not 
 You either have to set `ddl-auto` explicitly or use one of the other mechanisms to initialize the database.
 
 NOTE: You can output the schema creation by enabling the `org.hibernate.SQL` logger.
-This is done for you automatically if you enable the <<boot-features-logging-console-output,debug mode>>.
+This is done for you automatically if you enable the <<spring-boot-features.adoc#boot-features-logging-console-output,debug mode>>.
 
 In addition, a file named `import.sql` in the root of the classpath is executed on startup if Hibernate creates the schema from scratch (that is, if the `ddl-auto` property is set to `create` or `create-drop`).
 This can be useful for demos and for testing if you are careful but is probably not something you want to be on the classpath in production.
@@ -2136,7 +2136,7 @@ In general, you need a `View` that resolves with a name of `error` or a `@Contro
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be a simple way of doing that.
 See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
-See also the section on "`<<boot-features-error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
+See also the section on "`<<spring-boot-features.adoc#boot-features-error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
 
 
 
@@ -2263,7 +2263,7 @@ See {spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateAutoCo
 [[howto-reload-fast-restart]]
 === Fast Application Restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
-While not as fast as technologies such as https://zeroturnaround.com/software/jrebel/[JRebel] it is usually significantly faster than a "`cold start`".
+While not as fast as technologies such as https://jrebel.com/software/jrebel/[JRebel] it is usually significantly faster than a "`cold start`".
 You should probably give it a try before investigating some of the more complex reload options discussed later in this document.
 
 For more details, see the <<using-spring-boot.adoc#using-boot-devtools>> section.

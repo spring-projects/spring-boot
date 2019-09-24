@@ -151,7 +151,7 @@ To build a war file that is both executable and deployable into an external cont
 	</project>
 ----
 
-TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on how to create a deployable war file.
+TIP: See the "`<<howto.adoc#howto-create-a-deployable-war-file>>`" section for more details on how to create a deployable war file.
 
 Advanced configuration options and examples are available in the {spring-boot-maven-plugin-docs}[plugin info page].
 
@@ -350,7 +350,7 @@ If your archive already includes libraries, you can use `Libraries.NONE`.
 
 [[build-tool-plugins-find-a-main-class]]
 === Finding a Main Class
-If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.org/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
+If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.io/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
 An exception is thrown if more than one candidate is found.
 
 

@@ -77,9 +77,9 @@ Need more details about Spring Boot's core features?
 == Moving to Production
 When you are ready to push your Spring Boot application to production, we have <<production-ready-features.adoc#production-ready, some tricks>> that you might like:
 
-* *Management endpoints:* <<production-ready-features.adoc#production-ready-endpoints, Overview>> | <<production-ready-features.adoc#production-ready-customizing-endpoints, Customization>>
+* *Management endpoints:* <<production-ready-features.adoc#production-ready-endpoints, Overview>>
 * *Connection options:* <<production-ready-features.adoc#production-ready-monitoring, HTTP>> | <<production-ready-features.adoc#production-ready-jmx, JMX>>
-* *Monitoring:* <<production-ready-features.adoc#production-ready-metrics, Metrics>> | <<production-ready-features.adoc#production-ready-auditing, Auditing>> | <<production-ready-features.adoc#production-ready-tracing, Tracing>> | <<production-ready-features.adoc#production-ready-process-monitoring, Process>>
+* *Monitoring:* <<production-ready-features.adoc#production-ready-metrics, Metrics>> | <<production-ready-features.adoc#production-ready-auditing, Auditing>> | <<production-ready-features.adoc#production-ready-http-tracing, HTTP Tracing>> | <<production-ready-features.adoc#production-ready-process-monitoring, Process>>
 
 
 
