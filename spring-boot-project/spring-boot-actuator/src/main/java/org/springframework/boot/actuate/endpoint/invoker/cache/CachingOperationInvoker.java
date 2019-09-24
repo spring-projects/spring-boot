@@ -82,7 +82,6 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return ((Mono) response).cache(Duration.ofMillis(this.timeToLive));
 		}
 		return response;
-
 	}
 
 	private boolean hasInput(InvocationContext context) {
