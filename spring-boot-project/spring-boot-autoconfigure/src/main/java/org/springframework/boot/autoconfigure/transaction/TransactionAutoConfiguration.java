@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -69,7 +70,7 @@ public class TransactionAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(TransactionOperations.class)
 		public TransactionTemplate transactionTemplate() {
 			return new TransactionTemplate(this.transactionManager);
 		}

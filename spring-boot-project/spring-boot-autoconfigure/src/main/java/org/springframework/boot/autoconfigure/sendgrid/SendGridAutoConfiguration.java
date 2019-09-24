@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.sendgrid;
 
 import com.sendgrid.Client;
 import com.sendgrid.SendGrid;
+import com.sendgrid.SendGridAPI;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -50,7 +51,7 @@ public class SendGridAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(SendGridAPI.class)
 	public SendGrid sendGrid() {
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(), this.properties.getProxy().getPort());

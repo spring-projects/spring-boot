@@ -28,6 +28,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
+import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
@@ -165,7 +166,7 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(RabbitOperations.class)
 		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 			PropertyMapper map = PropertyMapper.get();
 			RabbitTemplate template = new RabbitTemplate(connectionFactory);

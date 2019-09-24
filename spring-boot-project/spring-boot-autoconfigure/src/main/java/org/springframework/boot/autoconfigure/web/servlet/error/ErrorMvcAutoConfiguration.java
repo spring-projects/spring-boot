@@ -140,7 +140,7 @@ public class ErrorMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(DispatcherServlet.class)
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(ErrorViewResolver.class)
 		public DefaultErrorViewResolver conventionErrorViewResolver() {
 			return new DefaultErrorViewResolver(this.applicationContext, this.resourceProperties);
 		}

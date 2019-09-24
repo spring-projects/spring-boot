@@ -64,7 +64,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class JooqAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ConnectionProvider.class)
 	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
 		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}

@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
@@ -44,7 +45,7 @@ class MailSenderPropertiesConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(JavaMailSender.class)
 	public JavaMailSenderImpl mailSender() {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		applyProperties(sender);

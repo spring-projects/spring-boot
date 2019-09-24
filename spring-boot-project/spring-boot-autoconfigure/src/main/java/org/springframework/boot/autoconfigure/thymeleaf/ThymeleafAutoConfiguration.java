@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
@@ -147,7 +148,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(ISpringTemplateEngine.class)
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
