@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicationPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JerseySameManagementContextConfiguration}.
@@ -61,16 +59,6 @@ public class JerseySameManagementContextConfigurationTests {
 	public void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
-	}
-
-	@Test
-	public void resourceConfigIsCustomizedWithResourceConfigCustomizerBean() {
-		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ResourceConfig.class);
-			ResourceConfig config = context.getBean(ResourceConfig.class);
-			ResourceConfigCustomizer customizer = context.getBean(ResourceConfigCustomizer.class);
-			verify(customizer).customize(config);
-		});
 	}
 
 	@Test
@@ -121,16 +109,6 @@ public class JerseySameManagementContextConfigurationTests {
 		@Bean
 		public ResourceConfig customResourceConfig() {
 			return new ResourceConfig();
-		}
-
-	}
-
-	@Configuration
-	static class CustomizerConfiguration {
-
-		@Bean
-		ResourceConfigCustomizer resourceConfigCustomizer() {
-			return mock(ResourceConfigCustomizer.class);
 		}
 
 	}

@@ -22,10 +22,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration.JerseyWebEndpointsResourcesRegistrar;
 import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -45,11 +45,11 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
 					JerseyWebEndpointManagementContextConfiguration.class))
-			.withUserConfiguration(WebEndpointsSupplierConfig.class);
+			.withUserConfiguration(ResourceConfig.class, WebEndpointsSupplierConfig.class);
 
 	@Test
-	public void resourceConfigCustomizerForEndpointsIsAutoConfigured() {
-		this.runner.run((context) -> assertThat(context).hasSingleBean(ResourceConfigCustomizer.class));
+	public void jerseyWebEndpointsResourcesRegistrarForEndpointsIsAutoConfigured() {
+		this.runner.run((context) -> assertThat(context).hasSingleBean(JerseyWebEndpointsResourcesRegistrar.class));
 	}
 
 	@Test
