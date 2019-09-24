@@ -89,7 +89,7 @@ class RSocketServerAutoConfigurationTests {
 					assertThat(context).hasSingleBean(RSocketServerFactory.class)
 							.hasSingleBean(RSocketServerBootstrap.class)
 							.hasSingleBean(ServerRSocketFactoryCustomizer.class);
-					assertThat(context.getEnvironment().getProperty("local.server.port")).isNotNull();
+					assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNotNull();
 				});
 	}
 
