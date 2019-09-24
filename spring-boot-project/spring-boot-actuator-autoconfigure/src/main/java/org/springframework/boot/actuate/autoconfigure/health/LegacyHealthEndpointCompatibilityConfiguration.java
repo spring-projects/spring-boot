@@ -39,13 +39,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("deprecation")
-@EnableConfigurationProperties
+@EnableConfigurationProperties(HealthIndicatorProperties.class)
 class LegacyHealthEndpointCompatibilityConfiguration {
-
-	@Bean
-	HealthIndicatorProperties healthIndicatorProperties() {
-		return new HealthIndicatorProperties();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
