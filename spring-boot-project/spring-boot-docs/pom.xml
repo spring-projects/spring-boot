@@ -1573,7 +1573,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<highlightjsdir>js/highlight</highlightjsdir>
-										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<highlightjs-theme>github</highlightjs-theme>
 										<linkcss>true</linkcss>
 										<imagesdir>./images</imagesdir>
 										<icons>font</icons>
