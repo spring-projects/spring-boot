@@ -68,6 +68,8 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		@Autowired
 		void bindDataSourcesToRegistry(Map<String, DataSource> dataSources, MeterRegistry registry,
 				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+			// doesn't matter the ordering here since they are usually distinct and are
+			// used as first match wins basis.
 			List<DataSourcePoolMetadataProvider> metadataProvidersList = metadataProviders.stream()
 					.collect(Collectors.toList());
 			dataSources.forEach(

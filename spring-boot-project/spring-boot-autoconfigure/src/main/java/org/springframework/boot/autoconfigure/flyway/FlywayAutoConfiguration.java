@@ -123,6 +123,8 @@ public class FlywayAutoConfiguration {
 			configureCallbacks(configuration, orderedCallbacks);
 			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			configureFlywayCallbacks(configuration, orderedCallbacks);
+			// flyway orders migrations by itself with their versions; thus use normal
+			// stream to collect them
 			List<JavaMigration> migrations = javaMigrations.stream().collect(Collectors.toList());
 			configureJavaMigrations(configuration, migrations);
 			return configuration.load();

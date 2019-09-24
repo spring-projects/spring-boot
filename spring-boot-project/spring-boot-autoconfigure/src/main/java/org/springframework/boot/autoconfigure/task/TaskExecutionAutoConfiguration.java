@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,7 +68,7 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.awaitTermination(shutdown.isAwaitTermination());
 		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 		builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-		builder = builder.customizers(taskExecutorCustomizers);
+		builder = builder.customizers(taskExecutorCustomizers.orderedStream().collect(Collectors.toList()));
 		builder = builder.taskDecorator(taskDecorator.getIfUnique());
 		return builder;
 	}
