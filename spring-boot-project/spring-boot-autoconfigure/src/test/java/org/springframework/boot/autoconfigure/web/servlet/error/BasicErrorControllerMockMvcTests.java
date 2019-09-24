@@ -92,11 +92,21 @@ public class BasicErrorControllerMockMvcTests {
 	}
 
 	@Test
-	public void testErrorWithResponseStatus() throws Exception {
+	public void testErrorWithNotFoundResponseStatus() throws Exception {
 		MvcResult result = this.mockMvc.perform(get("/bang")).andExpect(status().isNotFound()).andReturn();
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("Expected!");
+	}
+
+	@Test
+	public void testErrorWithNoContentResponseStatus() throws Exception {
+		MvcResult result = this.mockMvc.perform(get("/noContent").accept("some/thing"))
+				.andExpect(status().isNoContent()).andReturn();
+		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
+				.andExpect(status().isNoContent()).andReturn();
+		String content = response.getResponse().getContentAsString();
+		assertThat(content).isEmpty();
 	}
 
 	@Test
@@ -174,6 +184,11 @@ public class BasicErrorControllerMockMvcTests {
 				throw error;
 			}
 
+			@RequestMapping("/noContent")
+			public void noContent() throws Exception {
+				throw new NoContentException("Expected!");
+			}
+
 		}
 
 	}
@@ -182,6 +197,15 @@ public class BasicErrorControllerMockMvcTests {
 	private static class NotFoundException extends RuntimeException {
 
 		NotFoundException(String string) {
+			super(string);
+		}
+
+	}
+
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	private static class NoContentException extends RuntimeException {
+
+		NoContentException(String string) {
 			super(string);
 		}
 
@@ -203,6 +227,7 @@ public class BasicErrorControllerMockMvcTests {
 			MockHttpServletRequest request = this.result.getRequest();
 			request.setDispatcherType(DispatcherType.ERROR);
 			request.setRequestURI(this.path);
+			request.setAttribute("javax.servlet.error.status_code", this.result.getResponse().getStatus());
 			return request;
 		}
 
