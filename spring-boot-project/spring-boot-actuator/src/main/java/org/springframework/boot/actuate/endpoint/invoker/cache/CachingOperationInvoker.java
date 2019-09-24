@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -67,11 +70,18 @@ public class CachingOperationInvoker implements OperationInvoker {
 		long accessTime = System.currentTimeMillis();
 		CachedResponse cached = this.cachedResponse;
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
-			Object response = this.invoker.invoke(context);
+			Object response = handleMonoResponse(this.invoker.invoke(context));
 			this.cachedResponse = new CachedResponse(response, accessTime);
 			return response;
 		}
 		return cached.getResponse();
+	}
+
+	private Object handleMonoResponse(Object response) {
+		if (response instanceof Mono) {
+			return ((Mono) response).cache(Duration.ofMillis(this.timeToLive));
+		}
+		return response;
 	}
 
 	private boolean hasInput(InvocationContext context) {

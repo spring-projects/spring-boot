@@ -17,15 +17,20 @@
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -41,6 +46,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Stephane Nicoll
  */
 public class CachingOperationInvokerTests {
+
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void createInstanceWithTtlSetToZero() {
@@ -60,6 +68,21 @@ public class CachingOperationInvokerTests {
 		parameters.put("first", null);
 		parameters.put("second", null);
 		assertCacheIsUsed(parameters);
+	}
+
+	@Test
+	public void cacheInTtlWithMonoResponse() {
+		MonoOperationInvoker target = new MonoOperationInvoker();
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		Object monoResponse = invoker.invoke(context);
+		assertThat(monoResponse).isInstanceOf(Mono.class);
+		Object response = ((Mono) monoResponse).block(Duration.ofSeconds(30));
+		Object cachedMonoResponse = invoker.invoke(context);
+		assertThat(cachedMonoResponse).isInstanceOf(Mono.class);
+		Object cachedResponse = ((Mono) cachedMonoResponse).block(Duration.ofSeconds(30));
+		assertThat(response).isSameAs(cachedResponse);
+		assertThat(this.outputCapture.toString()).containsOnlyOnce("invoked");
 	}
 
 	private void assertCacheIsUsed(Map<String, Object> parameters) {
@@ -117,6 +140,20 @@ public class CachingOperationInvokerTests {
 		Thread.sleep(55);
 		invoker.invoke(context);
 		verify(target, times(2)).invoke(context);
+	}
+
+	private static class MonoOperationInvoker implements OperationInvoker {
+
+		@Override
+		public Object invoke(InvocationContext context) throws MissingParametersException {
+			return Mono.fromCallable(this::printInvocation);
+		}
+
+		private Mono<String> printInvocation() {
+			System.out.println("MonoOperationInvoker invoked");
+			return Mono.just("test");
+		}
+
 	}
 
 }
