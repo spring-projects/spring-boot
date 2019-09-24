@@ -32,6 +32,9 @@
 					<include>**/application*.yml</include>
 					<include>**/application*.yaml</include>
 					<include>**/application*.properties</include>
+					<include>**/bootstrap*.yml</include>
+					<include>**/bootstrap*.yaml</include>
+					<include>**/bootstrap*.properties</include>
 				</includes>
 			</resource>
 			<resource>
@@ -40,6 +43,9 @@
 					<exclude>**/application*.yml</exclude>
 					<exclude>**/application*.yaml</exclude>
 					<exclude>**/application*.properties</exclude>
+					<exclude>**/bootstrap*.yml</exclude>
+					<exclude>**/bootstrap*.yaml</exclude>
+					<exclude>**/bootstrap*.properties</exclude>
 				</excludes>
 			</resource>
 		</resources>
