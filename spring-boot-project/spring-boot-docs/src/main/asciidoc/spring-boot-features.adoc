@@ -5720,7 +5720,7 @@ Those default settings can be fine-tuned using the `spring.task.execution` names
 
 [source,properties,indent=0]
 ----
-	spring.task.execution.pool.max-threads=16
+	spring.task.execution.pool.max-size=16
 	spring.task.execution.pool.queue-capacity=100
 	spring.task.execution.pool.keep-alive=10s
 ----
