@@ -279,6 +279,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	public void noCompressionForResponseWithInvalidContentType() {
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		compression.setMimeTypes(new String[] { "application/json" });
+		WebClient client = prepareCompressionTest(compression, "test~plain");
+		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
+				.block(Duration.ofSeconds(30));
+		assertResponseIsNotCompressed(response);
+	}
+
+	@Test
 	public void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
 				.hasMessageContaining("Could not load key store 'null'");
