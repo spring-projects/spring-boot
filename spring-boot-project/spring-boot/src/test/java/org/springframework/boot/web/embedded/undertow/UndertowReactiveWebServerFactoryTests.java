@@ -118,7 +118,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		this.webServer.start();
 		WebClient client = getWebClient().build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
