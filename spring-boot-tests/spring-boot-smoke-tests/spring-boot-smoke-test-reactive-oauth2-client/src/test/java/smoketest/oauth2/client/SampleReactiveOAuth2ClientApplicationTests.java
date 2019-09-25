@@ -49,7 +49,7 @@ class SampleReactiveOAuth2ClientApplicationTests {
 	}
 
 	@Test
-	public void actuatorShouldBeSecuredByOAuth() {
+	void actuatorShouldBeSecuredByOAuth() {
 		this.webTestClient.get().uri("/actuator/health").exchange().expectStatus().isFound().expectHeader()
 				.valueEquals("Location", "/login");
 	}
