@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -90,6 +91,16 @@ class EndpointIdTests {
 		EndpointId.of("foo-bar");
 		assertThat(output)
 				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
+	}
+
+	@Test
+	void ofWhenMigratingLegacyNameRemovesDots(CapturedOutput output) {
+		EndpointId.resetLoggedWarnings();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.endpoints.migrate-legacy-ids", "true");
+		EndpointId endpointId = EndpointId.of(environment, "foo.bar");
+		assertThat(endpointId.toString()).isEqualTo("foobar");
+		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test

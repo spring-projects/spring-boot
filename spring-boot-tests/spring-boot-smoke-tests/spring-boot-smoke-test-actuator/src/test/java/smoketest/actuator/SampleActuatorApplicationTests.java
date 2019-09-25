@@ -36,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Basic integration tests for service demo application.
@@ -186,6 +187,17 @@ class SampleActuatorApplicationTests {
 		Map<String, Object> context = (Map<String, Object>) contexts.get(this.applicationContext.getId());
 		Map<String, Object> beans = (Map<String, Object>) context.get("beans");
 		assertThat(beans).containsKey("spring.datasource-" + DataSourceProperties.class.getName());
+	}
+
+	@Test
+	void testLegacy() {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.getForEntity("/actuator/legacy", Map.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertThat(body).contains(entry("legacy", "legacy"));
 	}
 
 	private String getPassword() {
