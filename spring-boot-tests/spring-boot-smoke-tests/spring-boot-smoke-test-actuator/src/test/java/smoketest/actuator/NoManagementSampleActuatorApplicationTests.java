@@ -42,26 +42,23 @@ class NoManagementSampleActuatorApplicationTests {
 
 	@Test
 	void testHome() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
-				Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
 	}
 
 	@Test
 	void testMetricsNotAvailable() {
 		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/metrics",
-				Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/metrics", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	private String getPassword() {
-		return "password";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
+		return (ResponseEntity) entity;
 	}
 
 }
