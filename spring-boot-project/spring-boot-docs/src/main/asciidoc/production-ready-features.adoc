@@ -623,7 +623,7 @@ The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever poss
 === Health Information
 You can use health information to check the status of your running application.
 It is often used by monitoring software to alert someone when a production system goes down.
-The information exposed by the `health` endpoint depends on the `management.endpoint.health.show-details` property which can be configured with one of the following values:
+The information exposed by the `health` endpoint depends on the `management.endpoint.health.show-details` and `management.endpoint.health.show-components` properties which can be configured with one of the following values:
 
 [cols="1, 3"]
 |===

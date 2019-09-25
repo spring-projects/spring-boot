@@ -76,8 +76,8 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	}
 
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
-			boolean alwaysIncludeDetails, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, alwaysIncludeDetails, path);
+			boolean showAll, String... path) {
+		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, showAll, path);
 		if (result == null) {
 			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
@@ -94,8 +94,8 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 
 	@Override
 	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
-			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
-		return getCompositeHealth(apiVersion, contributions, statusAggregator, includeDetails, groupNames);
+			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }

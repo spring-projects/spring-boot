@@ -24,6 +24,9 @@ The following table describes the structure of the response:
 [cols="2,1,3"]
 include::{snippets}health/response-fields.adoc[]
 
+NOTE: The response fields above are for the V3 API.
+If you need to return V2 JSON you should use an accept header or `application/vnd.spring-boot.actuator.v2+json`
+
 
 
 [[health-retrieving-component]]

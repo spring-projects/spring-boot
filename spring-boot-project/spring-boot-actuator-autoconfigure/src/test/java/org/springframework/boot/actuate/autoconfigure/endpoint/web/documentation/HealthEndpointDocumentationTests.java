@@ -146,7 +146,12 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 
 		@Override
-		public boolean includeDetails(SecurityContext securityContext) {
+		public boolean showComponents(SecurityContext securityContext) {
+			return true;
+		}
+
+		@Override
+		public boolean showDetails(SecurityContext securityContext) {
 			return true;
 		}
 
