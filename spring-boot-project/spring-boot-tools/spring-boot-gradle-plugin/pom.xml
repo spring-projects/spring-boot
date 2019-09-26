@@ -360,7 +360,7 @@
 							<dependency>
 								<groupId>io.spring.asciidoctor</groupId>
 								<artifactId>spring-asciidoctor-extensions</artifactId>
-								<version>0.2.0.RELEASE</version>
+								<version>${spring-asciidoctor-extensions.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>

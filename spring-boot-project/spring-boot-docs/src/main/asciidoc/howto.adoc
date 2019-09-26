@@ -222,7 +222,7 @@ A `SpringApplication` has bean properties (mainly setters), so you can use its J
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	spring.main.web-application-type=none
 	spring.main.banner-mode=off
@@ -243,7 +243,7 @@ Consider the following application:
 
 Now consider the following configuration:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
 	spring.main.banner-mode=console
@@ -264,8 +264,8 @@ Properties added in this way have lower priority than any added by using the def
 
 You can also provide the following System properties (or environment variables) to change the behavior:
 
-* `spring.config.name` (`SPRING_CONFIG_NAME`): Defaults to `application` as the root of the file name.
-* `spring.config.location` (`SPRING_CONFIG_LOCATION`): The file to load (such as a classpath resource or a URL).
+* configprop:spring.config.name[] (configprop:spring.config.name[format=envvar]): Defaults to `application` as the root of the file name.
+* configprop:spring.config.location[] (configprop:spring.config.location[format=envvar]): The file to load (such as a classpath resource or a URL).
   A separate `Environment` property source is set up for this document and it can be overridden by system properties, environment variables, or the command line.
 
 No matter what you set in the environment, Spring Boot always loads `application.properties` as described above.
@@ -282,7 +282,7 @@ See {spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.port=${port:8080}
 ----
@@ -317,10 +317,10 @@ A YAML file is parsed to a Java `Map<String,Object>` (like a JSON object), and S
 
 The preceding example YAML corresponds to the following `application.properties` file:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	spring.application.name=cruncher
-	spring.datasource.driverClassName=com.mysql.jdbc.Driver
+	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 	spring.datasource.url=jdbc:mysql://localhost/test
 	server.port=9000
 ----
@@ -331,7 +331,7 @@ See "`<<spring-boot-features.adoc#boot-features-external-config-yaml>>`" in the 
 
 [[howto-set-active-spring-profiles]]
 === Set the Active Spring Profiles
-The Spring `Environment` has an API for this, but you would normally set a System property (`spring.profiles.active`) or an OS environment variable (`SPRING_PROFILES_ACTIVE`).
+The Spring `Environment` has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -341,7 +341,7 @@ Also, you can launch your application with a `-D` argument (remember to put it b
 
 In Spring Boot, you can also set the active profile in `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	spring.profiles.active=production
 ----
@@ -474,7 +474,7 @@ NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` cla
 If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
 To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.main.web-application-type=none
 ----
@@ -483,8 +483,8 @@ To disable this behavior configure the `WebApplicationType` in your `application
 
 [[howto-change-the-http-port]]
 === Change the HTTP Port
-In a standalone application, the main HTTP port defaults to `8080` but can be set with `server.port` (for example, in `application.properties` or as a System property).
-Thanks to relaxed binding of `Environment` values, you can also use `SERVER_PORT` (for example, as an OS environment variable).
+In a standalone application, the main HTTP port defaults to `8080` but can be set with configprop:server.port[] (for example, in `application.properties` or as a System property).
+Thanks to relaxed binding of `Environment` values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
@@ -536,13 +536,13 @@ Contrary to a test, application code callbacks are processed early (before the v
 HTTP response compression is supported by Jetty, Tomcat, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.compression.enabled=true
 ----
 
 By default, responses must be at least 2048 bytes in length for compression to be performed.
-You can configure this behavior by setting the `server.compression.min-response-size` property.
+You can configure this behavior by setting the configprop:server.compression.min-response-size[] property.
 
 By default, responses are compressed only if their content type is one of the following:
 
@@ -555,7 +555,7 @@ By default, responses are compressed only if their content type is one of the fo
 * `application/json`
 * `application/xml`
 
-You can configure this behavior by setting the `server.compression.mime-types` property.
+You can configure this behavior by setting the configprop:server.compression.mime-types[] property.
 
 
 
@@ -564,7 +564,7 @@ You can configure this behavior by setting the `server.compression.mime-types` p
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
 The following example shows setting SSL properties in `application.properties`:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.port=8443
 	server.ssl.key-store=classpath:keystore.jks
@@ -583,7 +583,7 @@ We recommend using `application.properties` to configure HTTPS, as the HTTP conn
 
 [[howto-configure-http2]]
 === Configure HTTP/2
-You can enable HTTP/2 support in your Spring Boot application with the `+server.http2.enabled+` configuration property.
+You can enable HTTP/2 support in your Spring Boot application with the configprop:server.http2.enabled[] configuration property.
 This support depends on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by JDK8.
 
 [NOTE]
@@ -754,7 +754,7 @@ Access logs can be configured for Tomcat, Undertow, and Jetty through their resp
 
 For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.tomcat.basedir=my-tomcat
 	server.tomcat.accesslog.enabled=true
@@ -767,18 +767,18 @@ In the preceding example, the logs are available in `my-tomcat/logs` relative to
 
 Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.undertow.accesslog.enabled=true
 	server.undertow.accesslog.pattern=%t %a "%r" %s (%D ms)
 ----
 
 Logs are stored in a `logs` directory relative to the working directory of the application.
-You can customize this location by setting the `server.undertow.accesslog.dir` property.
+You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
 
 Finally, access logging for Jetty can also be configured as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	server.jetty.accesslog.enabled=true
 	server.jetty.accesslog.filename=/var/log/jetty-access.log
@@ -798,7 +798,7 @@ Typically, such situations are handled through a contract with the proxy, which 
 
 If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most proxy servers do so), the absolute links should be rendered correctly, provided `server.forward-headers-strategy` is set to `NATIVE` or `FRAMEWORK` in your `application.properties`.
 
-NOTE: If your application runs in Cloud Foundry or Heroku, the `server.forward-headers-strategy` property defaults to `NATIVE`.
+NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
 
 
@@ -894,9 +894,9 @@ include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.jav
 === Enable Tomcat's MBean Registry
 Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.
-If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the `server.tomcat.mbeanregistry.enabled` property to do so, as shown in the following example:
+If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 server.tomcat.mbeanregistry.enabled=true
 ----
@@ -1054,7 +1054,7 @@ These features are described in six enums (in Jackson) that map onto properties 
 | `true`, `false`
 
 | `com.fasterxml.jackson.annotation.JsonInclude.Include`
-| `spring.jackson.default-property-inclusion`
+| configprop:spring.jackson.default-property-inclusion[]
 | `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
 |===
 
@@ -1101,7 +1101,7 @@ See the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfigurat
 Spring Boot embraces the Servlet 3 `javax.servlet.http.Part` API to support uploading files.
 By default, Spring Boot configures Spring MVC with a maximum size of 1MB per file and a maximum of 10MB of file data in a single request.
 You may override these values, the location to which intermediate data is stored (for example, to the `/tmp` directory), and the threshold past which data is flushed to disk by using the properties exposed in the `MultipartProperties` class.
-For example, if you want to specify that files be unlimited, set the `spring.servlet.multipart.max-file-size` property to `-1`.
+For example, if you want to specify that files be unlimited, set the configprop:spring.servlet.multipart.max-file-size[] property to `-1`.
 
 The multipart support is helpful when you want to receive multipart encoded file data as a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller handler method.
 
@@ -1116,7 +1116,7 @@ NOTE: It is recommended to use the container's built-in support for multipart up
 By default, all content is served from the root of your application (`/`).
 If you would rather map to a different path, you can configure one as follows:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties,indent=0,subs="verbatim",configprops]
 ----
 	spring.mvc.servlet.path=/acme
 ----
@@ -1284,7 +1284,7 @@ If Logback is available, it is the first choice.
 
 If the only change you need to make to logging is to set the levels of various loggers, you can do so in `application.properties` by using the "logging.level" prefix, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	logging.level.org.springframework.web=DEBUG
 	logging.level.org.hibernate=ERROR
@@ -1293,7 +1293,7 @@ If the only change you need to make to logging is to set the levels of various l
 You can also set the location of a file to which to write the log (in addition to the console) by using "logging.file.name".
 
 To configure the more fine-grained settings of a logging system, you need to use the native configuration format supported by the `LoggingSystem` in question.
-By default, Spring Boot picks up the native configuration from its default location for the system (such as `classpath:logback.xml` for Logback), but you can set the location of the config file by using the "logging.config" property.
+By default, Spring Boot picks up the native configuration from its default location for the system (such as `classpath:logback.xml` for Logback), but you can set the location of the config file by using the configprop:logging.config[] property.
 
 
 
@@ -1369,7 +1369,7 @@ If you want to disable console logging and write output only to a file, you need
 
 You also need to add `logging.file.name` to your `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
 ----
 	logging.file.name=myapplication.log
 ----
@@ -1652,7 +1652,7 @@ If an embedded database is used and no schema manager (such as Liquibase or Flyw
 In all other cases, it defaults to `none`.
 
 The dialect to use is detected by the JPA provider.
-If you prefer to set the dialect yourself, set the `spring.jpa.database-platform` property.
+If you prefer to set the dialect yourself, set the configprop:spring.jpa.database-platform[] property.
 
 The most common options to set are shown in the following example:
 
@@ -1922,7 +1922,7 @@ For example, you might choose to set it to the vendor name of the database (`hsq
 [NOTE]
 ====
 Spring Boot automatically creates the schema of an embedded `DataSource`.
-This behavior can be customized by using the `spring.datasource.initialization-mode` property.
+This behavior can be customized by using the configprop:spring.datasource.initialization-mode[] property.
 For instance, if you want to always initialize the `DataSource` regardless of its type:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -1971,7 +1971,7 @@ By default, they are in a folder called `classpath:db/migration`, but you can mo
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.flyway.locations=classpath:db/migration,filesystem:/opt/migration
 ----
@@ -1979,7 +1979,7 @@ For example, the following configuration would search for scripts in both the de
 You can also add a special `\{vendor}` placeholder to use vendor-specific scripts.
 Assume the following:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
@@ -2015,7 +2015,7 @@ For example, you can place test-specific migrations in `src/test/resources` and 
 Also, you can use profile-specific configuration to customize `spring.flyway.locations` so that certain migrations run only when a particular profile is active.
 For example, in `application-dev.properties`, you might specify the following setting:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.flyway.locations=classpath:/db/migration,classpath:/dev/db/migration
 ----
@@ -2119,7 +2119,7 @@ This section answers questions that often arise from its use.
 [[howto-change-the-http-port-or-address-of-the-actuator-endpoints]]
 === Change the HTTP Port or Address of the Actuator Endpoints
 In a standalone application, the Actuator HTTP port defaults to the same as the main HTTP port.
-To make the application listen on a different port, set the external property: `management.server.port`.
+To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
 For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`<<production-ready-features.adoc#production-ready-customizing-management-server-port>>`" in the "`Production-ready features`" section.
@@ -2185,7 +2185,7 @@ If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own `Re
 The standard behavior is determined by the presence or absence of certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should work with most front-end proxies.
 You can switch on the valve by adding some entries to `application.properties`, as shown in the following example:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	server.tomcat.remote-ip-header=x-forwarded-for
 	server.tomcat.protocol-header=x-forwarded-proto
