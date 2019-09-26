@@ -1076,6 +1076,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-cloudwatch2</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-datadog</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
