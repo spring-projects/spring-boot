@@ -98,7 +98,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 					mockMvc.perform(get("/cloudfoundryapplication"))
-							.andExpect(header().string("Content-Type", ActuatorMediaType.V2_JSON));
+							.andExpect(header().string("Content-Type", ActuatorMediaType.V3_JSON));
 				});
 	}
 

@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -309,6 +310,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
+			ApiVersion apiVersion = ApiVersion.fromHttpHeaders(exchange.getRequest().getHeaders());
 			Map<String, Object> arguments = getArguments(exchange, body);
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
 					.getMatchAllRemainingPathSegmentsVariable();
@@ -317,7 +319,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 						tokenizePathSegments((String) arguments.get(matchAllRemainingPathSegmentsVariable)));
 			}
 			return this.securityContextSupplier.get()
-					.map((securityContext) -> new InvocationContext(securityContext, arguments))
+					.map((securityContext) -> new InvocationContext(apiVersion, securityContext, arguments))
 					.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
 							exchange.getRequest().getMethod()));
 		}
