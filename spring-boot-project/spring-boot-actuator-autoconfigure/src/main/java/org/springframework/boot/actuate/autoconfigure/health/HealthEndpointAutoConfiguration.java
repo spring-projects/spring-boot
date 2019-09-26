@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthEndpoint}.
@@ -44,8 +45,12 @@ public class HealthEndpointAutoConfiguration {
 	@SuppressWarnings("deprecation")
 	HealthEndpointProperties healthEndpointProperties(HealthIndicatorProperties healthIndicatorProperties) {
 		HealthEndpointProperties healthEndpointProperties = new HealthEndpointProperties();
-		healthEndpointProperties.getStatus().getOrder().addAll(healthIndicatorProperties.getOrder());
-		healthEndpointProperties.getStatus().getHttpMapping().putAll(healthIndicatorProperties.getHttpMapping());
+		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getOrder())) {
+			healthEndpointProperties.getStatus().getOrder().addAll(healthIndicatorProperties.getOrder());
+		}
+		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getHttpMapping())) {
+			healthEndpointProperties.getStatus().getHttpMapping().putAll(healthIndicatorProperties.getHttpMapping());
+		}
 		return healthEndpointProperties;
 	}
 
