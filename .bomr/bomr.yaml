@@ -20,6 +20,10 @@ bomr:
         versions:
           # Contains incompatiable class change
           - '9.4.20.v20190813'
+      - project: netty
+        versions:
+          # https://github.com/reactor/reactor-netty/issues/844
+          - '[4.1.40.Final,)'
       - project: saaj-impl
         versions:
           # Switches to Jarkarta EE API dependencies resulting in duplicate classes
