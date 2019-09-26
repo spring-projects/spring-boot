@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.util.Assert;
 
 /**
@@ -59,15 +60,16 @@ abstract class HealthEndpointSupport<C, T> {
 		this.groups = groups;
 	}
 
-	HealthResult<T> getHealth(SecurityContext securityContext, boolean alwaysIncludeDetails, String... path) {
+	HealthResult<T> getHealth(ApiVersion apiVersion, SecurityContext securityContext, boolean alwaysIncludeDetails,
+			String... path) {
 		HealthEndpointGroup group = (path.length > 0) ? this.groups.get(path[0]) : null;
 		if (group != null) {
-			return getHealth(group, securityContext, alwaysIncludeDetails, path, 1);
+			return getHealth(apiVersion, group, securityContext, alwaysIncludeDetails, path, 1);
 		}
-		return getHealth(this.groups.getPrimary(), securityContext, alwaysIncludeDetails, path, 0);
+		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, alwaysIncludeDetails, path, 0);
 	}
 
-	private HealthResult<T> getHealth(HealthEndpointGroup group, SecurityContext securityContext,
+	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
 			boolean alwaysIncludeDetails, String[] path, int pathOffset) {
 		boolean includeDetails = alwaysIncludeDetails || group.includeDetails(securityContext);
 		boolean isSystemHealth = group == this.groups.getPrimary() && pathOffset == 0;
@@ -76,7 +78,8 @@ abstract class HealthEndpointSupport<C, T> {
 			return null;
 		}
 		Object contributor = getContributor(path, pathOffset);
-		T health = getContribution(group, contributor, includeDetails, isSystemHealth ? this.groups.getNames() : null);
+		T health = getContribution(apiVersion, group, contributor, includeDetails,
+				isSystemHealth ? this.groups.getNames() : null);
 		return (health != null) ? new HealthResult<T>(health, group) : null;
 	}
 
@@ -94,44 +97,47 @@ abstract class HealthEndpointSupport<C, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T getContribution(HealthEndpointGroup group, Object contributor, boolean includeDetails,
-			Set<String> groupNames) {
+	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, Object contributor,
+			boolean includeDetails, Set<String> groupNames) {
 		if (contributor instanceof NamedContributors) {
-			return getAggregateHealth(group, (NamedContributors<C>) contributor, includeDetails, groupNames);
+			return getAggregateHealth(apiVersion, group, (NamedContributors<C>) contributor, includeDetails,
+					groupNames);
 		}
 		return (contributor != null) ? getHealth((C) contributor, includeDetails) : null;
 	}
 
-	private T getAggregateHealth(HealthEndpointGroup group, NamedContributors<C> namedContributors,
-			boolean includeDetails, Set<String> groupNames) {
+	private T getAggregateHealth(ApiVersion apiVersion, HealthEndpointGroup group,
+			NamedContributors<C> namedContributors, boolean includeDetails, Set<String> groupNames) {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> namedContributor : namedContributors) {
 			String name = namedContributor.getName();
 			if (group.isMember(name)) {
-				T contribution = getContribution(group, namedContributor.getContributor(), includeDetails, null);
+				T contribution = getContribution(apiVersion, group, namedContributor.getContributor(), includeDetails,
+						null);
 				contributions.put(name, contribution);
 			}
 		}
 		if (contributions.isEmpty()) {
 			return null;
 		}
-		return aggregateContributions(contributions, group.getStatusAggregator(), includeDetails, groupNames);
+		return aggregateContributions(apiVersion, contributions, group.getStatusAggregator(), includeDetails,
+				groupNames);
 	}
 
 	protected abstract T getHealth(C contributor, boolean includeDetails);
 
-	protected abstract T aggregateContributions(Map<String, T> contributions, StatusAggregator statusAggregator,
-			boolean includeDetails, Set<String> groupNames);
+	protected abstract T aggregateContributions(ApiVersion apiVersion, Map<String, T> contributions,
+			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames);
 
-	protected final CompositeHealth getCompositeHealth(Map<String, HealthComponent> components,
+	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
 			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
 		Status status = statusAggregator.getAggregateStatus(
 				components.values().stream().map(HealthComponent::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> includedComponents = includeDetails ? components : null;
 		if (groupNames != null) {
-			return new SystemHealth(status, includedComponents, groupNames);
+			return new SystemHealth(apiVersion, status, includedComponents, groupNames);
 		}
-		return new CompositeHealth(status, includedComponents);
+		return new CompositeHealth(apiVersion, status, includedComponents);
 	}
 
 	/**

@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,7 +78,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	@Test
 	void getHealthResultWhenPathIsEmptyUsesPrimaryGroup() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false);
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false);
 		assertThat(result.getGroup()).isEqualTo(this.primaryGroup);
 		assertThat(getHealth(result)).isNotSameAs(this.up);
 		assertThat(getHealth(result).getStatus()).isEqualTo(Status.UP);
@@ -86,7 +88,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	@Test
 	void getHealthResultWhenPathIsNotGroupReturnsResultFromPrimaryGroup() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false, "test");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false, "test");
 		assertThat(result.getGroup()).isEqualTo(this.primaryGroup);
 		assertThat(getHealth(result)).isEqualTo(this.up);
 
@@ -95,8 +98,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	@Test
 	void getHealthResultWhenPathIsGroupReturnsResultFromGroup() {
 		this.registry.registerContributor("atest", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false, "alltheas",
-				"atest");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false, "alltheas", "atest");
 		assertThat(result.getGroup()).isEqualTo(this.allTheAs);
 		assertThat(getHealth(result)).isEqualTo(this.up);
 	}
@@ -104,7 +107,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	@Test
 	void getHealthResultWhenAlwaysIncludesDetailsIsFalseAndGroupIsTrueIncludesDetails() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false, "test");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false, "test");
 		assertThat(((Health) getHealth(result)).getDetails()).containsEntry("spring", "boot");
 	}
 
@@ -113,8 +117,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		this.primaryGroup.setIncludeDetails(false);
 		this.registry.registerContributor("test", createContributor(this.up));
 		HealthEndpointSupport<C, T> endpoint = create(this.registry, this.groups);
-		HealthResult<T> rootResult = endpoint.getHealth(SecurityContext.NONE, false);
-		HealthResult<T> componentResult = endpoint.getHealth(SecurityContext.NONE, false, "test");
+		HealthResult<T> rootResult = endpoint.getHealth(ApiVersion.V3, SecurityContext.NONE, false);
+		HealthResult<T> componentResult = endpoint.getHealth(ApiVersion.V3, SecurityContext.NONE, false, "test");
 		assertThat(((CompositeHealth) getHealth(rootResult)).getStatus()).isEqualTo(Status.UP);
 		assertThat(componentResult).isNull();
 	}
@@ -123,7 +127,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	void getHealthResultWhenAlwaysIncludesDetailsIsTrueIncludesDetails() {
 		this.primaryGroup.setIncludeDetails(false);
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, true, "test");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE, true,
+				"test");
 		assertThat(((Health) getHealth(result)).getDetails()).containsEntry("spring", "boot");
 	}
 
@@ -133,31 +138,35 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		contributors.put("a", createContributor(this.up));
 		contributors.put("b", createContributor(this.down));
 		this.registry.registerContributor("test", createCompositeContributor(contributors));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false);
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false);
 		CompositeHealth root = (CompositeHealth) getHealth(result);
-		CompositeHealth component = (CompositeHealth) root.getDetails().get("test");
+		CompositeHealth component = (CompositeHealth) root.getComponents().get("test");
 		assertThat(root.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(component.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(component.getDetails()).containsOnlyKeys("a", "b");
+		assertThat(component.getComponents()).containsOnlyKeys("a", "b");
 	}
 
 	@Test
 	void getHealthResultWhenPathDoesNotExistReturnsNull() {
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false, "missing");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false, "missing");
 		assertThat(result).isNull();
 	}
 
 	@Test
 	void getHealthResultWhenPathIsEmptyIncludesGroups() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false);
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false);
 		assertThat(((SystemHealth) getHealth(result)).getGroups()).containsOnly("alltheas");
 	}
 
 	@Test
 	void getHealthResultWhenPathIsGroupDoesNotIncludesGroups() {
 		this.registry.registerContributor("atest", createContributor(this.up));
-		HealthResult<T> result = create(this.registry, this.groups).getHealth(SecurityContext.NONE, false, "alltheas");
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false, "alltheas");
 		assertThat(getHealth(result)).isNotInstanceOf(SystemHealth.class);
 	}
 
