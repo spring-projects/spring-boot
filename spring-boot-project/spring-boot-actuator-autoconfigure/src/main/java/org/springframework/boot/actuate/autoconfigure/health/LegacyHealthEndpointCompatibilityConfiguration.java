@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration to adapt legacy deprecated health endpoint classes and interfaces.
@@ -46,7 +47,7 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 	@ConditionalOnMissingBean
 	HealthAggregator healthAggregator(HealthIndicatorProperties healthIndicatorProperties) {
 		OrderedHealthAggregator aggregator = new OrderedHealthAggregator();
-		if (healthIndicatorProperties.getOrder() != null) {
+		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getOrder())) {
 			aggregator.setStatusOrder(healthIndicatorProperties.getOrder());
 		}
 		return aggregator;
@@ -56,7 +57,7 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 	@ConditionalOnMissingBean
 	HealthStatusHttpMapper healthStatusHttpMapper(HealthIndicatorProperties healthIndicatorProperties) {
 		HealthStatusHttpMapper mapper = new HealthStatusHttpMapper();
-		if (healthIndicatorProperties.getHttpMapping() != null) {
+		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getHttpMapping())) {
 			mapper.setStatusMapping(healthIndicatorProperties.getHttpMapping());
 		}
 		return mapper;

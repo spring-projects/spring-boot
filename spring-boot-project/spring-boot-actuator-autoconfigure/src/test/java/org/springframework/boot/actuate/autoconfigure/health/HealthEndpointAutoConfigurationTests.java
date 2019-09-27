@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -269,6 +271,26 @@ class HealthEndpointAutoConfigurationTests {
 							SecurityContext.NONE, true, "simple");
 					assertThat(response).isNull();
 				});
+	}
+
+	@Test // gh-18354
+	void runCreatesLegacyHealthAggregator() {
+		this.contextRunner.run((context) -> {
+			HealthAggregator aggregator = context.getBean(HealthAggregator.class);
+			Map<String, Health> healths = new LinkedHashMap<>();
+			healths.put("one", Health.up().build());
+			healths.put("two", Health.down().build());
+			Health result = aggregator.aggregate(healths);
+			assertThat(result.getStatus()).isEqualTo(Status.DOWN);
+		});
+	}
+
+	@Test // gh-18354
+	void runCreatesLegacyHealthStatusHttpMapper() {
+		this.contextRunner.run((context) -> {
+			HealthStatusHttpMapper mapper = context.getBean(HealthStatusHttpMapper.class);
+			assertThat(mapper.mapStatus(Status.DOWN)).isEqualTo(503);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
