@@ -266,7 +266,7 @@ public class WebMvcProperties {
 		}
 
 		public String getServletMapping() {
-			if (this.path.equals("") || this.path.equals("/")) {
+			if ("".equals(this.path) || "/".equals(this.path)) {
 				return "/";
 			}
 			if (this.path.endsWith("/")) {
