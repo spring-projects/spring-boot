@@ -68,7 +68,6 @@ import org.mockito.InOrder;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.core.io.ByteArrayResource;
@@ -544,14 +543,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void registerJspServletWithDefaultLoadOnStartup() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
-		factory.addInitializers(new ServletContextInitializer() {
-
-			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.addServlet("manually-registered-jsp-servlet", JspServlet.class);
-			}
-
-		});
+		factory.addInitializers((context) -> context.addServlet("manually-registered-jsp-servlet", JspServlet.class));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 	}
