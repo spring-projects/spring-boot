@@ -1507,6 +1507,7 @@
 								<sources-root>${project.basedir}/src</sources-root>
 								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
 								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
+								<jetty-version>${jetty.version}</jetty-version>
 								<jooq-version>${jooq.version}</jooq-version>
 								<spring-boot-version>${revision}</spring-boot-version>
 								<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
