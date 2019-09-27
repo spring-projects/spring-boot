@@ -1644,7 +1644,7 @@ For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springf
 
 NOTE: The above approach will only work for package level logging.
 Since relaxed binding always converts environment variables to lowercase, it's not possible to configure logging for an individual class in this way.
-If you need to configure logging for a class, you can use <<boot-features-external-config-application-json, the APPLICATION_JSON>> variable.
+If you need to configure logging for a class, you can use <<boot-features-external-config-application-json, the SPRING_APPLICATION_JSON>> variable.
 
 
 
@@ -7266,8 +7266,8 @@ Resources can be specified by using the usual Spring conventions, as shown in th
 [[boot-features-web-application-conditions]]
 ==== Web Application Conditions
 The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a "`web application`".
-A servlet based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `StandardServletEnvironment`.
-A reactive web application is any application that uses a `ReactiveWebApplicationContext`, defines a `session` scope, or has a `ConfigurableReactiveWebEnvironment`.
+A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
+A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
 
 
 
