@@ -54,7 +54,7 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	@Override
 	void write(AsciidocBuilder builder) {
-		builder.appendln("¦`+", this.key, "+`");
+		builder.appendln("|`+", this.key, "+`");
 		writeDefaultValue(builder);
 		writeDescription(builder);
 		builder.appendln();
@@ -62,21 +62,22 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	private void writeDefaultValue(AsciidocBuilder builder) {
 		String defaultValue = (this.defaultValue != null) ? this.defaultValue : "";
-		defaultValue = defaultValue.replace("\\", "\\\\");
+		defaultValue = defaultValue.replace("\\", "\\\\").replace("|", "\\|");
 		if (defaultValue.isEmpty()) {
-			builder.appendln("¦");
+			builder.appendln("|");
 		}
 		else {
-			builder.appendln("¦`+", defaultValue, "+`");
+			builder.appendln("|`+", defaultValue, "+`");
 		}
 	}
 
 	private void writeDescription(AsciidocBuilder builder) {
 		if (this.description == null || this.description.isEmpty()) {
-			builder.append("¦");
+			builder.append("|");
 		}
 		else {
-			builder.append("¦+++", this.description, "+++");
+			String cleanedDescription = this.description.replace("|", "\\|");
+			builder.append("|+++", cleanedDescription, "+++");
 		}
 	}
 
