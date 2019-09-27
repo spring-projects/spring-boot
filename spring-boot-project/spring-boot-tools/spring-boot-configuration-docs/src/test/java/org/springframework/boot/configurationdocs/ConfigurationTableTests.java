@@ -46,10 +46,10 @@ class ConfigurationTableTests {
 		second.setType("java.lang.String");
 		table.addEntry(new SingleConfigurationTableEntry(first));
 		table.addEntry(new SingleConfigurationTableEntry(second));
-		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", separator=¦, options=\"header\"]" + NEWLINE
-				+ "|===" + NEWLINE + "¦Key¦Default Value¦Description" + NEWLINE + NEWLINE + "¦`+spring.test.other+`"
-				+ NEWLINE + "¦`+other value+`" + NEWLINE + "¦+++This is another description.+++" + NEWLINE + NEWLINE
-				+ "¦`+spring.test.prop+`" + NEWLINE + "¦`+something+`" + NEWLINE + "¦+++This is a description.+++"
+		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
+				+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE + "|`+spring.test.other+`" + NEWLINE
+				+ "|`+other value+`" + NEWLINE + "|+++This is another description.+++" + NEWLINE + NEWLINE
+				+ "|`+spring.test.prop+`" + NEWLINE + "|`+something+`" + NEWLINE + "|+++This is a description.+++"
 				+ NEWLINE + NEWLINE + "|===" + NEWLINE);
 	}
 
