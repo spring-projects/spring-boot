@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.CachedIntrospectionResults;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -236,6 +237,8 @@ public class SpringApplication {
 
 	private boolean isCustomEnvironment = false;
 
+	private boolean lazyInitialization = false;
+
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
@@ -380,6 +383,9 @@ public class SpringApplication {
 			((DefaultListableBeanFactory) beanFactory)
 					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
+		if (this.lazyInitialization) {
+			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
+		}
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
@@ -514,8 +520,6 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-		environment.getActiveProfiles(); // ensure they are initialized
-		// But these ones should go first (last wins in a property key clash)
 		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
@@ -578,8 +582,7 @@ public class SpringApplication {
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, " + "please specify an ApplicationContextClass",
-						ex);
+						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
@@ -940,6 +943,16 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets if beans should be initialized lazily. Defaults to {@code false}.
+	 * @param lazyInitialization if initialization should be lazy
+	 * @since 2.2
+	 * @see BeanDefinition#setLazyInit(boolean)
+	 */
+	public void setLazyInitialization(boolean lazyInitialization) {
+		this.lazyInitialization = lazyInitialization;
+	}
+
+	/**
 	 * Sets if the application is headless and should not instantiate AWT. Defaults to
 	 * {@code true} to prevent java icons appearing.
 	 * @param headless if the application is headless
@@ -1142,8 +1155,7 @@ public class SpringApplication {
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<>();
-		this.initializers.addAll(initializers);
+		this.initializers = new ArrayList<>(initializers);
 	}
 
 	/**
@@ -1170,8 +1182,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new ArrayList<>();
-		this.listeners.addAll(listeners);
+		this.listeners = new ArrayList<>(listeners);
 	}
 
 	/**

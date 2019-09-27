@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class CachingOperationInvokerAdvisorTests {
+class CachingOperationInvokerAdvisorTests {
 
 	@Mock
 	private OperationInvoker invoker;
@@ -54,14 +54,14 @@ public class CachingOperationInvokerAdvisorTests {
 
 	private CachingOperationInvokerAdvisor advisor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.advisor = new CachingOperationInvokerAdvisor(this.timeToLive);
 	}
 
 	@Test
-	public void applyWhenOperationIsNotReadShouldNotAddAdvise() {
+	void applyWhenOperationIsNotReadShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.WRITE, parameters,
 				this.invoker);
@@ -69,7 +69,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
+	void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("getWithParameters", String.class, String.class);
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
 				this.invoker);
@@ -77,7 +77,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() {
+	void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(null);
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
@@ -87,7 +87,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() {
+	void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(0L);
 		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
@@ -97,21 +97,21 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyShouldAddCacheAdvise() {
+	void applyShouldAddCacheAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		assertAdviseIsApplied(parameters);
 	}
 
 	@Test
-	public void applyWithAllOptionalParametersShouldAddAdvise() {
+	void applyWithAllOptionalParametersShouldAddAdvise() {
 		OperationParameters parameters = getParameters("getWithAllOptionalParameters", String.class, String.class);
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		assertAdviseIsApplied(parameters);
 	}
 
 	@Test
-	public void applyWithSecurityContextShouldAddAdvise() {
+	void applyWithSecurityContextShouldAddAdvise() {
 		OperationParameters parameters = getParameters("getWithSecurityContext", SecurityContext.class, String.class);
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		assertAdviseIsApplied(parameters);
@@ -134,21 +134,21 @@ public class CachingOperationInvokerAdvisorTests {
 		return new OperationMethod(method, OperationType.READ);
 	}
 
-	public static class TestOperations {
+	static class TestOperations {
 
-		public String get() {
+		String get() {
 			return "";
 		}
 
-		public String getWithParameters(@Nullable String foo, String bar) {
+		String getWithParameters(@Nullable String foo, String bar) {
 			return "";
 		}
 
-		public String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
+		String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
 			return "";
 		}
 
-		public String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
+		String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
 			return "";
 		}
 

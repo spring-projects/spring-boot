@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -34,19 +34,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootTestContextBootstrapperTests {
+class SpringBootTestContextBootstrapperTests {
 
 	@Test
-	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
+	void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class))
 				.withMessageContaining("@WebAppConfiguration should only be used with "
 						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
-						+ "environment. Please remove @WebAppConfiguration or reconfigure " + "@SpringBootTest.");
+						+ "environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 	}
 
 	@Test
-	public void springBootTestWithAMockWebEnvironmentCanBeUsedWithWebAppConfiguration() {
+	void springBootTestWithAMockWebEnvironmentCanBeUsedWithWebAppConfiguration() {
 		buildTestContext(SpringBootTestMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 
@@ -63,13 +63,13 @@ public class SpringBootTestContextBootstrapperTests {
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 	@WebAppConfiguration
-	private static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 
 	@SpringBootTest
 	@WebAppConfiguration
-	private static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 

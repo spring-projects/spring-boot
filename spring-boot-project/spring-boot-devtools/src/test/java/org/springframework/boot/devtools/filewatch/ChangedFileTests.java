@@ -18,9 +18,8 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
@@ -32,49 +31,52 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ChangedFileTests {
+class ChangedFileTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void sourceFolderMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
+	void sourceFolderMustNotBeNull() throws Exception {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
 				.withMessageContaining("SourceFolder must not be null");
 	}
 
 	@Test
-	public void fileMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
+	void fileMustNotBeNull() throws Exception {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "folder"), null, Type.ADD))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
-	public void typeMustNotBeNull() throws Exception {
+	void typeMustNotBeNull() throws Exception {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
+				.isThrownBy(
+						() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "folder"), null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	public void getFile() throws Exception {
-		File file = this.temp.newFile();
-		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(), file, Type.ADD);
+	void getFile() throws Exception {
+		File file = new File(this.tempDir, "file");
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "folder"), file, Type.ADD);
 		assertThat(changedFile.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	public void getType() throws Exception {
-		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(), this.temp.newFile(), Type.DELETE);
+	void getType() throws Exception {
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "folder"), new File(this.tempDir, "file"),
+				Type.DELETE);
 		assertThat(changedFile.getType()).isEqualTo(Type.DELETE);
 	}
 
 	@Test
-	public void getRelativeName() throws Exception {
-		File folder = this.temp.newFolder();
-		File subFolder = new File(folder, "A");
+	void getRelativeName() throws Exception {
+		File subFolder = new File(this.tempDir, "A");
 		File file = new File(subFolder, "B.txt");
-		ChangedFile changedFile = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile changedFile = new ChangedFile(this.tempDir, file, Type.ADD);
 		assertThat(changedFile.getRelativeName()).isEqualTo("A/B.txt");
 	}
 

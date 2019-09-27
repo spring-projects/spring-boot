@@ -35,13 +35,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class SpringBootWebSecurityConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	static class DefaultConfigurerAdapter extends WebSecurityConfigurerAdapter {
 

@@ -24,8 +24,8 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,20 +44,20 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
+class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
 	@Mock
 	private RepositorySystem repositorySystem;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void noLocalRepositoryWhenNoGrapeRoot() {
+	void noLocalRepositoryWhenNoGrapeRoot() {
 		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class)))
 				.willAnswer((invocation) -> {
 					LocalRepository localRepository = invocation.getArgument(1);
@@ -70,7 +70,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	}
 
 	@Test
-	public void grapeRootConfiguresLocalRepositoryLocation() {
+	void grapeRootConfiguresLocalRepositoryLocation() {
 		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class)))
 				.willAnswer(new LocalRepositoryManagerAnswer());
 

@@ -41,8 +41,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * {@link TomcatServletWebServerFactory} (unless you have defined your own
  * {@link ServletWebServerFactory} bean).
  * <p>
- * When using {@link SpringBootApplication}, the auto-configuration of the context is
- * automatically enabled and adding this annotation has therefore no additional effect.
+ * When using {@link SpringBootApplication @SpringBootApplication}, the auto-configuration
+ * of the context is automatically enabled and adding this annotation has therefore no
+ * additional effect.
  * <p>
  * Auto-configuration tries to be as intelligent as possible and will back-away as you
  * define more of your own configuration. You can always manually {@link #exclude()} any
@@ -58,10 +59,11 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * not using {@code @SpringBootApplication}) in a root package so that all sub-packages
  * and classes can be searched.
  * <p>
- * Auto-configuration classes are regular Spring {@link Configuration} beans. They are
- * located using the {@link SpringFactoriesLoader} mechanism (keyed against this class).
- * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
- * often using {@link ConditionalOnClass @ConditionalOnClass} and
+ * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
+ * beans. They are located using the {@link SpringFactoriesLoader} mechanism (keyed
+ * against this class). Generally auto-configuration beans are
+ * {@link Conditional @Conditional} beans (most often using
+ * {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *
  * @author Phillip Webb

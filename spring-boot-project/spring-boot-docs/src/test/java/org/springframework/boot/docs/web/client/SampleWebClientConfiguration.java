@@ -29,7 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * A sample {@link SpringBootConfiguration} with an example controller.
+ * A sample {@link SpringBootConfiguration @ConfigurationProperties} with an example
+ * controller.
  *
  * @author Stephane Nicoll
  */
@@ -42,7 +43,7 @@ class SampleWebClientConfiguration {
 	private static class ExampleController {
 
 		@RequestMapping("/example")
-		public ResponseEntity<String> example() {
+		ResponseEntity<String> example() {
 			return ResponseEntity.ok().location(URI.create("https://other.example.com/example")).body("test");
 		}
 

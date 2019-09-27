@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Dave Syer
  */
-public class FileEncodingApplicationListenerTests {
+class FileEncodingApplicationListenerTests {
 
 	private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
 
@@ -43,7 +43,7 @@ public class FileEncodingApplicationListenerTests {
 			new SpringApplication(), new String[0], this.environment);
 
 	@Test
-	public void testIllegalState() {
+	void testIllegalState() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding=FOO");
 		ConfigurationPropertySources.attach(this.environment);
@@ -51,12 +51,12 @@ public class FileEncodingApplicationListenerTests {
 	}
 
 	@Test
-	public void testSunnyDayNothingMandated() {
+	void testSunnyDayNothingMandated() {
 		this.initializer.onApplicationEvent(this.event);
 	}
 
 	@Test
-	public void testSunnyDayMandated() {
+	void testSunnyDayMandated() {
 		assertThat(System.getProperty("file.encoding")).isNotNull();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));

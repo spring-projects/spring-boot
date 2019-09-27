@@ -49,7 +49,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Toshiaki Maki
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })
 @ConditionalOnProperty(prefix = "spring.servlet.multipart", name = "enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = Type.SERVLET)

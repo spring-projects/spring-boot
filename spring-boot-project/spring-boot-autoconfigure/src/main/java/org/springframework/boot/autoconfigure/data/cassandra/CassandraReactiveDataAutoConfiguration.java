@@ -43,7 +43,7 @@ import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessio
  * @author Mark Paluch
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(Session.class)
 @AutoConfigureAfter(CassandraDataAutoConfiguration.class)

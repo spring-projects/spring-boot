@@ -18,7 +18,7 @@ package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,13 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientMockTests {
+class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientMockTests {
 
 	private final ServiceCapabilitiesReportGenerator command = new ServiceCapabilitiesReportGenerator(
 			new InitializrService(this.http));
 
 	@Test
-	public void listMetadataFromServer() throws IOException {
+	void listMetadataFromServer() throws IOException {
 		mockSuccessfulMetadataTextGet();
 		String expected = new String(readClasspathResource("metadata/service-metadata-2.1.0.txt"));
 		String content = this.command.generate("http://localhost");
@@ -41,13 +41,13 @@ public class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientM
 	}
 
 	@Test
-	public void listMetadata() throws IOException {
+	void listMetadata() throws IOException {
 		mockSuccessfulMetadataGet(true);
 		doTestGenerateCapabilitiesFromJson();
 	}
 
 	@Test
-	public void listMetadataV2() throws IOException {
+	void listMetadataV2() throws IOException {
 		mockSuccessfulMetadataGetV2(true);
 		doTestGenerateCapabilitiesFromJson();
 	}

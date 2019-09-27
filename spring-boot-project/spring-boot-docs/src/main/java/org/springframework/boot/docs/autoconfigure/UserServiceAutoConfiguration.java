@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(UserService.class)
 @EnableConfigurationProperties(UserProperties.class)
 public class UserServiceAutoConfiguration {
@@ -41,7 +41,7 @@ public class UserServiceAutoConfiguration {
 	}
 
 	@ConfigurationProperties("user")
-	static class UserProperties {
+	public static class UserProperties {
 
 		private String name = "test";
 

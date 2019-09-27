@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.reactive;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -32,30 +32,30 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ReactiveSecurityAutoConfigurationTests {
+class ReactiveSecurityAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 
 	@Test
-	public void backsOffWhenWebFilterChainProxyBeanPresent() {
+	void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
 	}
 
 	@Test
-	public void enablesWebFluxSecurity() {
+	void enablesWebFluxSecurity() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
 						ReactiveUserDetailsServiceAutoConfiguration.class))
 				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WebFilterChainProxyConfiguration {
 
 		@Bean
-		public WebFilterChainProxy webFilterChainProxy() {
+		WebFilterChainProxy webFilterChainProxy() {
 			return mock(WebFilterChainProxy.class);
 		}
 

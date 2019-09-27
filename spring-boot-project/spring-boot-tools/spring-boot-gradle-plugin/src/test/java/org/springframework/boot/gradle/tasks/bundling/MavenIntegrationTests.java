@@ -22,11 +22,10 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,13 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class MavenIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
 		BuildResult result = this.gradleBuild.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -51,7 +49,7 @@ public class MavenIntegrationTests {
 				.artifactId(this.gradleBuild.getProjectDir().getName()).version("1.0").noPackaging().noDependencies());
 	}
 
-	@Test
+	@TestTemplate
 	public void bootWarCanBeUploaded() throws IOException {
 		BuildResult result = this.gradleBuild.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

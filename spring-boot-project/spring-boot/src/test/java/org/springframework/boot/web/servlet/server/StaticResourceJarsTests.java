@@ -25,9 +25,8 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,41 +36,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rupert Madden-Abbott
  * @author Andy Wilkinson
  */
-public class StaticResourceJarsTests {
+class StaticResourceJarsTests {
 
-	@Rule
-	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void includeJarWithStaticResources() throws Exception {
+	void includeJarWithStaticResources() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
-	public void includeJarWithStaticResourcesWithUrlEncodedSpaces() throws Exception {
+	void includeJarWithStaticResourcesWithUrlEncodedSpaces() throws Exception {
 		File jarFile = createResourcesJar("test resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
-	public void includeJarWithStaticResourcesWithPlusInItsPath() throws Exception {
+	void includeJarWithStaticResourcesWithPlusInItsPath() throws Exception {
 		File jarFile = createResourcesJar("test + resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
-	public void excludeJarWithoutStaticResources() throws Exception {
+	void excludeJarWithoutStaticResources() throws Exception {
 		File jarFile = createJar("dependency.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(0);
 	}
 
 	@Test
-	public void uncPathsAreTolerated() throws Exception {
+	void uncPathsAreTolerated() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL(),
 				new URL("file://unc.example.com/test.jar"));
@@ -96,7 +95,7 @@ public class StaticResourceJarsTests {
 	}
 
 	private File createJar(String name, Consumer<JarOutputStream> customizer) throws IOException {
-		File jarFile = this.temporaryFolder.newFile(name);
+		File jarFile = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
 		if (customizer != null) {
 			customizer.accept(jarOutputStream);

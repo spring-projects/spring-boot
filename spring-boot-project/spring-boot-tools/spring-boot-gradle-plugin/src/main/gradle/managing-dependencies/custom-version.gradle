@@ -8,7 +8,7 @@ dependencyManagement {
 	resolutionStrategy {
 		eachDependency {
 			if (it.requested.group == 'org.springframework.boot') {
-				it.useVersion '{version}'
+				it.useVersion 'TEST-SNAPSHOT'
 			}
 		}
 	}
@@ -19,7 +19,7 @@ ext['slf4j.version'] = '1.7.20'
 // end::custom-version[]
 
 repositories {
-	mavenLocal()
+	maven { url 'file:repository' }
 }
 
 task slf4jVersion {

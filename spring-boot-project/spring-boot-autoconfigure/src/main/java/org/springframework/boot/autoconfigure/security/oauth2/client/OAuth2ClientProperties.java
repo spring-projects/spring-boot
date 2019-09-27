@@ -162,16 +162,6 @@ public class OAuth2ClientProperties {
 			this.redirectUri = redirectUri;
 		}
 
-		@Deprecated
-		public String getRedirectUriTemplate() {
-			return getRedirectUri();
-		}
-
-		@Deprecated
-		public void setRedirectUriTemplate(String redirectUri) {
-			setRedirectUri(redirectUri);
-		}
-
 		public Set<String> getScope() {
 			return this.scope;
 		}
@@ -224,7 +214,8 @@ public class OAuth2ClientProperties {
 		private String jwkSetUri;
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
 

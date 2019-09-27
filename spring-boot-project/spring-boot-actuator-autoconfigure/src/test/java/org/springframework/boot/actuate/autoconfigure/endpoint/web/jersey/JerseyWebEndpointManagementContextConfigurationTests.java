@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey;
 import java.util.Collections;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
@@ -29,8 +29,6 @@ import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,20 +38,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Simons
  * @author Madhura Bhave
  */
-public class JerseyWebEndpointManagementContextConfigurationTests {
+class JerseyWebEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
 					JerseyWebEndpointManagementContextConfiguration.class))
-			.withUserConfiguration(WebEndpointsSupplierConfig.class);
+			.withBean(WebEndpointsSupplier.class, () -> Collections::emptyList);
 
 	@Test
-	public void resourceConfigCustomizerForEndpointsIsAutoConfigured() {
+	void resourceConfigCustomizerForEndpointsIsAutoConfigured() {
 		this.runner.run((context) -> assertThat(context).hasSingleBean(ResourceConfigCustomizer.class));
 	}
 
 	@Test
-	public void autoConfigurationIsConditionalOnServletWebApplication() {
+	void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 		contextRunner
@@ -61,19 +59,9 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationIsConditionalOnClassResourceConfig() {
+	void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.runner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
-	}
-
-	@Configuration
-	static class WebEndpointsSupplierConfig {
-
-		@Bean
-		public WebEndpointsSupplier webEndpointsSupplier() {
-			return () -> Collections.emptyList();
-		}
-
 	}
 
 }

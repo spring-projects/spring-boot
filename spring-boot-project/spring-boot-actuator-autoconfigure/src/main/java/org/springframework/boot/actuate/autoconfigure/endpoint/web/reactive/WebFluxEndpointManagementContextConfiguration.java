@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -40,17 +41,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
 
 /**
- * {@link ManagementContextConfiguration} for Reactive {@link Endpoint} concerns.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Reactive
+ * {@link Endpoint @Endpoint} concerns.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnBean(WebEndpointsSupplier.class)
@@ -61,15 +65,22 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
 			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties,
+			Environment environment) {
+		String basePath = webEndpointProperties.getBasePath();
+		EndpointMapping endpointMapping = new EndpointMapping(basePath);
 		Collection<ExposableWebEndpoint> endpoints = webEndpointsSupplier.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(endpoints);
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints, endpointMediaTypes,
-				corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
+				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
+				shouldRegisterLinksMapping(environment, basePath));
+	}
+
+	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
+		return StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 	}
 
 	@Bean

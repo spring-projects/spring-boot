@@ -47,9 +47,8 @@ class PropertyMapping {
 	 * Return the mapped {@link PropertySource} name.
 	 * @return the property source name (never {@code null})
 	 */
-	public String getPropertySourceName() {
+	String getPropertySourceName() {
 		return this.propertySourceName;
-
 	}
 
 	/**
@@ -57,9 +56,8 @@ class PropertyMapping {
 	 * {@link ConfigurationPropertyName}.
 	 * @return the configuration property source name (never {@code null})
 	 */
-	public ConfigurationPropertyName getConfigurationPropertyName() {
+	ConfigurationPropertyName getConfigurationPropertyName() {
 		return this.configurationPropertyName;
-
 	}
 
 	/**
@@ -68,7 +66,7 @@ class PropertyMapping {
 	 * @param name the name to check
 	 * @return if the mapping is applicable
 	 */
-	public boolean isApplicable(ConfigurationPropertyName name) {
+	boolean isApplicable(ConfigurationPropertyName name) {
 		return this.configurationPropertyName.equals(name);
 	}
 

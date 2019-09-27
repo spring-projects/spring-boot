@@ -39,7 +39,7 @@ class ProjectGenerationResponse {
 	 * Return the {@link ContentType} of this instance.
 	 * @return the content type
 	 */
-	public ContentType getContentType() {
+	ContentType getContentType() {
 		return this.contentType;
 	}
 
@@ -47,11 +47,11 @@ class ProjectGenerationResponse {
 	 * The generated project archive or file.
 	 * @return the content
 	 */
-	public byte[] getContent() {
+	byte[] getContent() {
 		return this.content;
 	}
 
-	public void setContent(byte[] content) {
+	void setContent(byte[] content) {
 		this.content = content;
 	}
 
@@ -60,11 +60,11 @@ class ProjectGenerationResponse {
 	 * preferred value has been set.
 	 * @return the file name, or {@code null}
 	 */
-	public String getFileName() {
+	String getFileName() {
 		return this.fileName;
 	}
 
-	public void setFileName(String fileName) {
+	void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 

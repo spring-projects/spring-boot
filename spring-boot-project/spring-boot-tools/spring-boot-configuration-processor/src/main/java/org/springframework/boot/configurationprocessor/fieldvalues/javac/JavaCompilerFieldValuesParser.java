@@ -209,7 +209,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return null;
 		}
 
-		public Map<String, Object> getFieldValues() {
+		Map<String, Object> getFieldValues() {
 			return this.fieldValues;
 		}
 

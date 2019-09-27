@@ -148,8 +148,7 @@ public class EntityScanPackages {
 					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			String[] basePackages = attributes.getStringArray("basePackages");
 			Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-			Set<String> packagesToScan = new LinkedHashSet<>();
-			packagesToScan.addAll(Arrays.asList(basePackages));
+			Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
 			for (Class<?> basePackageClass : basePackageClasses) {
 				packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 			}

@@ -28,7 +28,7 @@ public class SampleApplication {
 		if (!argument.startsWith("--spring.profiles.active=")) {
 			throw new IllegalArgumentException("Invalid argument " + argument);
 		}
-		int index = args[0].indexOf("=");
+		int index = args[0].indexOf('=');
 		String profile = argument.substring(index + 1);
 		System.out.println("I haz been run with profile(s) '" + profile + "'");
 	}

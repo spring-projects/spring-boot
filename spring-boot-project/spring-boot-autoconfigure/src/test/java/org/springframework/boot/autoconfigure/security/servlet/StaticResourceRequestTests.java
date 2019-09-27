@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -37,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StaticResourceRequestTests {
+class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
-	public void atCommonLocationsShouldMatchCommonLocations() {
+	void atCommonLocationsShouldMatchCommonLocations() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -53,7 +53,7 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atCommonLocationsWhenManagementContextShouldNeverMatch() {
+	void atCommonLocationsWhenManagementContextShouldNeverMatch() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher, "management").doesNotMatch("/css/file.css");
 		assertMatcher(matcher, "management").doesNotMatch("/js/file.js");
@@ -63,34 +63,34 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+	void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
-	public void atLocationShouldMatchLocation() {
+	void atLocationShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void atLocationWhenHasServletPathShouldMatchLocation() {
+	void atLocationWhenHasServletPathShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher, null, "/foo").matches("/foo", "/css/file.css");
 		assertMatcher(matcher, null, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
-	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
+	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() {
+	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}
@@ -110,7 +110,7 @@ public class StaticResourceRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -121,11 +121,11 @@ public class StaticResourceRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String path) {
+		void matches(String path) {
 			matches(mockRequest(path));
 		}
 
-		public void matches(String servletPath, String path) {
+		void matches(String servletPath, String path) {
 			matches(mockRequest(servletPath, path));
 		}
 
@@ -133,11 +133,11 @@ public class StaticResourceRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String path) {
+		void doesNotMatch(String path) {
 			doesNotMatch(mockRequest(path));
 		}
 
-		public void doesNotMatch(String servletPath, String path) {
+		void doesNotMatch(String servletPath, String path) {
 			doesNotMatch(mockRequest(servletPath, path));
 		}
 

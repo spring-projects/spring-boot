@@ -18,27 +18,24 @@ package com.example;
 
 import org.eclipse.jetty.server.handler.ContextHandler;
 
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link WebServerFactoryCustomizer} that approves all aliases (Used for Windows CI on
+ * {@link JettyServerCustomizer} that approves all aliases (Used for Windows CI on
  * Concourse).
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class JettyServerCustomizerConfig {
 
 	@Bean
-	public WebServerFactoryCustomizer<JettyServletWebServerFactory> jettyServerCustomizer() {
-		return (factory) -> {
-			factory.addServerCustomizers((server) -> {
-				ContextHandler handler = (ContextHandler) server.getHandler();
-				handler.addAliasCheck(new ContextHandler.ApproveAliases());
-			});
+	public JettyServerCustomizer jettyServerCustomizer() {
+		return (server) -> {
+			ContextHandler handler = (ContextHandler) server.getHandler();
+			handler.addAliasCheck(new ContextHandler.ApproveAliases());
 		};
 	}
 

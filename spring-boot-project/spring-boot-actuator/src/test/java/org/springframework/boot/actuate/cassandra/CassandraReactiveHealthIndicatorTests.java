@@ -16,7 +16,7 @@
 package org.springframework.boot.actuate.cassandra;
 
 import com.datastax.driver.core.querybuilder.Select;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Artsiom Yudovin
  */
-public class CassandraReactiveHealthIndicatorTests {
+class CassandraReactiveHealthIndicatorTests {
 
 	@Test
-	public void testCassandraIsUp() {
+	void testCassandraIsUp() {
 		ReactiveCqlOperations reactiveCqlOperations = mock(ReactiveCqlOperations.class);
 		given(reactiveCqlOperations.queryForObject(any(Select.class), eq(String.class))).willReturn(Mono.just("6.0.0"));
 		ReactiveCassandraOperations reactiveCassandraOperations = mock(ReactiveCassandraOperations.class);
@@ -57,7 +57,7 @@ public class CassandraReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void testCassandraIsDown() {
+	void testCassandraIsDown() {
 		ReactiveCassandraOperations reactiveCassandraOperations = mock(ReactiveCassandraOperations.class);
 		given(reactiveCassandraOperations.getReactiveCqlOperations())
 				.willThrow(new CassandraInternalException("Connection failed"));

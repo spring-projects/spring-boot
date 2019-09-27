@@ -20,7 +20,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vladimir Tsanev
  * @author Phillip Webb
  */
-public class ExtendedWhitespaceThrowablePatternConverterTests {
+class ExtendedWhitespaceThrowablePatternConverterTests {
 
 	private final ThrowablePatternConverter converter = ExtendedWhitespaceThrowablePatternConverter
 			.newInstance(new DefaultConfiguration(), new String[] {});
 
 	@Test
-	public void noStackTrace() {
+	void noStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
@@ -44,7 +44,7 @@ public class ExtendedWhitespaceThrowablePatternConverterTests {
 	}
 
 	@Test
-	public void withStackTrace() {
+	void withStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);

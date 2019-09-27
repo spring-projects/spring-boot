@@ -19,10 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import org.springframework.data.repository.CrudRepository;
 
 /**
- * Example repository used with {@link DataRedisTest} tests.
+ * Example repository used with {@link DataRedisTest @DataRedisTest} tests.
  *
  * @author Jayaram Pradhan
  */
-public interface ExampleRepository extends CrudRepository<PersonHash, String> {
+interface ExampleRepository extends CrudRepository<PersonHash, String> {
 
 }

@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class InitializrServiceMetadataTests {
+class InitializrServiceMetadataTests {
 
 	@Test
-	public void parseDefaults() throws Exception {
+	void parseDefaults() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		assertThat(metadata.getDefaults().get("bootVersion")).isEqualTo("1.1.8.RELEASE");
 		assertThat(metadata.getDefaults().get("javaVersion")).isEqualTo("1.7");
@@ -55,7 +55,7 @@ public class InitializrServiceMetadataTests {
 	}
 
 	@Test
-	public void parseDependencies() throws Exception {
+	void parseDependencies() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		assertThat(metadata.getDependencies()).hasSize(5);
 
@@ -69,7 +69,7 @@ public class InitializrServiceMetadataTests {
 	}
 
 	@Test
-	public void parseTypes() throws Exception {
+	void parseTypes() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		ProjectType projectType = metadata.getProjectTypes().get("maven-project");
 		assertThat(projectType).isNotNull();

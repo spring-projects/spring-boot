@@ -44,13 +44,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class WebSocketMessagingAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {

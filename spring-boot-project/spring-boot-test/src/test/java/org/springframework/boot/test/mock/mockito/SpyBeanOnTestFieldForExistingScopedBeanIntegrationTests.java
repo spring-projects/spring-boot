@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = SpyBeanOnTestFieldForExistingScopedBeanConfig.class)
 public class SpyBeanOnTestFieldForExistingScopedBeanIntegrationTests {
 
@@ -54,12 +54,12 @@ public class SpyBeanOnTestFieldForExistingScopedBeanIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
 		verify(this.exampleService).greeting();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ ExampleServiceCaller.class })
 	static class SpyBeanOnTestFieldForExistingScopedBeanConfig {
 

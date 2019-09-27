@@ -19,14 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.jdbc;
 import org.springframework.data.repository.CrudRepository;
 
 /**
- * Example repository used with {@link DataJdbcTest} tests.
+ * Example repository used with {@link DataJdbcTest @DataJdbcTest} tests.
  *
  * @author Andy Wilkinson
- * @author Dave Syer
- * @since 1.2.1
- * @deprecated since 2.0.6 since security prerequisites are not supported in Spring Boot 2
  */
-@Deprecated
-public interface ExampleRepository extends CrudRepository<ExampleEntity, Long> {
+interface ExampleRepository extends CrudRepository<ExampleEntity, Long> {
 
 }

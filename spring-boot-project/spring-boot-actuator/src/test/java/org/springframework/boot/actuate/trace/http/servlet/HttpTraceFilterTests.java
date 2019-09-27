@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace.Session;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class HttpTraceFilterTests {
+class HttpTraceFilterTests {
 
 	private final InMemoryHttpTraceRepository repository = new InMemoryHttpTraceRepository();
 
@@ -61,13 +61,13 @@ public class HttpTraceFilterTests {
 	private final HttpTraceFilter filter = new HttpTraceFilter(this.repository, this.tracer);
 
 	@Test
-	public void filterTracesExchange() throws ServletException, IOException {
+	void filterTracesExchange() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
-	public void filterCapturesSessionId() throws ServletException, IOException {
+	void filterCapturesSessionId() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain(new HttpServlet() {
 
@@ -85,7 +85,7 @@ public class HttpTraceFilterTests {
 	}
 
 	@Test
-	public void filterCapturesPrincipal() throws ServletException, IOException {
+	void filterCapturesPrincipal() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
@@ -99,7 +99,7 @@ public class HttpTraceFilterTests {
 	}
 
 	@Test
-	public void statusIsAssumedToBe500WhenChainFails() throws ServletException, IOException {
+	void statusIsAssumedToBe500WhenChainFails() throws ServletException, IOException {
 		assertThatIOException().isThrownBy(() -> this.filter.doFilter(new MockHttpServletRequest(),
 				new MockHttpServletResponse(), new MockFilterChain(new HttpServlet() {
 
@@ -116,7 +116,7 @@ public class HttpTraceFilterTests {
 	}
 
 	@Test
-	public void filterRejectsInvalidRequests() throws ServletException, IOException {
+	void filterRejectsInvalidRequests() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName("<script>alert(document.domain)</script>");
 		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());

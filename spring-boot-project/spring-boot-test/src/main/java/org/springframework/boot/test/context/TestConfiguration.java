@@ -39,7 +39,7 @@ import org.springframework.core.annotation.AliasFor;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @TestComponent
 public @interface TestConfiguration {
 

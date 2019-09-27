@@ -18,7 +18,7 @@ package org.springframework.boot.cli.command.run;
 
 import java.util.logging.Level;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SpringApplicationRunnerTests {
+class SpringApplicationRunnerTests {
 
 	@Test
-	public void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
+	void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
 		SpringApplicationRunnerConfiguration configuration = mock(SpringApplicationRunnerConfiguration.class);
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);

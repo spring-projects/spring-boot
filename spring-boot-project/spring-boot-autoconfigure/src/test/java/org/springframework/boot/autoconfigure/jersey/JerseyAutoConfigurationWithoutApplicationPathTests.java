@@ -26,8 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +41,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,16 +49,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.application-path=/api")
 @DirtiesContext
-public class JerseyAutoConfigurationWithoutApplicationPathTests {
+class JerseyAutoConfigurationWithoutApplicationPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/api/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -72,16 +69,16 @@ public class JerseyAutoConfigurationWithoutApplicationPathTests {
 		@Value("${message:World}")
 		private String msg;
 
+		Application() {
+			register(Application.class);
+		}
+
 		@GET
 		public String message() {
 			return "Hello " + this.msg;
 		}
 
-		public Application() {
-			register(Application.class);
-		}
-
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

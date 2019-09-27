@@ -21,10 +21,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
@@ -38,10 +37,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,27 +60,24 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
-public class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumentationTests {
-
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@LocalServerPort
 	private int port;
 
 	private WebTestClient client;
 
-	@Before
-	public void webTestClient() {
+	@BeforeEach
+	void webTestClient(RestDocumentationContextProvider restDocumentation) {
 		this.client = WebTestClient.bindToServer()
-				.filter(documentationConfiguration(this.restDocumentation).snippets().withDefaults())
+				.filter(documentationConfiguration(restDocumentation).snippets().withDefaults())
 				.baseUrl("http://localhost:" + this.port).build();
 	}
 
 	@Test
-	public void mappings() throws Exception {
+	void mappings() throws Exception {
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
 				requestMappingConditionField("").description("Details of the request mapping conditions.").optional(),
 				requestMappingConditionField(".consumes").description("Details of the consumes condition"),
@@ -104,23 +100,23 @@ public class MappingsEndpointReactiveDocumentationTests extends AbstractEndpoint
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
 				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
-						.description("Details of the method, if any, " + "that will handle requests to this mapping."),
+						.description("Details of the method, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className").type(JsonFieldType.STRING)
 						.description("Fully qualified name of the class of the method."),
 				fieldWithPath("*.[].details.handlerMethod.name").type(JsonFieldType.STRING)
 						.description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor").type(JsonFieldType.STRING)
-						.description("Descriptor of the method as specified in the Java " + "Language Specification."));
+						.description("Descriptor of the method as specified in the Java Language Specification."));
 		List<FieldDescriptor> handlerFunction = Arrays.asList(
-				fieldWithPath("*.[].details.handlerFunction").optional().type(JsonFieldType.OBJECT).description(
-						"Details of the function, if any, that will handle " + "requests to this mapping."),
+				fieldWithPath("*.[].details.handlerFunction").optional().type(JsonFieldType.OBJECT)
+						.description("Details of the function, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerFunction.className").type(JsonFieldType.STRING)
 						.description("Fully qualified name of the class of the function."));
 		List<FieldDescriptor> dispatcherHandlerFields = new ArrayList<>(Arrays.asList(
-				fieldWithPath("*").description(
-						"Dispatcher handler mappings, if any, keyed by " + "dispatcher handler bean name."),
+				fieldWithPath("*")
+						.description("Dispatcher handler mappings, if any, keyed by dispatcher handler bean name."),
 				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
-						.description("Additional implementation-specific " + "details about the mapping. Optional."),
+						.description("Additional implementation-specific details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
 				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
 		dispatcherHandlerFields.addAll(requestMappingConditions);
@@ -136,44 +132,44 @@ public class MappingsEndpointReactiveDocumentationTests extends AbstractEndpoint
 		return fieldWithPath("*.[].details.requestMappingConditions" + path);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
+		NettyReactiveWebServerFactory netty() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
+		DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
+		MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
 
 		@Bean
-		public RouterFunction<ServerResponse> exampleRouter() {
+		RouterFunction<ServerResponse> exampleRouter() {
 			return route(GET("/foo"), (request) -> ServerResponse.ok().build());
 		}
 
 		@Bean
-		public ExampleController exampleController() {
+		ExampleController exampleController() {
 			return new ExampleController();
 		}
 
 	}
 
 	@RestController
-	private static class ExampleController {
+	static class ExampleController {
 
 		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
 				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
-		public String example() {
+		String example() {
 			return "Hello World";
 		}
 

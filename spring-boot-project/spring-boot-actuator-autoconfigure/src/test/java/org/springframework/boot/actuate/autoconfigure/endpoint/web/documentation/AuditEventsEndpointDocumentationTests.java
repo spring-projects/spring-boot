@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
@@ -47,13 +47,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private AuditEventRepository repository;
 
 	@Test
-	public void allAuditEvents() throws Exception {
+	void allAuditEvents() throws Exception {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any()))
 				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
@@ -66,7 +66,7 @@ public class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocume
 	}
 
 	@Test
-	public void filteredAuditEvents() throws Exception {
+	void filteredAuditEvents() throws Exception {
 		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
 		given(this.repository.find("alice", now.toInstant(), "logout"))
@@ -75,22 +75,23 @@ public class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocume
 				.perform(get("/actuator/auditevents")
 						.param("principal", "alice").param("after", queryTimestamp).param("type", "logout"))
 				.andExpect(status().isOk())
-				.andDo(document("auditevents/filtered", requestParameters(
-						parameterWithName("after").description(
-								"Restricts the events to those that occurred " + "after the given time. Optional."),
-						parameterWithName("principal")
-								.description("Restricts the events to those with the given " + "principal. Optional."),
-						parameterWithName("type")
-								.description("Restricts the events to those with the given " + "type. Optional."))));
+				.andDo(document("auditevents/filtered",
+						requestParameters(
+								parameterWithName("after").description(
+										"Restricts the events to those that occurred after the given time. Optional."),
+								parameterWithName("principal").description(
+										"Restricts the events to those with the given principal. Optional."),
+								parameterWithName("type")
+										.description("Restricts the events to those with the given type. Optional."))));
 		verify(this.repository).find("alice", now.toInstant(), "logout");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
+		AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
 			return new AuditEventsEndpoint(repository);
 		}
 

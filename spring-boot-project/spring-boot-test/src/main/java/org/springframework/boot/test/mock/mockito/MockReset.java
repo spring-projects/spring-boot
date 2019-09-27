@@ -126,7 +126,7 @@ public enum MockReset {
 			this.reset = reset;
 		}
 
-		public MockReset getReset() {
+		MockReset getReset() {
 			return this.reset;
 		}
 

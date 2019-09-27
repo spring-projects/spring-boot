@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -36,18 +36,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class GraphiteMetricsExportAutoConfigurationTests {
+class GraphiteMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GraphiteMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(GraphiteMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresUseTagsAsPrefix() {
+	void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app").run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
@@ -58,13 +58,13 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresItsConfigAndMeterRegistry() {
+	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(GraphiteMeterRegistry.class).hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.graphite.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(GraphiteMeterRegistry.class)
@@ -72,21 +72,21 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
 						.hasSingleBean(GraphiteConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
 						.hasBean("customRegistry").hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();
@@ -95,22 +95,22 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public GraphiteConfig customConfig() {
+		GraphiteConfig customConfig() {
 			return (key) -> {
 				if ("Graphite.apiKey".equals(key)) {
 					return "12345";
@@ -121,12 +121,12 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public GraphiteMeterRegistry customRegistry(GraphiteConfig config, Clock clock) {
+		GraphiteMeterRegistry customRegistry(GraphiteConfig config, Clock clock) {
 			return new GraphiteMeterRegistry(config, clock);
 		}
 

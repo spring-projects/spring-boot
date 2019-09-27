@@ -22,8 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,22 +44,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class JerseyAutoConfigurationCustomApplicationTests {
+class JerseyAutoConfigurationCustomApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@ApplicationPath("/test")
-	public static class TestApplication extends Application {
+	static class TestApplication extends Application {
 
 	}
 
@@ -75,12 +72,12 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class TestConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		public class JerseyConfiguration {
 
 			@Bean

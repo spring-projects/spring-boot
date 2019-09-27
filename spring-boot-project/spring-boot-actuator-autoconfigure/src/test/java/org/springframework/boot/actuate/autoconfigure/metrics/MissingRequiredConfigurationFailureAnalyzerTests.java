@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,17 +27,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link MissingRequiredConfigurationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class MissingRequiredConfigurationFailureAnalyzerTests {
+class MissingRequiredConfigurationFailureAnalyzerTests {
 
 	@Test
-	public void analyzesMissingRequiredConfiguration() {
+	void analyzesMissingRequiredConfiguration() {
 		FailureAnalysis analysis = new MissingRequiredConfigurationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdConfiguration.class));
 		assertThat(analysis).isNotNull();
@@ -55,11 +55,11 @@ public class MissingRequiredConfigurationFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MissingAccountIdConfiguration {
 
 		@Bean
-		public NewRelicMeterRegistry meterRegistry() {
+		NewRelicMeterRegistry meterRegistry() {
 			return new NewRelicMeterRegistry((key) -> null, Clock.SYSTEM);
 		}
 

@@ -6,32 +6,20 @@ bomr:
       repository: spring-boot
       issue-labels:
         - 'type: dependency-upgrade'
-    policy: same-minor-version
+    policy: same-major-version
     prohibited:
-      - project: dom4j
+      - project: maven-invoker-plugin
         versions:
-          # Old versions that use yyyymmdd format
-          - '[20040101,)'
-      - project: glassfish-jaxb
+          # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
+          - '[3.2.0]'
+      - project: derby
         versions:
-          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
-          - '[2.3.2,2.4)'
-      - project: jetty
-        versions:
-          # Contains incompatiable class change
-          - '9.4.20.v20190813'
+          # 10.15 requires Java 9
+          - '[10.15,)'
       - project: netty
         versions:
           # https://github.com/reactor/reactor-netty/issues/844
           - '[4.1.40.Final,)'
-      - project: saaj-impl
-        versions:
-          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
-          - '[1.5.1,1.6)'
-      - project: selenium-htmlunit
-        versions:
-          # Requires a new minor of Selenium which contains breaking API changes
-          - '[2.33.1,2.34)'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for
@@ -42,7 +30,7 @@ bomr:
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
     repositories:
-      # Solr's Restlet dependencies
-      - 'https://maven.restlet.com'
       # Caffeine Simulator's dependencies
       - 'https://maven.imagej.net/content/repositories/public/'
+      # Spring Data GemFire's GemFire dependencies
+      - 'https://repo.spring.io/gemstone-release-pivotal-cache'

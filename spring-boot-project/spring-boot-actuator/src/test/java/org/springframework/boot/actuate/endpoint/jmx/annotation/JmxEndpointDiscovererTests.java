@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -56,15 +56,15 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class JmxEndpointDiscovererTests {
+class JmxEndpointDiscovererTests {
 
 	@Test
-	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
+	void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
 		load(EmptyConfiguration.class, (discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty());
 	}
 
 	@Test
-	public void getEndpointsShouldDiscoverStandardEndpoints() {
+	void getEndpointsShouldDiscoverStandardEndpoints() {
 		load(TestEndpoint.class, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
@@ -95,7 +95,7 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenHasFilteredEndpointShouldOnlyDiscoverJmxEndpoints() {
+	void getEndpointsWhenHasFilteredEndpointShouldOnlyDiscoverJmxEndpoints() {
 		load(MultipleEndpointsConfiguration.class, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("jmx"));
@@ -103,14 +103,14 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
+	void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
 		load(TestJmxEndpointExtension.class, (discoverer) -> assertThatIllegalStateException()
 				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
 						"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
 	}
 
 	@Test
-	public void getEndpointsWhenHasJmxExtensionShouldOverrideStandardEndpoint() {
+	void getEndpointsWhenHasJmxExtensionShouldOverrideStandardEndpoint() {
 		load(OverriddenOperationJmxEndpointConfiguration.class, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
@@ -119,7 +119,7 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenHasJmxExtensionWithNewOperationAddsExtraOperation() {
+	void getEndpointsWhenHasJmxExtensionWithNewOperationAddsExtraOperation() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
@@ -135,7 +135,7 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
+	void getEndpointsWhenHasCacheWithTtlShouldCacheReadOperationWithTtlValue() {
 		load(TestEndpoint.class, (id) -> 500L, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
@@ -149,7 +149,7 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsShouldCacheReadOperations() {
+	void getEndpointsShouldCacheReadOperations() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (id) -> 500L, (discoverer) -> {
 			Map<EndpointId, ExposableJmxEndpoint> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
@@ -167,35 +167,35 @@ public class JmxEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
+	void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> assertThatIllegalStateException()
 				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
 						"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
-	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
+	void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
 				(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test
-	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
+	void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpoint.class, (discoverer) -> assertThatIllegalStateException()
 				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
 						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
 	}
 
 	@Test
-	public void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
+	void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(AdditionalClashingOperationsConfiguration.class, (discoverer) -> assertThatIllegalStateException()
 				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
 						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
 	}
 
 	@Test
-	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
+	void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> assertThatIllegalStateException()
 				.isThrownBy(discoverer::getEndpoints).withMessageContaining(
 						"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
@@ -272,167 +272,167 @@ public class JmxEndpointDiscovererTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleEndpointsConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestJmxEndpoint testJmxEndpoint() {
+		TestJmxEndpoint testJmxEndpoint() {
 			return new TestJmxEndpoint();
 		}
 
 		@Bean
-		public NonJmxEndpoint nonJmxEndpoint() {
+		NonJmxEndpoint nonJmxEndpoint() {
 			return new NonJmxEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OverriddenOperationJmxEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestJmxEndpointExtension testJmxEndpointExtension() {
+		TestJmxEndpointExtension testJmxEndpointExtension() {
 			return new TestJmxEndpointExtension();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AdditionalOperationJmxEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public AdditionalOperationJmxEndpointExtension additionalOperationJmxEndpointExtension() {
+		AdditionalOperationJmxEndpointExtension additionalOperationJmxEndpointExtension() {
 			return new AdditionalOperationJmxEndpointExtension();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AdditionalClashingOperationsConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public ClashingOperationsJmxEndpointExtension clashingOperationsJmxEndpointExtension() {
+		ClashingOperationsJmxEndpointExtension clashingOperationsJmxEndpointExtension() {
 			return new ClashingOperationsJmxEndpointExtension();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClashingJmxEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestJmxEndpointExtension testExtensionOne() {
+		TestJmxEndpointExtension testExtensionOne() {
 			return new TestJmxEndpointExtension();
 		}
 
 		@Bean
-		public TestJmxEndpointExtension testExtensionTwo() {
+		TestJmxEndpointExtension testExtensionTwo() {
 			return new TestJmxEndpointExtension();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClashingStandardEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpointTwo() {
+		TestEndpoint testEndpointTwo() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestEndpoint testEndpointOne() {
+		TestEndpoint testEndpointOne() {
 			return new TestEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class InvalidJmxExtensionConfiguration {
 
 		@Bean
-		public NonJmxEndpoint nonJmxEndpoint() {
+		NonJmxEndpoint nonJmxEndpoint() {
 			return new NonJmxEndpoint();
 		}
 
 		@Bean
-		public NonJmxJmxEndpointExtension nonJmxJmxEndpointExtension() {
+		NonJmxJmxEndpointExtension nonJmxJmxEndpointExtension() {
 			return new NonJmxJmxEndpointExtension();
 		}
 
 	}
 
 	@Endpoint(id = "test")
-	private static class TestEndpoint {
+	static class TestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		public String getSomething(TimeUnit timeUnit) {
+		String getSomething(TimeUnit timeUnit) {
 			return null;
 		}
 
 		@WriteOperation
-		public void update(String foo, String bar) {
+		void update(String foo, String bar) {
 
 		}
 
 		@DeleteOperation
-		public void deleteSomething(TimeUnit timeUnit) {
+		void deleteSomething(TimeUnit timeUnit) {
 
 		}
 
 	}
 
 	@JmxEndpoint(id = "jmx")
-	private static class TestJmxEndpoint {
+	static class TestJmxEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 	}
 
 	@EndpointJmxExtension(endpoint = TestEndpoint.class)
-	private static class TestJmxEndpointExtension {
+	static class TestJmxEndpointExtension {
 
 		@ManagedOperation(description = "Get all the things")
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -440,7 +440,7 @@ public class JmxEndpointDiscovererTests {
 		@ManagedOperation(description = "Get something based on a timeUnit")
 		@ManagedOperationParameters({
 				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
-		public String getSomething(Long timeUnit) {
+		String getSomething(Long timeUnit) {
 			return null;
 		}
 
@@ -448,7 +448,7 @@ public class JmxEndpointDiscovererTests {
 		@ManagedOperation(description = "Update something based on bar")
 		@ManagedOperationParameters({ @ManagedOperationParameter(name = "foo", description = "Foo identifier"),
 				@ManagedOperationParameter(name = "bar", description = "Bar value") })
-		public void update(String foo, String bar) {
+		void update(String foo, String bar) {
 
 		}
 
@@ -456,18 +456,18 @@ public class JmxEndpointDiscovererTests {
 		@ManagedOperation(description = "Delete something based on a timeUnit")
 		@ManagedOperationParameters({
 				@ManagedOperationParameter(name = "unitMs", description = "Number of milliseconds") })
-		public void deleteSomething(Long timeUnit) {
+		void deleteSomething(Long timeUnit) {
 
 		}
 
 	}
 
 	@EndpointJmxExtension(endpoint = TestEndpoint.class)
-	private static class AdditionalOperationJmxEndpointExtension {
+	static class AdditionalOperationJmxEndpointExtension {
 
 		@ManagedOperation(description = "Get another thing")
 		@ReadOperation
-		public Object getAnother() {
+		Object getAnother() {
 			return null;
 		}
 
@@ -477,12 +477,12 @@ public class JmxEndpointDiscovererTests {
 	static class ClashingOperationsEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		public Object getAll(String param) {
+		Object getAll(String param) {
 			return null;
 		}
 
@@ -492,32 +492,32 @@ public class JmxEndpointDiscovererTests {
 	static class ClashingOperationsJmxEndpointExtension {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		public Object getAll(String param) {
+		Object getAll(String param) {
 			return null;
 		}
 
 	}
 
 	@WebEndpoint(id = "nonjmx")
-	private static class NonJmxEndpoint {
+	static class NonJmxEndpoint {
 
 		@ReadOperation
-		public Object getData() {
+		Object getData() {
 			return null;
 		}
 
 	}
 
 	@EndpointJmxExtension(endpoint = NonJmxEndpoint.class)
-	private static class NonJmxJmxEndpointExtension {
+	static class NonJmxJmxEndpointExtension {
 
 		@ReadOperation
-		public Object getSomething() {
+		Object getSomething() {
 			return null;
 		}
 

@@ -33,7 +33,7 @@ import org.springframework.core.Ordered;
  * @author Dave Syer
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 public class PropertyPlaceholderAutoConfiguration {
 

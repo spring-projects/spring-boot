@@ -28,8 +28,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ServletRegistrationBeanTests {
+class ServletRegistrationBeanTests {
 
 	private final MockServlet servlet = new MockServlet();
 
@@ -60,15 +60,15 @@ public class ServletRegistrationBeanTests {
 	@Mock
 	private FilterRegistration.Dynamic filterRegistration;
 
-	@Before
-	public void setupMocks() {
+	@BeforeEach
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(this.registration);
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.filterRegistration);
 	}
 
 	@Test
-	public void startupWithDefaults() throws Exception {
+	void startupWithDefaults() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
@@ -77,7 +77,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void startupWithDoubleRegistration() throws Exception {
+	void startupWithDoubleRegistration() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(null);
 		bean.onStartup(this.servletContext);
@@ -86,7 +86,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void startupWithSpecifiedValues() throws Exception {
+	void startupWithSpecifiedValues() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		bean.setName("test");
 		bean.setServlet(this.servlet);
@@ -108,7 +108,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void specificName() throws Exception {
+	void specificName() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		bean.setName("specificName");
 		bean.setServlet(this.servlet);
@@ -117,7 +117,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void deducedName() throws Exception {
+	void deducedName() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		bean.setServlet(this.servlet);
 		bean.onStartup(this.servletContext);
@@ -125,7 +125,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void disable() throws Exception {
+	void disable() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		bean.setServlet(this.servlet);
 		bean.setEnabled(false);
@@ -134,41 +134,41 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void setServletMustNotBeNull() throws Exception {
+	void setServletMustNotBeNull() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
 				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
-	public void createServletMustNotBeNull() {
+	void createServletMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
 				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
-	public void setMappingMustNotBeNull() {
+	void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
-	public void createMappingMustNotBeNull() {
+	void createMappingMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
-	public void addMappingMustNotBeNull() {
+	void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlMappings((String[]) null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
-	public void setMappingReplacesValue() throws Exception {
+	void setMappingReplacesValue() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
 		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/c", "/d")));
 		bean.onStartup(this.servletContext);
@@ -176,7 +176,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void modifyInitParameters() throws Exception {
+	void modifyInitParameters() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
 		bean.addInitParameter("a", "b");
 		bean.getInitParameters().put("a", "c");
@@ -185,7 +185,7 @@ public class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	public void withoutDefaultMappings() throws Exception {
+	void withoutDefaultMappings() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, false);
 		bean.onStartup(this.servletContext);
 		verify(this.registration, never()).addMapping(any(String[].class));

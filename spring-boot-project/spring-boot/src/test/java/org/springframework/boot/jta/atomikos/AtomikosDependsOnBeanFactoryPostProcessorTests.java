@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.extra.MessageDrivenContainer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -39,12 +39,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AtomikosDependsOnBeanFactoryPostProcessorTests {
+class AtomikosDependsOnBeanFactoryPostProcessorTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@Test
-	public void setsDependsOn() {
+	void setsDependsOn() {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertDependsOn("dataSource");
 		assertDependsOn("connectionFactory");
@@ -63,31 +63,31 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 		assertThat(dependsOn).isEqualTo(new HashSet<>(Arrays.asList(expected)));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
 		@Bean
-		public UserTransactionManager userTransactionManager() {
+		UserTransactionManager userTransactionManager() {
 			return mock(UserTransactionManager.class);
 		}
 
 		@Bean
-		public MessageDrivenContainer messageDrivenContainer() {
+		MessageDrivenContainer messageDrivenContainer() {
 			return mock(MessageDrivenContainer.class);
 		}
 
 		@Bean
-		public static AtomikosDependsOnBeanFactoryPostProcessor atomikosPostProcessor() {
+		static AtomikosDependsOnBeanFactoryPostProcessor atomikosPostProcessor() {
 			return new AtomikosDependsOnBeanFactoryPostProcessor();
 		}
 

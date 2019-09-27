@@ -24,11 +24,11 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class ErrorPageFilterConfiguration {
 
 	@Bean
-	public ErrorPageFilter errorPageFilter() {
+	ErrorPageFilter errorPageFilter() {
 		return new ErrorPageFilter();
 	}
 

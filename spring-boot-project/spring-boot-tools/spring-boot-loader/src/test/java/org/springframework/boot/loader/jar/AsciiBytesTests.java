@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -27,30 +27,30 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AsciiBytesTests {
+class AsciiBytesTests {
 
 	private static final char NO_SUFFIX = 0;
 
 	@Test
-	public void createFromBytes() {
+	void createFromBytes() {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66 });
 		assertThat(bytes.toString()).isEqualTo("AB");
 	}
 
 	@Test
-	public void createFromBytesWithOffset() {
+	void createFromBytesWithOffset() {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
 		assertThat(bytes.toString()).isEqualTo("BC");
 	}
 
 	@Test
-	public void createFromString() {
+	void createFromString() {
 		AsciiBytes bytes = new AsciiBytes("AB");
 		assertThat(bytes.toString()).isEqualTo("AB");
 	}
 
 	@Test
-	public void length() {
+	void length() {
 		AsciiBytes b1 = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes b2 = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
 		assertThat(b1.length()).isEqualTo(2);
@@ -58,7 +58,7 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void startWith() {
+	void startWith() {
 		AsciiBytes abc = new AsciiBytes(new byte[] { 65, 66, 67 });
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
@@ -70,7 +70,7 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void endsWith() {
+	void endsWith() {
 		AsciiBytes abc = new AsciiBytes(new byte[] { 65, 66, 67 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
@@ -82,7 +82,7 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void substringFromBeingIndex() {
+	void substringFromBeingIndex() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
 		assertThat(abcd.substring(0).toString()).isEqualTo("ABCD");
 		assertThat(abcd.substring(1).toString()).isEqualTo("BCD");
@@ -93,7 +93,7 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void substring() {
+	void substring() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
 		assertThat(abcd.substring(0, 4).toString()).isEqualTo("ABCD");
 		assertThat(abcd.substring(1, 3).toString()).isEqualTo("BC");
@@ -103,7 +103,7 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void hashCodeAndEquals() {
+	void hashCodeAndEquals() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 66, 67 });
 		AsciiBytes bc_substring = new AsciiBytes(new byte[] { 65, 66, 67, 68 }).substring(1, 3);
@@ -119,22 +119,22 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void hashCodeSameAsString() {
+	void hashCodeSameAsString() {
 		hashCodeSameAsString("abcABC123xyz!");
 	}
 
 	@Test
-	public void hashCodeSameAsStringWithSpecial() {
+	void hashCodeSameAsStringWithSpecial() {
 		hashCodeSameAsString("special/\u00EB.dat");
 	}
 
 	@Test
-	public void hashCodeSameAsStringWithCyrillicCharacters() {
+	void hashCodeSameAsStringWithCyrillicCharacters() {
 		hashCodeSameAsString("\u0432\u0435\u0441\u043D\u0430");
 	}
 
 	@Test
-	public void hashCodeSameAsStringWithEmoji() {
+	void hashCodeSameAsStringWithEmoji() {
 		hashCodeSameAsString("\ud83d\udca9");
 	}
 
@@ -143,22 +143,22 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void matchesSameAsString() {
+	void matchesSameAsString() {
 		matchesSameAsString("abcABC123xyz!");
 	}
 
 	@Test
-	public void matchesSameAsStringWithSpecial() {
+	void matchesSameAsStringWithSpecial() {
 		matchesSameAsString("special/\u00EB.dat");
 	}
 
 	@Test
-	public void matchesSameAsStringWithCyrillicCharacters() {
+	void matchesSameAsStringWithCyrillicCharacters() {
 		matchesSameAsString("\u0432\u0435\u0441\u043D\u0430");
 	}
 
 	@Test
-	public void matchesDifferentLengths() {
+	void matchesDifferentLengths() {
 		assertThat(new AsciiBytes("abc").matches("ab", NO_SUFFIX)).isFalse();
 		assertThat(new AsciiBytes("abc").matches("abcd", NO_SUFFIX)).isFalse();
 		assertThat(new AsciiBytes("abc").matches("abc", NO_SUFFIX)).isTrue();
@@ -168,23 +168,23 @@ public class AsciiBytesTests {
 	}
 
 	@Test
-	public void matchesSuffix() {
+	void matchesSuffix() {
 		assertThat(new AsciiBytes("ab").matches("a", 'b')).isTrue();
 	}
 
 	@Test
-	public void matchesSameAsStringWithEmoji() {
+	void matchesSameAsStringWithEmoji() {
 		matchesSameAsString("\ud83d\udca9");
 	}
 
 	@Test
-	public void hashCodeFromInstanceMatchesHashCodeFromString() {
+	void hashCodeFromInstanceMatchesHashCodeFromString() {
 		String name = "fonts/宋体/simsun.ttf";
 		assertThat(new AsciiBytes(name).hashCode()).isEqualTo(AsciiBytes.hashCode(name));
 	}
 
 	@Test
-	public void instanceCreatedFromCharSequenceMatchesSameCharSequence() {
+	void instanceCreatedFromCharSequenceMatchesSameCharSequence() {
 		String name = "fonts/宋体/simsun.ttf";
 		assertThat(new AsciiBytes(name).matches(name, NO_SUFFIX)).isTrue();
 	}

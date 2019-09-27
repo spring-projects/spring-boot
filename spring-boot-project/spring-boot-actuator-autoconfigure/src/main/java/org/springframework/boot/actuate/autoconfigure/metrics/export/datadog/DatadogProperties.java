@@ -20,7 +20,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Datadog metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Datadog
+ * metrics export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll

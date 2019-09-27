@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
@@ -34,12 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MockitoContextCustomizerTests {
+class MockitoContextCustomizerTests {
 
 	private static final Set<MockDefinition> NO_DEFINITIONS = Collections.emptySet();
 
 	@Test
-	public void hashCodeAndEquals() {
+	void hashCodeAndEquals() {
 		MockDefinition d1 = createTestMockDefinition(ExampleService.class);
 		MockDefinition d2 = createTestMockDefinition(ExampleServiceCaller.class);
 		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);

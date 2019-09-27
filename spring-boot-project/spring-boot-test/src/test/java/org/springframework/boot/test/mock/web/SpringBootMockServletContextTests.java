@@ -23,30 +23,29 @@ import java.net.URLDecoder;
 
 import javax.servlet.ServletContext;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.ServletContextAware;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for {@link SpringBootMockServletContext}.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @DirtiesContext
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration("src/test/webapp")
-public class SpringBootMockServletContextTests implements ServletContextAware {
+class SpringBootMockServletContextTests implements ServletContextAware {
 
 	private ServletContext servletContext;
 
@@ -56,7 +55,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 	}
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	void getResourceLocation() throws Exception {
 		testResource("/inwebapp", "src/test/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");
@@ -72,7 +71,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 
 	// gh-2654
 	@Test
-	public void getRootUrlExistsAndIsEmpty() throws Exception {
+	void getRootUrlExistsAndIsEmpty() throws Exception {
 		SpringBootMockServletContext context = new SpringBootMockServletContext("src/test/doesntexist") {
 			@Override
 			protected String getResourceLocation(String path) {
@@ -81,15 +80,15 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 			}
 		};
 		URL resource = context.getResource("/");
-		assertThat(resource).isNotEqualTo(nullValue());
+		assertThat(resource).isNotNull();
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
 		String[] contents = file.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
-		assertThat(contents).isNotEqualTo(nullValue());
-		assertThat(contents.length).isEqualTo(0);
+		assertThat(contents).isNotNull();
+		assertThat(contents).isEmpty();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 	}

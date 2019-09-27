@@ -44,7 +44,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
  * @author Mark Paluch
  * @author Ryon Day
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisConnectionFactory.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
@@ -52,37 +52,31 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
 @Conditional(CacheCondition.class)
 class RedisCacheConfiguration {
 
-	private final CacheProperties cacheProperties;
-
-	private final CacheManagerCustomizers customizerInvoker;
-
-	private final org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration;
-
-	RedisCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizerInvoker,
-			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration) {
-		this.cacheProperties = cacheProperties;
-		this.customizerInvoker = customizerInvoker;
-		this.redisCacheConfiguration = redisCacheConfiguration.getIfAvailable();
-	}
-
 	@Bean
-	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
-			ResourceLoader resourceLoader) {
-		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory)
-				.cacheDefaults(determineConfiguration(resourceLoader.getClassLoader()));
-		List<String> cacheNames = this.cacheProperties.getCacheNames();
+	RedisCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers cacheManagerCustomizers,
+			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
+			ObjectProvider<RedisCacheManagerBuilderCustomizer> redisCacheManagerBuilderCustomizers,
+			RedisConnectionFactory redisConnectionFactory, ResourceLoader resourceLoader) {
+		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(
+				determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
+		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
-		return this.customizerInvoker.customize(builder.build());
+		redisCacheManagerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return cacheManagerCustomizers.customize(builder.build());
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(
+			CacheProperties cacheProperties,
+			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ClassLoader classLoader) {
-		if (this.redisCacheConfiguration != null) {
-			return this.redisCacheConfiguration;
-		}
-		Redis redisProperties = this.cacheProperties.getRedis();
+		return redisCacheConfiguration.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
+	}
+
+	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
+			CacheProperties cacheProperties, ClassLoader classLoader) {
+		Redis redisProperties = cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
 		config = config.serializeValuesWith(

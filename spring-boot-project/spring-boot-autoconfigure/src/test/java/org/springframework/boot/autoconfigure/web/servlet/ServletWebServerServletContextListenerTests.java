@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -40,35 +40,35 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class ServletWebServerServletContextListenerTests {
+class ServletWebServerServletContextListenerTests {
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByJetty() {
+	void registeredServletContextListenerBeanIsCalledByJetty() {
 		registeredServletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByTomcat() {
+	void registeredServletContextListenerBeanIsCalledByTomcat() {
 		registeredServletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByUndertow() {
+	void registeredServletContextListenerBeanIsCalledByUndertow() {
 		registeredServletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByJetty() {
+	void servletContextListenerBeanIsCalledByJetty() {
 		servletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByTomcat() {
+	void servletContextListenerBeanIsCalledByTomcat() {
 		servletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByUndertow() {
+	void servletContextListenerBeanIsCalledByUndertow() {
 		servletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 
@@ -90,51 +90,51 @@ public class ServletWebServerServletContextListenerTests {
 		context.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TomcatConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JettyConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new JettyServletWebServerFactory(0);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class UndertowConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new UndertowServletWebServerFactory(0);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletContextListenerBeanConfiguration {
 
 		@Bean
-		public ServletContextListener servletContextListener() {
+		ServletContextListener servletContextListener() {
 			return mock(ServletContextListener.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServletListenerRegistrationBeanConfiguration {
 
 		@Bean
-		public ServletListenerRegistrationBean<ServletContextListener> registration() {
+		ServletListenerRegistrationBean<ServletContextListener> registration() {
 			return new ServletListenerRegistrationBean<>(mock(ServletContextListener.class));
 		}
 

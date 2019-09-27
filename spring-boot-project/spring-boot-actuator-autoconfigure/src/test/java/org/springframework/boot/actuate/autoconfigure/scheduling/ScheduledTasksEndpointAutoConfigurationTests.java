@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.scheduling;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,33 +33,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ScheduledTasksEndpointAutoConfigurationTests {
+class ScheduledTasksEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ScheduledTasksEndpointAutoConfiguration.class));
 
 	@Test
-	public void endpointIsAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class));
+	void endpointIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=scheduledtasks")
+				.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
-	public void endpointCanBeDisabled() {
+	void endpointNotAutoConfiguredWhenNotExposed() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
+	}
+
+	@Test
+	void endpointCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.endpoint.scheduledtasks.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
-	public void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
+	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
 		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class).run(
 				(context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class).hasBean("customEndpoint"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		public CustomEndpoint customEndpoint() {
+		CustomEndpoint customEndpoint() {
 			return new CustomEndpoint();
 		}
 

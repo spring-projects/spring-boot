@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
 
 /**
- * {@link Endpoint} to expose HTTP request mappings.
+ * {@link Endpoint @Endpoint} to expose HTTP request mappings.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

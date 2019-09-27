@@ -85,7 +85,7 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain, Principal principal,
 			WebSession session) {
 		ServerWebExchangeTraceableRequest request = new ServerWebExchangeTraceableRequest(exchange);
-		final HttpTrace trace = this.tracer.receivedRequest(request);
+		HttpTrace trace = this.tracer.receivedRequest(request);
 		exchange.getResponse().beforeCommit(() -> {
 			TraceableServerHttpResponse response = new TraceableServerHttpResponse(exchange.getResponse());
 			this.tracer.sendingResponse(trace, response, () -> principal, () -> getStartedSessionId(session));

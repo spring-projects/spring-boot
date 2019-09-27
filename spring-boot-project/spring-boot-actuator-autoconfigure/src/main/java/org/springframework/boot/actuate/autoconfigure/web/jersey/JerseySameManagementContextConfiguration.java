@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link ManagementContextConfiguration} for Jersey infrastructure when the management
- * context is the same as the main application context.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jersey
+ * infrastructure when the management context is the same as the main application context.
  *
  * @author Madhura Bhave
  * @since 2.1.0

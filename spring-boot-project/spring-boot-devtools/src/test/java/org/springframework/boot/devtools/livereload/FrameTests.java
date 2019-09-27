@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -31,36 +31,36 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class FrameTests {
+class FrameTests {
 
 	@Test
-	public void payloadMustNotBeNull() {
+	void payloadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((String) null))
 				.withMessageContaining("Payload must not be null");
 	}
 
 	@Test
-	public void typeMustNotBeNull() {
+	void typeMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((Frame.Type) null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	public void textPayload() {
+	void textPayload() {
 		Frame frame = new Frame("abc");
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
 		assertThat(frame.getPayload()).isEqualTo("abc".getBytes());
 	}
 
 	@Test
-	public void typedPayload() {
+	void typedPayload() {
 		Frame frame = new Frame(Frame.Type.CLOSE);
 		assertThat(frame.getType()).isEqualTo(Frame.Type.CLOSE);
 		assertThat(frame.getPayload()).isEqualTo(new byte[] {});
 	}
 
 	@Test
-	public void writeSmallPayload() throws Exception {
+	void writeSmallPayload() throws Exception {
 		String payload = createString(1);
 		Frame frame = new Frame(payload);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -69,13 +69,13 @@ public class FrameTests {
 	}
 
 	@Test
-	public void writeLargePayload() throws Exception {
+	void writeLargePayload() throws Exception {
 		String payload = createString(126);
 		Frame frame = new Frame(payload);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		frame.write(bos);
 		byte[] bytes = bos.toByteArray();
-		assertThat(bytes.length).isEqualTo(130);
+		assertThat(bytes).hasSize(130);
 		assertThat(bytes[0]).isEqualTo((byte) 0x81);
 		assertThat(bytes[1]).isEqualTo((byte) 0x7E);
 		assertThat(bytes[2]).isEqualTo((byte) 0x00);
@@ -85,21 +85,21 @@ public class FrameTests {
 	}
 
 	@Test
-	public void readFragmentedNotSupported() throws Exception {
+	void readFragmentedNotSupported() throws Exception {
 		byte[] bytes = new byte[] { 0x0F };
 		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Fragmented frames are not supported");
 	}
 
 	@Test
-	public void readLargeFramesNotSupported() throws Exception {
+	void readLargeFramesNotSupported() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
 		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Large frames are not supported");
 	}
 
 	@Test
-	public void readSmallTextFrame() throws Exception {
+	void readSmallTextFrame() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x02, 0x41, 0x41 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
@@ -107,7 +107,7 @@ public class FrameTests {
 	}
 
 	@Test
-	public void readMaskedTextFrame() throws Exception {
+	void readMaskedTextFrame() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F, 0x4E, 0x4E };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
@@ -115,7 +115,7 @@ public class FrameTests {
 	}
 
 	@Test
-	public void readLargeTextFrame() throws Exception {
+	void readLargeTextFrame() throws Exception {
 		byte[] bytes = new byte[134];
 		Arrays.fill(bytes, (byte) 0x4E);
 		bytes[0] = (byte) 0x81;
@@ -132,35 +132,35 @@ public class FrameTests {
 	}
 
 	@Test
-	public void readContinuation() throws Exception {
+	void readContinuation() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.CONTINUATION);
 	}
 
 	@Test
-	public void readBinary() throws Exception {
+	void readBinary() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x82, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.BINARY);
 	}
 
 	@Test
-	public void readClose() throws Exception {
+	void readClose() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x88, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.CLOSE);
 	}
 
 	@Test
-	public void readPing() throws Exception {
+	void readPing() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x89, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.PING);
 	}
 
 	@Test
-	public void readPong() throws Exception {
+	void readPong() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x8A, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.PONG);

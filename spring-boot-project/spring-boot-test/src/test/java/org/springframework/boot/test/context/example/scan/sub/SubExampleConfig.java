@@ -17,10 +17,9 @@
 package org.springframework.boot.test.context.example.scan.sub;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.AnnotatedClassFinderTests;
 
 /**
- * Example config used in {@link AnnotatedClassFinderTests}. Should not be found since
+ * Example config used in {@code AnnotatedClassFinderTests}. Should not be found since
  * scanner should only search upwards.
  *
  * @author Phillip Webb

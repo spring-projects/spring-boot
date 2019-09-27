@@ -44,7 +44,7 @@ final class SqlDialectLookup {
 	 * @param dataSource the source {@link DataSource}
 	 * @return the most suitable {@link SQLDialect}
 	 */
-	public static SQLDialect getDialect(DataSource dataSource) {
+	static SQLDialect getDialect(DataSource dataSource) {
 		if (dataSource == null) {
 			return SQLDialect.DEFAULT;
 		}

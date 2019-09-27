@@ -21,7 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
- * Example entity used with {@link DataJpaTest} tests.
+ * Example entity used with {@link DataJpaTest @DataJpaTest} tests.
  *
  * @author Phillip Webb
  */

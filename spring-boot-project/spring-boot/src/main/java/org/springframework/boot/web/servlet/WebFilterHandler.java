@@ -30,7 +30,7 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.util.StringUtils;
 
 /**
- * Handler for {@link WebFilter}-annotated classes.
+ * Handler for {@link WebFilter @WebFilter}-annotated classes.
  *
  * @author Andy Wilkinson
  */

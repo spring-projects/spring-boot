@@ -1,15 +1,13 @@
 [[using-boot]]
 = Using Spring Boot
+include::attributes.adoc[]
 
-[partintro]
---
 This section goes into more detail about how you should use Spring Boot.
 It covers topics such as build systems, auto-configuration, and how to run your applications.
 We also cover some Spring Boot best practices.
 Although there is nothing particularly special about Spring Boot (it is just another library that you can consume), there are a few recommendations that, when followed, make your development process a little easier.
 
 If you are starting out with Spring Boot, you should probably read the _<<getting-started.adoc#getting-started, Getting Started>>_ guide before diving into this section.
---
 
 
 
@@ -260,17 +258,17 @@ For example, a third-party starter project called `thirdpartyproject` would typi
 The following application starters are provided by Spring Boot under the `org.springframework.boot` group:
 
 .Spring Boot application starters
-include::../../../target/generated-resources/application-starters.adoc[]
+include::{generated-resources-root}/application-starters.adoc[]
 
 In addition to the application starters, the following starters can be used to add _<<production-ready-features.adoc#production-ready, production ready>>_ features:
 
 .Spring Boot production starters
-include::../../../target/generated-resources/production-starters.adoc[]
+include::{generated-resources-root}/production-starters.adoc[]
 
 Finally, Spring Boot also includes the following starters that can be used if you want to exclude or swap specific technical facets:
 
 .Spring Boot technical starters
-include::../../../target/generated-resources/technical-starters.adoc[]
+include::{generated-resources-root}/technical-starters.adoc[]
 
 TIP: For a list of additional community contributed starters, see the {spring-boot-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
 
@@ -287,7 +285,7 @@ However, there are some best practices that help.
 === Using the "`default`" Package
 When a class does not include a `package` declaration, it is considered to be in the "`default package`".
 The use of the "`default package`" is generally discouraged and should be avoided.
-It can cause particular problems for Spring Boot applications that use the `@ComponentScan`, `@EntityScan`, or `@SpringBootApplication` annotations, since every class from every jar is read.
+It can cause particular problems for Spring Boot applications that use the `@ComponentScan`, `@ConfigurationPropertiesScan`, `@EntityScan`, or `@SpringBootApplication` annotations, since every class from every jar is read.
 
 TIP: We recommend that you follow Java's recommended package naming conventions and use a reversed domain name (for example, `com.example.project`).
 
@@ -300,7 +298,7 @@ The <<using-boot-using-springbootapplication-annotation, `@SpringBootApplication
 For example, if you are writing a JPA application, the package of the `@SpringBootApplication` annotated class is used to search for `@Entity` items.
 Using a root package also allows component scan to apply only on your project.
 
-TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behavior so you can also use that instead.
+TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` `@ComponentScan`, and `@ConfigurationPropertiesScan` annotations that it imports defines that behaviour so you can also use those instead.
 
 The following listing shows a typical layout:
 
@@ -405,7 +403,7 @@ If you find that specific auto-configuration classes that you do not want are be
 	import org.springframework.boot.autoconfigure.jdbc.*;
 	import org.springframework.context.annotation.*;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 	public class MyConfiguration {
 	}
@@ -482,9 +480,8 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 
 * `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's auto-configuration mechanism>>
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
+* `@ConfigurationPropertiesScan`: enable `@ConfigurationProperties` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional configuration classes
-
-The `@SpringBootApplication` annotation is equivalent to using `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan` with their default attributes, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -493,7 +490,7 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan
 	public class Application {
 
 		public static void main(String[] args) {
@@ -508,7 +505,7 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 [NOTE]
 ====
 None of these features are mandatory and you may choose to replace this single annotation by any of the features that it enables.
-For instance, you may not want to use component scan in your application:
+For instance, you may not want to use component scan or configuration properties scan in your application:
 
 [source,java,indent=0]
 ----
@@ -519,7 +516,7 @@ For instance, you may not want to use component scan in your application:
 	import org.springframework.context.annotation.Configuration;
 	import org.springframework.context.annotation.Import;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@Import({ MyConfig.class, MyAnotherConfig.class })
 	public class Application {
@@ -531,7 +528,7 @@ For instance, you may not want to use component scan in your application:
 	}
 ----
 
-In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
+In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
 ====
 
 
@@ -670,7 +667,7 @@ NOTE: Developer tools are automatically disabled when running a fully packaged a
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
 If that does not apply to you (i.e. if you run your application from a container), consider excluding devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
 
-TIP: Flagging the dependency as optional in Maven or using a custom`developmentOnly` configuration in Gradle (as shown above) is a best practice that prevents devtools from being transitively applied to other modules that use your project.
+TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly` configuration in Gradle (as shown above) is a best practice that prevents devtools from being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default.
 If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the `excludeDevtools` build property to include it.
@@ -717,7 +714,7 @@ In IntelliJ IDEA, building the project (`Build +->+ Build Project`) has the same
 ****
 
 NOTE: As long as forking is enabled, you can also start your application by using the supported build plugins (Maven and Gradle), since DevTools needs an isolated application classloader to operate properly.
-By default, Gradle and Maven do that when they detect DevTools on the classpath.
+By default, the Gradle and Maven plugins fork the application process.
 
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See the LiveReload section>> for details.
@@ -894,17 +891,25 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 
 [[using-boot-devtools-globalsettings]]
 === Global Settings
-You can configure global devtools settings by adding a file named `.spring-boot-devtools.properties` to your `$HOME` folder (note that the filename starts with "`.`").
-Any properties added to this file apply to _all_ Spring Boot applications on your machine that use devtools.
+You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder:
+
+. `spring-boot-devtools.properties`
+. `spring-boot-devtools.yaml`
+. `spring-boot-devtools.yml`
+
+Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following property:
 
-.~/.spring-boot-devtools.properties
+.~/config/spring-boot/spring-boot-devtools.properties
 [source,properties,indent=0]
 ----
 	spring.devtools.reload.trigger-file=.reloadtrigger
 ----
 
-NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
+NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` folder is searched for the presence of a `.spring-boot-devtools.properties` file.
+This allows you to share the devtools global configuration with applications that are on an older version of Spring Boot that does not support the `$HOME/.config/spring-boot` location.
+
+NOTE: Profiles activated in the above files will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
 
 
 
@@ -1019,38 +1024,6 @@ If you observe such problems constantly, try increasing the `spring.devtools.res
 ----
 
 The monitored classpath folders are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.
-
-
-
-[[security-configuration-for-devtools-remote]]
-==== Security Configuration for Devtools Remote
-If you have Spring Security on the classpath, you may observe HTTP error 401 or 403 in the logs of the `RemoteSpringApplication`:
-
-[indent=0,subs="attributes"]
-----
-	Exception in thread "File Watcher" java.lang.IllegalStateException: Unexpected 401 UNAUTHORIZED response uploading class files
-----
-
-The URL for class uploading should be exempted both from the web security and from the csrf filter.
-The following example shows how anonymous access to the remote devtools endpoint can be configured:
-
-[source,java,indent=0]
-----
-@Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.requestMatchers("/.~~spring-boot!~/restart").anyRequest().anonymous()
-			.and().csrf().disable();
-	}
-
-}
-----
-
-NOTE: The above configuration will only affect the remote devtools endpoint.
-Spring Boot's default security auto-configuration will still apply to the rest of the application.
-If the rest of the application requires custom security, it needs to be configured separately.
 
 
 

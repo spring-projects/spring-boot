@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.restart;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -29,30 +29,30 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class DefaultRestartInitializerTests {
+class DefaultRestartInitializerTests {
 
 	@Test
-	public void jUnitStackShouldReturnNull() {
+	void jUnitStackShouldReturnNull() {
 		testSkippedStacks("org.junit.runners.Something");
 	}
 
 	@Test
-	public void jUnit5StackShouldReturnNull() {
+	void jUnit5StackShouldReturnNull() {
 		testSkippedStacks("org.junit.platform.Something");
 	}
 
 	@Test
-	public void springTestStackShouldReturnNull() {
+	void springTestStackShouldReturnNull() {
 		testSkippedStacks("org.springframework.boot.test.Something");
 	}
 
 	@Test
-	public void cucumberStackShouldReturnNull() {
+	void cucumberStackShouldReturnNull() {
 		testSkippedStacks("cucumber.runtime.Runtime.run");
 	}
 
 	@Test
-	public void validMainThreadShouldReturnUrls() {
+	void validMainThreadShouldReturnUrls() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -62,7 +62,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotNamedMainShouldReturnNull() {
+	void threadNotNamedMainShouldReturnNull() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -72,7 +72,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotUsingAppClassLoader() {
+	void threadNotUsingAppClassLoader() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -82,7 +82,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void urlsCanBeRetrieved() {
+	void urlsCanBeRetrieved() {
 		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread())).isNotEmpty();
 	}
 
@@ -97,7 +97,7 @@ public class DefaultRestartInitializerTests {
 		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);
 	}
 
-	private static class MockAppClassLoader extends ClassLoader {
+	static class MockAppClassLoader extends ClassLoader {
 
 		MockAppClassLoader(ClassLoader parent) {
 			super(parent);
@@ -105,7 +105,7 @@ public class DefaultRestartInitializerTests {
 
 	}
 
-	private static class MockLauncherClassLoader extends ClassLoader {
+	static class MockLauncherClassLoader extends ClassLoader {
 
 		MockLauncherClassLoader(ClassLoader parent) {
 			super(parent);

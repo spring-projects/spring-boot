@@ -83,7 +83,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private BootJar configureBootJarTask(Project project) {
 		BootJar bootJar = project.getTasks().create(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class);
 		bootJar.setDescription(
-				"Assembles an executable jar archive containing the main" + " classes and their dependencies.");
+				"Assembles an executable jar archive containing the main classes and their dependencies.");
 		bootJar.setGroup(BasePlugin.BUILD_GROUP);
 		bootJar.classpath((Callable<FileCollection>) () -> {
 			JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);

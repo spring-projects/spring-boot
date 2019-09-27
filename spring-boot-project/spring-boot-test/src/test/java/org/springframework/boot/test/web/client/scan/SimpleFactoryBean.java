@@ -21,6 +21,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
+ * A simple factory bean with no generics. Used to test early initialization doesn't
+ * occur.
+ *
  * @author Madhura Bhave
  */
 @Component

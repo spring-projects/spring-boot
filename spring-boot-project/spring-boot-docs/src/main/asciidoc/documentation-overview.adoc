@@ -1,11 +1,9 @@
 [[boot-documentation]]
 = Spring Boot Documentation
+include::attributes.adoc[]
 
-[partintro]
---
 This section provides a brief overview of Spring Boot reference documentation.
 It serves as a map for the rest of the document.
---
 
 
 
@@ -13,9 +11,9 @@ It serves as a map for the rest of the document.
 == About the Documentation
 The Spring Boot reference guide is available as:
 
-* {spring-boot-docs}/html[HTML]
+* {spring-boot-docs}/html[Multi-page HTML]
+* {spring-boot-docs}/htmlsingle[Single page HTML]
 * {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
-* {spring-boot-docs}/epub/spring-boot-reference.epub[EPUB]
 
 The latest copy is available at {spring-boot-current-docs}.
 
@@ -79,9 +77,9 @@ Need more details about Spring Boot's core features?
 == Moving to Production
 When you are ready to push your Spring Boot application to production, we have <<production-ready-features.adoc#production-ready, some tricks>> that you might like:
 
-* *Management endpoints:* <<production-ready-features.adoc#production-ready-endpoints, Overview>> | <<production-ready-features.adoc#production-ready-customizing-endpoints, Customization>>
+* *Management endpoints:* <<production-ready-features.adoc#production-ready-endpoints, Overview>>
 * *Connection options:* <<production-ready-features.adoc#production-ready-monitoring, HTTP>> | <<production-ready-features.adoc#production-ready-jmx, JMX>>
-* *Monitoring:* <<production-ready-features.adoc#production-ready-metrics, Metrics>> | <<production-ready-features.adoc#production-ready-auditing, Auditing>> | <<production-ready-features.adoc#production-ready-tracing, Tracing>> | <<production-ready-features.adoc#production-ready-process-monitoring, Process>>
+* *Monitoring:* <<production-ready-features.adoc#production-ready-metrics, Metrics>> | <<production-ready-features.adoc#production-ready-auditing, Auditing>> | <<production-ready-features.adoc#production-ready-http-tracing, HTTP Tracing>> | <<production-ready-features.adoc#production-ready-process-monitoring, Process>>
 
 
 
@@ -90,5 +88,4 @@ Finally, we have a few topics for more advanced users:
 
 * *Spring Boot Applications Deployment:* <<deployment.adoc#cloud-deployment, Cloud Deployment>> | <<deployment.adoc#deployment-service, OS Service>>
 * *Build tool plugins:* <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> | <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
-* *Appendix:* <<appendix-application-properties.adoc#common-application-properties, Application Properties>> | <<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration classes>> | <<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
-
+* *Appendix:* <<appendix-application-properties.adoc#common-application-properties,Application Properties>> | <<appendix-configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> | <<appendix-auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> | <<appendix-test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> | <<appendix-executable-jar-format.adoc#executable-jar,Executable Jars>> | <<appendix-dependency-versions.adoc#appendex-dependency-versions,Dependency Versions>>

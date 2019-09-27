@@ -20,7 +20,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 /**
- * Example graph used with {@link DataRedisTest} tests.
+ * Example graph used with {@link DataRedisTest @DataRedisTest} tests.
  *
  * @author Jayaram Pradhan
  */

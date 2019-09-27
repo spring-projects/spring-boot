@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -37,7 +37,8 @@ import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -59,20 +60,15 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class RemoteClientConfigurationTests {
-
-	@Rule
-	public MockRestarter restarter = new MockRestarter();
-
-	@Rule
-	public OutputCapture output = new OutputCapture();
+@ExtendWith({ OutputCaptureExtension.class, MockRestarter.class })
+class RemoteClientConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	private AnnotationConfigApplicationContext clientContext;
 
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -82,31 +78,31 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void warnIfRestartDisabled() {
+	void warnIfRestartDisabled(CapturedOutput output) {
 		configure("spring.devtools.remote.restart.enabled:false");
-		assertThat(this.output.toString()).contains("Remote restart is disabled");
+		assertThat(output).contains("Remote restart is disabled");
 	}
 
 	@Test
-	public void warnIfNotHttps() {
+	void warnIfNotHttps(CapturedOutput output) {
 		configure("http://localhost", true);
-		assertThat(this.output.toString()).contains("is insecure");
+		assertThat(output).contains("is insecure");
 	}
 
 	@Test
-	public void doesntWarnIfUsingHttps() {
+	void doesntWarnIfUsingHttps(CapturedOutput output) {
 		configure("https://localhost", true);
-		assertThat(this.output.toString()).doesNotContain("is insecure");
+		assertThat(output).doesNotContain("is insecure");
 	}
 
 	@Test
-	public void failIfNoSecret() {
+	void failIfNoSecret() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> configure("http://localhost", false))
 				.withMessageContaining("required to secure your connection");
 	}
 
 	@Test
-	public void liveReloadOnClassPathChanged() throws Exception {
+	void liveReloadOnClassPathChanged() throws Exception {
 		configure();
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
@@ -119,14 +115,14 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadDisabled() {
+	void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
-	public void remoteRestartDisabled() {
+	void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
@@ -155,20 +151,20 @@ public class RemoteClientConfigurationTests {
 		this.clientContext.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherFilter dispatcherFilter() throws IOException {
+		DispatcherFilter dispatcherFilter() throws IOException {
 			return new DispatcherFilter(dispatcher());
 		}
 
-		public Dispatcher dispatcher() throws IOException {
+		Dispatcher dispatcher() throws IOException {
 			Dispatcher dispatcher = mock(Dispatcher.class);
 			ServerHttpRequest anyRequest = any(ServerHttpRequest.class);
 			ServerHttpResponse anyResponse = any(ServerHttpResponse.class);
@@ -178,11 +174,11 @@ public class RemoteClientConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ClientConfig {
 
 		@Bean
-		public LiveReloadServer liveReloadServer() {
+		LiveReloadServer liveReloadServer() {
 			return mock(LiveReloadServer.class);
 		}
 

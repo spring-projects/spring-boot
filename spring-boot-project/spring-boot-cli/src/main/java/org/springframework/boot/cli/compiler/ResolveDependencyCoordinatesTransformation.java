@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.core.annotation.Order;
 
 /**
- * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
+ * {@link ASTTransformation} to resolve {@link Grab @Grab} artifact coordinates.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb

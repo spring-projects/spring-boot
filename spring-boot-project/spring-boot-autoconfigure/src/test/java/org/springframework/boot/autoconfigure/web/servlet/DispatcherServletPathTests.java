@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,52 +25,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class DispatcherServletPathTests {
+class DispatcherServletPathTests {
 
 	@Test
-	public void getRelativePathReturnsRelativePath() {
+	void getRelativePathReturnsRelativePath() {
 		assertThat(((DispatcherServletPath) () -> "spring").getRelativePath("boot")).isEqualTo("spring/boot");
 		assertThat(((DispatcherServletPath) () -> "spring/").getRelativePath("boot")).isEqualTo("spring/boot");
 		assertThat(((DispatcherServletPath) () -> "spring").getRelativePath("/boot")).isEqualTo("spring/boot");
 	}
 
 	@Test
-	public void getPrefixWhenHasSimplePathReturnPath() {
+	void getPrefixWhenHasSimplePathReturnPath() {
 		assertThat(((DispatcherServletPath) () -> "spring").getPrefix()).isEqualTo("spring");
 	}
 
 	@Test
-	public void getPrefixWhenHasPatternRemovesPattern() {
+	void getPrefixWhenHasPatternRemovesPattern() {
 		assertThat(((DispatcherServletPath) () -> "spring/*.do").getPrefix()).isEqualTo("spring");
 	}
 
 	@Test
-	public void getPathWhenPathEndsWithSlashRemovesSlash() {
+	void getPathWhenPathEndsWithSlashRemovesSlash() {
 		assertThat(((DispatcherServletPath) () -> "spring/").getPrefix()).isEqualTo("spring");
 	}
 
 	@Test
-	public void getServletUrlMappingWhenPathIsEmptyReturnsSlash() {
+	void getServletUrlMappingWhenPathIsEmptyReturnsSlash() {
 		assertThat(((DispatcherServletPath) () -> "").getServletUrlMapping()).isEqualTo("/");
 	}
 
 	@Test
-	public void getServletUrlMappingWhenPathIsSlashReturnsSlash() {
+	void getServletUrlMappingWhenPathIsSlashReturnsSlash() {
 		assertThat(((DispatcherServletPath) () -> "/").getServletUrlMapping()).isEqualTo("/");
 	}
 
 	@Test
-	public void getServletUrlMappingWhenPathContainsStarReturnsPath() {
+	void getServletUrlMappingWhenPathContainsStarReturnsPath() {
 		assertThat(((DispatcherServletPath) () -> "spring/*.do").getServletUrlMapping()).isEqualTo("spring/*.do");
 	}
 
 	@Test
-	public void getServletUrlMappingWhenHasPathNotEndingSlashReturnsSlashStarPattern() {
+	void getServletUrlMappingWhenHasPathNotEndingSlashReturnsSlashStarPattern() {
 		assertThat(((DispatcherServletPath) () -> "spring/boot").getServletUrlMapping()).isEqualTo("spring/boot/*");
 	}
 
 	@Test
-	public void getServletUrlMappingWhenHasPathEndingWithSlashReturnsSlashStarPattern() {
+	void getServletUrlMappingWhenHasPathEndingWithSlashReturnsSlashStarPattern() {
 		assertThat(((DispatcherServletPath) () -> "spring/boot/").getServletUrlMapping()).isEqualTo("spring/boot/*");
 	}
 

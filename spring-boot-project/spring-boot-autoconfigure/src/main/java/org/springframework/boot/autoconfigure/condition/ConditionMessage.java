@@ -61,7 +61,7 @@ public final class ConditionMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !ConditionMessage.class.isInstance(obj)) {
+		if (!(obj instanceof ConditionMessage)) {
 			return false;
 		}
 		if (obj == this) {
@@ -382,13 +382,13 @@ public final class ConditionMessage {
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
 			if ((this.condition == null || items.size() <= 1) && StringUtils.hasLength(this.singular)) {
-				message.append(" " + this.singular);
+				message.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {
-				message.append(" " + this.plural);
+				message.append(" ").append(this.plural);
 			}
 			if (items != null && !items.isEmpty()) {
-				message.append(" " + StringUtils.collectionToDelimitedString(items, ", "));
+				message.append(" ").append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
 			return this.condition.because(message.toString());
 		}

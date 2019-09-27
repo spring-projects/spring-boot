@@ -79,17 +79,17 @@ final class BindConverter {
 		return services;
 	}
 
-	public boolean canConvert(Object value, ResolvableType type, Annotation... annotations) {
+	boolean canConvert(Object value, ResolvableType type, Annotation... annotations) {
 		return this.conversionService.canConvert(TypeDescriptor.forObject(value),
 				new ResolvableTypeDescriptor(type, annotations));
 	}
 
-	public <T> T convert(Object result, Bindable<T> target) {
+	<T> T convert(Object result, Bindable<T> target) {
 		return convert(result, target.getType(), target.getAnnotations());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T convert(Object value, ResolvableType type, Annotation... annotations) {
+	<T> T convert(Object value, ResolvableType type, Annotation... annotations) {
 		if (value == null) {
 			return null;
 		}
@@ -231,11 +231,11 @@ final class BindConverter {
 		}
 
 		private PropertyEditor getPropertyEditor(Class<?> type) {
-			SimpleTypeConverter typeConverter = this.typeConverter;
 			if (type == null || type == Object.class || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
 				return null;
 			}
+			SimpleTypeConverter typeConverter = this.typeConverter;
 			PropertyEditor editor = typeConverter.getDefaultEditor(type);
 			if (editor == null) {
 				editor = typeConverter.findCustomEditor(type, null);

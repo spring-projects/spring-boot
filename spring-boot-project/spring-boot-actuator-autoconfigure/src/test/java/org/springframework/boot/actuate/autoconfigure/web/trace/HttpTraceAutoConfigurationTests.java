@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.trace;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceProperties;
@@ -42,34 +42,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HttpTraceAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
-public class HttpTraceAutoConfigurationTests {
+class HttpTraceAutoConfigurationTests {
+
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class));
 
 	@Test
-	public void configuresRepository() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(InMemoryHttpTraceRepository.class));
+	void autoConfigurationIsDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceAutoConfiguration.class));
 	}
 
 	@Test
-	public void usesUserProvidedRepository() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.withUserConfiguration(CustomRepositoryConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpTraceRepository.class);
-					assertThat(context.getBean(HttpTraceRepository.class))
-							.isInstanceOf(CustomHttpTraceRepository.class);
-				});
+	void autoConfigurationIsEnabledWhenHttpTraceRepositoryBeanPresent() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(HttpExchangeTracer.class);
+			assertThat(context).hasSingleBean(HttpTraceFilter.class);
+			assertThat(context).hasSingleBean(HttpTraceRepository.class);
+			assertThat(context.getBean(HttpTraceRepository.class)).isInstanceOf(CustomHttpTraceRepository.class);
+		});
 	}
 
 	@Test
-	public void configuresTracer() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(HttpExchangeTracer.class));
-	}
-
-	@Test
-	public void usesUserProvidedTracer() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+	void usesUserProvidedTracer() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomTracerConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(HttpExchangeTracer.class);
 					assertThat(context.getBean(HttpExchangeTracer.class)).isInstanceOf(CustomHttpExchangeTracer.class);
@@ -77,16 +74,10 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void configuresWebFilter() {
+	void usesUserProvidedWebFilterWhenReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(HttpTraceWebFilter.class));
-	}
-
-	@Test
-	public void usesUserProvidedWebFilter() {
-		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+				.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomWebFilterConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(HttpTraceWebFilter.class);
 					assertThat(context.getBean(HttpTraceWebFilter.class)).isInstanceOf(CustomHttpTraceWebFilter.class);
@@ -94,14 +85,14 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void configuresServletFilter() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+	void configuresServletFilter() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(HttpTraceFilter.class));
 	}
 
 	@Test
-	public void usesUserProvidedServletFilter() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+	void usesUserProvidedServletFilter() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(HttpTraceFilter.class);
 					assertThat(context.getBean(HttpTraceFilter.class)).isInstanceOf(CustomHttpTraceFilter.class);
@@ -109,14 +100,14 @@ public class HttpTraceAutoConfigurationTests {
 	}
 
 	@Test
-	public void backsOffWhenDisabled() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+	void backsOffWhenDisabled() {
+		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.trace.http.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpTraceRepository.class)
 						.doesNotHaveBean(HttpExchangeTracer.class).doesNotHaveBean(HttpTraceFilter.class));
 	}
 
-	private static class CustomHttpTraceRepository implements HttpTraceRepository {
+	static class CustomHttpTraceRepository implements HttpTraceRepository {
 
 		@Override
 		public List<HttpTrace> findAll() {
@@ -130,11 +121,11 @@ public class HttpTraceAutoConfigurationTests {
 
 	}
 
-	@Configuration
-	static class CustomRepositoryConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		public CustomHttpTraceRepository customRepository() {
+		CustomHttpTraceRepository customRepository() {
 			return new CustomHttpTraceRepository();
 		}
 
@@ -148,11 +139,11 @@ public class HttpTraceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTracerConfiguration {
 
 		@Bean
-		public CustomHttpExchangeTracer customTracer(HttpTraceProperties properties) {
+		CustomHttpExchangeTracer customTracer(HttpTraceProperties properties) {
 			return new CustomHttpExchangeTracer(properties.getInclude());
 		}
 
@@ -167,11 +158,11 @@ public class HttpTraceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomWebFilterConfiguration {
 
 		@Bean
-		public CustomHttpTraceWebFilter customWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer,
+		CustomHttpTraceWebFilter customWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer,
 				HttpTraceProperties properties) {
 			return new CustomHttpTraceWebFilter(repository, tracer, properties.getInclude());
 		}
@@ -186,11 +177,11 @@ public class HttpTraceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFilterConfiguration {
 
 		@Bean
-		public CustomHttpTraceFilter customWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer) {
+		CustomHttpTraceFilter customWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer) {
 			return new CustomHttpTraceFilter(repository, tracer);
 		}
 

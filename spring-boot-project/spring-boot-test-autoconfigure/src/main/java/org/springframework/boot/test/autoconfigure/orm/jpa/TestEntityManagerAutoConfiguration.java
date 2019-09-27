@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.4.0
  * @see AutoConfigureTestEntityManager
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ EntityManagerFactory.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 public class TestEntityManagerAutoConfiguration {

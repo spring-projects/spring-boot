@@ -36,20 +36,20 @@ import org.springframework.core.io.Resource;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastClient.class)
 @ConditionalOnMissingBean(HazelcastInstance.class)
 class HazelcastClientConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ClientConfig.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastClientConfigFileConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance(HazelcastProperties properties) throws IOException {
+		HazelcastInstance hazelcastInstance(HazelcastProperties properties) throws IOException {
 			Resource config = properties.resolveConfigLocation();
 			if (config != null) {
 				return new HazelcastClientFactory(config).getHazelcastInstance();
@@ -59,12 +59,12 @@ class HazelcastClientConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(ClientConfig.class)
 	static class HazelcastClientConfigConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance(ClientConfig config) {
+		HazelcastInstance hazelcastInstance(ClientConfig config) {
 			return new HazelcastClientFactory(config).getHazelcastInstance();
 		}
 
@@ -77,7 +77,8 @@ class HazelcastClientConfiguration {
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
 		ConfigAvailableCondition() {
-			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml", "classpath:/hazelcast-client.xml");
+			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml", "classpath:/hazelcast-client.xml",
+					"file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml");
 		}
 
 	}

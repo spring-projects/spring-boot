@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
@@ -63,14 +63,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryMvcWebEndpointIntegrationTests {
+class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	private static TokenValidator tokenValidator = mock(TokenValidator.class);
 
 	private static CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() {
+	void operationWithSecurityInterceptorForbidden() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() {
+	void operationWithSecurityInterceptorSuccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
+	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
 				(client) -> client.options().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
 						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
@@ -98,7 +98,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithFullAccess() {
+	void linksToOtherEndpointsWithFullAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsForbidden() {
+	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
@@ -123,7 +123,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithRestrictedAccess() {
+	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
@@ -144,14 +144,10 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context, client) -> clientConsumer.accept(client);
-		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(configuration,
-				CloudFoundryMvcConfiguration.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(configuration,
+				CloudFoundryMvcConfiguration.class)) {
 			consumer.accept(context,
 					WebTestClient.bindToServer().baseUrl("http://localhost:" + getPort(context)).build());
-		}
-		finally {
-			context.close();
 		}
 	}
 
@@ -161,23 +157,23 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 				+ Base64Utils.encodeToString("signature".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class CloudFoundryMvcConfiguration {
 
 		@Bean
-		public CloudFoundrySecurityInterceptor interceptor() {
+		CloudFoundrySecurityInterceptor interceptor() {
 			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
-		public EndpointMediaTypes EndpointMediaTypes() {
+		EndpointMediaTypes EndpointMediaTypes() {
 			return new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 		}
 
 		@Bean
-		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
+		CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -189,7 +185,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@Bean
-		public WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
+		WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
@@ -198,17 +194,17 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@Bean
-		public EndpointDelegate endpointDelegate() {
+		EndpointDelegate endpointDelegate() {
 			return mock(EndpointDelegate.class);
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
@@ -224,17 +220,17 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 		@ReadOperation
-		public Map<String, Object> readPart(@Selector String part) {
+		Map<String, Object> readPart(@Selector String part) {
 			return Collections.singletonMap("part", part);
 		}
 
 		@WriteOperation
-		public void write(String foo, String bar) {
+		void write(String foo, String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -244,7 +240,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class TestEnvEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
@@ -254,34 +250,34 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class TestInfoEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryMvcConfiguration.class)
-	protected static class TestEndpointConfiguration {
+	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+		TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
 		}
 
 		@Bean
-		public TestInfoEndpoint testInfoEnvEndpoint() {
+		TestInfoEndpoint testInfoEnvEndpoint() {
 			return new TestInfoEndpoint();
 		}
 
 		@Bean
-		public TestEnvEndpoint testEnvEndpoint() {
+		TestEnvEndpoint testEnvEndpoint() {
 			return new TestEnvEndpoint();
 		}
 
 	}
 
-	public interface EndpointDelegate {
+	interface EndpointDelegate {
 
 		void write();
 

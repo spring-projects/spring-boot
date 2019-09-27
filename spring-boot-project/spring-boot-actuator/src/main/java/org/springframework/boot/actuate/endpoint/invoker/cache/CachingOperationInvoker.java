@@ -114,11 +114,11 @@ public class CachingOperationInvoker implements OperationInvoker {
 			this.creationTime = creationTime;
 		}
 
-		public boolean isStale(long accessTime, long timeToLive) {
+		boolean isStale(long accessTime, long timeToLive) {
 			return (accessTime - this.creationTime) >= timeToLive;
 		}
 
-		public Object getResponse() {
+		Object getResponse() {
 			return this.response;
 		}
 

@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ClassPathFileChangeListenerTests {
+class ClassPathFileChangeListenerTests {
 
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
@@ -59,33 +59,33 @@ public class ClassPathFileChangeListenerTests {
 	@Captor
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void eventPublisherMustNotBeNull() {
+	void eventPublisherMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
 				.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
-	public void restartStrategyMustNotBeNull() {
+	void restartStrategyMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
 				.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test
-	public void sendsEventWithoutRestart() {
+	void sendsEventWithoutRestart() {
 		testSendsEvent(false);
 		verify(this.fileSystemWatcher, never()).stop();
 	}
 
 	@Test
-	public void sendsEventWithRestart() {
+	void sendsEventWithRestart() {
 		testSendsEvent(true);
 		verify(this.fileSystemWatcher).stop();
 	}

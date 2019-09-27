@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Basic global error {@link Controller}, rendering {@link ErrorAttributes}. More specific
- * errors can be handled either using Spring MVC abstractions (e.g.
+ * Basic global error {@link Controller @Controller}, rendering {@link ErrorAttributes}.
+ * More specific errors can be handled either using Spring MVC abstractions (e.g.
  * {@code @ExceptionHandler}) or by adding servlet
  * {@link AbstractServletWebServerFactory#setErrorPages server error pages}.
  *

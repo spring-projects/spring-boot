@@ -18,7 +18,7 @@ package org.springframework.boot.web.servlet.context;
 
 import javax.servlet.Servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class XmlServletWebServerApplicationContextTests {
+class XmlServletWebServerApplicationContextTests {
 
 	private static final String PATH = XmlServletWebServerApplicationContextTests.class.getPackage().getName()
 			.replace('.', '/') + "/";
@@ -40,25 +40,25 @@ public class XmlServletWebServerApplicationContextTests {
 	private XmlServletWebServerApplicationContext context;
 
 	@Test
-	public void createFromResource() {
+	void createFromResource() {
 		this.context = new XmlServletWebServerApplicationContext(new ClassPathResource(FILE, getClass()));
 		verifyContext();
 	}
 
 	@Test
-	public void createFromResourceLocation() {
+	void createFromResourceLocation() {
 		this.context = new XmlServletWebServerApplicationContext(PATH + FILE);
 		verifyContext();
 	}
 
 	@Test
-	public void createFromRelativeResourceLocation() {
+	void createFromRelativeResourceLocation() {
 		this.context = new XmlServletWebServerApplicationContext(getClass(), FILE);
 		verifyContext();
 	}
 
 	@Test
-	public void loadAndRefreshFromResource() {
+	void loadAndRefreshFromResource() {
 		this.context = new XmlServletWebServerApplicationContext();
 		this.context.load(new ClassPathResource(FILE, getClass()));
 		this.context.refresh();
@@ -66,7 +66,7 @@ public class XmlServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void loadAndRefreshFromResourceLocation() {
+	void loadAndRefreshFromResourceLocation() {
 		this.context = new XmlServletWebServerApplicationContext();
 		this.context.load(PATH + FILE);
 		this.context.refresh();
@@ -74,7 +74,7 @@ public class XmlServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void loadAndRefreshFromRelativeResourceLocation() {
+	void loadAndRefreshFromRelativeResourceLocation() {
 		this.context = new XmlServletWebServerApplicationContext();
 		this.context.load(getClass(), FILE);
 		this.context.refresh();

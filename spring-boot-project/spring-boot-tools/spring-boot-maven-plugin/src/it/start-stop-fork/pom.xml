@@ -50,7 +50,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<fork>true</fork>
 					<jmxPort>${jmx.port}</jmxPort>
 				</configuration>
 			</plugin>

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,10 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ApplicationHealthIndicatorTests {
+@Deprecated
+class ApplicationHealthIndicatorTests {
 
 	@Test
-	public void indicatesUp() {
+	void indicatesUp() {
 		ApplicationHealthIndicator healthIndicator = new ApplicationHealthIndicator();
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}

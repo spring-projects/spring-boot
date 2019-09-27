@@ -26,8 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import org.junit.Rule;
-import org.junit.Test;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -40,7 +42,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,23 +61,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  * @author Dmytro Nosan
+ * @author Tadaya Tsuyukubo
  */
-public class WebMvcMetricsAutoConfigurationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class WebMvcMetricsAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
 	@Test
-	public void backsOffWhenMeterRegistryIsMissing() {
+	void backsOffWhenMeterRegistryIsMissing() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(WebMvcTagsProvider.class));
 	}
 
 	@Test
-	public void definesTagsProviderAndFilterWhenMeterRegistryIsPresent() {
+	void definesTagsProviderAndFilterWhenMeterRegistryIsPresent() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
 			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
@@ -84,7 +86,7 @@ public class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void tagsProviderBacksOff() {
+	void tagsProviderBacksOff() {
 		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(DefaultWebMvcTagsProvider.class);
 			assertThat(context).hasSingleBean(TestWebMvcTagsProvider.class);
@@ -92,7 +94,7 @@ public class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void filterRegistrationHasExpectedDispatcherTypesAndOrder() {
+	void filterRegistrationHasExpectedDispatcherTypesAndOrder() {
 		this.contextRunner.run((context) -> {
 			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 			assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
@@ -102,36 +104,52 @@ public class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
-					assertThat(this.output.toString())
-							.contains("Reached the maximum number of URI tags " + "for 'http.server.requests'");
+					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(this.output.toString())
-							.doesNotContain("Reached the maximum number of URI tags " + "for 'http.server.requests'");
+					assertThat(output)
+							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	void autoTimeRequestsCanBeConfigured() {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.request.autotime.enabled=true",
+						"management.metrics.web.server.request.autotime.percentiles=0.5,0.7",
+						"management.metrics.web.server.request.autotime.percentiles-histogram=true")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					Timer timer = registry.get("http.server.requests").timer();
+					HistogramSnapshot snapshot = timer.takeSnapshot();
+					assertThat(snapshot.percentileValues()).hasSize(2);
+					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
+					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
 				});
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void longTaskTimingInterceptorIsRegistered() {
+	void longTaskTimingInterceptorIsRegistered() {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(RequestMappingHandlerMapping.class))
-						.extracting("interceptors").element(0).asList().extracting((item) -> (Class) item.getClass())
+						.extracting("interceptors").asList().extracting((item) -> (Class) item.getClass())
 						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
@@ -146,11 +164,11 @@ public class WebMvcMetricsAutoConfigurationTests {
 		return context.getBean(MeterRegistry.class);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TagsProviderConfiguration {
 
 		@Bean
-		public TestWebMvcTagsProvider tagsProvider() {
+		TestWebMvcTagsProvider tagsProvider() {
 			return new TestWebMvcTagsProvider();
 		}
 

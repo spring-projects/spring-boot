@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -36,7 +36,8 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
-public class CompositeHealthIndicatorTests {
+@Deprecated
+class CompositeHealthIndicatorTests {
 
 	private HealthAggregator healthAggregator;
 
@@ -46,8 +47,8 @@ public class CompositeHealthIndicatorTests {
 	@Mock
 	private HealthIndicator two;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.one.health()).willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
 		given(this.two.health()).willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
@@ -56,7 +57,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWithIndicators() {
+	void createWithIndicators() {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
@@ -70,7 +71,7 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void testSerialization() throws Exception {
+	void testSerialization() throws Exception {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
@@ -82,7 +83,7 @@ public class CompositeHealthIndicatorTests {
 		assertThat(mapper.writeValueAsString(result))
 				.isEqualTo("{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
 						+ ",\"details\":{\"db1\":{\"status\":\"UNKNOWN\",\"details\""
-						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\"" + ":{\"2\":\"2\"}}}}}}");
+						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\":{\"2\":\"2\"}}}}}}");
 	}
 
 }

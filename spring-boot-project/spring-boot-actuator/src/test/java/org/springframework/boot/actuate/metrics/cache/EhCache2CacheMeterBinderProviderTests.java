@@ -24,7 +24,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.cache.ehcache.EhCacheCache;
 
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EhCache2CacheMeterBinderProviderTests {
+class EhCache2CacheMeterBinderProviderTests {
 
 	@Test
-	public void ehCache2CacheProvider() {
+	void ehCache2CacheProvider() {
 		CacheManager cacheManager = new CacheManager(
 				new Configuration().name("EhCacheCacheTests").defaultCache(new CacheConfiguration("default", 100)));
 		try {

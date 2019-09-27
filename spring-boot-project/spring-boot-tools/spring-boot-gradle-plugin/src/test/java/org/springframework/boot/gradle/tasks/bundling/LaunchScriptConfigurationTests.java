@@ -18,8 +18,8 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import org.gradle.api.Project;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,61 +30,61 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class LaunchScriptConfigurationTests {
+class LaunchScriptConfigurationTests {
 
 	private final AbstractArchiveTask task = mock(AbstractArchiveTask.class);
 
 	private final Project project = mock(Project.class);
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		given(this.task.getProject()).willReturn(this.project);
 	}
 
 	@Test
-	public void initInfoProvidesUsesArchiveBaseNameByDefault() {
+	void initInfoProvidesUsesArchiveBaseNameByDefault() {
 		given(this.task.getBaseName()).willReturn("base-name");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoProvides",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesDescriptionByDefault() {
+	void initInfoShortDescriptionUsesDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
+	void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
 		given(this.task.getBaseName()).willReturn("base-name");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
+	void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("Project\ndescription");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
+	void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
 		given(this.task.getBaseName()).willReturn("base-name");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesProjectDescriptionByDefault() {
+	void initInfoDescriptionUsesProjectDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
+	void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("The\nproject\ndescription");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"The\n#  project\n#  description");

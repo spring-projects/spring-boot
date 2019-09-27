@@ -71,6 +71,11 @@ public class RedisProperties {
 	 */
 	private Duration timeout;
 
+	/**
+	 * Client name to be set on connections with CLIENT SETNAME.
+	 */
+	private String clientName;
+
 	private Sentinel sentinel;
 
 	private Cluster cluster;
@@ -133,6 +138,14 @@ public class RedisProperties {
 
 	public Duration getTimeout() {
 		return this.timeout;
+	}
+
+	public String getClientName() {
+		return this.clientName;
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 
 	public Sentinel getSentinel() {

@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies a method on an {@link Endpoint} as being a write operation.
+ * Identifies a method on an {@link Endpoint @Endpoint} as being a write operation.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

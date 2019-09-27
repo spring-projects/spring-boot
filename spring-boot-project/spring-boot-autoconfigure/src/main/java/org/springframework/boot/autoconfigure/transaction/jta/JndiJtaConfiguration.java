@@ -34,25 +34,18 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JtaTransactionManager.class)
 @ConditionalOnJndi({ JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, "java:comp/TransactionManager",
 		"java:appserver/TransactionManager", "java:pm/TransactionManager", "java:/TransactionManager" })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class JndiJtaConfiguration {
 
-	private final TransactionManagerCustomizers transactionManagerCustomizers;
-
-	JndiJtaConfiguration(ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		this.transactionManagerCustomizers = transactionManagerCustomizers.getIfAvailable();
-	}
-
 	@Bean
-	public JtaTransactionManager transactionManager() {
+	JtaTransactionManager transactionManager(
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManagerFactoryBean().getObject();
-		if (this.transactionManagerCustomizers != null) {
-			this.transactionManagerCustomizers.customize(jtaTransactionManager);
-		}
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));
 		return jtaTransactionManager;
 	}
 

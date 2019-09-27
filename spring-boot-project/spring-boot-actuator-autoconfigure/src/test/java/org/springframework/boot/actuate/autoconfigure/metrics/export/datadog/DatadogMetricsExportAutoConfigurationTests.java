@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,24 +34,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class DatadogMetricsExportAutoConfigurationTests {
+class DatadogMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DatadogMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(DatadogMeterRegistry.class));
 	}
 
 	@Test
-	public void failsWithoutAnApiKey() {
+	void failsWithoutAnApiKey() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void autoConfiguresConfigAndMeterRegistry() {
+	void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context).hasSingleBean(DatadogMeterRegistry.class)
@@ -59,7 +59,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(DatadogMeterRegistry.class)
@@ -67,13 +67,13 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(DatadogMeterRegistry.class).hasSingleBean(DatadogConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context).hasSingleBean(DatadogMeterRegistry.class)
@@ -81,7 +81,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde").run((context) -> {
 					DatadogMeterRegistry registry = context.getBean(DatadogMeterRegistry.class);
@@ -91,22 +91,22 @@ public class DatadogMetricsExportAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DatadogConfig customConfig() {
+		DatadogConfig customConfig() {
 			return (key) -> {
 				if ("datadog.apiKey".equals(key)) {
 					return "12345";
@@ -117,12 +117,12 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
+		DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
 			return new DatadogMeterRegistry(config, clock);
 		}
 

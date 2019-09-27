@@ -30,8 +30,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration;
@@ -65,7 +64,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,10 +81,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Jon Schneider
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class,
 		properties = "management.metrics.use-global-registry=false")
-public class MetricsIntegrationTests {
+class MetricsIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -102,7 +99,7 @@ public class MetricsIntegrationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void restTemplateIsInstrumented() {
+	void restTemplateIsInstrumented() {
 		MockRestServiceServer server = MockRestServiceServer.bindTo(this.external).build();
 		server.expect(once(), requestTo("/api/external")).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess("{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
@@ -111,20 +108,20 @@ public class MetricsIntegrationTests {
 	}
 
 	@Test
-	public void requestMappingIsInstrumented() {
+	void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
 		assertThat(this.registry.get("http.server.requests").timer().count()).isEqualTo(1);
 	}
 
 	@Test
-	public void automaticallyRegisteredBinders() {
+	void automaticallyRegisteredBinders() {
 		assertThat(this.context.getBeansOfType(MeterBinder.class).values())
 				.hasAtLeastOneElementOfType(LogbackMetrics.class).hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
 	}
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void metricsFilterRegisteredForAsyncDispatches() {
+	void metricsFilterRegisteredForAsyncDispatches() {
 		Map<String, FilterRegistrationBean> filterRegistrations = this.context
 				.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(filterRegistrations).containsKey("webMvcMetricsFilter");
@@ -134,7 +131,7 @@ public class MetricsIntegrationTests {
 				.containsExactlyInAnyOrder(DispatcherType.REQUEST, DispatcherType.ASYNC);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
 			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
 			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
@@ -149,17 +146,17 @@ public class MetricsIntegrationTests {
 
 		@Primary
 		@Bean
-		public MeterRegistry registry() {
+		MeterRegistry registry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		}
 
 		@Bean
-		public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 			return restTemplateBuilder.build();
 		}
 
 		@Bean
-		public CyclicBarrier cyclicBarrier() {
+		CyclicBarrier cyclicBarrier() {
 			return new CyclicBarrier(2);
 		}
 

@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
 
@@ -32,23 +32,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
+class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
-	public void initFieldsWhenTestIsNullShouldThrowException() {
+	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
-	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
+	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
-	public void initFieldsShouldSetNullFields() {
+	void initFieldsShouldSetNullFields() {
 		InitFieldsTestClass test = new InitFieldsTestClass();
 		assertThat(test.test).isNull();
 		assertThat(test.base).isNull();

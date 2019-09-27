@@ -27,7 +27,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class CustomWebFluxSecurityExample {
 
 	// @formatter:off

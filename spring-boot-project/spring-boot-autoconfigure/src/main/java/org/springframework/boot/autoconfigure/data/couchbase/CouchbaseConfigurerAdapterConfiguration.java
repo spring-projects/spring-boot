@@ -30,7 +30,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CouchbaseConfigurer.class)
 @ConditionalOnBean(CouchbaseConfiguration.class)
 class CouchbaseConfigurerAdapterConfiguration {
@@ -43,7 +43,7 @@ class CouchbaseConfigurerAdapterConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CouchbaseConfigurer springBootCouchbaseConfigurer() throws Exception {
+	CouchbaseConfigurer springBootCouchbaseConfigurer() throws Exception {
 		return new SpringBootCouchbaseConfigurer(this.configuration.couchbaseEnvironment(),
 				this.configuration.couchbaseCluster(), this.configuration.couchbaseClusterInfo(),
 				this.configuration.couchbaseClient());

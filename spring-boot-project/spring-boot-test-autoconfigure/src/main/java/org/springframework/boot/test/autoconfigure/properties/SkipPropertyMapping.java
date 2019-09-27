@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.properties;
 
 /**
- * Enum used to control when {@link PropertyMapping} is skipped.
+ * Enum used to control when {@link PropertyMapping @PropertyMapping} is skipped.
  *
  * @author Phillip Webb
  * @since 1.4.0

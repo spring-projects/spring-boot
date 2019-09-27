@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.humio.HumioConfig;
 import io.micrometer.humio.HumioMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -35,24 +35,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class HumioMetricsExportAutoConfigurationTests {
+class HumioMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HumioMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HumioMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresConfigAndMeterRegistry() {
+	void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(HumioMeterRegistry.class).hasSingleBean(HumioConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.humio.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(HumioMeterRegistry.class)
@@ -60,19 +60,19 @@ public class HumioMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(HumioMeterRegistry.class).hasSingleBean(HumioConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(HumioMeterRegistry.class).hasBean("customRegistry").hasSingleBean(HumioConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			HumioMeterRegistry registry = context.getBean(HumioMeterRegistry.class);
 			new JvmMemoryMetrics().bindTo(registry);
@@ -82,33 +82,33 @@ public class HumioMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public HumioConfig customConfig() {
+		HumioConfig customConfig() {
 			return (key) -> null;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public HumioMeterRegistry customRegistry(HumioConfig config, Clock clock) {
+		HumioMeterRegistry customRegistry(HumioConfig config, Clock clock) {
 			return new HumioMeterRegistry(config, clock);
 		}
 

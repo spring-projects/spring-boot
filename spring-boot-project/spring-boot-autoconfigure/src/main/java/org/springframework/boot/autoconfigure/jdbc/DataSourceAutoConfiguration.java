@@ -48,13 +48,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Kazuki Shimizu
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class })
 public class DataSourceAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
@@ -62,7 +62,7 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
@@ -102,21 +102,10 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("PooledDataSource");
-			if (getDataSourceClassLoader(context) != null) {
+			if (DataSourceBuilder.findType(context.getClassLoader()) != null) {
 				return ConditionOutcome.match(message.foundExactly("supported DataSource"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("supported DataSource").atAll());
-		}
-
-		/**
-		 * Returns the class loader for the {@link DataSource} class. Used to ensure that
-		 * the driver class can actually be loaded by the data source.
-		 * @param context the condition context
-		 * @return the class loader
-		 */
-		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
-			Class<?> dataSourceClass = DataSourceBuilder.findType(context.getClassLoader());
-			return (dataSourceClass != null) ? dataSourceClass.getClassLoader() : null;
 		}
 
 	}

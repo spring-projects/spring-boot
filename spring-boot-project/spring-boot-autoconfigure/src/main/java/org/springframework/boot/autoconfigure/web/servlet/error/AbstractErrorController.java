@@ -34,7 +34,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Abstract base class for error {@link Controller} implementations.
+ * Abstract base class for error {@link Controller @Controller} implementations.
  *
  * @author Dave Syer
  * @author Phillip Webb

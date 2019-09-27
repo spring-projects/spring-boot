@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.lang.Nullable;
 
 /**
- * {@link EndpointWebExtension} for the {@link CachesEndpoint}.
+ * {@link EndpointWebExtension @EndpointWebExtension} for the {@link CachesEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.1.0

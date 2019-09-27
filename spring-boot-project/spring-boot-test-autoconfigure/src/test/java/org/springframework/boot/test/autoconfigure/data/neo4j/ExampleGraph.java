@@ -22,7 +22,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 /**
- * Example graph used with {@link DataNeo4jTest} tests.
+ * Example graph used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
  */

@@ -41,7 +41,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, JdbcOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
@@ -51,22 +51,24 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
+	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
+	static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
+		void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setTableName(jdbcSessionProperties.getTableName());
 			setCleanupCron(jdbcSessionProperties.getCleanupCron());
+			setFlushMode(jdbcSessionProperties.getFlushMode());
+			setSaveMode(jdbcSessionProperties.getSaveMode());
 		}
 
 	}

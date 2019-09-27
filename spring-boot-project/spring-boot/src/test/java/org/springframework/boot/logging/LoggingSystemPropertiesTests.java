@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -35,51 +35,61 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LoggingSystemProperties}.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
-public class LoggingSystemPropertiesTests {
+class LoggingSystemPropertiesTests {
 
 	private Set<Object> systemPropertyNames;
 
-	@Before
-	public void captureSystemPropertyNames() {
+	@BeforeEach
+	void captureSystemPropertyNames() {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
-	@After
-	public void restoreSystemProperties() {
+	@AfterEach
+	void restoreSystemProperties() {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 	}
 
 	@Test
-	public void pidIsSet() {
+	void pidIsSet() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
 	@Test
-	public void consoleLogPatternIsSet() {
+	void consoleLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.console", "console pattern"))
 				.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console pattern");
 	}
 
 	@Test
-	public void fileLogPatternIsSet() {
+	void fileLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.file", "file pattern"))
 				.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file pattern");
 	}
 
 	@Test
-	public void consoleLogPatternCanReferencePid() {
+	void consoleLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.console", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).matches("[0-9]+");
 	}
 
 	@Test
-	public void fileLogPatternCanReferencePid() {
+	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
+	}
+
+	@Test
+	void rollingFileNameIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.rolling-file-name", "rolling file pattern"))
+						.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
+				.isEqualTo("rolling file pattern");
 	}
 
 	private Environment environment(String key, Object value) {

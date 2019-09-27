@@ -44,7 +44,7 @@ class FileSnapshot {
 		this.lastModified = file.lastModified();
 	}
 
-	public File getFile() {
+	File getFile() {
 		return this.file;
 	}
 

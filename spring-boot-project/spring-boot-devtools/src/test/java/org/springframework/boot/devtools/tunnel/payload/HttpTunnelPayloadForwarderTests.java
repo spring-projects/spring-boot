@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,16 +32,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class HttpTunnelPayloadForwarderTests {
+class HttpTunnelPayloadForwarderTests {
 
 	@Test
-	public void targetChannelMustNotBeNull() {
+	void targetChannelMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
 				.withMessageContaining("TargetChannel must not be null");
 	}
 
 	@Test
-	public void forwardInSequence() throws Exception {
+	void forwardInSequence() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel channel = Channels.newChannel(out);
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
@@ -52,7 +52,7 @@ public class HttpTunnelPayloadForwarderTests {
 	}
 
 	@Test
-	public void forwardOutOfSequence() throws Exception {
+	void forwardOutOfSequence() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel channel = Channels.newChannel(out);
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
@@ -63,7 +63,7 @@ public class HttpTunnelPayloadForwarderTests {
 	}
 
 	@Test
-	public void overflow() throws Exception {
+	void overflow() throws Exception {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
 		assertThatIllegalStateException().isThrownBy(() -> {

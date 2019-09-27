@@ -57,7 +57,7 @@ public class ResourceHandlingApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(ResourceHandlingApplication.class).properties("server.port:0")
-				.listeners(new WebServerPortFileWriter("target/server.port")).run(args);
+				.listeners(new WebServerPortFileWriter(args[0])).run(args);
 	}
 
 	private static final class GetResourcePathsServlet extends HttpServlet {

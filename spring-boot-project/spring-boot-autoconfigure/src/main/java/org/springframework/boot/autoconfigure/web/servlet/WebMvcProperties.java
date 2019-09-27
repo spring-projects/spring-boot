@@ -77,6 +77,11 @@ public class WebMvcProperties {
 	private boolean ignoreDefaultModelOnRedirect = true;
 
 	/**
+	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
+	 */
+	private boolean publishRequestHandledEvents = true;
+
+	/**
 	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
 	 * process a request.
 	 */
@@ -141,6 +146,14 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public boolean isPublishRequestHandledEvents() {
+		return this.publishRequestHandledEvents;
+	}
+
+	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
+		this.publishRequestHandledEvents = publishRequestHandledEvents;
 	}
 
 	public boolean isThrowExceptionIfNoHandlerFound() {

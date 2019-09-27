@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.security;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -39,19 +39,19 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link AuthorizationAuditListener}.
  */
-public class AuthorizationAuditListenerTests {
+class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
 	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.listener.setApplicationEventPublisher(this.publisher);
 	}
 
 	@Test
-	public void testAuthenticationCredentialsNotFound() {
+	void testAuthenticationCredentialsNotFound() {
 		AuditApplicationEvent event = handleAuthorizationEvent(
 				new AuthenticationCredentialsNotFoundEvent(this, Collections.singletonList(new SecurityConfig("USER")),
 						new AuthenticationCredentialsNotFoundException("Bad user")));
@@ -59,7 +59,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testAuthorizationFailure() {
+	void testAuthorizationFailure() {
 		AuditApplicationEvent event = handleAuthorizationEvent(new AuthorizationFailureEvent(this,
 				Collections.singletonList(new SecurityConfig("USER")),
 				new UsernamePasswordAuthenticationToken("user", "password"), new AccessDeniedException("Bad user")));
@@ -67,7 +67,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testDetailsAreIncludedInAuditEvent() {
+	void testDetailsAreIncludedInAuditEvent() {
 		Object details = new Object();
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
 				"password");

@@ -137,7 +137,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * @return a {@link SpringConfigurationPropertySource} or
 	 * {@link SpringIterableConfigurationPropertySource} instance
 	 */
-	public static SpringConfigurationPropertySource from(PropertySource<?> source) {
+	static SpringConfigurationPropertySource from(PropertySource<?> source) {
 		Assert.notNull(source, "Source must not be null");
 		PropertyMapper mapper = getPropertyMapper(source);
 		if (isFullEnumerable(source)) {

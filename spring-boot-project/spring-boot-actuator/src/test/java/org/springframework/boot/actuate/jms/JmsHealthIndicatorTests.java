@@ -21,7 +21,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -41,10 +41,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class JmsHealthIndicatorTests {
+class JmsHealthIndicatorTests {
 
 	@Test
-	public void jmsBrokerIsUp() throws JMSException {
+	void jmsBrokerIsUp() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
@@ -59,7 +59,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerIsDown() throws JMSException {
+	void jmsBrokerIsDown() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		given(connectionFactory.createConnection()).willThrow(new JMSException("test", "123"));
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
@@ -69,7 +69,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
+	void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willThrow(new JMSException("test", "123"));
 		Connection connection = mock(Connection.class);
@@ -84,7 +84,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerUsesFailover() throws JMSException {
+	void jmsBrokerUsesFailover() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
@@ -99,7 +99,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void whenConnectionStartIsUnresponsiveStatusIsDown() throws JMSException {
+	void whenConnectionStartIsUnresponsiveStatusIsDown() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);

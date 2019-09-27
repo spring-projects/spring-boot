@@ -107,7 +107,7 @@ public class ConditionEvaluationReportLoggingListener
 	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
 			if (this.applicationContext == null) {
-				this.logger.info("Unable to provide the conditions report " + "due to missing ApplicationContext");
+				this.logger.info("Unable to provide the conditions report due to missing ApplicationContext");
 				return;
 			}
 			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());

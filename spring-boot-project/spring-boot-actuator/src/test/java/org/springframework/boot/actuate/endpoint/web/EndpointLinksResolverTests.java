@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.Condition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class EndpointLinksResolverTests {
+class EndpointLinksResolverTests {
 
 	@Test
-	public void linkResolutionWithTrailingSlashStripsSlashOnSelfLink() {
+	void linkResolutionWithTrailingSlashStripsSlashOnSelfLink() {
 		Map<String, Link> links = new EndpointLinksResolver(Collections.emptyList())
 				.resolveLinks("https://api.example.com/actuator/");
 		assertThat(links).hasSize(1);
@@ -48,7 +48,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	@Test
-	public void linkResolutionWithoutTrailingSlash() {
+	void linkResolutionWithoutTrailingSlash() {
 		Map<String, Link> links = new EndpointLinksResolver(Collections.emptyList())
 				.resolveLinks("https://api.example.com/actuator");
 		assertThat(links).hasSize(1);
@@ -56,7 +56,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForEachWebEndpointOperation() {
+	void resolvedLinksContainsALinkForEachWebEndpointOperation() {
 		List<WebOperation> operations = new ArrayList<>();
 		operations.add(operationWithPath("/alpha", "alpha"));
 		operations.add(operationWithPath("/alpha/{name}", "alpha-name"));
@@ -75,7 +75,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForServletEndpoint() {
+	void resolvedLinksContainsALinkForServletEndpoint() {
 		ExposableServletEndpoint servletEndpoint = mock(ExposableServletEndpoint.class);
 		given(servletEndpoint.getEndpointId()).willReturn(EndpointId.of("alpha"));
 		given(servletEndpoint.isEnableByDefault()).willReturn(true);
@@ -89,7 +89,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForControllerEndpoint() {
+	void resolvedLinksContainsALinkForControllerEndpoint() {
 		ExposableControllerEndpoint controllerEndpoint = mock(ExposableControllerEndpoint.class);
 		given(controllerEndpoint.getEndpointId()).willReturn(EndpointId.of("alpha"));
 		given(controllerEndpoint.isEnableByDefault()).willReturn(true);

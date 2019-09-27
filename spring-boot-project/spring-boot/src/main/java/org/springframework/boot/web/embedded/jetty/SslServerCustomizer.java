@@ -75,7 +75,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		server.setConnectors(new Connector[] { connector });
 	}
 
-	private ServerConnector createConnector(Server server, SslContextFactory sslContextFactory,
+	private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory,
 			InetSocketAddress address) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
@@ -88,20 +88,20 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		return connector;
 	}
 
-	private ServerConnector createServerConnector(Server server, SslContextFactory sslContextFactory,
+	private ServerConnector createServerConnector(Server server, SslContextFactory.Server sslContextFactory,
 			HttpConfiguration config) {
 		if (this.http2 == null || !this.http2.isEnabled()) {
 			return createHttp11ServerConnector(server, config, sslContextFactory);
 		}
 		Assert.state(isAlpnPresent(),
-				() -> "The 'org.eclipse.jetty:jetty-alpn-server' " + "dependency is required for HTTP/2 support.");
+				() -> "The 'org.eclipse.jetty:jetty-alpn-server' dependency is required for HTTP/2 support.");
 		Assert.state(isConscryptPresent(), () -> "The 'org.eclipse.jetty.http2:http2-server' and Conscrypt "
 				+ "dependencies are required for HTTP/2 support.");
 		return createHttp2ServerConnector(server, config, sslContextFactory);
 	}
 
 	private ServerConnector createHttp11ServerConnector(Server server, HttpConfiguration config,
-			SslContextFactory sslContextFactory) {
+			SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory,
 				HttpVersion.HTTP_1_1.asString());
@@ -117,7 +117,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createHttp2ServerConnector(Server server, HttpConfiguration config,
-			SslContextFactory sslContextFactory) {
+			SslContextFactory.Server sslContextFactory) {
 		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
 		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
 		sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
@@ -128,7 +128,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	/**
 	 * Configure the SSL connection.
-	 * @param factory the Jetty {@link SslContextFactory}.
+	 * @param factory the Jetty {@link Server SslContextFactory.Server}.
 	 * @param ssl the ssl details.
 	 * @param sslStoreProvider the ssl store provider
 	 */
@@ -169,7 +169,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslPasswords(SslContextFactory factory, Ssl ssl) {
+	private void configureSslPasswords(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getKeyStorePassword() != null) {
 			factory.setKeyStorePassword(ssl.getKeyStorePassword());
 		}
@@ -178,7 +178,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslKeyStore(SslContextFactory factory, Ssl ssl) {
+	private void configureSslKeyStore(SslContextFactory.Server factory, Ssl ssl) {
 		try {
 			URL url = ResourceUtils.getURL(ssl.getKeyStore());
 			factory.setKeyStoreResource(Resource.newResource(url));
@@ -194,7 +194,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 	}
 
-	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
+	private void configureSslTrustStore(SslContextFactory.Server factory, Ssl ssl) {
 		if (ssl.getTrustStorePassword() != null) {
 			factory.setTrustStorePassword(ssl.getTrustStorePassword());
 		}

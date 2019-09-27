@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
@@ -52,13 +52,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private HttpTraceRepository repository;
 
 	@Test
-	public void traces() throws Exception {
+	void traces() throws Exception {
 		TraceableRequest request = mock(TraceableRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
@@ -101,12 +101,12 @@ public class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocument
 								.description("Time, in milliseconds, taken to handle the exchange."))));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository repository) {
+		HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository repository) {
 			return new HttpTraceEndpoint(repository);
 		}
 

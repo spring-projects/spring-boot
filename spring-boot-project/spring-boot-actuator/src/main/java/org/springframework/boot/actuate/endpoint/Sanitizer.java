@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Strategy that should be used by endpoint implementations to sanitize potentially
@@ -29,16 +31,19 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Nicolas Lejeune
  * @author Stephane Nicoll
+ * @author HaiTao Zhang
  * @since 2.0.0
  */
 public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
+	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("[A-Za-z]+://.+:(.*)@.+$");
+
 	private Pattern[] keysToSanitize;
 
 	public Sanitizer() {
-		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command");
+		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command", "uri");
 	}
 
 	public Sanitizer(String... keysToSanitize) {
@@ -86,8 +91,21 @@ public class Sanitizer {
 		}
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
+				if (pattern.matcher("uri").matches()) {
+					return sanitizeUri(value);
+				}
 				return "******";
 			}
+		}
+		return value;
+	}
+
+	private Object sanitizeUri(Object value) {
+		String uriString = value.toString();
+		Matcher matcher = URI_USERINFO_PATTERN.matcher(uriString);
+		String password = matcher.matches() ? matcher.group(1) : null;
+		if (password != null) {
+			return StringUtils.replace(uriString, ":" + password + "@", ":******@");
 		}
 		return value;
 	}

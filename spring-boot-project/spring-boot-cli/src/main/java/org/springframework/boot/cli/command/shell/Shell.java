@@ -142,7 +142,7 @@ public class Shell {
 		String version = getClass().getPackage().getImplementationVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
-		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit " + "RETURN for help, and 'exit' to quit."));
+		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit RETURN for help, and 'exit' to quit."));
 	}
 
 	private void runInputLoop() throws Exception {
@@ -193,7 +193,7 @@ public class Shell {
 			super(null);
 		}
 
-		public void addAliases(String command, String... aliases) {
+		void addAliases(String command, String... aliases) {
 			for (String alias : aliases) {
 				this.aliases.put(alias, command);
 			}
@@ -219,7 +219,7 @@ public class Shell {
 		protected void afterRun(Command command) {
 		}
 
-		public boolean handleSigInt() {
+		boolean handleSigInt() {
 			Command command = this.lastCommand;
 			if (command != null && command instanceof RunProcessCommand) {
 				return ((RunProcessCommand) command).handleSigInt();

@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.List;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -33,6 +37,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -50,12 +55,12 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	static class SameManagementContextConfiguration implements SmartInitializingSingleton {
 
@@ -98,7 +103,7 @@ public class ManagementContextAutoConfiguration {
 			});
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableManagementContext(ManagementContextType.SAME)
 		static class EnableSameManagementContextConfiguration {
 
@@ -106,7 +111,7 @@ public class ManagementContextAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
@@ -127,12 +132,21 @@ public class ManagementContextAutoConfiguration {
 						.createManagementContext(this.applicationContext,
 								EnableChildManagementContextConfiguration.class,
 								PropertyPlaceholderAutoConfiguration.class);
+				if (isLazyInitialization()) {
+					managementContext.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
+				}
 				managementContext.setServerNamespace("management");
 				managementContext.setId(this.applicationContext.getId() + ":management");
 				setClassLoaderIfPossible(managementContext);
 				CloseManagementContextListener.addIfPossible(this.applicationContext, managementContext);
 				managementContext.refresh();
 			}
+		}
+
+		protected boolean isLazyInitialization() {
+			AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
+			List<BeanFactoryPostProcessor> postProcessors = context.getBeanFactoryPostProcessors();
+			return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 		}
 
 		private void setClassLoaderIfPossible(ConfigurableApplicationContext child) {
@@ -182,8 +196,7 @@ public class ManagementContextAutoConfiguration {
 			}
 		}
 
-		public static void addIfPossible(ApplicationContext parentContext,
-				ConfigurableApplicationContext childContext) {
+		static void addIfPossible(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
 			if (parentContext instanceof ConfigurableApplicationContext) {
 				add((ConfigurableApplicationContext) parentContext, childContext);
 			}

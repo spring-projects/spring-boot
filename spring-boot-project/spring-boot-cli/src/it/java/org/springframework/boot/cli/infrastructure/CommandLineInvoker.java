@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -46,12 +47,15 @@ public final class CommandLineInvoker {
 
 	private final File workingDirectory;
 
-	public CommandLineInvoker() {
-		this(new File("."));
+	private final File temp;
+
+	public CommandLineInvoker(File temp) {
+		this(new File("."), temp);
 	}
 
-	public CommandLineInvoker(File workingDirectory) {
+	public CommandLineInvoker(File workingDirectory, File temp) {
 		this.workingDirectory = workingDirectory;
+		this.temp = temp;
 	}
 
 	public Invocation invoke(String... args) throws IOException {
@@ -69,9 +73,9 @@ public final class CommandLineInvoker {
 	}
 
 	private File findLaunchScript() throws IOException {
-		File unpacked = new File("target/unpacked-cli");
+		File unpacked = new File(this.temp, "unpacked-cli");
 		if (!unpacked.isDirectory()) {
-			File zip = new File("target")
+			File zip = new BuildOutput(getClass()).getRootLocation()
 					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];
 			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;

@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -38,14 +38,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class NoUnboundElementsBindHandlerTests {
+class NoUnboundElementsBindHandlerTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
 
 	@Test
-	public void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
+	void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
@@ -56,7 +56,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBind() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		this.sources.add(source);
@@ -67,7 +67,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerThrowException() {
+	void bindWhenUsingNoUnboundElementsHandlerThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
@@ -80,7 +80,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("other.baz", "bar");
@@ -92,7 +92,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.other", "baz");
@@ -105,7 +105,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundCollectionProperties() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundCollectionProperties() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("example.foo[0]", "bar");
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
@@ -120,7 +120,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerAndUnboundListElementsShouldThrowException() {
+	void bindWhenUsingNoUnboundElementsHandlerAndUnboundListElementsShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo[0]", "bar");
 		this.sources.add(source);
@@ -131,29 +131,29 @@ public class NoUnboundElementsBindHandlerTests {
 						.contains("The elements [example.foo[0]] were left unbound"));
 	}
 
-	public static class Example {
+	static class Example {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
 	}
 
-	public static class ExampleWithList {
+	static class ExampleWithList {
 
 		private List<String> foo;
 
-		public List<String> getFoo() {
+		List<String> getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(List<String> foo) {
+		void setFoo(List<String> foo) {
 			this.foo = foo;
 		}
 

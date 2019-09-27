@@ -38,31 +38,22 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * @author Vedran Pavic
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ContextSource.class)
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {
 
-	private final LdapProperties properties;
-
-	private final Environment environment;
-
-	public LdapAutoConfiguration(LdapProperties properties, Environment environment) {
-		this.properties = properties;
-		this.environment = environment;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment) {
 		LdapContextSource source = new LdapContextSource();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertyMapper.from(this.properties.getUsername()).to(source::setUserDn);
-		propertyMapper.from(this.properties.getPassword()).to(source::setPassword);
-		propertyMapper.from(this.properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
-		propertyMapper.from(this.properties.getBase()).to(source::setBase);
-		propertyMapper.from(this.properties.determineUrls(this.environment)).to(source::setUrls);
-		propertyMapper.from(this.properties.getBaseEnvironment()).to(
+		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
+		propertyMapper.from(properties.getPassword()).to(source::setPassword);
+		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
+		propertyMapper.from(properties.getBase()).to(source::setBase);
+		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
+		propertyMapper.from(properties.getBaseEnvironment()).to(
 				(baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}

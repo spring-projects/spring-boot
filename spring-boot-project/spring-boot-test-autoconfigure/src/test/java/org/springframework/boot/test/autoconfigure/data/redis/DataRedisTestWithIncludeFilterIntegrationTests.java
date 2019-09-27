@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -28,22 +28,21 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test with custom include filter for {@link DataRedisTest}.
+ * Integration test with custom include filter for {@link DataRedisTest @DataRedisTest}.
  *
  * @author Jayaram Pradhan
  */
-@RunWith(SpringRunner.class)
+@Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(initializers = DataRedisTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataRedisTest(includeFilters = @Filter(Service.class))
-public class DataRedisTestWithIncludeFilterIntegrationTests {
+class DataRedisTestWithIncludeFilterIntegrationTests {
 
-	@ClassRule
-	public static RedisContainer redis = new RedisContainer();
+	@Container
+	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -52,7 +51,7 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 	private ExampleService service;
 
 	@Test
-	public void testService() {
+	void testService() {
 		PersonHash personHash = new PersonHash();
 		personHash.setDescription("Look, new @DataRedisTest!");
 		assertThat(personHash.getId()).isNull();
@@ -64,7 +63,7 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
+			TestPropertyValues.of("spring.redis.port=" + redis.getFirstMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

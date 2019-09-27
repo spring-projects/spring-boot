@@ -50,8 +50,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
- * using the {@link org.springframework.data.jpa.repository.config.EnableJpaRepositories}
- * annotation.
+ * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
@@ -60,13 +59,13 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * @since 1.0.0
  * @see EnableJpaRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@Import(JpaRepositoriesAutoConfigureRegistrar.class)
+@Import(JpaRepositoriesRegistrar.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 

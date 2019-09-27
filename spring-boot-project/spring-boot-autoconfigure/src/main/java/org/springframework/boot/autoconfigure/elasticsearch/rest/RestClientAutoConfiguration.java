@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
 @EnableConfigurationProperties(RestClientProperties.class)
 @Import({ RestClientConfigurations.RestClientBuilderConfiguration.class,

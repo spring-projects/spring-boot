@@ -21,7 +21,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
@@ -40,7 +41,7 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (AnnotatedElementUtils.findMergedAnnotation(testClass, Import.class) != null) {
+		if (MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY).isPresent(Import.class)) {
 			assertHasNoBeanMethods(testClass);
 			return new ImportsContextCustomizer(testClass);
 		}
@@ -52,7 +53,7 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	}
 
 	private void assertHasNoBeanMethods(Method method) {
-		Assert.state(!AnnotatedElementUtils.isAnnotated(method, Bean.class),
+		Assert.state(!MergedAnnotations.from(method).isPresent(Bean.class),
 				"Test classes cannot include @Bean methods");
 	}
 

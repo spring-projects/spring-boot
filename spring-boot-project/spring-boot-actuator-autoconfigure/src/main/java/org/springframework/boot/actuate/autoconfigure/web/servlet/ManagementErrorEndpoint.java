@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 
 /**
- * {@link Controller} for handling "/error" path when the management servlet is in a child
- * context. The regular {@link ErrorController} should be available there but because of
- * the way the handler mappings are set up it will not be detected.
+ * {@link Controller @Controller} for handling "/error" path when the management servlet
+ * is in a child context. The regular {@link ErrorController} should be available there
+ * but because of the way the handler mappings are set up it will not be detected.
  *
  * @author Dave Syer
  * @since 2.0.0

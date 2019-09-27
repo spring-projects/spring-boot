@@ -18,8 +18,8 @@ package org.springframework.boot.test.context;
 
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,52 +36,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class SpringBootContextLoaderTests {
+class SpringBootContextLoaderTests {
 
 	@Test
-	public void environmentPropertiesSimple() {
+	void environmentPropertiesSimple() {
 		Map<String, Object> config = getEnvironmentProperties(SimpleConfig.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "anotherKey", "anotherValue");
 	}
 
 	@Test
-	public void environmentPropertiesSimpleNonAlias() {
+	void environmentPropertiesSimpleNonAlias() {
 		Map<String, Object> config = getEnvironmentProperties(SimpleConfigNonAlias.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "anotherKey", "anotherValue");
 	}
 
 	@Test
-	public void environmentPropertiesOverrideDefaults() {
+	void environmentPropertiesOverrideDefaults() {
 		Map<String, Object> config = getEnvironmentProperties(OverrideConfig.class);
 		assertKey(config, "server.port", "2345");
 	}
 
 	@Test
-	public void environmentPropertiesAppend() {
+	void environmentPropertiesAppend() {
 		Map<String, Object> config = getEnvironmentProperties(AppendConfig.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "otherKey", "otherValue");
 	}
 
 	@Test
-	public void environmentPropertiesSeparatorInValue() {
+	void environmentPropertiesSeparatorInValue() {
 		Map<String, Object> config = getEnvironmentProperties(SameSeparatorInValue.class);
 		assertKey(config, "key", "my=Value");
 		assertKey(config, "anotherKey", "another:Value");
 	}
 
 	@Test
-	public void environmentPropertiesAnotherSeparatorInValue() {
+	void environmentPropertiesAnotherSeparatorInValue() {
 		Map<String, Object> config = getEnvironmentProperties(AnotherSeparatorInValue.class);
 		assertKey(config, "key", "my:Value");
 		assertKey(config, "anotherKey", "another=Value");
 	}
 
 	@Test
-	@Ignore
-	public void environmentPropertiesNewLineInValue() {
+	@Disabled
+	void environmentPropertiesNewLineInValue() {
 		// gh-4384
 		Map<String, Object> config = getEnvironmentProperties(NewLineInValue.class);
 		assertKey(config, "key", "myValue");
@@ -142,7 +142,7 @@ public class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 	}
@@ -150,13 +150,13 @@ public class SpringBootContextLoaderTests {
 	/**
 	 * {@link TestContextManager} which exposes the {@link TestContext}.
 	 */
-	private static class ExposedTestContextManager extends TestContextManager {
+	static class ExposedTestContextManager extends TestContextManager {
 
 		ExposedTestContextManager(Class<?> testClass) {
 			super(testClass);
 		}
 
-		public final TestContext getExposedTestContext() {
+		final TestContext getExposedTestContext() {
 			return super.getTestContext();
 		}
 

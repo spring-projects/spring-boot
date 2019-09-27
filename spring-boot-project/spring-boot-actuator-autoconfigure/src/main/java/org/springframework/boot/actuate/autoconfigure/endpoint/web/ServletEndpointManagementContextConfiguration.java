@@ -29,20 +29,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link ManagementContextConfiguration} for servlet endpoints.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for servlet
+ * endpoints.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
 
@@ -54,41 +54,27 @@ public class ServletEndpointManagementContextConfiguration {
 				exposure.getExclude());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
 	public static class WebMvcServletEndpointManagementContextConfiguration {
 
-		private final ApplicationContext context;
-
-		public WebMvcServletEndpointManagementContextConfiguration(ApplicationContext context) {
-			this.context = context;
-		}
-
 		@Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier) {
-			DispatcherServletPath dispatcherServletPath = this.context.getBean(DispatcherServletPath.class);
+				ServletEndpointsSupplier servletEndpointsSupplier, DispatcherServletPath dispatcherServletPath) {
 			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	public static class JerseyServletEndpointManagementContextConfiguration {
 
-		private final ApplicationContext context;
-
-		public JerseyServletEndpointManagementContextConfiguration(ApplicationContext context) {
-			this.context = context;
-		}
-
 		@Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier) {
-			JerseyApplicationPath jerseyApplicationPath = this.context.getBean(JerseyApplicationPath.class);
+				ServletEndpointsSupplier servletEndpointsSupplier, JerseyApplicationPath jerseyApplicationPath) {
 			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}

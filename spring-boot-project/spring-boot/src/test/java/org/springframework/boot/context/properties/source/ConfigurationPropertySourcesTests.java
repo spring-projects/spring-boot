@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -39,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertySourcesTests {
+class ConfigurationPropertySourcesTests {
 
 	@Test
-	public void attachShouldAddAdapterAtBeginning() {
+	void attachShouldAddAdapterAtBeginning() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system", Collections.singletonMap("SERVER_PORT", "1234")));
@@ -55,7 +55,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void attachShouldReAttachInMergedSetup() {
+	void attachShouldReAttachInMergedSetup() {
 		ConfigurableEnvironment parent = new StandardEnvironment();
 		ConfigurationPropertySources.attach(parent);
 		ConfigurableEnvironment child = new StandardEnvironment();
@@ -67,13 +67,13 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void getWhenNotAttachedShouldReturnAdapted() {
+	void getWhenNotAttachedShouldReturnAdapted() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		assertThat(ConfigurationPropertySources.get(environment)).isNotEmpty();
 	}
 
 	@Test
-	public void getWhenAttachedShouldReturnAttached() {
+	void getWhenAttachedShouldReturnAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addFirst(new MapPropertySource("test", Collections.singletonMap("a", "b")));
@@ -83,7 +83,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentPropertyExpansionShouldWorkWhenAttached() {
+	void environmentPropertyExpansionShouldWorkWhenAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
@@ -95,7 +95,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource() {
+	void fromPropertySourceShouldReturnSpringConfigurationPropertySource() {
 		PropertySource<?> source = new MapPropertySource("foo", Collections.singletonMap("foo", "bar"));
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources.from(source).iterator()
 				.next();
@@ -103,7 +103,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldFlattenPropertySources() {
+	void fromPropertySourceShouldFlattenPropertySources() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(new MapPropertySource("foo", Collections.singletonMap("foo", "bar")));
 		environment.getPropertySources().addFirst(new MapPropertySource("far", Collections.singletonMap("far", "far")));
@@ -118,7 +118,7 @@ public class ConfigurationPropertySourcesTests {
 		});
 		sources.addLast(new MapPropertySource("baz", Collections.singletonMap("baz", "barf")));
 		Iterable<ConfigurationPropertySource> configurationSources = ConfigurationPropertySources.from(sources);
-		assertThat(configurationSources.iterator()).hasSize(5);
+		assertThat(configurationSources.iterator()).toIterable().hasSize(5);
 	}
 
 }

@@ -42,7 +42,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(ProjectInfoAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)
 public class InfoContributorAutoConfiguration {
@@ -51,12 +51,6 @@ public class InfoContributorAutoConfiguration {
 	 * The default order for the core {@link InfoContributor} beans.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
-
-	private final InfoContributorProperties properties;
-
-	public InfoContributorAutoConfiguration(InfoContributorProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnEnabledInfoContributor("env")
@@ -70,8 +64,9 @@ public class InfoContributorAutoConfiguration {
 	@ConditionalOnSingleCandidate(GitProperties.class)
 	@ConditionalOnMissingBean
 	@Order(DEFAULT_ORDER)
-	public GitInfoContributor gitInfoContributor(GitProperties gitProperties) {
-		return new GitInfoContributor(gitProperties, this.properties.getGit().getMode());
+	public GitInfoContributor gitInfoContributor(GitProperties gitProperties,
+			InfoContributorProperties infoContributorProperties) {
+		return new GitInfoContributor(gitProperties, infoContributorProperties.getGit().getMode());
 	}
 
 	@Bean

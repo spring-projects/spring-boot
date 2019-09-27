@@ -61,9 +61,24 @@ public interface BindHandler {
 	}
 
 	/**
+	 * Called when binding of an element ends with an unbound result and a newly created
+	 * instance is about to be returned. Implementations may change the ultimately
+	 * returned result or perform addition validation.
+	 * @param name the name of the element being bound
+	 * @param target the item being bound
+	 * @param context the bind context
+	 * @param result the newly created instance (never {@code null})
+	 * @return the actual result that should be used (must not be {@code null})
+	 * @since 2.2.2
+	 */
+	default Object onCreate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+		return result;
+	}
+
+	/**
 	 * Called when binding fails for any reason (including failures from
-	 * {@link #onSuccess} calls). Implementations may choose to swallow exceptions and
-	 * return an alternative result.
+	 * {@link #onSuccess} or {@link #onCreate} calls). Implementations may choose to
+	 * swallow exceptions and return an alternative result.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context

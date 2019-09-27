@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,16 +30,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurationMetadataTests {
+class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
-	public void nullResource() throws IOException {
+	void nullResource() throws IOException {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
 	}
 
 	@Test
-	public void simpleRepository() throws IOException {
+	void simpleRepository() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo).build();
 			validateFoo(repo);
@@ -50,7 +50,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void hintsOnMaps() throws IOException {
+	void hintsOnMaps() throws IOException {
 		try (InputStream map = getInputStreamFor("map")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(map).build();
 			validateMap(repo);
@@ -62,7 +62,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void severalRepositoriesNoConflict() throws IOException {
+	void severalRepositoriesNoConflict() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo")) {
 			try (InputStream bar = getInputStreamFor("bar")) {
 				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, bar)
@@ -78,7 +78,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void repositoryWithRoot() throws IOException {
+	void repositoryWithRoot() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo")) {
 			try (InputStream root = getInputStreamFor("root")) {
 				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, root)
@@ -94,7 +94,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void severalRepositoriesIdenticalGroups() throws IOException {
+	void severalRepositoriesIdenticalGroups() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo")) {
 			try (InputStream foo2 = getInputStreamFor("foo2")) {
 				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2)
@@ -114,7 +114,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void emptyGroups() throws IOException {
+	void emptyGroups() throws IOException {
 		try (InputStream in = getInputStreamFor("empty-groups")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(in).build();
 			validateEmptyGroup(repo);
@@ -125,7 +125,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void multiGroups() throws IOException {
+	void multiGroups() throws IOException {
 		try (InputStream in = getInputStreamFor("multi-groups")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(in).build();
 			assertThat(repo.getAllGroups()).containsOnlyKeys("test.group.one.retry", "test.group.two.retry",
@@ -143,7 +143,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractCon
 	}
 
 	@Test
-	public void builderInstancesAreIsolated() throws IOException {
+	void builderInstancesAreIsolated() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo")) {
 			try (InputStream bar = getInputStreamFor("bar")) {
 				ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder

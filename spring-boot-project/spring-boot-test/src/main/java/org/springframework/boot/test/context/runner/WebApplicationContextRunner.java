@@ -22,12 +22,12 @@ import java.util.function.Supplier;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a Servlet
@@ -45,12 +45,12 @@ public final class WebApplicationContextRunner extends
 
 	/**
 	 * Create a new {@link WebApplicationContextRunner} instance using an
-	 * {@link AnnotationConfigWebApplicationContext} with a {@link MockServletContext} as
-	 * the underlying source.
+	 * {@link AnnotationConfigServletWebApplicationContext} with a
+	 * {@link MockServletContext} as the underlying source.
 	 * @see #withMockServletContext(Supplier)
 	 */
 	public WebApplicationContextRunner() {
-		this(withMockServletContext(AnnotationConfigWebApplicationContext::new));
+		this(withMockServletContext(AnnotationConfigServletWebApplicationContext::new));
 	}
 
 	/**
@@ -65,18 +65,20 @@ public final class WebApplicationContextRunner extends
 	private WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+				beanRegistrations, configurations);
 	}
 
 	@Override
 	protected WebApplicationContextRunner newInstance(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		return new WebApplicationContextRunner(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, configurations);
+				classLoader, parent, beanRegistrations, configurations);
 	}
 
 	/**

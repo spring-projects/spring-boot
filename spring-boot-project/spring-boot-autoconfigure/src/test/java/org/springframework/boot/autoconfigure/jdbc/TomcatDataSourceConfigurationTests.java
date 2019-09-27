@@ -21,8 +21,8 @@ import javax.sql.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
@@ -42,19 +42,19 @@ import static org.junit.Assert.fail;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceConfigurationTests {
+class TomcatDataSourceConfigurationTests {
 
 	private static final String PREFIX = "spring.datasource.tomcat.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
 	}
 
 	@Test
-	public void testDataSourceExists() {
+	void testDataSourceExists() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
@@ -63,7 +63,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourcePropertiesOverridden() throws Exception {
+	void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues
 				.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
@@ -95,7 +95,7 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	public void testDataSourceDefaultsPreserved() {
+	void testDataSourceDefaultsPreserved() {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues.of(PREFIX + "url:jdbc:h2:mem:testdb").applyTo(this.context);
 		this.context.refresh();
@@ -106,14 +106,14 @@ public class TomcatDataSourceConfigurationTests {
 		assertThat(ds.getValidationInterval()).isEqualTo(3000L);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	@EnableMBeanExport
-	protected static class TomcatDataSourceConfiguration {
+	static class TomcatDataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 

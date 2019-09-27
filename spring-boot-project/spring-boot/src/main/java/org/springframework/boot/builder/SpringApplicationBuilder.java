@@ -391,6 +391,17 @@ public class SpringApplicationBuilder {
 		return properties(getMapFromKeyValuePairs(defaultProperties));
 	}
 
+	/**
+	 * Flag to control whether the application should be initialized lazily.
+	 * @param lazyInitialization the flag to set. Defaults to false.
+	 * @return the current builder
+	 * @since 2.2
+	 */
+	public SpringApplicationBuilder lazyInitialization(boolean lazyInitialization) {
+		this.application.setLazyInitialization(lazyInitialization);
+		return this;
+	}
+
 	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -42,13 +42,13 @@ import static org.mockito.Mockito.mockingDetails;
  * @author Aurélien Leboulanger
  * @author Stephane Nicoll
  */
-public class ActiveMQAutoConfigurationTests {
+class ActiveMQAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class));
 
 	@Test
-	public void brokerIsEmbeddedByDefault() {
+	void brokerIsEmbeddedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
 			CachingConnectionFactory cachingConnectionFactory = context.getBean(CachingConnectionFactory.class);
@@ -61,13 +61,13 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
+	void configurationBacksOffWhenCustomConnectionFactoryExists() {
 		this.contextRunner.withUserConfiguration(CustomConnectionFactoryConfiguration.class).run(
 				(context) -> assertThat(mockingDetails(context.getBean(ConnectionFactory.class)).isMock()).isTrue());
 	}
 
 	@Test
-	public void connectionFactoryIsCachedByDefault() {
+	void connectionFactoryIsCachedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ConnectionFactory.class);
 			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
@@ -80,7 +80,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void connectionFactoryCachingCanBeCustomized() {
+	void connectionFactoryCachingCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.consumers=true", "spring.jms.cache.producers=false",
 						"spring.jms.cache.session-cache-size=10")
@@ -95,7 +95,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void connectionFactoryCachingCanBeDisabled() {
+	void connectionFactoryCachingCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.enabled=false").run((context) -> {
 					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class)).hasSize(1);
@@ -115,7 +115,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConnectionFactoryIsApplied() {
+	void customConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.enabled=false",
 						"spring.activemq.brokerUrl=vm://localhost?useJmx=false&broker.persistent=false",
@@ -136,7 +136,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPoolConnectionFactoryIsApplied() {
+	void defaultPoolConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true").run((context) -> {
 					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
@@ -159,7 +159,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPoolConnectionFactoryIsApplied() {
+	void customPoolConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true", "spring.activemq.pool.blockIfFull=false",
 						"spring.activemq.pool.blockIfFullTimeout=64", "spring.activemq.pool.idleTimeout=512",
@@ -180,20 +180,7 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void customPoolConnectionFactoryIsAppliedWithDeprecatedSettings() {
-		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled=true",
-						"spring.activemq.pool.maximumActiveSessionPerConnection=1024")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
-					JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
-					assertThat(connectionFactory.getMaxSessionsPerConnection()).isEqualTo(1024);
-				});
-	}
-
-	@Test
-	public void poolConnectionFactoryConfiguration() {
+	void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled:true").run((context) -> {
 					ConnectionFactory factory = context.getBean(ConnectionFactory.class);
@@ -204,39 +191,39 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void cachingConnectionFactoryNotOnTheClasspathThenSimpleConnectionFactoryAutoConfigured() {
+	void cachingConnectionFactoryNotOnTheClasspathThenSimpleConnectionFactoryAutoConfigured() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
 				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=false")
 				.run((context) -> assertThat(context).hasSingleBean(ActiveMQConnectionFactory.class));
 	}
 
 	@Test
-	public void cachingConnectionFactoryNotOnTheClasspathAndCacheEnabledThenSimpleConnectionFactoryNotConfigured() {
+	void cachingConnectionFactoryNotOnTheClasspathAndCacheEnabledThenSimpleConnectionFactoryNotConfigured() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
 				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=true")
 				.run((context) -> assertThat(context).doesNotHaveBean(ActiveMQConnectionFactory.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConnectionFactoryConfiguration {
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomizerConfiguration {
 
 		@Bean
-		public ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
+		ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
 			return (factory) -> {
 				factory.setBrokerURL("vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");

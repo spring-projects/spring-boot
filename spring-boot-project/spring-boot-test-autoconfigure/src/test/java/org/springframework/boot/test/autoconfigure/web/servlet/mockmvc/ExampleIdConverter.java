@@ -23,7 +23,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * Example {@link Converter} used with {@link WebMvcTest} tests.
+ * Example {@link Converter} used with {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Stephane Nicoll
  */

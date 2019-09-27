@@ -22,8 +22,8 @@
 		</dependency>
 		<!-- Test -->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -32,8 +32,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -44,8 +44,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test-support</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

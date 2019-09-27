@@ -30,7 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used by {@link ServletComponentScan}.
+ * {@link ImportBeanDefinitionRegistrar} used by
+ * {@link ServletComponentScan @ServletComponentScan}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
@@ -72,8 +73,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 				.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		Set<String> packagesToScan = new LinkedHashSet<>();
-		packagesToScan.addAll(Arrays.asList(basePackages));
+		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 		}

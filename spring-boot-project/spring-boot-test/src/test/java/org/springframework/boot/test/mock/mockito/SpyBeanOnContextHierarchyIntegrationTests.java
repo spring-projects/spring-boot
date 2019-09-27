@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +31,26 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test {@link SpyBean} can be used with a {@link ContextHierarchy}.
+ * Test {@link SpyBean @SpyBean} can be used with a
+ * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfig.class),
 		@ContextConfiguration(classes = ChildConfig.class) })
-public class SpyBeanOnContextHierarchyIntegrationTests {
+class SpyBeanOnContextHierarchyIntegrationTests {
 
 	@Autowired
 	private ChildConfig childConfig;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);
@@ -60,13 +61,13 @@ public class SpyBeanOnContextHierarchyIntegrationTests {
 		assertThat(context.getBean(ExampleServiceCaller.class)).isNotNull();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@SpyBean(SimpleExampleService.class)
 	static class ParentConfig {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@SpyBean(ExampleServiceCaller.class)
 	static class ChildConfig implements ApplicationContextAware {
 
@@ -77,7 +78,7 @@ public class SpyBeanOnContextHierarchyIntegrationTests {
 			this.context = applicationContext;
 		}
 
-		public ApplicationContext getContext() {
+		ApplicationContext getContext() {
 			return this.context;
 		}
 

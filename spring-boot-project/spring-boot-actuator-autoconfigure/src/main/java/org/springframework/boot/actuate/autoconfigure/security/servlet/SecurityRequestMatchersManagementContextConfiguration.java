@@ -45,7 +45,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SecurityRequestMatchersManagementContextConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
 	@ConditionalOnBean(DispatcherServletPath.class)
 	public static class MvcRequestMatcherConfiguration {
@@ -59,7 +59,7 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 	@ConditionalOnBean(JerseyApplicationPath.class)

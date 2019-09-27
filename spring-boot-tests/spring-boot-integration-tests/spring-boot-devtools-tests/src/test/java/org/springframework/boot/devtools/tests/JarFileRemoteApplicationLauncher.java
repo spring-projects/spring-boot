@@ -27,7 +27,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,24 +38,23 @@ import org.springframework.util.StringUtils;
  */
 public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher {
 
+	public JarFileRemoteApplicationLauncher(Directories directories) {
+		super(directories);
+	}
+
 	@Override
 	protected String createApplicationClassPath() throws Exception {
-		File appDirectory = new File("target/app");
-		if (appDirectory.isDirectory() && !FileSystemUtils.deleteRecursively(appDirectory.toPath())) {
-			throw new IllegalStateException("Failed to delete '" + appDirectory.getAbsolutePath() + "'");
-		}
-		appDirectory.mkdirs();
+		File appDirectory = getDirectories().getAppDirectory();
+		copyApplicationTo(appDirectory);
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		JarOutputStream output = new JarOutputStream(new FileOutputStream(new File(appDirectory, "app.jar")), manifest);
-		FileSystemUtils.copyRecursively(new File("target/test-classes/com"), new File("target/app/com"));
-		addToJar(output, new File("target/app/"), new File("target/app/"));
+		File appJar = new File(appDirectory, "app.jar");
+		JarOutputStream output = new JarOutputStream(new FileOutputStream(appJar), manifest);
+		addToJar(output, appDirectory, appDirectory);
 		output.close();
 		List<String> entries = new ArrayList<>();
-		entries.add("target/app/app.jar");
-		for (File jar : new File("target/dependencies").listFiles()) {
-			entries.add(jar.getAbsolutePath());
-		}
+		entries.add(appJar.getAbsolutePath());
+		entries.addAll(getDependencyJarPaths());
 		String classpath = StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 		return classpath;
 	}

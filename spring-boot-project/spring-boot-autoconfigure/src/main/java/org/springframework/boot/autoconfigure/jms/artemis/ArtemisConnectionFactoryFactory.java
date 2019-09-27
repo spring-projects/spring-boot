@@ -43,7 +43,8 @@ import org.springframework.util.StringUtils;
  */
 class ArtemisConnectionFactoryFactory {
 
-	static final String EMBEDDED_JMS_CLASS = "org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS";
+	static final String[] EMBEDDED_JMS_CLASSES = { "org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS",
+			"org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ" };
 
 	private final ArtemisProperties properties;
 
@@ -56,23 +57,25 @@ class ArtemisConnectionFactoryFactory {
 		this.properties = properties;
 	}
 
-	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			startEmbeddedJms();
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create " + "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException("Unable to create ActiveMQConnectionFactory", ex);
 		}
 	}
 
 	private void startEmbeddedJms() {
-		if (ClassUtils.isPresent(EMBEDDED_JMS_CLASS, null)) {
-			try {
-				this.beanFactory.getBeansOfType(Class.forName(EMBEDDED_JMS_CLASS));
-			}
-			catch (Exception ex) {
-				// Ignore
+		for (int i = 0; i < EMBEDDED_JMS_CLASSES.length; i++) {
+			if (ClassUtils.isPresent(EMBEDDED_JMS_CLASSES[i], null)) {
+				try {
+					this.beanFactory.getBeansOfType(Class.forName(EMBEDDED_JMS_CLASSES[i]));
+				}
+				catch (Exception ex) {
+					// Ignore
+				}
 			}
 		}
 	}
@@ -93,10 +96,19 @@ class ArtemisConnectionFactoryFactory {
 	 * @return the mode
 	 */
 	private ArtemisMode deduceMode() {
-		if (this.properties.getEmbedded().isEnabled() && ClassUtils.isPresent(EMBEDDED_JMS_CLASS, null)) {
+		if (this.properties.getEmbedded().isEnabled() && isEmbeddedJmsClassPresent()) {
 			return ArtemisMode.EMBEDDED;
 		}
 		return ArtemisMode.NATIVE;
+	}
+
+	private boolean isEmbeddedJmsClassPresent() {
+		for (int i = 0; i < EMBEDDED_JMS_CLASSES.length; i++) {
+			if (ClassUtils.isPresent(EMBEDDED_JMS_CLASSES[i], null)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(Class<T> factoryClass)
@@ -109,7 +121,7 @@ class ArtemisConnectionFactoryFactory {
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
-					+ "Artemis connection, ensure that artemis-jms-server.jar " + "is in the classpath", ex);
+					+ "Artemis connection, ensure that artemis-jms-server.jar is in the classpath", ex);
 		}
 	}
 

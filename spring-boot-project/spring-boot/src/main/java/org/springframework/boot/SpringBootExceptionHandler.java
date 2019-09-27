@@ -52,11 +52,11 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 		this.parent = parent;
 	}
 
-	public void registerLoggedException(Throwable exception) {
+	void registerLoggedException(Throwable exception) {
 		this.loggedExceptions.add(exception);
 	}
 
-	public void registerExitCode(int exitCode) {
+	void registerExitCode(int exitCode) {
 		this.exitCode = exitCode;
 	}
 

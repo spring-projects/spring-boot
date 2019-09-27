@@ -24,7 +24,7 @@ import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -41,18 +41,18 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseAutoConfigurationTests {
+class CouchbaseAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class));
 
 	@Test
-	public void bootstrapHostsIsRequired() {
+	void bootstrapHostsIsRequired() {
 		this.contextRunner.run(this::assertNoCouchbaseBeans);
 	}
 
 	@Test
-	public void bootstrapHostsNotRequiredIfCouchbaseConfigurerIsSet() {
+	void bootstrapHostsNotRequiredIfCouchbaseConfigurerIsSet() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class).run((context) -> {
 			assertThat(context).hasSingleBean(CouchbaseTestConfigurer.class);
 			// No beans are going to be created
@@ -61,7 +61,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void bootstrapHostsIgnoredIfCouchbaseConfigurerIsSet() {
+	void bootstrapHostsIgnoredIfCouchbaseConfigurerIsSet() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
 				.withPropertyValues("spring.couchbase.bootstrapHosts=localhost").run((context) -> {
 					assertThat(context).hasSingleBean(CouchbaseTestConfigurer.class);
@@ -76,7 +76,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeEnvEndpoints() {
+	void customizeEnvEndpoints() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.kvServiceConfig().minEndpoints()).isEqualTo(2);
 			assertThat(env.kvServiceConfig().maxEndpoints()).isEqualTo(2);
@@ -91,7 +91,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeEnvEndpointsUsesNewInfrastructure() {
+	void customizeEnvEndpointsUsesNewInfrastructure() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(3);
 			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(5);
@@ -104,7 +104,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeEnvEndpointsUsesNewInfrastructureWithOnlyMax() {
+	void customizeEnvEndpointsUsesNewInfrastructureWithOnlyMax() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(1);
 			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(5);
@@ -115,7 +115,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeEnvTimeouts() {
+	void customizeEnvTimeouts() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.connectTimeout()).isEqualTo(100);
 			assertThat(env.kvTimeout()).isEqualTo(200);
@@ -128,7 +128,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslNoEnabledFlag() {
+	void enableSslNoEnabledFlag() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.sslEnabled()).isTrue();
 			assertThat(env.sslKeystoreFile()).isEqualTo("foo");
@@ -137,7 +137,7 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableSslEvenWithKeyStore() {
+	void disableSslEvenWithKeyStore() {
 		testCouchbaseEnv((env) -> {
 			assertThat(env.sslEnabled()).isFalse();
 			assertThat(env.sslKeystoreFile()).isNull();
@@ -150,13 +150,14 @@ public class CouchbaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class).withPropertyValues(environment)
 				.run((context) -> {
 					CouchbaseProperties properties = context.getBean(CouchbaseProperties.class);
-					DefaultCouchbaseEnvironment env = new CouchbaseConfiguration(properties).couchbaseEnvironment();
+					DefaultCouchbaseEnvironment env = new CouchbaseConfiguration(properties)
+							.initializeEnvironmentBuilder(properties).build();
 					environmentConsumer.accept(env);
 				});
 	}
 
 	@Test
-	public void customizeEnvWithCustomCouchbaseConfiguration() {
+	void customizeEnvWithCustomCouchbaseConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomCouchbaseConfiguration.class)
 				.withPropertyValues("spring.couchbase.bootstrap-hosts=localhost",
 						"spring.couchbase.env.timeouts.connect=100")

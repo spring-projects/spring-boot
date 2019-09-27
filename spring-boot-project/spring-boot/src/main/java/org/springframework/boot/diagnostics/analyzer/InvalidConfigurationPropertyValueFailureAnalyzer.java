@@ -78,15 +78,15 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	private void appendDetails(StringBuilder message, InvalidConfigurationPropertyValueException cause,
 			List<Descriptor> descriptors) {
 		Descriptor mainDescriptor = descriptors.get(0);
-		message.append("Invalid value '" + mainDescriptor.getValue() + "' for configuration property '"
-				+ cause.getName() + "'");
+		message.append("Invalid value '").append(mainDescriptor.getValue()).append("' for configuration property '");
+		message.append(cause.getName()).append("'");
 		mainDescriptor.appendOrigin(message);
 		message.append(".");
 	}
 
 	private void appendReason(StringBuilder message, InvalidConfigurationPropertyValueException cause) {
 		if (StringUtils.hasText(cause.getReason())) {
-			message.append(String.format(" Validation failed for the following " + "reason:%n%n"));
+			message.append(String.format(" Validation failed for the following reason:%n%n"));
 			message.append(cause.getReason());
 		}
 		else {
@@ -98,11 +98,11 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 		List<Descriptor> others = descriptors.subList(1, descriptors.size());
 		if (!others.isEmpty()) {
 			message.append(
-					String.format("%n%nAdditionally, this property is also set in the following " + "property %s:%n%n",
+					String.format("%n%nAdditionally, this property is also set in the following property %s:%n%n",
 							(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
-				message.append("\t- In '" + other.getPropertySource() + "'");
-				message.append(" with the value '" + other.getValue() + "'");
+				message.append("\t- In '").append(other.getPropertySource()).append("'");
+				message.append(" with the value '").append(other.getValue()).append("'");
 				other.appendOrigin(message);
 				message.append(String.format(".%n"));
 			}
@@ -133,17 +133,17 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			this.origin = origin;
 		}
 
-		public String getPropertySource() {
+		String getPropertySource() {
 			return this.propertySource;
 		}
 
-		public Object getValue() {
+		Object getValue() {
 			return this.value;
 		}
 
-		public void appendOrigin(StringBuilder message) {
+		void appendOrigin(StringBuilder message) {
 			if (this.origin != null) {
-				message.append(" (originating from '" + this.origin + "')");
+				message.append(" (originating from '").append(this.origin).append("')");
 			}
 		}
 

@@ -164,7 +164,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * {@code b} is {@code null}. Returns -1 when the end of the stream is reached
 		 * @throws IOException in case of I/O errors
 		 */
-		public int doRead(byte[] b, int off, int len) throws IOException {
+		int doRead(byte[] b, int off, int len) throws IOException {
 			if (len == 0) {
 				return 0;
 			}

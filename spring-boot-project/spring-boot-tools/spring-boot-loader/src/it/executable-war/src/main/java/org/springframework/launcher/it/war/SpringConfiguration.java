@@ -25,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  *
  * @author Phillip Webb
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebMvc
 @ComponentScan
 public class SpringConfiguration {

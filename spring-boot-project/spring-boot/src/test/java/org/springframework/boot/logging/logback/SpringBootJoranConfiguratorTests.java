@@ -20,23 +20,22 @@ import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.
@@ -45,10 +44,8 @@ import static org.hamcrest.Matchers.not;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class SpringBootJoranConfiguratorTests {
-
-	@Rule
-	public OutputCapture out = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class SpringBootJoranConfiguratorTests {
 
 	private MockEnvironment environment;
 
@@ -60,8 +57,11 @@ public class SpringBootJoranConfiguratorTests {
 
 	private Logger logger;
 
-	@Before
-	public void setup() {
+	private CapturedOutput output;
+
+	@BeforeEach
+	void setup(CapturedOutput output) {
+		this.output = output;
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
 		this.configurator = new SpringBootJoranConfigurator(this.initializationContext);
@@ -70,96 +70,96 @@ public class SpringBootJoranConfiguratorTests {
 		this.logger = this.context.getLogger(getClass());
 	}
 
-	@After
-	public void reset() {
+	@AfterEach
+	void reset() {
 		this.context.stop();
 		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}
 
 	@Test
-	public void profileActive() throws Exception {
+	void profileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
-		this.out.expect(containsString("Hello"));
+		assertThat(this.output).contains("Hello");
 	}
 
 	@Test
-	public void multipleNamesFirstProfileActive() throws Exception {
+	void multipleNamesFirstProfileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("multi-profile-names.xml");
 		this.logger.trace("Hello");
-		this.out.expect(containsString("Hello"));
+		assertThat(this.output).contains("Hello");
 	}
 
 	@Test
-	public void multipleNamesSecondProfileActive() throws Exception {
+	void multipleNamesSecondProfileActive() throws Exception {
 		this.environment.setActiveProfiles("test");
 		initialize("multi-profile-names.xml");
 		this.logger.trace("Hello");
-		this.out.expect(containsString("Hello"));
+		assertThat(this.output).contains("Hello");
 	}
 
 	@Test
-	public void profileNotActive() throws Exception {
+	void profileNotActive() throws Exception {
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
-		this.out.expect(not(containsString("Hello")));
+		assertThat(this.output).doesNotContain("Hello");
 	}
 
 	@Test
-	public void profileExpressionMatchFirst() throws Exception {
+	void profileExpressionMatchFirst() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		this.out.expect(containsString("Hello"));
+		assertThat(this.output).contains("Hello");
 	}
 
 	@Test
-	public void profileExpressionMatchSecond() throws Exception {
+	void profileExpressionMatchSecond() throws Exception {
 		this.environment.setActiveProfiles("test");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		this.out.expect(containsString("Hello"));
+		assertThat(this.output).contains("Hello");
 	}
 
 	@Test
-	public void profileExpressionNoMatch() throws Exception {
+	void profileExpressionNoMatch() throws Exception {
 		this.environment.setActiveProfiles("development");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		this.out.expect(not(containsString("Hello")));
+		assertThat(this.output).doesNotContain("Hello");
 	}
 
 	@Test
-	public void profileNestedActiveActive() throws Exception {
+	void profileNestedActiveActive() throws Exception {
 		doTestNestedProfile(true, "outer", "inner");
 	}
 
 	@Test
-	public void profileNestedActiveNotActive() throws Exception {
+	void profileNestedActiveNotActive() throws Exception {
 		doTestNestedProfile(false, "outer");
 	}
 
 	@Test
-	public void profileNestedNotActiveActive() throws Exception {
+	void profileNestedNotActiveActive() throws Exception {
 		doTestNestedProfile(false, "inner");
 	}
 
 	@Test
-	public void profileNestedNotActiveNotActive() throws Exception {
+	void profileNestedNotActiveNotActive() throws Exception {
 		doTestNestedProfile(false);
 	}
 
 	@Test
-	public void springProperty() throws Exception {
+	void springProperty() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	@Test
-	public void relaxedSpringProperty() throws Exception {
+	void relaxedSpringProperty() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.EXAMPLE_PROPERTY=test");
 		ConfigurationPropertySources.attach(this.environment);
 		initialize("property.xml");
@@ -167,25 +167,25 @@ public class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
-	public void springPropertyNoValue() throws Exception {
+	void springPropertyNoValue() throws Exception {
 		initialize("property.xml");
 		assertThat(this.context.getProperty("SIMPLE")).isNull();
 	}
 
 	@Test
-	public void relaxedSpringPropertyNoValue() throws Exception {
+	void relaxedSpringPropertyNoValue() throws Exception {
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isNull();
 	}
 
 	@Test
-	public void springPropertyWithDefaultValue() throws Exception {
+	void springPropertyWithDefaultValue() throws Exception {
 		initialize("property-default-value.xml");
 		assertThat(this.context.getProperty("SIMPLE")).isEqualTo("foo");
 	}
 
 	@Test
-	public void relaxedSpringPropertyWithDefaultValue() throws Exception {
+	void relaxedSpringPropertyWithDefaultValue() throws Exception {
 		initialize("property-default-value.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
@@ -195,10 +195,10 @@ public class SpringBootJoranConfiguratorTests {
 		initialize("nested.xml");
 		this.logger.trace("Hello");
 		if (expected) {
-			this.out.expect(containsString("Hello"));
+			assertThat(this.output).contains("Hello");
 		}
 		else {
-			this.out.expect(not(containsString("Hello")));
+			assertThat(this.output).doesNotContain("Hello");
 		}
 
 	}

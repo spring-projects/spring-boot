@@ -42,7 +42,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose the {@link ConditionEvaluationReport}.
+ * {@link Endpoint @Endpoint} to expose the {@link ConditionEvaluationReport}.
  *
  * @author Greg Turnquist
  * @author Phillip Webb

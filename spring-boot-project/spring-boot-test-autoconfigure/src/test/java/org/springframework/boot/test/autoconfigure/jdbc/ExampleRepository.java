@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * Example repository used with {@link JdbcTest} tests.
+ * Example repository used with {@link JdbcTest @JdbcTest} tests.
  *
  * @author Stephane Nicoll
  */
@@ -56,7 +56,7 @@ public class ExampleRepository {
 		return this.jdbcTemplate.query("select id, name from example", ROW_MAPPER);
 	}
 
-	private static class ExampleEntityRowMapper implements RowMapper<ExampleEntity> {
+	static class ExampleEntityRowMapper implements RowMapper<ExampleEntity> {
 
 		@Override
 		public ExampleEntity mapRow(ResultSet rs, int rowNum) throws SQLException {

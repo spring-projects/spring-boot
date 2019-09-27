@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Yunkun Huang
  */
-public class JspTemplateAvailabilityProviderTests {
+class JspTemplateAvailabilityProviderTests {
 
 	private final JspTemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider();
 
@@ -38,18 +38,18 @@ public class JspTemplateAvailabilityProviderTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void availabilityOfTemplateThatDoesNotExist() {
+	void availabilityOfTemplateThatDoesNotExist() {
 		assertThat(isTemplateAvailable("whatever")).isFalse();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomPrefix() {
+	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		assertThat(isTemplateAvailable("custom.jsp")).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomSuffix() {
+	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
 		assertThat(isTemplateAvailable("suffixed")).isTrue();

@@ -48,7 +48,8 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 		if (properties.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return Collections.singletonList(new OriginTrackedMapPropertySource(name, properties));
+		return Collections
+				.singletonList(new OriginTrackedMapPropertySource(name, Collections.unmodifiableMap(properties), true));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

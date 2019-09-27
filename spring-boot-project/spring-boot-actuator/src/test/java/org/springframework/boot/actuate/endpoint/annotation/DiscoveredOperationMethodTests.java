@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationMethodTests {
+class DiscoveredOperationMethodTests {
 
 	@Test
-	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
+	void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
@@ -43,7 +43,7 @@ public class DiscoveredOperationMethodTests {
 	}
 
 	@Test
-	public void getProducesMediaTypesShouldReturnMediaTypes() {
+	void getProducesMediaTypesShouldReturnMediaTypes() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
@@ -53,7 +53,7 @@ public class DiscoveredOperationMethodTests {
 		assertThat(discovered.getProducesMediaTypes()).containsExactly("application/json");
 	}
 
-	public void example() {
+	void example() {
 	}
 
 }

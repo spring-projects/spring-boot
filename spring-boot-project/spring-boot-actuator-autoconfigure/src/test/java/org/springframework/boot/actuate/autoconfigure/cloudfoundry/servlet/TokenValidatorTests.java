@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Madhura Bhave
  */
-public class TokenValidatorTests {
+class TokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
 
@@ -83,14 +83,14 @@ public class TokenValidatorTests {
 
 	private static final Map<String, String> VALID_KEYS = Collections.singletonMap("valid-key", VALID_KEY);
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.tokenValidator = new TokenValidator(this.securityService);
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException() throws Exception {
+	void validateTokenWhenKidValidationFailsTwiceShouldThrowException() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(INVALID_KEYS);
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
@@ -101,7 +101,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt() throws Exception {
+	void validateTokenWhenKidValidationSucceedsInTheSecondAttempt() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
@@ -112,7 +112,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenShouldFetchTokenKeysIfNull() throws Exception {
+	void validateTokenShouldFetchTokenKeysIfNull() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
@@ -122,7 +122,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenValidShouldNotFetchTokenKeys() throws Exception {
+	void validateTokenWhenValidShouldNotFetchTokenKeys() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
@@ -132,7 +132,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
+	void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys",
 				Collections.singletonMap("valid-key", INVALID_KEY));
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
@@ -144,7 +144,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException() throws Exception {
+	void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		String header = "{ \"alg\": \"HS256\",  \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
@@ -154,7 +154,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenExpiredShouldThrowException() throws Exception {
+	void validateTokenWhenExpiredShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
@@ -165,7 +165,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
+	void validateTokenWhenIssuerIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("https://other-uaa.com");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
@@ -176,7 +176,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenAudienceIsNotValidShouldThrowException() throws Exception {
+	void validateTokenWhenAudienceIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";

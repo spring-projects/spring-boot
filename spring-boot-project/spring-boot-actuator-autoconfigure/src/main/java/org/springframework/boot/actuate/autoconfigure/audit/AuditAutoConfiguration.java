@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.audit;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.audit.listener.AbstractAuditListener;
 import org.springframework.boot.actuate.audit.listener.AuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthenticationAuditListener;
@@ -27,8 +25,10 @@ import org.springframework.boot.actuate.security.AbstractAuthorizationAuditListe
 import org.springframework.boot.actuate.security.AuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,19 +39,15 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnBean(AuditEventRepository.class)
+@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled", matchIfMissing = true)
 public class AuditAutoConfiguration {
-
-	private final AuditEventRepository auditEventRepository;
-
-	public AuditAutoConfiguration(ObjectProvider<AuditEventRepository> auditEventRepository) {
-		this.auditEventRepository = auditEventRepository.getIfAvailable();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(AbstractAuditListener.class)
-	public AuditListener auditListener() throws Exception {
-		return new AuditListener(this.auditEventRepository);
+	public AuditListener auditListener(AuditEventRepository auditEventRepository) {
+		return new AuditListener(auditEventRepository);
 	}
 
 	@Bean
@@ -66,17 +62,6 @@ public class AuditAutoConfiguration {
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();
-	}
-
-	@Configuration
-	@ConditionalOnMissingBean(AuditEventRepository.class)
-	protected static class AuditEventRepositoryConfiguration {
-
-		@Bean
-		public InMemoryAuditEventRepository auditEventRepository() throws Exception {
-			return new InMemoryAuditEventRepository();
-		}
-
 	}
 
 }

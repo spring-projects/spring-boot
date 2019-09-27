@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.core.CollectionFactory;
+
 /**
  * A {@code BuildPropertiesWriter} writes the {@code build-info.properties} for
  * consumption by the Actuator.
@@ -68,7 +70,7 @@ public final class BuildPropertiesWriter {
 	}
 
 	protected Properties createBuildInfo(ProjectDetails project) {
-		Properties properties = new Properties();
+		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.put("build.group", project.getGroup());
 		properties.put("build.artifact", project.getArtifact());
 		properties.put("build.name", project.getName());

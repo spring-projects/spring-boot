@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.validation.Configuration;
 import javax.validation.Validation;
 
-import org.apache.catalina.mbeans.MBeanFactory;
-
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
@@ -68,7 +66,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
-				&& event instanceof ApplicationStartingEvent && preinitializationStarted.compareAndSet(false, true)) {
+				&& event instanceof ApplicationStartingEvent && multipleProcessors()
+				&& preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
 		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
@@ -82,6 +81,10 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		}
 	}
 
+	private boolean multipleProcessors() {
+		return Runtime.getRuntime().availableProcessors() > 1;
+	}
+
 	private void performPreinitialization() {
 		try {
 			Thread thread = new Thread(new Runnable() {
@@ -91,7 +94,6 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
 					runSafely(new MessageConverterInitializer());
-					runSafely(new MBeanFactoryInitializer());
 					runSafely(new JacksonInitializer());
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
@@ -125,18 +127,6 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		@Override
 		public void run() {
 			new AllEncompassingFormHttpMessageConverter();
-		}
-
-	}
-
-	/**
-	 * Early initializer to load Tomcat MBean XML.
-	 */
-	private static class MBeanFactoryInitializer implements Runnable {
-
-		@Override
-		public void run() {
-			new MBeanFactory();
 		}
 
 	}

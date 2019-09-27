@@ -36,7 +36,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoOperations.class, MongoOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)

@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.TaskSchedulerCustomizer;
@@ -45,30 +45,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class TaskSchedulingAutoConfigurationTests {
+class TaskSchedulingAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class));
 
 	@Test
-	public void noSchedulingDoesNotExposeTaskScheduler() {
+	void noSchedulingDoesNotExposeTaskScheduler() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TaskScheduler.class));
 	}
 
 	@Test
-	public void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
-		this.contextRunner.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
+	void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
+		this.contextRunner
+				.withPropertyValues("spring.task.scheduling.shutdown.await-termination=true",
+						"spring.task.scheduling.shutdown.await-termination-period=30s",
+						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withUserConfiguration(SchedulingConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
+					TaskExecutor taskExecutor = context.getBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
 					assertThat(bean.threadNames).allMatch((name) -> name.contains("scheduling-test-"));
 				});
 	}
 
 	@Test
-	public void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
+	void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
 		this.contextRunner.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerCustomizerConfiguration.class)
 				.run((context) -> {
@@ -80,7 +86,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithExistingTaskSchedulerBacksOff() {
+	void enableSchedulingWithExistingTaskSchedulerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskScheduler.class);
@@ -92,7 +98,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
+	void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
 		this.contextRunner
 				.withUserConfiguration(SchedulingConfiguration.class, ScheduledExecutorServiceConfiguration.class)
 				.run((context) -> {
@@ -105,7 +111,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithConfigurerBacksOff() {
+	void enableSchedulingWithConfigurerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, SchedulingConfigurerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);
@@ -115,43 +121,43 @@ public class TaskSchedulingAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class SchedulingConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskSchedulerConfiguration {
 
 		@Bean
-		public TaskScheduler customTaskScheduler() {
+		TaskScheduler customTaskScheduler() {
 			return new TestTaskScheduler();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ScheduledExecutorServiceConfiguration {
 
 		@Bean
-		public ScheduledExecutorService customScheduledExecutorService() {
+		ScheduledExecutorService customScheduledExecutorService() {
 			return Executors.newScheduledThreadPool(2);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TaskSchedulerCustomizerConfiguration {
 
 		@Bean
-		public TaskSchedulerCustomizer testTaskSchedulerCustomizer() {
+		TaskSchedulerCustomizer testTaskSchedulerCustomizer() {
 			return ((taskScheduler) -> taskScheduler.setThreadNamePrefix("customized-scheduler-"));
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SchedulingConfigurerConfiguration implements SchedulingConfigurer {
 
 		private final TaskScheduler taskScheduler = new TestTaskScheduler();
@@ -163,11 +169,11 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
-		public TestBean testBean() {
+		TestBean testBean() {
 			return new TestBean();
 		}
 
@@ -180,7 +186,7 @@ public class TaskSchedulingAutoConfigurationTests {
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Scheduled(fixedRate = 60000)
-		public void accumulate() {
+		void accumulate() {
 			this.threadNames.add(Thread.currentThread().getName());
 			this.latch.countDown();
 		}

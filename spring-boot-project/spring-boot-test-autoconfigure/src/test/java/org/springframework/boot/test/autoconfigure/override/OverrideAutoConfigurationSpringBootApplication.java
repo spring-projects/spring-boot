@@ -23,7 +23,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 
 /**
  * Example {@link SpringBootApplication @SpringBootApplication} for use with
- * {@link OverrideAutoConfiguration} tests.
+ * {@link OverrideAutoConfiguration @OverrideAutoConfiguration} tests.
  *
  * @author Andy Wilkinson
  */

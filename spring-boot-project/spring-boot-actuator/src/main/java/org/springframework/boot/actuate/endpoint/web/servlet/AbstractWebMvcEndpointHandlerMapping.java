@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -39,9 +41,13 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,6 +87,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	private final CorsConfiguration corsConfiguration;
 
+	private final boolean shouldRegisterLinksMapping;
+
 	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
 			HttpServletRequest.class, Map.class);
 
@@ -92,10 +100,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes) {
-		this(endpointMapping, endpoints, endpointMediaTypes, null);
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			boolean shouldRegisterLinksMapping) {
+		this(endpointMapping, endpoints, endpointMediaTypes, null, shouldRegisterLinksMapping);
 	}
 
 	/**
@@ -105,14 +115,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration) {
+			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
+		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
 		setOrder(-100);
 	}
 
@@ -123,7 +135,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				registerMappingForOperation(endpoint, operation);
 			}
 		}
-		if (StringUtils.hasText(this.endpointMapping.getPath())) {
+		if (this.shouldRegisterLinksMapping) {
 			registerLinksMapping();
 		}
 	}
@@ -156,9 +168,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
+		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
+		String path = predicate.getPath();
+		String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
+		if (matchAllRemainingPathSegmentsVariable != null) {
+			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}", "**");
+		}
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
 				new ServletWebOperationAdapter(operation));
-		registerMapping(createRequestMappingInfo(operation), new OperationHandler(servletWebOperation),
+		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
 
@@ -175,9 +193,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return servletWebOperation;
 	}
 
-	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
-		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-		PatternsRequestCondition patterns = patternsRequestConditionForPattern(predicate.getPath());
+	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
+		PatternsRequestCondition patterns = patternsRequestConditionForPattern(path);
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
@@ -202,6 +219,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
 		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(), builderConfig.getPathMatcher(),
 				builderConfig.useSuffixPatternMatch(), builderConfig.useTrailingSlashMatch());
+	}
+
+	@Override
+	protected boolean hasCorsConfigurationSource(Object handler) {
+		return this.corsConfiguration != null;
 	}
 
 	@Override
@@ -264,6 +286,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 */
 	private class ServletWebOperationAdapter implements ServletWebOperation {
 
+		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
+
 		private final WebOperation operation;
 
 		ServletWebOperationAdapter(WebOperation operation) {
@@ -272,11 +296,13 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@Override
 		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
-				return handleResult(
-						this.operation.invoke(new InvocationContext(new ServletSecurityContext(request), arguments)),
-						HttpMethod.valueOf(request.getMethod()));
+				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(headers);
+				ServletSecurityContext securityContext = new ServletSecurityContext(request);
+				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
 				throw new BadOperationRequestException(ex.getReason());
@@ -289,14 +315,42 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
-			Map<String, Object> arguments = new LinkedHashMap<>();
-			arguments.putAll(getTemplateVariables(request));
+			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(request));
+			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
+					.getMatchAllRemainingPathSegmentsVariable();
+			if (matchAllRemainingPathSegmentsVariable != null) {
+				arguments.put(matchAllRemainingPathSegmentsVariable, getRemainingPathSegments(request));
+			}
 			if (body != null && HttpMethod.POST.name().equals(request.getMethod())) {
 				arguments.putAll(body);
 			}
 			request.getParameterMap().forEach(
 					(name, values) -> arguments.put(name, (values.length != 1) ? Arrays.asList(values) : values[0]));
 			return arguments;
+		}
+
+		private Object getRemainingPathSegments(HttpServletRequest request) {
+			String[] pathTokens = tokenize(request, HandlerMapping.LOOKUP_PATH, true);
+			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
+			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
+			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");
+			String[] remainingPathSegments = new String[numberOfRemainingPathSegments];
+			System.arraycopy(pathTokens, patternTokens.length - 1, remainingPathSegments, 0,
+					numberOfRemainingPathSegments);
+			return remainingPathSegments;
+		}
+
+		private String[] tokenize(HttpServletRequest request, String attributeName, boolean decode) {
+			String value = (String) request.getAttribute(attributeName);
+			String[] segments = StringUtils.tokenizeToStringArray(value, PATH_SEPARATOR, false, true);
+			if (decode) {
+				for (int i = 0; i < segments.length; i++) {
+					if (segments[i].contains("%")) {
+						segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
+					}
+				}
+			}
+			return segments;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -330,7 +384,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		@ResponseBody
-		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}
 

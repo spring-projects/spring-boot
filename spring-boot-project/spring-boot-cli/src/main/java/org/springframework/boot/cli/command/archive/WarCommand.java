@@ -36,8 +36,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
 public class WarCommand extends ArchiveCommand {
 
 	public WarCommand() {
-		super("war", "Create a self-contained executable war " + "file from a Spring Groovy script",
-				new WarOptionHandler());
+		super("war", "Create a self-contained executable war file from a Spring Groovy script", new WarOptionHandler());
 	}
 
 	private static final class WarOptionHandler extends ArchiveOptionHandler {
@@ -57,7 +56,7 @@ public class WarCommand extends ArchiveCommand {
 
 		@Override
 		protected void addCliClasses(JarWriter writer) throws IOException {
-			addClass(writer, null, "org.springframework.boot." + "cli.app.SpringApplicationWebApplicationInitializer");
+			addClass(writer, null, "org.springframework.boot.cli.app.SpringApplicationWebApplicationInitializer");
 			super.addCliClasses(writer);
 		}
 

@@ -20,7 +20,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 /**
- * Example {@link SpringBootApplication} used with {@link WebMvcTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  */

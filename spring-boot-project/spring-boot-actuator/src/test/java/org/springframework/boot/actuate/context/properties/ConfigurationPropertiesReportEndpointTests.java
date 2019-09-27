@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
@@ -45,11 +47,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author HaiTao Zhang
  */
-public class ConfigurationPropertiesReportEndpointTests {
+class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
-	public void configurationPropertiesAreReturned() {
+	void configurationPropertiesAreReturned() {
 		load((context, properties) -> {
 			assertThat(properties.getBeans().size()).isGreaterThan(0);
 			ConfigurationPropertiesBeanDescriptor nestedProperties = properties.getBeans().get("testProperties");
@@ -60,7 +63,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void entriesWithNullValuesAreNotIncluded() {
+	void entriesWithNullValuesAreNotIncluded() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).doesNotContainKey("nullValue");
@@ -68,7 +71,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void defaultKeySanitization() {
+	void defaultKeySanitization() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -78,7 +81,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customKeySanitization() {
+	void customKeySanitization() {
 		load("property", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -88,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customPatternKeySanitization() {
+	void customPatternKeySanitization() {
 		load(".*pass.*", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
@@ -99,7 +102,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void keySanitizationWithCustomPatternUsingCompositeKeys() {
+	void keySanitizationWithCustomPatternUsingCompositeKeys() {
 		// gh-4415
 		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"), (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
@@ -113,7 +116,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void nonCamelCaseProperty() {
+	void nonCamelCaseProperty() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("myURL")).isEqualTo("https://example.com");
@@ -121,7 +124,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void simpleBoolean() {
+	void simpleBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("simpleBoolean")).isEqualTo(true);
@@ -129,7 +132,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedBoolean() {
+	void mixedBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
@@ -137,7 +140,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedCase() {
+	void mixedCase() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mIxedCase")).isEqualTo("mixed");
@@ -145,7 +148,15 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void singleLetterProperty() {
+	void duration() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
+			assertThat(nestedProperties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString());
+		});
+	}
+
+	@Test
+	void singleLetterProperty() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("z")).isEqualTo("zzz");
@@ -154,7 +165,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsAreSanitized() {
+	void listsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
@@ -166,8 +177,24 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
+	void sanitizedUriWithSensitiveInfo() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
+			assertThat(nestedProperties.get("sensitiveUri")).isEqualTo("http://user:******@localhost:8080");
+		});
+	}
+
+	@Test
+	void sanitizedUriWithNoPassword() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
+			assertThat(nestedProperties.get("noPasswordUri")).isEqualTo("http://user:******@localhost:8080");
+		});
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
-	public void listsOfListsAreSanitized() {
+	void listsOfListsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
 			assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
@@ -201,28 +228,28 @@ public class ConfigurationPropertiesReportEndpointTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Parent {
+	static class Parent {
 
 		@Bean
-		public TestProperties testProperties() {
+		TestProperties testProperties() {
 			return new TestProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
-		public TestProperties testProperties() {
+		TestProperties testProperties() {
 			return new TestProperties();
 		}
 
@@ -255,7 +282,13 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 		private String nullValue = null;
 
-		public TestProperties() {
+		private Duration duration = Duration.ofSeconds(10);
+
+		private URI sensitiveUri = URI.create("http://user:password@localhost:8080");
+
+		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
+
+		TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
 			this.listItems.add(new ListItem());
@@ -356,6 +389,30 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 		public void setNullValue(String nullValue) {
 			this.nullValue = nullValue;
+		}
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public void setDuration(Duration duration) {
+			this.duration = duration;
+		}
+
+		public void setSensitiveUri(URI sensitiveUri) {
+			this.sensitiveUri = sensitiveUri;
+		}
+
+		public URI getSensitiveUri() {
+			return this.sensitiveUri;
+		}
+
+		public void setNoPasswordUri(URI noPasswordUri) {
+			this.noPasswordUri = noPasswordUri;
+		}
+
+		public URI getNoPasswordUri() {
+			return this.noPasswordUri;
 		}
 
 		public static class Hidden {

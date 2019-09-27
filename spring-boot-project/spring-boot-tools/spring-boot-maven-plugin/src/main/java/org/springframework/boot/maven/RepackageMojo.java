@@ -139,7 +139,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * archive type.
 	 * @since 1.0.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.repackage.layout")
 	private LayoutType layout;
 
 	/**
@@ -193,7 +193,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Exclude Spring Boot devtools from the repackaged archive.
 	 * @since 1.3.0
 	 */
-	@Parameter(defaultValue = "true")
+	@Parameter(property = "spring-boot.repackage.excludeDevtools", defaultValue = "true")
 	private boolean excludeDevtools = true;
 
 	/**
@@ -360,7 +360,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		@Override
 		public void handleTimeoutWarning(long duration, String mainMethod) {
 			getLog().warn("Searching for the main-class is taking some time, "
-					+ "consider using the mainClass configuration " + "parameter");
+					+ "consider using the mainClass configuration parameter");
 		}
 
 	}

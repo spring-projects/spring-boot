@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.management;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,8 +29,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnEnabledEndpoint(endpoint = ThreadDumpEndpoint.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnAvailableEndpoint(endpoint = ThreadDumpEndpoint.class)
 public class ThreadDumpEndpointAutoConfiguration {
 
 	@Bean

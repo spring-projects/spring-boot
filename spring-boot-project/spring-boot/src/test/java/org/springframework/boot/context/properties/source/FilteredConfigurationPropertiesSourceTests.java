@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Objects;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,17 +32,17 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class FilteredConfigurationPropertiesSourceTests {
+class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() {
+	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void createWhenFilterIsNullShouldThrowException() {
+	void createWhenFilterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
 						() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
@@ -50,7 +50,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void getValueShouldFilterNames() {
+	void getValueShouldFilterNames() {
 		ConfigurationPropertySource source = createTestSource();
 		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
@@ -62,7 +62,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
+	void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.UNKNOWN);
@@ -71,7 +71,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
+	void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.ABSENT);
@@ -80,7 +80,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
+	void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
 		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.PRESENT);
@@ -103,7 +103,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
-		return name.toString().indexOf("[") == -1;
+		return !name.toString().contains("[");
 	}
 
 }

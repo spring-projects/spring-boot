@@ -98,23 +98,23 @@ class PropertyMigration {
 		return candidate;
 	}
 
-	public ConfigurationProperty getProperty() {
+	ConfigurationProperty getProperty() {
 		return this.property;
 	}
 
-	public Integer getLineNumber() {
+	Integer getLineNumber() {
 		return this.lineNumber;
 	}
 
-	public ConfigurationMetadataProperty getMetadata() {
+	ConfigurationMetadataProperty getMetadata() {
 		return this.metadata;
 	}
 
-	public boolean isCompatibleType() {
+	boolean isCompatibleType() {
 		return this.compatibleType;
 	}
 
-	public String determineReason() {
+	String determineReason() {
 		if (this.compatibleType) {
 			return "Replacement: " + this.metadata.getDeprecation().getReplacement();
 		}

@@ -62,7 +62,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 	private static final String[] LOCATION_PATTERN_PREFIXES = { CLASSPATH_ALL_URL_PREFIX, CLASSPATH_URL_PREFIX };
 
-	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context." + "WebApplicationContext";
+	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
 	private final ResourcePatternResolver patternResolverDelegate;
 
@@ -199,7 +199,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	 */
 	private static class ResourcePatternResolverFactory {
 
-		public ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
+		ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
 				ResourceLoader resourceLoader) {
 			ResourceLoader targetResourceLoader = (resourceLoader != null) ? resourceLoader
 					: new ApplicationContextResourceLoader(applicationContext::getProtocolResolvers);

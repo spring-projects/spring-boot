@@ -39,10 +39,10 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
  *
  * @author Brian Clozel
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class ClientHttpConnectorConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
 	@ConditionalOnMissingBean(ClientHttpConnector.class)
 	public static class ReactorNetty {
@@ -60,7 +60,7 @@ class ClientHttpConnectorConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.eclipse.jetty.reactive.client.ReactiveRequest.class)
 	@ConditionalOnMissingBean(ClientHttpConnector.class)
 	public static class JettyClient {
@@ -75,10 +75,7 @@ class ClientHttpConnectorConfiguration {
 		public JettyClientHttpConnector jettyClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
 			SslContextFactory sslContextFactory = new SslContextFactory.Client();
 			HttpClient httpClient = new HttpClient(sslContextFactory);
-			httpClient.setExecutor(jettyResourceFactory.getExecutor());
-			httpClient.setByteBufferPool(jettyResourceFactory.getByteBufferPool());
-			httpClient.setScheduler(jettyResourceFactory.getScheduler());
-			return new JettyClientHttpConnector(httpClient);
+			return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
 		}
 
 	}

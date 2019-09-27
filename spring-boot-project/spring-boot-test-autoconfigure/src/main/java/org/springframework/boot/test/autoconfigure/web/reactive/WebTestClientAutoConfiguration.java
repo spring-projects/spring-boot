@@ -45,7 +45,7 @@ import org.springframework.web.server.WebHandler;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ WebClient.class, WebTestClient.class })
 @AutoConfigureAfter({ CodecsAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @Import(WebTestClientSecurityConfiguration.class)

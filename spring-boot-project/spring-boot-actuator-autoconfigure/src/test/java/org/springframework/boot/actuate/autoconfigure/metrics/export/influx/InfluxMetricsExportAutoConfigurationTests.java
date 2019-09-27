@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,24 +34,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class InfluxMetricsExportAutoConfigurationTests {
+class InfluxMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(InfluxMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresItsConfigAndMeterRegistry() {
+	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(InfluxMeterRegistry.class).hasSingleBean(InfluxConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.influx.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InfluxMeterRegistry.class)
@@ -59,19 +59,19 @@ public class InfluxMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(InfluxMeterRegistry.class).hasSingleBean(InfluxConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(InfluxMeterRegistry.class).hasBean("customRegistry").hasSingleBean(InfluxConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			InfluxMeterRegistry registry = context.getBean(InfluxMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();
@@ -80,33 +80,33 @@ public class InfluxMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public InfluxConfig customConfig() {
+		InfluxConfig customConfig() {
 			return (key) -> null;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public InfluxMeterRegistry customRegistry(InfluxConfig config, Clock clock) {
+		InfluxMeterRegistry customRegistry(InfluxConfig config, Clock clock) {
 			return new InfluxMeterRegistry(config, clock);
 		}
 

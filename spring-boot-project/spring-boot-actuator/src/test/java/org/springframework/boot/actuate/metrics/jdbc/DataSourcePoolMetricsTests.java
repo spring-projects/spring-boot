@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -38,10 +38,10 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  * @author Andy Wilkinson
  */
-public class DataSourcePoolMetricsTests {
+class DataSourcePoolMetricsTests {
 
 	@Test
-	public void dataSourceIsInstrumented() {
+	void dataSourceIsInstrumented() {
 		new ApplicationContextRunner().withUserConfiguration(DataSourceConfig.class, MetricsApp.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true", "metrics.use-global-registry=false")
@@ -51,7 +51,7 @@ public class DataSourcePoolMetricsTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MetricsApp {
 
 		@Bean
@@ -61,7 +61,7 @@ public class DataSourcePoolMetricsTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceConfig {
 
 		DataSourceConfig(DataSource dataSource, Collection<DataSourcePoolMetadataProvider> metadataProviders,

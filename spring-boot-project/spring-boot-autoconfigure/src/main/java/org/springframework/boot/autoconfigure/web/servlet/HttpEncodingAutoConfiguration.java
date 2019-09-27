@@ -40,7 +40,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(CharacterEncodingFilter.class)

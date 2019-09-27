@@ -24,7 +24,7 @@ import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
 import org.apache.activemq.artemis.core.server.JournalType;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ArtemisEmbeddedConfigurationFactoryTests {
+class ArtemisEmbeddedConfigurationFactoryTests {
 
 	@Test
-	public void defaultDataDir() {
+	void defaultDataDir() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
@@ -47,7 +47,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void persistenceSetup() {
+	void persistenceSetup() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
@@ -56,14 +56,14 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void generatedClusterPassword() {
+	void generatedClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
-		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
+		assertThat(configuration.getClusterPassword()).hasSize(36);
 	}
 
 	@Test
-	public void specificClusterPassword() {
+	void specificClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
@@ -71,7 +71,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void hasDlqExpiryQueueAddressSettingsConfigured() {
+	void hasDlqExpiryQueueAddressSettingsConfigured() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		Map<String, AddressSettings> addressesSettings = configuration.getAddressesSettings();
@@ -82,7 +82,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void hasDlqExpiryQueueConfigured() {
+	void hasDlqExpiryQueueConfigured() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		List<CoreAddressConfiguration> addressConfigurations = configuration.getAddressConfigurations();

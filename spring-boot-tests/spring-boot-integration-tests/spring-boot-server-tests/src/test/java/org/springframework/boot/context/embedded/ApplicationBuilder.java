@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,6 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -48,24 +48,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ApplicationBuilder {
 
-	private final TemporaryFolder temp;
+	private final Path temp;
 
 	private final String packaging;
 
 	private final String container;
 
-	ApplicationBuilder(TemporaryFolder temp, String packaging, String container) {
+	ApplicationBuilder(Path temp, String packaging, String container) {
 		this.temp = temp;
 		this.packaging = packaging;
 		this.container = container;
 	}
 
 	File buildApplication() throws Exception {
-		File containerFolder = new File(this.temp.getRoot(), this.container);
+		File containerFolder = new File(this.temp.toFile(), this.container);
 		if (containerFolder.exists()) {
 			return new File(containerFolder, "app/target/app-0.0.1." + this.packaging);
 		}
 		return doBuildApplication(containerFolder);
+	}
+
+	String getPackaging() {
+		return this.packaging;
+	}
+
+	String getContainer() {
+		return this.container;
 	}
 
 	private File doBuildApplication(File containerFolder) throws IOException, MavenInvocationException {
@@ -80,7 +88,7 @@ class ApplicationBuilder {
 	}
 
 	private File createResourcesJar() throws IOException {
-		File resourcesJar = new File(this.temp.getRoot(), "resources.jar");
+		File resourcesJar = new File(this.temp.toFile(), "resources.jar");
 		if (resourcesJar.exists()) {
 			return resourcesJar;
 		}

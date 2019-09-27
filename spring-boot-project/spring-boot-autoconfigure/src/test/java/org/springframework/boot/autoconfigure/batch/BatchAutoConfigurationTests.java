@@ -22,7 +22,7 @@ import java.util.Collections;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -49,10 +49,12 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -71,13 +73,13 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Kazuki Shimizu
  */
-public class BatchAutoConfigurationTests {
+class BatchAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class, TransactionAutoConfiguration.class));
 
 	@Test
-	public void testDefaultContext() {
+	void testDefaultContext() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -90,19 +92,19 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
+	void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
 	}
 
 	@Test
-	public void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
+	void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EntityManagerFactoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
 	}
 
 	@Test
-	public void testCustomConfigurationWithNoDatabase() {
+	void testCustomConfigurationWithNoDatabase() {
 		this.contextRunner.withUserConfiguration(TestCustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			JobExplorer explorer = context.getBean(JobExplorer.class);
@@ -111,7 +113,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoBatchConfiguration() {
+	void testNoBatchConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(JobLauncher.class);
@@ -120,7 +122,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesJob() {
+	void testDefinesAndLaunchesJob() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -131,7 +133,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesNamedJob() {
+	void testDefinesAndLaunchesNamedJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class,
 						EmbeddedDataSourceConfiguration.class)
@@ -144,7 +146,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefinesAndLaunchesLocalJob() {
+	void testDefinesAndLaunchesLocalJob() {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.names:discreteLocalJob").run((context) -> {
@@ -156,7 +158,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableLaunchesJob() {
+	void testDisableLaunchesJob() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.enabled:false").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
@@ -165,7 +167,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisableSchemaLoader() {
+	void testDisableSchemaLoader() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.batch.initialize-schema:never")
@@ -180,7 +182,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testUsingJpa() {
+	void testUsingJpa() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class).run((context) -> {
 					PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
@@ -196,7 +198,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRenamePrefix() {
+	void testRenamePrefix() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
@@ -217,7 +219,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeJpaTransactionManagerUsingProperties() {
+	void testCustomizeJpaTransactionManagerUsingProperties() {
 		this.contextRunner
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 						HibernateJpaAutoConfiguration.class)
@@ -233,7 +235,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeDataSourceTransactionManagerUsingProperties() {
+	void testCustomizeDataSourceTransactionManagerUsingProperties() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.transaction.default-timeout:30",
 						"spring.transaction.rollback-on-commit-failure:true")
@@ -246,18 +248,49 @@ public class BatchAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
-	protected static class EmptyConfiguration {
+	@Test
+	void testBatchDataSource() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, BatchDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(BatchConfigurer.class)
+							.hasSingleBean(BatchDataSourceInitializer.class).hasBean("batchDataSource");
+					DataSource batchDataSource = context.getBean("batchDataSource", DataSource.class);
+					assertThat(context.getBean(BatchConfigurer.class)).hasFieldOrPropertyWithValue("dataSource",
+							batchDataSource);
+					assertThat(context.getBean(BatchDataSourceInitializer.class))
+							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class BatchDataSourceConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource normalDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+		}
+
+		@BatchDataSource
+		@Bean
+		public DataSource batchDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EmptyConfiguration {
 
 	}
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EntityManagerFactoryConfiguration {
 
 		@Bean
@@ -269,7 +302,7 @@ public class BatchAutoConfigurationTests {
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestCustomConfiguration implements BatchConfigurer {
+	static class TestCustomConfiguration implements BatchConfigurer {
 
 		private JobRepository jobRepository;
 
@@ -305,9 +338,9 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class NamedJobConfigurationWithRegisteredJob {
+	static class NamedJobConfigurationWithRegisteredJob {
 
 		@Autowired
 		private JobRegistry jobRegistry;
@@ -316,14 +349,14 @@ public class BatchAutoConfigurationTests {
 		private JobRepository jobRepository;
 
 		@Bean
-		public JobRegistryBeanPostProcessor registryProcessor() {
+		JobRegistryBeanPostProcessor registryProcessor() {
 			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
 			processor.setJobRegistry(this.jobRegistry);
 			return processor;
 		}
 
 		@Bean
-		public Job discreteJob() {
+		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
 
 				@Override
@@ -347,15 +380,15 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class NamedJobConfigurationWithLocalJob {
+	static class NamedJobConfigurationWithLocalJob {
 
 		@Autowired
 		private JobRepository jobRepository;
 
 		@Bean
-		public Job discreteJob() {
+		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteLocalJob") {
 
 				@Override
@@ -379,15 +412,15 @@ public class BatchAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class JobConfiguration {
+	static class JobConfiguration {
 
 		@Autowired
 		private JobRepository jobRepository;
 
 		@Bean
-		public Job job() {
+		Job job() {
 			AbstractJob job = new AbstractJob() {
 
 				@Override

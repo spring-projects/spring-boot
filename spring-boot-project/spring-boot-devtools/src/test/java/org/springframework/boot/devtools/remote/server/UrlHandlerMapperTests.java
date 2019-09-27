@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.remote.server;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -34,30 +34,30 @@ import static org.mockito.Mockito.mock;
  * @author Rob Winch
  * @author Phillip Webb
  */
-public class UrlHandlerMapperTests {
+class UrlHandlerMapperTests {
 
 	private Handler handler = mock(Handler.class);
 
 	@Test
-	public void requestUriMustNotBeNull() {
+	void requestUriMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void requestUriMustNotBeEmpty() {
+	void requestUriMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("", this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void requestUrlMustStartWithSlash() {
+	void requestUrlMustStartWithSlash() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
 				.withMessageContaining("URL must start with '/'");
 	}
 
 	@Test
-	public void handlesMatchedUrl() {
+	void handlesMatchedUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
@@ -65,7 +65,7 @@ public class UrlHandlerMapperTests {
 	}
 
 	@Test
-	public void ignoresDifferentUrl() {
+	void ignoresDifferentUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel/other");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);

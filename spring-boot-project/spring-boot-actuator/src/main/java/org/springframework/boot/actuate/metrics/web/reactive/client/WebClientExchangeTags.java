@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -31,6 +32,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * performed by a {@link WebClient}.
  *
  * @author Brian Clozel
+ * @author Nishant Raut
  * @since 2.1.0
  */
 public final class WebClientExchangeTags {
@@ -106,6 +108,18 @@ public final class WebClientExchangeTags {
 			return CLIENT_NAME_NONE;
 		}
 		return Tag.of("clientName", host);
+	}
+
+	/**
+	 * Creates an {@code outcome} {@code Tag} derived from the
+	 * {@link ClientResponse#rawStatusCode() status} of the given {@code response}.
+	 * @param response the response
+	 * @return the outcome tag
+	 * @since 2.2.0
+	 */
+	public static Tag outcome(ClientResponse response) {
+		Outcome outcome = (response != null) ? Outcome.forStatus(response.rawStatusCode()) : Outcome.UNKNOWN;
+		return outcome.asTag();
 	}
 
 }

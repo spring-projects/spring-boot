@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Set;
 
 import com.datastax.driver.core.Session;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
@@ -44,26 +44,26 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Mark Paluch
  */
-public class CassandraReactiveDataAutoConfigurationTests {
+class CassandraReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void templateExists() {
+	void templateExists() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -72,7 +72,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
+	void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
@@ -95,17 +95,17 @@ public class CassandraReactiveDataAutoConfigurationTests {
 		this.context = ctx;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
-		public Session session() {
+		Session session() {
 			return mock(Session.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.data.cassandra.city")
 	static class EntityScanConfig {
 

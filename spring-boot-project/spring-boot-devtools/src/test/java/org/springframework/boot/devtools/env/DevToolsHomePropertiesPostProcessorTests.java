@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -37,38 +36,137 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author HaiTao Zhang
+ * @author Madhura Bhave
  */
-public class DevToolsHomePropertiesPostProcessorTests {
+class DevToolsHomePropertiesPostProcessorTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	private String configDir;
 
 	private File home;
 
-	@Before
-	public void setup() throws IOException {
-		this.home = this.temp.newFolder();
+	@BeforeEach
+	void setup(@TempDir File tempDir) {
+		this.home = tempDir;
+		this.configDir = this.home + "/.config/spring-boot/";
+		new File(this.configDir).mkdirs();
 	}
 
 	@Test
-	public void loadsHomeProperties() throws Exception {
+	void loadsPropertiesFromHomeFolderUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.home, ".spring-boot-devtools.properties"));
-		properties.store(out, null);
-		out.close();
-		ConfigurableEnvironment environment = new MockEnvironment();
-		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		writeFile(properties, ".spring-boot-devtools.properties");
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
 		assertThat(environment.getProperty("abc")).isEqualTo("def");
 	}
 
 	@Test
-	public void ignoresMissingHomeProperties() {
+	void loadsPropertiesFromConfigFolderUsingProperties() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
+		properties.store(out, null);
+		out.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("def");
+	}
+
+	@Test
+	void loadsPropertiesFromConfigFolderUsingYml() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
+		properties.store(out, null);
+		out.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("def");
+	}
+
+	@Test
+	void loadsPropertiesFromConfigFolderUsingYaml() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
+		properties.store(out, null);
+		out.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("def");
+	}
+
+	@Test
+	void loadFromConfigFolderWithPropertiesTakingPrecedence() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		properties.put("bar", "baz");
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
+		properties.store(out, null);
+		out.close();
+		Properties properties2 = new Properties();
+		properties2.put("abc", "jkl");
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
+		properties2.store(out2, null);
+		out2.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
+		assertThat(environment.getProperty("bar")).isEqualTo("baz");
+	}
+
+	@Test
+	void loadFromConfigFolderTakesPrecedenceOverHomeFolder() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		properties.put("bar", "baz");
+		writeFile(properties, ".spring-boot-devtools.properties");
+		Properties properties2 = new Properties();
+		properties2.put("abc", "jkl");
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
+		properties2.store(out2, null);
+		out2.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
+		assertThat(environment.getProperty("bar")).isEqualTo(null);
+	}
+
+	@Test
+	void loadFromConfigFolderWithYamlTakesPrecedenceOverHomeFolder() throws Exception {
+		Properties properties = new Properties();
+		properties.put("abc", "def");
+		properties.put("bar", "baz");
+		writeFile(properties, ".spring-boot-devtools.properties");
+		Properties properties2 = new Properties();
+		properties2.put("abc", "jkl");
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
+		properties2.store(out2, null);
+		out2.close();
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
+		assertThat(environment.getProperty("bar")).isEqualTo(null);
+	}
+
+	@Test
+	void ignoresMissingHomeProperties() throws Exception {
+		ConfigurableEnvironment environment = getPostProcessedEnvironment();
+		assertThat(environment.getProperty("abc")).isNull();
+	}
+
+	private void writeFile(Properties properties, String s) throws IOException {
+		OutputStream out = new FileOutputStream(new File(this.home, s));
+		properties.store(out, null);
+		out.close();
+	}
+
+	private ConfigurableEnvironment getPostProcessedEnvironment() throws Exception {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
-		assertThat(environment.getProperty("abc")).isNull();
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
+		return environment;
+	}
+
+	protected void runPostProcessor(Runnable runnable) throws Exception {
+		Thread thread = new Thread(runnable);
+		thread.start();
+		thread.join();
 	}
 
 	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {

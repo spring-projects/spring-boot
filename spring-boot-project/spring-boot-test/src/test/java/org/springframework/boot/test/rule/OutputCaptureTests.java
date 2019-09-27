@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Roland Weisleder
  */
+@Deprecated
 public class OutputCaptureTests {
 
 	@Rule

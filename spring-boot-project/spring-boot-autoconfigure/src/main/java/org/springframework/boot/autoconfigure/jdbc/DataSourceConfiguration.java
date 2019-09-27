@@ -46,7 +46,7 @@ abstract class DataSourceConfiguration {
 	/**
 	 * Tomcat Pool DataSource configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource",
@@ -55,7 +55,7 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		public org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties) {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties) {
 			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(properties,
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
@@ -72,7 +72,7 @@ abstract class DataSourceConfiguration {
 	/**
 	 * Hikari DataSource configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource",
@@ -81,7 +81,7 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		public HikariDataSource dataSource(DataSourceProperties properties) {
+		HikariDataSource dataSource(DataSourceProperties properties) {
 			HikariDataSource dataSource = createDataSource(properties, HikariDataSource.class);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
@@ -94,7 +94,7 @@ abstract class DataSourceConfiguration {
 	/**
 	 * DBCP DataSource configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource",
@@ -103,7 +103,7 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
-		public org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
+		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
 		}
 
@@ -112,13 +112,13 @@ abstract class DataSourceConfiguration {
 	/**
 	 * Generic DataSource configuration.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type")
 	static class Generic {
 
 		@Bean
-		public DataSource dataSource(DataSourceProperties properties) {
+		DataSource dataSource(DataSourceProperties properties) {
 			return properties.initializeDataSourceBuilder().build();
 		}
 

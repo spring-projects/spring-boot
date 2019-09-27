@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationmetadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,46 +25,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class SentenceExtractorTests {
+class SentenceExtractorTests {
 
 	private static final String NEW_LINE = System.lineSeparator();
 
 	private SentenceExtractor extractor = new SentenceExtractor();
 
 	@Test
-	public void extractFirstSentence() {
-		String sentence = this.extractor.getFirstSentence("My short " + "description. More stuff.");
+	void extractFirstSentence() {
+		String sentence = this.extractor.getFirstSentence("My short description. More stuff.");
 		assertThat(sentence).isEqualTo("My short description.");
 	}
 
 	@Test
-	public void extractFirstSentenceNewLineBeforeDot() {
+	void extractFirstSentenceNewLineBeforeDot() {
 		String sentence = this.extractor
 				.getFirstSentence("My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
 		assertThat(sentence).isEqualTo("My short description.");
 	}
 
 	@Test
-	public void extractFirstSentenceNewLineBeforeDotWithSpaces() {
+	void extractFirstSentenceNewLineBeforeDotWithSpaces() {
 		String sentence = this.extractor
 				.getFirstSentence("My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
 		assertThat(sentence).isEqualTo("My short description.");
 	}
 
 	@Test
-	public void extractFirstSentenceNoDot() {
+	void extractFirstSentenceNoDot() {
 		String sentence = this.extractor.getFirstSentence("My short description");
 		assertThat(sentence).isEqualTo("My short description");
 	}
 
 	@Test
-	public void extractFirstSentenceNoDotMultipleLines() {
+	void extractFirstSentenceNoDotMultipleLines() {
 		String sentence = this.extractor.getFirstSentence("My short description " + NEW_LINE + " More stuff");
 		assertThat(sentence).isEqualTo("My short description");
 	}
 
 	@Test
-	public void extractFirstSentenceNull() {
+	void extractFirstSentenceNull() {
 		assertThat(this.extractor.getFirstSentence(null)).isNull();
 	}
 

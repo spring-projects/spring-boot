@@ -18,11 +18,9 @@ package org.springframework.boot.webservices.client;
 
 import java.time.Duration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -36,20 +34,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions({ "httpclient-*.jar", "okhttp*.jar" })
-public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
+class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	public void buildUseUseSimpleClientByDefault() {
+	void buildUseUseSimpleClientByDefault() {
 		WebServiceMessageSender messageSender = this.builder.build();
 		assertSimpleClientRequestFactory(messageSender);
 	}
 
 	@Test
-	public void buildWithCustomTimeouts() {
+	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(2)).build();
 		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(messageSender);

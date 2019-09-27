@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpProperties;
@@ -40,13 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
-public class CodecsAutoConfigurationTests {
+class CodecsAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
 
 	@Test
-	public void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
+	void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
 		this.contextRunner.run((context) -> {
 			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
@@ -57,7 +57,7 @@ public class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	public void loggingRequestDetailsCustomizerShouldUseHttpProperties() {
+	void loggingRequestDetailsCustomizerShouldUseHttpProperties() {
 		this.contextRunner.withPropertyValues("spring.http.log-request-details=true").run((context) -> {
 			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
@@ -67,7 +67,7 @@ public class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	public void loggingRequestDetailsBeanShouldHaveOrderZero() {
+	void loggingRequestDetailsBeanShouldHaveOrderZero() {
 		this.contextRunner.run((context) -> {
 			Method customizerMethod = ReflectionUtils.findMethod(
 					CodecsAutoConfiguration.LoggingCodecConfiguration.class, "loggingCodecCustomizer",
@@ -78,18 +78,18 @@ public class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	public void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
+	void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
-	public void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
+	void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
 		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
 				.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
-	public void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
+	void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
 		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class, CodecCustomizerConfiguration.class)
 				.run((context) -> {
 					List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
@@ -107,7 +107,7 @@ public class CodecsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ObjectMapperConfiguration {
 
 		@Bean
@@ -117,7 +117,7 @@ public class CodecsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CodecCustomizerConfiguration {
 
 		@Bean

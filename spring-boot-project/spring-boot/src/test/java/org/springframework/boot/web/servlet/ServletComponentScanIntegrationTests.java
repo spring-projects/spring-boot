@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -34,23 +34,23 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ServletComponentScan}
+ * Integration tests for {@link ServletComponentScan @ServletComponentScan}
  *
  * @author Andy Wilkinson
  */
-public class ServletComponentScanIntegrationTests {
+class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void componentsAreRegistered() {
+	void componentsAreRegistered() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
@@ -61,7 +61,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
-	public void multipartConfigIsHonoured() {
+	void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
@@ -78,12 +78,12 @@ public class ServletComponentScanIntegrationTests {
 		assertThat(multipartConfig.getFileSizeThreshold()).isEqualTo(512);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 

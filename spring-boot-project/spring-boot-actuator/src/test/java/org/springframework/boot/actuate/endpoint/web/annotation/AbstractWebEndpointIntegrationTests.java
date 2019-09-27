@@ -27,7 +27,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +51,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -79,31 +81,31 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperation() {
+	void readOperation() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("All").isEqualTo(true));
 	}
 
 	@Test
-	public void readOperationWithEndpointsMappedToTheRoot() {
+	void readOperationWithEndpointsMappedToTheRoot() {
 		load(TestEndpointConfiguration.class, "", (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("All").isEqualTo(true));
 	}
 
 	@Test
-	public void readOperationWithSelector() {
+	void readOperationWithSelector() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/one").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("part").isEqualTo("one"));
 	}
 
 	@Test
-	public void readOperationWithSelectorContainingADot() {
+	void readOperationWithSelectorContainingADot() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/foo.bar").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("part").isEqualTo("foo.bar"));
 	}
 
 	@Test
-	public void linksToOtherEndpointsAreProvided() {
+	void linksToOtherEndpointsAreProvided() {
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get().uri("").exchange().expectStatus().isOk().expectBody()
 						.jsonPath("_links.length()").isEqualTo(3).jsonPath("_links.self.href").isNotEmpty()
@@ -113,43 +115,57 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void linksMappingIsDisabledWhenEndpointPathIsEmpty() {
+	void linksMappingIsDisabledWhenEndpointPathIsEmpty() {
 		load(TestEndpointConfiguration.class, "",
 				(client) -> client.get().uri("").exchange().expectStatus().isNotFound());
 	}
 
 	@Test
-	public void operationWithTrailingSlashShouldMatch() {
+	void operationWithTrailingSlashShouldMatch() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("All").isEqualTo(true));
 	}
 
 	@Test
-	public void readOperationWithSingleQueryParameters() {
+	void matchAllRemainingPathsSelectorShouldMatchFullPath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two/three").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two|three"));
+	}
+
+	@Test
+	void matchAllRemainingPathsSelectorShouldDecodePath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two%20three/").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two three"));
+	}
+
+	@Test
+	void readOperationWithSingleQueryParameters() {
 		load(QueryEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2").exchange()
 				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 2"));
 	}
 
 	@Test
-	public void readOperationWithSingleQueryParametersAndMultipleValues() {
+	void readOperationWithSingleQueryParametersAndMultipleValues() {
 		load(QueryEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&one=1&two=2").exchange()
 				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1,1 2"));
 	}
 
 	@Test
-	public void readOperationWithListQueryParameterAndSingleValue() {
+	void readOperationWithListQueryParameterAndSingleValue() {
 		load(QueryWithListEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2").exchange()
 				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 [2]"));
 	}
 
 	@Test
-	public void readOperationWithListQueryParameterAndMultipleValues() {
+	void readOperationWithListQueryParameterAndMultipleValues() {
 		load(QueryWithListEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2&two=2")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 [2, 2]"));
 	}
 
 	@Test
-	public void readOperationWithMappingFailureProducesBadRequestResponse() {
+	void readOperationWithMappingFailureProducesBadRequestResponse() {
 		load(QueryEndpointConfiguration.class, (client) -> {
 			WebTestClient.BodyContentSpec body = client.get().uri("/query?two=two").accept(MediaType.APPLICATION_JSON)
 					.exchange().expectStatus().isBadRequest().expectBody();
@@ -158,17 +174,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void writeOperation() {
+	void writeOperation() {
 		load(TestEndpointConfiguration.class, (client) -> {
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
 			body.put("bar", "two");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 		});
 	}
 
 	@Test
-	public void writeOperationWithVoidResponse() {
+	void writeOperationWithVoidResponse() {
 		load(VoidWriteResponseEndpointConfiguration.class, (context, client) -> {
 			client.post().uri("/voidwrite").exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write();
@@ -176,13 +192,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void deleteOperation() {
+	void deleteOperation() {
 		load(TestEndpointConfiguration.class, (client) -> client.delete().uri("/test/one").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("part").isEqualTo("one"));
 	}
 
 	@Test
-	public void deleteOperationWithVoidResponse() {
+	void deleteOperationWithVoidResponse() {
 		load(VoidDeleteResponseEndpointConfiguration.class, (context, client) -> {
 			client.delete().uri("/voiddelete").exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).delete();
@@ -190,17 +206,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void nullIsPassedToTheOperationWhenArgumentIsNotFoundInPostRequestBody() {
+	void nullIsPassedToTheOperationWhenArgumentIsNotFoundInPostRequestBody() {
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write("one", null);
 		});
 	}
 
 	@Test
-	public void nullsArePassedToTheOperationWhenPostRequestHasNoBody() {
+	void nullsArePassedToTheOperationWhenPostRequestHasNoBody() {
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			client.post().uri("/test").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent()
 					.expectBody().isEmpty();
@@ -209,25 +225,25 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void nullResponseFromReadOperationResultsInNotFoundResponseStatus() {
+	void nullResponseFromReadOperationResultsInNotFoundResponseStatus() {
 		load(NullReadResponseEndpointConfiguration.class,
 				(context, client) -> client.get().uri("/nullread").exchange().expectStatus().isNotFound());
 	}
 
 	@Test
-	public void nullResponseFromDeleteOperationResultsInNoContentResponseStatus() {
+	void nullResponseFromDeleteOperationResultsInNoContentResponseStatus() {
 		load(NullDeleteResponseEndpointConfiguration.class,
 				(context, client) -> client.delete().uri("/nulldelete").exchange().expectStatus().isNoContent());
 	}
 
 	@Test
-	public void nullResponseFromWriteOperationResultsInNoContentResponseStatus() {
+	void nullResponseFromWriteOperationResultsInNoContentResponseStatus() {
 		load(NullWriteResponseEndpointConfiguration.class,
 				(context, client) -> client.post().uri("/nullwrite").exchange().expectStatus().isNoContent());
 	}
 
 	@Test
-	public void readOperationWithResourceResponse() {
+	void readOperationWithResourceResponse() {
 		load(ResourceEndpointConfiguration.class, (context, client) -> {
 			byte[] responseBody = client.get().uri("/resource").exchange().expectStatus().isOk().expectHeader()
 					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
@@ -237,7 +253,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperationWithResourceWebOperationResponse() {
+	void readOperationWithResourceWebOperationResponse() {
 		load(ResourceWebEndpointResponseEndpointConfiguration.class, (context, client) -> {
 			byte[] responseBody = client.get().uri("/resource").exchange().expectStatus().isOk().expectHeader()
 					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
@@ -247,19 +263,19 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperationWithMonoResponse() {
+	void readOperationWithMonoResponse() {
 		load(MonoResponseEndpointConfiguration.class, (client) -> client.get().uri("/mono").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("a").isEqualTo("alpha"));
 	}
 
 	@Test
-	public void readOperationWithCustomMediaType() {
+	void readOperationWithCustomMediaType() {
 		load(CustomMediaTypesEndpointConfiguration.class, (client) -> client.get().uri("/custommediatypes").exchange()
 				.expectStatus().isOk().expectHeader().valueMatches("Content-Type", "text/plain(;charset=.*)?"));
 	}
 
 	@Test
-	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
+	void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
 		load(RequiredParameterEndpointConfiguration.class, (client) -> {
 			WebTestClient.BodyContentSpec body = client.get().uri("/requiredparameters")
 					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isBadRequest().expectBody();
@@ -268,44 +284,44 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperationWithMissingNullableParametersIsOk() {
+	void readOperationWithMissingNullableParametersIsOk() {
 		load(RequiredParameterEndpointConfiguration.class,
 				(client) -> client.get().uri("/requiredparameters?foo=hello").exchange().expectStatus().isOk());
 	}
 
 	@Test
-	public void endpointsProducePrimaryMediaTypeByDefault() {
+	void endpointsProducePrimaryMediaTypeByDefault() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
 				.expectHeader().valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
 	}
 
 	@Test
-	public void endpointsProduceSecondaryMediaTypeWhenRequested() {
+	void endpointsProduceSecondaryMediaTypeWhenRequested() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isOk().expectHeader().valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
 	}
 
 	@Test
-	public void linksProducesPrimaryMediaTypeByDefault() {
+	void linksProducesPrimaryMediaTypeByDefault() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("").exchange().expectStatus().isOk()
 				.expectHeader().valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
 	}
 
 	@Test
-	public void linksProducesSecondaryMediaTypeWhenRequested() {
+	void linksProducesSecondaryMediaTypeWhenRequested() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isOk().expectHeader().valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
 	}
 
 	@Test
-	public void principalIsNullWhenRequestHasNoPrincipal() {
+	void principalIsNullWhenRequestHasNoPrincipal() {
 		load(PrincipalEndpointConfiguration.class,
 				(client) -> client.get().uri("/principal").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 						.isOk().expectBody(String.class).isEqualTo("None"));
 	}
 
 	@Test
-	public void principalIsAvailableWhenRequestHasAPrincipal() {
+	void principalIsAvailableWhenRequestHasAPrincipal() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(PrincipalEndpointConfiguration.class);
@@ -314,7 +330,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void operationWithAQueryNamedPrincipalCanBeAccessedWhenAuthenticated() {
+	void operationWithAQueryNamedPrincipalCanBeAccessedWhenAuthenticated() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(PrincipalQueryEndpointConfiguration.class);
@@ -323,14 +339,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void securityContextIsAvailableAndHasNullPrincipalWhenRequestHasNoPrincipal() {
+	void securityContextIsAvailableAndHasNullPrincipalWhenRequestHasNoPrincipal() {
 		load(SecurityContextEndpointConfiguration.class,
 				(client) -> client.get().uri("/securitycontext").accept(MediaType.APPLICATION_JSON).exchange()
 						.expectStatus().isOk().expectBody(String.class).isEqualTo("None"));
 	}
 
 	@Test
-	public void securityContextIsAvailableAndHasPrincipalWhenRequestHasPrincipal() {
+	void securityContextIsAvailableAndHasPrincipalWhenRequestHasPrincipal() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(SecurityContextEndpointConfiguration.class);
@@ -339,14 +355,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void userInRoleReturnsFalseWhenRequestHasNoPrincipal() {
+	void userInRoleReturnsFalseWhenRequestHasNoPrincipal() {
 		load(UserInRoleEndpointConfiguration.class,
 				(client) -> client.get().uri("/userinrole?role=ADMIN").accept(MediaType.APPLICATION_JSON).exchange()
 						.expectStatus().isOk().expectBody(String.class).isEqualTo("ADMIN: false"));
 	}
 
 	@Test
-	public void userInRoleReturnsFalseWhenUserIsNotInRole() {
+	void userInRoleReturnsFalseWhenUserIsNotInRole() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(UserInRoleEndpointConfiguration.class);
@@ -355,7 +371,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void userInRoleReturnsTrueWhenUserIsInRole() {
+	void userInRoleReturnsTrueWhenUserIsInRole() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(UserInRoleEndpointConfiguration.class);
@@ -407,7 +423,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	protected static class TestEndpointConfiguration {
 
@@ -418,84 +434,95 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class MatchAllRemainingEndpointConfiguration {
+
+		@Bean
+		MatchAllRemainingEndpoint matchAllRemainingEndpoint() {
+			return new MatchAllRemainingEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class QueryEndpointConfiguration {
 
 		@Bean
-		public QueryEndpoint queryEndpoint() {
+		QueryEndpoint queryEndpoint() {
 			return new QueryEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class QueryWithListEndpointConfiguration {
 
 		@Bean
-		public QueryWithListEndpoint queryEndpoint() {
+		QueryWithListEndpoint queryEndpoint() {
 			return new QueryWithListEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class VoidWriteResponseEndpointConfiguration {
 
 		@Bean
-		public VoidWriteResponseEndpoint voidWriteResponseEndpoint(EndpointDelegate delegate) {
+		VoidWriteResponseEndpoint voidWriteResponseEndpoint(EndpointDelegate delegate) {
 			return new VoidWriteResponseEndpoint(delegate);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class VoidDeleteResponseEndpointConfiguration {
 
 		@Bean
-		public VoidDeleteResponseEndpoint voidDeleteResponseEndpoint(EndpointDelegate delegate) {
+		VoidDeleteResponseEndpoint voidDeleteResponseEndpoint(EndpointDelegate delegate) {
 			return new VoidDeleteResponseEndpoint(delegate);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class NullWriteResponseEndpointConfiguration {
 
 		@Bean
-		public NullWriteResponseEndpoint nullWriteResponseEndpoint(EndpointDelegate delegate) {
+		NullWriteResponseEndpoint nullWriteResponseEndpoint(EndpointDelegate delegate) {
 			return new NullWriteResponseEndpoint(delegate);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class NullReadResponseEndpointConfiguration {
 
 		@Bean
-		public NullReadResponseEndpoint nullResponseEndpoint() {
+		NullReadResponseEndpoint nullResponseEndpoint() {
 			return new NullReadResponseEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class NullDeleteResponseEndpointConfiguration {
 
 		@Bean
-		public NullDeleteResponseEndpoint nullDeleteResponseEndpoint() {
+		NullDeleteResponseEndpoint nullDeleteResponseEndpoint() {
 			return new NullDeleteResponseEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	protected static class ResourceEndpointConfiguration {
 
@@ -506,89 +533,89 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class ResourceWebEndpointResponseEndpointConfiguration {
 
 		@Bean
-		public ResourceWebEndpointResponseEndpoint resourceEndpoint() {
+		ResourceWebEndpointResponseEndpoint resourceEndpoint() {
 			return new ResourceWebEndpointResponseEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class MonoResponseEndpointConfiguration {
 
 		@Bean
-		public MonoResponseEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+		MonoResponseEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new MonoResponseEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomMediaTypesEndpointConfiguration {
 
 		@Bean
-		public CustomMediaTypesEndpoint customMediaTypesEndpoint() {
+		CustomMediaTypesEndpoint customMediaTypesEndpoint() {
 			return new CustomMediaTypesEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class RequiredParameterEndpointConfiguration {
 
 		@Bean
-		public RequiredParametersEndpoint requiredParametersEndpoint() {
+		RequiredParametersEndpoint requiredParametersEndpoint() {
 			return new RequiredParametersEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	protected static class PrincipalEndpointConfiguration {
+	static class PrincipalEndpointConfiguration {
 
 		@Bean
-		public PrincipalEndpoint principalEndpoint() {
+		PrincipalEndpoint principalEndpoint() {
 			return new PrincipalEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	protected static class PrincipalQueryEndpointConfiguration {
+	static class PrincipalQueryEndpointConfiguration {
 
 		@Bean
-		public PrincipalQueryEndpoint principalQueryEndpoint() {
+		PrincipalQueryEndpoint principalQueryEndpoint() {
 			return new PrincipalQueryEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	protected static class SecurityContextEndpointConfiguration {
+	static class SecurityContextEndpointConfiguration {
 
 		@Bean
-		public SecurityContextEndpoint securityContextEndpoint() {
+		SecurityContextEndpoint securityContextEndpoint() {
 			return new SecurityContextEndpoint();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	protected static class UserInRoleEndpointConfiguration {
+	static class UserInRoleEndpointConfiguration {
 
 		@Bean
-		public UserInRoleEndpoint userInRoleEndpoint() {
+		UserInRoleEndpoint userInRoleEndpoint() {
 			return new UserInRoleEndpoint();
 		}
 
@@ -604,23 +631,33 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 		@ReadOperation
-		public Map<String, Object> readPart(@Selector String part) {
+		Map<String, Object> readPart(@Selector String part) {
 			return Collections.singletonMap("part", part);
 		}
 
 		@WriteOperation
-		public void write(@Nullable String foo, @Nullable String bar) {
+		void write(@Nullable String foo, @Nullable String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
 		@DeleteOperation
-		public Map<String, Object> deletePart(@Selector String part) {
+		Map<String, Object> deletePart(@Selector String part) {
 			return Collections.singletonMap("part", part);
+		}
+
+	}
+
+	@Endpoint(id = "matchallremaining")
+	static class MatchAllRemainingEndpoint {
+
+		@ReadOperation
+		Map<String, String> select(@Selector(match = Match.ALL_REMAINING) String... selection) {
+			return Collections.singletonMap("selection", StringUtils.arrayToDelimitedString(selection, "|"));
 		}
 
 	}
@@ -629,12 +666,12 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class QueryEndpoint {
 
 		@ReadOperation
-		public Map<String, String> query(String one, Integer two) {
+		Map<String, String> query(String one, Integer two) {
 			return Collections.singletonMap("query", one + " " + two);
 		}
 
 		@ReadOperation
-		public Map<String, String> queryWithParameterList(@Selector String list, String one, List<String> two) {
+		Map<String, String> queryWithParameterList(@Selector String list, String one, List<String> two) {
 			return Collections.singletonMap("query", list + " " + one + " " + two);
 		}
 
@@ -644,7 +681,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class QueryWithListEndpoint {
 
 		@ReadOperation
-		public Map<String, String> queryWithParameterList(String one, List<String> two) {
+		Map<String, String> queryWithParameterList(String one, List<String> two) {
 			return Collections.singletonMap("query", one + " " + two);
 		}
 
@@ -660,7 +697,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@WriteOperation
-		public void write() {
+		void write() {
 			this.delegate.write();
 		}
 
@@ -676,7 +713,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@DeleteOperation
-		public void delete() {
+		void delete() {
 			this.delegate.delete();
 		}
 
@@ -692,7 +729,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@WriteOperation
-		public Object write() {
+		Object write() {
 			this.delegate.write();
 			return null;
 		}
@@ -703,7 +740,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class NullReadResponseEndpoint {
 
 		@ReadOperation
-		public String readReturningNull() {
+		String readReturningNull() {
 			return null;
 		}
 
@@ -713,7 +750,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class NullDeleteResponseEndpoint {
 
 		@DeleteOperation
-		public String deleteReturningNull() {
+		String deleteReturningNull() {
 			return null;
 		}
 
@@ -723,7 +760,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class ResourceEndpoint {
 
 		@ReadOperation
-		public Resource read() {
+		Resource read() {
 			return new ByteArrayResource(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 		}
 
@@ -733,7 +770,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class ResourceWebEndpointResponseEndpoint {
 
 		@ReadOperation
-		public WebEndpointResponse<Resource> read() {
+		WebEndpointResponse<Resource> read() {
 			return new WebEndpointResponse<>(new ByteArrayResource(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), 200);
 		}
 
@@ -753,7 +790,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class CustomMediaTypesEndpoint {
 
 		@ReadOperation(produces = "text/plain")
-		public String read() {
+		String read() {
 			return "read";
 		}
 
@@ -763,7 +800,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class RequiredParametersEndpoint {
 
 		@ReadOperation
-		public String read(String foo, @Nullable String bar) {
+		String read(String foo, @Nullable String bar) {
 			return foo;
 		}
 
@@ -773,7 +810,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class PrincipalEndpoint {
 
 		@ReadOperation
-		public String read(@Nullable Principal principal) {
+		String read(@Nullable Principal principal) {
 			return (principal != null) ? principal.getName() : "None";
 		}
 
@@ -783,7 +820,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class PrincipalQueryEndpoint {
 
 		@ReadOperation
-		public String read(String principal) {
+		String read(String principal) {
 			return principal;
 		}
 
@@ -793,7 +830,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class SecurityContextEndpoint {
 
 		@ReadOperation
-		public String read(SecurityContext securityContext) {
+		String read(SecurityContext securityContext) {
 			Principal principal = securityContext.getPrincipal();
 			return (principal != null) ? principal.getName() : "None";
 		}
@@ -804,13 +841,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class UserInRoleEndpoint {
 
 		@ReadOperation
-		public String read(SecurityContext securityContext, String role) {
+		String read(SecurityContext securityContext, String role) {
 			return role + ": " + securityContext.isUserInRole(role);
 		}
 
 	}
 
-	public interface EndpointDelegate {
+	interface EndpointDelegate {
 
 		void write();
 

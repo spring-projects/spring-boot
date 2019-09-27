@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import javax.annotation.PreDestroy;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 
@@ -40,36 +38,17 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
 
-	private final MongoClientOptions options;
-
-	private final MongoClientFactory factory;
-
-	private MongoClient mongo;
-
-	public MongoAutoConfiguration(MongoProperties properties, ObjectProvider<MongoClientOptions> options,
-			Environment environment) {
-		this.options = options.getIfAvailable();
-		this.factory = new MongoClientFactory(properties, environment);
-	}
-
-	@PreDestroy
-	public void close() {
-		if (this.mongo != null) {
-			this.mongo.close();
-		}
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
-	public MongoClient mongo() {
-		this.mongo = this.factory.createMongoClient(this.options);
-		return this.mongo;
+	public MongoClient mongo(MongoProperties properties, ObjectProvider<MongoClientOptions> options,
+			Environment environment) {
+		return new MongoClientFactory(properties, environment).createMongoClient(options.getIfAvailable());
 	}
 
 }

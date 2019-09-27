@@ -59,7 +59,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.securityInterceptor = securityInterceptor;
 		this.linksResolver = linksResolver;
 	}
@@ -86,12 +86,12 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 				sendFailureResponse(response, securityResponse);
 			}
 			AccessLevel accessLevel = (AccessLevel) request.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
-					.resolveLinks(request.getRequestURL().toString());
 			Map<String, Link> filteredLinks = new LinkedHashMap<>();
 			if (accessLevel == null) {
 				return Collections.singletonMap("_links", filteredLinks);
 			}
+			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
+					.resolveLinks(request.getRequestURL().toString());
 			filteredLinks = links.entrySet().stream()
 					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

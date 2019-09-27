@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class ConnectionOutputStreamTests {
+class ConnectionOutputStreamTests {
 
 	@Test
-	public void write() throws Exception {
+	void write() throws Exception {
 		OutputStream out = mock(OutputStream.class);
 		ConnectionOutputStream outputStream = new ConnectionOutputStream(out);
 		byte[] b = new byte[100];
@@ -44,7 +44,7 @@ public class ConnectionOutputStreamTests {
 	}
 
 	@Test
-	public void writeHttp() throws Exception {
+	void writeHttp() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ConnectionOutputStream outputStream = new ConnectionOutputStream(out);
 		outputStream.writeHttp(new ByteArrayInputStream("hi".getBytes()), "x-type");
@@ -58,7 +58,7 @@ public class ConnectionOutputStreamTests {
 	}
 
 	@Test
-	public void writeHeaders() throws Exception {
+	void writeHeaders() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ConnectionOutputStream outputStream = new ConnectionOutputStream(out);
 		outputStream.writeHeaders("A: a", "B: b");

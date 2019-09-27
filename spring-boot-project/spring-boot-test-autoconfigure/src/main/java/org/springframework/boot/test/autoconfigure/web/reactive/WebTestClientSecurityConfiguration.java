@@ -28,12 +28,12 @@ import org.springframework.test.web.reactive.server.MockServerConfigurer;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SecurityMockServerConfigurers.class)
 class WebTestClientSecurityConfiguration {
 
 	@Bean
-	public MockServerConfigurer mockServerConfigurer() {
+	MockServerConfigurer mockServerConfigurer() {
 		return SecurityMockServerConfigurers.springSecurity();
 	}
 

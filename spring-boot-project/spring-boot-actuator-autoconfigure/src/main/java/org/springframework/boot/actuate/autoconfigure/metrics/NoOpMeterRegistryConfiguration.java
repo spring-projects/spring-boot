@@ -31,13 +31,13 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnMissingBean(MeterRegistry.class)
 class NoOpMeterRegistryConfiguration {
 
 	@Bean
-	public CompositeMeterRegistry noOpMeterRegistry(Clock clock) {
+	CompositeMeterRegistry noOpMeterRegistry(Clock clock) {
 		return new CompositeMeterRegistry(clock);
 	}
 

@@ -21,7 +21,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
@@ -43,7 +45,9 @@ import org.springframework.util.Assert;
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
-	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
+	private Set<NettyServerCustomizer> serverCustomizers = new LinkedHashSet<>();
+
+	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
 
 	private Duration lifecycleTimeout;
 
@@ -62,7 +66,9 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
-		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
+		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
+		webServer.setRouteProviders(this.routeProviders);
+		return webServer;
 	}
 
 	/**
@@ -81,7 +87,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setServerCustomizers(Collection<? extends NettyServerCustomizer> serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
-		this.serverCustomizers = new ArrayList<>(serverCustomizers);
+		this.serverCustomizers = new LinkedHashSet<>(serverCustomizers);
 	}
 
 	/**
@@ -91,6 +97,16 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
 		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
+	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the
+	 * handler for the Spring application.
+	 * @param routeProviders the route providers to add
+	 */
+	public void addRouteProviders(NettyRouteProvider... routeProviders) {
+		Assert.notNull(routeProviders, "NettyRouteProvider must not be null");
+		this.routeProviders.addAll(Arrays.asList(routeProviders));
 	}
 
 	/**
@@ -145,13 +161,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpProtocol[] listProtocols() {
-		if (getHttp2() != null && getHttp2().isEnabled()) {
-			if (getSsl() != null && getSsl().isEnabled()) {
-				return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
-			}
-			else {
-				return new HttpProtocol[] { HttpProtocol.H2C, HttpProtocol.HTTP11 };
-			}
+		if (getHttp2() != null && getHttp2().isEnabled() && getSsl() != null && getSsl().isEnabled()) {
+			return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
 		}
 		return new HttpProtocol[] { HttpProtocol.HTTP11 };
 	}

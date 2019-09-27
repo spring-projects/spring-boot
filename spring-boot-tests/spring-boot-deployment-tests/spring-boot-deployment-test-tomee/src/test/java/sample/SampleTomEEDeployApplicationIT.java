@@ -16,7 +16,7 @@
 
 package sample;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class SampleTomEEDeployApplicationIT {
 	private int port = Integer.valueOf(System.getProperty("port"));
 
 	@Test
-	public void testHome() throws Exception {
+	void testHome() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -40,7 +40,7 @@ public class SampleTomEEDeployApplicationIT {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	void testHealth() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/actuator/health";
 		System.out.println(url);
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);

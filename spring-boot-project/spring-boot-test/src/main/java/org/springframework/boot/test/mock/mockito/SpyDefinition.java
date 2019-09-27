@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * A complete definition that can be used to create a Mockito spy.
  *
@@ -47,7 +49,7 @@ class SpyDefinition extends Definition {
 
 	}
 
-	public ResolvableType getTypeToSpy() {
+	ResolvableType getTypeToSpy() {
 		return this.typeToSpy;
 	}
 
@@ -78,12 +80,12 @@ class SpyDefinition extends Definition {
 				.append("reset", getReset()).toString();
 	}
 
-	public <T> T createSpy(Object instance) {
+	<T> T createSpy(Object instance) {
 		return createSpy(getName(), instance);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T createSpy(String name, Object instance) {
+	<T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
 		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
 		if (Mockito.mockingDetails(instance).isSpy()) {
@@ -98,7 +100,7 @@ class SpyDefinition extends Definition {
 		if (this.isProxyTargetAware()) {
 			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
-		return (T) Mockito.mock(instance.getClass(), settings);
+		return (T) mock(instance.getClass(), settings);
 	}
 
 	/**

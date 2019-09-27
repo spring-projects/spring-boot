@@ -29,7 +29,7 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.util.StringUtils;
 
 /**
- * Handler for {@link WebServlet}-annotated classes.
+ * Handler for {@link WebServlet @WebServlet}-annotated classes.
  *
  * @author Andy Wilkinson
  */

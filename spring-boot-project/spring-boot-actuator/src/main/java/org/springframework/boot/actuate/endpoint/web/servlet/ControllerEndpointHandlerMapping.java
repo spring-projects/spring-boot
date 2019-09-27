@@ -111,6 +111,11 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	@Override
+	protected boolean hasCorsConfigurationSource(Object handler) {
+		return this.corsConfiguration != null;
+	}
+
+	@Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}

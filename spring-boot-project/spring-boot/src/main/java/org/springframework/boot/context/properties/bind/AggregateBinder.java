@@ -52,7 +52,7 @@ abstract class AggregateBinder<T> {
 	 * @return the bound aggregate or null
 	 */
 	@SuppressWarnings("unchecked")
-	public final Object bind(ConfigurationPropertyName name, Bindable<?> target, AggregateElementBinder elementBinder) {
+	final Object bind(ConfigurationPropertyName name, Bindable<?> target, AggregateElementBinder elementBinder) {
 		Object result = bindAggregate(name, target, elementBinder);
 		Supplier<?> value = target.getValue();
 		if (result == null || value == null) {

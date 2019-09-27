@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that checks whether or not a default info contributor is enabled.
- * Matches if the value of the {@code management.info.<name>.enabled} property is
- * {@code true}. Otherwise, matches if the value of the
+ * {@link Conditional @Conditional} that checks whether or not a default info contributor
+ * is enabled. Matches if the value of the {@code management.info.<name>.enabled} property
+ * is {@code true}. Otherwise, matches if the value of the
  * {@code management.info.defaults.enabled} property is {@code true} or if it is not
  * configured.
  *

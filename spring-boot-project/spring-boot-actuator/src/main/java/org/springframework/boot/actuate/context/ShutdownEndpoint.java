@@ -27,7 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * {@link Endpoint} to shutdown the {@link ApplicationContext}.
+ * {@link Endpoint @Endpoint} to shutdown the {@link ApplicationContext}.
  *
  * @author Dave Syer
  * @author Christian Dupuis

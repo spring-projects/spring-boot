@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,8 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class DefaultReactiveHealthIndicatorRegistryTests {
+@Deprecated
+class DefaultReactiveHealthIndicatorRegistryTests {
 
 	private ReactiveHealthIndicator one = mock(ReactiveHealthIndicator.class);
 
@@ -42,15 +43,15 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 
 	private DefaultReactiveHealthIndicatorRegistry registry;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		given(this.one.health()).willReturn(Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));
 		given(this.two.health()).willReturn(Mono.just(new Health.Builder().unknown().withDetail("2", "2").build()));
 		this.registry = new DefaultReactiveHealthIndicatorRegistry();
 	}
 
 	@Test
-	public void register() {
+	void register() {
 		this.registry.register("one", this.one);
 		this.registry.register("two", this.two);
 		assertThat(this.registry.getAll()).hasSize(2);
@@ -59,14 +60,14 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	}
 
 	@Test
-	public void registerAlreadyUsedName() {
+	void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
 		assertThatIllegalStateException().isThrownBy(() -> this.registry.register("one", this.two))
 				.withMessageContaining("HealthIndicator with name 'one' already registered");
 	}
 
 	@Test
-	public void unregister() {
+	void unregister() {
 		this.registry.register("one", this.one);
 		this.registry.register("two", this.two);
 		assertThat(this.registry.getAll()).hasSize(2);
@@ -76,7 +77,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	}
 
 	@Test
-	public void unregisterUnknown() {
+	void unregisterUnknown() {
 		this.registry.register("one", this.one);
 		assertThat(this.registry.getAll()).hasSize(1);
 		ReactiveHealthIndicator two = this.registry.unregister("two");
@@ -85,7 +86,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	}
 
 	@Test
-	public void getAllIsASnapshot() {
+	void getAllIsASnapshot() {
 		this.registry.register("one", this.one);
 		Map<String, ReactiveHealthIndicator> snapshot = this.registry.getAll();
 		assertThat(snapshot).containsOnlyKeys("one");
@@ -94,7 +95,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	}
 
 	@Test
-	public void getAllIsImmutable() {
+	void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, ReactiveHealthIndicator> snapshot = this.registry.getAll();
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(snapshot::clear);

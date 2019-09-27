@@ -31,7 +31,8 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -91,7 +92,7 @@ class BeanDefinitionLoader {
 	 * Set the bean name generator to be used by the underlying readers and scanner.
 	 * @param beanNameGenerator the bean name generator
 	 */
-	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
@@ -101,7 +102,7 @@ class BeanDefinitionLoader {
 	 * Set the resource loader to be used by the underlying readers and scanner.
 	 * @param resourceLoader the resource loader
 	 */
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.xmlReader.setResourceLoader(resourceLoader);
 		this.scanner.setResourceLoader(resourceLoader);
@@ -111,7 +112,7 @@ class BeanDefinitionLoader {
 	 * Set the environment to be used by the underlying readers and scanner.
 	 * @param environment the environment
 	 */
-	public void setEnvironment(ConfigurableEnvironment environment) {
+	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.xmlReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
@@ -121,7 +122,7 @@ class BeanDefinitionLoader {
 	 * Load the sources into the reader.
 	 * @return the number of loaded beans
 	 */
-	public int load() {
+	int load() {
 		int count = 0;
 		for (Object source : this.sources) {
 			count += load(source);
@@ -275,16 +276,13 @@ class BeanDefinitionLoader {
 	private boolean isComponent(Class<?> type) {
 		// This has to be a bit of a guess. The only way to be sure that this type is
 		// eligible is to make a bean definition out of it and try to instantiate it.
-		if (AnnotationUtils.findAnnotation(type, Component.class) != null) {
+		if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
 			return true;
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass() || type.getConstructors() == null
-				|| type.getConstructors().length == 0) {
-			return false;
-		}
-		return true;
+		return !type.getName().matches(".*\\$_.*closure.*") && !type.isAnonymousClass()
+				&& type.getConstructors() != null && type.getConstructors().length != 0;
 	}
 
 	/**

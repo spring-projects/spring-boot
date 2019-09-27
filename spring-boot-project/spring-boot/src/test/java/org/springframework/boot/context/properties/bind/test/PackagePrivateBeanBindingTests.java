@@ -19,8 +19,8 @@ package org.springframework.boot.context.properties.bind.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class PackagePrivateBeanBindingTests {
+class PackagePrivateBeanBindingTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -43,14 +43,14 @@ public class PackagePrivateBeanBindingTests {
 
 	private ConfigurationPropertyName name;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.binder = new Binder(this.sources);
 		this.name = ConfigurationPropertyName.of("foo");
 	}
 
 	@Test
-	public void bindToPackagePrivateClassShouldBindToInstance() {
+	void bindToPackagePrivateClassShouldBindToInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
@@ -63,11 +63,11 @@ public class PackagePrivateBeanBindingTests {
 
 		private int bar;
 
-		public int getBar() {
+		int getBar() {
 			return this.bar;
 		}
 
-		public void setBar(int bar) {
+		void setBar(int bar) {
 			this.bar = bar;
 		}
 

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -35,15 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class PathRequestTests {
+class PathRequestTests {
 
 	@Test
-	public void toStaticResourcesShouldReturnStaticResourceRequest() {
+	void toStaticResourcesShouldReturnStaticResourceRequest() {
 		assertThat(PathRequest.toStaticResources()).isInstanceOf(StaticResourceRequest.class);
 	}
 
 	@Test
-	public void toH2ConsoleShouldMatchH2ConsolePath() {
+	void toH2ConsoleShouldMatchH2ConsolePath() {
 		RequestMatcher matcher = PathRequest.toH2Console();
 		assertMatcher(matcher).matches("/h2-console");
 		assertMatcher(matcher).matches("/h2-console/subpath");
@@ -51,7 +51,7 @@ public class PathRequestTests {
 	}
 
 	@Test
-	public void toH2ConsoleWhenManagementContextShouldNeverMatch() {
+	void toH2ConsoleWhenManagementContextShouldNeverMatch() {
 		RequestMatcher matcher = PathRequest.toH2Console();
 		assertMatcher(matcher, "management").doesNotMatch("/h2-console");
 		assertMatcher(matcher, "management").doesNotMatch("/h2-console/subpath");
@@ -69,7 +69,7 @@ public class PathRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -80,7 +80,7 @@ public class PathRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String path) {
+		void matches(String path) {
 			matches(mockRequest(path));
 		}
 
@@ -88,7 +88,7 @@ public class PathRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String path) {
+		void doesNotMatch(String path) {
 			doesNotMatch(mockRequest(path));
 		}
 

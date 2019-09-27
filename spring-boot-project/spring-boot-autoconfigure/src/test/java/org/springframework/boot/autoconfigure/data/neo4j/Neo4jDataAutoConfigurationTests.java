@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.neo4j.ogm.driver.NativeTypesNotAvailableException;
+import org.neo4j.ogm.driver.NativeTypesNotSupportedException;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -51,8 +53,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
- * use Lucene 4 and Neo4j still requires 3.
+ * Tests for {@link Neo4jDataAutoConfiguration}. Tests should not use the embedded driver
+ * as it requires the complete Neo4j-Kernel and server to function properly.
  *
  * @author Stephane Nicoll
  * @author Michael Hunger
@@ -61,7 +63,7 @@ import static org.mockito.Mockito.verify;
  * @author Kazuki Shimizu
  * @author Michael Simons
  */
-public class Neo4jDataAutoConfigurationTests {
+class Neo4jDataAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
@@ -69,7 +71,7 @@ public class Neo4jDataAutoConfigurationTests {
 					AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfiguration() {
+	void defaultConfiguration() {
 		this.contextRunner.withPropertyValues("spring.data.neo4j.uri=http://localhost:8989").run((context) -> {
 			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 			assertThat(context).hasSingleBean(SessionFactory.class);
@@ -80,7 +82,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customNeo4jTransactionManagerUsingProperties() {
+	void customNeo4jTransactionManagerUsingProperties() {
 		this.contextRunner.withPropertyValues("spring.transaction.default-timeout=30",
 				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
 					Neo4jTransactionManager transactionManager = context.getBean(Neo4jTransactionManager.class);
@@ -90,7 +92,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customSessionFactory() {
+	void customSessionFactory() {
 		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(org.neo4j.ogm.config.Configuration.class);
 			assertThat(context).hasSingleBean(SessionFactory.class);
@@ -98,26 +100,27 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customSessionFactoryShouldNotDisableOtherDefaults() {
+	void customSessionFactoryShouldNotDisableOtherDefaults() {
 		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
+			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context.getBean(SessionFactory.class)).isSameAs(context.getBean("customSessionFactory"));
 			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
 			assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
 		});
 	}
 
 	@Test
-	public void customConfiguration() {
+	void customConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context.getBean(org.neo4j.ogm.config.Configuration.class))
 					.isSameAs(context.getBean("myConfiguration"));
 			assertThat(context).hasSingleBean(SessionFactory.class);
 			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 		});
-
 	}
 
 	@Test
-	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
+	void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
 		String cityPackage = City.class.getPackage().getName();
@@ -133,13 +136,52 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void openSessionInViewInterceptorCanBeDisabled() {
+	void openSessionInViewInterceptorCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(OpenSessionInViewInterceptor.class));
 	}
 
 	@Test
-	public void eventListenersAreAutoRegistered() {
+	void shouldBeAbleToUseNativeTypesWithBolt() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(
+						AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class))
+				.run((context) -> assertThat(context).getBean(org.neo4j.ogm.config.Configuration.class)
+						.hasFieldOrPropertyWithValue("useNativeTypes", true));
+	}
+
+	@Test
+	void shouldFailWhenNativeTypesAreNotAvailable() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.neo4j.ogm.drivers.bolt.types"))
+				.withPropertyValues("spring.data.neo4j.uri=bolt://localhost:7687",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(
+						AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.hasRootCauseInstanceOf(NativeTypesNotAvailableException.class);
+				});
+	}
+
+	@Test
+	void shouldFailWhenNativeTypesAreNotSupported() {
+		this.contextRunner
+				.withPropertyValues("spring.data.neo4j.uri=http://localhost:7474",
+						"spring.data.neo4j.use-native-types:true")
+				.withConfiguration(
+						AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.hasRootCauseInstanceOf(NativeTypesNotSupportedException.class);
+				});
+	}
+
+	@Test
+	void eventListenersAreAutoRegistered() {
 		this.contextRunner.withUserConfiguration(EventListenerConfiguration.class).run((context) -> {
 			Session session = context.getBean(SessionFactory.class).openSession();
 			session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
@@ -149,7 +191,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void providesARequestScopedBookmarkManagerIfNecessaryAndPossible() {
+	void providesARequestScopedBookmarkManagerIfNecessaryAndPossible() {
 		this.contextRunner.withUserConfiguration(BookmarkManagementEnabledConfiguration.class).run((context) -> {
 			BeanDefinition bookmarkManagerBean = context.getBeanFactory()
 					.getBeanDefinition("scopedTarget.bookmarkManager");
@@ -158,7 +200,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void providesASingletonScopedBookmarkManagerIfNecessaryAndPossible() {
+	void providesASingletonScopedBookmarkManagerIfNecessaryAndPossible() {
 		new ApplicationContextRunner().withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
 				.withUserConfiguration(TestConfiguration.class, BookmarkManagementEnabledConfiguration.class)
 				.withConfiguration(
@@ -170,7 +212,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void doesNotProvideABookmarkManagerIfNotPossible() {
+	void doesNotProvideABookmarkManagerIfNotPossible() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Caffeine.class, EmbeddedDriver.class))
 				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(BookmarkManager.class));
@@ -182,48 +224,48 @@ public class Neo4jDataAutoConfigurationTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = Country.class)
 	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSessionFactory {
 
 		@Bean
-		public SessionFactory customSessionFactory() {
+		SessionFactory customSessionFactory() {
 			return mock(SessionFactory.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomConfiguration {
 
 		@Bean
-		public org.neo4j.ogm.config.Configuration myConfiguration() {
+		org.neo4j.ogm.config.Configuration myConfiguration() {
 			return new org.neo4j.ogm.config.Configuration.Builder().uri("http://localhost:12345").build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBookmarkManagement
 	static class BookmarkManagementEnabledConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EventListenerConfiguration {
 
 		@Bean
-		public EventListener eventListenerOne() {
+		EventListener eventListenerOne() {
 			return mock(EventListener.class);
 		}
 
 		@Bean
-		public EventListener eventListenerTwo() {
+		EventListener eventListenerTwo() {
 			return mock(EventListener.class);
 		}
 

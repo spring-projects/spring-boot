@@ -26,22 +26,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class MustacheServletWebConfiguration {
 
-	private final MustacheProperties mustache;
-
-	protected MustacheServletWebConfiguration(MustacheProperties mustache) {
-		this.mustache = mustache;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
+	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		this.mustache.applyToMvcViewResolver(resolver);
-		resolver.setCharset(this.mustache.getCharsetName());
+		mustache.applyToMvcViewResolver(resolver);
+		resolver.setCharset(mustache.getCharsetName());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;
 	}

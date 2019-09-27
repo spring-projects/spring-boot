@@ -52,11 +52,11 @@ class EnvVariables {
 		return (value != null) ? value : "";
 	}
 
-	public Map<String, String> asMap() {
+	Map<String, String> asMap() {
 		return Collections.unmodifiableMap(this.variables);
 	}
 
-	public String[] asArray() {
+	String[] asArray() {
 		List<String> args = new ArrayList<>(this.variables.size());
 		for (Map.Entry<String, String> arg : this.variables.entrySet()) {
 			args.add(arg.getKey() + "=" + arg.getValue());

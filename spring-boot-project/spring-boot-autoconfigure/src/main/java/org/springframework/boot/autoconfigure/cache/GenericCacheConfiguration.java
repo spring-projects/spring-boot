@@ -33,23 +33,17 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(Cache.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 class GenericCacheConfiguration {
 
-	private final CacheManagerCustomizers customizers;
-
-	GenericCacheConfiguration(CacheManagerCustomizers customizers) {
-		this.customizers = customizers;
-	}
-
 	@Bean
-	public SimpleCacheManager cacheManager(Collection<Cache> caches) {
+	SimpleCacheManager cacheManager(CacheManagerCustomizers customizers, Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
-		return this.customizers.customize(cacheManager);
+		return customizers.customize(cacheManager);
 	}
 
 }

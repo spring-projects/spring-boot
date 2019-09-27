@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 class SentenceExtractor {
 
-	public String getFirstSentence(String text) {
+	String getFirstSentence(String text) {
 		if (text == null) {
 			return null;
 		}

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -56,7 +56,7 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  */
-public class JobLauncherCommandLineRunnerTests {
+class JobLauncherCommandLineRunnerTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -72,8 +72,8 @@ public class JobLauncherCommandLineRunnerTests {
 
 	private Step step;
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.context.register(BatchConfiguration.class);
 		this.context.refresh();
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
@@ -89,13 +89,13 @@ public class JobLauncherCommandLineRunnerTests {
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 
-	@After
-	public void closeContext() {
+	@AfterEach
+	void closeContext() {
 		this.context.close();
 	}
 
 	@Test
-	public void basicExecution() throws Exception {
+	void basicExecution() throws Exception {
 		this.runner.execute(this.job, new JobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 		this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L).toJobParameters());
@@ -103,7 +103,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void incrementExistingExecution() throws Exception {
+	void incrementExistingExecution() throws Exception {
 		this.job = this.jobs.get("job").start(this.step).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
@@ -111,7 +111,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void retryFailedExecution() throws Exception {
+	void retryFailedExecution() throws Exception {
 		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
@@ -120,7 +120,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void runDifferentInstances() throws Exception {
+	void runDifferentInstances() throws Exception {
 		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build()).build();
 		// start a job instance
 		JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
@@ -133,7 +133,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
+	void retryFailedExecutionOnNonRestartableJob() throws Exception {
 		this.job = this.jobs.get("job").preventRestart()
 				.start(this.steps.get("step").tasklet(throwingTasklet()).build()).incrementer(new RunIdIncrementer())
 				.build();
@@ -150,7 +150,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
+	void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
 		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
@@ -163,7 +163,7 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
-	public void retryFailedExecutionWithDifferentNonIdentifyingParametersFromPreviousExecution() throws Exception {
+	void retryFailedExecutionWithDifferentNonIdentifyingParametersFromPreviousExecution() throws Exception {
 		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
@@ -198,9 +198,9 @@ public class JobLauncherCommandLineRunnerTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class BatchConfiguration implements BatchConfigurer {
+	static class BatchConfiguration implements BatchConfigurer {
 
 		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
 
@@ -209,11 +209,11 @@ public class JobLauncherCommandLineRunnerTests {
 		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
 				this.transactionManager);
 
-		public BatchConfiguration() throws Exception {
+		BatchConfiguration() throws Exception {
 			this.jobRepository = this.jobRepositoryFactory.getObject();
 		}
 
-		public void clear() {
+		void clear() {
 			this.jobRepositoryFactory.clear();
 		}
 

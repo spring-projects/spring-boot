@@ -44,27 +44,27 @@ abstract class FilterableDependency {
 	@Parameter
 	private String classifier;
 
-	public String getGroupId() {
+	String getGroupId() {
 		return this.groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
-	public String getArtifactId() {
+	String getArtifactId() {
 		return this.artifactId;
 	}
 
-	public void setArtifactId(String artifactId) {
+	void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
 
-	public String getClassifier() {
+	String getClassifier() {
 		return this.classifier;
 	}
 
-	public void setClassifier(String classifier) {
+	void setClassifier(String classifier) {
 		this.classifier = classifier;
 	}
 

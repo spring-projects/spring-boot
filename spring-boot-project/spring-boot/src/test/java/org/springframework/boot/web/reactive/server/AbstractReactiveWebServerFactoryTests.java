@@ -34,15 +34,13 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -72,13 +70,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
 	protected WebServer webServer;
 
-	@After
-	public void tearDown() {
+	@AfterEach
+	void tearDown() {
 		if (this.webServer != null) {
 			try {
 				this.webServer.stop();
@@ -92,26 +87,26 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected abstract AbstractReactiveWebServerFactory getFactory();
 
 	@Test
-	public void specificPort() {
+	void specificPort() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		Mono<String> result = getWebClient().build().post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
-	public void basicSslFromClassPath() {
+	void basicSslFromClassPath() {
 		testBasicSslWithKeyStore("classpath:test.jks", "password");
 	}
 
 	@Test
-	public void basicSslFromFileSystem() {
+	void basicSslFromFileSystem() {
 		testBasicSslWithKeyStore("src/test/resources/test.jks", "password");
 	}
 
@@ -127,7 +122,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(connector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
@@ -141,7 +136,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
@@ -151,7 +146,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
+	void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
@@ -181,13 +176,13 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
@@ -197,7 +192,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
+	void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
@@ -214,7 +209,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		StepVerifier.create(result).expectError(SSLException.class).verify(Duration.ofSeconds(10));
 	}
@@ -230,7 +225,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToGetRequest() {
+	void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
@@ -238,7 +233,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToPostRequest() {
+	void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.post().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
@@ -246,7 +241,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForSmallResponse() {
+	void noCompressionForSmallResponse() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setMinResponseSize(DataSize.ofBytes(3001));
@@ -257,7 +252,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForMimeType() {
+	void noCompressionForMimeType() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setMimeTypes(new String[] { "application/json" });
@@ -268,7 +263,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForUserAgent() {
+	void noCompressionForUserAgent() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
@@ -279,7 +274,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForResponseWithInvalidContentType() {
+	void noCompressionForResponseWithInvalidContentType() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setMimeTypes(new String[] { "application/json" });
@@ -290,7 +285,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
+	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
 				.hasMessageContaining("Could not load key store 'null'");
 	}
@@ -299,7 +294,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		return prepareCompressionTest(compression);
-
 	}
 
 	protected WebClient prepareCompressionTest(Compression compression) {
@@ -348,7 +342,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class CompressionDetectionHandler extends ChannelInboundHandlerAdapter {
+	static class CompressionDetectionHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -364,7 +358,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class CharsHandler implements HttpHandler {
+	static class CharsHandler implements HttpHandler {
 
 		private static final DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
 
@@ -372,7 +366,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		private final String mediaType;
 
-		public CharsHandler(int contentSize, String mediaType) {
+		CharsHandler(int contentSize, String mediaType) {
 			char[] chars = new char[contentSize];
 			Arrays.fill(chars, 'F');
 			this.bytes = factory.wrap(new String(chars).getBytes(StandardCharsets.UTF_8));
@@ -389,7 +383,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class XForwardedHandler implements HttpHandler {
+	static class XForwardedHandler implements HttpHandler {
 
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {

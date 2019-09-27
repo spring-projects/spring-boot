@@ -20,10 +20,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.testkit.GradleBuildExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,30 +33,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootPluginIntegrationTests {
+@ExtendWith(GradleBuildExtension.class)
+class SpringBootPluginIntegrationTests {
 
-	@Rule
-	public final GradleBuild gradleBuild = new GradleBuild();
+	final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
-	public void failFastWithVersionOfGradleLowerThanRequired() {
-		BuildResult result = this.gradleBuild.gradleVersion("4.3").buildAndFail();
+	void failFastWithVersionOfGradleLowerThanRequired() {
+		BuildResult result = this.gradleBuild.gradleVersion("4.9").buildAndFail();
 		assertThat(result.getOutput())
-				.contains("Spring Boot plugin requires Gradle 4.4" + " or later. The current version is Gradle 4.3");
+				.contains("Spring Boot plugin requires Gradle 4.10 or later. The current version is Gradle 4.9");
 	}
 
 	@Test
-	public void succeedWithVersionOfGradleHigherThanRequired() {
-		this.gradleBuild.gradleVersion("4.4.1").build();
+	void succeedWithVersionOfGradleHigherThanRequired() {
+		this.gradleBuild.gradleVersion("4.10.1").build();
 	}
 
 	@Test
-	public void succeedWithVersionOfGradleMatchingWhatIsRequired() {
-		this.gradleBuild.gradleVersion("4.4").build();
+	void succeedWithVersionOfGradleMatchingWhatIsRequired() {
+		this.gradleBuild.gradleVersion("4.10").build();
 	}
 
 	@Test
-	public void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
+	void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.buildAndFail("compileJava");
 		assertThat(result.getOutput())

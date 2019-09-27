@@ -24,7 +24,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Service;
 
 /**
- * Example service used with {@link DataRedisTest} tests.
+ * Example service used with {@link DataRedisTest @DataRedisTest} tests.
  *
  * @author Jayaram Pradhan
  */

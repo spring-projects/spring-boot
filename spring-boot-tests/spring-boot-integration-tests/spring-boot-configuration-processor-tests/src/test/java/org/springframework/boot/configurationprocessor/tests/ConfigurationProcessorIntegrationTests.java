@@ -18,8 +18,8 @@ package org.springframework.boot.configurationprocessor.tests;
 
 import java.io.IOException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
@@ -34,12 +34,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationProcessorIntegrationTests {
+class ConfigurationProcessorIntegrationTests {
 
 	private static ConfigurationMetadataRepository repository;
 
-	@BeforeClass
-	public static void readMetadata() throws IOException {
+	@BeforeAll
+	static void readMetadata() throws IOException {
 		Resource resource = new ClassPathResource("META-INF/spring-configuration-metadata.json");
 		assertThat(resource.exists()).isTrue();
 		// Make sure the right file is detected
@@ -49,7 +49,7 @@ public class ConfigurationProcessorIntegrationTests {
 	}
 
 	@Test
-	public void extractTypeFromAnnotatedGetter() {
+	void extractTypeFromAnnotatedGetter() {
 		ConfigurationMetadataProperty property = repository.getAllProperties().get("annotated.name");
 		assertThat(property).isNotNull();
 		assertThat(property.getType()).isEqualTo("java.lang.String");

@@ -16,13 +16,11 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,20 +28,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link WebMvcTest} and Pageable support.
+ * Integration tests for {@link WebMvcTest @WebMvcTest} and Pageable support.
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @WithMockUser
-public class WebMvcTestPageableIntegrationTests {
+class WebMvcTestPageableIntegrationTests {
 
 	@Autowired
 	private MockMvc mvc;
 
 	@Test
-	public void shouldSupportPageable() throws Exception {
+	void shouldSupportPageable() throws Exception {
 		this.mvc.perform(get("/paged").param("page", "2").param("size", "42")).andExpect(status().isOk())
 				.andExpect(content().string("2:42"));
 	}

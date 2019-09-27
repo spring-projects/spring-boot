@@ -30,7 +30,7 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 
 /**
- * {@link Endpoint} to expose a user's {@link Session}s.
+ * {@link Endpoint @Endpoint} to expose a user's {@link Session}s.
  *
  * @author Vedran Pavic
  * @since 2.0.0

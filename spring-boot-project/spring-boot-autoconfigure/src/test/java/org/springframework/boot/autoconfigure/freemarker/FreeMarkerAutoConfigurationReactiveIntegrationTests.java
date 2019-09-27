@@ -20,7 +20,7 @@ import java.io.StringWriter;
 import java.time.Duration;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,13 +41,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
+class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
 
 	@Test
-	public void defaultConfiguration() {
+	void defaultConfiguration() {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBean(FreeMarkerViewResolver.class)).isNotNull();
 			assertThat(context.getBean(FreeMarkerConfigurer.class)).isNotNull();
@@ -57,7 +57,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void defaultViewResolution() {
+	void defaultViewResolution() {
 		this.contextRunner.run((context) -> {
 			MockServerWebExchange exchange = render(context, "home");
 			String result = exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30));
@@ -67,7 +67,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customPrefix() {
+	void customPrefix() {
 		this.contextRunner.withPropertyValues("spring.freemarker.prefix:prefix/").run((context) -> {
 			MockServerWebExchange exchange = render(context, "prefixed");
 			String result = exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30));
@@ -76,7 +76,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customSuffix() {
+	void customSuffix() {
 		this.contextRunner.withPropertyValues("spring.freemarker.suffix:.freemarker").run((context) -> {
 			MockServerWebExchange exchange = render(context, "suffixed");
 			String result = exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30));
@@ -85,7 +85,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void customTemplateLoaderPath() {
+	void customTemplateLoaderPath() {
 		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
 				.run((context) -> {
 					MockServerWebExchange exchange = render(context, "custom");
@@ -96,7 +96,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void customFreeMarkerSettings() {
+	void customFreeMarkerSettings() {
 		this.contextRunner.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
 				.run((context) -> assertThat(
 						context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
@@ -104,17 +104,13 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Test
-	public void renderTemplate() {
+	void renderTemplate() {
 		this.contextRunner.withPropertyValues().run((context) -> {
 			FreeMarkerConfigurer freemarker = context.getBean(FreeMarkerConfigurer.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
+			freemarker.getConfiguration().getTemplate("message.ftlh").process(new DataModel(), writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
-	}
-
-	public String getGreeting() {
-		return "Hello World";
 	}
 
 	private MockServerWebExchange render(ApplicationContext context, String viewName) {
@@ -123,6 +119,14 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/path"));
 		view.flatMap((v) -> v.render(null, MediaType.TEXT_HTML, exchange)).block(Duration.ofSeconds(30));
 		return exchange;
+	}
+
+	public static class DataModel {
+
+		public String getGreeting() {
+			return "Hello World";
+		}
+
 	}
 
 }

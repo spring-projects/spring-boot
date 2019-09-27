@@ -54,7 +54,7 @@ class RestartLauncher extends Thread {
 		}
 	}
 
-	public Throwable getError() {
+	Throwable getError() {
 		return this.error;
 	}
 

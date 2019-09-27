@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,25 +34,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class SpringDataWebAutoConfigurationTests {
+class SpringDataWebAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SpringDataWebAutoConfiguration.class));
 
 	@Test
-	public void webSupportIsAutoConfiguredInWebApplicationContexts() {
+	void webSupportIsAutoConfiguredInWebApplicationContexts() {
 		this.contextRunner
 				.run((context) -> assertThat(context).hasSingleBean(PageableHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
-	public void autoConfigurationBacksOffInNonWebApplicationContexts() {
+	void autoConfigurationBacksOffInNonWebApplicationContexts() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(SpringDataWebAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(PageableHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
-	public void customizePageable() {
+	void customizePageable() {
 		this.contextRunner.withPropertyValues("spring.data.web.pageable.page-parameter=p",
 				"spring.data.web.pageable.size-parameter=s", "spring.data.web.pageable.default-page-size=10",
 				"spring.data.web.pageable.prefix=abc", "spring.data.web.pageable.qualifier-delimiter=__",
@@ -71,7 +71,7 @@ public class SpringDataWebAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPageable() {
+	void defaultPageable() {
 		this.contextRunner.run((context) -> {
 			SpringDataWebProperties.Pageable properties = new SpringDataWebProperties().getPageable();
 			PageableHandlerMethodArgumentResolver argumentResolver = context
@@ -92,7 +92,7 @@ public class SpringDataWebAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeSort() {
+	void customizeSort() {
 		this.contextRunner.withPropertyValues("spring.data.web.sort.sort-parameter=s").run((context) -> {
 			SortHandlerMethodArgumentResolver argumentResolver = context
 					.getBean(SortHandlerMethodArgumentResolver.class);

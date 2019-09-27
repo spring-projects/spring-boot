@@ -25,8 +25,8 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -41,7 +41,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
-public class DependencyCustomizerTests {
+class DependencyCustomizerTests {
 
 	private final ModuleNode moduleNode = new ModuleNode((SourceUnit) null);
 
@@ -52,8 +52,8 @@ public class DependencyCustomizerTests {
 
 	private DependencyCustomizer dependencyCustomizer;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
 		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
@@ -70,7 +70,7 @@ public class DependencyCustomizerTests {
 	}
 
 	@Test
-	public void basicAdd() {
+	void basicAdd() {
 		this.dependencyCustomizer.add("spring-boot-starter-logging");
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);
@@ -80,7 +80,7 @@ public class DependencyCustomizerTests {
 	}
 
 	@Test
-	public void nonTransitiveAdd() {
+	void nonTransitiveAdd() {
 		this.dependencyCustomizer.add("spring-boot-starter-logging", false);
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);
@@ -90,7 +90,7 @@ public class DependencyCustomizerTests {
 	}
 
 	@Test
-	public void fullyCustomized() {
+	void fullyCustomized() {
 		this.dependencyCustomizer.add("spring-boot-starter-logging", "my-classifier", "my-type", false);
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);
@@ -100,39 +100,39 @@ public class DependencyCustomizerTests {
 	}
 
 	@Test
-	public void anyMissingClassesWithMissingClassesPerformsAdd() {
+	void anyMissingClassesWithMissingClassesPerformsAdd() {
 		this.dependencyCustomizer.ifAnyMissingClasses("does.not.Exist").add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
-	public void anyMissingClassesWithMixtureOfClassesPerformsAdd() {
+	void anyMissingClassesWithMixtureOfClassesPerformsAdd() {
 		this.dependencyCustomizer.ifAnyMissingClasses(getClass().getName(), "does.not.Exist")
 				.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
-	public void anyMissingClassesWithNoMissingClassesDoesNotPerformAdd() {
+	void anyMissingClassesWithNoMissingClassesDoesNotPerformAdd() {
 		this.dependencyCustomizer.ifAnyMissingClasses(getClass().getName()).add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
-	public void allMissingClassesWithNoMissingClassesDoesNotPerformAdd() {
+	void allMissingClassesWithNoMissingClassesDoesNotPerformAdd() {
 		this.dependencyCustomizer.ifAllMissingClasses(getClass().getName()).add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
-	public void allMissingClassesWithMixtureOfClassesDoesNotPerformAdd() {
+	void allMissingClassesWithMixtureOfClassesDoesNotPerformAdd() {
 		this.dependencyCustomizer.ifAllMissingClasses(getClass().getName(), "does.not.Exist")
 				.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
-	public void allMissingClassesWithAllClassesMissingPerformsAdd() {
+	void allMissingClassesWithAllClassesMissingPerformsAdd() {
 		this.dependencyCustomizer.ifAllMissingClasses("does.not.Exist", "does.not.exist.Either")
 				.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);

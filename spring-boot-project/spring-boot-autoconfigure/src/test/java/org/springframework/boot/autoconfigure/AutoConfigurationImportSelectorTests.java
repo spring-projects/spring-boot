@@ -22,8 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.BeansException;
@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class AutoConfigurationImportSelectorTests {
+class AutoConfigurationImportSelectorTests {
 
 	private final TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector();
 
@@ -60,8 +60,8 @@ public class AutoConfigurationImportSelectorTests {
 
 	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
@@ -69,7 +69,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void importsAreSelectedWhenUsingEnableAutoConfiguration() {
+	void importsAreSelectedWhenUsingEnableAutoConfiguration() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSameSizeAs(
 				SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, getClass().getClassLoader()));
@@ -77,7 +77,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void classExclusionsAreApplied() {
+	void classExclusionsAreApplied() {
 		String[] imports = selectImports(EnableAutoConfigurationWithClassExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
@@ -85,7 +85,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void classExclusionsAreAppliedWhenUsingSpringBootApplication() {
+	void classExclusionsAreAppliedWhenUsingSpringBootApplication() {
 		String[] imports = selectImports(SpringBootApplicationWithClassExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
@@ -93,7 +93,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void classNamesExclusionsAreApplied() {
+	void classNamesExclusionsAreApplied() {
 		String[] imports = selectImports(EnableAutoConfigurationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
@@ -101,7 +101,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void classNamesExclusionsAreAppliedWhenUsingSpringBootApplication() {
+	void classNamesExclusionsAreAppliedWhenUsingSpringBootApplication() {
 		String[] imports = selectImports(SpringBootApplicationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
@@ -109,7 +109,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void propertyExclusionsAreApplied() {
+	void propertyExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
@@ -118,21 +118,21 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void severalPropertyExclusionsAreApplied() {
+	void severalPropertyExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				FreeMarkerAutoConfiguration.class.getName() + "," + MustacheAutoConfiguration.class.getName());
 		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	@Test
-	public void severalPropertyExclusionsAreAppliedWithExtraSpaces() {
+	void severalPropertyExclusionsAreAppliedWithExtraSpaces() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				FreeMarkerAutoConfiguration.class.getName() + " , " + MustacheAutoConfiguration.class.getName() + " ");
 		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	@Test
-	public void severalPropertyYamlExclusionsAreApplied() {
+	void severalPropertyYamlExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude[0]", FreeMarkerAutoConfiguration.class.getName());
 		this.environment.setProperty("spring.autoconfigure.exclude[1]", MustacheAutoConfiguration.class.getName());
 		testSeveralPropertyExclusionsAreApplied();
@@ -146,7 +146,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void combinedExclusionsAreApplied() {
+	void combinedExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude", ThymeleafAutoConfiguration.class.getName());
 		String[] imports = selectImports(EnableAutoConfigurationWithClassAndClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
@@ -156,26 +156,26 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
+	void nonAutoConfigurationClassExclusionsShouldThrowException() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
 	}
 
 	@Test
-	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
+	void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class));
 	}
 
 	@Test
-	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
+	void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
-				"org.springframework.boot.autoconfigure." + "AutoConfigurationImportSelectorTests.TestConfiguration");
+				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration");
 		assertThatIllegalStateException().isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test
-	public void nameAndPropertyExclusionsWhenNotPresentOnClasspathShouldNotThrowException() {
+	void nameAndPropertyExclusionsWhenNotPresentOnClasspathShouldNotThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure.DoesNotExist2");
 		selectImports(EnableAutoConfigurationWithAbsentClassNameExclude.class);
@@ -185,7 +185,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void filterShouldFilterImports() {
+	void filterShouldFilterImports() {
 		String[] defaultImports = selectImports(BasicEnableAutoConfiguration.class);
 		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 1));
 		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 3, 4));
@@ -195,7 +195,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void filterShouldSupportAware() {
+	void filterShouldSupportAware() {
 		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(new String[] {});
 		this.filters.add(filter);
 		selectImports(BasicEnableAutoConfiguration.class);
@@ -203,7 +203,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	private String[] selectImports(Class<?> source) {
-		return this.importSelector.selectImports(new StandardAnnotationMetadata(source));
+		return this.importSelector.selectImports(AnnotationMetadata.introspect(source));
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
@@ -224,13 +224,13 @@ public class AutoConfigurationImportSelectorTests {
 			return Collections.singletonList((event) -> this.lastEvent = event);
 		}
 
-		public AutoConfigurationImportEvent getLastEvent() {
+		AutoConfigurationImportEvent getLastEvent() {
 			return this.lastEvent;
 		}
 
 	}
 
-	private static class TestAutoConfigurationImportFilter implements AutoConfigurationImportFilter, BeanFactoryAware {
+	static class TestAutoConfigurationImportFilter implements AutoConfigurationImportFilter, BeanFactoryAware {
 
 		private final Set<String> nonMatching = new HashSet<>();
 
@@ -256,13 +256,13 @@ public class AutoConfigurationImportSelectorTests {
 			this.beanFactory = beanFactory;
 		}
 
-		public BeanFactory getBeanFactory() {
+		BeanFactory getBeanFactory() {
 			return this.beanFactory;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	private class TestConfiguration {
 
 	}

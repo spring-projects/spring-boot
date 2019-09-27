@@ -20,7 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.stereotype.Service;
 
 /**
- * Example {@link Service} used with {@link WebFluxTest} tests.
+ * Example {@link Service @Service} used with {@link WebFluxTest @WebFluxTest} tests.
  *
  * @author Stephane Nicoll
  */

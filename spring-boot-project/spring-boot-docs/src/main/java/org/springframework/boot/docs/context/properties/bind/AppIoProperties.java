@@ -22,7 +22,8 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
 /**
- * A {@link ConfigurationProperties} example that uses {@link DataSize}.
+ * A {@link ConfigurationProperties @ConfigurationProperties} example that uses
+ * {@link DataSize}.
  *
  * @author Stephane Nicoll
  */

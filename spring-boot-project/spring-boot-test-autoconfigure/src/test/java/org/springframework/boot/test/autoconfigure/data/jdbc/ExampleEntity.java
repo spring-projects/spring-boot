@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.data.jdbc;
 import org.springframework.data.annotation.Id;
 
 /**
- * Example entity used with {@link DataJdbcTest} tests.
+ * Example entity used with {@link DataJdbcTest @DataJdbcTest} tests.
  *
  * @author Andy Wilkinson
  */

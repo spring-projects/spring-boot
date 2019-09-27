@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HazelcastJpaDependencyAutoConfigurationTests {
+class HazelcastJpaDependencyAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -51,7 +51,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 					"spring.datasource.initialization-mode=never");
 
 	@Test
-	public void registrationIfHazelcastInstanceHasRegularBeanName() {
+	void registrationIfHazelcastInstanceHasRegularBeanName() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
 			assertThat(postProcessors(context)).containsKey("hazelcastInstanceJpaDependencyPostProcessor");
 			assertThat(entityManagerFactoryDependencies(context)).contains("hazelcastInstance");
@@ -59,7 +59,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	}
 
 	@Test
-	public void noRegistrationIfHazelcastInstanceHasCustomBeanName() {
+	void noRegistrationIfHazelcastInstanceHasCustomBeanName() {
 		this.contextRunner.withUserConfiguration(HazelcastCustomNameConfiguration.class).run((context) -> {
 			assertThat(entityManagerFactoryDependencies(context)).doesNotContain("hazelcastInstance");
 			assertThat(postProcessors(context)).doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
@@ -67,7 +67,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	}
 
 	@Test
-	public void noRegistrationWithNoHazelcastInstance() {
+	void noRegistrationWithNoHazelcastInstance() {
 		this.contextRunner.run((context) -> {
 			assertThat(entityManagerFactoryDependencies(context)).doesNotContain("hazelcastInstance");
 			assertThat(postProcessors(context)).doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
@@ -75,7 +75,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	}
 
 	@Test
-	public void noRegistrationWithNoEntityManagerFactory() {
+	void noRegistrationWithNoEntityManagerFactory() {
 		new ApplicationContextRunner().withUserConfiguration(HazelcastConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(HazelcastJpaDependencyAutoConfiguration.class))
 				.run((context) -> assertThat(postProcessors(context))
@@ -93,21 +93,21 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 		return (dependsOn != null) ? Arrays.asList(dependsOn) : Collections.emptyList();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance() {
+		HazelcastInstance hazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HazelcastCustomNameConfiguration {
 
 		@Bean
-		public HazelcastInstance myHazelcastInstance() {
+		HazelcastInstance myHazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
 

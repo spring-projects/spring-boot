@@ -58,7 +58,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
@@ -66,22 +66,16 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 public class WebServicesAutoConfiguration {
 
-	private final WebServicesProperties properties;
-
-	public WebServicesAutoConfiguration(WebServicesProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-			ApplicationContext applicationContext) {
+			ApplicationContext applicationContext, WebServicesProperties properties) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
-		String path = this.properties.getPath();
+		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(servlet,
 				urlMapping);
-		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
+		WebServicesProperties.Servlet servletProperties = properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		servletProperties.getInit().forEach(registration::addInitParameter);
 		return registration;
@@ -93,7 +87,7 @@ public class WebServicesAutoConfiguration {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 

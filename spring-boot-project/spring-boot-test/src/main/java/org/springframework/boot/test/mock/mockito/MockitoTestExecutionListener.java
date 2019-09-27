@@ -34,8 +34,8 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * {@link TestExecutionListener} to trigger {@link MockitoAnnotations#initMocks(Object)}
- * when {@link MockBean @MockBean} annotations are used. Primarily to allow {@link Captor}
- * annotations.
+ * when {@link MockBean @MockBean} annotations are used. Primarily to allow
+ * {@link Captor @Captor} annotations.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -119,7 +119,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 			}
 		}
 
-		public boolean hasAnnotations() {
+		boolean hasAnnotations() {
 			return !this.annotations.isEmpty();
 		}
 

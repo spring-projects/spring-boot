@@ -19,7 +19,7 @@ package org.springframework.boot.test.json;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
 
@@ -31,23 +31,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
+class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
-	public void initFieldsWhenTestIsNullShouldThrowException() {
+	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
-	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
+	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
-	public void initFieldsShouldSetNullFields() {
+	void initFieldsShouldSetNullFields() {
 		InitFieldsTestClass test = new InitFieldsTestClass();
 		assertThat(test.test).isNull();
 		assertThat(test.base).isNull();

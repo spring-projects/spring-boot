@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CacheAutoConfiguration.class })
 @ConditionalOnBean(CacheManager.class)
 @Import({ CacheMeterBinderProvidersConfiguration.class, CacheMetricsRegistrarConfiguration.class })

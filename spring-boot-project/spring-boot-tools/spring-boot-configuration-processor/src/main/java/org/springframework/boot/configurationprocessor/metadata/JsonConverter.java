@@ -37,7 +37,7 @@ class JsonConverter {
 
 	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
 
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
+	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
 				.sorted(ITEM_COMPARATOR).collect(Collectors.toList());
@@ -49,7 +49,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
 			jsonArray.put(toJsonObject(hint));
@@ -57,13 +57,13 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONObject toJsonObject(ItemMetadata item) throws Exception {
+	JSONObject toJsonObject(ItemMetadata item) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
-		putIfPresent(jsonObject, "type", item.getType());
-		putIfPresent(jsonObject, "description", item.getDescription());
-		putIfPresent(jsonObject, "sourceType", item.getSourceType());
-		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
+		jsonObject.putOpt("type", item.getType());
+		jsonObject.putOpt("description", item.getDescription());
+		jsonObject.putOpt("sourceType", item.getSourceType());
+		jsonObject.putOpt("sourceMethod", item.getSourceMethod());
 		Object defaultValue = item.getDefaultValue();
 		if (defaultValue != null) {
 			putDefaultValue(jsonObject, defaultValue);
@@ -109,7 +109,7 @@ class JsonConverter {
 	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
 		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
-		putIfPresent(result, "description", value.getDescription());
+		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
@@ -132,12 +132,6 @@ class JsonConverter {
 			result.put("parameters", parameters);
 		}
 		return result;
-	}
-
-	private void putIfPresent(JSONObject jsonObject, String name, Object value) throws Exception {
-		if (value != null) {
-			jsonObject.put(name, value);
-		}
 	}
 
 	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {

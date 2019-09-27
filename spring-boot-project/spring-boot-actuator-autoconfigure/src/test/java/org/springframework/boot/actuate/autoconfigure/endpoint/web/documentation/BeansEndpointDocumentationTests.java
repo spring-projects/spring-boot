@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -45,10 +45,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void beans() throws Exception {
+	void beans() throws Exception {
 		List<FieldDescriptor> beanFields = Arrays.asList(fieldWithPath("aliases").description("Names of any aliases."),
 				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),
@@ -70,12 +70,12 @@ public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentatio
 				&& CollectionUtils.isEmpty((Collection<?>) bean.getValue().get("dependencies"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public BeansEndpoint beansEndpoint(ConfigurableApplicationContext context) {
+		BeansEndpoint beansEndpoint(ConfigurableApplicationContext context) {
 			return new BeansEndpoint(context);
 		}
 

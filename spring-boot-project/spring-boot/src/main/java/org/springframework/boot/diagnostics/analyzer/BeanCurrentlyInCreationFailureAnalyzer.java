@@ -67,8 +67,8 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 
 	private String buildMessage(DependencyCycle dependencyCycle) {
 		StringBuilder message = new StringBuilder();
-		message.append(String
-				.format("The dependencies of some of the beans in the " + "application context form a cycle:%n%n"));
+		message.append(
+				String.format("The dependencies of some of the beans in the application context form a cycle:%n%n"));
 		List<BeanInCycle> beansInCycle = dependencyCycle.getBeansInCycle();
 		int cycleStart = dependencyCycle.getCycleStart();
 		for (int i = 0; i < beansInCycle.size(); i++) {
@@ -98,11 +98,11 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			this.cycleStart = cycleStart;
 		}
 
-		public List<BeanInCycle> getBeansInCycle() {
+		List<BeanInCycle> getBeansInCycle() {
 			return this.beansInCycle;
 		}
 
-		public int getCycleStart() {
+		int getCycleStart() {
 			return this.cycleStart;
 		}
 
@@ -158,7 +158,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return this.name + this.description;
 		}
 
-		public static BeanInCycle get(Throwable ex) {
+		static BeanInCycle get(Throwable ex) {
 			if (ex instanceof BeanCreationException) {
 				return get((BeanCreationException) ex);
 			}

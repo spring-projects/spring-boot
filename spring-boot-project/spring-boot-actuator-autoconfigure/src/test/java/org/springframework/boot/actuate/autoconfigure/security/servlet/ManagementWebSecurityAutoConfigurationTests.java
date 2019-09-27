@@ -18,13 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.FilterChainProxy;
@@ -49,16 +50,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ManagementWebSecurityAutoConfigurationTests {
+class ManagementWebSecurityAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+			AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 					InfoEndpointAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 
 	@Test
-	public void permitAllForHealth() {
+	void permitAllForHealth() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -66,7 +67,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void permitAllForInfo() {
+	void permitAllForInfo() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/info");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -74,7 +75,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void securesEverythingElse() {
+	void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator");
 			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -84,7 +85,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesMatchersBasedOffConfiguredActuatorBasePath() {
+	void usesMatchersBasedOffConfiguredActuatorBasePath() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/health");
 			assertThat(status).isEqualTo(HttpStatus.OK);
@@ -92,7 +93,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfCustomSecurityIsAdded() {
+	void backOffIfCustomSecurityIsAdded() {
 		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class).run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
 			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -102,9 +103,9 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
+	void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
-				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));
 	}
 
@@ -121,13 +122,17 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		return HttpStatus.valueOf(response.getStatus());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/foo").permitAll().anyRequest().authenticated().and().formLogin()
-					.and().httpBasic();
+			http.authorizeRequests((requests) -> {
+				requests.antMatchers("/foo").permitAll();
+				requests.anyRequest().authenticated();
+			});
+			http.formLogin(Customizer.withDefaults());
+			http.httpBasic();
 		}
 
 	}

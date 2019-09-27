@@ -66,8 +66,7 @@ public class StartMojo extends AbstractRunMojo {
 	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
 
 	/**
-	 * The port to use to expose the platform MBeanServer if the application needs to be
-	 * forked.
+	 * The port to use to expose the platform MBeanServer if the application is forked.
 	 */
 	@Parameter
 	private int jmxPort = 9001;
@@ -255,7 +254,7 @@ public class StartMojo extends AbstractRunMojo {
 			}
 		}
 		throw new MojoExecutionException(
-				"Spring application did not start before the configured " + "timeout (" + (wait * maxAttempts) + "ms");
+				"Spring application did not start before the configured timeout (" + (wait * maxAttempts) + "ms");
 	}
 
 	private class CreateJmxConnector implements Callable<JMXConnector> {

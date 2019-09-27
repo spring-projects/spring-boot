@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.sendgrid;
 
 import com.sendgrid.SendGrid;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SendGridAutoConfiguration}.
@@ -36,44 +37,45 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Maciej Walkowiak
  * @author Patrick Bray
  */
-public class SendGridAutoConfigurationTests {
+class SendGridAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void expectedSendGridBeanCreatedApiKey() {
+	void expectedSendGridBeanCreatedApiKey() {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.SECRET-API-KEY");
-	}
-
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void autoConfigurationNotFiredWhenPropertiesNotSet() {
-		loadContext();
-		this.context.getBean(SendGrid.class);
+		assertThat(sendGrid).extracting("apiKey").isEqualTo("SG.SECRET-API-KEY");
 	}
 
 	@Test
-	public void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
+	void autoConfigurationNotFiredWhenPropertiesNotSet() {
+		loadContext();
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(SendGrid.class));
+	}
+
+	@Test
+	void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.CUSTOM_API_KEY");
+		assertThat(sendGrid).extracting("apiKey").isEqualTo("SG.CUSTOM_API_KEY");
 	}
 
 	@Test
-	public void expectedSendGridBeanWithProxyCreated() {
+	void expectedSendGridBeanWithProxyCreated() {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY", "spring.sendgrid.proxy.host:localhost",
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertThat(sendGrid).extracting("client").extracting("httpClient").extracting("routePlanner")
-				.hasOnlyElementsOfType(DefaultProxyRoutePlanner.class);
+				.isInstanceOf(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {
@@ -91,7 +93,7 @@ public class SendGridAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ManualSendGridConfiguration {
 
 		@Bean

@@ -34,37 +34,31 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 class MailSenderPropertiesConfiguration {
 
-	private final MailProperties properties;
-
-	MailSenderPropertiesConfiguration(MailProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(JavaMailSender.class)
-	public JavaMailSenderImpl mailSender() {
+	JavaMailSenderImpl mailSender(MailProperties properties) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
-		applyProperties(sender);
+		applyProperties(properties, sender);
 		return sender;
 	}
 
-	private void applyProperties(JavaMailSenderImpl sender) {
-		sender.setHost(this.properties.getHost());
-		if (this.properties.getPort() != null) {
-			sender.setPort(this.properties.getPort());
+	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender) {
+		sender.setHost(properties.getHost());
+		if (properties.getPort() != null) {
+			sender.setPort(properties.getPort());
 		}
-		sender.setUsername(this.properties.getUsername());
-		sender.setPassword(this.properties.getPassword());
-		sender.setProtocol(this.properties.getProtocol());
-		if (this.properties.getDefaultEncoding() != null) {
-			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+		sender.setUsername(properties.getUsername());
+		sender.setPassword(properties.getPassword());
+		sender.setProtocol(properties.getProtocol());
+		if (properties.getDefaultEncoding() != null) {
+			sender.setDefaultEncoding(properties.getDefaultEncoding().name());
 		}
-		if (!this.properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
+		if (!properties.getProperties().isEmpty()) {
+			sender.setJavaMailProperties(asProperties(properties.getProperties()));
 		}
 	}
 

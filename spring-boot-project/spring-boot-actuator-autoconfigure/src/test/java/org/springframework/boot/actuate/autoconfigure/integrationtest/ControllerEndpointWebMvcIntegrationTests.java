@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
@@ -45,7 +46,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,19 +58,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ControllerEndpointWebMvcIntegrationTests {
+class ControllerEndpointWebMvcIntegrationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
-	public void endpointsAreSecureByDefault() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
+	void endpointsAreSecureByDefault() throws Exception {
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/actuator/example").accept(MediaType.APPLICATION_JSON))
@@ -78,10 +78,10 @@ public class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() throws Exception {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		TestPropertyValues
 				.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
@@ -124,7 +124,7 @@ public class ControllerEndpointWebMvcIntegrationTests {
 	static class ExampleController {
 
 		@GetMapping("/")
-		public String example() {
+		String example() {
 			return "Example";
 		}
 

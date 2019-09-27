@@ -38,17 +38,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Default user {@link Configuration} for a reactive web application. Configures a
- * {@link ReactiveUserDetailsService} with a default user and generated password. This
- * backs-off completely if there is a bean of type {@link ReactiveUserDetailsService} or
- * {@link ReactiveAuthenticationManager}.
+ * Default user {@link Configuration @Configuration} for a reactive web application.
+ * Configures a {@link ReactiveUserDetailsService} with a default user and generated
+ * password. This backs-off completely if there is a bean of type
+ * {@link ReactiveUserDetailsService} or {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
-@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class })
+@ConditionalOnMissingBean(value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class },
+		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder",
+				"org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveUserDetailsServiceAutoConfiguration {
 

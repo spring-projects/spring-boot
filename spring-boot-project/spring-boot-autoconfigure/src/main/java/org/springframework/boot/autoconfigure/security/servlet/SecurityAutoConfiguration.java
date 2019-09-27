@@ -37,7 +37,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
  * @author Madhura Bhave
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,

@@ -37,32 +37,35 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnMissingBean(BatchConfigurer.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class BatchConfigurerConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	static class JdbcBatchConfiguration {
 
 		@Bean
-		public BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+		BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(properties, dataSource, transactionManagerCustomizers.getIfAvailable());
+			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
+					transactionManagerCustomizers.getIfAvailable());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EntityManagerFactory.class)
 	@ConditionalOnBean(name = "entityManagerFactory")
 	static class JpaBatchConfiguration {
 
 		@Bean
-		public JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+		JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				EntityManagerFactory entityManagerFactory) {
-			return new JpaBatchConfigurer(properties, dataSource, transactionManagerCustomizers.getIfAvailable(),
-					entityManagerFactory);
+			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
+					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory);
 		}
 
 	}

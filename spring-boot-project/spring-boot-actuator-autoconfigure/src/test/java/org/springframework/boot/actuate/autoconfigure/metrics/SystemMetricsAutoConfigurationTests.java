@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -35,92 +35,71 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class SystemMetricsAutoConfigurationTests {
+class SystemMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresUptimeMetrics() {
+	void autoConfiguresUptimeMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(UptimeMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomUptimeMetricsToBeUsed() {
+	void allowsCustomUptimeMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class).run(
 				(context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
 	}
 
 	@Test
-	public void autoConfiguresProcessorMetrics() {
+	void autoConfiguresProcessorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsProcessorMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.processor.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ProcessorMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomProcessorMetricsToBeUsed() {
+	void allowsCustomProcessorMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 						.hasBean("customProcessorMetrics"));
 	}
 
 	@Test
-	public void autoConfiguresFileDescriptorMetrics() {
+	void autoConfiguresFileDescriptorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.files.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(FileDescriptorMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomFileDescriptorMetricsToBeUsed() {
+	void allowsCustomFileDescriptorMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
 						.hasBean("customFileDescriptorMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomUptimeMetricsConfiguration {
 
 		@Bean
-		public UptimeMetrics customUptimeMetrics() {
+		UptimeMetrics customUptimeMetrics() {
 			return new UptimeMetrics();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
-		public ProcessorMetrics customProcessorMetrics() {
+		ProcessorMetrics customProcessorMetrics() {
 			return new ProcessorMetrics();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean
-		public FileDescriptorMetrics customFileDescriptorMetrics() {
+		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
 		}
 

@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.transaction.jta;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.TemporaryQueue;
@@ -34,9 +36,9 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -54,7 +56,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -70,24 +71,19 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Nishant Raut
  */
-public class JtaAutoConfigurationTests {
+class JtaAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Before
-	public void cleanUpLogs() {
-		FileSystemUtils.deleteRecursively(new File("target/transaction-logs"));
-	}
-
-	@After
-	public void closeContext() {
+	@AfterEach
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void customPlatformTransactionManager() {
+	void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(CustomTransactionManagerConfig.class,
 				JtaAutoConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -95,7 +91,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableJtaSupport() {
+	void disableJtaSupport() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.enabled:false").applyTo(this.context);
 		this.context.register(JtaAutoConfiguration.class);
@@ -106,7 +102,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void atomikosSanityCheck() {
+	void atomikosSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, AtomikosJtaConfiguration.class);
 		this.context.getBean(AtomikosProperties.class);
 		this.context.getBean(UserTransactionService.class);
@@ -119,7 +115,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixSanityCheck() {
+	void bitronixSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, BitronixJtaConfiguration.class);
 		this.context.getBean(bitronix.tm.Configuration.class);
 		this.context.getBean(TransactionManager.class);
@@ -130,14 +126,14 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultBitronixServerId() throws UnknownHostException {
+	void defaultBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext(BitronixJtaConfiguration.class);
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class).getServerId();
 		assertThat(serverId).isEqualTo(InetAddress.getLocalHost().getHostAddress());
 	}
 
 	@Test
-	public void customBitronixServerId() {
+	void customBitronixServerId() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.transactionManagerId:custom").applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class);
@@ -147,18 +143,19 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAtomikosTransactionManagerName() {
+	void defaultAtomikosTransactionManagerName(@TempDir Path dir) throws IOException {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs").applyTo(this.context);
+		File logs = new File(dir.toFile(), "jta");
+		TestPropertyValues.of("spring.jta.logDir:" + logs.getAbsolutePath()).applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class);
 		this.context.refresh();
 
-		File epochFile = new File("target/transaction-logs/tmlog0.log");
+		File epochFile = new File(logs, "tmlog0.log");
 		assertThat(epochFile.isFile()).isTrue();
 	}
 
 	@Test
-	public void atomikosConnectionFactoryPoolConfiguration() {
+	void atomikosConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
 				"spring.jta.atomikos.connectionfactory.maxPoolSize:10").applyTo(this.context);
@@ -170,7 +167,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixConnectionFactoryPoolConfiguration() {
+	void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
 				"spring.jta.bitronix.connectionfactory.maxPoolSize:10").applyTo(this.context);
@@ -182,7 +179,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void atomikosDataSourcePoolConfiguration() {
+	void atomikosDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.jta.atomikos.datasource.minPoolSize:5", "spring.jta.atomikos.datasource.maxPoolSize:10")
@@ -195,7 +192,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixDataSourcePoolConfiguration() {
+	void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.jta.bitronix.datasource.minPoolSize:5", "spring.jta.bitronix.datasource.maxPoolSize:10")
@@ -208,7 +205,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void atomikosCustomizeJtaTransactionManagerUsingProperties() {
+	void atomikosCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true")
@@ -221,7 +218,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixCustomizeJtaTransactionManagerUsingProperties() {
+	void bitronixCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true")
@@ -233,21 +230,21 @@ public class JtaAutoConfigurationTests {
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
-	@Configuration
-	public static class CustomTransactionManagerConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class CustomTransactionManagerConfig {
 
 		@Bean
-		public PlatformTransactionManager transactionManager() {
+		PlatformTransactionManager transactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
 
 	}
 
-	@Configuration
-	public static class PoolConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class PoolConfiguration {
 
 		@Bean
-		public ConnectionFactory pooledConnectionFactory(XAConnectionFactoryWrapper wrapper) throws Exception {
+		ConnectionFactory pooledConnectionFactory(XAConnectionFactoryWrapper wrapper) throws Exception {
 			XAConnectionFactory connectionFactory = mock(XAConnectionFactory.class);
 			XAConnection connection = mock(XAConnection.class);
 			XASession session = mock(XASession.class);
@@ -261,7 +258,7 @@ public class JtaAutoConfigurationTests {
 		}
 
 		@Bean
-		public DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
+		DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
 		}

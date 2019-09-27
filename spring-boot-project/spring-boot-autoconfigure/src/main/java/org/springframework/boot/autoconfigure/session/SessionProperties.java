@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -56,9 +57,10 @@ public class SessionProperties {
 
 	private Servlet servlet = new Servlet();
 
-	private final ServerProperties serverProperties;
+	private ServerProperties serverProperties;
 
-	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
+	@Autowired
+	void setServerProperties(ObjectProvider<ServerProperties> serverProperties) {
 		this.serverProperties = serverProperties.getIfUnique();
 	}
 

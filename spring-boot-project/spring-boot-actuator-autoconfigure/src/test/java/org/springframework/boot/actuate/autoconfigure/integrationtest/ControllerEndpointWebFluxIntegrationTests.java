@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -45,18 +45,18 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Phillip Webb
  */
-public class ControllerEndpointWebFluxIntegrationTests {
+class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() throws Exception {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
@@ -80,7 +80,7 @@ public class ControllerEndpointWebFluxIntegrationTests {
 	static class ExampleController {
 
 		@GetMapping("/")
-		public String example() {
+		String example() {
 			return "Example";
 		}
 

@@ -16,25 +16,34 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -44,91 +53,118 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class RestTemplateAutoConfigurationTests {
+class RestTemplateAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+				.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					RestTemplate restTemplate = context.getBean(RestTemplate.class);
+					List<HttpMessageConverter<?>> converters = context.getBean(HttpMessageConverters.class)
+							.getConverters();
+					assertThat(restTemplate.getMessageConverters()).containsExactlyElementsOf(converters);
+					assertThat(restTemplate.getRequestFactory())
+							.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+				});
 	}
 
 	@Test
-	public void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
-		load(HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
-		assertThat(this.context.getBeansOfType(RestTemplate.class)).hasSize(1);
-		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		List<HttpMessageConverter<?>> converters = this.context.getBean(HttpMessageConverters.class).getConverters();
-		assertThat(restTemplate.getMessageConverters()).containsExactlyElementsOf(converters);
-		assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+	void restTemplateWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestTemplate.class);
+			RestTemplate restTemplate = context.getBean(RestTemplate.class);
+			assertThat(restTemplate.getMessageConverters().size())
+					.isEqualTo(new RestTemplate().getMessageConverters().size());
+		});
 	}
 
 	@Test
-	public void restTemplateWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
-		load(RestTemplateConfig.class);
-		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		assertThat(restTemplate.getMessageConverters().size())
-				.isEqualTo(new RestTemplate().getMessageConverters().size());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+				.withUserConfiguration(CustomHttpMessageConverter.class, RestTemplateConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					RestTemplate restTemplate = context.getBean(RestTemplate.class);
+					assertThat(restTemplate.getMessageConverters()).extracting(HttpMessageConverter::getClass)
+							.contains((Class) CustomHttpMessageConverter.class);
+				});
 	}
 
 	@Test
-	public void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
-		load(CustomHttpMessageConverter.class, HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
-		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		List<Class<?>> converterClasses = new ArrayList<>();
-		for (HttpMessageConverter<?> converter : restTemplate.getMessageConverters()) {
-			converterClasses.add(converter.getClass());
-		}
-		assertThat(converterClasses).contains(CustomHttpMessageConverter.class);
+	void restTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfig.class, CustomRestTemplateBuilderConfig.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					RestTemplate restTemplate = context.getBean(RestTemplate.class);
+					assertThat(restTemplate.getMessageConverters()).hasSize(1);
+					assertThat(restTemplate.getMessageConverters().get(0))
+							.isInstanceOf(CustomHttpMessageConverter.class);
+				});
 	}
 
 	@Test
-	public void restTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
-		load(RestTemplateConfig.class, CustomRestTemplateBuilderConfig.class);
-		assertThat(this.context.getBeansOfType(RestTemplate.class)).hasSize(1);
-		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		assertThat(restTemplate.getMessageConverters()).hasSize(1);
-		assertThat(restTemplate.getMessageConverters().get(0)).isInstanceOf(CustomHttpMessageConverter.class);
+	void restTemplateShouldApplyCustomizer() {
+		this.contextRunner.withUserConfiguration(RestTemplateConfig.class, RestTemplateCustomizerConfig.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RestTemplate.class);
+					RestTemplate restTemplate = context.getBean(RestTemplate.class);
+					RestTemplateCustomizer customizer = context.getBean(RestTemplateCustomizer.class);
+					verify(customizer).customize(restTemplate);
+				});
 	}
 
 	@Test
-	public void restTemplateShouldApplyCustomizer() {
-		load(RestTemplateCustomizerConfig.class, RestTemplateConfig.class);
-		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		RestTemplateCustomizer customizer = this.context.getBean(RestTemplateCustomizer.class);
-		verify(customizer).customize(restTemplate);
+	void restTemplateShouldApplyRequestCustomizer() {
+		this.contextRunner.withUserConfiguration(RestTemplateRequestCustomizerConfig.class).run((context) -> {
+			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
+			ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
+			MockClientHttpRequest request = new MockClientHttpRequest();
+			request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
+			given(requestFactory.createRequest(any(), any())).willReturn(request);
+			RestTemplate restTemplate = builder.requestFactory(() -> requestFactory).build();
+			restTemplate.getForEntity("http://localhost:8080/test", String.class);
+			assertThat(request.getHeaders()).containsEntry("spring", Collections.singletonList("boot"));
+		});
 	}
 
 	@Test
-	public void builderShouldBeFreshForEachUse() {
-		load(DirtyRestTemplateConfig.class);
+	void builderShouldBeFreshForEachUse() {
+		this.contextRunner.withUserConfiguration(DirtyRestTemplateConfig.class)
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
-	public void load(Class<?>... config) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(config);
-		ctx.register(RestTemplateAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+	@Test
+	void whenServletWebApplicationRestTemplateBuilderIsConfigured() {
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(RestTemplateBuilder.class));
 	}
 
-	@Configuration
+	@Test
+	void whenReactiveWebApplicationRestTemplateBuilderIsNotConfigured() {
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(RestTemplateBuilder.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateConfig {
 
 		@Bean
-		public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		RestTemplate restTemplate(RestTemplateBuilder builder) {
 			return builder.build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DirtyRestTemplateConfig {
 
 		@Bean
-		public RestTemplate restTemplateOne(RestTemplateBuilder builder) {
+		RestTemplate restTemplateOne(RestTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -138,7 +174,7 @@ public class RestTemplateAutoConfigurationTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplateTwo(RestTemplateBuilder builder) {
+		RestTemplate restTemplateTwo(RestTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -155,22 +191,32 @@ public class RestTemplateAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestTemplateBuilderConfig {
 
 		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
+		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().messageConverters(new CustomHttpMessageConverter());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateCustomizerConfig {
 
 		@Bean
-		public RestTemplateCustomizer restTemplateCustomizer() {
+		RestTemplateCustomizer restTemplateCustomizer() {
 			return mock(RestTemplateCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateRequestCustomizerConfig {
+
+		@Bean
+		RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
+			return (request) -> request.getHeaders().add("spring", "boot");
 		}
 
 	}

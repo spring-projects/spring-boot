@@ -25,7 +25,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 
 /**
- * Handler for {@link WebListener}-annotated classes.
+ * Handler for {@link WebListener @WebListener}-annotated classes.
  *
  * @author Andy Wilkinson
  */

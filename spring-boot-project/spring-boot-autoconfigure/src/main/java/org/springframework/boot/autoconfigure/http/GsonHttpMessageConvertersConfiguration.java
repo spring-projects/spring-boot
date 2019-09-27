@@ -36,18 +36,18 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Gson.class)
 class GsonHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
-	protected static class GsonHttpMessageConverterConfiguration {
+	static class GsonHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
+		GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);
 			return converter;

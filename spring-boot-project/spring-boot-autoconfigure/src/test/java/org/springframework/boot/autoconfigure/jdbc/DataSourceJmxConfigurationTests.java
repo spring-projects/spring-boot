@@ -29,7 +29,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -48,17 +48,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Tadaya Tsuyukubo
  */
-public class DataSourceJmxConfigurationTests {
+class DataSourceJmxConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.url=" + "jdbc:hsqldb:mem:test-" + UUID.randomUUID())
+			.withPropertyValues("spring.datasource.url=jdbc:hsqldb:mem:test-" + UUID.randomUUID())
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class));
 
 	@Test
-	public void hikariAutoConfiguredCanUseRegisterMBeans() {
+	void hikariAutoConfiguredCanUseRegisterMBeans() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner
-				.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
+				.withPropertyValues("spring.jmx.enabled=true",
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
 						"spring.datasource.name=" + poolName, "spring.datasource.hikari.register-mbeans=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(HikariDataSource.class);
@@ -69,7 +70,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariAutoConfiguredWithoutDataSourceName() throws MalformedObjectNameException {
+	void hikariAutoConfiguredWithoutDataSourceName() throws MalformedObjectNameException {
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 		Set<ObjectInstance> existingInstances = mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"),
 				null);
@@ -86,7 +87,7 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariAutoConfiguredUsesJmsFlag() {
+	void hikariAutoConfiguredUsesJmsFlag() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
 				"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
@@ -99,10 +100,11 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void hikariProxiedCanUseRegisterMBeans() {
+	void hikariProxiedCanUseRegisterMBeans() {
 		String poolName = UUID.randomUUID().toString();
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
-				.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
+				.withPropertyValues("spring.jmx.enabled=true",
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
 						"spring.datasource.name=" + poolName, "spring.datasource.hikari.register-mbeans=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(javax.sql.DataSource.class);
@@ -123,15 +125,15 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatDoesNotExposeMBeanPoolByDefault() {
+	void tomcatDoesNotExposeMBeanPoolByDefault() {
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + DataSource.class.getName())
 				.run((context) -> assertThat(context).doesNotHaveBean(ConnectionPool.class));
 	}
 
 	@Test
-	public void tomcatAutoConfiguredCanExposeMBeanPool() {
+	void tomcatAutoConfiguredCanExposeMBeanPool() {
 		this.contextRunner.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
-				"spring.datasource.jmx-enabled=true").run((context) -> {
+				"spring.datasource.tomcat.jmx-enabled=true").run((context) -> {
 					assertThat(context).hasBean("dataSourceMBean");
 					assertThat(context).hasSingleBean(ConnectionPool.class);
 					assertThat(context.getBean(DataSourceProxy.class).createPool().getJmxPool())
@@ -140,10 +142,10 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatProxiedCanExposeMBeanPool() {
+	void tomcatProxiedCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
 				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
-						"spring.datasource.jmx-enabled=true")
+						"spring.datasource.tomcat.jmx-enabled=true")
 				.run((context) -> {
 					assertThat(context).hasBean("dataSourceMBean");
 					assertThat(context).getBean("dataSourceMBean").isInstanceOf(ConnectionPool.class);
@@ -151,27 +153,27 @@ public class DataSourceJmxConfigurationTests {
 	}
 
 	@Test
-	public void tomcatDelegateCanExposeMBeanPool() {
+	void tomcatDelegateCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
 				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
-						"spring.datasource.jmx-enabled=true")
+						"spring.datasource.tomcat.jmx-enabled=true")
 				.run((context) -> {
 					assertThat(context).hasBean("dataSourceMBean");
 					assertThat(context).getBean("dataSourceMBean").isInstanceOf(ConnectionPool.class);
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceProxyConfiguration {
 
 		@Bean
-		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+		static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
 			return new DataSourceBeanPostProcessor();
 		}
 
 	}
 
-	private static class DataSourceBeanPostProcessor implements BeanPostProcessor {
+	static class DataSourceBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
@@ -183,18 +185,16 @@ public class DataSourceJmxConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceDelegateConfiguration {
 
 		@Bean
-		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+		static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
 			return new DataSourceBeanPostProcessor() {
 				@Override
 				public Object postProcessAfterInitialization(Object bean, String beanName) {
-					if (bean instanceof javax.sql.DataSource) {
-						return new DelegatingDataSource((javax.sql.DataSource) bean);
-					}
-					return bean;
+					return (bean instanceof javax.sql.DataSource)
+							? new DelegatingDataSource((javax.sql.DataSource) bean) : bean;
 				}
 			};
 		}

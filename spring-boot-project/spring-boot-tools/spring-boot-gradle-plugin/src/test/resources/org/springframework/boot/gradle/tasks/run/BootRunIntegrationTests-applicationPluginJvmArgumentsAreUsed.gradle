@@ -4,7 +4,3 @@ plugins {
 }
 
 applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
-
-task echoJvmArguments {
-	println 'JVM arguments = ' + bootRun.jvmArgs
-}

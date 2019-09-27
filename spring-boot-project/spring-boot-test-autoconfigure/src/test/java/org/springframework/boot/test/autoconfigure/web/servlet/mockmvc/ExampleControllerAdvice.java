@@ -25,7 +25,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
- * Example {@link ControllerAdvice} used with {@link WebMvcTest} tests.
+ * Example {@link ControllerAdvice @ControllerAdvice} used with
+ * {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

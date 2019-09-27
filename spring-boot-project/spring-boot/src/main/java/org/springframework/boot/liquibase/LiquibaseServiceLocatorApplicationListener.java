@@ -50,7 +50,7 @@ public class LiquibaseServiceLocatorApplicationListener implements ApplicationLi
 	 */
 	private static class LiquibasePresent {
 
-		public void replaceServiceLocator() {
+		void replaceServiceLocator() {
 			CustomResolverServiceLocator customResolverServiceLocator = new CustomResolverServiceLocator(
 					new SpringPackageScanClassResolver(logger));
 			ServiceLocator.setInstance(customResolverServiceLocator);

@@ -44,7 +44,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
 @AutoConfigureAfter({ CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
 public class WebClientAutoConfiguration {
@@ -63,7 +63,7 @@ public class WebClientAutoConfiguration {
 		return this.webClientBuilder.clone();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CodecCustomizer.class)
 	protected static class WebClientCodecsConfiguration {
 

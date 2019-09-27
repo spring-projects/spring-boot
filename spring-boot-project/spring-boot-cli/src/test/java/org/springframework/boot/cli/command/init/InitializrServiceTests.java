@@ -18,7 +18,7 @@ package org.springframework.boot.cli.command.init;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -31,19 +31,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class InitializrServiceTests extends AbstractHttpClientMockTests {
+class InitializrServiceTests extends AbstractHttpClientMockTests {
 
 	private final InitializrService invoker = new InitializrService(this.http);
 
 	@Test
-	public void loadMetadata() throws Exception {
+	void loadMetadata() throws Exception {
 		mockSuccessfulMetadataGet(false);
-		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
+		InitializrServiceMetadata metadata = this.invoker.loadMetadata("https://foo/bar");
 		assertThat(metadata).isNotNull();
 	}
 
 	@Test
-	public void generateSimpleProject() throws Exception {
+	void generateSimpleProject() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
 				"foo.zip");
@@ -52,7 +52,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectCustomTargetFilename() throws Exception {
+	void generateProjectCustomTargetFilename() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.setOutput("bar.zip");
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
@@ -62,7 +62,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectNoDefaultFileName() throws Exception {
+	void generateProjectNoDefaultFileName() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
 				null);
@@ -71,7 +71,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectBadRequest() throws Exception {
+	void generateProjectBadRequest() throws Exception {
 		String jsonMessage = "Unknown dependency foo:bar";
 		mockProjectGenerationError(400, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
@@ -81,7 +81,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectBadRequestNoExtraMessage() throws Exception {
+	void generateProjectBadRequestNoExtraMessage() throws Exception {
 		mockProjectGenerationError(400, null);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
@@ -89,7 +89,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectNoContent() throws Exception {
+	void generateProjectNoContent() throws Exception {
 		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
@@ -100,7 +100,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void loadMetadataBadRequest() throws Exception {
+	void loadMetadataBadRequest() throws Exception {
 		String jsonMessage = "whatever error on the server";
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
@@ -109,7 +109,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void loadMetadataInvalidJson() throws Exception {
+	void loadMetadataInvalidJson() throws Exception {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, "Foo-Bar-Not-JSON".getBytes(), "application/json");
 		mockStatus(response, 200);
@@ -120,7 +120,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void loadMetadataNoContent() throws Exception {
+	void loadMetadataNoContent() throws Exception {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);

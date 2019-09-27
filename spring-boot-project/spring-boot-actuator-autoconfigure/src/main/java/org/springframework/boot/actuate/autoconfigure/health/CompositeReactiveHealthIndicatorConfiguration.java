@@ -33,7 +33,10 @@ import org.springframework.core.ResolvableType;
  * @param <S> the bean source type
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of
+ * {@link CompositeReactiveHealthContributorConfiguration}
  */
+@Deprecated
 public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends ReactiveHealthIndicator, S> {
 
 	@Autowired

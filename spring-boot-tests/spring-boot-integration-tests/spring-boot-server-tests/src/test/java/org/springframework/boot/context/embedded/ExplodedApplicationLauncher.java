@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
@@ -36,15 +38,16 @@ import org.springframework.util.StreamUtils;
  */
 class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
-	private final File exploded = new File("target/exploded");
+	private final Supplier<File> exploded;
 
-	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder) {
-		super(applicationBuilder);
+	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
+		super(applicationBuilder, buildOutput);
+		this.exploded = () -> new File(buildOutput.getRootLocation(), "exploded");
 	}
 
 	@Override
 	protected File getWorkingDirectory() {
-		return this.exploded;
+		return this.exploded.get();
 	}
 
 	@Override
@@ -53,12 +56,13 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	protected List<String> getArguments(File archive) {
+	protected List<String> getArguments(File archive, File serverPortFile) {
 		String mainClass = (archive.getName().endsWith(".war") ? "org.springframework.boot.loader.WarLauncher"
 				: "org.springframework.boot.loader.JarLauncher");
 		try {
 			explodeArchive(archive);
-			return Arrays.asList("-cp", this.exploded.getAbsolutePath(), mainClass);
+			return Arrays.asList("-cp", this.exploded.get().getAbsolutePath(), mainClass,
+					serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -66,12 +70,12 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private void explodeArchive(File archive) throws IOException {
-		FileSystemUtils.deleteRecursively(this.exploded);
+		FileSystemUtils.deleteRecursively(this.exploded.get());
 		JarFile jarFile = new JarFile(archive);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry jarEntry = entries.nextElement();
-			File extracted = new File(this.exploded, jarEntry.getName());
+			File extracted = new File(this.exploded.get(), jarEntry.getName());
 			if (jarEntry.isDirectory()) {
 				extracted.mkdirs();
 			}

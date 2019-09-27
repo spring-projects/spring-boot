@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,38 +33,38 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class SpringBootConditionTests {
+class SpringBootConditionTests {
 
 	@Test
-	public void sensibleClassException() {
+	void sensibleClassException() {
 		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
 				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
-	public void sensibleMethodException() {
+	void sensibleMethodException() {
 		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
 				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(AlwaysThrowsCondition.class)
-	public static class ErrorOnClass {
+	static class ErrorOnClass {
 
 	}
 
-	@Configuration
-	public static class ErrorOnMethod {
+	@Configuration(proxyBeanMethods = false)
+	static class ErrorOnMethod {
 
 		@Bean
 		@Conditional(AlwaysThrowsCondition.class)
-		public String myBean() {
+		String myBean() {
 			return "bean";
 		}
 
 	}
 
-	public static class AlwaysThrowsCondition extends SpringBootCondition {
+	static class AlwaysThrowsCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {

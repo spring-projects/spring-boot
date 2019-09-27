@@ -95,6 +95,12 @@ public enum DatabaseDriver {
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource", "SELECT 1"),
 
 	/**
+	 * Amazon Redshift.
+	 * @since 2.2.0
+	 */
+	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
+
+	/**
 	 * HANA - SAP HANA Database - HDB.
 	 * @since 2.1.0
 	 */
@@ -120,7 +126,6 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
-
 		}
 
 	},
@@ -133,7 +138,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Collections.singleton("firebirdsql");
+			return Arrays.asList("firebirdsql", "firebird");
 		}
 
 		@Override

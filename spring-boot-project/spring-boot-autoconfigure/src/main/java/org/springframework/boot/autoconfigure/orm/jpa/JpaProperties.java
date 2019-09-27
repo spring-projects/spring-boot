@@ -134,7 +134,10 @@ public class JpaProperties {
 	 * {@link DataSource}.
 	 * @param dataSource the auto-configured data source
 	 * @return {@code Database}
+	 * @deprecated since 2.2.0 in favor of letting the JPA container detect the database
+	 * to use.
 	 */
+	@Deprecated
 	public Database determineDatabase(DataSource dataSource) {
 		if (this.database != null) {
 			return this.database;

@@ -26,7 +26,8 @@ import org.springframework.util.MimeType;
 import org.springframework.web.servlet.ViewResolver;
 
 /**
- * Base class for {@link ConfigurationProperties} of a {@link ViewResolver}.
+ * Base class for {@link ConfigurationProperties @ConfigurationProperties} of a
+ * {@link ViewResolver}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

@@ -54,7 +54,7 @@ public class JarFileArchive implements Archive {
 	private File tempUnpackFolder;
 
 	public JarFileArchive(File file) throws IOException {
-		this(file, null);
+		this(file, file.toURI().toURL());
 	}
 
 	public JarFileArchive(File file, URL url) throws IOException {
@@ -93,6 +93,11 @@ public class JarFileArchive implements Archive {
 	@Override
 	public Iterator<Entry> iterator() {
 		return new EntryIterator(this.jarFile.entries());
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.jarFile.close();
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
@@ -202,7 +207,7 @@ public class JarFileArchive implements Archive {
 			this.jarEntry = jarEntry;
 		}
 
-		public JarEntry getJarEntry() {
+		JarEntry getJarEntry() {
 			return this.jarEntry;
 		}
 

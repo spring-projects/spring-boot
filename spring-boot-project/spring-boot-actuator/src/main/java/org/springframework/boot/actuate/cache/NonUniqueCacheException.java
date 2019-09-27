@@ -32,7 +32,7 @@ public class NonUniqueCacheException extends RuntimeException {
 	private final Collection<String> cacheManagerNames;
 
 	public NonUniqueCacheException(String cacheName, Collection<String> cacheManagerNames) {
-		super(String.format("Multiple caches named %s found, specify the 'cacheManager' " + "to use: %s", cacheName,
+		super(String.format("Multiple caches named %s found, specify the 'cacheManager' to use: %s", cacheName,
 				cacheManagerNames));
 		this.cacheName = cacheName;
 		this.cacheManagerNames = Collections.unmodifiableCollection(cacheManagerNames);

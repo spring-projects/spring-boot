@@ -17,15 +17,15 @@
 package org.springframework.boot.autoconfigure.mustache;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,14 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MustacheAutoConfigurationTests {
+class MustacheAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext webContext;
+	private AnnotationConfigServletWebApplicationContext webContext;
 
 	private AnnotationConfigReactiveWebApplicationContext reactiveWebContext;
 
 	@Test
-	public void registerBeansForServletApp() {
+	void registerBeansForServletApp() {
 		loadWithServlet(null);
 		assertThat(this.webContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.webContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
@@ -49,7 +49,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerCompilerForServletApp() {
+	void registerCompilerForServletApp() {
 		loadWithServlet(CustomCompilerConfiguration.class);
 		assertThat(this.webContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
 		assertThat(this.webContext.getBeansOfType(MustacheViewResolver.class)).hasSize(1);
@@ -58,7 +58,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerBeansForReactiveApp() {
+	void registerBeansForReactiveApp() {
 		loadWithReactive(null);
 		assertThat(this.reactiveWebContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
@@ -69,7 +69,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerCompilerForReactiveApp() {
+	void registerCompilerForReactiveApp() {
 		loadWithReactive(CustomCompilerConfiguration.class);
 		assertThat(this.reactiveWebContext.getBeansOfType(Mustache.Compiler.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
@@ -81,7 +81,7 @@ public class MustacheAutoConfigurationTests {
 	}
 
 	private void loadWithServlet(Class<?> config) {
-		this.webContext = new AnnotationConfigWebApplicationContext();
+		this.webContext = new AnnotationConfigServletWebApplicationContext();
 		TestPropertyValues.of("spring.mustache.prefix=classpath:/mustache-templates/").applyTo(this.webContext);
 		if (config != null) {
 			this.webContext.register(config);
@@ -100,17 +100,17 @@ public class MustacheAutoConfigurationTests {
 		this.reactiveWebContext.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ MustacheAutoConfiguration.class })
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
-	@Configuration
-	protected static class CustomCompilerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class CustomCompilerConfiguration {
 
 		@Bean
-		public Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
+		Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
 			return Mustache.compiler().standardsMode(true).withLoader(mustacheTemplateLoader);
 		}
 

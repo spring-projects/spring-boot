@@ -22,10 +22,10 @@ import java.util.Collections;
 
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.JCacheMetrics;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.cache.jcache.JCacheCache;
 
@@ -38,14 +38,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-@RunWith(MockitoJUnitRunner.class)
-public class JCacheCacheMeterBinderProviderTests {
+@ExtendWith(MockitoExtension.class)
+class JCacheCacheMeterBinderProviderTests {
 
 	@Mock
 	private javax.cache.Cache<Object, Object> nativeCache;
 
 	@Test
-	public void jCacheCacheProvider() throws URISyntaxException {
+	void jCacheCacheProvider() throws URISyntaxException {
 		javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
 		given(cacheManager.getURI()).willReturn(new URI("/test"));
 		given(this.nativeCache.getCacheManager()).willReturn(cacheManager);

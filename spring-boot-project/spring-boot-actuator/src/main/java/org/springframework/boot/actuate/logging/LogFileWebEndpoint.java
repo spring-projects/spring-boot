@@ -29,7 +29,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
- * Web {@link Endpoint} that provides access to an application's log file.
+ * Web {@link Endpoint @Endpoint} that provides access to an application's log file.
  *
  * @author Johannes Edmeier
  * @author Phillip Webb
@@ -64,7 +64,7 @@ public class LogFileWebEndpoint {
 			return new FileSystemResource(this.externalFile);
 		}
 		if (this.logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
+			logger.debug("Missing 'logging.file.name' or 'logging.file.path' properties");
 			return null;
 		}
 		return new FileSystemResource(this.logFile.toString());

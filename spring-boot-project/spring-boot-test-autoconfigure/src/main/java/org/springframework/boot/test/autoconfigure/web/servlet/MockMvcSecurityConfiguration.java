@@ -33,7 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SecurityMockMvcRequestPostProcessors.class)
 class MockMvcSecurityConfiguration {
 
@@ -41,7 +41,7 @@ class MockMvcSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_SECURITY_FILTER_NAME)
-	public SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
+	SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
 		return new SecurityMockMvcBuilderCustomizer();
 	}
 

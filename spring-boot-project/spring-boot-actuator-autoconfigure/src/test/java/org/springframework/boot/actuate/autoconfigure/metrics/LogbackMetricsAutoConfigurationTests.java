@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,34 +33,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class LogbackMetricsAutoConfigurationTests {
+class LogbackMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresLogbackMetrics() {
+	void autoConfiguresLogbackMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsLogbackMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.logback.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LogbackMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomLogbackMetricsToBeUsed() {
+	void allowsCustomLogbackMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class).run(
 				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomLogbackMetricsConfiguration {
 
 		@Bean
-		public LogbackMetrics customLogbackMetrics() {
+		LogbackMetrics customLogbackMetrics() {
 			return new LogbackMetrics();
 		}
 

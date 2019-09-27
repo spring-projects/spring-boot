@@ -47,7 +47,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
  * @author Christoph Strobl
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class, MongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
 @Import({ MongoDataConfiguration.class, MongoDbFactoryConfiguration.class, MongoDbFactoryDependentConfiguration.class })

@@ -24,7 +24,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebConnection;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
@@ -44,23 +44,23 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class LocalHostWebClientTests {
+class LocalHostWebClientTests {
 
 	@Captor
 	private ArgumentCaptor<WebRequest> requestCaptor;
 
-	public LocalHostWebClientTests() {
+	LocalHostWebClientTests() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void createWhenEnvironmentIsNullWillThrowException() {
+	void createWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebClient(null))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
-	public void getPageWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
+	void getPageWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		WebClient client = new LocalHostWebClient(environment);
 		WebConnection connection = mockConnection();
@@ -71,7 +71,7 @@ public class LocalHostWebClientTests {
 	}
 
 	@Test
-	public void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
+	void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "8181");
 		WebClient client = new LocalHostWebClient(environment);

@@ -39,7 +39,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
@@ -58,7 +58,8 @@ class HazelcastSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setSessionMapName(hazelcastSessionProperties.getMapName());
-			setHazelcastFlushMode(hazelcastSessionProperties.getFlushMode());
+			setFlushMode(hazelcastSessionProperties.getFlushMode());
+			setSaveMode(hazelcastSessionProperties.getSaveMode());
 		}
 
 	}

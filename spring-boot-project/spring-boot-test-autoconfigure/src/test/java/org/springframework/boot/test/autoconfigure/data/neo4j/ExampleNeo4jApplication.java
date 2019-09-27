@@ -19,7 +19,8 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Example {@link SpringBootApplication} used with {@link DataNeo4jTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
  */

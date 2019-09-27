@@ -18,14 +18,14 @@ package org.springframework.boot.actuate.management;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeEach;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileCopyUtils;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Integration tests for {@link HeapDumpWebEndpoint} exposed by Jersey, Spring MVC, and
@@ -42,53 +42,44 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
-public class HeapDumpWebEndpointWebIntegrationTests {
-
-	private static WebTestClient client;
-
-	private static ConfigurableApplicationContext context;
+class HeapDumpWebEndpointWebIntegrationTests {
 
 	private TestHeapDumpWebEndpoint endpoint;
 
-	@Before
-	public void configureEndpoint() {
+	@BeforeEach
+	void configureEndpoint(ApplicationContext context) {
 		this.endpoint = context.getBean(TestHeapDumpWebEndpoint.class);
 		this.endpoint.setAvailable(true);
 	}
 
-	@Test
-	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus() {
+	@WebEndpointTest
+	void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus(WebTestClient client) {
 		this.endpoint.setAvailable(false);
 		client.get().uri("/actuator/heapdump").exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
-	@Test
-	public void getRequestShouldReturnHeapDumpInResponseBody() throws Exception {
+	@WebEndpointTest
+	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) throws Exception {
 		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).expectBody(String.class).isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();
 	}
 
 	private void assertHeapDumpFileIsDeleted() throws InterruptedException {
-		long end = System.currentTimeMillis() + 5000;
-		while (System.currentTimeMillis() < end && this.endpoint.file.exists()) {
-			Thread.sleep(100);
-		}
-		assertThat(this.endpoint.file.exists()).isFalse();
+		Awaitility.waitAtMost(Duration.ofSeconds(5)).until(this.endpoint.file::exists, is(false));
 	}
 
-	@Configuration
-	public static class TestConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration {
 
 		@Bean
-		public HeapDumpWebEndpoint endpoint() {
+		HeapDumpWebEndpoint endpoint() {
 			return new TestHeapDumpWebEndpoint();
 		}
 
 	}
 
-	private static class TestHeapDumpWebEndpoint extends HeapDumpWebEndpoint {
+	static class TestHeapDumpWebEndpoint extends HeapDumpWebEndpoint {
 
 		private boolean available;
 
@@ -101,7 +92,7 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 			reset();
 		}
 
-		public void reset() {
+		void reset() {
 			this.available = true;
 		}
 
@@ -119,7 +110,7 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 			};
 		}
 
-		public void setAvailable(boolean available) {
+		void setAvailable(boolean available) {
 			this.available = available;
 		}
 

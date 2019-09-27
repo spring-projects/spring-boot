@@ -28,14 +28,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.boot.testsupport.compiler.TestCompiler.TestCompilationTask;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -63,9 +62,9 @@ public class TestProject {
 
 	private Set<File> sourceFiles = new LinkedHashSet<>();
 
-	public TestProject(TemporaryFolder tempFolder, Class<?>... classes) throws IOException {
-		this.sourceFolder = tempFolder.newFolder();
-		this.compiler = new TestCompiler(tempFolder) {
+	public TestProject(File tempFolder, Class<?>... classes) throws IOException {
+		this.sourceFolder = new File(tempFolder, "src");
+		this.compiler = new TestCompiler(new File(tempFolder, "build")) {
 			@Override
 			protected File getSourceFolder() {
 				return TestProject.this.sourceFolder;
@@ -122,7 +121,7 @@ public class TestProject {
 	 * @return the output file
 	 */
 	public File getOutputFile(String relativePath) {
-		Assert.assertFalse(new File(relativePath).isAbsolute());
+		Assert.isTrue(!new File(relativePath).isAbsolute(), "'" + relativePath + "' was absolute");
 		return new File(this.compiler.getOutputLocation(), relativePath);
 	}
 
@@ -157,7 +156,7 @@ public class TestProject {
 	 * @throws IOException on IO error
 	 */
 	public void revert(Class<?> type) throws IOException {
-		Assert.assertTrue(getSourceFile(type).exists());
+		Assert.isTrue(getSourceFile(type).exists(), "Source file for type '" + type + "' does not exist");
 		copySources(type);
 	}
 
@@ -167,7 +166,7 @@ public class TestProject {
 	 * @throws IOException on IO error
 	 */
 	public void add(Class<?> type) throws IOException {
-		Assert.assertFalse(getSourceFile(type).exists());
+		Assert.isTrue(!getSourceFile(type).exists(), "Source file for type '" + type + "' already exists");
 		copySources(type);
 	}
 

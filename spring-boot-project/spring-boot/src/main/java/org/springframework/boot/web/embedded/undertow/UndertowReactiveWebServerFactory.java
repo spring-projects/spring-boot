@@ -19,10 +19,10 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.undertow.Handlers;
@@ -31,7 +31,6 @@ import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
@@ -52,10 +51,7 @@ import org.springframework.util.Assert;
 public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableUndertowWebServerFactory {
 
-	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
-
-	@Deprecated
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
+	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
 	private Integer bufferSize;
 
@@ -199,38 +195,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return getAddress().getHostAddress();
 	}
 
-	/**
-	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
-	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
-	 * customizers.
-	 * @param customizers the customizers to set
-	 * @deprecated since 2.1.7 as the factory does not create a {@link DeploymentInfo}
-	 * making customization redundant
-	 */
-	@Deprecated
-	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo}.
-	 * @return the customizers that will be applied
-	 * @deprecated since 2.1.7 as the factory does not create a {@link DeploymentInfo}
-	 * making customization redundant
-	 */
-	@Deprecated
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	@Override
-	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
-		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
-	}
-
 	@Override
 	public void setAccessLogDirectory(File accessLogDirectory) {
 		this.accessLogDirectory = accessLogDirectory;
@@ -302,7 +266,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 */
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new ArrayList<>(customizers);
+		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**

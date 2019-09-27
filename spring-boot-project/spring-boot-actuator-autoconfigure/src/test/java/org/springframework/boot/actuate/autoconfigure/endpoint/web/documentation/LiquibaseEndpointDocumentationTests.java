@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -43,12 +43,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void liquibase() throws Exception {
+	void liquibase() throws Exception {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
-				.description("Change sets made by the Liquibase beans, keyed by " + "bean name.");
+				.description("Change sets made by the Liquibase beans, keyed by bean name.");
 		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("liquibase",
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
@@ -76,13 +76,13 @@ public class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocument
 						.type(JsonFieldType.STRING));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ BaseDocumentationConfiguration.class, EmbeddedDataSourceConfiguration.class,
 			LiquibaseAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
 		}
 

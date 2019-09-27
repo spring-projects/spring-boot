@@ -24,7 +24,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Humio metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Humio metrics
+ * export.
  *
  * @author Andy Wilkinson
  * @since 2.1.0

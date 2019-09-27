@@ -19,14 +19,14 @@ package org.springframework.boot.web.servlet.view;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class MustacheViewTests {
+class MustacheViewTests {
 
 	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
 			+ "/template.html";
@@ -44,10 +44,10 @@ public class MustacheViewTests {
 
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.context.refresh();
 		MockServletContext servletContext = new MockServletContext();
 		this.context.setServletContext(servletContext);
@@ -55,7 +55,7 @@ public class MustacheViewTests {
 	}
 
 	@Test
-	public void viewResolvesHandlebars() throws Exception {
+	void viewResolvesHandlebars() throws Exception {
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);

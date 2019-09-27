@@ -16,10 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -31,10 +32,21 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
-@EnableConfigurationProperties({ HealthEndpointProperties.class, HealthIndicatorProperties.class })
-@AutoConfigureAfter(HealthIndicatorAutoConfiguration.class)
-@Import({ HealthEndpointConfiguration.class, HealthEndpointWebExtensionConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
+@EnableConfigurationProperties
+@Import({ LegacyHealthEndpointAdaptersConfiguration.class, LegacyHealthEndpointCompatibilityConfiguration.class,
+		HealthEndpointConfiguration.class, ReactiveHealthEndpointConfiguration.class,
+		HealthEndpointWebExtensionConfiguration.class, HealthEndpointReactiveWebExtensionConfiguration.class })
 public class HealthEndpointAutoConfiguration {
+
+	@Bean
+	@SuppressWarnings("deprecation")
+	HealthEndpointProperties healthEndpointProperties(HealthIndicatorProperties healthIndicatorProperties) {
+		HealthEndpointProperties healthEndpointProperties = new HealthEndpointProperties();
+		healthEndpointProperties.getStatus().getOrder().addAll(healthIndicatorProperties.getOrder());
+		healthEndpointProperties.getStatus().getHttpMapping().putAll(healthIndicatorProperties.getHttpMapping());
+		return healthEndpointProperties;
+	}
 
 }

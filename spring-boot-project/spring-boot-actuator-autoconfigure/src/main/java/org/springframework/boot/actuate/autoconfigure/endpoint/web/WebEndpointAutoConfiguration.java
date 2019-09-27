@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -28,7 +26,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludeProp
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -54,19 +51,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint} support.
+ * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint @Endpoint}
+ * support.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @AutoConfigureAfter(EndpointAutoConfiguration.class)
 @EnableConfigurationProperties(WebEndpointProperties.class)
 public class WebEndpointAutoConfiguration {
-
-	private static final List<String> MEDIA_TYPES = Arrays.asList(ActuatorMediaType.V2_JSON, "application/json");
 
 	private final ApplicationContext applicationContext;
 
@@ -85,7 +81,7 @@ public class WebEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointMediaTypes endpointMediaTypes() {
-		return new EndpointMediaTypes(MEDIA_TYPES, MEDIA_TYPES);
+		return EndpointMediaTypes.DEFAULT;
 	}
 
 	@Bean
@@ -111,9 +107,8 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers,
-			WebEndpointProperties webEndpointProperties) {
-		return new PathMappedEndpoints(webEndpointProperties.getBasePath(), endpointSuppliers);
+	public PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers) {
+		return new PathMappedEndpoints(this.properties.getBasePath(), endpointSuppliers);
 	}
 
 	@Bean
@@ -130,13 +125,13 @@ public class WebEndpointAutoConfiguration {
 				exposure.getExclude());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class WebEndpointServletConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
-		public ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
+		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
 				ObjectProvider<PathMapper> endpointPathMappers,
 				ObjectProvider<EndpointFilter<ExposableServletEndpoint>> filters) {
 			return new ServletEndpointDiscoverer(applicationContext,

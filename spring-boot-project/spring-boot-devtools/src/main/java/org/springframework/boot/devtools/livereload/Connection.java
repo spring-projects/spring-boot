@@ -75,7 +75,7 @@ class Connection {
 	 * Run the connection.
 	 * @throws Exception in case of errors
 	 */
-	public void run() throws Exception {
+	void run() throws Exception {
 		if (this.header.contains("Upgrade: websocket") && this.header.contains("Sec-WebSocket-Version: 13")) {
 			runWebSocket();
 		}
@@ -88,7 +88,7 @@ class Connection {
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols", "Upgrade: websocket", "Connection: Upgrade",
 				"Sec-WebSocket-Accept: " + accept);
-		new Frame("{\"command\":\"hello\",\"protocols\":" + "[\"http://livereload.com/protocols/official-7\"],"
+		new Frame("{\"command\":\"hello\",\"protocols\":[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
 		Thread.sleep(100);
 		this.webSocket = true;
@@ -126,7 +126,7 @@ class Connection {
 	 * Trigger livereload for the client using this connection.
 	 * @throws IOException in case of I/O errors
 	 */
-	public void triggerReload() throws IOException {
+	void triggerReload() throws IOException {
 		if (this.webSocket) {
 			logger.debug("Triggering LiveReload");
 			writeWebSocketFrame(new Frame("{\"command\":\"reload\",\"path\":\"/\"}"));
@@ -152,7 +152,7 @@ class Connection {
 	 * Close the connection.
 	 * @throws IOException in case of I/O errors
 	 */
-	public void close() throws IOException {
+	void close() throws IOException {
 		this.running = false;
 		this.socket.close();
 	}

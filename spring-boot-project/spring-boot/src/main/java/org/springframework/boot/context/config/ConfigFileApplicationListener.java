@@ -74,7 +74,7 @@ import org.springframework.util.StringUtils;
  * properties from well known file locations. By default properties will be loaded from
  * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
- * <li>file:./config/:</li>
+ * <li>file:./config/</li>
  * <li>file:./</li>
  * <li>classpath:config/</li>
  * <li>classpath:</li>
@@ -114,6 +114,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	private static final Set<String> NO_SEARCH_NAMES = Collections.singleton(null);
 
 	private static final Bindable<String[]> STRING_ARRAY = Bindable.of(String[].class);
+
+	private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
+
+	private static final Set<String> LOAD_FILTERED_PROPERTY;
+
+	static {
+		Set<String> filteredProperties = new HashSet<>();
+		filteredProperties.add("spring.profiles.active");
+		filteredProperties.add("spring.profiles.include");
+		LOAD_FILTERED_PROPERTY = Collections.unmodifiableSet(filteredProperties);
+	}
 
 	/**
 	 * The "active profiles" property name.
@@ -308,23 +319,27 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					getClass().getClassLoader());
 		}
 
-		public void load() {
-			this.profiles = new LinkedList<>();
-			this.processedProfiles = new LinkedList<>();
-			this.activatedProfiles = false;
-			this.loaded = new LinkedHashMap<>();
-			initializeProfiles();
-			while (!this.profiles.isEmpty()) {
-				Profile profile = this.profiles.poll();
-				if (profile != null && !profile.isDefaultProfile()) {
-					addProfileToEnvironment(profile.getName());
-				}
-				load(profile, this::getPositiveProfileFilter, addToLoaded(MutablePropertySources::addLast, false));
-				this.processedProfiles.add(profile);
-			}
-			resetEnvironmentProfiles(this.processedProfiles);
-			load(null, this::getNegativeProfileFilter, addToLoaded(MutablePropertySources::addFirst, true));
-			addLoadedPropertySources();
+		void load() {
+			FilteredPropertySource.apply(this.environment, DEFAULT_PROPERTIES, LOAD_FILTERED_PROPERTY,
+					(defaultProperties) -> {
+						this.profiles = new LinkedList<>();
+						this.processedProfiles = new LinkedList<>();
+						this.activatedProfiles = false;
+						this.loaded = new LinkedHashMap<>();
+						initializeProfiles();
+						while (!this.profiles.isEmpty()) {
+							Profile profile = this.profiles.poll();
+							if (isDefaultProfile(profile)) {
+								addProfileToEnvironment(profile.getName());
+							}
+							load(profile, this::getPositiveProfileFilter,
+									addToLoaded(MutablePropertySources::addLast, false));
+							this.processedProfiles.add(profile);
+						}
+						load(null, this::getNegativeProfileFilter, addToLoaded(MutablePropertySources::addFirst, true));
+						addLoadedPropertySources();
+						applyActiveProfiles(defaultProperties);
+					});
 		}
 
 		/**
@@ -336,10 +351,13 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			// The default profile for these purposes is represented as null. We add it
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
-			Set<Profile> activatedViaProperty = getProfilesActivatedViaProperty();
-			this.profiles.addAll(getOtherActiveProfiles(activatedViaProperty));
+			Set<Profile> activatedViaProperty = getProfilesFromProperty(ACTIVE_PROFILES_PROPERTY);
+			Set<Profile> includedViaProperty = getProfilesFromProperty(INCLUDE_PROFILES_PROPERTY);
+			List<Profile> otherActiveProfiles = getOtherActiveProfiles(activatedViaProperty, includedViaProperty);
+			this.profiles.addAll(otherActiveProfiles);
 			// Any pre-existing active profiles set via property sources (e.g.
 			// System properties) take precedence over those added in config files.
+			this.profiles.addAll(includedViaProperty);
 			addActiveProfiles(activatedViaProperty);
 			if (this.profiles.size() == 1) { // only has null profile
 				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
@@ -349,21 +367,20 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}
 		}
 
-		private Set<Profile> getProfilesActivatedViaProperty() {
-			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)
-					&& !this.environment.containsProperty(INCLUDE_PROFILES_PROPERTY)) {
+		private Set<Profile> getProfilesFromProperty(String profilesProperty) {
+			if (!this.environment.containsProperty(profilesProperty)) {
 				return Collections.emptySet();
 			}
 			Binder binder = Binder.get(this.environment);
-			Set<Profile> activeProfiles = new LinkedHashSet<>();
-			activeProfiles.addAll(getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
-			activeProfiles.addAll(getProfiles(binder, ACTIVE_PROFILES_PROPERTY));
-			return activeProfiles;
+			Set<Profile> profiles = getProfiles(binder, profilesProperty);
+			return new LinkedHashSet<>(profiles);
 		}
 
-		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty) {
-			return Arrays.stream(this.environment.getActiveProfiles()).map(Profile::new)
-					.filter((profile) -> !activatedViaProperty.contains(profile)).collect(Collectors.toList());
+		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty,
+				Set<Profile> includedViaProperty) {
+			return Arrays.stream(this.environment.getActiveProfiles()).map(Profile::new).filter(
+					(profile) -> !activatedViaProperty.contains(profile) && !includedViaProperty.contains(profile))
+					.collect(Collectors.toList());
 		}
 
 		void addActiveProfiles(Set<Profile> profiles) {
@@ -436,6 +453,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						return;
 					}
 				}
+				throw new IllegalStateException("File extension of config file location '" + location
+						+ "' is not known to any PropertySourceLoader. If the location is meant to reference "
+						+ "a directory, it must end in '/'");
 			}
 			Set<String> processed = new HashSet<>();
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
@@ -522,8 +542,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				}
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to load property " + "source from location '" + location + "'",
-						ex);
+				throw new IllegalStateException("Failed to load property source from location '" + location + "'", ex);
 			}
 		}
 
@@ -643,18 +662,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return new LinkedHashSet<>(list);
 		}
 
-		/**
-		 * This ensures that the order of active profiles in the {@link Environment}
-		 * matches the order in which the profiles were processed.
-		 * @param processedProfiles the processed profiles
-		 */
-		private void resetEnvironmentProfiles(List<Profile> processedProfiles) {
-			String[] names = processedProfiles.stream()
-					.filter((profile) -> profile != null && !profile.isDefaultProfile()).map(Profile::getName)
-					.toArray(String[]::new);
-			this.environment.setActiveProfiles(names);
-		}
-
 		private void addLoadedPropertySources() {
 			MutablePropertySources destination = this.environment.getPropertySources();
 			List<MutablePropertySources> loaded = new ArrayList<>(this.loaded.values());
@@ -686,6 +693,29 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}
 		}
 
+		private void applyActiveProfiles(PropertySource<?> defaultProperties) {
+			List<String> activeProfiles = new ArrayList<>();
+			if (defaultProperties != null) {
+				Binder binder = new Binder(ConfigurationPropertySources.from(defaultProperties),
+						new PropertySourcesPlaceholdersResolver(this.environment));
+				activeProfiles.addAll(getDefaultProfiles(binder, "spring.profiles.include"));
+				if (!this.activatedProfiles) {
+					activeProfiles.addAll(getDefaultProfiles(binder, "spring.profiles.active"));
+				}
+			}
+			this.processedProfiles.stream().filter(this::isDefaultProfile).map(Profile::getName)
+					.forEach(activeProfiles::add);
+			this.environment.setActiveProfiles(activeProfiles.toArray(new String[0]));
+		}
+
+		private boolean isDefaultProfile(Profile profile) {
+			return profile != null && !profile.isDefaultProfile();
+		}
+
+		private List<String> getDefaultProfiles(Binder binder, String property) {
+			return binder.bind(property, STRING_LIST).orElse(Collections.emptyList());
+		}
+
 	}
 
 	/**
@@ -707,11 +737,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.defaultProfile = defaultProfile;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public boolean isDefaultProfile() {
+		boolean isDefaultProfile() {
 			return this.defaultProfile;
 		}
 
@@ -792,19 +822,19 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.includeProfiles = includeProfiles;
 		}
 
-		public PropertySource<?> getPropertySource() {
+		PropertySource<?> getPropertySource() {
 			return this.propertySource;
 		}
 
-		public String[] getProfiles() {
+		String[] getProfiles() {
 			return this.profiles;
 		}
 
-		public Set<Profile> getActiveProfiles() {
+		Set<Profile> getActiveProfiles() {
 			return this.activeProfiles;
 		}
 
-		public Set<Profile> getIncludeProfiles() {
+		Set<Profile> getIncludeProfiles() {
 			return this.includeProfiles;
 		}
 

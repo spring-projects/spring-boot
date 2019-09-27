@@ -61,7 +61,7 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
-	protected static final String PROPERTIES_PATH = "META-INF/" + "spring-autoconfigure-metadata.properties";
+	protected static final String PROPERTIES_PATH = "META-INF/spring-autoconfigure-metadata.properties";
 
 	private final Map<String, String> annotations;
 
@@ -271,7 +271,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		@Override
 		public List<Object> getValues(AnnotationMirror annotation) {
 			List<Object> values = super.getValues(annotation);
-			Collections.sort(values, this::compare);
+			values.sort(this::compare);
 			return values;
 		}
 

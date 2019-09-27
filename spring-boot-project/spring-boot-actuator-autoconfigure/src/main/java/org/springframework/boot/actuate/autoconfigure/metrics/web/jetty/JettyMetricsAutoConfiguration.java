@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
 public class JettyMetricsAutoConfiguration {

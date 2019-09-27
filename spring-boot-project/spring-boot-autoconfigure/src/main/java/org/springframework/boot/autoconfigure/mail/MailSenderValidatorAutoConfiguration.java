@@ -34,7 +34,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(MailSenderAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.mail", value = "test-connection")
 @ConditionalOnSingleCandidate(JavaMailSenderImpl.class)

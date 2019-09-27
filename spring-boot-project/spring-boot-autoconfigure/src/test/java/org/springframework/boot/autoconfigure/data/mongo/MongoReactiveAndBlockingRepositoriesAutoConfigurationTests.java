@@ -19,14 +19,13 @@ package org.springframework.boot.autoconfigure.data.mongo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.mongo.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -46,17 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  */
-public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
+class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		this.context.close();
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndBlockingRepositories() {
+	void shouldCreateInstancesForReactiveAndBlockingRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
 		this.context.register(BlockingAndReactiveConfiguration.class, BaseConfiguration.class);
@@ -65,21 +64,21 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
 	}
 
-	@Configuration
-	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EnableMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
 	@EnableReactiveMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
-	protected static class BlockingAndReactiveConfiguration {
+	static class BlockingAndReactiveConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(Registrar.class)
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
-	protected static class Registrar implements ImportSelector {
+	static class Registrar implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.BeansException;
@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ReactiveOAuth2ClientAutoConfigurationTests {
+class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
 			.of(ReactiveOAuth2ClientAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class));
@@ -68,19 +68,19 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
 	@Test
-	public void autoConfigurationShouldBackOffForServletEnvironments() {
+	void autoConfigurationShouldBackOffForServletEnvironments() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
+	void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
+	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
 						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
@@ -95,7 +95,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceAndRepositoryBeansAreConditionalOnClientRegistrationRepository() {
+	void authorizedClientServiceAndRepositoryBeansAreConditionalOnClientRegistrationRepository() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ReactiveOAuth2AuthorizedClientService.class);
 			assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class);
@@ -103,7 +103,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientServiceAndRepositoryBeans() {
+	void configurationRegistersAuthorizedClientServiceAndRepositoryBeans() {
 		this.contextRunner.withUserConfiguration(ReactiveClientRepositoryConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(InMemoryReactiveOAuth2AuthorizedClientService.class);
 			assertThat(context).hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class);
@@ -111,7 +111,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnMissingBean() {
+	void authorizedClientServiceBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class);
@@ -120,20 +120,20 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientRepositoryBeanIsConditionalOnAuthorizedClientService() {
+	void authorizedClientRepositoryBeanIsConditionalOnAuthorizedClientService() {
 		this.contextRunner
 				.run((context) -> assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
-	public void configurationRegistersAuthorizedClientRepositoryBean() {
+	void configurationRegistersAuthorizedClientRepositoryBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
-	public void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
+	void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ServerOAuth2AuthorizedClientRepository.class);
@@ -142,13 +142,13 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void securityWebFilterChainBeanConditionalOnWebApplication() {
+	void securityWebFilterChainBeanConditionalOnWebApplication() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(SecurityWebFilterChain.class));
 	}
 
 	@Test
-	public void configurationRegistersSecurityWebFilterChainBean() { // gh-17949
+	void configurationRegistersSecurityWebFilterChainBean() { // gh-17949
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
 				.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class,
@@ -158,17 +158,17 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassFlux() {
+	void autoConfigurationConditionalOnClassFlux() {
 		assertWhenClassNotPresent(Flux.class);
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassEnableWebFluxSecurity() {
+	void autoConfigurationConditionalOnClassEnableWebFluxSecurity() {
 		assertWhenClassNotPresent(EnableWebFluxSecurity.class);
 	}
 
 	@Test
-	public void autoConfigurationConditionalOnClassClientRegistration() {
+	void autoConfigurationConditionalOnClassClientRegistration() {
 		assertWhenClassNotPresent(ClientRegistration.class);
 	}
 
@@ -189,14 +189,14 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ReactiveClientRepositoryConfiguration {
 
 		@Bean
-		public ReactiveClientRegistrationRepository clientRegistrationRepository() {
+		ReactiveClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
 			registrations.add(getClientRegistration("first", "https://user-info-uri.com"));
-			registrations.add(getClientRegistration("second", "http://other-user-info"));
+			registrations.add(getClientRegistration("second", "https://other-user-info"));
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}
 
@@ -214,31 +214,31 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveClientRepositoryConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
-		public ReactiveOAuth2AuthorizedClientService testAuthorizedClientService(
+		ReactiveOAuth2AuthorizedClientService testAuthorizedClientService(
 				ReactiveClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 	static class ReactiveOAuth2AuthorizedClientRepositoryConfiguration {
 
 		@Bean
-		public ServerOAuth2AuthorizedClientRepository testAuthorizedClientRepository(
+		ServerOAuth2AuthorizedClientRepository testAuthorizedClientRepository(
 				ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ServerHttpSecurityConfiguration {
 
 		@Bean

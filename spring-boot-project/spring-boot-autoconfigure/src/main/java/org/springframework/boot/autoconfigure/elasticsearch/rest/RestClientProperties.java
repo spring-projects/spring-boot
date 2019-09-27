@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,16 @@ public class RestClientProperties {
 	 */
 	private String password;
 
+	/**
+	 * Connection timeout.
+	 */
+	private Duration connectionTimeout = Duration.ofSeconds(1);
+
+	/**
+	 * Read timeout.
+	 */
+	private Duration readTimeout = Duration.ofSeconds(30);
+
 	public List<String> getUris() {
 		return this.uris;
 	}
@@ -68,6 +79,22 @@ public class RestClientProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Duration getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Duration connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 
 }

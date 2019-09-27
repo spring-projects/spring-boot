@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -37,10 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void configProps() throws Exception {
+	void configProps() throws Exception {
 		this.mockMvc.perform(get("/actuator/configprops")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("configprops",
 						preprocessResponse(limit("contexts", getApplicationContext().getId(), "beans")),
@@ -54,12 +54,12 @@ public class ConfigurationPropertiesReportEndpointDocumentationTests extends Moc
 								parentIdField())));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 

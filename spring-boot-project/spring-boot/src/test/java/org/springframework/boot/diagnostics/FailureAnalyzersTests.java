@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,45 +41,45 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class FailureAnalyzersTests {
+class FailureAnalyzersTests {
 
 	private static AwareFailureAnalyzer failureAnalyzer;
 
-	@Before
-	public void configureMock() {
+	@BeforeEach
+	void configureMock() {
 		failureAnalyzer = mock(AwareFailureAnalyzer.class);
 	}
 
 	@Test
-	public void analyzersAreLoadedAndCalled() {
+	void analyzersAreLoadedAndCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
 		verify(failureAnalyzer, times(2)).analyze(failure);
 	}
 
 	@Test
-	public void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers() {
+	void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
 		verify(failureAnalyzer).setBeanFactory(any(BeanFactory.class));
 	}
 
 	@Test
-	public void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
+	void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
 		verify(failureAnalyzer).setEnvironment(any(Environment.class));
 	}
 
 	@Test
-	public void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
+	void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("broken-initialization.factories", failure);
 		verify(failureAnalyzer, times(1)).analyze(failure);
 	}
 
 	@Test
-	public void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
+	void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("broken-analysis.factories", failure);
 		verify(failureAnalyzer, times(1)).analyze(failure);

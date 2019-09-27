@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.mongo;
 
 import com.mongodb.MongoException;
 import org.bson.Document;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -36,19 +36,19 @@ import static org.mockito.Mockito.verify;
  *
  * @author Christian Dupuis
  */
-public class MongoHealthIndicatorTests {
+class MongoHealthIndicatorTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void mongoIsUp() {
+	void mongoIsUp() {
 		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
@@ -62,7 +62,7 @@ public class MongoHealthIndicatorTests {
 	}
 
 	@Test
-	public void mongoIsDown() {
+	void mongoIsDown() {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
 		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);

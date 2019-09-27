@@ -21,24 +21,42 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OAuth resource server support.
+ * {@link EnableAutoConfiguration Auto-configuration} for OAuth2 resource server support.
  *
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
-@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({ SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
-@ConditionalOnClass({ JwtAuthenticationToken.class, JwtDecoder.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({ OAuth2ResourceServerJwtConfiguration.class, OAuth2ResourceServerWebSecurityConfiguration.class })
+
 public class OAuth2ResourceServerAutoConfiguration {
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ JwtAuthenticationToken.class, JwtDecoder.class })
+	@Import({ OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
+			OAuth2ResourceServerJwtConfiguration.OAuth2WebSecurityConfigurerAdapter.class })
+	static class JwtConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, OpaqueTokenIntrospector.class })
+	@Import({ OAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
+			OAuth2ResourceServerOpaqueTokenConfiguration.OAuth2WebSecurityConfigurerAdapter.class })
+	static class OpaqueTokenConfiguration {
+
+	}
 
 }

@@ -29,7 +29,7 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Import({ DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class })
 class DataSourceInitializationConfiguration {
 

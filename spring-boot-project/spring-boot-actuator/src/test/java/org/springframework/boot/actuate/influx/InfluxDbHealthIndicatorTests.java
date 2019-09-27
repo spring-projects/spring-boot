@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBException;
 import org.influxdb.dto.Pong;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -36,10 +36,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Eddú Meléndez
  */
-public class InfluxDbHealthIndicatorTests {
+class InfluxDbHealthIndicatorTests {
 
 	@Test
-	public void influxDbIsUp() {
+	void influxDbIsUp() {
 		Pong pong = mock(Pong.class);
 		given(pong.getVersion()).willReturn("0.9");
 		InfluxDB influxDB = mock(InfluxDB.class);
@@ -52,7 +52,7 @@ public class InfluxDbHealthIndicatorTests {
 	}
 
 	@Test
-	public void influxDbIsDown() {
+	void influxDbIsDown() {
 		InfluxDB influxDB = mock(InfluxDB.class);
 		given(influxDB.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
 		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);

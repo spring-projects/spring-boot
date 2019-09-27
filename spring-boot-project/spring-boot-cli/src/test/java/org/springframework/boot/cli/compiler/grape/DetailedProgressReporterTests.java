@@ -23,8 +23,8 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.transfer.TransferResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public final class DetailedProgressReporterTests {
+final class DetailedProgressReporterTests {
 
 	private static final String REPOSITORY = "https://repo.example.com/";
 
@@ -47,13 +47,13 @@ public final class DetailedProgressReporterTests {
 
 	private final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
 
-	@Before
-	public void initialize() {
+	@BeforeEach
+	void initialize() {
 		new DetailedProgressReporter(this.session, this.out);
 	}
 
 	@Test
-	public void downloading() throws TransferCancelledException {
+	void downloading() throws TransferCancelledException {
 		TransferEvent startedEvent = new TransferEvent.Builder(this.session, this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
 		assertThat(new String(this.baos.toByteArray()))
@@ -61,7 +61,7 @@ public final class DetailedProgressReporterTests {
 	}
 
 	@Test
-	public void downloaded() throws InterruptedException {
+	void downloaded() throws InterruptedException {
 		// Ensure some transfer time
 		Thread.sleep(100);
 		TransferEvent completedEvent = new TransferEvent.Builder(this.session, this.resource).addTransferredBytes(4096)

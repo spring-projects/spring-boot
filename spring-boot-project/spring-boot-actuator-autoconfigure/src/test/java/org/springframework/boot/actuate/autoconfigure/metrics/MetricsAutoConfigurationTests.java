@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -41,25 +41,25 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class MetricsAutoConfigurationTests {
+class MetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresAClock() {
+	void autoConfiguresAClock() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Clock.class));
 	}
 
 	@Test
-	public void allowsACustomClockToBeUsed() {
+	void allowsACustomClockToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomClockConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasBean("customClock"));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void configuresMeterRegistries() {
+	void configuresMeterRegistries() {
 		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			MeterFilter[] filters = (MeterFilter[]) ReflectionTestUtils.getField(meterRegistry, "filters");
@@ -72,7 +72,7 @@ public class MetricsAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomClockConfiguration {
 
 		@Bean
@@ -82,7 +82,7 @@ public class MetricsAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MeterRegistryConfiguration {
 
 		@Bean

@@ -39,7 +39,7 @@ import org.springframework.mail.MailSender;
  * @author Eddú Meléndez
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MimeMessage.class, MimeType.class, MailSender.class })
 @ConditionalOnMissingBean(MailSender.class)
 @Conditional(MailSenderCondition.class)

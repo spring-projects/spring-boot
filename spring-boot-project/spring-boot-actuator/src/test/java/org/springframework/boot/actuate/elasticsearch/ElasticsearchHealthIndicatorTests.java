@@ -31,8 +31,8 @@ import org.elasticsearch.cluster.block.ClusterBlocks;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.routing.RoutingTable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -49,7 +49,8 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
-public class ElasticsearchHealthIndicatorTests {
+@Deprecated
+class ElasticsearchHealthIndicatorTests {
 
 	@Mock
 	private Client client;
@@ -62,8 +63,8 @@ public class ElasticsearchHealthIndicatorTests {
 
 	private ElasticsearchHealthIndicator indicator;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.client.admin()).willReturn(this.admin);
 		given(this.admin.cluster()).willReturn(this.cluster);
@@ -71,7 +72,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void defaultConfigurationQueriesAllIndicesWith100msTimeout() {
+	void defaultConfigurationQueriesAllIndicesWith100msTimeout() {
 		TestActionFuture responseFuture = new TestActionFuture();
 		responseFuture.onResponse(new StubClusterHealthResponse());
 		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor.forClass(ClusterHealthRequest.class);
@@ -83,7 +84,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void certainIndices() {
+	void certainIndices() {
 		this.indicator = new ElasticsearchHealthIndicator(this.client, 100L, "test-index-1", "test-index-2");
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
@@ -95,7 +96,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void customTimeout() {
+	void customTimeout() {
 		this.indicator = new ElasticsearchHealthIndicator(this.client, 1000L);
 		TestActionFuture responseFuture = new TestActionFuture();
 		responseFuture.onResponse(new StubClusterHealthResponse());
@@ -106,7 +107,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthDetails() {
+	void healthDetails() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
 		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
@@ -124,7 +125,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void redResponseMapsToDown() {
+	void redResponseMapsToDown() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.RED));
 		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
@@ -132,7 +133,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void yellowResponseMapsToUp() {
+	void yellowResponseMapsToUp() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
 		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
@@ -140,7 +141,7 @@ public class ElasticsearchHealthIndicatorTests {
 	}
 
 	@Test
-	public void responseTimeout() {
+	void responseTimeout() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
 		Health health = this.indicator.health();
@@ -163,7 +164,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 		private StubClusterHealthResponse(ClusterHealthStatus status) {
 			super("test-cluster", new String[0], new ClusterState(null, 0, null, null, RoutingTable.builder().build(),
-					DiscoveryNodes.builder().build(), ClusterBlocks.builder().build(), null, false));
+					DiscoveryNodes.builder().build(), ClusterBlocks.builder().build(), null, 1, false));
 			this.status = status;
 		}
 
@@ -209,7 +210,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	}
 
-	private static class TestActionFuture extends PlainActionFuture<ClusterHealthResponse> {
+	static class TestActionFuture extends PlainActionFuture<ClusterHealthResponse> {
 
 		private long getTimeout = -1L;
 

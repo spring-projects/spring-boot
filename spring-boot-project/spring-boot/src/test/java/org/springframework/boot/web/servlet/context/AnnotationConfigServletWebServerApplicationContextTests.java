@@ -22,7 +22,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.context.config.ExampleServletWebServerApplicationConfiguration;
@@ -45,26 +46,33 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class AnnotationConfigServletWebServerApplicationContextTests {
+class AnnotationConfigServletWebServerApplicationContextTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
+	@AfterEach
+	void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
-	public void createFromScan() {
+	void createFromScan() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
 	@Test
-	public void sessionScopeAvailable() {
+	void sessionScopeAvailable() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class, SessionScopedComponent.class);
 		verifyContext();
 	}
 
 	@Test
-	public void sessionScopeAvailableToServlet() {
+	void sessionScopeAvailableToServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class, ExampleServletWithAutowired.class,
 				SessionScopedComponent.class);
@@ -73,14 +81,14 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createFromConfigClass() {
+	void createFromConfigClass() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() {
+	void registerAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -88,7 +96,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleRegistersAndRefresh() {
+	void multipleRegistersAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(WebServerConfiguration.class);
 		this.context.register(ServletContextAwareConfiguration.class);
@@ -98,7 +106,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void scanAndRefresh() {
+	void scanAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.scan(ExampleServletWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
@@ -106,7 +114,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createAndInitializeCyclic() {
+	void createAndInitializeCyclic() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextAwareEmbeddedConfiguration.class);
 		verifyContext();
@@ -116,7 +124,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createAndInitializeWithParent() {
+	void createAndInitializeWithParent() {
 		AnnotationConfigServletWebServerApplicationContext parent = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerConfiguration.class);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
@@ -135,7 +143,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	@Component
 	@SuppressWarnings("serial")
-	protected static class ExampleServletWithAutowired extends GenericServlet {
+	static class ExampleServletWithAutowired extends GenericServlet {
 
 		@Autowired
 		private SessionScopedComponent component;
@@ -149,23 +157,23 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	@Component
 	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-	protected static class SessionScopedComponent {
+	static class SessionScopedComponent {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration implements ServletContextAware {
+	static class ServletContextAwareEmbeddedConfiguration implements ServletContextAware {
 
 		private ServletContext servletContext;
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new MockServletWebServerFactory();
 		}
 
 		@Bean
-		public Servlet servlet() {
+		Servlet servlet() {
 			return new MockServlet();
 		}
 
@@ -174,30 +182,30 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 			this.servletContext = servletContext;
 		}
 
-		public ServletContext getServletContext() {
+		ServletContext getServletContext() {
 			return this.servletContext;
 		}
 
 	}
 
-	@Configuration
-	public static class WebServerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class WebServerConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new MockServletWebServerFactory();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class ServletContextAwareConfiguration implements ServletContextAware {
+	static class ServletContextAwareConfiguration implements ServletContextAware {
 
 		private ServletContext servletContext;
 
 		@Bean
-		public Servlet servlet() {
+		Servlet servlet() {
 			return new MockServlet();
 		}
 
@@ -206,7 +214,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 			this.servletContext = servletContext;
 		}
 
-		public ServletContext getServletContext() {
+		ServletContext getServletContext() {
 			return this.servletContext;
 		}
 

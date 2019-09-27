@@ -35,15 +35,15 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class DataSourcePoolMetadataProvidersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	static class TomcatDataSourcePoolMetadataProviderConfiguration {
 
 		@Bean
-		public DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
+		DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
 						org.apache.tomcat.jdbc.pool.DataSource.class);
@@ -56,12 +56,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
 	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		public DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
+		DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
 				if (hikariDataSource != null) {
@@ -73,12 +73,12 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(BasicDataSource.class)
 	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
+		DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSource.class);
 				if (dbcpDataSource != null) {

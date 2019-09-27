@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResol
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for Mustache.
+ * {@link ConfigurationProperties @ConfigurationProperties} for Mustache.
  *
  * @author Dave Syer
  * @since 1.2.2

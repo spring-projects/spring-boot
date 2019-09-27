@@ -62,7 +62,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
 		}
 		catch (Throwable ex) {
-			version = 8;
+			version = BASE_VERSION;
 		}
 		RUNTIME_VERSION = version;
 	}
@@ -195,20 +195,20 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return new EntryIterator();
 	}
 
-	public boolean containsEntry(CharSequence name) {
+	boolean containsEntry(CharSequence name) {
 		return getEntry(name, FileHeader.class, true) != null;
 	}
 
-	public JarEntry getEntry(CharSequence name) {
+	JarEntry getEntry(CharSequence name) {
 		return getEntry(name, JarEntry.class, true);
 	}
 
-	public InputStream getInputStream(String name) throws IOException {
+	InputStream getInputStream(String name) throws IOException {
 		FileHeader entry = getEntry(name, FileHeader.class, false);
 		return getInputStream(entry);
 	}
 
-	public InputStream getInputStream(FileHeader entry) throws IOException {
+	InputStream getInputStream(FileHeader entry) throws IOException {
 		if (entry == null) {
 			return null;
 		}
@@ -219,7 +219,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return inputStream;
 	}
 
-	public RandomAccessData getEntryData(String name) throws IOException {
+	RandomAccessData getEntryData(String name) throws IOException {
 		FileHeader entry = getEntry(name, FileHeader.class, false);
 		if (entry == null) {
 			return null;
@@ -336,7 +336,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return index;
 	}
 
-	public void clearCache() {
+	void clearCache() {
 		this.entriesCache.clear();
 	}
 

@@ -40,6 +40,7 @@ import org.springframework.util.CollectionUtils;
  * bean and can be injected whenever a {@link TaskExecutor} is needed.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  * @since 2.1.0
  */
 public class TaskExecutorBuilder {
@@ -54,6 +55,10 @@ public class TaskExecutorBuilder {
 
 	private final Duration keepAlive;
 
+	private final Boolean awaitTermination;
+
+	private final Duration awaitTerminationPeriod;
+
 	private final String threadNamePrefix;
 
 	private final TaskDecorator taskDecorator;
@@ -66,19 +71,24 @@ public class TaskExecutorBuilder {
 		this.maxPoolSize = null;
 		this.allowCoreThreadTimeOut = null;
 		this.keepAlive = null;
+		this.awaitTermination = null;
+		this.awaitTerminationPeriod = null;
 		this.threadNamePrefix = null;
 		this.taskDecorator = null;
 		this.customizers = null;
 	}
 
 	private TaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
-			Boolean allowCoreThreadTimeOut, Duration keepAlive, String threadNamePrefix, TaskDecorator taskDecorator,
+			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean awaitTermination,
+			Duration awaitTerminationPeriod, String threadNamePrefix, TaskDecorator taskDecorator,
 			Set<TaskExecutorCustomizer> customizers) {
 		this.queueCapacity = queueCapacity;
 		this.corePoolSize = corePoolSize;
 		this.maxPoolSize = maxPoolSize;
 		this.allowCoreThreadTimeOut = allowCoreThreadTimeOut;
 		this.keepAlive = keepAlive;
+		this.awaitTermination = awaitTermination;
+		this.awaitTerminationPeriod = awaitTerminationPeriod;
 		this.threadNamePrefix = threadNamePrefix;
 		this.taskDecorator = taskDecorator;
 		this.customizers = customizers;
@@ -92,7 +102,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder queueCapacity(int queueCapacity) {
 		return new TaskExecutorBuilder(queueCapacity, this.corePoolSize, this.maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
+				this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -106,7 +117,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder corePoolSize(int corePoolSize) {
 		return new TaskExecutorBuilder(this.queueCapacity, corePoolSize, this.maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
+				this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -120,7 +132,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder maxPoolSize(int maxPoolSize) {
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, maxPoolSize, this.allowCoreThreadTimeOut,
-				this.keepAlive, this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
+				this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -131,7 +144,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder allowCoreThreadTimeOut(boolean allowCoreThreadTimeOut) {
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize, allowCoreThreadTimeOut,
-				this.keepAlive, this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod, this.threadNamePrefix,
+				this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -141,7 +155,37 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder keepAlive(Duration keepAlive) {
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, keepAlive, this.threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
+	}
+
+	/**
+	 * Set whether the executor should wait for scheduled tasks to complete on shutdown,
+	 * not interrupting running tasks and executing all tasks in the queue.
+	 * @param awaitTermination whether the executor needs to wait for the tasks to
+	 * complete on shutdown
+	 * @return a new builder instance
+	 * @see #awaitTerminationPeriod(Duration)
+	 */
+	public TaskExecutorBuilder awaitTermination(boolean awaitTermination) {
+		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
+	}
+
+	/**
+	 * Set the maximum time the executor is supposed to block on shutdown. When set, the
+	 * executor blocks on shutdown in order to wait for remaining tasks to complete their
+	 * execution before the rest of the container continues to shut down. This is
+	 * particularly useful if your remaining tasks are likely to need access to other
+	 * resources that are also managed by the container.
+	 * @param awaitTerminationPeriod the await termination period to set
+	 * @return a new builder instance
+	 */
+	public TaskExecutorBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -151,7 +195,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, threadNamePrefix, this.taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				threadNamePrefix, this.taskDecorator, this.customizers);
 	}
 
 	/**
@@ -161,7 +206,8 @@ public class TaskExecutorBuilder {
 	 */
 	public TaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.threadNamePrefix, taskDecorator, this.customizers);
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, taskDecorator, this.customizers);
 	}
 
 	/**
@@ -190,8 +236,8 @@ public class TaskExecutorBuilder {
 	public TaskExecutorBuilder customizers(Iterable<TaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.threadNamePrefix, this.taskDecorator,
-				append(null, customizers));
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, append(null, customizers));
 	}
 
 	/**
@@ -218,8 +264,8 @@ public class TaskExecutorBuilder {
 	public TaskExecutorBuilder additionalCustomizers(Iterable<TaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new TaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
-				this.allowCoreThreadTimeOut, this.keepAlive, this.threadNamePrefix, this.taskDecorator,
-				append(this.customizers, customizers));
+				this.allowCoreThreadTimeOut, this.keepAlive, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.taskDecorator, append(this.customizers, customizers));
 	}
 
 	/**
@@ -261,6 +307,8 @@ public class TaskExecutorBuilder {
 		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);
 		map.from(this.keepAlive).asInt(Duration::getSeconds).to(taskExecutor::setKeepAliveSeconds);
 		map.from(this.allowCoreThreadTimeOut).to(taskExecutor::setAllowCoreThreadTimeOut);
+		map.from(this.awaitTermination).to(taskExecutor::setWaitForTasksToCompleteOnShutdown);
+		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskExecutor::setAwaitTerminationSeconds);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
 		map.from(this.taskDecorator).to(taskExecutor::setTaskDecorator);
 		if (!CollectionUtils.isEmpty(this.customizers)) {

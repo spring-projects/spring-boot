@@ -33,7 +33,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
 @ConditionalOnClass({ EnableWebSecurity.class, ClientRegistration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

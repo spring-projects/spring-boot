@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,17 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Christian Dupuis
  */
-public class OrderedHealthAggregatorTests {
+@Deprecated
+class OrderedHealthAggregatorTests {
 
 	private OrderedHealthAggregator healthAggregator;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
 
 	@Test
-	public void defaultOrder() {
+	void defaultOrder() {
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
@@ -50,7 +51,7 @@ public class OrderedHealthAggregatorTests {
 	}
 
 	@Test
-	public void customOrder() {
+	void customOrder() {
 		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP, Status.OUT_OF_SERVICE, Status.DOWN);
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
@@ -61,7 +62,7 @@ public class OrderedHealthAggregatorTests {
 	}
 
 	@Test
-	public void defaultOrderWithCustomStatus() {
+	void defaultOrderWithCustomStatus() {
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
@@ -72,7 +73,7 @@ public class OrderedHealthAggregatorTests {
 	}
 
 	@Test
-	public void customOrderWithCustomStatus() {
+	void customOrderWithCustomStatus() {
 		this.healthAggregator.setStatusOrder(Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP", "UNKNOWN", "CUSTOM"));
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());

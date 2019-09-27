@@ -45,7 +45,7 @@ class ConversionServiceDeducer {
 		this.applicationContext = applicationContext;
 	}
 
-	public ConversionService getConversionService() {
+	ConversionService getConversionService() {
 		try {
 			return this.applicationContext.getBean(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
 					ConversionService.class);
@@ -75,11 +75,11 @@ class ConversionServiceDeducer {
 		}
 
 		private <T> List<T> beans(Class<T> type, String qualifier, ListableBeanFactory beanFactory) {
-			return new ArrayList<T>(
+			return new ArrayList<>(
 					BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, type, qualifier).values());
 		}
 
-		public ConversionService create() {
+		ConversionService create() {
 			if (this.converters.isEmpty() && this.genericConverters.isEmpty()) {
 				return ApplicationConversionService.getSharedInstance();
 			}

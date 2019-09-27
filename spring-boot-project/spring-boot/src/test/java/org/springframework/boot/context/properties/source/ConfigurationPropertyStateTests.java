@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,30 +30,30 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertyStateTests {
+class ConfigurationPropertyStateTests {
 
 	@Test
-	public void searchWhenIterableIsNullShouldThrowException() {
+	void searchWhenIterableIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void searchWhenPredicateIsNullShouldThrowException() {
+	void searchWhenPredicateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
 				.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test
-	public void searchWhenContainsItemShouldReturnPresent() {
+	void searchWhenContainsItemShouldReturnPresent() {
 		List<String> source = Arrays.asList("a", "b", "c");
 		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
-	public void searchWhenContainsNoItemShouldReturnAbsent() {
+	void searchWhenContainsNoItemShouldReturnAbsent() {
 		List<String> source = Arrays.asList("a", "x", "c");
 		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.ABSENT);

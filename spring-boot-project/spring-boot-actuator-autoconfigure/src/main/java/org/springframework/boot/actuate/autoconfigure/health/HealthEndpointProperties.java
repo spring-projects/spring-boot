@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.ShowDetails;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,33 +30,48 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  */
 @ConfigurationProperties("management.endpoint.health")
-public class HealthEndpointProperties {
+public class HealthEndpointProperties extends HealthProperties {
 
 	/**
-	 * When to show full health details.
+	 * Health endpoint groups.
 	 */
-	private ShowDetails showDetails = ShowDetails.NEVER;
+	private Map<String, Group> group = new LinkedHashMap<>();
+
+	public Map<String, Group> getGroup() {
+		return this.group;
+	}
 
 	/**
-	 * Roles used to determine whether or not a user is authorized to be shown details.
-	 * When empty, all authenticated users are authorized.
+	 * A health endpoint group.
 	 */
-	private Set<String> roles = new HashSet<>();
+	public static class Group extends HealthProperties {
 
-	public ShowDetails getShowDetails() {
-		return this.showDetails;
-	}
+		/**
+		 * Health indicator IDs that should be included or '*' for all.
+		 */
+		private Set<String> include;
 
-	public void setShowDetails(ShowDetails showDetails) {
-		this.showDetails = showDetails;
-	}
+		/**
+		 * Health indicator IDs that should be excluded or '*' for all.
+		 */
+		private Set<String> exclude;
 
-	public Set<String> getRoles() {
-		return this.roles;
-	}
+		public Set<String> getInclude() {
+			return this.include;
+		}
 
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+		public void setInclude(Set<String> include) {
+			this.include = include;
+		}
+
+		public Set<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
+
 	}
 
 }

@@ -101,7 +101,7 @@ public class HttpWebServiceMessageSenderBuilder {
 			this.methodName = methodName;
 		}
 
-		public void customize(ClientHttpRequestFactory factory) {
+		void customize(ClientHttpRequestFactory factory) {
 			ReflectionUtils.invokeMethod(findMethod(factory), factory, Math.toIntExact(this.timeout.toMillis()));
 		}
 

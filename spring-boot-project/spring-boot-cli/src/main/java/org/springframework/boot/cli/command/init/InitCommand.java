@@ -47,7 +47,7 @@ public class InitCommand extends OptionParsingCommand {
 	}
 
 	public InitCommand(InitOptionHandler handler) {
-		super("init", "Initialize a new project using Spring " + "Initializr (start.spring.io)", handler);
+		super("init", "Initialize a new project using Spring Initializr (start.spring.io)", handler);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.packageName = option("package-name", "Package name").withRequiredArg();
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
-							+ "and/or --format. Check the capabilities of the service " + "(--list) for more details")
+							+ "and/or --format. Check the capabilities of the service (--list) for more details")
 									.withRequiredArg();
 			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
 					.withRequiredArg();
@@ -155,7 +155,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version (for example '1.2.0.RELEASE')").withRequiredArg();
 			this.dependencies = option(Arrays.asList("dependencies", "d"),
-					"Comma-separated list of dependency identifiers to include in the " + "generated project")
+					"Comma-separated list of dependency identifiers to include in the generated project")
 							.withRequiredArg();
 		}
 
@@ -196,10 +196,8 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-
 			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
 			Assert.isTrue(nonOptionArguments.size() <= 1, "Only the target location may be specified");
-
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));
 			if (options.has(this.bootVersion)) {

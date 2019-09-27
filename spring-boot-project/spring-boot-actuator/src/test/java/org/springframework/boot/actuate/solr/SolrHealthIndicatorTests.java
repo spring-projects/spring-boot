@@ -19,12 +19,12 @@ package org.springframework.boot.actuate.solr;
 import java.io.IOException;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.util.NamedList;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -46,19 +46,19 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Markus Schuch
  * @author Phillip Webb
  */
-public class SolrHealthIndicatorTests {
+class SolrHealthIndicatorTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void healthWhenSolrStatusUpAndBaseUrlPointsToRootReturnsUp() throws Exception {
+	void healthWhenSolrStatusUpAndBaseUrlPointsToRootReturnsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
@@ -68,7 +68,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenSolrStatusDownAndBaseUrlPointsToRootReturnsDown() throws Exception {
+	void healthWhenSolrStatusDownAndBaseUrlPointsToRootReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
@@ -78,7 +78,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenSolrStatusUpAndBaseUrlPointsToParticularCoreReturnsUp() throws Exception {
+	void healthWhenSolrStatusUpAndBaseUrlPointsToParticularCoreReturnsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new RemoteSolrException("mock", 404, "", null));
@@ -91,7 +91,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenSolrStatusDownAndBaseUrlPointsToParticularCoreReturnsDown() throws Exception {
+	void healthWhenSolrStatusDownAndBaseUrlPointsToParticularCoreReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new RemoteSolrException("mock", 404, "", null));
@@ -104,7 +104,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenSolrConnectionFailsReturnsDown() throws Exception {
+	void healthWhenSolrConnectionFailsReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new IOException("Connection failed"));
@@ -117,7 +117,7 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenMakingMultipleCallsRemembersStatusStrategy() throws Exception {
+	void healthWhenMakingMultipleCallsRemembersStatusStrategy() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new RemoteSolrException("mock", 404, "", null));

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.ContextCustomizer;
@@ -29,29 +29,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MockitoContextCustomizerFactoryTests {
+class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void getContextCustomizerWithoutAnnotationReturnsCustomizer() {
+	void getContextCustomizerWithoutAnnotationReturnsCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(NoMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerWithAnnotationReturnsCustomizer() {
+	void getContextCustomizerWithAnnotationReturnsCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerUsesMocksAsCacheKey() {
+	void getContextCustomizerUsesMocksAsCacheKey() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 		ContextCustomizer same = this.factory.createContextCustomizer(WithSameMockBeanAnnotation.class, null);

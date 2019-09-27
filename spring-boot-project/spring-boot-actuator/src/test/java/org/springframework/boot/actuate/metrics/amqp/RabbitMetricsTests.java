@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.amqp;
 import com.rabbitmq.client.ConnectionFactory;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class RabbitMetricsTests {
+class RabbitMetricsTests {
 
 	@Test
-	public void connectionFactoryIsInstrumented() {
+	void connectionFactoryIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, null).bindTo(registry);
@@ -40,7 +40,7 @@ public class RabbitMetricsTests {
 	}
 
 	@Test
-	public void connectionFactoryWithTagsIsInstrumented() {
+	void connectionFactoryWithTagsIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, Tags.of("env", "prod")).bindTo(registry);

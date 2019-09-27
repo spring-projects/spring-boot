@@ -45,11 +45,11 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  * @author Roman Zaynetdinov
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 public class RestDocsAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@EnableConfigurationProperties(RestDocsProperties.class)
@@ -57,7 +57,7 @@ public class RestDocsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
+		MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
 				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
@@ -68,7 +68,7 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
+		RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
 			return new RestDocsMockMvcBuilderCustomizer(properties, configurer, resultHandler.getIfAvailable());
@@ -76,14 +76,14 @@ public class RestDocsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
 	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsRestAssuredConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RequestSpecification restDocsRestAssuredConfigurer(
+		RequestSpecification restDocsRestAssuredConfigurer(
 				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
@@ -94,14 +94,14 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
+		RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
 				RequestSpecification configurer) {
 			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(WebTestClientRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@EnableConfigurationProperties(RestDocsProperties.class)
@@ -109,7 +109,7 @@ public class RestDocsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
+		WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
 				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
@@ -120,7 +120,7 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
+		RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				WebTestClientRestDocumentationConfigurer configurer) {
 			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);
 		}

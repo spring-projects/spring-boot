@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.testsupport.BuildOutput;
+
 /**
  * {@link AbstractApplicationLauncher} that launches a packaged Spring Boot application
  * using {@code java -jar}.
@@ -28,8 +30,8 @@ import java.util.List;
  */
 class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
-	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder) {
-		super(applicationBuilder);
+	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
+		super(applicationBuilder, buildOutput);
 	}
 
 	@Override
@@ -43,8 +45,8 @@ class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	protected List<String> getArguments(File archive) {
-		return Arrays.asList("-jar", archive.getAbsolutePath());
+	protected List<String> getArguments(File archive, File serverPortFile) {
+		return Arrays.asList("-jar", archive.getAbsolutePath(), serverPortFile.getAbsolutePath());
 	}
 
 }

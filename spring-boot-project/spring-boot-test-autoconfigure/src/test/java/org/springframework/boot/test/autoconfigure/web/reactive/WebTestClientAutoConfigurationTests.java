@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -48,13 +48,13 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
-public class WebTestClientAutoConfigurationTests {
+class WebTestClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class));
 
 	@Test
-	public void shouldNotBeConfiguredWithoutWebHandler() {
+	void shouldNotBeConfiguredWithoutWebHandler() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasNotFailed();
 			assertThat(context).doesNotHaveBean(WebTestClient.class);
@@ -62,7 +62,7 @@ public class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeClientCodecs() {
+	void shouldCustomizeClientCodecs() {
 		this.contextRunner.withUserConfiguration(CodecConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(WebTestClient.class);
 			assertThat(context).hasSingleBean(CodecCustomizer.class);
@@ -71,7 +71,7 @@ public class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeTimeout() {
+	void shouldCustomizeTimeout() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("spring.test.webtestclient.timeout=15m").run((context) -> {
 					WebTestClient webTestClient = context.getBean(WebTestClient.class);
@@ -82,7 +82,7 @@ public class WebTestClientAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldApplySpringSecurityConfigurer() {
+	void shouldApplySpringSecurityConfigurer() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			WebTestClient webTestClient = context.getBean(WebTestClient.class);
 			WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils.getField(webTestClient,
@@ -97,7 +97,7 @@ public class WebTestClientAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
+	void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(SecurityMockServerConfigurers.class);
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).withClassLoader(classLoader)
 				.run((context) -> {
@@ -112,22 +112,22 @@ public class WebTestClientAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public WebHandler webHandler() {
+		WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CodecConfiguration {
 
 		@Bean
-		public CodecCustomizer myCodecCustomizer() {
+		CodecCustomizer myCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
 

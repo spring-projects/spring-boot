@@ -21,7 +21,7 @@ import org.neo4j.ogm.session.Session;
 import org.springframework.stereotype.Service;
 
 /**
- * Example service used with {@link DataNeo4jTest} tests.
+ * Example service used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
  */

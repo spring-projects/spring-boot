@@ -29,12 +29,13 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.net.SSLHostConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
@@ -52,25 +53,23 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class SslConnectorCustomizerTests {
+@ExtendWith(OutputCaptureExtension.class)
+class SslConnectorCustomizerTests {
 
 	private Tomcat tomcat;
 
 	private Connector connector;
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.tomcat = new Tomcat();
 		this.connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		this.connector.setPort(0);
 		this.tomcat.setConnector(this.connector);
 	}
 
-	@After
-	public void stop() throws Exception {
+	@AfterEach
+	void stop() throws Exception {
 		System.clearProperty("javax.net.ssl.trustStorePassword");
 		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
 		ReflectionTestUtils.setField(URL.class, "factory", null);
@@ -78,7 +77,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void sslCiphersConfiguration() throws Exception {
+	void sslCiphersConfiguration() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
@@ -92,7 +91,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
+	void sslEnabledMultipleProtocolsConfiguration() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
@@ -108,7 +107,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void sslEnabledProtocolsConfiguration() throws Exception {
+	void sslEnabledProtocolsConfiguration() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
@@ -124,7 +123,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenSslStoreProviderProvidesOnlyKeyStoreShouldUseDefaultTruststore() throws Exception {
+	void customizeWhenSslStoreProviderProvidesOnlyKeyStoreShouldUseDefaultTruststore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
@@ -142,7 +141,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenSslStoreProviderProvidesOnlyTrustStoreShouldUseDefaultKeystore() throws Exception {
+	void customizeWhenSslStoreProviderProvidesOnlyTrustStoreShouldUseDefaultKeystore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
@@ -161,7 +160,7 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl() throws Exception {
+	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput output) throws Exception {
 		System.setProperty("javax.net.ssl.trustStorePassword", "trustStoreSecret");
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -174,11 +173,11 @@ public class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
-		assertThat(this.output.toString()).doesNotContain("Password verification failed");
+		assertThat(output).doesNotContain("Password verification failed");
 	}
 
 	@Test
-	public void customizeWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
+	void customizeWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
 				.withMessageContaining("Could not load key store 'null'");

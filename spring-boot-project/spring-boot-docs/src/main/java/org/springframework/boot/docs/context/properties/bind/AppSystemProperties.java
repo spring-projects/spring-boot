@@ -23,7 +23,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
- * A {@link ConfigurationProperties} example that uses {@link Duration}.
+ * A {@link ConfigurationProperties @ConfigurationProperties} example that uses
+ * {@link Duration}.
  *
  * @author Stephane Nicoll
  */

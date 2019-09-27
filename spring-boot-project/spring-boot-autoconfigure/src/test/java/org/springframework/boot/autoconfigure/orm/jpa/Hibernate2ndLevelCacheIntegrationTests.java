@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import org.ehcache.jsr107.EhcacheCachingProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class Hibernate2ndLevelCacheIntegrationTests {
+class Hibernate2ndLevelCacheIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
@@ -42,7 +42,7 @@ public class Hibernate2ndLevelCacheIntegrationTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	public void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
+	void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
 		this.contextRunner
@@ -54,7 +54,7 @@ public class Hibernate2ndLevelCacheIntegrationTests {
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class TestConfiguration {
 

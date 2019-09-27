@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -99,9 +100,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
+	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
+	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -164,7 +165,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new ArrayList<>(customizers);
+		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
+		this.deploymentInfoCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -202,7 +203,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.deploymentInfoCustomizers;
 	}
 
-	@Override
+	/**
+	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
+	 * Undertow {@link DeploymentInfo}.
+	 * @param customizers the customizers to add
+	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
