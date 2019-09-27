@@ -46,9 +46,9 @@ class ConfigurationTable {
 
 	String toAsciidocTable() {
 		AsciidocBuilder builder = new AsciidocBuilder();
-		builder.appendln("[cols=\"1,1,2\", options=\"header\"]");
+		builder.appendln("[cols=\"1,1,2\", separator=¦, options=\"header\"]");
 		builder.appendln("|===");
-		builder.appendln("|Key|Default Value|Description");
+		builder.appendln("¦Key¦Default Value¦Description");
 		builder.appendln();
 		this.entries.forEach((entry) -> {
 			entry.write(builder);
