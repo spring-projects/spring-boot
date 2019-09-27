@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +54,7 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisOperationsSessionRepository.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))

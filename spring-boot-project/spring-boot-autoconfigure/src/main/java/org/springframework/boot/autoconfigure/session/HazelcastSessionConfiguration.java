@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
@@ -40,7 +40,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(HazelcastSessionRepository.class)
+@ConditionalOnClass(HazelcastIndexedSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(ServletSessionCondition.class)

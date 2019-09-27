@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,8 +72,8 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
 			SaveMode saveMode) {
 		return (context) -> {
-			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(context,
-					ReactiveRedisOperationsSessionRepository.class);
+			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
+					ReactiveRedisSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
 			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
 		};
