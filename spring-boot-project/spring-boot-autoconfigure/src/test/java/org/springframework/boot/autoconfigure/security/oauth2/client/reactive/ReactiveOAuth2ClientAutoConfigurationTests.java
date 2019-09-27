@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -46,6 +45,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.server.OAuth2AuthorizationCodeGrantWebFilter;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.server.authentication.OAuth2LoginAuthenticationWebFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -153,8 +153,10 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
 				.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class,
 						ServerHttpSecurityConfiguration.class)
-				.run((context) -> assertThat(getFilters(context, OAuth2LoginAuthenticationWebFilter.class))
-						.isNotNull());
+				.run((context) -> {
+					assertThat(hasFilter(context, OAuth2LoginAuthenticationWebFilter.class)).isTrue();
+					assertThat(hasFilter(context, OAuth2AuthorizationCodeGrantWebFilter.class)).isTrue();
+				});
 	}
 
 	@Test
@@ -181,12 +183,11 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<WebFilter> getFilters(AssertableReactiveWebApplicationContext context,
-			Class<? extends WebFilter> filter) {
+	private boolean hasFilter(AssertableReactiveWebApplicationContext context, Class<? extends WebFilter> filter) {
 		SecurityWebFilterChain filterChain = (SecurityWebFilterChain) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
-		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
+		return filters.stream().anyMatch(filter::isInstance);
 	}
 
 	@Configuration(proxyBeanMethods = false)
