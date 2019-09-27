@@ -86,6 +86,7 @@ class ReactiveOAuth2ClientConfigurations {
 			SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 				http.authorizeExchange().anyExchange().authenticated();
 				http.oauth2Login();
+				http.oauth2Client();
 				return http.build();
 			}
 
