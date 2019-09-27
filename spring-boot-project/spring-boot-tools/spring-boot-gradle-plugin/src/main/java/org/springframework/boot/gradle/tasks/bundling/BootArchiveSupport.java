@@ -143,8 +143,8 @@ class BootArchiveSupport {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (byte b : ZIP_FILE_HEADER) {
-			if (inputStream.read() != b) {
+		for (byte headerByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != headerByte) {
 				return false;
 			}
 		}
