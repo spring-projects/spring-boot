@@ -16,11 +16,10 @@
 
 package org.springframework.boot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,71 +27,61 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.Ordered;
 
 /**
- * {@link BeanFactoryPostProcessor} to set the lazy attribute on bean definition.
- *
- * <P>
- * This processor will not touch a bean definition that has already had its "lazy" flag
- * explicitly set to "false".
- *
- * <P>
- * There are edge cases in which it is not easy to explicitly set the "lazy" flag to
- * "false" (such as in DSLs that dynamically create additional beans) and therefore this
- * class uses a customizer strategy that allows downstream projects to contribute
- * predicates which impact if a class is considered for lazy-loading.
- *
- * <P>
- * Because this is a BeanFactoryPostProcessor, this class does not use dependency
- * injection to collect the customizers. The post processor actually makes two passes
- * through the bean definitions; the first is used to find and instantiate any
- * {@link org.springframework.boot.EagerLoadingBeanDefinitionPredicate} and the second
- * pass is where bean definitions are marked as lazy.
+ * {@link BeanFactoryPostProcessor} to set lazy-init on bean definitions that not
+ * {@link LazyInitializationExcludeFilter excluded} and have not already had a value
+ * explicitly set.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Tyler Van Gorder
+ * @author Phillip Webb
  * @since 2.2.0
+ * @see LazyInitializationExcludeFilter
  */
 public final class LazyInitializationBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
-		List<EagerLoadingBeanDefinitionPredicate> eagerPredicateList = getEagerLoadingPredicatesFromContext(
-				beanFactory);
-
+		// Take care not to force the eager init of factory beans when getting filters
+		Collection<LazyInitializationExcludeFilter> filters = beanFactory
+				.getBeansOfType(LazyInitializationExcludeFilter.class, false, false).values();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			if (eagerPredicateList.stream()
-					.anyMatch((predicate) -> predicate.test(beanFactory.getType(beanName, false)))) {
-				continue;
-			}
 			if (beanDefinition instanceof AbstractBeanDefinition) {
-				Boolean lazyInit = ((AbstractBeanDefinition) beanDefinition).getLazyInit();
-				if (lazyInit != null && !lazyInit) {
-					continue;
-				}
+				postProcess(beanFactory, filters, beanName, (AbstractBeanDefinition) beanDefinition);
 			}
+		}
+	}
+
+	private void postProcess(ConfigurableListableBeanFactory beanFactory,
+			Collection<LazyInitializationExcludeFilter> filters, String beanName,
+			AbstractBeanDefinition beanDefinition) {
+		Boolean lazyInit = beanDefinition.getLazyInit();
+		Class<?> beanType = getBeanType(beanFactory, beanName);
+		if (lazyInit == null && !isExcluded(filters, beanName, beanDefinition, beanType)) {
 			beanDefinition.setLazyInit(true);
 		}
 	}
 
-	/**
-	 * This method extracts the list of
-	 * {@link org.springframework.boot.EagerLoadingBeanDefinitionPredicate} beans from the
-	 * bean factory. Because this method is called early in the factory life cycle, we
-	 * take care not to force the eager initialization of factory beans.
-	 * @param beanFactory bean factory passed into the post-processor.
-	 * @return a list of {@link EagerLoadingBeanDefinitionPredicate} that can be used to
-	 * customize the behavior of this processor.
-	 */
-	private List<EagerLoadingBeanDefinitionPredicate> getEagerLoadingPredicatesFromContext(
-			ConfigurableListableBeanFactory beanFactory) {
+	private Class<?> getBeanType(ConfigurableListableBeanFactory beanFactory, String beanName) {
+		try {
+			return beanFactory.getType(beanName, false);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return null;
+		}
+	}
 
-		Map<String, EagerLoadingBeanDefinitionPredicate> eagerPredicates = beanFactory
-				.getBeansOfType(EagerLoadingBeanDefinitionPredicate.class, false, false);
-
-		return new ArrayList<>(eagerPredicates.values());
-
+	private boolean isExcluded(Collection<LazyInitializationExcludeFilter> filters, String beanName,
+			AbstractBeanDefinition beanDefinition, Class<?> beanType) {
+		if (beanType != null) {
+			for (LazyInitializationExcludeFilter filter : filters) {
+				if (filter.isExcluded(beanName, beanDefinition, beanType)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

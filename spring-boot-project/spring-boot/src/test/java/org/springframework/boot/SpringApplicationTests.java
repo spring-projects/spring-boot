@@ -1107,15 +1107,15 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void lazyInitializationShouldNotApplyToBeansThatAreExplicitlyNotLazy() {
+	void lazyInitializationIgnoresBeansThatAreExplicitlyNotLazy() {
 		assertThat(new SpringApplication(NotLazyInitializationConfig.class)
 				.run("--spring.main.web-application-type=none", "--spring.main.lazy-initialization=true")
 				.getBean(AtomicInteger.class)).hasValue(1);
 	}
 
 	@Test
-	void lazyInitializationShouldNotApplyToBeansThatMatchPredicate() {
-		assertThat(new SpringApplication(NotLazyInitializationPredicateConfig.class)
+	void lazyInitializationIgnoresLazyInitializationExcludeFilteredBeans() {
+		assertThat(new SpringApplication(LazyInitializationExcludeFilterConfig.class)
 				.run("--spring.main.web-application-type=none", "--spring.main.lazy-initialization=true")
 				.getBean(AtomicInteger.class)).hasValue(1);
 	}
@@ -1430,7 +1430,7 @@ class SpringApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class NotLazyInitializationPredicateConfig {
+	static class LazyInitializationExcludeFilterConfig {
 
 		@Bean
 		AtomicInteger counter() {
@@ -1443,16 +1443,16 @@ class SpringApplicationTests {
 		}
 
 		@Bean
-		static EagerLoadingBeanDefinitionPredicate eagerLoadingBeanDefinitionPredicate() {
-			return NotLazyBean.class::isAssignableFrom;
+		static LazyInitializationExcludeFilter lazyInitializationExcludeFilter() {
+			return LazyInitializationExcludeFilter.forBeanTypes(NotLazyBean.class);
 		}
 
-		static class NotLazyBean {
+	}
 
-			NotLazyBean(AtomicInteger counter) {
-				counter.getAndIncrement();
-			}
+	static class NotLazyBean {
 
+		NotLazyBean(AtomicInteger counter) {
+			counter.getAndIncrement();
 		}
 
 	}
