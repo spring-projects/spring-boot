@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
-import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
+import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

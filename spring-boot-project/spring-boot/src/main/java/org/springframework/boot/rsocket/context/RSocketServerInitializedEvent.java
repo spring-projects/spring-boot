@@ -27,18 +27,17 @@ import org.springframework.context.ApplicationEvent;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@SuppressWarnings("serial")
 public class RSocketServerInitializedEvent extends ApplicationEvent {
 
-	public RSocketServerInitializedEvent(RSocketServer rSocketServer) {
-		super(rSocketServer);
+	public RSocketServerInitializedEvent(RSocketServer server) {
+		super(server);
 	}
 
 	/**
 	 * Access the {@link RSocketServer}.
 	 * @return the embedded RSocket server
 	 */
-	public RSocketServer getrSocketServer() {
+	public RSocketServer getServer() {
 		return getSource();
 	}
 

@@ -54,7 +54,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private InetAddress address;
 
-	private RSocketServer.TRANSPORT transport = RSocketServer.TRANSPORT.TCP;
+	private RSocketServer.Transport transport = RSocketServer.Transport.TCP;
 
 	private ReactorResourceFactory resourceFactory;
 
@@ -73,7 +73,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
-	public void setTransport(RSocketServer.TRANSPORT transport) {
+	public void setTransport(RSocketServer.Transport transport) {
 		this.transport = transport;
 	}
 
@@ -126,26 +126,28 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private ServerTransport<CloseableChannel> createTransport() {
-		if (this.transport == RSocketServer.TRANSPORT.WEBSOCKET) {
-			if (this.resourceFactory != null) {
-				HttpServer httpServer = HttpServer.create().tcpConfiguration((tcpServer) -> tcpServer
-						.runOn(this.resourceFactory.getLoopResources()).addressSupplier(this::getListenAddress));
-				return WebsocketServerTransport.create(httpServer);
-			}
-			else {
-				return WebsocketServerTransport.create(getListenAddress());
-			}
+		if (this.transport == RSocketServer.Transport.WEBSOCKET) {
+			return createWebSocketTransport();
 		}
-		else {
-			if (this.resourceFactory != null) {
-				TcpServer tcpServer = TcpServer.create().runOn(this.resourceFactory.getLoopResources())
-						.addressSupplier(this::getListenAddress);
-				return TcpServerTransport.create(tcpServer);
-			}
-			else {
-				return TcpServerTransport.create(getListenAddress());
-			}
+		return createTcpTransport();
+	}
+
+	private ServerTransport<CloseableChannel> createWebSocketTransport() {
+		if (this.resourceFactory != null) {
+			HttpServer httpServer = HttpServer.create().tcpConfiguration((tcpServer) -> tcpServer
+					.runOn(this.resourceFactory.getLoopResources()).addressSupplier(this::getListenAddress));
+			return WebsocketServerTransport.create(httpServer);
 		}
+		return WebsocketServerTransport.create(getListenAddress());
+	}
+
+	private ServerTransport<CloseableChannel> createTcpTransport() {
+		if (this.resourceFactory != null) {
+			TcpServer tcpServer = TcpServer.create().runOn(this.resourceFactory.getLoopResources())
+					.addressSupplier(this::getListenAddress);
+			return TcpServerTransport.create(tcpServer);
+		}
+		return TcpServerTransport.create(getListenAddress());
 	}
 
 	private InetSocketAddress getListenAddress() {
