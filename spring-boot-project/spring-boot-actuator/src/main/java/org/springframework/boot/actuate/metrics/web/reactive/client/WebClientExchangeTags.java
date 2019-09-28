@@ -78,17 +78,16 @@ public final class WebClientExchangeTags {
 	}
 
 	/**
-	 * Creates a {@code uriVariables} {@code Tag} for the URI path of the given {@code request}.
+	 * Creates a {@code uriVariables} {@code Tag} for the URI path of the given
+	 * {@code request}.
 	 * @param request the request
 	 * @return the uriVariables tags
 	 */
 	public static Tag[] uriVariables(ClientRequest request) {
-		return request.attribute(URI_TEMPLATE_ATTRIBUTE)
-				.map(templateUri -> (String)templateUri)
+		return request.attribute(URI_TEMPLATE_ATTRIBUTE).map((templateUri) -> (String) templateUri)
 				.map(WebClientExchangeTags::extractPath)
-				.map(templateUri -> extractUriTemplateVariables(request, templateUri))
-				.map(WebClientExchangeTags::convertUriVariables)
-				.orElse(EMPTY_TAG_ARRAY);
+				.map((templateUri) -> extractUriTemplateVariables(request, templateUri))
+				.map(WebClientExchangeTags::convertUriVariables).orElse(EMPTY_TAG_ARRAY);
 	}
 
 	private static Map<String, String> extractUriTemplateVariables(ClientRequest request, String templateUri) {
@@ -106,11 +105,10 @@ public final class WebClientExchangeTags {
 	}
 
 	private static Tag[] convertUriVariables(Map<String, String> uriVariables) {
-		if( CollectionUtils.isEmpty(uriVariables)) {
+		if (CollectionUtils.isEmpty(uriVariables)) {
 			return EMPTY_TAG_ARRAY;
 		}
-		return uriVariables.entrySet().stream()
-				.map(entry -> Tag.of(entry.getKey(), entry.getValue()))
+		return uriVariables.entrySet().stream().map((entry) -> Tag.of(entry.getKey(), entry.getValue()))
 				.toArray(Tag[]::new);
 	}
 
@@ -160,4 +158,5 @@ public final class WebClientExchangeTags {
 		Outcome outcome = (response != null) ? Outcome.forStatus(response.rawStatusCode()) : Outcome.UNKNOWN;
 		return outcome.asTag();
 	}
+
 }

@@ -39,7 +39,8 @@ public class DefaultWebClientExchangeTagsProvider implements WebClientExchangeTa
 		Tag[] uriVariables = WebClientExchangeTags.uriVariables(request);
 
 		return Tags.of(method).and(uri).and(clientName).and(uriVariables).and(WebClientExchangeTags.outcome(response))
-				.and((response != null) ? WebClientExchangeTags.status(response) : WebClientExchangeTags.status(throwable));
+				.and((response != null) ? WebClientExchangeTags.status(response)
+						: WebClientExchangeTags.status(throwable));
 	}
 
 }

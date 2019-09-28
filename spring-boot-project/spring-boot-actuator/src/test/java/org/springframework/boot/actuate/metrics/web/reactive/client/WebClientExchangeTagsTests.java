@@ -92,9 +92,11 @@ class WebClientExchangeTagsTests {
 
 	@Test
 	void uriVariablesWhenMultiVariableTemplateIsAvailableShouldReturnVariables() {
-		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot/actuator"))
+		this.request = ClientRequest
+				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot/actuator"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}/{detail}").build();
-		assertThat(WebClientExchangeTags.uriVariables(this.request)).containsExactly(Tag.of("project", "spring-boot"), Tag.of("detail", "actuator"));
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).containsExactly(Tag.of("project", "spring-boot"),
+				Tag.of("detail", "actuator"));
 	}
 
 	@Test
