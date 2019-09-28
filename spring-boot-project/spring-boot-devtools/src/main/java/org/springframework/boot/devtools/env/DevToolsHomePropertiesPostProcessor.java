@@ -52,12 +52,6 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private static final String CONFIG_PATH = "/.config/spring-boot/";
 
-	private static final File HOME_FOLDER;
-	static {
-		String home = System.getProperty("user.home");
-		HOME_FOLDER = StringUtils.hasLength(home) ? new File(home) : null;
-	}
-
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
@@ -104,7 +98,11 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	}
 
 	protected File getHomeFolder() {
-		return HOME_FOLDER;
+		String home = System.getProperty("user.home");
+		if (StringUtils.hasLength(home)) {
+			return new File(home);
+		}
+		return null;
 	}
 
 }
