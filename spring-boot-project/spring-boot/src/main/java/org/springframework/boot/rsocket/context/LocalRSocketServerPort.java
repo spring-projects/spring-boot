@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.rsocket.context;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
