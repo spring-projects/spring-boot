@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.rsocket.server;
+package org.springframework.boot.rsocket.context;
 
 import io.rsocket.SocketAcceptor;
 
-import org.springframework.boot.rsocket.context.RSocketServerInitializedEvent;
+import org.springframework.boot.rsocket.server.RSocketServer;
+import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.util.Assert;
 
 /**
  * Bootstrap an {@link RSocketServer} and start it with the application context.
@@ -31,33 +33,34 @@ import org.springframework.context.SmartLifecycle;
  */
 public class RSocketServerBootstrap implements ApplicationEventPublisherAware, SmartLifecycle {
 
-	private final RSocketServer rSocketServer;
+	private final RSocketServer server;
 
-	private ApplicationEventPublisher applicationEventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
-	public RSocketServerBootstrap(RSocketServerFactory serverFactoryProvider, SocketAcceptor socketAcceptor) {
-		this.rSocketServer = serverFactoryProvider.create(socketAcceptor);
+	public RSocketServerBootstrap(RSocketServerFactory serverFactory, SocketAcceptor socketAcceptor) {
+		Assert.notNull(serverFactory, "ServerFactory must not be null");
+		this.server = serverFactory.create(socketAcceptor);
 	}
 
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		this.applicationEventPublisher = applicationEventPublisher;
+		this.eventPublisher = applicationEventPublisher;
 	}
 
 	@Override
 	public void start() {
-		this.rSocketServer.start();
-		this.applicationEventPublisher.publishEvent(new RSocketServerInitializedEvent(this.rSocketServer));
+		this.server.start();
+		this.eventPublisher.publishEvent(new RSocketServerInitializedEvent(this.server));
 	}
 
 	@Override
 	public void stop() {
-		this.rSocketServer.stop();
+		this.server.stop();
 	}
 
 	@Override
 	public boolean isRunning() {
-		RSocketServer server = this.rSocketServer;
+		RSocketServer server = this.server;
 		if (server != null) {
 			return server.address() != null;
 		}

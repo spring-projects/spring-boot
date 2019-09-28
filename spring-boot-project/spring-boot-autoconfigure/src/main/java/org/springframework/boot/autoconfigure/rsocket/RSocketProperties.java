@@ -51,7 +51,7 @@ public class RSocketProperties {
 		/**
 		 * RSocket transport protocol.
 		 */
-		private RSocketServer.TRANSPORT transport = RSocketServer.TRANSPORT.TCP;
+		private RSocketServer.Transport transport = RSocketServer.Transport.TCP;
 
 		/**
 		 * Path under which RSocket handles requests (only works with websocket
@@ -75,11 +75,11 @@ public class RSocketProperties {
 			this.address = address;
 		}
 
-		public RSocketServer.TRANSPORT getTransport() {
+		public RSocketServer.Transport getTransport() {
 			return this.transport;
 		}
 
-		public void setTransport(RSocketServer.TRANSPORT transport) {
+		public void setTransport(RSocketServer.Transport transport) {
 			this.transport = transport;
 		}
 

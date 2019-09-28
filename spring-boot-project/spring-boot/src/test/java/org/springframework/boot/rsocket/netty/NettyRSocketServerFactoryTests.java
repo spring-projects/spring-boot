@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
  */
 class NettyRSocketServerFactoryTests {
 
-	private NettyRSocketServer rSocketServer;
+	private NettyRSocketServer server;
 
 	private RSocketRequester requester;
 
@@ -67,9 +67,9 @@ class NettyRSocketServerFactoryTests {
 
 	@AfterEach
 	void tearDown() {
-		if (this.rSocketServer != null) {
+		if (this.server != null) {
 			try {
-				this.rSocketServer.stop();
+				this.server.stop();
 			}
 			catch (Exception ex) {
 				// Ignore
@@ -89,47 +89,44 @@ class NettyRSocketServerFactoryTests {
 		NettyRSocketServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
-		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
-		this.rSocketServer.start();
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
 		this.requester = createRSocketTcpClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
-
-		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
+		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
 		assertThat(response).isEqualTo(payload);
-		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
+		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
 	void websocketTransport() {
 		NettyRSocketServerFactory factory = getFactory();
-		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
-		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
-		this.rSocketServer.start();
+		factory.setTransport(RSocketServer.Transport.WEBSOCKET);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
 		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
-
 		assertThat(response).isEqualTo(payload);
 	}
 
 	@Test
 	void websocketTransportWithReactorResource() {
 		NettyRSocketServerFactory factory = getFactory();
-		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
+		factory.setTransport(RSocketServer.Transport.WEBSOCKET);
 		ReactorResourceFactory resourceFactory = new ReactorResourceFactory();
 		resourceFactory.afterPropertiesSet();
 		factory.setResourceFactory(resourceFactory);
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
-		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
-		this.rSocketServer.start();
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
 		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
-
 		assertThat(response).isEqualTo(payload);
-		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
+		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
@@ -142,7 +139,7 @@ class NettyRSocketServerFactoryTests {
 					.will((invocation) -> invocation.getArgument(0));
 		}
 		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
-		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
+		this.server = factory.create(new EchoRequestResponseAcceptor());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (ServerRSocketFactoryCustomizer customizer : customizers) {
 			ordered.verify(customizer).apply(any(RSocketFactory.ServerRSocketFactory.class));
@@ -150,14 +147,14 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private RSocketRequester createRSocketTcpClient() {
-		Assertions.assertThat(this.rSocketServer).isNotNull();
-		InetSocketAddress address = this.rSocketServer.address();
+		Assertions.assertThat(this.server).isNotNull();
+		InetSocketAddress address = this.server.address();
 		return createRSocketRequesterBuilder().connectTcp(address.getHostString(), address.getPort()).block();
 	}
 
 	private RSocketRequester createRSocketWebSocketClient() {
-		Assertions.assertThat(this.rSocketServer).isNotNull();
-		InetSocketAddress address = this.rSocketServer.address();
+		Assertions.assertThat(this.server).isNotNull();
+		InetSocketAddress address = this.server.address();
 		return createRSocketRequesterBuilder().connect(WebsocketClientTransport.create(address)).block();
 	}
 
