@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools;
+package org.springframework.boot.devtools.system;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;

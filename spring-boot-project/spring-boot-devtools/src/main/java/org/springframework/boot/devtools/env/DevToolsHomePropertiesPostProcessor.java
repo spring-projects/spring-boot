@@ -24,7 +24,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.DevToolsEnablementDeducer;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;

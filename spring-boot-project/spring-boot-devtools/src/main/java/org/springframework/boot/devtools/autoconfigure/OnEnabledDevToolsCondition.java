@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.autoconfigure;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.devtools.DevToolsEnablementDeducer;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
