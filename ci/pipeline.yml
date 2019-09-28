@@ -273,7 +273,6 @@ jobs:
       - "**/*.effective-pom"
       - "**/spring-boot-configuration-docs/**"
       - "**/spring-boot-test-support/**"
-      - "**/spring-boot-docs-*.jar"
       artifact_set:
       - include:
         - "/**/spring-boot-docs-*.zip"
