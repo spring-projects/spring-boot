@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.context;
+package org.springframework.boot.rsocket.context;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.rsocket.context.RSocketServerInitializedEvent;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -45,41 +44,52 @@ import org.springframework.core.env.PropertySource;
  * @since 2.2.0
  */
 public class RSocketPortInfoApplicationContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext>,
-		ApplicationListener<RSocketServerInitializedEvent> {
-
-	private ConfigurableApplicationContext applicationContext;
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addApplicationListener(this);
-		this.applicationContext = applicationContext;
+		applicationContext.addApplicationListener(new Listener(applicationContext));
 	}
 
-	@Override
-	public void onApplicationEvent(RSocketServerInitializedEvent event) {
-		String propertyName = "local.rsocket.server.port";
-		setPortProperty(this.applicationContext, propertyName, event.getrSocketServer().address().getPort());
-	}
+	private static class Listener implements ApplicationListener<RSocketServerInitializedEvent> {
 
-	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			setPortProperty(((ConfigurableApplicationContext) context).getEnvironment(), propertyName, port);
-		}
-		if (context.getParent() != null) {
-			setPortProperty(context.getParent(), propertyName, port);
-		}
-	}
+		private static final String PROPERTY_NAME = "local.rsocket.server.port";
 
-	@SuppressWarnings("unchecked")
-	private void setPortProperty(ConfigurableEnvironment environment, String propertyName, int port) {
-		MutablePropertySources sources = environment.getPropertySources();
-		PropertySource<?> source = sources.get("server.ports");
-		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<>());
-			sources.addFirst(source);
+		private ConfigurableApplicationContext applicationContext;
+
+		Listener(ConfigurableApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
 		}
-		((Map<String, Object>) source.getSource()).put(propertyName, port);
+
+		@Override
+		public void onApplicationEvent(RSocketServerInitializedEvent event) {
+			setPortProperty(this.applicationContext, event.getrSocketServer().address().getPort());
+		}
+
+		private void setPortProperty(ApplicationContext context, int port) {
+			if (context instanceof ConfigurableApplicationContext) {
+				setPortProperty(((ConfigurableApplicationContext) context).getEnvironment(), port);
+			}
+			if (context.getParent() != null) {
+				setPortProperty(context.getParent(), port);
+			}
+		}
+
+		private void setPortProperty(ConfigurableEnvironment environment, int port) {
+			MutablePropertySources sources = environment.getPropertySources();
+			PropertySource<?> source = sources.get("server.ports");
+			if (source == null) {
+				source = new MapPropertySource("server.ports", new HashMap<>());
+				sources.addFirst(source);
+			}
+			setPortProperty(port, source);
+		}
+
+		@SuppressWarnings("unchecked")
+		private void setPortProperty(int port, PropertySource<?> source) {
+			((Map<String, Object>) source.getSource()).put(PROPERTY_NAME, port);
+		}
+
 	}
 
 }
