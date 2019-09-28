@@ -17,12 +17,15 @@
 package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -47,6 +50,10 @@ public final class WebClientExchangeTags {
 
 	private static final Tag CLIENT_NAME_NONE = Tag.of("clientName", "none");
 
+	private static final Tag[] EMPTY_TAG_ARRAY = new Tag[0];
+
+	private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
 	private WebClientExchangeTags() {
 	}
 
@@ -70,9 +77,41 @@ public final class WebClientExchangeTags {
 		return Tag.of("uri", extractPath(uri));
 	}
 
+	/**
+	 * Creates a {@code uriVariables} {@code Tag} for the URI path of the given {@code request}.
+	 * @param request the request
+	 * @return the uriVariables tags
+	 */
+	public static Tag[] uriVariables(ClientRequest request) {
+		return request.attribute(URI_TEMPLATE_ATTRIBUTE)
+				.map(templateUri -> (String)templateUri)
+				.map(WebClientExchangeTags::extractPath)
+				.map(templateUri -> extractUriTemplateVariables(request, templateUri))
+				.map(WebClientExchangeTags::convertUriVariables)
+				.orElse(EMPTY_TAG_ARRAY);
+	}
+
+	private static Map<String, String> extractUriTemplateVariables(ClientRequest request, String templateUri) {
+		try {
+			return PATH_MATCHER.extractUriTemplateVariables(templateUri, request.url().getPath());
+		}
+		catch (IllegalStateException ex) {
+			return null;
+		}
+	}
+
 	private static String extractPath(String url) {
 		String path = PATTERN_BEFORE_PATH.matcher(url).replaceFirst("");
 		return (path.startsWith("/") ? path : "/" + path);
+	}
+
+	private static Tag[] convertUriVariables(Map<String, String> uriVariables) {
+		if( CollectionUtils.isEmpty(uriVariables)) {
+			return EMPTY_TAG_ARRAY;
+		}
+		return uriVariables.entrySet().stream()
+				.map(entry -> Tag.of(entry.getKey(), entry.getValue()))
+				.toArray(Tag[]::new);
 	}
 
 	/**
@@ -121,5 +160,4 @@ public final class WebClientExchangeTags {
 		Outcome outcome = (response != null) ? Outcome.forStatus(response.rawStatusCode()) : Outcome.UNKNOWN;
 		return outcome.asTag();
 	}
-
 }

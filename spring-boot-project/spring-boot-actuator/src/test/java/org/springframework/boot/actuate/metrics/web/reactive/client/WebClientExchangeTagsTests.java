@@ -79,6 +79,39 @@ class WebClientExchangeTagsTests {
 	}
 
 	@Test
+	void uriVariablesWhenAbsoluteTemplateIsAvailableShouldReturnVariable() {
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).containsExactly(Tag.of("project", "spring-boot"));
+	}
+
+	@Test
+	void uriVariablesWhenRelativeTemplateIsAvailableShouldReturnVariable() {
+		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).containsExactly(Tag.of("project", "spring-boot"));
+	}
+
+	@Test
+	void uriVariablesWhenMultiVariableTemplateIsAvailableShouldReturnVariables() {
+		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot/actuator"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}/{detail}").build();
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).containsExactly(Tag.of("project", "spring-boot"), Tag.of("detail", "actuator"));
+	}
+
+	@Test
+	void uriVariablesWhenTemplateIsMissingShouldReturnEmpty() {
+		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
+				.build();
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).isEmpty();
+	}
+
+	@Test
+	void uriVariablesWhenTemplateNotMatchPathShouldReturnEmpty() {
+		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE, "/{project}").build();
+		assertThat(WebClientExchangeTags.uriVariables(this.request)).isEmpty();
+	}
+
+	@Test
 	void clientName() {
 		assertThat(WebClientExchangeTags.clientName(this.request)).isEqualTo(Tag.of("clientName", "example.org"));
 	}
