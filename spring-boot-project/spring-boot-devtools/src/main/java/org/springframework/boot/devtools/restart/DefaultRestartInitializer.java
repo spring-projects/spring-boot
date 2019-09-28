@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
-import org.springframework.boot.devtools.DevToolsEnablementDeducer;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
