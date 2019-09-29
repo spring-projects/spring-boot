@@ -79,10 +79,9 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 
-		Map<String, Map<String, Object>> details = new LinkedHashMap<>();
+		Map<String, Map<String, Long>> details = new LinkedHashMap<>();
 		diskFreeInBytesMap.forEach((file, diskFreeInBytes) -> {
-			Map<String, Object> detail = new LinkedHashMap<>();
-			detail.put("path", file);
+			Map<String, Long> detail = new LinkedHashMap<>();
 			detail.put("total", file.getTotalSpace());
 			detail.put("free", diskFreeInBytes);
 			details.put(file.getPath(), detail);

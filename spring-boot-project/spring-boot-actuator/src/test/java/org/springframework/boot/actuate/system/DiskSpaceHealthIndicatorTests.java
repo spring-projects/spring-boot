@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Mattias Severson
  * @author Stephane Nicoll
+ * @author Leo Li
  */
 class DiskSpaceHealthIndicatorTests {
 
@@ -44,47 +47,57 @@ class DiskSpaceHealthIndicatorTests {
 
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
+	private static final String MOCK_FILE_PATH = ".";
+
 	@Mock
-	private List<File> fileMocks;
+	private File fileMock;
+
+	private List<File> fileMocks = new ArrayList<>();
 
 	private HealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
+		fileMocks.add(fileMock);
 		this.fileMocks.forEach((fileMock) -> {
 			given(fileMock.exists()).willReturn(true);
 			given(fileMock.canRead()).willReturn(true);
+			given(fileMock.getPath()).willReturn(MOCK_FILE_PATH);
 		});
 		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMocks, THRESHOLD);
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void diskSpaceIsUp() {
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		this.fileMocks.forEach((fileMock) -> {
-			given(fileMock.exists()).willReturn(true);
-			given(fileMock.canRead()).willReturn(true);
+			given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
+			given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+			Health health = this.healthIndicator.health();
+			assertThat(health.getStatus()).isEqualTo(Status.UP);
+			assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
+			Map<String, Long> details = (Map) health.getDetails().get(fileMock.getPath());
+			assertThat(details.get("free")).isEqualTo(freeSpace);
+			assertThat(details.get("total")).isEqualTo(TOTAL_SPACE.toBytes());
 		});
-		Health health = this.healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
-		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
-		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void diskSpaceIsDown() {
 		long freeSpace = THRESHOLD.toBytes() - 10;
 		this.fileMocks.forEach((fileMock) -> {
-			given(fileMock.exists()).willReturn(true);
-			given(fileMock.canRead()).willReturn(true);
+			given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
+			given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+			Health health = this.healthIndicator.health();
+			assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+			assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
+			Map<String, Long> details = (Map) health.getDetails().get(fileMock.getPath());
+			assertThat(details.get("free")).isEqualTo(freeSpace);
+			assertThat(details.get("total")).isEqualTo(TOTAL_SPACE.toBytes());
 		});
-		Health health = this.healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
-		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
-		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
 	}
 
 }
