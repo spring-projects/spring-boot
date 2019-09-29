@@ -36,13 +36,13 @@ class AnnotatedClassFinderTests {
 
 	@Test
 	void findFromClassWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromClass(null))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	void findFromPackageWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromPackage((String) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromPackage(null))
 				.withMessageContaining("Source must not be null");
 	}
 

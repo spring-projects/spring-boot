@@ -62,8 +62,7 @@ class JacksonTesterIntegrationTests {
 
 	@Test
 	void typicalTest() throws Exception {
-		String example = JSON;
-		assertThat(this.simpleJson.parse(example).getObject().getName()).isEqualTo("Spring");
+		assertThat(this.simpleJson.parse(JSON).getObject().getName()).isEqualTo("Spring");
 	}
 
 	@Test
