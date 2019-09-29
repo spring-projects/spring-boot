@@ -1162,6 +1162,11 @@ If you add your own, you have to be aware of the order and in which position you
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.
   You can override `GroovyMarkupViewResolver` by providing a bean of the same name.
+* If you use Mustache, you also have a `MustacheViewResolver` named '`mustacheViewResolver`'.
+  It looks for resources by surrounding the view name with a prefix and suffix.
+  The prefix is `spring.mustache.prefix`, and the suffix is `spring.mustache.suffix`.
+  The values of the prefix and suffix default to '`classpath:/templates/`' and '`.mustache`', respectively.
+  You can override `MustacheViewResolver` by providing a bean of the same name.
 
 For more detail, see the following sections:
 
