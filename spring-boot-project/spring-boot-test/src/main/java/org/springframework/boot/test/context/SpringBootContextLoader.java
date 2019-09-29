@@ -165,7 +165,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
 		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
-		if (!isEmbeddedWebEnvironment(config) && !hasCustomServerPort(properties)) {
+		// set server.port to -1 only for web application and who doesn't have custom server port
+		if (isEmbeddedWebEnvironment(config) && !hasCustomServerPort(properties)) {
 			properties.add("server.port=-1");
 		}
 		return StringUtils.toStringArray(properties);

@@ -63,6 +63,11 @@ class SpringBootTestWithTestPropertySourceTests {
 	}
 
 	@Test
+	void propertyFromTestPropertySourceLocationsWithServerPort() {
+		assertThat(this.config.serverPort).isEqualTo("12345");
+	}
+
+	@Test
 	void propertyFromPropertySourcePropertiesOverridesPropertyFromPropertySourceLocations() {
 		assertThat(this.config.propertySourceInlinedOverridesPropertySourceLocation)
 				.isEqualTo("property-source-inlined");
@@ -98,6 +103,9 @@ class SpringBootTestWithTestPropertySourceTests {
 
 		@Value("${c}")
 		private String propertySourceInlinedOverridesBootTestInlined;
+
+		@Value("${server.port}")
+		private String serverPort;
 
 		@Bean
 		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
