@@ -78,11 +78,11 @@
 		<hsqldb.version>2.5.0</hsqldb.version>
 		<htmlunit.version>2.36.0</htmlunit.version>
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
-		<httpclient.version>4.5.9</httpclient.version>
+		<httpclient.version>4.5.10</httpclient.version>
 		<httpcore.version>4.4.12</httpcore.version>
 		<infinispan.version>9.4.16.Final</infinispan.version>
 		<influxdb-java.version>2.15</influxdb-java.version>
-		<!-- deprecated since 2.18 in favor of "jackson-bom.version" -->
+		<!-- deprecated since 2.1 in favor of "jackson-bom.version" -->
 		<jackson.version>2.10.0</jackson.version>
 		<jackson-bom.version>${jackson.version}</jackson-bom.version>
 		<jakarta-activation.version>1.2.1</jakarta-activation.version>
@@ -130,7 +130,7 @@
 		<jetty-reactive-httpclient.version>1.0.3</jetty-reactive-httpclient.version>
 		<jmustache.version>1.15</jmustache.version>
 		<jna.version>4.5.2</jna.version>
-		<joda-time.version>2.10.3</joda-time.version>
+		<joda-time.version>2.10.4</joda-time.version>
 		<jolokia.version>1.6.2</jolokia.version>
 		<!-- Deprecated in favor of "johnzon.version" -->
 		<johnzon-jsonb.version>1.1.13</johnzon-jsonb.version>
@@ -161,7 +161,7 @@
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.2.0-RC2</neo4j-ogm.version>
 		<netty.version>4.1.39.Final</netty.version>
-		<netty-tcnative.version>2.0.25.Final</netty-tcnative.version>
+		<netty-tcnative.version>2.0.26.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<ojdbc.version>19.3.0.0</ojdbc.version>
 		<okhttp3.version>3.14.2</okhttp3.version>
@@ -207,7 +207,7 @@
 		<thymeleaf-layout-dialect.version>2.4.1</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.4.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>9.0.24</tomcat.version>
+		<tomcat.version>9.0.26</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.11</unboundid-ldapsdk.version>
 		<undertow.version>2.0.26.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
