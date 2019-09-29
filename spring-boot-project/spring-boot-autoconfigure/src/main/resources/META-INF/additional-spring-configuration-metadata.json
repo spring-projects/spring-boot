@@ -719,7 +719,7 @@
       "name": "spring.mvc.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name" : "spring.mvc.media-types",
@@ -2096,7 +2096,7 @@
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     }
   ],
   "hints": [
