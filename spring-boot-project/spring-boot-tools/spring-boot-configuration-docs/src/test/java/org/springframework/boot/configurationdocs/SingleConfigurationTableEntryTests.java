@@ -68,8 +68,8 @@ class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first{vbar}" + NEWLINE
-				+ "second+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first\\|second+`" + NEWLINE
+				+ "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
