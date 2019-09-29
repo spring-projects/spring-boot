@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -116,7 +117,9 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 		@Bean
 		DiskSpaceHealthIndicator diskSpaceHealthIndicator() {
-			return new DiskSpaceHealthIndicator(new File("."), DataSize.ofMegabytes(10));
+			List<File> path = new ArrayList<>();
+			path.add(new File("."));
+			return new DiskSpaceHealthIndicator(path, DataSize.ofMegabytes(10));
 		}
 
 		@Bean
