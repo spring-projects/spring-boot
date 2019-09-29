@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.system;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,6 +30,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Leo Li
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "management.health.diskspace")
@@ -36,20 +39,26 @@ public class DiskSpaceHealthIndicatorProperties {
 	/**
 	 * Path used to compute the available disk space.
 	 */
-	private File path = new File(".");
+	private List<File> path = new ArrayList<File>() {
+		{
+			add(new File("."));
+		}
+	};
 
 	/**
 	 * Minimum disk space that should be available.
 	 */
 	private DataSize threshold = DataSize.ofMegabytes(10);
 
-	public File getPath() {
+	public List<File> getPath() {
 		return this.path;
 	}
 
-	public void setPath(File path) {
-		Assert.isTrue(path.exists(), () -> "Path '" + path + "' does not exist");
-		Assert.isTrue(path.canRead(), () -> "Path '" + path + "' cannot be read");
+	public void setPath(List<File> path) {
+		path.forEach((filePath) -> {
+			Assert.isTrue(filePath.exists(), () -> "Path '" + filePath + "' does not exist");
+			Assert.isTrue(filePath.canRead(), () -> "Path '" + filePath + "' cannot be read");
+		});
 		this.path = path;
 	}
 

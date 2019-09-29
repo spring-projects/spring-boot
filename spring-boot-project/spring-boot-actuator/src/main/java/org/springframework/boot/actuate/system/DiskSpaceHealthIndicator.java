@@ -17,6 +17,10 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,13 +38,14 @@ import org.springframework.util.unit.DataSize;
  * @author Mattias Severson
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Leo Li
  * @since 2.0.0
  */
 public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 	private static final Log logger = LogFactory.getLog(DiskSpaceHealthIndicator.class);
 
-	private final File path;
+	private final List<File> path;
 
 	private final DataSize threshold;
 
@@ -49,7 +54,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	 * @param path the Path used to compute the available disk space
 	 * @param threshold the minimum disk space that should be available
 	 */
-	public DiskSpaceHealthIndicator(File path, DataSize threshold) {
+	public DiskSpaceHealthIndicator(List<File> path, DataSize threshold) {
 		super("DiskSpace health check failed");
 		this.path = path;
 		this.threshold = threshold;
@@ -57,17 +62,32 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		long diskFreeInBytes = this.path.getUsableSpace();
-		if (diskFreeInBytes >= this.threshold.toBytes()) {
+		boolean status = true;
+		Map<File, Long> diskFreeInBytesMap = new HashMap<>();
+		for (File file : this.path) {
+			long diskFreeInBytes = file.getUsableSpace();
+			diskFreeInBytesMap.put(file, diskFreeInBytes);
+			if (status && diskFreeInBytes < this.threshold.toBytes()) {
+				logger.warn(String.format("Free disk space in %s below threshold. Available: %d bytes (threshold: %s)",
+						file.getPath(), diskFreeInBytes, this.threshold));
+				builder.down();
+				status = false;
+			}
+		}
+
+		if (status) {
 			builder.up();
 		}
-		else {
-			logger.warn(String.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
-					diskFreeInBytes, this.threshold));
-			builder.down();
-		}
-		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold.toBytes());
+
+		Map<String, Map<String, Object>> details = new LinkedHashMap<>();
+		diskFreeInBytesMap.forEach((file, diskFreeInBytes) -> {
+			Map<String, Object> detail = new LinkedHashMap<>();
+			detail.put("path", file);
+			detail.put("total", file.getTotalSpace());
+			detail.put("free", diskFreeInBytes);
+			details.put(file.getPath(), detail);
+		});
+		builder.withDetails(details).withDetail("threshold", this.threshold.toBytes());
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,23 +45,27 @@ class DiskSpaceHealthIndicatorTests {
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
 	@Mock
-	private File fileMock;
+	private List<File> fileMocks;
 
 	private HealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		given(this.fileMock.exists()).willReturn(true);
-		given(this.fileMock.canRead()).willReturn(true);
-		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, THRESHOLD);
+		this.fileMocks.forEach((fileMock) -> {
+			given(fileMock.exists()).willReturn(true);
+			given(fileMock.canRead()).willReturn(true);
+		});
+		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMocks, THRESHOLD);
 	}
 
 	@Test
 	void diskSpaceIsUp() {
 		long freeSpace = THRESHOLD.toBytes() + 10;
-		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
-		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		this.fileMocks.forEach((fileMock) -> {
+			given(fileMock.exists()).willReturn(true);
+			given(fileMock.canRead()).willReturn(true);
+		});
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
@@ -71,8 +76,10 @@ class DiskSpaceHealthIndicatorTests {
 	@Test
 	void diskSpaceIsDown() {
 		long freeSpace = THRESHOLD.toBytes() - 10;
-		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
-		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		this.fileMocks.forEach((fileMock) -> {
+			given(fileMock.exists()).willReturn(true);
+			given(fileMock.canRead()).willReturn(true);
+		});
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
