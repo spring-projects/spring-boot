@@ -59,7 +59,7 @@ class DiskSpaceHealthIndicatorTests {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		fileMocks.add(fileMock);
+		this.fileMocks.add(this.fileMock);
 		this.fileMocks.forEach((fileMock) -> {
 			given(fileMock.exists()).willReturn(true);
 			given(fileMock.canRead()).willReturn(true);
