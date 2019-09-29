@@ -20,11 +20,13 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -32,9 +34,13 @@ import org.springframework.util.ObjectUtils;
  * configurable time to live.
  *
  * @author Stephane Nicoll
+ * @author Christoph Dreis
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class CachingOperationInvoker implements OperationInvoker {
+
+	private static final boolean IS_REACTOR_PRESENT = ClassUtils.isPresent("reactor.core.publisher.Mono", null);
 
 	private final OperationInvoker invoker;
 
@@ -70,18 +76,11 @@ public class CachingOperationInvoker implements OperationInvoker {
 		long accessTime = System.currentTimeMillis();
 		CachedResponse cached = this.cachedResponse;
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
-			Object response = handleMonoResponse(this.invoker.invoke(context));
-			this.cachedResponse = new CachedResponse(response, accessTime);
-			return response;
+			Object response = this.invoker.invoke(context);
+			cached = createCachedResponse(response, accessTime);
+			this.cachedResponse = cached;
 		}
 		return cached.getResponse();
-	}
-
-	private Object handleMonoResponse(Object response) {
-		if (response instanceof Mono) {
-			return ((Mono) response).cache(Duration.ofMillis(this.timeToLive));
-		}
-		return response;
 	}
 
 	private boolean hasInput(InvocationContext context) {
@@ -93,6 +92,13 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return arguments.values().stream().anyMatch(Objects::nonNull);
 		}
 		return false;
+	}
+
+	private CachedResponse createCachedResponse(Object response, long accessTime) {
+		if (IS_REACTOR_PRESENT) {
+			return new ReactiveCachedResponse(response, accessTime, this.timeToLive);
+		}
+		return new CachedResponse(response, accessTime);
 	}
 
 	/**
@@ -130,6 +136,27 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 		public Object getResponse() {
 			return this.response;
+		}
+
+	}
+
+	/**
+	 * {@link CachedResponse} variant used when Reactor is present.
+	 */
+	static class ReactiveCachedResponse extends CachedResponse {
+
+		ReactiveCachedResponse(Object response, long creationTime, long timeToLive) {
+			super(applyCaching(response, timeToLive), creationTime);
+		}
+
+		private static Object applyCaching(Object response, long timeToLive) {
+			if (response instanceof Mono) {
+				return ((Mono<?>) response).cache(Duration.ofMillis(timeToLive));
+			}
+			if (response instanceof Flux) {
+				return ((Flux<?>) response).cache(Duration.ofMillis(timeToLive));
+			}
+			return response;
 		}
 
 	}
