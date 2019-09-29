@@ -78,7 +78,10 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && obj.getClass() == getClass();
+		if (obj == null || obj.getClass() != getClass()) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

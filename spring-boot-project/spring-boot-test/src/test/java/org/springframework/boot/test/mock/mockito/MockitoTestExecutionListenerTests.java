@@ -92,7 +92,7 @@ class MockitoTestExecutionListenerTests {
 		given(mockTestContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))
 				.willReturn(Boolean.TRUE);
 		this.listener.beforeTestMethod(mockTestContext);
-		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
+		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance), (MockDefinition) any());
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");
 	}
 

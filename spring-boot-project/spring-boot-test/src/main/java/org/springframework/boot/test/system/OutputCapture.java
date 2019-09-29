@@ -208,7 +208,7 @@ class OutputCapture implements CapturedOutput {
 		}
 
 		private static PrintStream getSystemStream(PrintStream printStream) {
-			if (printStream instanceof PrintStreamCapture) {
+			while (printStream instanceof PrintStreamCapture) {
 				return ((PrintStreamCapture) printStream).getParent();
 			}
 			return printStream;

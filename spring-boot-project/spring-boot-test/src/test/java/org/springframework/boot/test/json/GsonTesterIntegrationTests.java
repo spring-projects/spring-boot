@@ -54,7 +54,8 @@ class GsonTesterIntegrationTests {
 
 	@Test
 	void typicalTest() throws Exception {
-		assertThat(this.simpleJson.parse(JSON).getObject().getName()).isEqualTo("Spring");
+		String example = JSON;
+		assertThat(this.simpleJson.parse(example).getObject().getName()).isEqualTo("Spring");
 	}
 
 	@Test
