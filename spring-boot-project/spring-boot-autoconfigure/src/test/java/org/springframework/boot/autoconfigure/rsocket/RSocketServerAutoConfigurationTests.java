@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link RSocketServerAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Verónica Vásquez
  */
 class RSocketServerAutoConfigurationTests {
 
@@ -78,6 +80,17 @@ class RSocketServerAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
 						.hasSingleBean(RSocketServerBootstrap.class)
 						.hasSingleBean(ServerRSocketFactoryCustomizer.class));
+	}
+
+	@Test
+	void shouldSetLocalServerPortWhenRSocketServerPortIsSet() {
+		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
+				.withInitializer(new RSocketPortInfoApplicationContextInitializer()).run((context) -> {
+					assertThat(context).hasSingleBean(RSocketServerFactory.class)
+							.hasSingleBean(RSocketServerBootstrap.class)
+							.hasSingleBean(ServerRSocketFactoryCustomizer.class);
+					assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNotNull();
+				});
 	}
 
 	@Test
