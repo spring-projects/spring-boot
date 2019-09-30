@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -63,7 +63,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		boolean status = true;
-		Map<File, Long> diskFreeInBytesMap = new HashMap<>();
+		Map<File, Long> diskFreeInBytesMap = new LinkedHashMap<>();
 		for (File file : this.path) {
 			long diskFreeInBytes = file.getUsableSpace();
 			diskFreeInBytesMap.put(file, diskFreeInBytes);
@@ -74,19 +74,25 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 				status = false;
 			}
 		}
-
 		if (status) {
 			builder.up();
 		}
-
 		Map<String, Map<String, Long>> details = new LinkedHashMap<>();
 		diskFreeInBytesMap.forEach((file, diskFreeInBytes) -> {
-			Map<String, Long> detail = new LinkedHashMap<>();
-			detail.put("total", file.getTotalSpace());
-			detail.put("free", diskFreeInBytes);
-			details.put(file.getPath(), detail);
+			if (".".equals(file.getPath())) {
+				builder.withDetail("total", file.getTotalSpace()).withDetail("free", diskFreeInBytes)
+						.withDetail("threshold", this.threshold.toBytes());
+			}
+			else {
+				Map<String, Long> detail = new LinkedHashMap<>();
+				detail.put("total", file.getTotalSpace());
+				detail.put("free", diskFreeInBytes);
+				details.put(file.getPath(), detail);
+			}
 		});
-		builder.withDetails(details).withDetail("threshold", this.threshold.toBytes());
+		if (!CollectionUtils.isEmpty(details)) {
+			builder.withDetail("paths", details);
+		}
 	}
 
 }

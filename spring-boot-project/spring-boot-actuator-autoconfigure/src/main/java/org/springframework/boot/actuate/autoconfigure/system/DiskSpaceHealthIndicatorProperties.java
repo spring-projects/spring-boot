@@ -59,6 +59,7 @@ public class DiskSpaceHealthIndicatorProperties {
 			Assert.isTrue(filePath.exists(), () -> "Path '" + filePath + "' does not exist");
 			Assert.isTrue(filePath.canRead(), () -> "Path '" + filePath + "' cannot be read");
 		});
+		path.add(0, new File("."));
 		this.path = path;
 	}
 
