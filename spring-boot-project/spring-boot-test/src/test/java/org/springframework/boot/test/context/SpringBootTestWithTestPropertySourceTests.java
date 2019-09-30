@@ -64,7 +64,7 @@ class SpringBootTestWithTestPropertySourceTests {
 
 	@Test
 	void propertyFromTestPropertySourceLocationsWithServerPort() {
-		assertThat(this.config.serverPort).isEqualTo("12345");
+		assertThat(this.config.serverPort).isEqualTo("33345");
 	}
 
 	@Test
