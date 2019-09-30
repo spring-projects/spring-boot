@@ -194,7 +194,7 @@
 		<spring-integration.version>5.2.0.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-kafka.version>2.3.0.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
-		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>
+		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
 		<spring-security.version>5.2.0.BUILD-SNAPSHOT</spring-security.version>
 		<spring-session-bom.version>Corn-BUILD-SNAPSHOT</spring-session-bom.version>
