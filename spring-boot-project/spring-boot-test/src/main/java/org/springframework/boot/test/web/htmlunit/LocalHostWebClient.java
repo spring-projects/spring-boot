@@ -17,7 +17,6 @@
 package org.springframework.boot.test.web.htmlunit;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
