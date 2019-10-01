@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package sample.jersey;
+package smoketest.jersey;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
@@ -33,7 +32,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,9 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.server.port=0")
-public class JerseyManagementPortTests {
+class JerseyManagementPortTests {
 
 	@LocalServerPort
 	private int port;
@@ -56,7 +53,7 @@ public class JerseyManagementPortTests {
 	private TestRestTemplate testRestTemplate;
 
 	@Test
-	public void resourceShouldBeAvailableOnMainPort() {
+	void resourceShouldBeAvailableOnMainPort() {
 		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/test",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -64,7 +61,7 @@ public class JerseyManagementPortTests {
 	}
 
 	@Test
-	public void resourceShouldNotBeAvailableOnManagementPort() {
+	void resourceShouldNotBeAvailableOnManagementPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
 				.getForEntity("http://localhost:" + this.managementPort + "/test", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -74,7 +71,7 @@ public class JerseyManagementPortTests {
 	static class ResourceConfigConfiguration {
 
 		@Bean
-		public ResourceConfigCustomizer customizer() {
+		ResourceConfigCustomizer customizer() {
 			return new ResourceConfigCustomizer() {
 				@Override
 				public void customize(ResourceConfig config) {
