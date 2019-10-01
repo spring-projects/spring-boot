@@ -3239,6 +3239,35 @@ However, this functionality is available from the {spring-security-oauth2}[Sprin
 Until then, you can use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server; see its https://docs.spring.io/spring-security-oauth2-boot[documentation] for instructions.
 
 
+[[boot-features-security-saml]]
+=== SAML 2.0
+
+
+
+[[boot-features-security-saml2-relying-party]]
+==== Relying Party
+If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to make it easy to set up a SAML 2.0 Relying Party.
+This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
+
+A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
+You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	spring.security.saml2.relyingparty.registration.my-relying-party1.signing.credentials[0].private-key-location=path-to-private-key
+	spring.security.saml2.relyingparty.registration.my-relying-party1.signing.credentials[0].certificate-location=path-to-certificate
+	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.verification.credentials[0].certificate-location=path-to-verification-cert
+	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.entity-id=remote-idp-entity-id1
+	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.sso-url=https://remoteidp1.sso.url
+
+	spring.security.saml2.relyingparty.registration.my-relying-party2.signing.credentials[0].private-key-location=path-to-private-key
+    spring.security.saml2.relyingparty.registration.my-relying-party2.signing.credentials[0].certificate-location=path-to-certificate
+    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.verification.credentials[0].certificate-location=path-to-other-verification-cert
+    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.entity-id=remote-idp-entity-id2
+    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.sso-url=https://remoteidp2.sso.url
+----
+
+
 
 [[boot-features-security-actuator]]
 === Actuator Security
