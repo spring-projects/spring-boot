@@ -184,7 +184,7 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-archiver</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
