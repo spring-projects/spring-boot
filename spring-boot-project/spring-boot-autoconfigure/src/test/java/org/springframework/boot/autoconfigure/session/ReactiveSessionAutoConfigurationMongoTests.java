@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,8 +74,8 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesMongo(
 			String collectionName) {
 		return (context) -> {
-			ReactiveMongoOperationsSessionRepository repository = validateSessionRepository(context,
-					ReactiveMongoOperationsSessionRepository.class);
+			ReactiveMongoSessionRepository repository = validateSessionRepository(context,
+					ReactiveMongoSessionRepository.class);
 			assertThat(repository.getCollectionName()).isEqualTo(collectionName);
 		};
 	}

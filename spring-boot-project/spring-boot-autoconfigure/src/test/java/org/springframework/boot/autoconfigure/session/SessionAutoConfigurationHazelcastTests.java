@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
@@ -59,7 +59,7 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(JdbcIndexedSessionRepository.class,
-						RedisIndexedSessionRepository.class, MongoOperationsSessionRepository.class))
+						RedisIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 
