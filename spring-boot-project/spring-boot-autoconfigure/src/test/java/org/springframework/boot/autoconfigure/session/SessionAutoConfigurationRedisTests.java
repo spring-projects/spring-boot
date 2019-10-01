@@ -35,7 +35,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
@@ -75,7 +75,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-						JdbcIndexedSessionRepository.class, MongoOperationsSessionRepository.class))
+						JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,

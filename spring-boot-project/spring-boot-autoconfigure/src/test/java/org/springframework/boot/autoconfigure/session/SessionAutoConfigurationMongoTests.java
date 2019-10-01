@@ -26,7 +26,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
@@ -72,8 +72,8 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName) {
 		return (context) -> {
-			MongoOperationsSessionRepository repository = validateSessionRepository(context,
-					MongoOperationsSessionRepository.class);
+			MongoIndexedSessionRepository repository = validateSessionRepository(context,
+					MongoIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("collectionName", collectionName);
 		};
 	}
