@@ -340,11 +340,6 @@
 					<artifactId>gmavenplus-plugin</artifactId>
 					<version>1.6.1</version>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.3.0.603</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
