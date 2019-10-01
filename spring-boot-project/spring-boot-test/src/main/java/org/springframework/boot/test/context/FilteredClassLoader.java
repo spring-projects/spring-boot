@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.springframework.core.io.ClassPathResource;
 
@@ -141,12 +142,8 @@ public class FilteredClassLoader extends URLClassLoader {
 
 		@Override
 		public boolean test(String className) {
-			for (Class<?> hiddenClass : this.hiddenClasses) {
-				if (className.equals(hiddenClass.getName())) {
-					return true;
-				}
-			}
-			return false;
+			return Stream.of(this.hiddenClasses)
+					.anyMatch(hiddenClass -> className.equals(hiddenClass.getName()));
 		}
 
 		public static ClassFilter of(Class<?>... hiddenClasses) {
@@ -168,12 +165,7 @@ public class FilteredClassLoader extends URLClassLoader {
 
 		@Override
 		public boolean test(String className) {
-			for (String hiddenPackage : this.hiddenPackages) {
-				if (className.startsWith(hiddenPackage)) {
-					return true;
-				}
-			}
-			return false;
+			return Stream.of(this.hiddenPackages).anyMatch(className::startsWith);
 		}
 
 		public static PackageFilter of(String... hiddenPackages) {
@@ -197,12 +189,8 @@ public class FilteredClassLoader extends URLClassLoader {
 
 		@Override
 		public boolean test(String resourceName) {
-			for (ClassPathResource hiddenResource : this.hiddenResources) {
-				if (hiddenResource.getFilename() != null && resourceName.equals(hiddenResource.getPath())) {
-					return true;
-				}
-			}
-			return false;
+			return Stream.of(this.hiddenResources)
+					.anyMatch(hiddenResource -> hiddenResource.getFilename() != null && resourceName.equals(hiddenResource.getPath()));
 		}
 
 		public static ClassPathResourceFilter of(ClassPathResource... hiddenResources) {

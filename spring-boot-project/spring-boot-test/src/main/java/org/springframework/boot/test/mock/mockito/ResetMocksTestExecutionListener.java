@@ -19,6 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.mockito.Mockito;
 
@@ -85,11 +86,8 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		}
 		try {
 			MockitoBeans mockedBeans = beanFactory.getBean(MockitoBeans.class);
-			for (Object mockedBean : mockedBeans) {
-				if (reset.equals(MockReset.get(mockedBean))) {
-					Mockito.reset(mockedBean);
-				}
-			}
+			Stream.of(mockedBeans).filter(mockedBean -> reset.equals(MockReset.get(mockedBean)))
+					.forEach(Mockito::reset);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// Continue

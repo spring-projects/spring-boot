@@ -20,12 +20,14 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.scope.ScopedProxyUtils;
@@ -144,11 +146,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private Set<Class<?>> getConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
-		Set<Class<?>> configurationClasses = new LinkedHashSet<>();
-		for (BeanDefinition beanDefinition : getConfigurationBeanDefinitions(beanFactory).values()) {
-			configurationClasses.add(ClassUtils.resolveClassName(beanDefinition.getBeanClassName(), this.classLoader));
-		}
-		return configurationClasses;
+		return getConfigurationBeanDefinitions(beanFactory).values()
+				.stream().map(beanDefinition -> ClassUtils.resolveClassName(beanDefinition.getBeanClassName(), this.classLoader))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	private Map<String, BeanDefinition> getConfigurationBeanDefinitions(ConfigurableListableBeanFactory beanFactory) {
@@ -240,13 +240,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory, ResolvableType type,
 			QualifierDefinition qualifier) {
-		Set<String> candidates = new TreeSet<>();
-		for (String candidate : getExistingBeans(beanFactory, type)) {
-			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
-				candidates.add(candidate);
-			}
-		}
-		return candidates;
+		return getExistingBeans(beanFactory, type).stream()
+				.filter(candidate -> qualifier == null || qualifier.matches(beanFactory, candidate))
+				.collect(Collectors.toCollection(TreeSet::new));
 	}
 
 	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory, ResolvableType type) {
@@ -310,7 +306,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 				if (primaryBeanName != null) {
 					throw new NoUniqueBeanDefinitionException(type.resolve(), candidateBeanNames.size(),
 							"more than one 'primary' bean found among candidates: "
-									+ Arrays.asList(candidateBeanNames));
+									+ Collections.singletonList(candidateBeanNames));
 				}
 				primaryBeanName = candidateBeanName;
 			}

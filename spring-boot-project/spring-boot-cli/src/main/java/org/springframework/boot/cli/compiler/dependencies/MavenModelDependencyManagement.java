@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.maven.model.Model;
 
@@ -47,10 +48,9 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 	private static List<Dependency> extractDependenciesFromModel(Model model) {
 		List<Dependency> dependencies = new ArrayList<>();
 		for (org.apache.maven.model.Dependency mavenDependency : model.getDependencyManagement().getDependencies()) {
-			List<Exclusion> exclusions = new ArrayList<>();
-			for (org.apache.maven.model.Exclusion mavenExclusion : mavenDependency.getExclusions()) {
-				exclusions.add(new Exclusion(mavenExclusion.getGroupId(), mavenExclusion.getArtifactId()));
-			}
+			List<Exclusion> exclusions = mavenDependency.getExclusions().stream()
+					.map(mavenExclusion -> new Exclusion(mavenExclusion.getGroupId(), mavenExclusion.getArtifactId()))
+					.collect(Collectors.toList());
 			Dependency dependency = new Dependency(mavenDependency.getGroupId(), mavenDependency.getArtifactId(),
 					mavenDependency.getVersion(), exclusions);
 			dependencies.add(dependency);
