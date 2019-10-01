@@ -104,7 +104,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-archiver</artifactId>
-				<version>3.2.0</version>
+				<version>3.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
