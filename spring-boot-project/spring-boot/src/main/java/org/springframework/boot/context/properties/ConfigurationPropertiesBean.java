@@ -265,11 +265,15 @@ public final class ConfigurationPropertiesBean {
 		VALUE_OBJECT;
 
 		static BindMethod forClass(Class<?> type) {
-			if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(ConstructorBinding.class)
-					|| findBindConstructor(type) != null) {
+			if (isConstructorBindingType(type) || findBindConstructor(type) != null) {
 				return VALUE_OBJECT;
 			}
 			return JAVA_BEAN;
+		}
+
+		private static boolean isConstructorBindingType(Class<?> type) {
+			return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY_AND_ENCLOSING_CLASSES)
+					.isPresent(ConstructorBinding.class);
 		}
 
 		static Constructor<?> findBindConstructor(Class<?> type) {
