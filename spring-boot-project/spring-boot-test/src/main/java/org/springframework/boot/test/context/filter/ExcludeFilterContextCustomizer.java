@@ -37,10 +37,7 @@ class ExcludeFilterContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		return obj != null && getClass() == obj.getClass();
+		return (obj != null) && (getClass() == obj.getClass());
 	}
 
 	@Override
