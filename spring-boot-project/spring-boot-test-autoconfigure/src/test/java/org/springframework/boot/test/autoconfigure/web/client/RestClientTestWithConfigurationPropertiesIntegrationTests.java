@@ -25,8 +25,8 @@ import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RestClientTest @RestClientTest} with a {@link ConfigurationProperties}
- * annotated type.
+ * Tests for {@link RestClientTest @RestClientTest} with a
+ * {@link ConfigurationProperties @ConfigurationProperties} annotated type.
  *
  * @author Stephane Nicoll
  */

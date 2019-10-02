@@ -776,7 +776,6 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void loadWhenBindingOnBeanWithoutBeanDefinitionShouldBind() {
 		load(BasicConfiguration.class, "name=test");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
@@ -785,6 +784,19 @@ class ConfigurationPropertiesTests {
 		this.context.getBean(ConfigurationPropertiesBindingPostProcessor.class).postProcessBeforeInitialization(bean,
 				"does-not-exist");
 		assertThat(bean.name).isEqualTo("test");
+	}
+
+	@Test
+	void loadWhenBindingToNestedConstructorPropertiesShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.name", "spring");
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(NestedConstructorPropertiesConfiguration.class);
+		NestedConstructorProperties bean = this.context.getBean(NestedConstructorProperties.class);
+		assertThat(bean.getName()).isEqualTo("spring");
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -1744,7 +1756,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ImmutableConfigurationProperties(prefix = "test")
 	static class OtherInjectedProperties {
 
 		final DataSizeProperties dataSizeProperties;
@@ -1761,7 +1773,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ImmutableConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterProperties {
 
@@ -1785,7 +1797,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ImmutableConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 
@@ -1894,6 +1906,49 @@ class ConfigurationPropertiesTests {
 
 		void setB(int b) {
 			this.b = b;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NestedConstructorProperties.class)
+	static class NestedConstructorPropertiesConfiguration {
+
+	}
+
+	@ImmutableConfigurationProperties("test")
+	static class NestedConstructorProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		NestedConstructorProperties(String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private final int age;
+
+			@ConstructorBinding
+			Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
 		}
 
 	}

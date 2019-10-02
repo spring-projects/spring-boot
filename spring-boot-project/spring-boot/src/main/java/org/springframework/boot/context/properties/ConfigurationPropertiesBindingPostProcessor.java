@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
@@ -92,17 +93,22 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
-				.get(this.applicationContext, bean, beanName);
-		if (configurationPropertiesBean != null && !hasBoundValueObject(beanName)) {
-			try {
-				this.binder.bind(configurationPropertiesBean.asBindTarget());
-			}
-			catch (Exception ex) {
-				throw new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
-			}
-		}
+		bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
 		return bean;
+	}
+
+	private void bind(ConfigurationPropertiesBean bean) {
+		if (bean == null || hasBoundValueObject(bean.getName())) {
+			return;
+		}
+		Assert.state(bean.getBindMethod() == BindMethod.JAVA_BEAN, "Cannot bind @ConfigurationProperties for bean '"
+				+ bean.getName() + "'. Ensure that @ConstructorBinding has not been applied to regular bean");
+		try {
+			this.binder.bind(bean);
+		}
+		catch (Exception ex) {
+			throw new ConfigurationPropertiesBindException(bean, ex);
+		}
 	}
 
 	private boolean hasBoundValueObject(String beanName) {

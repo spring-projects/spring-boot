@@ -16,6 +16,7 @@
 package org.springframework.boot.context.properties.scan.valid.b;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ImmutableConfigurationProperties;
 
 /**
  * @author Madhura Bhave
@@ -27,7 +28,7 @@ public class BScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "b.first")
+	@ImmutableConfigurationProperties(prefix = "b.first")
 	public static class BFirstProperties implements BProperties {
 
 		private final String name;

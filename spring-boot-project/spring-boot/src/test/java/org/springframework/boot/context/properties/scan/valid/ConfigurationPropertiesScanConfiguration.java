@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.scan.valid;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ImmutableConfigurationProperties;
 import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration;
 
 /**
@@ -45,7 +46,7 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "bar")
+	@ImmutableConfigurationProperties(prefix = "bar")
 	static class BarProperties {
 
 		BarProperties(String foo) {

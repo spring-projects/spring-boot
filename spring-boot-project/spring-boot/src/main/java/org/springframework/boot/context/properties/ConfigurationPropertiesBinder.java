@@ -45,7 +45,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
-import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
@@ -83,22 +82,18 @@ class ConfigurationPropertiesBinder {
 		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
-	<T> BindResult<T> bind(Bindable<T> target) {
-		ConfigurationProperties annotation = getAnnotation(target);
+	BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
+		Bindable<?> target = propertiesBean.asBindTarget();
+		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	<T> T bindOrCreate(Bindable<T> target) {
-		ConfigurationProperties annotation = getAnnotation(target);
+	Object bindOrCreate(ConfigurationPropertiesBean propertiesBean) {
+		Bindable<?> target = propertiesBean.asBindTarget();
+		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
-	}
-
-	private <T> ConfigurationProperties getAnnotation(Bindable<?> target) {
-		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
-		return annotation;
 	}
 
 	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {

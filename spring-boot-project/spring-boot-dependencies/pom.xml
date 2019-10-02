@@ -167,7 +167,7 @@
 		<okhttp3.version>3.14.3</okhttp3.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
 		<postgresql.version>42.2.8</postgresql.version>
-		<prometheus-pushgateway.version>0.6.0</prometheus-pushgateway.version>
+		<prometheus-pushgateway.version>0.7.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.1</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.7.3</rabbit-amqp-client.version>
@@ -186,7 +186,7 @@
 		<snakeyaml.version>1.25</snakeyaml.version>
 		<solr.version>8.2.0</solr.version>
 		<spring-amqp.version>2.2.0.RELEASE</spring-amqp.version>
-		<spring-batch.version>4.2.0.BUILD-SNAPSHOT</spring-batch.version>
+		<spring-batch.version>4.2.0.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Moore-RELEASE</spring-data-releasetrain.version>
 		<spring-framework.version>5.2.0.RELEASE</spring-framework.version>
@@ -197,7 +197,7 @@
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
 		<spring-security.version>5.2.0.RELEASE</spring-security.version>
-		<spring-session-bom.version>Corn-BUILD-SNAPSHOT</spring-session-bom.version>
+		<spring-session-bom.version>Corn-RC1</spring-session-bom.version>
 		<spring-ws.version>3.0.7.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
 		<sun-mail.version>${jakarta-mail.version}</sun-mail.version>

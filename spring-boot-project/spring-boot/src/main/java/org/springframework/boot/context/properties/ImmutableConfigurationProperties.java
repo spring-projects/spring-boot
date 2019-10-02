@@ -25,29 +25,19 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Annotation for externalized configuration. Add this to a class definition or a
- * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
- * some external Properties (e.g. from a .properties file).
- * <p>
- * Binding can is either performed by calling setters on the annotated class or, if
- * {@link ConstructorBinding @ConstructorBinding} is in use, by binding to the constructor
- * parameters.
- * <p>
- * Note that contrary to {@code @Value}, SpEL expressions are not evaluated since property
- * values are externalized.
+ * A convenience annotation that can be used for immutable
+ * {@link ConfigurationProperties @ConfigurationProperties} that use
+ * {@link ConstructorBinding @ConstructorBinding}.
  *
- * @author Dave Syer
- * @since 1.0.0
- * @see ConfigurationPropertiesScan
- * @see ConstructorBinding
- * @see ImmutableConfigurationProperties
- * @see ConfigurationPropertiesBindingPostProcessor
- * @see EnableConfigurationProperties
+ * @author Phillip Webb
+ * @since 2.2.0
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConfigurationProperties {
+@ConfigurationProperties
+@ConstructorBinding
+public @interface ImmutableConfigurationProperties {
 
 	/**
 	 * The name prefix of the properties that are valid to bind to this object. Synonym
@@ -55,7 +45,7 @@ public @interface ConfigurationProperties {
 	 * with dots (e.g. {@code "acme.system.feature"}).
 	 * @return the name prefix of the properties to bind
 	 */
-	@AliasFor("prefix")
+	@AliasFor(annotation = ConfigurationProperties.class)
 	String value() default "";
 
 	/**
@@ -64,22 +54,7 @@ public @interface ConfigurationProperties {
 	 * dots (e.g. {@code "acme.system.feature"}).
 	 * @return the name prefix of the properties to bind
 	 */
-	@AliasFor("value")
+	@AliasFor(annotation = ConfigurationProperties.class)
 	String prefix() default "";
-
-	/**
-	 * Flag to indicate that when binding to this object invalid fields should be ignored.
-	 * Invalid means invalid according to the binder that is used, and usually this means
-	 * fields of the wrong type (or that cannot be coerced into the correct type).
-	 * @return the flag value (default false)
-	 */
-	boolean ignoreInvalidFields() default false;
-
-	/**
-	 * Flag to indicate that when binding to this object unknown fields should be ignored.
-	 * An unknown field could be a sign of a mistake in the Properties.
-	 * @return the flag value (default true)
-	 */
-	boolean ignoreUnknownFields() default true;
 
 }

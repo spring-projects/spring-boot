@@ -79,7 +79,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && obj.getClass() == getClass());
+		return (obj != null) && (obj.getClass() == getClass());
 	}
 
 	@Override

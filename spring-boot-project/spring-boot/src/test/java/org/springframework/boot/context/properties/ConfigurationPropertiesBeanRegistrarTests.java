@@ -90,7 +90,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "valuecp")
+	@ImmutableConfigurationProperties("valuecp")
 	static class ValueObjectConfigurationProperties {
 
 		ValueObjectConfigurationProperties(String name) {

@@ -22,6 +22,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import kotlin.reflect.KFunction;
 import kotlin.reflect.KParameter;
@@ -106,9 +107,9 @@ class ValueObjectBinder implements DataObjectBinder {
 				return null;
 			}
 			if (KotlinDetector.isKotlinType(type)) {
-				return KotlinValueObject.get(type);
+				return KotlinValueObject.get(type, bindable.getConstructorFilter());
 			}
-			return DefaultValueObject.get(type);
+			return DefaultValueObject.get(type, bindable.getConstructorFilter());
 		}
 
 	}
@@ -142,9 +143,10 @@ class ValueObjectBinder implements DataObjectBinder {
 			return this.constructorParameters;
 		}
 
-		static <T> ValueObject<T> get(Class<T> type) {
+		static <T> ValueObject<T> get(Class<T> type, Predicate<Constructor<?>> constructorFilter) {
 			Constructor<T> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-			if (primaryConstructor == null || primaryConstructor.getParameterCount() == 0) {
+			if (primaryConstructor == null || primaryConstructor.getParameterCount() == 0
+					|| !constructorFilter.test(primaryConstructor)) {
 				return null;
 			}
 			KFunction<T> kotlinConstructor = ReflectJvmMapping.getKotlinFunction(primaryConstructor);
@@ -191,18 +193,23 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Class<T> type) {
+		static <T> ValueObject<T> get(Class<T> type, Predicate<Constructor<?>> constructorFilter) {
 			Constructor<?> constructor = null;
 			for (Constructor<?> candidate : type.getDeclaredConstructors()) {
-				int modifiers = candidate.getModifiers();
-				if (!Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers)) {
+				if (isCandidateConstructor(candidate, constructorFilter)) {
 					if (constructor != null) {
 						return null;
 					}
 					constructor = candidate;
 				}
 			}
-			return get((Constructor<T>) constructor);
+			return (constructor != null) ? new DefaultValueObject<>((Constructor<T>) constructor) : null;
+		}
+
+		private static boolean isCandidateConstructor(Constructor<?> candidate, Predicate<Constructor<?>> filter) {
+			int modifiers = candidate.getModifiers();
+			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers)
+					&& candidate.getParameterCount() > 0 && filter.test(candidate);
 		}
 
 		static <T> DefaultValueObject<T> get(Constructor<T> constructor) {

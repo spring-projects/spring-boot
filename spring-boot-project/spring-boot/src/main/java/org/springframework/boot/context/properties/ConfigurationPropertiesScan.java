@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ ConfigurationPropertiesScanRegistrar.class })
+@Import(ConfigurationPropertiesScanRegistrar.class)
 @EnableConfigurationProperties
 public @interface ConfigurationPropertiesScan {
 
