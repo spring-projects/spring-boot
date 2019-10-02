@@ -34,6 +34,16 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	}
 
 	@Override
+	public boolean meterNameEventTypeEnabled() {
+		return get(NewRelicProperties::isMeterNameEventTypeEnabled, NewRelicConfig.super::meterNameEventTypeEnabled);
+	}
+
+	@Override
+	public String eventType() {
+		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
+	}
+
+	@Override
 	public String apiKey() {
 		return get(NewRelicProperties::getApiKey, NewRelicConfig.super::apiKey);
 	}
