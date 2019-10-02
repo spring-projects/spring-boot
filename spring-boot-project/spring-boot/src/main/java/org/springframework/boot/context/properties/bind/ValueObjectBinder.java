@@ -203,13 +203,12 @@ class ValueObjectBinder implements DataObjectBinder {
 					constructor = candidate;
 				}
 			}
-			return (constructor != null) ? new DefaultValueObject<>((Constructor<T>) constructor) : null;
+			return get((Constructor<T>) constructor);
 		}
 
 		private static boolean isCandidateConstructor(Constructor<?> candidate, Predicate<Constructor<?>> filter) {
 			int modifiers = candidate.getModifiers();
-			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers)
-					&& candidate.getParameterCount() > 0 && filter.test(candidate);
+			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && filter.test(candidate);
 		}
 
 		static <T> DefaultValueObject<T> get(Constructor<T> constructor) {
