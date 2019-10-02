@@ -16,27 +16,25 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
-import org.springframework.boot.configurationsample.DefaultValue;
-
 /**
- * Demonstrates that an invalid default character value leads to a compilation failure.
+ * Simple properties with a constructor but no binding directive.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
-public class InvalidDefaultValueCharacterProperties {
+public class MatchingConstructorNoDirectiveProperties {
 
-	private final char letter;
+	private String name;
 
-	@ConstructorBinding
-	public InvalidDefaultValueCharacterProperties(@DefaultValue("bad") char letter) {
-		this.letter = letter;
+	public MatchingConstructorNoDirectiveProperties(String name) {
+		this.name = name;
 	}
 
-	public char getLetter() {
-		return this.letter;
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

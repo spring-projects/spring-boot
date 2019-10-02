@@ -16,27 +16,35 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.MetaConstructorBinding;
 
 /**
- * Demonstrates that an invalid default character value leads to a compilation failure.
+ * A type that declares constructor binding but with two available constructors.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
-public class InvalidDefaultValueCharacterProperties {
+@MetaConstructorBinding
+public class TwoConstructorsClassConstructorBindingExample {
 
-	private final char letter;
+	private String name;
 
-	@ConstructorBinding
-	public InvalidDefaultValueCharacterProperties(@DefaultValue("bad") char letter) {
-		this.letter = letter;
+	private String description;
+
+	public TwoConstructorsClassConstructorBindingExample(String name) {
+		this(name, null);
 	}
 
-	public char getLetter() {
-		return this.letter;
+	public TwoConstructorsClassConstructorBindingExample(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

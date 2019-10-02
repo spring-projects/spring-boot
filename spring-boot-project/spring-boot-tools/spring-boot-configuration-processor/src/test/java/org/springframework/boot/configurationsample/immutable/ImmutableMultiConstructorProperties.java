@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.specific;
+package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.ConstructorBinding;
-import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
- * Demonstrates that an invalid default character value leads to a compilation failure.
+ * Simple immutable properties with several constructors.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
-public class InvalidDefaultValueCharacterProperties {
+@SuppressWarnings("unused")
+public class ImmutableMultiConstructorProperties {
 
-	private final char letter;
+	private final String name;
 
-	@ConstructorBinding
-	public InvalidDefaultValueCharacterProperties(@DefaultValue("bad") char letter) {
-		this.letter = letter;
+	/**
+	 * Test description.
+	 */
+	private final String description;
+
+	public ImmutableMultiConstructorProperties(String name) {
+		this(name, null);
 	}
 
-	public char getLetter() {
-		return this.letter;
+	@ConstructorBinding
+	public ImmutableMultiConstructorProperties(String name, String description) {
+		this.name = name;
+		this.description = description;
 	}
 
 }
