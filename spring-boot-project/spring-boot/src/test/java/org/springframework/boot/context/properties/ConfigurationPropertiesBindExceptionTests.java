@@ -48,22 +48,6 @@ class ConfigurationPropertiesBindExceptionTests {
 		assertThat(exception.getCause()).isInstanceOf(IllegalStateException.class);
 	}
 
-	@Test
-	void createFromItemsHasDetails() {
-		Example example = new Example();
-		ConfigurationProperties annotation = example.getClass().getDeclaredAnnotation(ConfigurationProperties.class);
-		ConfigurationPropertiesBindException exception = new ConfigurationPropertiesBindException("example",
-				Example.class, annotation, new IllegalStateException());
-		assertThat(exception.getMessage()).isEqualTo("Error creating bean with name 'example': "
-				+ "Could not bind properties to 'ConfigurationPropertiesBindExceptionTests.Example' : "
-				+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=true; "
-				+ "nested exception is java.lang.IllegalStateException");
-		assertThat(exception.getBeanType()).isEqualTo(Example.class);
-		assertThat(exception.getBeanName()).isEqualTo("example");
-		assertThat(exception.getAnnotation()).isInstanceOf(ConfigurationProperties.class);
-		assertThat(exception.getCause()).isInstanceOf(IllegalStateException.class);
-	}
-
 	@Component("example")
 	@ConfigurationProperties
 	static class Example {

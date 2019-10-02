@@ -17,12 +17,14 @@
 package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -32,8 +34,11 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
@@ -56,12 +61,15 @@ public final class ConfigurationPropertiesBean {
 
 	private final Bindable<?> bindTarget;
 
+	private final BindMethod bindMethod;
+
 	private ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
-			Bindable<?> bindTarget) {
+			Bindable<?> bindTarget, BindMethod bindMethod) {
 		this.name = name;
 		this.instance = instance;
 		this.annotation = annotation;
 		this.bindTarget = bindTarget;
+		this.bindMethod = bindMethod;
 	}
 
 	/**
@@ -78,6 +86,22 @@ public final class ConfigurationPropertiesBean {
 	 */
 	public Object getInstance() {
 		return this.instance;
+	}
+
+	/**
+	 * Return the bean type.
+	 * @return the bean type
+	 */
+	Class<?> getType() {
+		return this.bindTarget.getType().resolve();
+	}
+
+	/**
+	 * Return the property binding method that was used for the bean.
+	 * @return the bind type
+	 */
+	public BindMethod getBindMethod() {
+		return this.bindMethod;
 	}
 
 	/**
@@ -152,18 +176,7 @@ public final class ConfigurationPropertiesBean {
 	 */
 	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
-		ConfigurationProperties annotation = getAnnotation(applicationContext, bean, beanName, factoryMethod,
-				ConfigurationProperties.class);
-		if (annotation == null) {
-			return null;
-		}
-		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
-				: ResolvableType.forClass(bean.getClass());
-		Validated validated = getAnnotation(applicationContext, bean, beanName, factoryMethod, Validated.class);
-		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-				: new Annotation[] { annotation };
-		Bindable<?> bindTarget = Bindable.of(type).withAnnotations(annotations).withExistingValue(bean);
-		return new ConfigurationPropertiesBean(beanName, bean, annotation, bindTarget);
+		return create(beanName, bean, bean.getClass(), factoryMethod);
 	}
 
 	private static Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
@@ -184,22 +197,105 @@ public final class ConfigurationPropertiesBean {
 		return null;
 	}
 
-	private static <A extends Annotation> A getAnnotation(ApplicationContext applicationContext, Object bean,
-			String beanName, Method factoryMethod, Class<A> annotationType) {
-		if (factoryMethod != null) {
-			A annotation = AnnotationUtils.findAnnotation(factoryMethod, annotationType);
-			if (annotation != null) {
-				return annotation;
+	static ConfigurationPropertiesBean forValueObject(Class<?> beanClass, String beanName) {
+		ConfigurationPropertiesBean propertiesBean = create(beanName, null, beanClass, null);
+		Assert.state(propertiesBean != null && propertiesBean.getBindMethod() == BindMethod.VALUE_OBJECT,
+				"Bean '" + beanName + "' is not a @ConfigurationProperties value object");
+		return propertiesBean;
+	}
+
+	private static ConfigurationPropertiesBean create(String name, Object instance, Class<?> type, Method factory) {
+		ConfigurationProperties annotation = findAnnotation(instance, type, factory, ConfigurationProperties.class);
+		if (annotation == null) {
+			return null;
+		}
+		Validated validated = findAnnotation(instance, type, factory, Validated.class);
+		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
+				: new Annotation[] { annotation };
+		Constructor<?> bindConstructor = BindMethod.findBindConstructor(type);
+		BindMethod bindMethod = (bindConstructor != null) ? BindMethod.VALUE_OBJECT : BindMethod.forClass(type);
+		ResolvableType bindType = (factory != null) ? ResolvableType.forMethodReturnType(factory)
+				: ResolvableType.forClass(type);
+		Bindable<Object> bindTarget = Bindable.of(bindType).withAnnotations(annotations)
+				.withConstructorFilter(ConfigurationPropertiesBean::isBindableConstructor);
+		if (instance != null) {
+			bindTarget = bindTarget.withExistingValue(instance);
+		}
+		return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget, bindMethod);
+	}
+
+	private static <A extends Annotation> A findAnnotation(Object instance, Class<?> type, Method factory,
+			Class<A> annotationType) {
+		MergedAnnotation<A> annotation = MergedAnnotation.missing();
+		if (factory != null) {
+			annotation = MergedAnnotations.from(factory, SearchStrategy.TYPE_HIERARCHY).get(annotationType);
+		}
+		if (!annotation.isPresent()) {
+			annotation = MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).get(annotationType);
+		}
+		if (!annotation.isPresent() && AopUtils.isAopProxy(instance)) {
+			annotation = MergedAnnotations.from(AopUtils.getTargetClass(instance), SearchStrategy.TYPE_HIERARCHY)
+					.get(annotationType);
+		}
+		return annotation.isPresent() ? annotation.synthesize() : null;
+	}
+
+	private static boolean isBindableConstructor(Constructor<?> constructor) {
+		Class<?> declaringClass = constructor.getDeclaringClass();
+		Constructor<?> bindConstructor = BindMethod.findBindConstructor(declaringClass);
+		if (bindConstructor != null) {
+			return bindConstructor.equals(constructor);
+		}
+		return BindMethod.forClass(declaringClass) == BindMethod.VALUE_OBJECT;
+	}
+
+	/**
+	 * The binding method that use used for the bean.
+	 */
+	public enum BindMethod {
+
+		/**
+		 * Java Bean using getter/setter binding.
+		 */
+		JAVA_BEAN,
+
+		/**
+		 * Value object using constructor binding.
+		 */
+		VALUE_OBJECT;
+
+		static BindMethod forClass(Class<?> type) {
+			if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(ConstructorBinding.class)
+					|| findBindConstructor(type) != null) {
+				return VALUE_OBJECT;
 			}
+			return JAVA_BEAN;
 		}
-		A annotation = AnnotationUtils.findAnnotation(bean.getClass(), annotationType);
-		if (annotation != null) {
-			return annotation;
+
+		static Constructor<?> findBindConstructor(Class<?> type) {
+			if (KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type)) {
+				Constructor<?> constructor = BeanUtils.findPrimaryConstructor(type);
+				if (constructor != null) {
+					return findBindConstructor(type, constructor);
+				}
+			}
+			return findBindConstructor(type, type.getDeclaredConstructors());
 		}
-		if (AopUtils.isAopProxy(bean)) {
-			return AnnotationUtils.findAnnotation(AopUtils.getTargetClass(bean), annotationType);
+
+		private static Constructor<?> findBindConstructor(Class<?> type, Constructor<?>... candidates) {
+			Constructor<?> constructor = null;
+			for (Constructor<?> candidate : candidates) {
+				if (MergedAnnotations.from(candidate).isPresent(ConstructorBinding.class)) {
+					Assert.state(candidate.getParameterCount() > 0,
+							type.getName() + " declares @ConstructorBinding on a no-args constructor");
+					Assert.state(constructor == null,
+							type.getName() + " has more than one @ConstructorBinding constructor");
+					constructor = candidate;
+				}
+			}
+			return constructor;
 		}
-		return null;
+
 	}
 
 }

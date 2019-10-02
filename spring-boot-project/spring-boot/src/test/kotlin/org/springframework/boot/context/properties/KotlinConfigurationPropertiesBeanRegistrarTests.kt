@@ -47,7 +47,7 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 	@ConfigurationProperties(prefix = "foo")
 	class FooProperties
 
-	@ConfigurationProperties(prefix = "bar")
+	@ImmutableConfigurationProperties(prefix = "bar")
 	class BarProperties(val name: String?, val counter: Int = 42)
 
 	@ConfigurationProperties(prefix = "bing")
