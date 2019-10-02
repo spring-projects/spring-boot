@@ -54,7 +54,6 @@ class ConfigurationPropertiesBeanDefinitionValidator implements BeanFactoryPostP
 
 	private void validate(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		Class<?> beanClass = beanFactory.getType(beanName, false);
-		System.out.println(beanName);
 		if (beanClass != null && BindMethod.forClass(beanClass) == BindMethod.VALUE_OBJECT) {
 			throw new BeanCreationException(beanName,
 					"@EnableConfigurationProperties or @ConfigurationPropertiesScan must be used to add "
