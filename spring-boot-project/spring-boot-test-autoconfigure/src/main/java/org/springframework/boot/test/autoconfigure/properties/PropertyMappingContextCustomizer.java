@@ -57,8 +57,8 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && getClass() == obj.getClass()
-				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource));
+		return (obj != null) && (getClass() == obj.getClass())
+				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource);
 	}
 
 	@Override
