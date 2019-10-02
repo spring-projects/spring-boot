@@ -29,7 +29,7 @@ import org.springframework.core.annotation.AliasFor;
  * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
  * some external Properties (e.g. from a .properties file).
  * <p>
- * Binding can is either performed by calling setters on the annotated class or, if
+ * Binding is either performed by calling setters on the annotated class or, if
  * {@link ConstructorBinding @ConstructorBinding} is in use, by binding to the constructor
  * parameters.
  * <p>
