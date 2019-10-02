@@ -55,6 +55,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -756,6 +757,13 @@ class ConfigurationPropertiesTests {
 		ConstructorParameterProperties bean = this.context.getBean(ConstructorParameterProperties.class);
 		assertThat(bean.getFoo()).isEqualTo("baz");
 		assertThat(bean.getBar()).isEqualTo(5);
+	}
+
+	@Test // gh-17831
+	void loadWhenBindingConstructorParametersViaImportShouldThrowException() {
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> load(ImportConstructorParameterPropertiesConfiguration.class))
+				.withMessageContaining("@EnableConfigurationProperties or @ConfigurationPropertiesScan must be used");
 	}
 
 	@Test
@@ -1794,6 +1802,13 @@ class ConfigurationPropertiesTests {
 		int getBar() {
 			return this.bar;
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	@Import(ConstructorParameterProperties.class)
+	static class ImportConstructorParameterPropertiesConfiguration {
 
 	}
 
