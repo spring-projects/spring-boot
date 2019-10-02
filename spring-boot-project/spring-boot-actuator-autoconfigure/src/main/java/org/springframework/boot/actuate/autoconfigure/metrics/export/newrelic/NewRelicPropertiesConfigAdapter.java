@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * Adapter to convert {@link NewRelicProperties} to a {@link NewRelicConfig}.
  *
  * @author Jon Schneider
+ * @author Neil Powell
  * @since 2.0.0
  */
 public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<NewRelicProperties>

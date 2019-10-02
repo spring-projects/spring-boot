@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Neil Powell
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.newrelic")
