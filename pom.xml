@@ -194,6 +194,11 @@
 			</snapshots>
 		</pluginRepository>
 		<pluginRepository>
+			<id>springio</id>
+			<name>Spring Release</name>
+			<url>https://repo.spring.io/release</url>
+		</pluginRepository>
+		<pluginRepository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone</name>
 			<url>https://repo.spring.io/milestone</url>
