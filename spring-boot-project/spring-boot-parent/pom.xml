@@ -20,6 +20,9 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<disable.checks>false</disable.checks>
+		<git.url>https://github.com/spring-projects/spring-boot</git.url>
+		<git.connection>scm:git:git://github.com/spring-projects/spring-boot.git</git.connection>
+		<git.developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</git.developerConnection>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -33,9 +36,9 @@
 		<testng.version>6.14.3</testng.version>
 	</properties>
 	<scm>
-		<url>https://github.com/spring-projects/spring-boot</url>
-		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
 	</scm>
 	<issueManagement>
 		<system>Github</system>
