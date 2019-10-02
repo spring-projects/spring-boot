@@ -194,7 +194,7 @@
 			</snapshots>
 		</pluginRepository>
 		<pluginRepository>
-			<id>springio</id>
+			<id>spring-release</id>
 			<name>Spring Release</name>
 			<url>https://repo.spring.io/release</url>
 		</pluginRepository>
