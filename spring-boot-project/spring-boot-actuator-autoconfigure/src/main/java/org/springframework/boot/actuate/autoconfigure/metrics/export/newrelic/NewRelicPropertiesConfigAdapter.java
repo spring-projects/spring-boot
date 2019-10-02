@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * Adapter to convert {@link NewRelicProperties} to a {@link NewRelicConfig}.
  *
  * @author Jon Schneider
+ * @author Neil Powell
  * @since 2.0.0
  */
 public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<NewRelicProperties>
@@ -31,6 +32,16 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 
 	public NewRelicPropertiesConfigAdapter(NewRelicProperties properties) {
 		super(properties);
+	}
+
+	@Override
+	public boolean meterNameEventTypeEnabled() {
+		return get(NewRelicProperties::isMeterNameEventTypeEnabled, NewRelicConfig.super::meterNameEventTypeEnabled);
+	}
+
+	@Override
+	public String eventType() {
+		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
 	}
 
 	@Override

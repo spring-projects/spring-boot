@@ -26,10 +26,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Neil Powell
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.newrelic")
 public class NewRelicProperties extends StepRegistryProperties {
+
+	/**
+	 * When this is {@code false}, the New Relic eventType value will be set to
+	 * {@link #eventType()}. Otherwise, the meter name will be used. Defaults to
+	 * {@code false}.
+	 */
+	private boolean meterNameEventTypeEnabled;
+
+	/**
+	 * This configuration property will only be used if
+	 * {@link #meterNameEventTypeEnabled()} is {@code false}. Default value is
+	 * {@code SpringBootSample}.
+	 */
+	private String eventType = "SpringBootSample";
 
 	/**
 	 * New Relic API key.
@@ -45,6 +60,22 @@ public class NewRelicProperties extends StepRegistryProperties {
 	 * URI to ship metrics to.
 	 */
 	private String uri = "https://insights-collector.newrelic.com";
+
+	public boolean isMeterNameEventTypeEnabled() {
+		return this.meterNameEventTypeEnabled;
+	}
+
+	public void setMeterNameEventTypeEnabled(boolean meterNameEventTypeEnabled) {
+		this.meterNameEventTypeEnabled = meterNameEventTypeEnabled;
+	}
+
+	public String getEventType() {
+		return this.eventType;
+	}
+
+	public void setEventType(String eventType) {
+		this.eventType = eventType;
+	}
 
 	public String getApiKey() {
 		return this.apiKey;
