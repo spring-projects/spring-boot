@@ -37,6 +37,7 @@ class HumioPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenPropertiesRepositoryIsSetAdapterRepositoryReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setRepository("test");
