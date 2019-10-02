@@ -40,19 +40,19 @@ import org.springframework.core.annotation.AliasFor;
 public @interface ImmutableConfigurationProperties {
 
 	/**
-	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #prefix()}. A valid prefix is defined by one or more words separated
-	 * with dots (e.g. {@code "acme.system.feature"}).
-	 * @return the name prefix of the properties to bind
+	 * The prefix of the properties that are valid to bind to this object. Synonym for
+	 * {@link #prefix()}. A valid prefix is defined by one or more words separated with
+	 * dots (e.g. {@code "acme.system.feature"}).
+	 * @return the prefix of the properties to bind
 	 */
 	@AliasFor(annotation = ConfigurationProperties.class)
 	String value() default "";
 
 	/**
-	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #value()}. A valid prefix is defined by one or more words separated with
+	 * The prefix of the properties that are valid to bind to this object. Synonym for
+	 * {@link #value()}. A valid prefix is defined by one or more words separated with
 	 * dots (e.g. {@code "acme.system.feature"}).
-	 * @return the name prefix of the properties to bind
+	 * @return the prefix of the properties to bind
 	 */
 	@AliasFor(annotation = ConfigurationProperties.class)
 	String prefix() default "";

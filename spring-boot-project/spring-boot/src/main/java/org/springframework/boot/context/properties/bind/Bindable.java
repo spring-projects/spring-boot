@@ -114,7 +114,7 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Return the constructor filter that can be used to limit the constructor that are
+	 * Return the constructor filter that can be used to limit the constructors that are
 	 * considered when binding.
 	 * @return the constructor filter
 	 * @since 2.2.0

@@ -901,7 +901,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 ----
 
 In this setup, the `@ImmutableConfigurationProperties` annotation is used to indicate that constructor binding should be used.
-This means that the binder will expect to find a constructor with the parameters that you wish to have bound bind.
+This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
 
 Nested classes that also require constructor binding (such as `Security` in the example above) should use the `@ConstructorBinding` annotation.
 

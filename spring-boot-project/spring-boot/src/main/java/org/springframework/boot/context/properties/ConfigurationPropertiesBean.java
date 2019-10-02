@@ -250,7 +250,7 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	/**
-	 * The binding method that use used for the bean.
+	 * The binding method that is used for the bean.
 	 */
 	public enum BindMethod {
 
