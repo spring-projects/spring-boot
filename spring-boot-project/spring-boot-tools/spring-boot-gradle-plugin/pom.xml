@@ -18,6 +18,11 @@
 		<skip.gradle.build>false</skip.gradle.build>
 		<kotlin.version>1.2.20</kotlin.version>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -15,6 +15,11 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<maven.version>3.3.9</maven.version>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
