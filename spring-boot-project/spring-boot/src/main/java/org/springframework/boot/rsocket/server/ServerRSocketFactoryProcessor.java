@@ -16,19 +16,25 @@
 
 package org.springframework.boot.rsocket.server;
 
-import java.util.function.Function;
-
-import io.rsocket.RSocketFactory;
+import io.rsocket.RSocketFactory.ServerRSocketFactory;
 
 /**
- * Mapping function that can be used to customize an RSocket server factory.
+ * Processor that allows for custom modification of a {@link ServerRSocketFactory
+ * RSocketFactory.ServerRSocketFactory} before it is used.
  *
  * @author Brian Clozel
  * @see RSocketServerFactory
  * @since 2.2.0
  */
 @FunctionalInterface
-public interface ServerRSocketFactoryCustomizer
-		extends Function<RSocketFactory.ServerRSocketFactory, RSocketFactory.ServerRSocketFactory> {
+public interface ServerRSocketFactoryProcessor {
+
+	/**
+	 * Apply this {@code ServerRSocketFactoryProcessor} to the given factory instance
+	 * before it's used.
+	 * @param factory the factory to process
+	 * @return the processed factory instance
+	 */
+	ServerRSocketFactory process(ServerRSocketFactory factory);
 
 }

@@ -36,7 +36,7 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -130,19 +130,19 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	void serverCustomizers() {
+	void serverProcessors() {
 		NettyRSocketServerFactory factory = getFactory();
-		ServerRSocketFactoryCustomizer[] customizers = new ServerRSocketFactoryCustomizer[2];
-		for (int i = 0; i < customizers.length; i++) {
-			customizers[i] = mock(ServerRSocketFactoryCustomizer.class);
-			given(customizers[i].apply(any(RSocketFactory.ServerRSocketFactory.class)))
+		ServerRSocketFactoryProcessor[] processors = new ServerRSocketFactoryProcessor[2];
+		for (int i = 0; i < processors.length; i++) {
+			processors[i] = mock(ServerRSocketFactoryProcessor.class);
+			given(processors[i].process(any(RSocketFactory.ServerRSocketFactory.class)))
 					.will((invocation) -> invocation.getArgument(0));
 		}
-		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setServerProcessors(Arrays.asList(processors));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
-		InOrder ordered = inOrder((Object[]) customizers);
-		for (ServerRSocketFactoryCustomizer customizer : customizers) {
-			ordered.verify(customizer).apply(any(RSocketFactory.ServerRSocketFactory.class));
+		InOrder ordered = inOrder((Object[]) processors);
+		for (ServerRSocketFactoryProcessor processor : processors) {
+			ordered.verify(processor).process(any(RSocketFactory.ServerRSocketFactory.class));
 		}
 	}
 

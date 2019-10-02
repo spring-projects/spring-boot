@@ -37,7 +37,7 @@ import reactor.netty.tcp.TcpServer;
 import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 
@@ -60,7 +60,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private Duration lifecycleTimeout;
 
-	private List<ServerRSocketFactoryCustomizer> serverCustomizers = new ArrayList<>();
+	private List<ServerRSocketFactoryProcessor> serverProcessors = new ArrayList<>();
 
 	@Override
 	public void setPort(int port) {
@@ -86,23 +86,23 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-	 * Set {@link ServerRSocketFactoryCustomizer}s that should be applied to the RSocket
+	 * Set {@link ServerRSocketFactoryProcessor}s that should be applied to the RSocket
 	 * server builder. Calling this method will replace any existing customizers.
-	 * @param serverCustomizers the customizers to set
+	 * @param serverProcessors server processors to apply before the server starts
 	 */
-	public void setServerCustomizers(Collection<? extends ServerRSocketFactoryCustomizer> serverCustomizers) {
-		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
-		this.serverCustomizers = new ArrayList<>(serverCustomizers);
+	public void setServerProcessors(Collection<? extends ServerRSocketFactoryProcessor> serverProcessors) {
+		Assert.notNull(serverProcessors, "ServerProcessors must not be null");
+		this.serverProcessors = new ArrayList<>(serverProcessors);
 	}
 
 	/**
-	 * Add {@link ServerRSocketFactoryCustomizer}s that should applied while building the
+	 * Add {@link ServerRSocketFactoryProcessor}s that should applied while building the
 	 * server.
-	 * @param serverCustomizers the customizers to add
+	 * @param serverProcessors server processors to apply before the server starts
 	 */
-	public void addServerCustomizers(ServerRSocketFactoryCustomizer... serverCustomizers) {
-		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
-		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	public void addServerProcessors(ServerRSocketFactoryProcessor... serverProcessors) {
+		Assert.notNull(serverProcessors, "ServerProcessors must not be null");
+		this.serverProcessors.addAll(Arrays.asList(serverProcessors));
 	}
 
 	/**
@@ -118,8 +118,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		RSocketFactory.ServerRSocketFactory factory = RSocketFactory.receive();
-		for (ServerRSocketFactoryCustomizer customizer : this.serverCustomizers) {
-			factory = customizer.apply(factory);
+		for (ServerRSocketFactoryProcessor processor : this.serverProcessors) {
+			factory = processor.process(factory);
 		}
 		Mono<CloseableChannel> starter = factory.acceptor(socketAcceptor).transport(transport).start();
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
