@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -53,13 +54,14 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 						DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class))
 				.withUserConfiguration(FailingEndpoint.class)
 				.withInitializer(new ServerPortInfoApplicationContextInitializer()).withPropertyValues("server.port=0",
-						"management.server.port=0", "management.endpoints.web.exposure.include=*")
+						"management.server.port=0", "management.endpoints.web.exposure.include=*","management.server.add-application-context-header=true")
 				.run((context) -> {
 					String port = context.getEnvironment().getProperty("local.management.port");
 					WebClient client = WebClient.create("http://localhost:" + port);
 					ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
 							.exchange().block();
 					assertThat(response.bodyToMono(String.class).block()).contains("message\":\"Epic Fail");
+					assertThat(response.headers().header("X-Application-Context").get(0)).contains(":management");
 				});
 	}
 

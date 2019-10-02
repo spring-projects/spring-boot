@@ -19,10 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
@@ -30,9 +27,12 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegis
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
@@ -129,6 +129,19 @@ class WebMvcEndpointChildContextConfiguration {
 		@Override
 		public int getOrder() {
 			return 0;
+		}
+
+	}
+
+	// Put Servlets and Filters in their own nested class so they don't force early
+	// instantiation of ManagementServerProperties.
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "management.server", name = "add-application-context-header", havingValue = "true")
+	protected static class ApplicationContextFilterConfiguration {
+
+		@Bean
+		public ApplicationContextHeaderFilter applicationContextIdFilter(ApplicationContext context) {
+			return new ApplicationContextHeaderFilter(context);
 		}
 
 	}
