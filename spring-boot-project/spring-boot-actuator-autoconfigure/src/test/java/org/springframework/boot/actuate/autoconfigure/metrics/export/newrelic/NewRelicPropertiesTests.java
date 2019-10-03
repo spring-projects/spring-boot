@@ -37,6 +37,16 @@ class NewRelicPropertiesTests extends StepRegistryPropertiesTests {
 		assertStepRegistryDefaultValues(properties, config);
 		// apiKey and account are mandatory
 		assertThat(properties.getUri()).isEqualTo(config.uri());
+		assertThat(properties.isMeterNameEventTypeEnabled()).isEqualTo(config.meterNameEventTypeEnabled());
+	}
+
+	@Test
+	void eventTypeDefaultValueIsOverriden() {
+		NewRelicProperties properties = new NewRelicProperties();
+		NewRelicConfig config = (key) -> null;
+		assertThat(properties.getEventType()).isNotEqualTo(config.eventType());
+		assertThat(properties.getEventType()).isEqualTo("SpringBootSample");
+		assertThat(config.eventType()).isEqualTo("MicrometerSample");
 	}
 
 }
