@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andrew McGhie
  * @author Rafiullah Hamedy
+ * @author Victor Mandujano
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -180,6 +181,25 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.remote-ip-header=x-my-remote-ip-header",
 				"server.tomcat.protocol-header=x-my-protocol-header", "server.tomcat.internal-proxies=192.168.0.1",
 				"server.tomcat.port-header=x-my-forward-port", "server.tomcat.protocol-header-https-value=On");
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(factory.getEngineValves()).hasSize(1);
+		Valve valve = factory.getEngineValves().iterator().next();
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
+		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
+		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
+		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("On");
+		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
+		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
+		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	void customNewPropertiesForRemoteIpValve() {
+		bind("server.tomcat.remote-ip-valve.remote-ip-header=x-my-remote-ip-header",
+				"server.tomcat.remote-ip-valve.protocol-header=x-my-protocol-header",
+				"server.tomcat.remote-ip-valve.internal-proxies=192.168.0.1",
+				"server.tomcat.remote-ip-valve.port-header=x-my-forward-port",
+				"server.tomcat.remote-ip-valve.protocol-header-https-value=On");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).hasSize(1);
 		Valve valve = factory.getEngineValves().iterator().next();

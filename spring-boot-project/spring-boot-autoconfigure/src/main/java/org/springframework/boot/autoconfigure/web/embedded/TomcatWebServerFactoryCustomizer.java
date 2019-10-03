@@ -55,6 +55,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andrew McGhie
  * @author Dirk Deyne
  * @author Rafiullah Hamedy
+ * @author Victor Mandujano
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
@@ -173,8 +174,8 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
 		Tomcat tomcatProperties = this.serverProperties.getTomcat();
-		String protocolHeader = tomcatProperties.getProtocolHeader();
-		String remoteIpHeader = tomcatProperties.getRemoteIpHeader();
+		String protocolHeader = tomcatProperties.getRemoteIpValve().getProtocolHeader();
+		String remoteIpHeader = tomcatProperties.getRemoteIpValve().getRemoteIpHeader();
 		// For back compatibility the valve is also enabled if protocol-header is set
 		if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
 				|| getOrDeduceUseForwardHeaders()) {
@@ -185,10 +186,10 @@ public class TomcatWebServerFactoryCustomizer
 			}
 			// The internal proxies default to a white list of "safe" internal IP
 			// addresses
-			valve.setInternalProxies(tomcatProperties.getInternalProxies());
-			valve.setHostHeader(tomcatProperties.getHostHeader());
-			valve.setPortHeader(tomcatProperties.getPortHeader());
-			valve.setProtocolHeaderHttpsValue(tomcatProperties.getProtocolHeaderHttpsValue());
+			valve.setInternalProxies(tomcatProperties.getRemoteIpValve().getInternalProxies());
+			valve.setHostHeader(tomcatProperties.getRemoteIpValve().getHostHeader());
+			valve.setPortHeader(tomcatProperties.getRemoteIpValve().getPortHeader());
+			valve.setProtocolHeaderHttpsValue(tomcatProperties.getRemoteIpValve().getProtocolHeaderHttpsValue());
 			// ... so it's safe to add this valve by default.
 			factory.addEngineValves(valve);
 		}
