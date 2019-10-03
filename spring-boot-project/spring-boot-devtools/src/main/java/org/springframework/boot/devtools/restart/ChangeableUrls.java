@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -156,7 +157,13 @@ final class ChangeableUrls implements Iterable<URL> {
 					urls.add(referenced);
 				}
 				else {
-					nonExistentEntries.add(referenced);
+					referenced = new URL(jarUrl, URLDecoder.decode(entry, "UTF-8"));
+					if (new File(referenced.getFile()).exists()) {
+						urls.add(referenced);
+					}
+					else {
+						nonExistentEntries.add(referenced);
+					}
 				}
 			}
 			catch (MalformedURLException ex) {
