@@ -211,7 +211,7 @@
 		<unboundid-ldapsdk.version>4.0.11</unboundid-ldapsdk.version>
 		<undertow.version>2.0.26.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
-		<webjars-locator-core.version>0.40</webjars-locator-core.version>
+		<webjars-locator-core.version>0.41</webjars-locator-core.version>
 		<woodstox.version>5.0.3</woodstox.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xmlunit2.version>2.6.3</xmlunit2.version>
