@@ -41,7 +41,7 @@ class StringToFileConverter implements Converter<String, File> {
 			return getFile(resourceLoader.getResource(source));
 		}
 		File file = new File(source);
-		if (file.isAbsolute()) {
+		if (file.exists()) {
 			return file;
 		}
 		Resource resource = resourceLoader.getResource(source);
