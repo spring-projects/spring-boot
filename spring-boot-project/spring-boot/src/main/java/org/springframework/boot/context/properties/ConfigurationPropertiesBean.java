@@ -47,7 +47,7 @@ import org.springframework.validation.annotation.Validated;
  * {@link ApplicationContext}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.2.0
  * @see #get(ApplicationContext, Object, String)
  * @see #getAll(ApplicationContext)
  */
