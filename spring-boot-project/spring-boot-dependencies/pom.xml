@@ -212,7 +212,6 @@
 		<undertow.version>2.0.26.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.41</webjars-locator-core.version>
-		<woodstox.version>5.0.3</woodstox.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xmlunit2.version>2.6.3</xmlunit2.version>
 		<!-- Plugin versions -->
@@ -647,11 +646,6 @@
 				<version>${jackson-bom.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.woodstox</groupId>
-				<artifactId>woodstox-core</artifactId>
-				<version>${woodstox.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.ben-manes.caffeine</groupId>
