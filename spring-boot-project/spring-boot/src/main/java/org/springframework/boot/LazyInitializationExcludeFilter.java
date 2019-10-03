@@ -21,16 +21,16 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 
 /**
  * Filter that can be used to exclude beans definitions from having their
- * {@link AbstractBeanDefinition#setLazyInit(boolean) lazy-int} set by the
+ * {@link AbstractBeanDefinition#setLazyInit(boolean) lazy-init} set by the
  * {@link LazyInitializationBeanFactoryPostProcessor}.
- * <P>
+ * <p>
  * Primarily intended to allow downstream projects to deal with edge-cases in which it is
  * not easy to support lazy-loading (such as in DSLs that dynamically create additional
  * beans). Adding an instance of this filter to the application context can be used for
  * these edge cases.
- * <P>
+ * <p>
  * A typical example would be something like this:
- * <P>
+ * <p>
  * <pre><code>
  * &#64;Bean
  * public static LazyInitializationExcludeFilter integrationLazyInitializationExcludeFilter() {
@@ -38,7 +38,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
  * }</code></pre>
  * <p>
  * NOTE: Beans of this type will be instantiated very early in the spring application
- * lifecycle so should generally be declared static and not have any dependencies.
+ * lifecycle so they should generally be declared static and not have any dependencies.
  *
  * @author Tyler Van Gorder
  * @author Philip Webb
@@ -49,11 +49,11 @@ public interface LazyInitializationExcludeFilter {
 
 	/**
 	 * Returns {@code true} if the specified bean definition should be excluded from
-	 * having {@code lazy-int} automatically set.
+	 * having {@code lazy-init} automatically set.
 	 * @param beanName the bean name
 	 * @param beanDefinition the bean definition
 	 * @param beanType the bean type
-	 * @return {@code true} if {@code lazy-int} should not be automatically set
+	 * @return {@code true} if {@code lazy-init} should not be automatically set
 	 */
 	boolean isExcluded(String beanName, BeanDefinition beanDefinition, Class<?> beanType);
 

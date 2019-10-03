@@ -27,7 +27,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.Ordered;
 
 /**
- * {@link BeanFactoryPostProcessor} to set lazy-init on bean definitions that not
+ * {@link BeanFactoryPostProcessor} to set lazy-init on bean definitions that are not
  * {@link LazyInitializationExcludeFilter excluded} and have not already had a value
  * explicitly set.
  *
@@ -57,8 +57,11 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 			Collection<LazyInitializationExcludeFilter> filters, String beanName,
 			AbstractBeanDefinition beanDefinition) {
 		Boolean lazyInit = beanDefinition.getLazyInit();
+		if (lazyInit != null) {
+			return;
+		}
 		Class<?> beanType = getBeanType(beanFactory, beanName);
-		if (lazyInit == null && !isExcluded(filters, beanName, beanDefinition, beanType)) {
+		if (!isExcluded(filters, beanName, beanDefinition, beanType)) {
 			beanDefinition.setLazyInit(true);
 		}
 	}
