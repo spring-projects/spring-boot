@@ -881,7 +881,6 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 			private final List<String> roles;
 
-			@ConstructorBinding
 			public Security(String username, String password,
 					@DefaultValue("USER") List<String> roles) {
 				this.username = username;
@@ -903,15 +902,15 @@ The example in the previous section can be rewritten in an immutable fashion as 
 In this setup, the `@ImmutableConfigurationProperties` annotation is used to indicate that constructor binding should be used.
 This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
 
-Nested classes that also require constructor binding (such as `Security` in the example above) should use the `@ConstructorBinding` annotation.
+Nested members of a `@ImmutableConfigurationProperties` class (such as `Security` in the example above) will also be bound via their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 
-TIP: You can also use `@ConstructorBinding` on the actual constructor that should be bound.
-This is required if you have more than one constructor for your class.
-
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
+
+TIP: `@ImmutableConfigurationProperties` is actually a meta-annotation composed of `@ConfigurationProperties` and `@ConstructorBinding`.
+If you  have more than one constructor for your class you can also use `@ConstructorBinding` directly on actual constructor that should be bound.
 
 
 

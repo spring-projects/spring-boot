@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -169,11 +170,22 @@ class PropertyDescriptorResolver {
 		}
 
 		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
-			boolean constructorBoundType = env.hasConstructorBindingAnnotation(type);
+			boolean constructorBoundType = isConstructorBoundType(type, env);
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = constructors.stream()
 					.filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
 			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
+		}
+
+		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
+			if (env.hasConstructorBindingAnnotation(type)) {
+				return true;
+			}
+			if (type.getNestingKind() == NestingKind.MEMBER) {
+				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
+			}
+			return false;
+
 		}
 
 	}
