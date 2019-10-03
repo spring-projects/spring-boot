@@ -42,10 +42,10 @@ public class ServletManagementContextAutoConfiguration {
 	public ServletManagementContextFactory servletWebChildContextFactory() {
 		return new ServletManagementContextFactory();
 	}
+
 	@Bean
 	public ManagementServletContext managementServletContext(WebEndpointProperties properties) {
 		return properties::getBasePath;
 	}
-	//       git remote set-url [--push] <name> <newurl> [<oldurl>]
 
 }
