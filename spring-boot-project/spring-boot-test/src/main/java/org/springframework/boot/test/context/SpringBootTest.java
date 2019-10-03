@@ -29,8 +29,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.web.context.LocalServerPort;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +70,8 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
  * @see ContextConfiguration
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -112,8 +112,8 @@ public @interface SpringBootTest {
 	 * explicit classes are defined the test will look for nested
 	 * {@link Configuration @Configuration} classes, before falling back to a
 	 * {@link SpringBootConfiguration @SpringBootConfiguration} search.
-	 * @see ContextConfiguration#classes()
 	 * @return the annotated classes used to load the application context
+	 * @see ContextConfiguration#classes()
 	 */
 	Class<?>[] classes() default {};
 

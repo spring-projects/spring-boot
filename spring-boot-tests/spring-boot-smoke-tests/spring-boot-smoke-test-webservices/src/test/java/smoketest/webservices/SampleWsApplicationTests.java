@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.context.LocalServerPort;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;

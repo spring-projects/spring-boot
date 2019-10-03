@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.context.LocalServerPort;
 import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
