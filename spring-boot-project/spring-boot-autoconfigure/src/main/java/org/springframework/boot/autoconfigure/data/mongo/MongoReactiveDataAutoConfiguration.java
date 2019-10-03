@@ -49,7 +49,7 @@ import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
  * <p>
  * Registers a {@link ReactiveMongoTemplate} bean if no other bean of the same type is
  * configured.
- * <P>
+ * <p>
  * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
  * to the {@literal test} database.
  *
