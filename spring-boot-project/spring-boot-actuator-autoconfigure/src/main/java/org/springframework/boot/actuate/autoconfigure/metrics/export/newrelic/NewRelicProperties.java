@@ -33,16 +33,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class NewRelicProperties extends StepRegistryProperties {
 
 	/**
-	 * When this is {@code false}, the New Relic eventType value will be set to
-	 * {@link #eventType()}. Otherwise, the meter name will be used. Defaults to
-	 * {@code false}.
+	 * Whether to send the meter name as the event type instead of using the 'event-type'
+	 * configuration property value. Can be set to 'true' if New Relic guidelines are not
+	 * being followed or event types consistent with previous Spring Boot releases are
+	 * required.
 	 */
 	private boolean meterNameEventTypeEnabled;
 
 	/**
-	 * This configuration property will only be used if
-	 * {@link #meterNameEventTypeEnabled()} is {@code false}. Default value is
-	 * {@code SpringBootSample}.
+	 * The event type that should be published. This property will be ignored if
+	 * 'meter-name-event-type-enabled' is set to 'true'.
 	 */
 	private String eventType = "SpringBootSample";
 
