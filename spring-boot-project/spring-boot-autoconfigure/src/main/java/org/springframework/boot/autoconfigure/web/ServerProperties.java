@@ -537,7 +537,7 @@ public class ServerProperties {
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remote-ip-valve.host-header")
 		public String getHostHeader() {
-			return this.remoteIpValve.getHostHeader() == null ? this.hostHeader : this.remoteIpValve.getHostHeader();
+			return this.remoteIpValve.getHostHeader();
 		}
 
 		public void setHostHeader(String hostHeader) {
