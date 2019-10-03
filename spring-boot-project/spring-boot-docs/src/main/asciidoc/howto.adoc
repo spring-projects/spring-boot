@@ -1301,7 +1301,7 @@ By default, Spring Boot picks up the native configuration from its default locat
 === Configure Logback for Logging
 If you need to apply customizations to logback beyond those that can be achieved with `application.properties`, you'll need to add a standard logback configuration file.
 You can add a `logback.xml` file to the root of your classpath for logback to find.
-You can also use `logback-spring.xml` if you want to use the <<spring-boot-features.adoc#boot-features-logback-extensions,Spring Boot Logback extensions>>)
+You can also use `logback-spring.xml` if you want to use the <<spring-boot-features.adoc#boot-features-logback-extensions,Spring Boot Logback extensions>>.
 
 TIP: The Logback documentation has a https://logback.qos.ch/manual/configuration.html[dedicated section that covers configuration] in some detail.
 
