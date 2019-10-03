@@ -23,7 +23,6 @@ import java.io.OutputStream;
  *
  * @author Madhura Bhave
  */
-@TestConfiguration
 public class TestMethodConfiguration {
 
 	@TestConditionalOnClass(name = "java.io.InputStream", value = OutputStream.class)
