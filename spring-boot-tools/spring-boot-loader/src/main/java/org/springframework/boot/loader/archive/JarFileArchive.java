@@ -81,7 +81,7 @@ public class JarFileArchive implements Archive {
 
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		List<Archive> nestedArchives = new ArrayList<>();
+		List<Archive> nestedArchives = new ArrayList<Archive>();
 		for (Entry entry : this) {
 			if (filter.matches(entry)) {
 				nestedArchives.add(getNestedArchive(entry));
@@ -142,14 +142,19 @@ public class JarFileArchive implements Archive {
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {
-		try (InputStream inputStream = this.jarFile.getInputStream(entry);
-				OutputStream outputStream = new FileOutputStream(file)) {
+		InputStream inputStream = this.jarFile.getInputStream(entry);
+		OutputStream outputStream = new FileOutputStream(file);
+		try {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
 			}
 			outputStream.flush();
+		}
+		finally {
+			inputStream.close();
+			outputStream.close();
 		}
 	}
 

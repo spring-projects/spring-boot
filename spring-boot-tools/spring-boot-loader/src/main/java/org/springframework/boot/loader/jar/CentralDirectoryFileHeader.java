@@ -17,8 +17,8 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
@@ -112,22 +112,27 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	public long getTime() {
-		long datetime = Bytes.littleEndianValue(this.header, this.headerOffset + 12, 4);
-		return decodeMsDosFormatDateTime(datetime);
+		long date = Bytes.littleEndianValue(this.header, this.headerOffset + 14, 2);
+		long time = Bytes.littleEndianValue(this.header, this.headerOffset + 12, 2);
+		return decodeMsDosFormatDateTime(date, time).getTimeInMillis();
 	}
 
 	/**
 	 * Decode MS-DOS Date Time details. See
 	 * <a href="https://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
 	 * more details of the format.
-	 * @param datetime the date and time
-	 * @return the date and time as milliseconds since the epoch
+	 * @param date the date part
+	 * @param time the time part
+	 * @return a {@link Calendar} containing the decoded date.
 	 */
-	private long decodeMsDosFormatDateTime(long datetime) {
-		LocalDateTime localDateTime = LocalDateTime.of((int) (((datetime >> 25) & 0x7f) + 1980),
-				(int) ((datetime >> 21) & 0x0f), (int) ((datetime >> 16) & 0x1f), (int) ((datetime >> 11) & 0x1f),
-				(int) ((datetime >> 5) & 0x3f), (int) ((datetime << 1) & 0x3e));
-		return localDateTime.toEpochSecond(ZoneId.systemDefault().getRules().getOffset(localDateTime)) * 1000;
+	private Calendar decodeMsDosFormatDateTime(long date, long time) {
+		int year = (int) ((date >> 9) & 0x7F) + 1980;
+		int month = (int) ((date >> 5) & 0xF) - 1;
+		int day = (int) (date & 0x1F);
+		int hours = (int) ((time >> 11) & 0x1F);
+		int minutes = (int) ((time >> 5) & 0x3F);
+		int seconds = (int) ((time << 1) & 0x3E);
+		return new GregorianCalendar(year, month, day, hours, minutes, seconds);
 	}
 
 	public long getCrc() {

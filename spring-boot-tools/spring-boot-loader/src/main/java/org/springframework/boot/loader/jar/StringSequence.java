@@ -16,8 +16,6 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.util.Objects;
-
 /**
  * A {@link CharSequence} backed by a single shared {@link String}. Unlike a regular
  * {@link String}, {@link #subSequence(int, int)} operations will not copy the underlying
@@ -40,7 +38,9 @@ final class StringSequence implements CharSequence {
 	}
 
 	StringSequence(String source, int start, int end) {
-		Objects.requireNonNull(source, "Source must not be null");
+		if (source == null) {
+			throw new NullPointerException("Source must not be null");
+		}
 		if (start < 0) {
 			throw new StringIndexOutOfBoundsException(start);
 		}

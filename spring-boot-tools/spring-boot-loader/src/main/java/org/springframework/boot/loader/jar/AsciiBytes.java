@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 /**
  * Simple wrapper around a byte array that represents an ASCII. Used for performance
@@ -48,7 +48,7 @@ final class AsciiBytes {
 	 * @param string the source string
 	 */
 	AsciiBytes(String string) {
-		this(string.getBytes(StandardCharsets.UTF_8));
+		this(string.getBytes(Charset.forName("UTF-8")));
 		this.string = string;
 	}
 
@@ -229,14 +229,14 @@ final class AsciiBytes {
 				this.string = EMPTY_STRING;
 			}
 			else {
-				this.string = new String(this.bytes, this.offset, this.length, StandardCharsets.UTF_8);
+				this.string = new String(this.bytes, this.offset, this.length, Charset.forName("UTF-8"));
 			}
 		}
 		return this.string;
 	}
 
 	static String toString(byte[] bytes) {
-		return new String(bytes, StandardCharsets.UTF_8);
+		return new String(bytes, Charset.forName("UTF-8"));
 	}
 
 	public static int hashCode(CharSequence charSequence) {

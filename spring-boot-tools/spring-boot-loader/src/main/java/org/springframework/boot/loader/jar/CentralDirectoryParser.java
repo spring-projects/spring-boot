@@ -33,7 +33,7 @@ class CentralDirectoryParser {
 
 	private static final int CENTRAL_DIRECTORY_HEADER_BASE_SIZE = 46;
 
-	private final List<CentralDirectoryVisitor> visitors = new ArrayList<>();
+	private final List<CentralDirectoryVisitor> visitors = new ArrayList<CentralDirectoryVisitor>();
 
 	public <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
 		this.visitors.add(visitor);

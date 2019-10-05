@@ -26,7 +26,6 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.function.Supplier;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -74,8 +73,6 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private JarFileEntries entries;
 
-	private Supplier<Manifest> manifestSupplier;
-
 	private SoftReference<Manifest> manifest;
 
 	private boolean signed;
@@ -109,11 +106,11 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarFileType type)
 			throws IOException {
-		this(rootFile, pathFromRoot, data, null, type, null);
+		this(rootFile, pathFromRoot, data, null, type);
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
-			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
+			JarFileType type) throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -122,17 +119,6 @@ public class JarFile extends java.util.jar.JarFile {
 		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
 		this.type = type;
-		this.manifestSupplier = (manifestSupplier != null) ? manifestSupplier : () -> {
-			try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
-				if (inputStream == null) {
-					return null;
-				}
-				return new Manifest(inputStream);
-			}
-			catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		};
 	}
 
 	private CentralDirectoryVisitor centralDirectoryVisitor() {
@@ -170,12 +156,21 @@ public class JarFile extends java.util.jar.JarFile {
 		Manifest manifest = (this.manifest != null) ? this.manifest.get() : null;
 		if (manifest == null) {
 			try {
-				manifest = this.manifestSupplier.get();
+				InputStream inputStream = getInputStream(MANIFEST_NAME);
+				if (inputStream == null) {
+					return null;
+				}
+				try {
+					manifest = new Manifest(inputStream);
+				}
+				finally {
+					inputStream.close();
+				}
 			}
-			catch (RuntimeException ex) {
-				throw new IOException(ex);
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
 			}
-			this.manifest = new SoftReference<>(manifest);
+			this.manifest = new SoftReference<Manifest>(manifest);
 		}
 		return manifest;
 	}
@@ -261,15 +256,20 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
-		AsciiBytes name = entry.getAsciiBytesName();
-		JarEntryFilter filter = (candidate) -> {
-			if (candidate.startsWith(name) && !candidate.equals(name)) {
-				return candidate.substring(name.length());
+		final AsciiBytes name = entry.getAsciiBytesName();
+		JarEntryFilter filter = new JarEntryFilter() {
+
+			@Override
+			public AsciiBytes apply(AsciiBytes candidate) {
+				if (candidate.startsWith(name) && !candidate.equals(name)) {
+					return candidate.substring(name.length());
+				}
+				return null;
 			}
-			return null;
 		};
+
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName().substring(0, name.length() - 1),
-				this.data, filter, JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
+				this.data, filter, JarFileType.NESTED_DIRECTORY);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
@@ -338,7 +338,8 @@ public class JarFile extends java.util.jar.JarFile {
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			try (JarInputStream inputStream = new JarInputStream(getData().getInputStream())) {
+			JarInputStream inputStream = new JarInputStream(getData().getInputStream());
+			try {
 				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
 				while (certEntry != null) {
 					inputStream.closeEntry();
@@ -348,6 +349,9 @@ public class JarFile extends java.util.jar.JarFile {
 					setCertificates(getJarEntry(certEntry.getName()), certEntry);
 					certEntry = inputStream.getNextJarEntry();
 				}
+			}
+			finally {
+				inputStream.close();
 			}
 		}
 		catch (IOException ex) {
