@@ -62,8 +62,8 @@ class CentralDirectoryEndRecord {
 			this.size++;
 			if (this.size > this.block.length) {
 				if (this.size >= MAXIMUM_SIZE || this.size > data.getSize()) {
-					throw new IOException("Unable to find ZIP central directory "
-							+ "records after reading " + this.size + " bytes");
+					throw new IOException(
+							"Unable to find ZIP central directory " + "records after reading " + this.size + " bytes");
 				}
 				this.block = createBlockFromEndOfData(data, this.size + READ_BLOCK_SIZE);
 			}
@@ -71,20 +71,17 @@ class CentralDirectoryEndRecord {
 		}
 	}
 
-	private byte[] createBlockFromEndOfData(RandomAccessData data, int size)
-			throws IOException {
+	private byte[] createBlockFromEndOfData(RandomAccessData data, int size) throws IOException {
 		int length = (int) Math.min(data.getSize(), size);
 		return data.read(data.getSize() - length, length);
 	}
 
 	private boolean isValid() {
-		if (this.block.length < MINIMUM_SIZE
-				|| Bytes.littleEndianValue(this.block, this.offset + 0, 4) != SIGNATURE) {
+		if (this.block.length < MINIMUM_SIZE || Bytes.littleEndianValue(this.block, this.offset + 0, 4) != SIGNATURE) {
 			return false;
 		}
 		// Total size must be the structure size + comment
-		long commentLength = Bytes.littleEndianValue(this.block,
-				this.offset + COMMENT_LENGTH_OFFSET, 2);
+		long commentLength = Bytes.littleEndianValue(this.block, this.offset + COMMENT_LENGTH_OFFSET, 2);
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 
