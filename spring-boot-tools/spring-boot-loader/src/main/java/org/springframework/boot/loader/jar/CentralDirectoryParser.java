@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,13 +26,14 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * Parses the central directory from a JAR file.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see CentralDirectoryVisitor
  */
 class CentralDirectoryParser {
 
-	private int CENTRAL_DIRECTORY_HEADER_BASE_SIZE = 46;
+	private static final int CENTRAL_DIRECTORY_HEADER_BASE_SIZE = 46;
 
-	private final List<CentralDirectoryVisitor> visitors = new ArrayList<CentralDirectoryVisitor>();
+	private final List<CentralDirectoryVisitor> visitors = new ArrayList<>();
 
 	public <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
 		this.visitors.add(visitor);
@@ -46,7 +47,8 @@ class CentralDirectoryParser {
 	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
-	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
+	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes)
+			throws IOException {
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
 		if (skipPrefixBytes) {
 			data = getArchiveData(endRecord, data);
@@ -58,20 +60,22 @@ class CentralDirectoryParser {
 		return data;
 	}
 
-	private void parseEntries(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData)
-			throws IOException {
-		byte[] bytes = Bytes.get(centralDirectoryData);
+	private void parseEntries(CentralDirectoryEndRecord endRecord,
+			RandomAccessData centralDirectoryData) throws IOException {
+		byte[] bytes = centralDirectoryData.read(0, centralDirectoryData.getSize());
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		int dataOffset = 0;
 		for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {
 			fileHeader.load(bytes, dataOffset, null, 0, null);
 			visitFileHeader(dataOffset, fileHeader);
-			dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE + fileHeader.getName().length()
-					+ fileHeader.getComment().length() + fileHeader.getExtra().length;
+			dataOffset += CENTRAL_DIRECTORY_HEADER_BASE_SIZE
+					+ fileHeader.getName().length() + fileHeader.getComment().length()
+					+ fileHeader.getExtra().length;
 		}
 	}
 
-	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord, RandomAccessData data) {
+	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
+			RandomAccessData data) {
 		long offset = endRecord.getStartOfArchive(data);
 		if (offset == 0) {
 			return data;
@@ -79,7 +83,8 @@ class CentralDirectoryParser {
 		return data.getSubsection(offset, data.getSize() - offset);
 	}
 
-	private void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
+	private void visitStart(CentralDirectoryEndRecord endRecord,
+			RandomAccessData centralDirectoryData) {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitStart(endRecord, centralDirectoryData);
 		}

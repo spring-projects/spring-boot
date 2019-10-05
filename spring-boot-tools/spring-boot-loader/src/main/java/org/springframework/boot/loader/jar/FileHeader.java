@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,10 +30,10 @@ interface FileHeader {
 	/**
 	 * Returns {@code true} if the header has the given name.
 	 * @param name the name to test
-	 * @param suffix an additional suffix (or {@code null})
+	 * @param suffix an additional suffix (or {@code 0})
 	 * @return {@code true} if the header has the given name
 	 */
-	boolean hasName(String name, String suffix);
+	boolean hasName(CharSequence name, char suffix);
 
 	/**
 	 * Return the offset of the load file header within the archive data.
