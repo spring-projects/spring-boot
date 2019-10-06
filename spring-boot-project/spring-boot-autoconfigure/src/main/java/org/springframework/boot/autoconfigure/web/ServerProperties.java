@@ -349,7 +349,8 @@ public class ServerProperties {
 		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size of the HTTP post content.
+		 * Maximum size of the FORM content in an HTTP post request. Non-FORM post
+		 * requests are unaffected by this property.
 		 */
 		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
