@@ -96,7 +96,6 @@ class NettyRSocketServerFactoryTests {
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
 		assertThat(response).isEqualTo(payload);
-		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
