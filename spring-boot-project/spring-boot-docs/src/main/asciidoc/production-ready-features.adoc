@@ -62,7 +62,7 @@ The following technology-agnostic endpoints are available:
 
 | `auditevents`
 | Exposes audit events information for the current application.
-| Yes
+| Yes. Requires an `AuditEventRepository` bean
 
 | `beans`
 | Displays a complete list of all the Spring beans in your application.
@@ -94,7 +94,7 @@ The following technology-agnostic endpoints are available:
 
 | `httptrace`
 | Displays HTTP trace information (by default, the last 100 HTTP request-response exchanges).
-| Yes
+| Yes. Requires an `HttpTraceRepository` bean
 
 | `info`
 | Displays arbitrary application info.
