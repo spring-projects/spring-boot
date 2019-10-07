@@ -1,4 +1,4 @@
-package org.springframework.boot.docs.configuration.kotlin
+package org.springframework.boot.docs.context.properties.bind.kotlin
 
 /**
  * Example configuration that illustrates the use of external properties.

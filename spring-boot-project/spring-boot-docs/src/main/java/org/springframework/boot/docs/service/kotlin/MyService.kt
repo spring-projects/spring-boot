@@ -3,7 +3,7 @@ package org.springframework.boot.docs.service.kotlin
 
 import org.eclipse.jetty.server.Server
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.docs.configuration.kotlin.AcmeProperties
+import org.springframework.boot.docs.context.properties.bind.kotlin.AcmeProperties
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 

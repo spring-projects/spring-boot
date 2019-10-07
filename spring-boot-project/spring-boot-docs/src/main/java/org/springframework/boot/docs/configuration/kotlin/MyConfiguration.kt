@@ -2,6 +2,7 @@ package org.springframework.boot.docs.configuration.kotlin
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.docs.context.properties.bind.kotlin.AcmeProperties
 import org.springframework.context.annotation.Configuration
 
 /**

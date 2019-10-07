@@ -669,7 +669,8 @@ The preceding example would be transformed into these properties:
 To bind to properties like that by using Spring Boot's `Binder` utilities (which is what `@ConfigurationProperties` does), you need to have a property in the target bean of type `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with a mutable value.
 For example, the following example binds to the properties shown previously:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties(prefix="my")
 	public class Config {
@@ -682,6 +683,11 @@ For example, the following example binds to the properties shown previously:
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/Config.kt[tag=customizer]
+----
 
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
@@ -862,7 +868,7 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/configuration/kotlin/AcmeProperties.kt[tag=customizer]
+include::{code-examples}/context/properties/bind/kotlin/AcmeProperties.kt[tag=customizer]
 ----
 
 The preceding POJO defines the following properties:
@@ -969,7 +975,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 [source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
 .Kotlin
 ----
-include::{code-examples}/configuration/kotlin/ImmutableAcmeProperties.kt[tag=customizer]
+include::{code-examples}/context/properties/bind/kotlin/ImmutableAcmeProperties.kt[tag=customizer]
 ----
 
 In this setup one, and only one constructor must be defined with the list of properties that you wish to bind and not other properties than the ones in the constructor are bound.
@@ -1098,7 +1104,8 @@ Doing so can be particularly useful when you want to bind properties to third-pa
 
 To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties(prefix = "another")
 	@Bean
@@ -1107,6 +1114,11 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/configuration/kotlin/ThirdPartyConfiguration.kt[tag=customizer]
+----
 Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
 
 
@@ -1118,7 +1130,8 @@ Common examples where this is useful include dash-separated environment properti
 
 As an example, consider the following `@ConfigurationProperties` class:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties(prefix="acme.my-project.person")
 	public class OwnerProperties {
@@ -1134,6 +1147,12 @@ As an example, consider the following `@ConfigurationProperties` class:
 		}
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/OwnerProperties.kt[tag=customizer]
 ----
 
 With the preceding code, the following properties names can all be used:
@@ -1207,7 +1226,8 @@ When lists are configured in more than one place, overriding works by replacing 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
 The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {
@@ -1219,6 +1239,12 @@ The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 		}
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/ComplexAcmeProperties.kt[tag=customizer]
 ----
 
 Consider the following configuration:
@@ -1267,7 +1293,8 @@ For `Map` properties, you can bind with property values drawn from multiple sour
 However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {
@@ -1281,6 +1308,11 @@ The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/MapAcmeProperties.kt[tag=customizer]
+----
 Consider the following configuration:
 
 [source,yaml,indent=0]
@@ -1331,9 +1363,16 @@ If you expose a `java.time.Duration` property, the following formats in applicat
 
 Consider the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/AppSystemProperties.kt[tag=example]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1367,9 +1406,16 @@ If you expose a `DataSize` property, the following formats in application proper
 
 Consider the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/AppIoProperties.kt[tag=example]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1397,7 +1443,8 @@ Spring Boot attempts to validate `@ConfigurationProperties` classes whenever the
 You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties(prefix="acme")
 	@Validated
@@ -1411,13 +1458,20 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 	}
 ----
 
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/ValidatedAcmeProperties.kt[tag=example]
+----
+
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
 Although nested properties will also be validated when bound, it's good practice to also annotate the associated field as `@Valid`.
 This ensures that validation is triggered even if no nested properties are found.
 The following example builds on the preceding `AcmeProperties` example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 	@ConfigurationProperties(prefix="acme")
 	@Validated
@@ -1441,6 +1495,12 @@ The following example builds on the preceding `AcmeProperties` example:
 		}
 
 	}
+----
+
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::{code-examples}/context/properties/bind/kotlin/NestedValidatedAcmeProperties.kt[tag=example]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.
