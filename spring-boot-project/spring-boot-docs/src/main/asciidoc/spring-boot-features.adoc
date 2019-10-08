@@ -977,7 +977,6 @@ The example in the previous section can be rewritten in an immutable fashion as 
 ----
 include::{code-examples}/context/properties/bind/kotlin/ImmutableAcmeProperties.kt[tag=customizer]
 ----
-
 In this setup, the `@ImmutableConfigurationProperties` annotation is used to indicate that constructor binding should be used.
 This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
 
@@ -3378,7 +3377,7 @@ In cases where opaque tokens are used instead of JWTs, you can configure the fol
 ----
 	spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
 	spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
-	spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret=
+	spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
