@@ -1077,7 +1077,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 			throws IOException, URISyntaxException {
 		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
-		request.getHeaders().add("Cookie", "JSESSIONID=123");
 		for (String header : headers) {
 			String[] parts = header.split(":");
 			request.getHeaders().add(parts[0], parts[1]);
