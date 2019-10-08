@@ -18,13 +18,14 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.server.handler.ErrorHandler.ErrorPageMapper;
 
 /**
  * Variation of Jetty's {@link ErrorHandler} that supports all {@link HttpMethod
@@ -34,32 +35,47 @@ import org.eclipse.jetty.server.handler.ErrorHandler.ErrorPageMapper;
  * prefers Tomcat, Jetty and Undertow to all behave in the same way.
  *
  * @author Phillip Webb
+ * @deprecated As of 2.2.0 in favor of {@link JettyEmbeddedErrorHandler} due to error
+ * handling changes in Jetty 9.4.21.v20190926
  */
-class JettyEmbeddedErrorHandler extends ErrorHandler implements ErrorPageMapper {
+@Deprecated
+class JettyEmbeddedLegacyErrorHandler extends ErrorHandler {
 
 	private final ErrorHandler delegate;
 
-	JettyEmbeddedErrorHandler(ErrorHandler delegate) {
+	JettyEmbeddedLegacyErrorHandler(ErrorHandler delegate) {
 		this.delegate = delegate;
 	}
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String method = request.getMethod();
+		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method) && !HttpMethod.HEAD.is(method)) {
+			request = new ErrorHttpServletRequest(request);
+		}
 		this.delegate.handle(target, baseRequest, request, response);
 	}
 
-	@Override
-	public boolean errorPageForMethod(String method) {
-		return true;
-	}
+	private static class ErrorHttpServletRequest extends HttpServletRequestWrapper {
 
-	@Override
-	public String getErrorPage(HttpServletRequest request) {
-		if (this.delegate instanceof ErrorPageMapper) {
-			return ((ErrorPageMapper) this.delegate).getErrorPage(request);
+		private boolean simulateGetMethod = true;
+
+		ErrorHttpServletRequest(HttpServletRequest request) {
+			super(request);
 		}
-		return null;
+
+		@Override
+		public String getMethod() {
+			return (this.simulateGetMethod ? HttpMethod.GET.toString() : super.getMethod());
+		}
+
+		@Override
+		public ServletContext getServletContext() {
+			this.simulateGetMethod = false;
+			return super.getServletContext();
+		}
+
 	}
 
 }

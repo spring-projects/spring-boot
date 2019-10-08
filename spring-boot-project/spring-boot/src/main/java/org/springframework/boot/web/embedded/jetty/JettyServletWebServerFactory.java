@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.jetty;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -62,6 +63,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -340,8 +342,18 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			@Override
 			public void configure(WebAppContext context) throws Exception {
 				ErrorHandler errorHandler = context.getErrorHandler();
-				context.setErrorHandler(new JettyEmbeddedErrorHandler(errorHandler));
+				context.setErrorHandler(wrapErrorHandler(errorHandler));
 				addJettyErrorPages(errorHandler, getErrorPages());
+			}
+
+			@SuppressWarnings("deprecation")
+			private ErrorHandler wrapErrorHandler(ErrorHandler errorHandler) {
+				Method method = ReflectionUtils.findMethod(ErrorHandler.class, "errorPageForMethod", String.class);
+				// Versions prior to 9.4.21.v20190926 have different error handling
+				if (method == null) {
+					return new JettyEmbeddedLegacyErrorHandler(errorHandler);
+				}
+				return new JettyEmbeddedErrorHandler(errorHandler);
 			}
 
 		};
