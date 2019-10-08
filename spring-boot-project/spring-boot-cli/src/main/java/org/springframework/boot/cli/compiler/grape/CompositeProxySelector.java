@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.aether.repository.Proxy;
@@ -31,7 +30,7 @@ import org.eclipse.aether.repository.RemoteRepository;
  */
 public class CompositeProxySelector implements ProxySelector {
 
-	private List<ProxySelector> selectors = new ArrayList<>();
+	private final List<ProxySelector> selectors;
 
 	public CompositeProxySelector(List<ProxySelector> selectors) {
 		this.selectors = selectors;

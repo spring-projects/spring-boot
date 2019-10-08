@@ -104,7 +104,7 @@ public class StopMojo extends AbstractMojo {
 			return this.fork;
 		}
 		String property = this.project.getProperties().getProperty("_spring.boot.fork.enabled");
-		return Boolean.valueOf(property);
+		return Boolean.parseBoolean(property);
 	}
 
 	private void stopForkedProcess() throws IOException, MojoFailureException, MojoExecutionException {
