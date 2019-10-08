@@ -196,8 +196,8 @@ final class ResolveDependencyCoordinatesTransformationTests {
 				new ConstantExpression("test"));
 		declarationExpression.addAnnotation(this.grabAnnotation);
 
-		BlockStatement code = new BlockStatement(
-				Arrays.asList(new ExpressionStatement(declarationExpression)), new VariableScope());
+		BlockStatement code = new BlockStatement(Arrays.asList(new ExpressionStatement(declarationExpression)),
+				new VariableScope());
 
 		MethodNode methodNode = new MethodNode("test", 0, new ClassNode(Void.class), new Parameter[0], new ClassNode[0],
 				code);
