@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withAdminPassword(null);
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication();
 
 	@Autowired
 	private Environment environment;
