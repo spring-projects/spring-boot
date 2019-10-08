@@ -10,10 +10,16 @@
 	<artifactId>spring-boot-starter-cloud-connectors</artifactId>
 	<name>Spring Boot Spring Cloud Connectors Starter</name>
 	<description>Starter for using Spring Cloud Connectors which simplifies connecting
-		to services in cloud platforms like Cloud Foundry and Heroku</description>
+		to services in cloud platforms like Cloud Foundry and Heroku. Deprecated in
+		favor of Java CFEnv</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

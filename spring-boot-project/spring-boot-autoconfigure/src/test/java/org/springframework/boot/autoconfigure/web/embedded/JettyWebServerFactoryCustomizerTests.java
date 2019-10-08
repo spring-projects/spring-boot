@@ -132,10 +132,10 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void idleTimeoutCanBeCustomized() {
-		bind("server.jetty.idle-timeout=100");
+		bind("server.jetty.idle-timeout=100s");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
-		assertThat(threadPool.getIdleTimeout()).isEqualTo(100);
+		assertThat(threadPool.getIdleTimeout()).isEqualTo(100000);
 	}
 
 	private CustomRequestLog getRequestLog(JettyWebServer server) {

@@ -42,19 +42,16 @@ class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	void testErrorPath() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
-				.getForEntity("/spring/error", Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/spring/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("None");
-		assertThat(body.get("status")).isEqualTo(999);
+		assertThat(entity.getBody().get("error")).isEqualTo("None");
+		assertThat(entity.getBody().get("status")).isEqualTo(999);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
 				.getForEntity("/spring/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
@@ -62,17 +59,16 @@ class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	void testHomeIsSecure() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/", Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/spring/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
-	private String getPassword() {
-		return "password";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
+		return (ResponseEntity) entity;
 	}
 
 }

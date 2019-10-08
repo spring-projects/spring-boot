@@ -43,6 +43,6 @@ public interface ConfigurableRSocketServerFactory {
 	 * Set the transport that the RSocket server should use.
 	 * @param transport the transport protocol to use
 	 */
-	void setTransport(RSocketServer.TRANSPORT transport);
+	void setTransport(RSocketServer.Transport transport);
 
 }

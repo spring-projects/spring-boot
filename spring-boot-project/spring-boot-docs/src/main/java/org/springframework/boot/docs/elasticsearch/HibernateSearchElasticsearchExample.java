@@ -19,7 +19,7 @@ package org.springframework.boot.docs.elasticsearch;
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Example configuration for configuring Hibernate to depend on Elasticsearch so that
@@ -34,10 +34,11 @@ public class HibernateSearchElasticsearchExample {
 	 * {@link EntityManagerFactoryDependsOnPostProcessor} that ensures that
 	 * {@link EntityManagerFactory} beans depend on the {@code elasticsearchClient} bean.
 	 */
-	@Configuration(proxyBeanMethods = false)
-	static class ElasticsearchJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
+	@Component
+	static class ElasticsearchEntityManagerFactoryDependsOnPostProcessor
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		ElasticsearchJpaDependencyConfiguration() {
+		ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
 			super("elasticsearchClient");
 		}
 

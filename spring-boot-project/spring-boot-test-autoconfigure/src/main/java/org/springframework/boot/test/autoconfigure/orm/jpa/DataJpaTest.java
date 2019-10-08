@@ -41,9 +41,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical JPA test. Can be used when a test focuses <strong>only</strong> on JPA
- * components.
+ * Annotation for a JPA test that focuses <strong>only</strong> on JPA components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to JPA tests.
@@ -58,6 +56,9 @@ import org.springframework.transaction.annotation.Transactional;
  * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
  * annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin

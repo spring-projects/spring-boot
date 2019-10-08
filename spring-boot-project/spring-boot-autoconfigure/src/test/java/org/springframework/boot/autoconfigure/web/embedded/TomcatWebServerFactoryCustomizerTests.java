@@ -243,6 +243,8 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
 		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
+		assertThat(remoteIpValve.getHostHeader()).isEqualTo("X-Forwarded-Host");
+		assertThat(remoteIpValve.getPortHeader()).isEqualTo("X-Forwarded-Port");
 		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16

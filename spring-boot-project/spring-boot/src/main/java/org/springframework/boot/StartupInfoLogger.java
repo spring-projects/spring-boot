@@ -87,7 +87,7 @@ class StartupInfoLogger {
 		message.append("Started ");
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(stopWatch.getTotalTimeSeconds());
+		message.append(stopWatch.getTotalTimeMillis() / 1000.0);
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;

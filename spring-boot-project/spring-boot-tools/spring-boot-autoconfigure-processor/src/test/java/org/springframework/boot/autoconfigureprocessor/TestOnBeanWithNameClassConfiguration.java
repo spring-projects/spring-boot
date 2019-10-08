@@ -21,7 +21,6 @@ package org.springframework.boot.autoconfigureprocessor;
  *
  * @author Phillip Webb
  */
-@TestConfiguration
 @TestConditionalOnBean(name = "test", type = "java.io.OutputStream")
 public class TestOnBeanWithNameClassConfiguration {
 

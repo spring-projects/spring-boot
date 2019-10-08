@@ -62,7 +62,7 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 		}
 		AnnotationAttributes attributes = getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context,
 				metadata);
-		EndpointId id = EndpointId.of(attributes.getString("id"));
+		EndpointId id = EndpointId.of(environment, attributes.getString("id"));
 		Set<ExposureInformation> exposureInformations = getExposureInformation(environment);
 		for (ExposureInformation exposureInformation : exposureInformations) {
 			if (exposureInformation.isExposed(id)) {

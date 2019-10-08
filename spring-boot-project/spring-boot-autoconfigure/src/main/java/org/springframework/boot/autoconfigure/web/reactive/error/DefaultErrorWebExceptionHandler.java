@@ -143,7 +143,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromObject(error));
+				.body(BodyInserters.fromValue(error));
 	}
 
 	/**

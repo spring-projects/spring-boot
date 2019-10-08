@@ -24,7 +24,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
+ * Initialize the Spring Batch schema (ignoring errors, so it should be idempotent).
  *
  * @author Dave Syer
  * @author Vedran Pavic

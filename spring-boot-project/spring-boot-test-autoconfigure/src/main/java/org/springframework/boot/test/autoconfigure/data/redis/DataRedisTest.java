@@ -37,12 +37,14 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Data Redis test. Can be used when a test focuses <strong>only</strong> on
- * Redis components.
+ * Annotation for a Data Redis test that focuses <strong>only</strong> on Redis
+ * components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Redis tests.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Jayaram Pradhan
  * @author Artsiom Yudovin

@@ -36,6 +36,16 @@ public interface OriginLookup<K> {
 	Origin getOrigin(K key);
 
 	/**
+	 * Return {@code true} if this lookup is immutable and has contents that will never
+	 * change.
+	 * @return if the lookup is immutable
+	 * @since 2.2.0
+	 */
+	default boolean isImmutable() {
+		return false;
+	}
+
+	/**
 	 * Attempt to lookup the origin from the given source. If the source is not a
 	 * {@link OriginLookup} or if an exception occurs during lookup then {@code null} is
 	 * returned.

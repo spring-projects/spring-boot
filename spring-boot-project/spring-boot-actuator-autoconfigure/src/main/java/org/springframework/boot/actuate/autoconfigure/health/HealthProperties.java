@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,9 +39,14 @@ public abstract class HealthProperties {
 	private final Status status = new Status();
 
 	/**
+	 * When to show components. If not specified the 'show-details' setting will be used.
+	 */
+	private Show showComponents;
+
+	/**
 	 * When to show full health details.
 	 */
-	private ShowDetails showDetails = ShowDetails.NEVER;
+	private Show showDetails = Show.NEVER;
 
 	/**
 	 * Roles used to determine whether or not a user is authorized to be shown details.
@@ -52,11 +58,19 @@ public abstract class HealthProperties {
 		return this.status;
 	}
 
-	public ShowDetails getShowDetails() {
+	public Show getShowComponents() {
+		return this.showComponents;
+	}
+
+	public void setShowComponents(Show showComponents) {
+		this.showComponents = showComponents;
+	}
+
+	public Show getShowDetails() {
 		return this.showDetails;
 	}
 
-	public void setShowDetails(ShowDetails showDetails) {
+	public void setShowDetails(Show showDetails) {
 		this.showDetails = showDetails;
 	}
 
@@ -76,7 +90,7 @@ public abstract class HealthProperties {
 		/**
 		 * Comma-separated list of health statuses in order of severity.
 		 */
-		private List<String> order = null;
+		private List<String> order = new ArrayList<>();
 
 		/**
 		 * Mapping of health statuses to HTTP status codes. By default, registered health
@@ -101,23 +115,23 @@ public abstract class HealthProperties {
 	}
 
 	/**
-	 * Options for showing details in responses from the {@link HealthEndpoint} web
+	 * Options for showing items in responses from the {@link HealthEndpoint} web
 	 * extensions.
 	 */
-	public enum ShowDetails {
+	public enum Show {
 
 		/**
-		 * Never show details in the response.
+		 * Never show the item in the response.
 		 */
 		NEVER,
 
 		/**
-		 * Show details in the response when accessed by an authorized user.
+		 * Show the item in the response when accessed by an authorized user.
 		 */
 		WHEN_AUTHORIZED,
 
 		/**
-		 * Always show details in the response.
+		 * Always show the item in the response.
 		 */
 		ALWAYS
 

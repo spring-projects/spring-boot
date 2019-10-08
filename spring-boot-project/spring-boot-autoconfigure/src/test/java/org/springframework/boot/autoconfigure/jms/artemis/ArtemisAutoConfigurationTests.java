@@ -23,14 +23,17 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 
+import org.apache.activemq.artemis.api.core.RoutingType;
+import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.apache.activemq.artemis.core.server.ActiveMQServer;
+import org.apache.activemq.artemis.core.server.BindingQueryResult;
+import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
 import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
@@ -38,7 +41,6 @@ import org.apache.activemq.artemis.jms.server.config.TopicConfiguration;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
-import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
@@ -51,9 +53,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.SessionCallback;
-import org.springframework.jms.support.destination.DestinationResolver;
-import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -153,7 +152,7 @@ class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.artemis.mode:embedded").run((context) -> {
 					ArtemisProperties properties = context.getBean(ArtemisProperties.class);
 					assertThat(properties.getMode()).isEqualTo(ArtemisMode.EMBEDDED);
-					assertThat(context).hasSingleBean(EmbeddedJMS.class);
+					assertThat(context).hasSingleBean(EmbeddedActiveMQ.class);
 					org.apache.activemq.artemis.core.config.Configuration configuration = context
 							.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
 					assertThat(configuration.isPersistenceEnabled()).isFalse();
@@ -166,7 +165,7 @@ class ArtemisAutoConfigurationTests {
 	void embeddedConnectionFactoryByDefault() {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(EmbeddedJMS.class);
+			assertThat(context).hasSingleBean(EmbeddedActiveMQ.class);
 			org.apache.activemq.artemis.core.config.Configuration configuration = context
 					.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
 			assertThat(configuration.isPersistenceEnabled()).isFalse();
@@ -180,7 +179,7 @@ class ArtemisAutoConfigurationTests {
 		// No mode is specified
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.enabled:false").run((context) -> {
-					assertThat(context).doesNotHaveBean(EmbeddedJMS.class);
+					assertThat(context).doesNotHaveBean(ActiveMQServer.class);
 					assertNettyConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)),
 							"localhost", 61616);
 				});
@@ -192,7 +191,7 @@ class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:embedded", "spring.artemis.embedded.enabled:false")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(EmbeddedJMS.class)).isEmpty();
+					assertThat(context.getBeansOfType(ActiveMQServer.class)).isEmpty();
 					assertInVmConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)));
 				});
 	}
@@ -206,9 +205,9 @@ class ArtemisAutoConfigurationTests {
 					DestinationChecker checker = new DestinationChecker(context);
 					checker.checkQueue("Queue1", true);
 					checker.checkQueue("Queue2", true);
-					checker.checkQueue("QueueWillNotBeAutoCreated", true);
+					checker.checkQueue("NonExistentQueue", false);
 					checker.checkTopic("Topic1", true);
-					checker.checkTopic("TopicWillBeAutoCreated", true);
+					checker.checkTopic("NonExistentTopic", false);
 				});
 	}
 
@@ -228,8 +227,8 @@ class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.artemis.embedded.queues=Queue1,Queue2").run((context) -> {
 					DestinationChecker checker = new DestinationChecker(context);
 					checker.checkQueue("custom", true); // See CustomJmsConfiguration
-					checker.checkQueue("Queue1", true);
-					checker.checkQueue("Queue2", true);
+					checker.checkQueue("Queue1", false);
+					checker.checkQueue("Queue2", false);
 				});
 	}
 
@@ -273,10 +272,10 @@ class ArtemisAutoConfigurationTests {
 								.isLessThan(secondProperties.getEmbedded().getServerId());
 						DestinationChecker firstChecker = new DestinationChecker(first);
 						firstChecker.checkQueue("Queue1", true);
-						firstChecker.checkQueue("Queue2", true);
+						firstChecker.checkQueue("Queue2", false);
 						DestinationChecker secondChecker = new DestinationChecker(second);
+						secondChecker.checkQueue("Queue1", false);
 						secondChecker.checkQueue("Queue2", true);
-						secondChecker.checkQueue("Queue1", true);
 					});
 				});
 	}
@@ -293,10 +292,9 @@ class ArtemisAutoConfigurationTests {
 									// Do not start a specific one
 									"spring.artemis.embedded.enabled=false")
 							.run((secondContext) -> {
-								DestinationChecker firstChecker = new DestinationChecker(first);
-								firstChecker.checkQueue("Queue1", true);
-								DestinationChecker secondChecker = new DestinationChecker(secondContext);
-								secondChecker.checkQueue("Queue1", true);
+								first.getBean(JmsTemplate.class).convertAndSend("Queue1", "test");
+								assertThat(secondContext.getBean(JmsTemplate.class).receiveAndConvert("Queue1"))
+										.isEqualTo("test");
 							});
 				});
 	}
@@ -382,40 +380,31 @@ class ArtemisAutoConfigurationTests {
 
 	private static final class DestinationChecker {
 
-		private final JmsTemplate jmsTemplate;
-
-		private final DestinationResolver destinationResolver;
+		private final ActiveMQServer server;
 
 		private DestinationChecker(ApplicationContext applicationContext) {
-			this.jmsTemplate = applicationContext.getBean(JmsTemplate.class);
-			this.destinationResolver = new DynamicDestinationResolver();
+			this.server = applicationContext.getBean(EmbeddedActiveMQ.class).getActiveMQServer();
 		}
 
 		void checkQueue(String name, boolean shouldExist) {
-			checkDestination(name, false, shouldExist);
+			checkDestination(name, RoutingType.ANYCAST, shouldExist);
 		}
 
 		void checkTopic(String name, boolean shouldExist) {
-			checkDestination(name, true, shouldExist);
+			checkDestination(name, RoutingType.MULTICAST, shouldExist);
 		}
 
-		void checkDestination(String name, final boolean pubSub, final boolean shouldExist) {
-			this.jmsTemplate.execute((SessionCallback<Void>) (session) -> {
-				try {
-					Destination destination = this.destinationResolver.resolveDestinationName(session, name, pubSub);
-					if (!shouldExist) {
-						throw new IllegalStateException(
-								"Destination '" + name + "' was not expected but got " + destination);
-					}
+		void checkDestination(String name, RoutingType routingType, boolean shouldExist) {
+			try {
+				BindingQueryResult result = this.server.bindingQuery(new SimpleString(name));
+				assertThat(result.isExists()).isEqualTo(shouldExist);
+				if (shouldExist) {
+					assertThat(result.getAddressInfo().getRoutingType()).isEqualTo(routingType);
 				}
-				catch (JMSException ex) {
-					if (shouldExist) {
-						throw new IllegalStateException(
-								"Destination '" + name + "' was expected but got " + ex.getMessage());
-					}
-				}
-				return null;
-			});
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
 	}

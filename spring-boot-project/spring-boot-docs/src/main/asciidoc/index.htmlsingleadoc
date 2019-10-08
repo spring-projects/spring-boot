@@ -14,4 +14,15 @@ include::deployment.adoc[leveloffset=+1]
 include::spring-boot-cli.adoc[leveloffset=+1]
 include::build-tool-plugins.adoc[leveloffset=+1]
 include::howto.adoc[leveloffset=+1]
-include::appendix.adoc[leveloffset=+1]
+
+
+
+[[appendix]]
+== Appendices
+
+include::appendix-application-properties.adoc[leveloffset=+2]
+include::appendix-configuration-metadata.adoc[leveloffset=+2]
+include::appendix-auto-configuration-classes.adoc[leveloffset=+2]
+include::appendix-test-auto-configuration.adoc[leveloffset=+2]
+include::appendix-executable-jar-format.adoc[leveloffset=+2]
+include::appendix-dependency-versions.adoc[leveloffset=+2]

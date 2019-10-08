@@ -94,7 +94,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		Mono<String> result = getWebClient().build().post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
@@ -122,7 +122,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(connector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
@@ -176,7 +176,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
@@ -209,7 +209,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		StepVerifier.create(result).expectError(SSLException.class).verify(Duration.ofSeconds(10));
 	}
@@ -270,6 +270,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent").exchange()
 				.flatMap((res) -> res.toEntity(Void.class)).block(Duration.ofSeconds(30));
+		assertResponseIsNotCompressed(response);
+	}
+
+	@Test
+	void noCompressionForResponseWithInvalidContentType() {
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		compression.setMimeTypes(new String[] { "application/json" });
+		WebClient client = prepareCompressionTest(compression, "test~plain");
+		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
+				.block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 

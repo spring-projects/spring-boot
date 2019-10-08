@@ -34,10 +34,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
-import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -68,10 +68,11 @@ public class RSocketServerAutoConfiguration {
 	static class WebFluxServerAutoConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
-				RSocketMessageHandler messageHandler) {
+				RSocketMessageHandler messageHandler, ObjectProvider<ServerRSocketFactoryProcessor> processors) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder());
+					messageHandler.responder(), processors.orderedStream());
 		}
 
 	}
@@ -89,14 +90,14 @@ public class RSocketServerAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
-				ObjectProvider<ServerRSocketFactoryCustomizer> customizers) {
+				ObjectProvider<ServerRSocketFactoryProcessor> processors) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
-			factory.setServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+			factory.setServerProcessors(processors.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 
@@ -108,8 +109,7 @@ public class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
-		ServerRSocketFactoryCustomizer frameDecoderServerFactoryCustomizer(
-				RSocketMessageHandler rSocketMessageHandler) {
+		ServerRSocketFactoryProcessor frameDecoderServerFactoryCustomizer(RSocketMessageHandler rSocketMessageHandler) {
 			return (serverRSocketFactory) -> {
 				if (rSocketMessageHandler.getRSocketStrategies()
 						.dataBufferFactory() instanceof NettyDataBufferFactory) {

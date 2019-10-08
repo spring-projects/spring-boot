@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
@@ -44,7 +44,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RedisTemplate.class, RedisOperationsSessionRepository.class })
+@ConditionalOnClass({ RedisTemplate.class, RedisIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
 @Conditional(ServletSessionCondition.class)

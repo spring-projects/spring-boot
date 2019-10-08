@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -44,13 +45,14 @@ public class CloudFoundryHealthEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health() {
-		return this.delegate.health(SecurityContext.NONE, true);
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion) {
+		return this.delegate.health(apiVersion, SecurityContext.NONE, true);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(@Selector(match = Match.ALL_REMAINING) String... path) {
-		return this.delegate.health(SecurityContext.NONE, true, path);
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion,
+			@Selector(match = Match.ALL_REMAINING) String... path) {
+		return this.delegate.health(apiVersion, SecurityContext.NONE, true, path);
 	}
 
 }

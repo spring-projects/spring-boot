@@ -33,6 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -40,9 +41,11 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -293,11 +296,13 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		@Override
 		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
-				return handleResult(
-						this.operation.invoke(new InvocationContext(new ServletSecurityContext(request), arguments)),
-						HttpMethod.valueOf(request.getMethod()));
+				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(headers);
+				ServletSecurityContext securityContext = new ServletSecurityContext(request);
+				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
 				throw new BadOperationRequestException(ex.getReason());

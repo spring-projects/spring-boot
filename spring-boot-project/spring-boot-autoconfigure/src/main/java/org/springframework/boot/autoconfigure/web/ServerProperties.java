@@ -322,6 +322,11 @@ public class ServerProperties {
 		private String remoteIpHeader;
 
 		/**
+		 * Name of the HTTP header from which the remote host is extracted.
+		 */
+		private String hostHeader = "X-Forwarded-Host";
+
+		/**
 		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
@@ -517,6 +522,14 @@ public class ServerProperties {
 
 		public void setRemoteIpHeader(String remoteIpHeader) {
 			this.remoteIpHeader = remoteIpHeader;
+		}
+
+		public String getHostHeader() {
+			return this.hostHeader;
+		}
+
+		public void setHostHeader(String hostHeader) {
+			this.hostHeader = hostHeader;
 		}
 
 		public Charset getUriEncoding() {
@@ -919,7 +932,7 @@ public class ServerProperties {
 		/**
 		 * Maximum thread idle time.
 		 */
-		private Integer idleTimeout = 60000;
+		private Duration idleTimeout = Duration.ofMillis(60000);
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
@@ -965,11 +978,11 @@ public class ServerProperties {
 			return this.maxThreads;
 		}
 
-		public void setIdleTimeout(Integer idleTimeout) {
+		public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public Integer getIdleTimeout() {
+		public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 

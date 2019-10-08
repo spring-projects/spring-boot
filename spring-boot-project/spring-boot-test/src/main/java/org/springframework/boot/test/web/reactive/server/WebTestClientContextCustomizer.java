@@ -79,7 +79,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && obj.getClass() == getClass());
+		return (obj != null) && (obj.getClass() == getClass());
 	}
 
 	@Override
@@ -160,6 +160,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
 			String baseUrl = (sslEnabled ? "https" : "http") + "://localhost:" + port;
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
+			customizeWebTestClientBuilder(builder, this.applicationContext);
 			customizeWebTestClientCodecs(builder, this.applicationContext);
 			return builder.baseUrl(baseUrl).build();
 		}
@@ -172,6 +173,13 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return false;
+			}
+		}
+
+		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
+			for (WebTestClientBuilderCustomizer customizer : context
+					.getBeansOfType(WebTestClientBuilderCustomizer.class).values()) {
+				customizer.customize(clientBuilder);
 			}
 		}
 

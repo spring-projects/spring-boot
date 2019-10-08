@@ -43,6 +43,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Toshiaki Maki
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {

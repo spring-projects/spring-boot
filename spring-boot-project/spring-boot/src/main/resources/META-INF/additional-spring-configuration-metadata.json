@@ -48,6 +48,18 @@
       "defaultValue": false
     },
     {
+      "name": "spring.banner.image.bitdepth",
+      "type": "java.lang.Integer",
+      "description": "The bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
+      "defaultValue": 4
+    },
+    {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
       "name": "debug",
       "type": "java.lang.Boolean",
       "description": "Enable debug logs.",
@@ -164,6 +176,13 @@
       "description": "Appender pattern for log level. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "%5p"
+    },
+    {
+      "name": "logging.pattern.rolling-file-name",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
     },
     {
       "name": "logging.register-shutdown-hook",

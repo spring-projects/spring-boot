@@ -17,7 +17,10 @@
 package org.springframework.boot.autoconfigure.quartz;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -144,9 +147,9 @@ public class QuartzProperties {
 		private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
 
 		/**
-		 * Prefix for single-line comments in SQL initialization scripts.
+		 * Prefixes for single-line comments in SQL initialization scripts.
 		 */
-		private String commentPrefix = "--";
+		private List<String> commentPrefix = new ArrayList<>(Arrays.asList("#", "--"));
 
 		public String getSchema() {
 			return this.schema;
@@ -164,11 +167,11 @@ public class QuartzProperties {
 			this.initializeSchema = initializeSchema;
 		}
 
-		public String getCommentPrefix() {
+		public List<String> getCommentPrefix() {
 			return this.commentPrefix;
 		}
 
-		public void setCommentPrefix(String commentPrefix) {
+		public void setCommentPrefix(List<String> commentPrefix) {
 			this.commentPrefix = commentPrefix;
 		}
 

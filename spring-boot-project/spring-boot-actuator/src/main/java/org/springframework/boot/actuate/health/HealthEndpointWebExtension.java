@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
@@ -64,19 +65,19 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext) {
-		return health(securityContext, NO_PATH);
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext) {
+		return health(apiVersion, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext,
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
-		return health(securityContext, false, path);
+		return health(apiVersion, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext, boolean alwaysIncludeDetails,
-			String... path) {
-		HealthResult<HealthComponent> result = getHealth(securityContext, alwaysIncludeDetails, path);
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
+			boolean showAll, String... path) {
+		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, showAll, path);
 		if (result == null) {
 			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
@@ -92,9 +93,9 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	}
 
 	@Override
-	protected HealthComponent aggregateContributions(Map<String, HealthComponent> contributions,
-			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
-		return getCompositeHealth(contributions, statusAggregator, includeDetails, groupNames);
+	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
+			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }

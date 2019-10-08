@@ -22,7 +22,6 @@ package org.springframework.boot.rsocket.server;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@SuppressWarnings("serial")
 public class RSocketServerException extends RuntimeException {
 
 	public RSocketServerException(String message, Throwable cause) {

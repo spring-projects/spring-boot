@@ -233,8 +233,8 @@ class ServerPropertiesTests {
 
 	@Test
 	void testCustomizeJettyIdleTimeout() {
-		bind("server.jetty.idle-timeout", "10");
-		assertThat(this.properties.getJetty().getIdleTimeout()).isEqualTo(10);
+		bind("server.jetty.idle-timeout", "10s");
+		assertThat(this.properties.getJetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test

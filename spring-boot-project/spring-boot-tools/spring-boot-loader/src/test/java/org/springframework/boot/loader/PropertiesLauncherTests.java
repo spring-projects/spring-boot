@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.assertj.core.api.Condition;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link PropertiesLauncher}.
@@ -339,14 +342,7 @@ class PropertiesLauncherTests {
 	}
 
 	private void waitFor(String value) throws Exception {
-		int count = 0;
-		boolean timeout = false;
-		while (!timeout && count < 100) {
-			count++;
-			Thread.sleep(50L);
-			timeout = this.output.toString().contains(value);
-		}
-		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
+		Awaitility.waitAtMost(Duration.ofSeconds(5)).until(this.output::toString, containsString(value));
 	}
 
 	private Condition<Archive> endingWith(String value) {

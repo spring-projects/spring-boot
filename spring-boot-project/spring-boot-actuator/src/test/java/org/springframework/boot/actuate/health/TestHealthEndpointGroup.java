@@ -33,7 +33,9 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Predicate<String> memberPredicate;
 
-	private boolean includeDetails = true;
+	private Boolean showComponents;
+
+	private boolean showDetails = true;
 
 	TestHealthEndpointGroup() {
 		this((name) -> true);
@@ -49,12 +51,21 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	@Override
-	public boolean includeDetails(SecurityContext securityContext) {
-		return this.includeDetails;
+	public boolean showComponents(SecurityContext securityContext) {
+		return (this.showComponents != null) ? this.showComponents : this.showDetails;
 	}
 
-	void setIncludeDetails(boolean includeDetails) {
-		this.includeDetails = includeDetails;
+	void setShowComponents(Boolean showComponents) {
+		this.showComponents = showComponents;
+	}
+
+	@Override
+	public boolean showDetails(SecurityContext securityContext) {
+		return this.showDetails;
+	}
+
+	void setShowDetails(boolean includeDetails) {
+		this.showDetails = includeDetails;
 	}
 
 	@Override

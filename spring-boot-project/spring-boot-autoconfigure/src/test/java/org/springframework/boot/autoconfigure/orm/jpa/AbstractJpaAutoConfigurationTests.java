@@ -290,7 +290,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 	static class TestFilterRegistrationConfiguration {
 
 		@Bean
-		FilterRegistrationBean<OpenEntityManagerInViewFilter> OpenEntityManagerInViewFilterFilterRegistrationBean() {
+		FilterRegistrationBean<OpenEntityManagerInViewFilter> openEntityManagerInViewFilterFilterRegistrationBean() {
 			return new FilterRegistrationBean<>();
 		}
 

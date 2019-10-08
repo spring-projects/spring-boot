@@ -37,8 +37,14 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ ConfigurationPropertiesBeanRegistrar.class, ConfigurationPropertiesBindingPostProcessorRegistrar.class })
+@Import(EnableConfigurationPropertiesRegistrar.class)
 public @interface EnableConfigurationProperties {
+
+	/**
+	 * The bean name of the configuration properties validator.
+	 * @since 2.2.0
+	 */
+	String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
 	/**
 	 * Convenient way to quickly register

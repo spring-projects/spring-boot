@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,18 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		boolean bound = this.binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).isBound();
 		assertThat(bound).isFalse();
+	}
+
+	@Test
+	void bindToClassWithMultipleConstructorsAndFilterShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.int-value", "12");
+		this.sources.add(source);
+		Constructor<?>[] constructors = MultipleConstructorsBean.class.getDeclaredConstructors();
+		Constructor<?> constructor = (constructors[0].getParameterCount() == 1) ? constructors[0] : constructors[1];
+		MultipleConstructorsBean bound = this.binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)
+				.withConstructorFilter((candidate) -> candidate.equals(constructor))).get();
+		assertThat(bound.getIntValue()).isEqualTo(12);
 	}
 
 	@Test
@@ -258,14 +271,20 @@ class ValueObjectBinderTests {
 
 	}
 
-	@SuppressWarnings("unused")
 	static class MultipleConstructorsBean {
+
+		private final int intValue;
 
 		MultipleConstructorsBean(int intValue) {
 			this(intValue, 23L, "hello");
 		}
 
 		MultipleConstructorsBean(int intValue, long longValue, String stringValue) {
+			this.intValue = intValue;
+		}
+
+		int getIntValue() {
+			return this.intValue;
 		}
 
 	}

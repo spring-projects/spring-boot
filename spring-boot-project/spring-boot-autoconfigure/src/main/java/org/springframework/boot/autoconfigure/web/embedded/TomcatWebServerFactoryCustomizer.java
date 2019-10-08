@@ -183,6 +183,7 @@ public class TomcatWebServerFactoryCustomizer
 			// The internal proxies default to a white list of "safe" internal IP
 			// addresses
 			valve.setInternalProxies(tomcatProperties.getInternalProxies());
+			valve.setHostHeader(tomcatProperties.getHostHeader());
 			valve.setPortHeader(tomcatProperties.getPortHeader());
 			valve.setProtocolHeaderHttpsValue(tomcatProperties.getProtocolHeaderHttpsValue());
 			// ... so it's safe to add this valve by default.

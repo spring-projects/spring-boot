@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
@@ -36,6 +37,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -116,7 +118,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		this.webServer.start();
 		WebClient client = getWebClient().build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
@@ -124,11 +126,8 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
 	}
 
-	private void awaitFile(File file) throws InterruptedException {
-		long end = System.currentTimeMillis() + 10000;
-		while (!file.exists() && System.currentTimeMillis() < end) {
-			Thread.sleep(100);
-		}
+	private void awaitFile(File file) {
+		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(file::exists, is(true));
 	}
 
 }

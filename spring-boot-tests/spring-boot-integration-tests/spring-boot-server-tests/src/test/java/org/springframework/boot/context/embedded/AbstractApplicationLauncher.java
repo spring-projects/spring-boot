@@ -21,9 +21,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -93,16 +95,12 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback, AfterE
 	}
 
 	private int awaitServerPort(Process process, File serverPortFile) throws Exception {
-		long end = System.currentTimeMillis() + 30000;
-		while (serverPortFile.length() == 0) {
-			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException("server.port file was not written within 30 seconds");
-			}
+		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(serverPortFile::length, (length) -> {
 			if (!process.isAlive()) {
-				throw new IllegalStateException("Application failed to launch");
+				throw new IllegalStateException("Application failed to start");
 			}
-			Thread.sleep(100);
-		}
+			return length > 0;
+		});
 		return Integer.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
 	}
 

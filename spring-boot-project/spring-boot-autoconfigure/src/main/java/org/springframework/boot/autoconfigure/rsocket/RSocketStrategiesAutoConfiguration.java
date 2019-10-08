@@ -39,6 +39,8 @@ import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RSocketStrategies}.
@@ -51,10 +53,15 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class RSocketStrategiesAutoConfiguration {
 
+	private static final String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
+		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {
+			builder.routeMatcher(new PathPatternRouteMatcher());
+		}
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
