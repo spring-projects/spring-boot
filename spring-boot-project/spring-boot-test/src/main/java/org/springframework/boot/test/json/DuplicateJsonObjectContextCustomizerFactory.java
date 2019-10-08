@@ -80,10 +80,7 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || obj.getClass() != getClass()) {
-				return false;
-			}
-			return true;
+			return (obj != null) && (getClass() == obj.getClass());
 		}
 
 		@Override

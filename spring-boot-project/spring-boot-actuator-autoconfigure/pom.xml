@@ -16,6 +16,11 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>

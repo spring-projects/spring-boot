@@ -266,7 +266,7 @@ public class SessionAutoConfiguration {
 			super(applicationContext, sessionProperties,
 					Arrays.asList("org.springframework.session.hazelcast.HazelcastIndexedSessionRepository",
 							"org.springframework.session.jdbc.JdbcIndexedSessionRepository",
-							"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
+							"org.springframework.session.data.mongo.MongoIndexedSessionRepository",
 							"org.springframework.session.data.redis.RedisIndexedSessionRepository"));
 		}
 
@@ -283,7 +283,7 @@ public class SessionAutoConfiguration {
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
 					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisSessionRepository",
-							"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
+							"org.springframework.session.data.mongo.ReactiveMongoSessionRepository"));
 		}
 
 	}

@@ -32,7 +32,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
@@ -63,7 +63,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-						MongoOperationsSessionRepository.class, RedisIndexedSessionRepository.class))
+						MongoIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 

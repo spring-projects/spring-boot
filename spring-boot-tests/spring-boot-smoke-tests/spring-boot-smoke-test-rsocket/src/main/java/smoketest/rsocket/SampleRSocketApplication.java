@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.rsocket.server;
+package smoketest.rsocket;
 
-import java.util.function.Function;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import io.rsocket.RSocketFactory;
+@SpringBootApplication
+public class SampleRSocketApplication {
 
-/**
- * Mapping function that can be used to customize an RSocket server factory.
- *
- * @author Brian Clozel
- * @see RSocketServerFactory
- * @since 2.2.0
- */
-@FunctionalInterface
-public interface ServerRSocketFactoryCustomizer
-		extends Function<RSocketFactory.ServerRSocketFactory, RSocketFactory.ServerRSocketFactory> {
+	public static void main(String[] args) {
+		SpringApplication.run(SampleRSocketApplication.class, args);
+	}
 
 }

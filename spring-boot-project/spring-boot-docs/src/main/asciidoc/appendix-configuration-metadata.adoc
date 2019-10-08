@@ -81,7 +81,7 @@ They use a simple JSON format with items categorized under either "`groups`" or 
 Each "`property`" is a configuration item that the user specifies with a given value.
 For example, `server.port` and `server.address` might be specified in `application.properties`, as follows:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	server.port=9090
 	server.address=127.0.0.1
@@ -94,7 +94,7 @@ NOTE: It is not required that every "`property`" has a "`group`".
 Some properties might exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a given property.
-For example, when a developer is configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
+For example, when a developer is configuring the configprop:spring.jpa.hibernate.ddl-auto[] property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
 
 
 

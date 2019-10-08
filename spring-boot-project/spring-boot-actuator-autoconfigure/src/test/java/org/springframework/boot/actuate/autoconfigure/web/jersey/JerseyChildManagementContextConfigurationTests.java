@@ -21,19 +21,14 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JerseyChildManagementContextConfiguration}.
@@ -62,16 +57,6 @@ class JerseyChildManagementContextConfigurationTests {
 	}
 
 	@Test
-	void resourceConfigIsCustomizedWithResourceConfigCustomizerBean() {
-		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ResourceConfig.class);
-			ResourceConfig config = context.getBean(ResourceConfig.class);
-			ResourceConfigCustomizer customizer = context.getBean(ResourceConfigCustomizer.class);
-			verify(customizer).customize(config);
-		});
-	}
-
-	@Test
 	void jerseyApplicationPathIsAutoConfigured() {
 		this.contextRunner.run((context) -> {
 			JerseyApplicationPath bean = context.getBean(JerseyApplicationPath.class);
@@ -91,16 +76,6 @@ class JerseyChildManagementContextConfigurationTests {
 	@Test
 	void resourceConfigCustomizerBeanIsNotRequired() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ResourceConfig.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomizerConfiguration {
-
-		@Bean
-		ResourceConfigCustomizer resourceConfigCustomizer() {
-			return mock(ResourceConfigCustomizer.class);
-		}
-
 	}
 
 }

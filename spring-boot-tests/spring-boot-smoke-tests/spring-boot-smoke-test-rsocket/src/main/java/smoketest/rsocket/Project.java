@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigureprocessor;
+package smoketest.rsocket;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class Project {
 
-/**
- * Alternative to Spring's {@code @Configuration} for testing (removes the need for a
- * dependency on the real annotation).
- *
- * @author Phillip Webb
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface TestConfiguration {
+	private String name;
 
-	String value() default "";
+	public Project() {
+	}
+
+	public Project(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

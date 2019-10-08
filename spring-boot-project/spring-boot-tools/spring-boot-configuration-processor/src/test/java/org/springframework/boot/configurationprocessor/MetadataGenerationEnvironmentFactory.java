@@ -35,6 +35,7 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NESTED_CONFIGURATION_PROPERTY_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION,
+				TestConfigurationMetadataAnnotationProcessor.CONSTRUCTOR_BINDING_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEFAULT_VALUE_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.READ_OPERATION_ANNOTATION);

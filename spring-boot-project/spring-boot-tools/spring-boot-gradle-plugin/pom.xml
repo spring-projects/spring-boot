@@ -17,6 +17,11 @@
 		<gradle.task>build</gradle.task>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -181,13 +186,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>springio</id>
-			<name>Spring IO releases repository</name>
-			<url>https://repo.spring.io/release</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>windows</id>
@@ -359,8 +357,8 @@
 						<dependencies>
 							<dependency>
 								<groupId>io.spring.asciidoctor</groupId>
-								<artifactId>spring-asciidoctor-extensions</artifactId>
-								<version>0.2.0.RELEASE</version>
+								<artifactId>spring-asciidoctor-extensions-block-switch</artifactId>
+								<version>${spring-asciidoctor-extensions.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>

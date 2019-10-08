@@ -70,6 +70,8 @@
 		<module>spring-boot-smoke-test-quartz</module>
 		<module>spring-boot-smoke-test-reactive-oauth2-client</module>
 		<module>spring-boot-smoke-test-reactive-oauth2-resource-server</module>
+		<module>spring-boot-smoke-test-rsocket</module>
+		<module>spring-boot-smoke-test-saml2-service-provider</module>
 		<module>spring-boot-smoke-test-secure</module>
 		<module>spring-boot-smoke-test-secure-jersey</module>
 		<module>spring-boot-smoke-test-secure-webflux</module>
