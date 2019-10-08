@@ -19,7 +19,6 @@ package org.springframework.boot.configurationprocessor.json;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 // Note: this class was written without inspecting the non-free org.json source code.
@@ -65,8 +64,8 @@ public class JSONArray {
 	public JSONArray(Collection copyFrom) {
 		this();
 		if (copyFrom != null) {
-			for (Iterator it = copyFrom.iterator(); it.hasNext();) {
-				put(JSONObject.wrap(it.next()));
+			for (Object o : copyFrom) {
+				put(JSONObject.wrap(o));
 			}
 		}
 	}
