@@ -123,7 +123,7 @@ public class HttpTunnelPayload {
 				body.read(payload);
 			}
 			payload.flip();
-			return new HttpTunnelPayload(Long.valueOf(seqHeader), payload);
+			return new HttpTunnelPayload(Long.parseLong(seqHeader), payload);
 		}
 	}
 
