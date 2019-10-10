@@ -849,7 +849,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 	import java.net.InetAddress;
 	import java.util.List;
 
-	import org.springframework.boot.context.properties.ConfigurationProperties;
+	import org.springframework.boot.context.properties.ImmutableConfigurationProperties;
 	import org.springframework.boot.context.properties.DefaultValue;
 
 	@ImmutableConfigurationProperties("acme")
