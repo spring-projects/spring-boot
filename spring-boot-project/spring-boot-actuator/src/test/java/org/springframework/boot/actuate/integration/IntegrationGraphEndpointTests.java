@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.integration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -40,12 +39,12 @@ class IntegrationGraphEndpointTests {
 	@Mock
 	private IntegrationGraphServer integrationGraphServer;
 
-	@InjectMocks
 	private IntegrationGraphEndpoint integrationGraphEndpoint;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
+		this.integrationGraphEndpoint = new IntegrationGraphEndpoint(this.integrationGraphServer);
 	}
 
 	@Test
