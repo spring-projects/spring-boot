@@ -65,8 +65,6 @@ Spring Boot supports the following embedded servlet containers:
 
 You can also deploy Spring Boot applications to any Servlet 3.1+ compatible container.
 
-
-
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command line tool.
@@ -198,8 +196,6 @@ See {gradle-docs}/gradle_wrapper.html for details.
 ****
 
 More details on getting started with Spring Boot and Gradle can be found in the {spring-boot-gradle-plugin-docs}/#getting-started[Getting Started section] of the Gradle plugin's reference guide.
-
-
 
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
@@ -398,6 +394,40 @@ NOTE: Once you're done with the migration, please make sure to remove this modul
 To upgrade an existing CLI installation, use the appropriate package manager command (for example, `brew upgrade`).
 If you manually installed the CLI, follow the <<getting-started-manual-cli-installation, standard instructions>>, remembering to update your `PATH` environment variable to remove any older references.
 
+[[getting-started-with-spring-initializr]]
+== Spring Initializr
+
+You can create project strcture of Spring Boot application in multiple ways. 
+
+* https://start.spring.io/[Spring Initializr]
+* Spring Tool Suite
+* Using Spring Boot CLI
+
+This section illustrates how to use "`Spring Initializr`" to create Spring Boot application. It is a web application which generates basic project structure for you with either Gradle or Maven based build specification.
+
+Open https://start.spring.io/ in a new tab. You should see the form with pre-defined values as given in the image, you can change these values as per you requirement.
+
+image:https://i.imgur.com/AEkqoRn.jpg[alt="not bad.",width=128,height=128]
+
+1. Choose build type: You can specify how to build your project whether using Maven or Gradle. 
+This decides where to store your project metadata, that is either pom.xml for Maven and build.gradle for Gradle.
+
+2. Select Language: You can pick any language from Java, Kotlin and Groovy.
+
+3. Select Spring boot version:
+
+4. Provide project metadata details: Such as Group, Artifact, Package Name, Packing Type and Java Version.
+
+5. Dependencies: This field allow you to add/remove dependencies to your project. For example, you are developing a web application.
+In this case you may want to dependencies for spring web or spring session or spring data JPA or spring data JDBC.
+It is possible to modify this dependencies later from respective build script file (pom.xml or build.gradle)
+
+Once you are done with form and dependencies selection, click on Generate the Project to download project structure.
+This action generates a zip file, which contains project strcture. 
+
+After unzipping the file you should get the project strcture similar to sample figure. 
+
+image:https://i.imgur.com/AEkqoRn.jpg[alt="not bad.",width=128,height=128]
 
 
 [[getting-started-first-application]]
