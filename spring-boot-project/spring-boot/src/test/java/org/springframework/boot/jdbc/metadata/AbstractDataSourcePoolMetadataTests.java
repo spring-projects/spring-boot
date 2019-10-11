@@ -56,7 +56,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
 		assertThat(getDataSourceMetadata().getActive()).isEqualTo(0);
-		assertThat(getDataSourceMetadata().getUsage()).isEqualTo((float) 0);
+		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0f);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
 			assertThat(getDataSourceMetadata().getActive()).isEqualTo(1);
-			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5F);
+			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5f);
 			return null;
 		});
 	}
