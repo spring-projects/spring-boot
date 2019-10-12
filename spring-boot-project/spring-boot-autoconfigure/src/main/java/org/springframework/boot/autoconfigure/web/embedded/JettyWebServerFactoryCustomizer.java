@@ -44,6 +44,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Rafiullah Hamedy
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer
@@ -74,8 +75,8 @@ public class JettyWebServerFactoryCustomizer
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive).to((maxHttpHeaderSize) -> factory
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
-		propertyMapper.from(jettyProperties::getMaxHttpPostSize).asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
+				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
 		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
 		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
@@ -106,24 +107,24 @@ public class JettyWebServerFactoryCustomizer
 		});
 	}
 
-	private void customizeMaxHttpPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpPostSize) {
+	private void customizeMaxHttpFormPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpFormPostSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
 			public void customize(Server server) {
-				setHandlerMaxHttpPostSize(maxHttpPostSize, server.getHandlers());
+				setHandlerMaxHttpFormPostSize(maxHttpFormPostSize, server.getHandlers());
 			}
 
-			private void setHandlerMaxHttpPostSize(int maxHttpPostSize, Handler... handlers) {
+			private void setHandlerMaxHttpFormPostSize(int maxHttpPostSize, Handler... handlers) {
 				for (Handler handler : handlers) {
 					if (handler instanceof ContextHandler) {
-						((ContextHandler) handler).setMaxFormContentSize(maxHttpPostSize);
+						((ContextHandler) handler).setMaxFormContentSize(maxHttpFormPostSize);
 					}
 					else if (handler instanceof HandlerWrapper) {
-						setHandlerMaxHttpPostSize(maxHttpPostSize, ((HandlerWrapper) handler).getHandler());
+						setHandlerMaxHttpFormPostSize(maxHttpFormPostSize, ((HandlerWrapper) handler).getHandler());
 					}
 					else if (handler instanceof HandlerCollection) {
-						setHandlerMaxHttpPostSize(maxHttpPostSize, ((HandlerCollection) handler).getHandlers());
+						setHandlerMaxHttpFormPostSize(maxHttpFormPostSize, ((HandlerCollection) handler).getHandlers());
 					}
 				}
 			}

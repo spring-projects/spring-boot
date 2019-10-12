@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rob Tompkins
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
+ * @author Rafiullah Hamedy
  */
 public class TomcatWebServerFactoryCustomizerTests {
 
@@ -96,6 +97,12 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customDisableMaxHttpFormPostSize() {
+		bind("server.tomcat.max-http-form-post-size=-1");
+		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
+	}
+
+	@Test
 	public void customMaxConnections() {
 		bind("server.tomcat.max-connections=5");
 		customizeAndRunServer((server) -> assertThat(
@@ -106,6 +113,13 @@ public class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	public void customMaxHttpPostSize() {
 		bind("server.tomcat.max-http-post-size=10000");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
+	}
+
+	@Test
+	public void customMaxHttpFormPostSize() {
+		bind("server.tomcat.max-http-form-post-size=10000");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
 	}
