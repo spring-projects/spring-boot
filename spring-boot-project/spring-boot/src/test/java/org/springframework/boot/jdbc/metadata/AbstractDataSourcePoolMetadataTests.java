@@ -42,12 +42,12 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 
 	@Test
 	void getMaxPoolSize() {
-		assertThat(getDataSourceMetadata().getMax()).isEqualTo(Integer.valueOf(2));
+		assertThat(getDataSourceMetadata().getMax()).isEqualTo(2);
 	}
 
 	@Test
 	void getMinPoolSize() {
-		assertThat(getDataSourceMetadata().getMin()).isEqualTo(Integer.valueOf(0));
+		assertThat(getDataSourceMetadata().getMin()).isEqualTo(0);
 	}
 
 	@Test
@@ -55,16 +55,16 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(0));
-		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0));
+		assertThat(getDataSourceMetadata().getActive()).isEqualTo(0);
+		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0f);
 	}
 
 	@Test
 	void getPoolSizeOneConnection() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
-			assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(1));
-			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0.5F));
+			assertThat(getDataSourceMetadata().getActive()).isEqualTo(1);
+			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5f);
 			return null;
 		});
 	}
@@ -73,7 +73,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 	void getIdle() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(1));
+		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(1);
 	}
 
 	@Test

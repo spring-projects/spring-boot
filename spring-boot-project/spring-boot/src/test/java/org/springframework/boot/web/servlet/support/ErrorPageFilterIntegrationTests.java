@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -190,7 +189,7 @@ class ErrorPageFilterIntegrationTests {
 
 		@Override
 		public ApplicationContext loadContext(String... locations) {
-			throw new UnsupportedOptionException();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -200,7 +199,7 @@ class ErrorPageFilterIntegrationTests {
 
 		@Override
 		protected String getResourceSuffix() {
-			throw new UnsupportedOptionException();
+			throw new UnsupportedOperationException();
 		}
 
 	}

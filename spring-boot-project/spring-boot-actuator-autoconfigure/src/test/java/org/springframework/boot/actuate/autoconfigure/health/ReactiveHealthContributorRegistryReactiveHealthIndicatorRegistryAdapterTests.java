@@ -58,7 +58,7 @@ class ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapterTes
 	}
 
 	@Test
-	void unregisterWhenDelegatesToContributorRegistry() {
+	void unregisterDelegatesToContributorRegistry() {
 		ReactiveHealthIndicator healthIndicator = mock(ReactiveHealthIndicator.class);
 		this.contributorRegistry.registerContributor("test", healthIndicator);
 		ReactiveHealthIndicator unregistered = this.adapter.unregister("test");
@@ -90,7 +90,7 @@ class ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapterTes
 	}
 
 	@Test
-	void getAllDelegatesContributorRegistry() {
+	void getAllDelegatesToContributorRegistry() {
 		ReactiveHealthIndicator healthIndicator = mock(ReactiveHealthIndicator.class);
 		this.contributorRegistry.registerContributor("test", healthIndicator);
 		Map<String, ReactiveHealthIndicator> all = this.adapter.getAll();

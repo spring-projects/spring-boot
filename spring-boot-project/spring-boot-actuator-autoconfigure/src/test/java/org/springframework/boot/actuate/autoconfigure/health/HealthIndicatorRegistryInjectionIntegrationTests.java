@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.List;
-
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -61,12 +58,9 @@ public class HealthIndicatorRegistryInjectionIntegrationTests {
 	static class Config {
 
 		Config(HealthAggregator healthAggregator, HealthIndicatorRegistry healthIndicatorRegistry,
-				List<HealthIndicator> healthIndicators, MeterRegistry registry) {
+				MeterRegistry registry) {
 			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(healthAggregator,
 					healthIndicatorRegistry);
-			for (int i = 0; i < healthIndicators.size(); i++) {
-				healthIndicatorRegistry.register(Integer.toString(i), healthIndicators.get(i));
-			}
 			Gauge.builder("health", healthIndicator, this::getGuageValue)
 					.description("Spring boot health indicator.  3=UP, 2=OUT_OF_SERVICE, 1=DOWN, 0=UNKNOWN")
 					.strongReference(true).register(registry);
