@@ -403,6 +403,17 @@ For more about the exact ordering of loading properties, see "<<spring-boot-feat
 
 
 
+[[howto-disable-register-shutdown-hook]]
+=== Disable Register Shutdown Hook
+When the Spring Boot starts, it will register a shutdown hook with the JVM runtime by default. To disable this behavior configure the `RegisterShutdownHook` in your `application.properties`, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	spring.main.register-shutdown-hook=false
+----
+
+
+
 [[howto-embedded-web-servers]]
 == Embedded Web Servers
 Each Spring Boot web application includes an embedded web server.
