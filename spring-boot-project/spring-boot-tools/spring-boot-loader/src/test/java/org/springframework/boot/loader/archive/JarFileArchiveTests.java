@@ -178,6 +178,8 @@ class JarFileArchiveTests {
 			assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
 			it.next();
 		}
+		((JarFileArchive) nestedArchive).close();
+		jarFileArchive.close();
 	}
 
 	private byte[] writeZip64Jar() throws IOException {
