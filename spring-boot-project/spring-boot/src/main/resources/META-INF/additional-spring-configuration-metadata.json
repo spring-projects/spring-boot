@@ -697,6 +697,12 @@
       }
     },
     {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether shutdown hooks are automatically registered when Spring Boot start. If not set, they are automatically registered."
+    },
+    {
       "name": "spring.mandatory-file-encoding",
       "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
       "type": "java.nio.charset.Charset",
