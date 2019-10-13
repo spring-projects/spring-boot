@@ -1843,17 +1843,17 @@ The following code shows a typical `@RestController` that serves JSON data:
 	@RequestMapping(value="/users")
 	public class MyRestController {
 
-		@RequestMapping(value="/\{user}", method=RequestMethod.GET)
+		@RequestMapping(value="/{user}", method=RequestMethod.GET)
 		public User getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/\{user}/customers", method=RequestMethod.GET)
+		@RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
 		List<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/\{user}", method=RequestMethod.DELETE)
+		@RequestMapping(value="/{user}", method=RequestMethod.DELETE)
 		public User deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2324,17 +2324,17 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 	@RequestMapping("/users")
 	public class MyRestController {
 
-		@GetMapping("/\{user}")
+		@GetMapping("/{user}")
 		public Mono<User> getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@GetMapping("/\{user}/customers")
+		@GetMapping("/{user}/customers")
 		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@DeleteMapping("/\{user}")
+		@DeleteMapping("/{user}")
 		public Mono<User> deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2351,9 +2351,9 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 		@Bean
 		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
-			return route(GET("/\{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
-					.andRoute(GET("/\{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
-					.andRoute(DELETE("/\{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
+			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
+					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
+					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
 		}
 
 	}
