@@ -203,12 +203,6 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForClassWhenNoMetaConstructorBindingOnTypeReturnsValueObject() {
-		BindMethod bindType = BindMethod.forClass(MetaConstructorBindingOnType.class);
-		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
-	}
-
-	@Test
 	void bindTypeForClassWhenNoConstructorBindingOnConstructorReturnsValueObject() {
 		BindMethod bindType = BindMethod.forClass(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
@@ -379,14 +373,6 @@ class ConfigurationPropertiesBeanTests {
 	static class ConstructorBindingOnType {
 
 		ConstructorBindingOnType(String name) {
-		}
-
-	}
-
-	@ImmutableConfigurationProperties
-	static class MetaConstructorBindingOnType {
-
-		MetaConstructorBindingOnType(String name) {
 		}
 
 	}

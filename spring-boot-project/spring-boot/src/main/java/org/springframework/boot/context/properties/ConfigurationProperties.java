@@ -40,7 +40,6 @@ import org.springframework.core.annotation.AliasFor;
  * @since 1.0.0
  * @see ConfigurationPropertiesScan
  * @see ConstructorBinding
- * @see ImmutableConfigurationProperties
  * @see ConfigurationPropertiesBindingPostProcessor
  * @see EnableConfigurationProperties
  */

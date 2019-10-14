@@ -30,7 +30,6 @@ import java.lang.annotation.Target;
  * @author Phillip Webb
  * @since 2.2.0
  * @see ConfigurationProperties
- * @see ImmutableConfigurationProperties
  */
 @Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)

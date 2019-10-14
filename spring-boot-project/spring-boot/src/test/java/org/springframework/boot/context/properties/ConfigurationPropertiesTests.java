@@ -1806,7 +1806,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ImmutableConfigurationProperties(prefix = "test")
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
 	static class OtherInjectedProperties {
 
 		final DataSizeProperties dataSizeProperties;
@@ -1823,7 +1824,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ImmutableConfigurationProperties(prefix = "test")
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterProperties {
 
@@ -1854,7 +1856,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ImmutableConfigurationProperties(prefix = "test")
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 
@@ -1973,7 +1976,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ImmutableConfigurationProperties("test")
+	@ConstructorBinding
+	@ConfigurationProperties("test")
 	static class NestedConstructorProperties {
 
 		private final String name;
@@ -2033,7 +2037,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ImmutableConfigurationProperties("test")
+	@ConstructorBinding
+	@ConfigurationProperties("test")
 	static class DeducedNestedConstructorProperties {
 
 		private final String name;
