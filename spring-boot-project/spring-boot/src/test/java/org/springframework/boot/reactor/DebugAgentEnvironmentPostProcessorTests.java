@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
+@ClassPathOverrides("io.projectreactor:reactor-tools:3.3.0.RELEASE")
 class DebugAgentEnvironmentPostProcessorTests {
 
 	static {
