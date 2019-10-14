@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import io.micrometer.shaded.reactor.core.publisher.Mono;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;

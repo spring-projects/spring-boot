@@ -44,9 +44,11 @@ import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -291,6 +293,17 @@ class HealthEndpointAutoConfigurationTests {
 			HealthStatusHttpMapper mapper = context.getBean(HealthStatusHttpMapper.class);
 			assertThat(mapper.mapStatus(Status.DOWN)).isEqualTo(503);
 		});
+	}
+
+	@Test
+	void runWhenReactorAvailableCreatesReactiveHealthIndicatorRegistryBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthIndicatorRegistry.class));
+	}
+
+	@Test // gh-18570
+	void runWhenReactorUnavailableDoesNotCreateReactiveHealthIndicatorRegistryBean() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Mono.class.getPackage().getName()))
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveHealthIndicatorRegistry.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
