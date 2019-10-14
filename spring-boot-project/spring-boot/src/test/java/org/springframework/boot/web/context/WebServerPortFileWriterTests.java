@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class WebServerPortFileWriterTest {
+public class WebServerPortFileWriterTests {
 
 	@Rule
 	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
