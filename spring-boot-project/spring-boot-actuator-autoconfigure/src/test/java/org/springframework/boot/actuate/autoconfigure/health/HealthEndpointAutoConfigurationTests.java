@@ -44,6 +44,7 @@ import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -294,10 +295,15 @@ class HealthEndpointAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void runWhenReactorAvailableCreatesReactiveHealthIndicatorRegistryBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthIndicatorRegistry.class));
+	}
+
 	@Test // gh-18570
-	void runDoesNotFailWithoutReactorOnClasspath() {
+	void runWhenReactorUnavailableDoesNotCreateReactiveHealthIndicatorRegistryBean() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Mono.class.getPackage().getName()))
-				.run((context) -> assertThat(context).hasNotFailed());
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveHealthIndicatorRegistry.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
