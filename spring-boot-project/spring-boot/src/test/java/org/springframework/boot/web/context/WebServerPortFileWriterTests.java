@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class WebServerPortFileWriterTest {
+class WebServerPortFileWriterTests {
 
 	@TempDir
 	File tempDir;
