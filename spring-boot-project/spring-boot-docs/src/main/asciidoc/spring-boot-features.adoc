@@ -7110,6 +7110,8 @@ Make sure that configuration keys are documented by adding field javadoc for eac
 	}
 ----
 
+NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+
 Here are some rules we follow internally to make sure descriptions are consistent:
 
 * Do not start the description by "The" or "A".
@@ -7117,9 +7119,6 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * For collection-based types, start the description with "Comma-separated list"
 * Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, e.g. "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
-
-NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since
-they are not processed before being added to the JSON.
 
 Make sure to <<appendix-configuration-metadata#configuration-metadata-annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
 You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
