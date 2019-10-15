@@ -122,6 +122,7 @@ Rather, pick only the properties that you need.
 	spring.main.banner-mode=console # Mode used to display the banner when the application runs.
 	spring.main.sources= # Sources (class names, package names, or XML resource locations) to include in the ApplicationContext.
 	spring.main.web-application-type= # Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath.
+	spring.main.register-shutdown-hook=true # Whether shutdown hooks are automatically registered when Spring Boot start. If not set, they are automatically registered.
 
 	# FILE ENCODING ({spring-boot-module-code}/context/FileEncodingApplicationListener.java[FileEncodingApplicationListener])
 	spring.mandatory-file-encoding= # Expected character encoding the application must use.
