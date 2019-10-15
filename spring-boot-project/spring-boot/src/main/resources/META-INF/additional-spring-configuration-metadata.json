@@ -666,6 +666,13 @@
       "defaultValue": false
     },
     {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether the application should have a shutdown hook registered.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.main.show-banner",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",

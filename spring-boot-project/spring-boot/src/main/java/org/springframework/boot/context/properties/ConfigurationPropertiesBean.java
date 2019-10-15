@@ -27,6 +27,7 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -43,13 +44,17 @@ import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Provides access to {@link ConfigurationProperties} beans from an
- * {@link ApplicationContext}.
+ * Provides access to {@link ConfigurationProperties @ConfigurationProperties} bean
+ * details, regardless of if the annotation was used directly or on a {@link Bean @Bean}
+ * factory method. This class can be used to access {@link #getAll(ApplicationContext)
+ * all} configuration properties beans in an ApplicationContext, or
+ * {@link #get(ApplicationContext, Object, String) individual beans} on a case-by-case
+ * basis (for example, in a {@link BeanPostProcessor}).
  *
  * @author Phillip Webb
  * @since 2.2.0
- * @see #get(ApplicationContext, Object, String)
  * @see #getAll(ApplicationContext)
+ * @see #get(ApplicationContext, Object, String)
  */
 public final class ConfigurationPropertiesBean {
 

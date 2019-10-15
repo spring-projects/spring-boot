@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -433,7 +433,7 @@ class CollectionBinderTests {
 
 		private List<String> items = new ArrayList<>();
 
-		private Set<String> itemsSet = new HashSet<>();
+		private Set<String> itemsSet = new LinkedHashSet<>();
 
 		List<String> getItems() {
 			return this.items;

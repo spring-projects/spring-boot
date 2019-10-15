@@ -7442,6 +7442,8 @@ Make sure that configuration keys are documented by adding field javadoc for eac
 	}
 ----
 
+NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+
 Here are some rules we follow internally to make sure descriptions are consistent:
 
 * Do not start the description by "The" or "A".
