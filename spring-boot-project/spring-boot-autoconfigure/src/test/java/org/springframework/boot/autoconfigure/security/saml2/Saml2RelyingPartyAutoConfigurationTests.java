@@ -31,6 +31,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
@@ -104,6 +105,13 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isTrue());
 	}
 
+	@Test
+	void samlLoginShouldBackOffWhenAWebSecurityConfigurerAdapterIsDefined() {
+		this.contextRunner.withUserConfiguration(WebSecurityConfigurerAdapterConfiguration.class)
+				.withPropertyValues(getPropertyValues())
+				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
+	}
+
 	private String[] getPropertyValues() {
 		return new String[] {
 				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
@@ -126,6 +134,18 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 		@Bean
 		RelyingPartyRegistrationRepository testRegistrationRepository() {
 			return mock(RelyingPartyRegistrationRepository.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebSecurityConfigurerAdapterConfiguration {
+
+		@Bean
+		WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
+			return new WebSecurityConfigurerAdapter() {
+
+			};
 		}
 
 	}
