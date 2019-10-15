@@ -68,7 +68,9 @@ class Connection {
 		this.inputStream = new ConnectionInputStream(inputStream);
 		this.outputStream = new ConnectionOutputStream(outputStream);
 		this.header = this.inputStream.readHeader();
-		logger.debug("Established livereload connection [" + this.header + "]");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Established livereload connection [" + this.header + "]");
+		}
 	}
 
 	/**
@@ -106,7 +108,7 @@ class Connection {
 			else if (frame.getType() == Frame.Type.CLOSE) {
 				throw new ConnectionClosedException();
 			}
-			else if (frame.getType() == Frame.Type.TEXT) {
+			else if (frame.getType() == Frame.Type.TEXT && logger.isDebugEnabled()) {
 				logger.debug("Received LiveReload text frame " + frame);
 			}
 			else {
