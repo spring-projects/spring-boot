@@ -120,6 +120,7 @@ Rather, pick only the properties that you need.
 	# APPLICATION SETTINGS ({spring-boot-module-code}/SpringApplication.java[SpringApplication])
 	spring.main.allow-bean-definition-overriding=false # Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.
 	spring.main.banner-mode=console # Mode used to display the banner when the application runs.
+	spring.main.register-shutdown-hook=true # Whether the application should have a shutdown hook registered.
 	spring.main.sources= # Sources (class names, package names, or XML resource locations) to include in the ApplicationContext.
 	spring.main.web-application-type= # Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath.
 
