@@ -202,6 +202,8 @@ COPY ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
 ----
 
+
+
 [[executable-jar-property-launcher-features]]
 == `PropertiesLauncher` Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
