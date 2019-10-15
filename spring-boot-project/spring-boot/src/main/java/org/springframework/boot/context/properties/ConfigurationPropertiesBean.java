@@ -216,7 +216,6 @@ public final class ConfigurationPropertiesBean {
 		if (factoryMethodName == null || factoryBeanName == null) {
 			return null;
 		}
-		System.out.println("***** " + beanDefinition.getFactoryMethodName());
 		Class<?> factoryType = beanFactory.getType(factoryBeanName);
 		if (factoryType.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
 			factoryType = factoryType.getSuperclass();
