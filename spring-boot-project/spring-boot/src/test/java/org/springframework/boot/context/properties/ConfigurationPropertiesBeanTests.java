@@ -27,7 +27,10 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -90,6 +93,31 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void getWhenFactoryMethodIsAnnotatedReturnsBean() throws Throwable {
 		get(NonAnnotatedBeanConfiguration.class, "nonAnnotatedBean", (propertiesBean) -> {
+			assertThat(propertiesBean).isNotNull();
+			assertThat(propertiesBean.getName()).isEqualTo("nonAnnotatedBean");
+			assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
+			assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedBean.class);
+			assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
+			assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+		});
+	}
+
+	@Test
+	void getWhenImportedFactoryMethodIsAnnotatedAndMetadataCachingIsDisabledReturnsBean() throws Throwable {
+		getWithoutBeanMetadataCaching(NonAnnotatedBeanImportConfiguration.class, "nonAnnotatedBean",
+				(propertiesBean) -> {
+					assertThat(propertiesBean).isNotNull();
+					assertThat(propertiesBean.getName()).isEqualTo("nonAnnotatedBean");
+					assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
+					assertThat(propertiesBean.getType()).isEqualTo(NonAnnotatedBean.class);
+					assertThat(propertiesBean.getAnnotation().prefix()).isEqualTo("prefix");
+					assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
+				});
+	}
+
+	@Test
+	void getWhenImportedFactoryMethodIsAnnotatedReturnsBean() throws Throwable {
+		get(NonAnnotatedBeanImportConfiguration.class, "nonAnnotatedBean", (propertiesBean) -> {
 			assertThat(propertiesBean).isNotNull();
 			assertThat(propertiesBean.getName()).isEqualTo("nonAnnotatedBean");
 			assertThat(propertiesBean.getInstance()).isInstanceOf(NonAnnotatedBean.class);
@@ -218,7 +246,20 @@ class ConfigurationPropertiesBeanTests {
 
 	private void get(Class<?> configuration, String beanName, ThrowingConsumer<ConfigurationPropertiesBean> consumer)
 			throws Throwable {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
+		get(configuration, beanName, true, consumer);
+	}
+
+	private void getWithoutBeanMetadataCaching(Class<?> configuration, String beanName,
+			ThrowingConsumer<ConfigurationPropertiesBean> consumer) throws Throwable {
+		get(configuration, beanName, false, consumer);
+	}
+
+	private void get(Class<?> configuration, String beanName, boolean cacheBeanMetadata,
+			ThrowingConsumer<ConfigurationPropertiesBean> consumer) throws Throwable {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.getBeanFactory().setCacheBeanMetadata(cacheBeanMetadata);
+			context.register(configuration);
+			context.refresh();
 			Object bean = context.getBean(beanName);
 			consumer.accept(ConfigurationPropertiesBean.get(context, bean, beanName));
 		}
@@ -400,6 +441,21 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnMultipleConstructors(String name, int age) {
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(NonAnnotatedBeanConfigurationImportSelector.class)
+	static class NonAnnotatedBeanImportConfiguration {
+
+	}
+
+	static class NonAnnotatedBeanConfigurationImportSelector implements ImportSelector {
+
+		@Override
+		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+			return new String[] { NonAnnotatedBeanConfiguration.class.getName() };
 		}
 
 	}
