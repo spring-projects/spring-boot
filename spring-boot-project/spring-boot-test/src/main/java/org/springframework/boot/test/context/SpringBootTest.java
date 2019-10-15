@@ -94,7 +94,7 @@ public @interface SpringBootTest {
 	String[] properties() default {};
 
 	/**
-	 * The <em>annotated classes</em> to use for loading an
+	 * The <em>component classes</em> to use for loading an
 	 * {@link org.springframework.context.ApplicationContext ApplicationContext}. Can also
 	 * be specified using
 	 * {@link ContextConfiguration#classes() @ContextConfiguration(classes=...)}. If no
@@ -102,7 +102,7 @@ public @interface SpringBootTest {
 	 * {@link Configuration @Configuration} classes, before falling back to a
 	 * {@link SpringBootConfiguration} search.
 	 * @see ContextConfiguration#classes()
-	 * @return the annotated classes used to load the application context
+	 * @return the component classes used to load the application context
 	 */
 	Class<?>[] classes() default {};
 
