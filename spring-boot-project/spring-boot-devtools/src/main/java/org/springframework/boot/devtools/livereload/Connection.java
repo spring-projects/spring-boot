@@ -108,8 +108,10 @@ class Connection {
 			else if (frame.getType() == Frame.Type.CLOSE) {
 				throw new ConnectionClosedException();
 			}
-			else if (frame.getType() == Frame.Type.TEXT && logger.isDebugEnabled()) {
-				logger.debug("Received LiveReload text frame " + frame);
+			else if (frame.getType() == Frame.Type.TEXT) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Received LiveReload text frame " + frame);
+				}
 			}
 			else {
 				throw new IOException("Unexpected Frame Type " + frame.getType());
