@@ -128,7 +128,8 @@ class EnableConfigurationPropertiesRegistrarTests {
 
 	}
 
-	@ImmutableConfigurationProperties(prefix = "bar")
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "bar")
 	static class BarProperties {
 
 		BarProperties(String foo) {

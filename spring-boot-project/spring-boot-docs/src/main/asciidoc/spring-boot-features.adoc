@@ -849,10 +849,12 @@ The example in the previous section can be rewritten in an immutable fashion as 
 	import java.net.InetAddress;
 	import java.util.List;
 
-	import org.springframework.boot.context.properties.ImmutableConfigurationProperties;
+	import org.springframework.boot.context.properties.ConfigurationProperties;
+	import org.springframework.boot.context.properties.ConstructorBinding;
 	import org.springframework.boot.context.properties.DefaultValue;
 
-	@ImmutableConfigurationProperties("acme")
+	@ConstructorBinding
+	@ConfigurationProperties("acme")
 	public class AcmeProperties {
 
 		private final boolean enabled;
@@ -899,18 +901,17 @@ The example in the previous section can be rewritten in an immutable fashion as 
 	}
 ----
 
-In this setup, the `@ImmutableConfigurationProperties` annotation is used to indicate that constructor binding should be used.
+In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
 This means that the binder will expect to find a constructor with the parameters that you wish to have bound.
 
-Nested members of a `@ImmutableConfigurationProperties` class (such as `Security` in the example above) will also be bound via their constructor.
+Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)
 
-TIP: `@ImmutableConfigurationProperties` is actually a meta-annotation composed of `@ConfigurationProperties` and `@ConstructorBinding`.
-If you  have more than one constructor for your class you can also use `@ConstructorBinding` directly on actual constructor that should be bound.
+TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
 
 
@@ -1970,17 +1971,17 @@ The following code shows a typical `@RestController` that serves JSON data:
 	@RequestMapping(value="/users")
 	public class MyRestController {
 
-		@RequestMapping(value="/\{user}", method=RequestMethod.GET)
+		@RequestMapping(value="/{user}", method=RequestMethod.GET)
 		public User getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/\{user}/customers", method=RequestMethod.GET)
+		@RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
 		List<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/\{user}", method=RequestMethod.DELETE)
+		@RequestMapping(value="/{user}", method=RequestMethod.DELETE)
 		public User deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2452,17 +2453,17 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 	@RequestMapping("/users")
 	public class MyRestController {
 
-		@GetMapping("/\{user}")
+		@GetMapping("/{user}")
 		public Mono<User> getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@GetMapping("/\{user}/customers")
+		@GetMapping("/{user}/customers")
 		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@DeleteMapping("/\{user}")
+		@DeleteMapping("/{user}")
 		public Mono<User> deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2479,9 +2480,9 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 		@Bean
 		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
-			return route(GET("/\{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
-					.andRoute(GET("/\{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
-					.andRoute(DELETE("/\{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
+			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
+					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
+					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
 		}
 
 	}
@@ -7613,35 +7614,40 @@ In order to avoid mixing different versions of Kotlin dependencies on the classp
 With Maven, the Kotlin version can be customized via the `kotlin.version` property and plugin management is provided for `kotlin-maven-plugin`.
 With Gradle, the Spring Boot plugin automatically aligns the `kotlin.version` with the version of the Kotlin plugin.
 
+Spring Boot also manages the version of Coroutines dependencies by importing the Kotlin Coroutines BOM.
+The version can be customized via the `kotlin-coroutines.version` property.
+
+TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided by default if one bootstraps a Kotlin project with at least one reactive dependency on https://start.spring.io/#!language=kotlin[start.spring.io].
 
 
 [[boot-features-kotlin-configuration-properties]]
 === `@ConfigurationProperties`
-`@ConfigurationProperties` supports classes with immutable `val` properties as shown in the following example:
+`@ConfigurationProperties` when used in combination with <<boot-features-external-config-constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin,indent=0]
 ----
+@ConstructorBinding
 @ConfigurationProperties("example.kotlin")
 data class KotlinExampleProperties(
 		val name: String,
 		val description: String,
-		val myService: MyService
-)
+		val myService: MyService) {
 
-data class MyService(
-	val apiToken: String,
-	val uri: URI
-)
+	data class MyService(
+			val apiToken: String,
+			val uri: URI
+	)
+}
 ----
 
 TIP: To generate <<appendix-configuration-metadata.adoc#configuration-metadata-annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
-Note that some features (such as detecting the default value or deperecated items) are not working due to limitations in the model kapt provides.
+Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
 
 
 [[boot-features-kotlin-testing]]
 === Testing
-While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is recommended.
+While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
 This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
 
@@ -7682,6 +7688,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 * https://github.com/sdeleuze/spring-kotlin-fullstack[spring-kotlin-fullstack]: WebFlux Kotlin fullstack example with Kotlin2js for frontend instead of JavaScript or TypeScript
 * https://github.com/spring-petclinic/spring-petclinic-kotlin[spring-petclinic-kotlin]: Kotlin version of the Spring PetClinic Sample Application
 * https://github.com/sdeleuze/spring-kotlin-deepdive[spring-kotlin-deepdive]: a step by step migration for Boot 1.0 + Java to Boot 2.0 + Kotlin
+* https://github.com/sdeleuze/spring-boot-coroutines-demo[spring-boot-coroutines-demo]: Coroutines sample project
 
 
 
