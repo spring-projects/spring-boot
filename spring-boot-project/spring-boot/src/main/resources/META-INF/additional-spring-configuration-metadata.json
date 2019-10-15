@@ -608,6 +608,13 @@
       "defaultValue": "console"
     },
     {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether the application should have a shutdown hook registered.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.main.show-banner",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
@@ -628,13 +635,6 @@
       "type": "org.springframework.boot.WebApplicationType",
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath."
-    },
-    {
-      "name": "spring.main.register-shutdown-hook",
-      "type": "java.lang.Boolean",
-      "sourceType": "org.springframework.boot.SpringApplication",
-      "description": "Whether shutdown hooks are automatically registered when Spring Boot start. If not set, they are automatically registered.",
-      "defaultValue": true
     },
     {
       "name": "spring.main.web-environment",
