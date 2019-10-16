@@ -6,7 +6,7 @@ bomr:
       repository: spring-boot
       issue-labels:
         - 'type: dependency-upgrade'
-    policy: same-major-version
+    policy: same-minor-version
     prohibited:
       - project: derby
         versions:
