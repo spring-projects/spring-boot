@@ -135,13 +135,13 @@ public class UndertowWebServerFactoryCustomizerTests {
 
 	@Test
 	public void customConnectionTimeout() {
-		bind("server.connection-timeout=100");
+		bind("server.undertow.no-request-timeout=1m");
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
 		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		assertThat(map.contains(UndertowOptions.NO_REQUEST_TIMEOUT)).isTrue();
-		assertThat(map.get(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
+		assertThat(map.get(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(60000);
 	}
 
 	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {

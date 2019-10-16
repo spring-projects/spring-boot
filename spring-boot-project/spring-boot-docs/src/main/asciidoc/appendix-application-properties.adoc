@@ -207,8 +207,10 @@ Rather, pick only the properties that you need.
 	server.jetty.accesslog.log-server=false # Enable logging of the request hostname.
 	server.jetty.accesslog.retention-period=31 # Number of days before rotated log files are deleted.
 	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
+	server.jetty.connection-idle-timeout= # Time that the connection can be idle before it is closed.
 	server.jetty.max-http-post-size=200000B # Maximum size of the HTTP post or put content.
 	server.jetty.selectors=-1 # Number of selector threads to use. When the value is -1, the default, the number of selectors is derived from the operating environment.
+	server.netty.connection-timeout= # Connection timeout of the Netty channel.
 	server.max-http-header-size=8KB # Maximum size of the HTTP message header.
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (if empty, no header is sent).
@@ -259,6 +261,7 @@ Rather, pick only the properties that you need.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
 	server.tomcat.background-processor-delay=10s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
 	server.tomcat.basedir= # Tomcat base directory. If not specified, a temporary directory is used.
+	server.tomcat.connection-timeout= # Amount of time the connector will wait, after accepting a connection, for the request URI line to be presented.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -293,6 +296,7 @@ Rather, pick only the properties that you need.
 	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker. The default is derived from the number of available processors.
 	server.undertow.max-http-post-size=-1B # Maximum size of the HTTP post content. When the value is -1, the default, the size is unlimited.
+	server.undertow.no-request-timeout= # Amount of time a connection can sit idle without processing a request, before it is closed by the server.
 	server.undertow.worker-threads= # Number of worker threads. The default is 8 times the number of I/O threads.
 
 	# FREEMARKER ({spring-boot-autoconfigure-module-code}/freemarker/FreeMarkerProperties.java[FreeMarkerProperties])

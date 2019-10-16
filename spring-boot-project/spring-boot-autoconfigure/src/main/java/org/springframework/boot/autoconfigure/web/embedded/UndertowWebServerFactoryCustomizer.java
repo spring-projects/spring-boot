@@ -81,14 +81,16 @@ public class UndertowWebServerFactoryCustomizer
 		propertyMapper.from(undertowProperties::getMaxHttpPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+				.to((connectionTimeout) -> customizeNoRequestTimeout(factory, connectionTimeout));
+		propertyMapper.from(undertowProperties::getNoRequestTimeout).whenNonNull()
+				.to((connectionTimeout) -> customizeNoRequestTimeout(factory, connectionTimeout));
 	}
 
 	private boolean isPositive(Number value) {
 		return value.longValue() > 0;
 	}
 
-	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeNoRequestTimeout(ConfigurableUndertowWebServerFactory factory, Duration connectionTimeout) {
 		factory.addBuilderCustomizers((builder) -> builder.setServerOption(UndertowOptions.NO_REQUEST_TIMEOUT,
 				(int) connectionTimeout.toMillis()));
 	}

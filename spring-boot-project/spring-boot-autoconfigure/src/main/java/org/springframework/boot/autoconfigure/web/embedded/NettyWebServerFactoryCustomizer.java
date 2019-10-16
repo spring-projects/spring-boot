@@ -61,6 +61,9 @@ public class NettyWebServerFactoryCustomizer
 		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpRequestHeaderSize));
 		propertyMapper.from(this.serverProperties::getConnectionTimeout)
+				.to((connectionTimeout) -> customizeGenericConnectionTimeout(factory, connectionTimeout));
+		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
+		propertyMapper.from(nettyProperties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 	}
 
@@ -77,12 +80,17 @@ public class NettyWebServerFactoryCustomizer
 				(httpRequestDecoderSpec) -> httpRequestDecoderSpec.maxHeaderSize((int) maxHttpHeaderSize.toBytes())));
 	}
 
-	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeGenericConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
 		if (!connectionTimeout.isZero()) {
 			long timeoutMillis = connectionTimeout.isNegative() ? 0 : connectionTimeout.toMillis();
 			factory.addServerCustomizers((httpServer) -> httpServer.tcpConfiguration((tcpServer) -> tcpServer
 					.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) timeoutMillis)));
 		}
+	}
+
+	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
+		factory.addServerCustomizers((httpServer) -> httpServer.tcpConfiguration((tcpServer) -> tcpServer
+				.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectionTimeout.toMillis())));
 	}
 
 }

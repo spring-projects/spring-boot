@@ -152,6 +152,14 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customConnectionTimeout() {
+		bind("server.tomcat.connection-timeout=30s");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getConnectionTimeout())
+						.isEqualTo(30000));
+	}
+
+	@Test
 	public void customRemoteIpValve() {
 		bind("server.tomcat.remote-ip-header=x-my-remote-ip-header",
 				"server.tomcat.protocol-header=x-my-protocol-header", "server.tomcat.internal-proxies=192.168.0.1",
