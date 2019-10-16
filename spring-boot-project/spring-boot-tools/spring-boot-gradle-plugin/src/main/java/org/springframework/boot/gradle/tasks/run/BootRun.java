@@ -18,7 +18,6 @@ package org.springframework.boot.gradle.tasks.run;
 
 import java.lang.reflect.Method;
 
-import org.gradle.api.JavaVersion;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
@@ -72,7 +71,6 @@ public class BootRun extends JavaExec {
 	public void exec() {
 		if (this.optimizedLaunch) {
 			setJvmArgs(getJvmArgs());
-			JavaVersion.current();
 			if (!isJava13OrLater()) {
 				jvmArgs("-Xverify:none");
 			}
