@@ -3064,7 +3064,7 @@ You can provide a different `AuthenticationEventPublisher` by adding a bean for 
 === MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
 `SecurityAutoConfiguration` imports `SpringBootWebSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
-To switch off the default web application security configuration completely, you can add a bean of type `WebSecurityConfigurerAdapter` (doing so does not disable the `UserDetailsService` configuration or Actuator's security).
+To switch off the default web application security configuration completely or to combine multiple Spring Security components such as OAuth 2 Client and Resource Server, add a bean of type `WebSecurityConfigurerAdapter` (doing so does not disable the `UserDetailsService` configuration or Actuator's security).
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
 
@@ -3084,7 +3084,7 @@ To switch off the default web application security configuration completely, you
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type `ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
 
-Access rules can be configured by adding a custom `SecurityWebFilterChain`.
+Access rules and the use of multiple Spring Security components such as OAuth 2 Client and Resource Server can be configured by adding a custom `SecurityWebFilterChain` bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
 `EndpointRequest` can be used to create a `ServerWebExchangeMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
 
