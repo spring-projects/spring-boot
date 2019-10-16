@@ -89,7 +89,9 @@ public class JettyWebServerFactoryCustomizer
 		propertyMapper.from(jettyProperties::getIdleTimeout).whenNonNull().asInt(Duration::toMillis).to(
 				(idleTimeout) -> customizeThreadPool(factory, (threadPool) -> threadPool.setIdleTimeout(idleTimeout)));
 		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
+		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
+				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
 				.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
@@ -106,7 +108,7 @@ public class JettyWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	private void customizeConnectionTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 				if (connector instanceof AbstractConnector) {

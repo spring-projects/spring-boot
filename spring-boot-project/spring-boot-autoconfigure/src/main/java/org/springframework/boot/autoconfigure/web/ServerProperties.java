@@ -118,6 +118,8 @@ public class ServerProperties {
 
 	private final Jetty jetty = new Jetty();
 
+	private final Netty netty = new Netty();
+
 	private final Undertow undertow = new Undertow();
 
 	public Integer getPort() {
@@ -163,10 +165,14 @@ public class ServerProperties {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(
+			reason = "Each server behaves differently. Use server specific properties instead.")
 	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
+	@Deprecated
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
@@ -201,6 +207,10 @@ public class ServerProperties {
 
 	public Jetty getJetty() {
 		return this.jetty;
+	}
+
+	public Netty getNetty() {
+		return this.netty;
 	}
 
 	public Undertow getUndertow() {
@@ -415,6 +425,12 @@ public class ServerProperties {
 		private List<Character> relaxedQueryChars = new ArrayList<>();
 
 		/**
+		 * Amount of time the connector will wait, after accepting a connection, for the
+		 * request URI line to be presented.
+		 */
+		private Duration connectionTimeout;
+
+		/**
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
@@ -594,6 +610,14 @@ public class ServerProperties {
 
 		public void setRelaxedQueryChars(List<Character> relaxedQueryChars) {
 			this.relaxedQueryChars = relaxedQueryChars;
+		}
+
+		public Duration getConnectionTimeout() {
+			return this.connectionTimeout;
+		}
+
+		public void setConnectionTimeout(Duration connectionTimeout) {
+			this.connectionTimeout = connectionTimeout;
 		}
 
 		public Resource getResource() {
@@ -934,6 +958,11 @@ public class ServerProperties {
 		 */
 		private Duration idleTimeout = Duration.ofMillis(60000);
 
+		/**
+		 * Time that the connection can be idle before it is closed.
+		 */
+		private Duration connectionIdleTimeout;
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -984,6 +1013,14 @@ public class ServerProperties {
 
 		public Duration getIdleTimeout() {
 			return this.idleTimeout;
+		}
+
+		public Duration getConnectionIdleTimeout() {
+			return this.connectionIdleTimeout;
+		}
+
+		public void setConnectionIdleTimeout(Duration connectionIdleTimeout) {
+			this.connectionIdleTimeout = connectionIdleTimeout;
 		}
 
 		/**
@@ -1119,6 +1156,26 @@ public class ServerProperties {
 	}
 
 	/**
+	 * Netty properties.
+	 */
+	public static class Netty {
+
+		/**
+		 * Connection timeout of the Netty channel.
+		 */
+		private Duration connectionTimeout;
+
+		public Duration getConnectionTimeout() {
+			return this.connectionTimeout;
+		}
+
+		public void setConnectionTimeout(Duration connectionTimeout) {
+			this.connectionTimeout = connectionTimeout;
+		}
+
+	}
+
+	/**
 	 * Undertow properties.
 	 */
 	public static class Undertow {
@@ -1199,6 +1256,12 @@ public class ServerProperties {
 		 * even if not required by the HTTP specification.
 		 */
 		private boolean alwaysSetKeepAlive = true;
+
+		/**
+		 * Amount of time a connection can sit idle without processing a request, before
+		 * it is closed by the server.
+		 */
+		private Duration noRequestTimeout;
 
 		private final Accesslog accesslog = new Accesslog();
 
@@ -1306,6 +1369,14 @@ public class ServerProperties {
 
 		public void setAlwaysSetKeepAlive(boolean alwaysSetKeepAlive) {
 			this.alwaysSetKeepAlive = alwaysSetKeepAlive;
+		}
+
+		public Duration getNoRequestTimeout() {
+			return this.noRequestTimeout;
+		}
+
+		public void setNoRequestTimeout(Duration noRequestTimeout) {
+			this.noRequestTimeout = noRequestTimeout;
 		}
 
 		public Accesslog getAccesslog() {
