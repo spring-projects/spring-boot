@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.rsocket.RSocketFactory;
+import io.rsocket.RSocketFactory.ServerRSocketFactory;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
@@ -60,7 +61,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private Duration lifecycleTimeout;
 
-	private List<ServerRSocketFactoryProcessor> serverProcessors = new ArrayList<>();
+	private List<ServerRSocketFactoryProcessor> socketFactoryProcessors = new ArrayList<>();
 
 	@Override
 	public void setPort(int port) {
@@ -86,23 +87,25 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-	 * Set {@link ServerRSocketFactoryProcessor}s that should be applied to the RSocket
-	 * server builder. Calling this method will replace any existing customizers.
-	 * @param serverProcessors server processors to apply before the server starts
+	 * Set {@link ServerRSocketFactoryProcessor}s that should be called to process the
+	 * {@link ServerRSocketFactory} while building the server. Calling this method will
+	 * replace any existing processors.
+	 * @param socketFactoryProcessors processors to apply before the server starts
 	 */
-	public void setServerProcessors(Collection<? extends ServerRSocketFactoryProcessor> serverProcessors) {
-		Assert.notNull(serverProcessors, "ServerProcessors must not be null");
-		this.serverProcessors = new ArrayList<>(serverProcessors);
+	public void setSocketFactoryProcessors(
+			Collection<? extends ServerRSocketFactoryProcessor> socketFactoryProcessors) {
+		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
+		this.socketFactoryProcessors = new ArrayList<>(socketFactoryProcessors);
 	}
 
 	/**
-	 * Add {@link ServerRSocketFactoryProcessor}s that should applied while building the
-	 * server.
-	 * @param serverProcessors server processors to apply before the server starts
+	 * Add {@link ServerRSocketFactoryProcessor}s that should be called to process the
+	 * {@link ServerRSocketFactory} while building the server.
+	 * @param socketFactoryProcessors processors to apply before the server starts
 	 */
-	public void addServerProcessors(ServerRSocketFactoryProcessor... serverProcessors) {
-		Assert.notNull(serverProcessors, "ServerProcessors must not be null");
-		this.serverProcessors.addAll(Arrays.asList(serverProcessors));
+	public void addSocketFactoryProcessors(ServerRSocketFactoryProcessor... socketFactoryProcessors) {
+		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
+		this.socketFactoryProcessors.addAll(Arrays.asList(socketFactoryProcessors));
 	}
 
 	/**
@@ -118,7 +121,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		RSocketFactory.ServerRSocketFactory factory = RSocketFactory.receive();
-		for (ServerRSocketFactoryProcessor processor : this.serverProcessors) {
+		for (ServerRSocketFactoryProcessor processor : this.socketFactoryProcessors) {
 			factory = processor.process(factory);
 		}
 		Mono<CloseableChannel> starter = factory.acceptor(socketAcceptor).transport(transport).start();
