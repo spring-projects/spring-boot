@@ -164,7 +164,7 @@ public class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	public void customIdleTimeout() {
-		bind("server.jetty.idle-timeout=60s");
+		bind("server.jetty.connection-idle-timeout=60s");
 		JettyWebServer server = customizeAndGetServer();
 		List<Long> timeouts = connectorsIdleTimeouts(server);
 		assertThat(timeouts).containsOnly(60000L);
