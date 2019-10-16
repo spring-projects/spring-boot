@@ -956,7 +956,7 @@ public class ServerProperties {
 		/**
 		 * Maximum thread idle time.
 		 */
-		private Duration idleTimeout = Duration.ofMillis(60000);
+		private Duration threadIdleTimeout = Duration.ofMillis(60000);
 
 		/**
 		 * Time that the connection can be idle before it is closed.
@@ -1007,12 +1007,12 @@ public class ServerProperties {
 			return this.maxThreads;
 		}
 
-		public void setIdleTimeout(Duration idleTimeout) {
-			this.idleTimeout = idleTimeout;
+		public void setThreadIdleTimeout(Duration threadIdleTimeout) {
+			this.threadIdleTimeout = threadIdleTimeout;
 		}
 
-		public Duration getIdleTimeout() {
-			return this.idleTimeout;
+		public Duration getThreadIdleTimeout() {
+			return this.threadIdleTimeout;
 		}
 
 		public Duration getConnectionIdleTimeout() {
