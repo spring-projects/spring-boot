@@ -289,6 +289,14 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customConnectionTimeout() {
+		bind("server.tomcat.connection-timeout=30s");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getConnectionTimeout())
+						.isEqualTo(30000));
+	}
+
+	@Test
 	void accessLogBufferingCanBeDisabled() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.buffered=false");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();

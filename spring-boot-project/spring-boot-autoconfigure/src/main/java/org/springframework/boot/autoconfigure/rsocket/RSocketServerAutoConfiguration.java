@@ -97,7 +97,7 @@ public class RSocketServerAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
-			factory.setServerProcessors(processors.orderedStream().collect(Collectors.toList()));
+			factory.setSocketFactoryProcessors(processors.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 

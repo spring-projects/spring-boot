@@ -6,16 +6,12 @@ bomr:
       repository: spring-boot
       issue-labels:
         - 'type: dependency-upgrade'
-    policy: same-major-version
+    policy: same-minor-version
     prohibited:
       - project: derby
         versions:
           # 10.15 requires Java 9
           - '[10.15,)'
-      - project: netty
-        versions:
-          # https://github.com/reactor/reactor-netty/issues/844
-          - '[4.1.40.Final,)'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for

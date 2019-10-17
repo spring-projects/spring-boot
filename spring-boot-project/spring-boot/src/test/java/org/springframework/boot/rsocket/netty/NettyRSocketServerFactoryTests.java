@@ -137,7 +137,7 @@ class NettyRSocketServerFactoryTests {
 			given(processors[i].process(any(RSocketFactory.ServerRSocketFactory.class)))
 					.will((invocation) -> invocation.getArgument(0));
 		}
-		factory.setServerProcessors(Arrays.asList(processors));
+		factory.setSocketFactoryProcessors(Arrays.asList(processors));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		InOrder ordered = inOrder((Object[]) processors);
 		for (ServerRSocketFactoryProcessor processor : processors) {

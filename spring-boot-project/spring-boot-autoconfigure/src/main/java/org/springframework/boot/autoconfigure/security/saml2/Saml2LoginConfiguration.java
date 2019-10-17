@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.saml2;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,6 +34,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 class Saml2LoginConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 	static class Saml2LoginConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override

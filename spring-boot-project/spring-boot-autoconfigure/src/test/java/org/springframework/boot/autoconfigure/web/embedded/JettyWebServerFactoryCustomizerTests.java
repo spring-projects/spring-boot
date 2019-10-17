@@ -19,8 +19,11 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -131,8 +134,8 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void idleTimeoutCanBeCustomized() {
-		bind("server.jetty.idle-timeout=100s");
+	void threadIdleTimeoutCanBeCustomized() {
+		bind("server.jetty.thread-idle-timeout=100s");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getIdleTimeout()).isEqualTo(100000);
@@ -180,6 +183,23 @@ class JettyWebServerFactoryCustomizerTests {
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
 		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	void customIdleTimeout() {
+		bind("server.jetty.connection-idle-timeout=60s");
+		JettyWebServer server = customizeAndGetServer();
+		List<Long> timeouts = connectorsIdleTimeouts(server);
+		assertThat(timeouts).containsOnly(60000L);
+	}
+
+	private List<Long> connectorsIdleTimeouts(JettyWebServer server) {
+		// Start (and directly stop) server to have connectors available
+		server.start();
+		server.stop();
+		return Arrays.stream(server.getServer().getConnectors())
+				.filter((connector) -> connector instanceof AbstractConnector).map(Connector::getIdleTimeout)
+				.collect(Collectors.toList());
 	}
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
