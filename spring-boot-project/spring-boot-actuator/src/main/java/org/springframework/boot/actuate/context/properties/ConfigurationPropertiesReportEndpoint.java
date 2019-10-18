@@ -51,6 +51,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ClassUtils;
@@ -69,6 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Leo Li
  * @since 2.0.0
  */
 @Endpoint(id = "configprops")
@@ -312,6 +314,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
+			// if the class has the @ConstructorBinding annotation or
+			// one constructor of this class has the @ConstructorBinding annotation,
+			// we can ignore the setter method.
+			if (beanDesc.getClassAnnotations().has(ConstructorBinding.class)
+					|| isConstructorsContainConstructorBinding(beanDesc)) {
+				return true;
+			}
 			Class<?> parentType = beanDesc.getType().getRawClass();
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
@@ -323,6 +332,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
 			return (setter != null) || ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
 					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
+		}
+
+		private boolean isConstructorsContainConstructorBinding(BeanDescription beanDesc) {
+			return beanDesc.getConstructors().stream()
+					.anyMatch((annotatedConstructor) -> annotatedConstructor.hasAnnotation(ConstructorBinding.class));
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
