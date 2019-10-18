@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Member predicate that matches based on {@code include} and {@code exclude} sets.
@@ -54,7 +55,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 		if (names == null) {
 			return Collections.emptySet();
 		}
-		Set<String> cleaned = new LinkedHashSet<>(names);
+		Set<String> cleaned = names.parallelStream().map(name -> name.trim().toLowerCase()).collect(Collectors.toCollection(LinkedHashSet::new));
 		return Collections.unmodifiableSet(cleaned);
 	}
 
