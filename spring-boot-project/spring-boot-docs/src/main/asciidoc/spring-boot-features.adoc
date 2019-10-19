@@ -5920,7 +5920,7 @@ The annotation works by <<boot-features-testing-spring-boot-applications-detecti
 In addition to `@SpringBootTest` a number of other annotations are also provided for <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,testing more specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there's no need to add the equivalent `@RunWith(SpringExtension.class)` as `@SpringBootTest` and the other `@…Test` annotations are already annotated with it.
+If you are using JUnit 5, there's no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server.
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how your tests run:
@@ -6315,7 +6315,7 @@ The following example uses `MockMvc`:
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration also provides an HTMLUnit `WebClient` bean and/or a `WebDriver` bean.
+If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
 [source,java,indent=0]
