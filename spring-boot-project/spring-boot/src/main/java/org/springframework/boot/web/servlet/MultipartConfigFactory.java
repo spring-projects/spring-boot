@@ -22,8 +22,7 @@ import org.springframework.util.unit.DataSize;
 
 /**
  * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
- * set using traditional {@literal long} values which are set in bytes or using more
- * convenient {@link DataSize} variants.
+ * set using {@link DataSize} variants.
  *
  * @author Phillip Webb
  * @since 1.4.0
