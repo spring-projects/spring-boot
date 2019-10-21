@@ -233,10 +233,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		@Override
 		public Object findFilterId(Annotated a) {
 			Object id = super.findFilterId(a);
-			if (id == null) {
-				id = CONFIGURATION_PROPERTIES_FILTER_ID;
-			}
-			return id;
+			return id == null ? CONFIGURATION_PROPERTIES_FILTER_ID : id;
 		}
 
 	}
