@@ -37,6 +37,18 @@ public class JmsProperties {
 	private boolean pubSubDomain = false;
 
 	/**
+	 * Set whether to make the subscription shared.
+	 * <p>Default is "false". Set this to "true" to register a shared subscription.
+	 */
+	private boolean subscriptionShared = false;
+
+	/**
+	 * Set whether to make the subscription durable.
+	 * <p>Default is "false". Set this to "true" to register a durable subscription.
+	 */
+	private boolean subscriptionDurable = false;
+
+	/**
 	 * Connection factory JNDI name. When set, takes precedence to others connection
 	 * factory auto-configurations.
 	 */
@@ -52,8 +64,30 @@ public class JmsProperties {
 		return this.pubSubDomain;
 	}
 
+	/**
+	 * Return whether to make the subscription shared.
+	 */
+	public boolean isSubscriptionShared() {
+		return this.subscriptionShared;
+	}
+
+	/**
+	 * Return whether to make the subscription durable.
+	 */
+	public boolean isSubscriptionDurable() {
+		return this.subscriptionDurable;
+	}
+
 	public void setPubSubDomain(boolean pubSubDomain) {
 		this.pubSubDomain = pubSubDomain;
+	}
+
+	public void setSubscriptionShared(boolean subscriptionShared){
+		this.subscriptionShared = subscriptionShared;
+	}
+
+	public void setSubscriptionDurable(boolean subscriptionDurable){
+		this.subscriptionDurable = subscriptionDurable;
 	}
 
 	public String getJndiName() {

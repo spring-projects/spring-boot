@@ -88,6 +88,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
+		factory.setSubscriptionDurable(this.jmsProperties.isSubscriptionDurable());
+		factory.setSubscriptionShared(this.jmsProperties.isSubscriptionShared());
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
