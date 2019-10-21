@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseEntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -71,7 +72,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Conditional(LiquibaseDataSourceCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import({ LiquibaseJdbcOperationsDependsOnPostProcessor.class,
-		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor.class })
+		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor.class,
+		LiquibaseEntityManagerFactoryDependsOnPostProcessor.class })
 public class LiquibaseAutoConfiguration {
 
 	@Bean
@@ -83,7 +85,6 @@ public class LiquibaseAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, LiquibaseProperties.class })
-	@Import(LiquibaseEntityManagerFactoryDependsOnPostProcessor.class)
 	public static class LiquibaseConfiguration {
 
 		private final LiquibaseProperties properties;
