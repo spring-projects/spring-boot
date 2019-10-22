@@ -359,9 +359,9 @@ public class ServerProperties {
 		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size of the HTTP post content.
+		 * Maximum size of the form content in any HTTP post request.
 		 */
-		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
+		private DataSize maxHttpFormPostSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Maximum amount of request body to swallow.
@@ -456,12 +456,23 @@ public class ServerProperties {
 			this.minSpareThreads = minSpareThreads;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.max-http-form-post-size")
 		public DataSize getMaxHttpPostSize() {
-			return this.maxHttpPostSize;
+			return this.maxHttpFormPostSize;
 		}
 
+		@Deprecated
 		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
-			this.maxHttpPostSize = maxHttpPostSize;
+			this.maxHttpFormPostSize = maxHttpPostSize;
+		}
+
+		public DataSize getMaxHttpFormPostSize() {
+			return this.maxHttpFormPostSize;
+		}
+
+		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
+			this.maxHttpFormPostSize = maxHttpFormPostSize;
 		}
 
 		public Accesslog getAccesslog() {
@@ -927,9 +938,9 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size of the HTTP post or put content.
+		 * Maximum size of the form content in any HTTP post request.
 		 */
-		private DataSize maxHttpPostSize = DataSize.ofBytes(200000);
+		private DataSize maxHttpFormPostSize = DataSize.ofBytes(200000);
 
 		/**
 		 * Number of acceptor threads to use. When the value is -1, the default, the
@@ -967,12 +978,23 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.max-http-form-post-size")
 		public DataSize getMaxHttpPostSize() {
-			return this.maxHttpPostSize;
+			return this.maxHttpFormPostSize;
 		}
 
+		@Deprecated
 		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
-			this.maxHttpPostSize = maxHttpPostSize;
+			this.maxHttpFormPostSize = maxHttpPostSize;
+		}
+
+		public DataSize getMaxHttpFormPostSize() {
+			return this.maxHttpFormPostSize;
+		}
+
+		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
+			this.maxHttpFormPostSize = maxHttpFormPostSize;
 		}
 
 		public Integer getAcceptors() {
