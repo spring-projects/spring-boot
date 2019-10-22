@@ -17,17 +17,13 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -35,7 +31,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
@@ -43,11 +38,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -63,11 +55,11 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  */
-public class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
+public class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFactoryTests {
 
-	@Override
-	protected JettyServletWebServerFactory getFactory() {
-		return new JettyServletWebServerFactory(0);
+	@Test
+	public void correctVersionOfJettyUsed() {
+		assertThat(JettyEmbeddedErrorHandler.ERROR_PAGE_FOR_METHOD_AVAILABLE).isTrue();
 	}
 
 	@Test
@@ -141,15 +133,6 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 		this.webServer.stop();
 		Server server = ((JettyWebServer) this.webServer).getServer();
 		assertThat(server.isStopped()).isTrue();
-	}
-
-	@Override
-	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
-		((JettyServletWebServerFactory) factory).addServerCustomizers((server) -> {
-			ServerConnector connector = new ServerConnector(server);
-			connector.setPort(port);
-			server.addConnector(connector);
-		});
 	}
 
 	@Test
@@ -309,37 +292,6 @@ public class JettyServletWebServerFactoryTests extends AbstractServletWebServerF
 				assertThat(threadPool.isRunning()).isFalse();
 			}
 		});
-	}
-
-	@Override
-	protected JspServlet getJspServlet() throws Exception {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
-		ServletHolder holder = context.getServletHandler().getServlet("jsp");
-		if (holder == null) {
-			return null;
-		}
-		holder.start();
-		holder.initialize();
-		return (JspServlet) holder.getServlet();
-	}
-
-	@Override
-	protected Map<String, String> getActualMimeMappings() {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
-		return context.getMimeTypes().getMimeMap();
-	}
-
-	@Override
-	protected Charset getCharset(Locale locale) {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
-		String charsetName = context.getLocaleEncoding(locale);
-		return (charsetName != null) ? Charset.forName(charsetName) : null;
-	}
-
-	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
-		assertThat(ex).isInstanceOf(PortInUseException.class);
-		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
 }
