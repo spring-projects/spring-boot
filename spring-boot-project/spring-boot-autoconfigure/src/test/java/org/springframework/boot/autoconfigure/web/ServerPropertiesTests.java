@@ -72,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Rafiullah Hamedy
  */
 public class ServerPropertiesTests {
 
@@ -220,6 +221,12 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() throws Exception {
+		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
+				.isEqualTo(getDefaultConnector().getMaxPostSize());
+	}
+
+	@Test
 	public void tomcatBackgroundProcessorDelayMatchesEngineDefault() {
 		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay())
 				.isEqualTo(Duration.ofSeconds((new StandardEngine().getBackgroundProcessorDelay())));
@@ -256,7 +263,7 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void jettyMaxHttpPostSizeMatchesDefault() throws Exception {
+	public void jettyMaxHttpFormPostSizeMatchesDefault() throws Exception {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory
 				.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
@@ -308,7 +315,7 @@ public class ServerPropertiesTests {
 			assertThat(failure.get()).isNotNull();
 			String message = failure.get().getCause().getMessage();
 			int defaultMaxPostSize = Integer.valueOf(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
+			assertThat(this.properties.getJetty().getMaxHttpFormPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
 		}
 		finally {
 			jetty.stop();
