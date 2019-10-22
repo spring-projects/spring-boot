@@ -31,6 +31,7 @@ import org.springframework.boot.testsupport.junit.platform.Launcher;
 import org.springframework.boot.testsupport.junit.platform.LauncherDiscoveryRequest;
 import org.springframework.boot.testsupport.junit.platform.LauncherDiscoveryRequestBuilder;
 import org.springframework.boot.testsupport.junit.platform.SummaryGeneratingListener;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -97,7 +98,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName)
 			throws ClassNotFoundException, Throwable {
 		Class<?> testClass = classLoader.loadClass(testClassName);
-		Method testMethod = ReflectionUtils.findMethod(testClass, testMethodName);
+		Method testMethod = findMethod(testClass, testMethodName);
 		LauncherDiscoveryRequest request = new LauncherDiscoveryRequestBuilder(classLoader)
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethod)).build();
 		Launcher launcher = new Launcher(classLoader);
@@ -108,6 +109,20 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		if (failure != null) {
 			throw failure;
 		}
+	}
+
+	private Method findMethod(Class<?> testClass, String testMethodName) {
+		Method method = ReflectionUtils.findMethod(testClass, testMethodName);
+		if (method == null) {
+			Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(testClass);
+			for (Method candidate : methods) {
+				if (candidate.getName().equals(testMethodName)) {
+					return candidate;
+				}
+			}
+		}
+		Assert.state(method != null, "Unable to find " + testClass + "." + testMethodName);
+		return method;
 	}
 
 	private void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
