@@ -15,6 +15,6 @@
  */
 
 /**
- * Generate documents for configuration properties.
+ * Support for generating documentation of configuration properties.
  */
 package org.springframework.boot.configurationdocs;
