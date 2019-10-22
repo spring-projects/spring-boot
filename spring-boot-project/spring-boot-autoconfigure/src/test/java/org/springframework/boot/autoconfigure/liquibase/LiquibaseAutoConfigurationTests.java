@@ -324,21 +324,21 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void userConfigurationJdbcTemplateDependency() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
-				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("jdbcTemplate");
-					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
-				});
-	}
-
-	@Test
 	void userConfigurationEntityManagerFactoryDependency() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
 				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("entityManagerFactory");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
+				});
+	}
+
+	@Test
+	void userConfigurationJdbcTemplateDependency() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("jdbcTemplate");
 					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
 				});
 	}

@@ -71,9 +71,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
 @Conditional(LiquibaseDataSourceCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
-@Import({ LiquibaseJdbcOperationsDependsOnPostProcessor.class,
-		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor.class,
-		LiquibaseEntityManagerFactoryDependsOnPostProcessor.class })
+@Import({ LiquibaseEntityManagerFactoryDependsOnPostProcessor.class,
+		LiquibaseJdbcOperationsDependsOnPostProcessor.class,
+		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor.class })
 public class LiquibaseAutoConfiguration {
 
 	@Bean
