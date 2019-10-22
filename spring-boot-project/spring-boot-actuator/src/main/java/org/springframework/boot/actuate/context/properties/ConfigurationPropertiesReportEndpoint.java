@@ -367,8 +367,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private boolean isConstructorsContainParam(Constructor constructor, Class clazz, String name,
 				boolean isEnclosing) {
-			int size = constructor.getParameterCount();
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < constructor.getParameterCount(); i++) {
 				if (!isEnclosing) {
 					if (constructor.getParameterTypes()[i].equals(clazz)
 							&& constructor.getParameters()[i].getName().equals(name)) {
