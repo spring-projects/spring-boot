@@ -45,7 +45,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Integration tests for {@link LoggersEndpoint} when exposed via Jersey, Spring MVC, and
@@ -165,7 +165,7 @@ class LoggersEndpointWebIntegrationTests {
 		this.client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus()
 				.isBadRequest();
-		verifyZeroInteractions(this.loggingSystem);
+		verifyNoInteractions(this.loggingSystem);
 	}
 
 	@WebEndpointTest
