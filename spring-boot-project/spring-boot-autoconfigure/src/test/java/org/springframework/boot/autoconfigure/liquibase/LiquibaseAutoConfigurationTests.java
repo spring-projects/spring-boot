@@ -41,6 +41,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
@@ -319,6 +320,16 @@ class LiquibaseAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasBean("springLiquibase");
 					assertThat(context).doesNotHaveBean("liquibase");
+				});
+	}
+
+	@Test
+	void userConfigurationEntityManagerFactoryDependency() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
+				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("entityManagerFactory");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
 				});
 	}
 
