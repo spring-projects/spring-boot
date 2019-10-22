@@ -174,7 +174,9 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner, Ordered,
 			if (StringUtils.hasText(this.jobNames)) {
 				String[] jobsToRun = this.jobNames.split(",");
 				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
-					logger.debug("Skipped job: " + job.getName());
+					if (logger.isDebugEnabled()) {
+						logger.debug("Skipped job: " + job.getName());
+					}
 					continue;
 				}
 			}
@@ -194,7 +196,9 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner, Ordered,
 					execute(job, jobParameters);
 				}
 				catch (NoSuchJobException ex) {
-					logger.debug("No job found in registry for job name: " + jobName);
+					if (logger.isDebugEnabled()) {
+						logger.debug("No job found in registry for job name: " + jobName);
+					}
 				}
 			}
 		}
