@@ -113,7 +113,9 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				}
 			}
 			catch (Throwable ex) {
-				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
+				if (logger.isDebugEnabled()) {
+					logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
+				}
 			}
 		}
 		return null;
