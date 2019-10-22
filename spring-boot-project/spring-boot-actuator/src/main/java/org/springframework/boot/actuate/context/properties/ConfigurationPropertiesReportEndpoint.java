@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -233,7 +234,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		@Override
 		public Object findFilterId(Annotated a) {
 			Object id = super.findFilterId(a);
-			return (id != null) ? id : CONFIGURATION_PROPERTIES_FILTER_ID;
+			if (id == null) {
+				id = CONFIGURATION_PROPERTIES_FILTER_ID;
+			}
+			return id;
 		}
 
 	}
@@ -311,13 +315,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
-			// if the class has the @ConstructorBinding annotation or
-			// one constructor of this class has the @ConstructorBinding annotation,
-			// we can ignore the setter method.
-			if (beanDesc.getClassAnnotations().has(ConstructorBinding.class)
-					|| isConstructorsContainConstructorBinding(beanDesc)) {
-				return true;
-			}
 			Class<?> parentType = beanDesc.getType().getRawClass();
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
@@ -328,12 +325,63 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
 			return (setter != null) || ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
-					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
+					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type)
+					|| isReadableForConstructorBinding(beanDesc, writer);
 		}
 
-		private boolean isConstructorsContainConstructorBinding(BeanDescription beanDesc) {
-			return beanDesc.getConstructors().stream()
-					.anyMatch((annotatedConstructor) -> annotatedConstructor.hasAnnotation(ConstructorBinding.class));
+		private boolean isReadableForConstructorBinding(BeanDescription beanDesc, BeanPropertyWriter writer) {
+			boolean isReadable = isReadable(beanDesc.getType().getRawClass(), writer.getType().getRawClass(),
+					writer.getName(), false);
+			if (!isReadable && beanDesc.getType().getRawClass().getEnclosingClass() != null) {
+				isReadable = isReadable(beanDesc.getType().getRawClass().getEnclosingClass(),
+						beanDesc.getType().getRawClass(), beanDesc.getType().getRawClass().getName(), true);
+			}
+			return isReadable;
+		}
+
+		private boolean isReadable(Class clazz, Class fieldClazz, String fieldName, boolean isEnclosing) {
+			if (clazz.isAnnotationPresent(ConstructorBinding.class)) {
+				if (clazz.getConstructors().length == 1) {
+					Constructor constructor = clazz.getConstructors()[0];
+					return isConstructorsContainParam(constructor, fieldClazz, fieldName, isEnclosing);
+				}
+				else {
+					for (Constructor constructor : clazz.getConstructors()) {
+						if (!constructor.isAnnotationPresent(ConstructorBinding.class)) {
+							continue;
+						}
+						return isConstructorsContainParam(constructor, fieldClazz, fieldName, isEnclosing);
+					}
+				}
+			}
+			else {
+				for (Constructor constructor : clazz.getConstructors()) {
+					if (!constructor.isAnnotationPresent(ConstructorBinding.class)) {
+						continue;
+					}
+					return isConstructorsContainParam(constructor, fieldClazz, fieldName, isEnclosing);
+				}
+			}
+			return false;
+		}
+
+		private boolean isConstructorsContainParam(Constructor constructor, Class clazz, String name,
+				boolean isEnclosing) {
+			int size = constructor.getParameterCount();
+			for (int i = 0; i < size; i++) {
+				if (!isEnclosing) {
+					if (constructor.getParameterTypes()[i].equals(clazz)
+							&& constructor.getParameters()[i].getName().equals(name)) {
+						return true;
+					}
+				}
+				else {
+					if (constructor.getParameterTypes()[i].equals(clazz)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
