@@ -16,39 +16,42 @@
 
 package org.springframework.boot.test.context;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAttributes;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TestConfiguration}.
+ * Tests for {@link TestConfiguration @TestConfiguration}.
  *
- * @author Dmytro Nosan
+ * @author Stephane Nicoll
  */
 class TestConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
-
 	@Test
-	void shouldProxyBeanMethods() {
-		this.contextRunner.withUserConfiguration(ProxyBeanMethodsConfiguration.class)
-				.run((context) -> Assertions.assertThat(context).hasFailed());
+	void proxyBeanMethodsIsEnabledByDefault() {
+		AnnotationAttributes attributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(DefaultTestConfiguration.class, Configuration.class);
+		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
 	}
 
 	@Test
-	void shouldNotProxyBeanMethods() {
-		this.contextRunner.withUserConfiguration(ProxyBeanMethodsDisableConfiguration.class)
-				.run((context) -> Assertions.assertThat(context).hasNotFailed());
+	void proxyBeanMethodsCanBeDisabled() {
+		AnnotationAttributes attributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(NoBeanMethodProxyingTestConfiguration.class, Configuration.class);
+		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
 	}
 
 	@TestConfiguration
-	final static class ProxyBeanMethodsConfiguration {
+	static class DefaultTestConfiguration {
 
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
-	final static class ProxyBeanMethodsDisableConfiguration {
+	static class NoBeanMethodProxyingTestConfiguration {
 
 	}
 

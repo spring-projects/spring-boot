@@ -40,7 +40,7 @@ import org.springframework.core.annotation.AliasFor;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @TestComponent
 public @interface TestConfiguration {
 
@@ -71,8 +71,8 @@ public @interface TestConfiguration {
 	 * individually like when declared on non-{@code @Configuration} classes, a.k.a.
 	 * "@Bean Lite Mode" (see {@link Bean @Bean's javadoc}). It is therefore behaviorally
 	 * equivalent to removing the {@code @Configuration} stereotype.
-	 * @since 2.2.1
 	 * @return whether to proxy {@code @Bean} methods
+	 * @since 2.2.1
 	 */
 	@AliasFor(annotation = Configuration.class)
 	boolean proxyBeanMethods() default true;
