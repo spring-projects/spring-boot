@@ -26,8 +26,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link DeferredLog}.
@@ -168,7 +168,7 @@ class DeferredLogTests {
 		verify(this.log).info("1", null);
 		verify(this.log).fatal("2", null);
 		verifyNoMoreInteractions(this.log);
-		verifyZeroInteractions(log2);
+		verifyNoInteractions(log2);
 	}
 
 	@SuppressWarnings("unchecked")

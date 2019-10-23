@@ -35,7 +35,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link HealthWebEndpointResponseMapper}.
@@ -56,8 +56,8 @@ class HealthWebEndpointResponseMapperTests {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		verifyZeroInteractions(supplier);
-		verifyZeroInteractions(securityContext);
+		verifyNoInteractions(supplier);
+		verifyNoInteractions(securityContext);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class HealthWebEndpointResponseMapperTests {
 		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
-		verifyZeroInteractions(supplier);
+		verifyNoInteractions(supplier);
 		verify(securityContext).isUserInRole("ACTUATOR");
 	}
 
@@ -94,7 +94,7 @@ class HealthWebEndpointResponseMapperTests {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
 		verify(supplier).get();
-		verifyZeroInteractions(securityContext);
+		verifyNoInteractions(securityContext);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link BindResult}.
@@ -100,7 +100,7 @@ class BindResultTests {
 	void ifBoundWhenHasNoValueShouldNotCallConsumer() {
 		BindResult<String> result = BindResult.of(null);
 		result.ifBound(this.consumer);
-		verifyZeroInteractions(this.consumer);
+		verifyNoInteractions(this.consumer);
 	}
 
 	@Test
@@ -121,7 +121,7 @@ class BindResultTests {
 	void mapWhenHasNoValueShouldNotCallMapper() {
 		BindResult<String> result = BindResult.of(null);
 		result.map(this.mapper);
-		verifyZeroInteractions(this.mapper);
+		verifyNoInteractions(this.mapper);
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class BindResultTests {
 	void orElseGetWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("foo");
-		verifyZeroInteractions(this.supplier);
+		verifyNoInteractions(this.supplier);
 	}
 
 	@Test
