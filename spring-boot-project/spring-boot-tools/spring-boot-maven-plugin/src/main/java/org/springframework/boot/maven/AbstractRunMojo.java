@@ -311,7 +311,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the application arguments
 	 */
 	protected RunArguments resolveApplicationArguments() {
-		RunArguments runArguments = new RunArguments(this.arguments);
+		ApplicationArguments applicationArguments = new ApplicationArguments(this.arguments);
+		RunArguments runArguments = new RunArguments(applicationArguments.asArray());
 		addActiveProfileArgument(runArguments);
 		return runArguments;
 	}
@@ -327,7 +328,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
-		logArguments("Application argument(s): ", this.arguments);
+		logArguments("Application argument(s): ", applicationArguments.asArray());
 	}
 
 	private Map<String, String> determineEnvironmentVariables() {
