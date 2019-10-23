@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Base64Utils;
 
 /**
@@ -68,7 +69,7 @@ class Connection {
 		this.inputStream = new ConnectionInputStream(inputStream);
 		this.outputStream = new ConnectionOutputStream(outputStream);
 		this.header = this.inputStream.readHeader();
-		logger.debug("Established livereload connection [" + this.header + "]");
+		logger.debug(LogMessage.format("Established livereload connection [%s]", this.header));
 	}
 
 	/**
@@ -107,7 +108,7 @@ class Connection {
 				throw new ConnectionClosedException();
 			}
 			else if (frame.getType() == Frame.Type.TEXT) {
-				logger.debug("Received LiveReload text frame " + frame);
+				logger.debug(LogMessage.format("Received LiveReload text frame %s", frame));
 			}
 			else {
 				throw new IOException("Unexpected Frame Type " + frame.getType());

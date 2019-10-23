@@ -54,6 +54,7 @@ import org.springframework.util.unit.DataSize;
  * @author Chentao Qu
  * @author Andrew McGhie
  * @author Dirk Deyne
+ * @author Rafiullah Hamedy
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
@@ -91,9 +92,9 @@ public class TomcatWebServerFactoryCustomizer
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull().asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
-		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).asInt(DataSize::toBytes)
-				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
-				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(tomcatProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes)
+				.when((maxHttpFormPostSize) -> maxHttpFormPostSize != 0)
+				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
 		propertyMapper.from(tomcatProperties::getAccesslog).when(ServerProperties.Tomcat.Accesslog::isEnabled)
 				.to((enabled) -> customizeAccessLog(factory));
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull().to(factory::setUriEncoding);
@@ -244,8 +245,8 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	private void customizeMaxHttpPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpPostSize) {
-		factory.addConnectorCustomizers((connector) -> connector.setMaxPostSize(maxHttpPostSize));
+	private void customizeMaxHttpFormPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpFormPostSize) {
+		factory.addConnectorCustomizers((connector) -> connector.setMaxPostSize(maxHttpFormPostSize));
 	}
 
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {

@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure;
-
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.context.TestConfiguration;
-
 /**
- * Example {@link TestConfiguration @TestConfiguration} for
- * {@link OverrideAutoConfiguration @OverrideAutoConfiguration} tests.
- *
- * @author Phillip Webb
+ * Auto-configuration for Spring Security's SAML 2.0.
  */
-@TestConfiguration(proxyBeanMethods = false)
-@EntityScan("some.other.package")
-public class ExampleTestConfig {
-
-}
+package org.springframework.boot.autoconfigure.security.saml2;

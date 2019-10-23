@@ -6840,7 +6840,7 @@ The following example shows a `RestDocumentationResultHandler` being defined:
 
 [source,java,indent=0]
 ----
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class ResultHandlerConfiguration {
 
 		@Bean
