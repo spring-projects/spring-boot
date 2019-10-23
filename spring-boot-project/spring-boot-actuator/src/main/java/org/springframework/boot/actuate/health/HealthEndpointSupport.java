@@ -112,10 +112,12 @@ abstract class HealthEndpointSupport<C, T> {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> namedContributor : namedContributors) {
 			String name = namedContributor.getName();
+			C contributor = namedContributor.getContributor();
 			if (group.isMember(name)) {
-				T contribution = getContribution(apiVersion, group, namedContributor.getContributor(), showComponents,
-						showDetails, null);
-				contributions.put(name, contribution);
+				T contribution = getContribution(apiVersion, group, contributor, showComponents, showDetails, null);
+				if (contribution != null) {
+					contributions.put(name, contribution);
+				}
 			}
 		}
 		if (contributions.isEmpty()) {
