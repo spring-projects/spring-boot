@@ -88,7 +88,9 @@ public class TunnelClient implements SmartInitializingSingleton {
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
 			int port = serverSocketChannel.socket().getLocalPort();
-			logger.trace("Listening for TCP traffic to tunnel on port " + port);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Listening for TCP traffic to tunnel on port " + port);
+			}
 			this.serverThread = new ServerThread(serverSocketChannel);
 			this.serverThread.start();
 			return port;
@@ -144,7 +146,9 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 
 		public void close() throws IOException {
-			logger.trace("Closing tunnel client on port " + this.serverSocketChannel.socket().getLocalPort());
+			if (logger.isTraceEnabled()) {
+				logger.trace("Closing tunnel client on port " + this.serverSocketChannel.socket().getLocalPort());
+			}
 			this.serverSocketChannel.close();
 			this.acceptConnections = false;
 			interrupt();

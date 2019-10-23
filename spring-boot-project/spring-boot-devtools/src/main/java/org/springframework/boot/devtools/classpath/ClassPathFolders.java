@@ -58,8 +58,12 @@ public class ClassPathFolders implements Iterable<File> {
 				this.folders.add(ResourceUtils.getFile(url));
 			}
 			catch (Exception ex) {
-				logger.warn("Unable to get classpath URL " + url);
-				logger.trace("Unable to get classpath URL " + url, ex);
+				if (logger.isWarnEnabled()) {
+					logger.warn("Unable to get classpath URL " + url);
+				}
+				if (logger.isTraceEnabled()) {
+					logger.trace("Unable to get classpath URL " + url, ex);
+				}
 			}
 		}
 	}

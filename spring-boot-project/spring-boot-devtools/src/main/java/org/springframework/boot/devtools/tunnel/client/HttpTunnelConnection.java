@@ -92,7 +92,9 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	@Override
 	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable) throws Exception {
-		logger.trace("Opening HTTP tunnel to " + this.uri);
+		if (logger.isTraceEnabled()) {
+			logger.trace("Opening HTTP tunnel to " + this.uri);
+		}
 		return new TunnelChannel(incomingChannel, closeable);
 	}
 
@@ -152,7 +154,10 @@ public class HttpTunnelConnection implements TunnelConnection {
 					}
 					catch (IOException ex) {
 						if (ex instanceof ConnectException) {
-							logger.warn("Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
+							if (logger.isWarnEnabled()) {
+								logger.warn(
+										"Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
+							}
 						}
 						else {
 							logger.trace("Unexpected connection error", ex);

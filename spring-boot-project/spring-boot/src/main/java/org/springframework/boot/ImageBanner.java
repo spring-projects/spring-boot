@@ -78,8 +78,10 @@ public class ImageBanner implements Banner {
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
-					+ "')");
+			if (logger.isWarnEnabled()) {
+				logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
+						+ "')");
+			}
 			logger.debug("Image banner printing failure", ex);
 		}
 		finally {

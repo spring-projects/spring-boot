@@ -121,7 +121,9 @@ class StartupInfoLogger {
 			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 				warning.append(" (macOS machines may need to add entries to /etc/hosts)");
 			}
-			logger.warn(warning.append("."));
+			if (logger.isWarnEnabled()) {
+				logger.warn(warning.append("."));
+			}
 		}
 	}
 

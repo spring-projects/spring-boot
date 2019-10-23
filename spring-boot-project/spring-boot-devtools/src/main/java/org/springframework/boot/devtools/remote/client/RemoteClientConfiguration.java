@@ -118,7 +118,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		if (!remoteProperties.getRestart().isEnabled()) {
 			logger.warn("Remote restart is disabled.");
 		}
-		if (!this.remoteUrl.startsWith("https://")) {
+		if (!this.remoteUrl.startsWith("https://") && logger.isWarnEnabled()) {
 			logger.warn("The connection to " + this.remoteUrl
 					+ " is insecure. You should use a URL starting with 'https://'.");
 		}

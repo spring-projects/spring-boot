@@ -76,7 +76,9 @@ class DataSourceInitializerInvoker implements ApplicationListener<DataSourceSche
 			}
 		}
 		catch (IllegalStateException ex) {
-			logger.warn("Could not send event to complete DataSource initialization (" + ex.getMessage() + ")");
+			if (logger.isWarnEnabled()) {
+				logger.warn("Could not send event to complete DataSource initialization (" + ex.getMessage() + ")");
+			}
 		}
 	}
 

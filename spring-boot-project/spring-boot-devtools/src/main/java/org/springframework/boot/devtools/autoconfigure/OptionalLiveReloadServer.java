@@ -54,7 +54,9 @@ public class OptionalLiveReloadServer implements InitializingBean {
 				if (!this.server.isStarted()) {
 					this.server.start();
 				}
-				logger.info("LiveReload server is running on port " + this.server.getPort());
+				if (logger.isInfoEnabled()) {
+					logger.info("LiveReload server is running on port " + this.server.getPort());
+				}
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to start LiveReload server");

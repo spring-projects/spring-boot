@@ -126,7 +126,9 @@ public class RemoteDevToolsAutoConfiguration {
 			RemoteDevToolsProperties remote = properties.getRemote();
 			String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
 			String url = servletContextPath + remote.getContextPath() + "/restart";
-			logger.warn("Listening for remote restart updates on " + url);
+			if (logger.isWarnEnabled()) {
+				logger.warn("Listening for remote restart updates on " + url);
+			}
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
 		}
