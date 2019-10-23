@@ -91,7 +91,9 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 			portFile.deleteOnExit();
 		}
 		catch (Exception ex) {
-			logger.warn(String.format("Cannot create port file %s", this.file));
+			if (logger.isWarnEnabled()) {
+				logger.warn(String.format("Cannot create port file %s", this.file));
+			}
 		}
 	}
 

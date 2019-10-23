@@ -287,7 +287,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
 		}
 		if (HttpStatus.resolve(response.rawStatusCode()) != null
-				&& response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				&& response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR) && logger.isErrorEnabled()) {
 			logger.error(request.exchange().getLogPrefix() + "500 Server Error for " + formatRequest(request),
 					throwable);
 		}

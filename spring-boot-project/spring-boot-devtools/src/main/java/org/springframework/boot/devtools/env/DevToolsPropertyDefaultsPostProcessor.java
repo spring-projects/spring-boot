@@ -80,10 +80,12 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread()) && isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
-				logger.info("Devtools property defaults active! Set '" + ENABLED + "' to 'false' to disable");
+				if (logger.isInfoEnabled()) {
+					logger.info("Devtools property defaults active! Set '" + ENABLED + "' to 'false' to disable");
+				}
 				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
 			}
-			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
+			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING) && logger.isInfoEnabled()) {
 				logger.info("For additional web related logging consider setting the '" + WEB_LOGGING
 						+ "' property to 'DEBUG'");
 			}

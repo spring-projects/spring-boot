@@ -76,7 +76,9 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
-				logger.trace("Failed to load " + analyzerName, ex);
+				if (logger.isTraceEnabled()) {
+					logger.trace("Failed to load " + analyzerName, ex);
+				}
 			}
 		}
 		AnnotationAwareOrderComparator.sort(analyzers);

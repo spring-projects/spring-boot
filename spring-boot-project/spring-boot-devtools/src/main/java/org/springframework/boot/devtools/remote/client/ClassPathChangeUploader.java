@@ -114,8 +114,10 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 					return;
 				}
 				catch (SocketException ex) {
-					logger.warn("A failure occurred when uploading to " + this.uri
-							+ ". Upload will be retried in 2 seconds");
+					if (logger.isWarnEnabled()) {
+						logger.warn("A failure occurred when uploading to " + this.uri
+								+ ". Upload will be retried in 2 seconds");
+					}
 					logger.debug("Upload failure", ex);
 					Thread.sleep(2000);
 				}
@@ -128,8 +130,10 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 	}
 
 	private void logUpload(ClassLoaderFiles classLoaderFiles) {
-		int size = classLoaderFiles.size();
-		logger.info("Uploaded " + size + " class " + ((size != 1) ? "resources" : "resource"));
+		if (logger.isInfoEnabled()) {
+			int size = classLoaderFiles.size();
+			logger.info("Uploaded " + size + " class " + ((size != 1) ? "resources" : "resource"));
+		}
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {

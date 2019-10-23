@@ -416,7 +416,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				system.setLogLevel(name, level);
 			}
 			catch (RuntimeException ex) {
-				this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
+				if (this.logger.isErrorEnabled()) {
+					this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
+				}
 			}
 		};
 	}

@@ -83,7 +83,7 @@ public class GroovyTemplateAutoConfiguration {
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
-				if (!location.exists(this.applicationContext)) {
+				if (!location.exists(this.applicationContext) && logger.isWarnEnabled()) {
 					logger.warn("Cannot find template location: " + location
 							+ " (please add some templates, check your Groovy "
 							+ "configuration, or set spring.groovy.template.check-template-location=false)");

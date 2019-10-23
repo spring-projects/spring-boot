@@ -124,7 +124,9 @@ public class DataSourcePoolMetricsAutoConfiguration {
 					hikari.setMetricsTrackerFactory(new MicrometerMetricsTrackerFactory(this.registry));
 				}
 				catch (Exception ex) {
-					logger.warn("Failed to bind Hikari metrics: " + ex.getMessage());
+					if (logger.isWarnEnabled()) {
+						logger.warn("Failed to bind Hikari metrics: " + ex.getMessage());
+					}
 				}
 			}
 		}
