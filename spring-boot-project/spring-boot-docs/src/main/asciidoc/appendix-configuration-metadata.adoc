@@ -121,7 +121,7 @@ The JSON object contained in the `groups` array can contain the attributes shown
 | `description`
 | String
 | A short description of the group that can be displayed to users.
-  If not description is available, it may be omitted.
+  If no description is available, it may be omitted.
   It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
   The last line in the description should end with a period (`.`).
 
@@ -163,7 +163,7 @@ The JSON object contained in the `properties` array can contain the attributes d
 
 | `description`
 | String
-| A short description of the group that can be displayed to users.
+| A short description of the property that can be displayed to users.
   If no description is available, it may be omitted.
   It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
   The last line in the description should end with a period (`.`).
