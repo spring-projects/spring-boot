@@ -168,7 +168,7 @@
 		<pooled-jms.version>1.0.6</pooled-jms.version>
 		<postgresql.version>42.2.8</postgresql.version>
 		<prometheus-pushgateway.version>0.7.0</prometheus-pushgateway.version>
-		<quartz.version>2.3.1</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.7.3</rabbit-amqp-client.version>
 		<reactor-bom.version>Dysprosium-RELEASE</reactor-bom.version>
