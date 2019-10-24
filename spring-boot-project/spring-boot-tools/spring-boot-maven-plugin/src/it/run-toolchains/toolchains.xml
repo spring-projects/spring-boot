@@ -1,0 +1,8 @@
+<toolchains>
+	<toolchain>
+		<type>jdk</type>
+		<configuration>
+			<jdkHome>jdkHome</jdkHome>
+		</configuration>
+	</toolchain>
+</toolchains>

@@ -37,7 +37,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
 /**
@@ -104,7 +103,7 @@ public class StartMojo extends AbstractRunMojo {
 	private RunProcess runProcess(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
 			runProcess.run(false, args, environmentVariables);
 			return runProcess;
 		}

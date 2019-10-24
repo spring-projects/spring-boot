@@ -240,6 +240,7 @@
 		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
 		<xml-maven-plugin.version>1.0.2</xml-maven-plugin.version>
 		<flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
+		<maven-toolchains-plugin.version>3.0.0</maven-toolchains-plugin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -3348,6 +3349,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven-war-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-toolchains-plugin</artifactId>
+					<version>${maven-toolchains-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
