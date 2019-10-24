@@ -30,15 +30,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -204,6 +209,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
+	/**
+	 * The Maven Session Object.
+	 * @since 2.2.1
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true)
+	private MavenSession session;
+
+	/**
+	 * The toolchain manager to use.
+	 * @since 2.2.1
+	 */
+	@Component
+	private ToolchainManager toolchainManager;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
@@ -323,6 +342,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				: new RunArguments(this.arguments);
 		addActiveProfileArgument(runArguments);
 		return runArguments;
+	}
+
+	/**
+	 * Provides access to the java binary executable, regardless of OS.
+	 * @return the java executable
+	 **/
+	protected String getJavaExecutable() {
+		Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
+		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
+		return (javaExecutable != null) ? javaExecutable : new JavaExecutable().toString();
 	}
 
 	/**
