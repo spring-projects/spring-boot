@@ -60,7 +60,7 @@ public class ClassPathFolders implements Iterable<File> {
 			}
 			catch (Exception ex) {
 				logger.warn(LogMessage.format("Unable to get classpath URL %s", url));
-				logger.trace(LogMessage.format("Unable to get classpath URL ", url), ex);
+				logger.trace(LogMessage.format("Unable to get classpath URL %s", url), ex);
 			}
 		}
 	}
