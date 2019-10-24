@@ -155,7 +155,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 					catch (IOException ex) {
 						if (ex instanceof ConnectException) {
 							if (logger.isWarnEnabled()) {
-								logger.warn("Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
+								logger.warn(
+										"Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
 							}
 						}
 						else {

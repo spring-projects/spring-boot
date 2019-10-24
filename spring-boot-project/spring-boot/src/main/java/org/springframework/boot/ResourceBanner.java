@@ -71,9 +71,8 @@ public class ResourceBanner implements Banner {
 		}
 		catch (Exception ex) {
 			if (logger.isWarnEnabled()) {
-				logger.warn(
-						"Banner not printable: " + this.resource + " (" + ex.getClass() + ": '" + ex.getMessage() + "')",
-						ex);
+				logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass() + ": '" + ex.getMessage()
+						+ "')", ex);
 			}
 		}
 	}
