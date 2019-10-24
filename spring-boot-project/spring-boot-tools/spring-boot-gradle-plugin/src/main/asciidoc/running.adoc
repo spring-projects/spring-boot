@@ -60,7 +60,7 @@ include::../gradle/running/boot-run-disable-optimized-launch.gradle.kts[tags=lau
 ----
 
 
-If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` project property must be configured and can be used for the same purpose:
+If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
