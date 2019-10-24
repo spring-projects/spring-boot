@@ -119,10 +119,8 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		SimpleModule jodaDateTimeSerializationModule(JacksonProperties jacksonProperties) {
-			if (logger.isWarnEnabled()) {
-				logger.warn("Auto-configuration of Jackson's Joda-Time integration is deprecated in favor of using "
-						+ "java.time (JSR-310).");
-			}
+			logger.warn("Auto-configuration of Jackson's Joda-Time integration is deprecated in favor of using "
+					+ "java.time (JSR-310).");
 			SimpleModule module = new SimpleModule();
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(jacksonProperties);
 			if (jacksonJodaFormat != null) {

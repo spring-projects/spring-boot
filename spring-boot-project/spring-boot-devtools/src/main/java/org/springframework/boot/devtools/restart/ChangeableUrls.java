@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.settings.DevToolsSettings;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -170,10 +171,10 @@ final class ChangeableUrls implements Iterable<URL> {
 				throw new IllegalStateException("Class-Path attribute contains malformed URL", ex);
 			}
 		}
-		if (!nonExistentEntries.isEmpty() && logger.isInfoEnabled()) {
-			logger.info("The Class-Path manifest attribute in " + jarFile.getName()
+		if (!nonExistentEntries.isEmpty()) {
+			logger.info(LogMessage.of(() -> "The Class-Path manifest attribute in " + jarFile.getName()
 					+ " referenced one or more files that do not exist: "
-					+ StringUtils.collectionToCommaDelimitedString(nonExistentEntries));
+					+ StringUtils.collectionToCommaDelimitedString(nonExistentEntries)));
 		}
 		return urls;
 	}

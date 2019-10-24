@@ -43,6 +43,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -124,9 +125,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 					hikari.setMetricsTrackerFactory(new MicrometerMetricsTrackerFactory(this.registry));
 				}
 				catch (Exception ex) {
-					if (logger.isWarnEnabled()) {
-						logger.warn("Failed to bind Hikari metrics: " + ex.getMessage());
-					}
+					logger.warn(LogMessage.format("Failed to bind Hikari metrics: %s", ex.getMessage()));
 				}
 			}
 		}

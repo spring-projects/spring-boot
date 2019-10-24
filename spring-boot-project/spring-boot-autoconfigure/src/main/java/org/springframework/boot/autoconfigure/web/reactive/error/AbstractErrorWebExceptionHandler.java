@@ -34,6 +34,7 @@ import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
@@ -287,9 +288,9 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
 		}
 		if (HttpStatus.resolve(response.rawStatusCode()) != null
-				&& response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR) && logger.isErrorEnabled()) {
-			logger.error(request.exchange().getLogPrefix() + "500 Server Error for " + formatRequest(request),
-					throwable);
+				&& response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+			logger.error(LogMessage.of(() -> String.format("%s 500 Server Error for %s",
+					request.exchange().getLogPrefix(), formatRequest(request))), throwable);
 		}
 	}
 

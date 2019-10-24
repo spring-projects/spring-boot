@@ -32,6 +32,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -80,14 +81,14 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread()) && isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
-				if (logger.isInfoEnabled()) {
-					logger.info("Devtools property defaults active! Set '" + ENABLED + "' to 'false' to disable");
-				}
+				logger.info(LogMessage.format("Devtools property defaults active! Set '%s' to 'false' to disable",
+						ENABLED));
 				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
 			}
-			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING) && logger.isInfoEnabled()) {
-				logger.info("For additional web related logging consider setting the '" + WEB_LOGGING
-						+ "' property to 'DEBUG'");
+			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
+				logger.info(LogMessage.format(
+						"For additional web related logging consider setting the '%s' property to 'DEBUG'",
+						WEB_LOGGING));
 			}
 		}
 	}
