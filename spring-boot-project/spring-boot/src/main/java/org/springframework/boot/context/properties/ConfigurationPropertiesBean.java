@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -156,17 +157,33 @@ public final class ConfigurationPropertiesBean {
 		Iterator<String> beanNames = beanFactory.getBeanNamesIterator();
 		while (beanNames.hasNext()) {
 			String beanName = beanNames.next();
-			try {
-				Object bean = beanFactory.getBean(beanName);
-				ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
-				if (propertiesBean != null) {
+			if (isConfigurationPropertiesBean(beanFactory, beanName)) {
+				try {
+					Object bean = beanFactory.getBean(beanName);
+					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
 					propertiesBeans.put(beanName, propertiesBean);
 				}
-			}
-			catch (NoSuchBeanDefinitionException ex) {
+				catch (Exception ex) {
+				}
 			}
 		}
 		return propertiesBeans;
+	}
+
+	private static boolean isConfigurationPropertiesBean(ConfigurableListableBeanFactory beanFactory, String beanName) {
+		try {
+			if (beanFactory.getBeanDefinition(beanName).isAbstract()) {
+				return false;
+			}
+			if (beanFactory.findAnnotationOnBean(beanName, ConfigurationProperties.class) != null) {
+				return true;
+			}
+			Method factoryMethod = findFactoryMethod(beanFactory, beanName);
+			return findMergedAnnotation(factoryMethod, ConfigurationProperties.class).isPresent();
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return false;
+		}
 	}
 
 	/**
@@ -195,7 +212,10 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	private static Method findFactoryMethod(ConfigurableApplicationContext applicationContext, String beanName) {
-		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		return findFactoryMethod(applicationContext.getBeanFactory(), beanName);
+	}
+
+	private static Method findFactoryMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (beanDefinition instanceof RootBeanDefinition) {
@@ -260,16 +280,22 @@ public final class ConfigurationPropertiesBean {
 			Class<A> annotationType) {
 		MergedAnnotation<A> annotation = MergedAnnotation.missing();
 		if (factory != null) {
-			annotation = MergedAnnotations.from(factory, SearchStrategy.TYPE_HIERARCHY).get(annotationType);
+			annotation = findMergedAnnotation(factory, annotationType);
 		}
 		if (!annotation.isPresent()) {
-			annotation = MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).get(annotationType);
+			annotation = findMergedAnnotation(type, annotationType);
 		}
 		if (!annotation.isPresent() && AopUtils.isAopProxy(instance)) {
 			annotation = MergedAnnotations.from(AopUtils.getTargetClass(instance), SearchStrategy.TYPE_HIERARCHY)
 					.get(annotationType);
 		}
 		return annotation.isPresent() ? annotation.synthesize() : null;
+	}
+
+	private static <A extends Annotation> MergedAnnotation<A> findMergedAnnotation(AnnotatedElement element,
+			Class<A> annotationType) {
+		return (element != null) ? MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY).get(annotationType)
+				: MergedAnnotation.missing();
 	}
 
 	private static boolean isBindableConstructor(Constructor<?> constructor) {

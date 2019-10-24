@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.stereotype.Component;
@@ -69,6 +70,16 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(valueObject.getType()).isEqualTo(ValueObject.class);
 			assertThat(valueObject.getAnnotation()).isNotNull();
 			assertThat(valueObject.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		}
+	}
+
+	@Test
+	void getAllWhenHasBadBeanDoesNotFail() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				NonAnnotatedComponent.class, AnnotatedComponent.class, AnnotatedBeanConfiguration.class,
+				ValueObjectConfiguration.class, BadBeanConfiguration.class)) {
+			Map<String, ConfigurationPropertiesBean> all = ConfigurationPropertiesBean.getAll(context);
+			assertThat(all).isNotEmpty();
 		}
 	}
 
@@ -384,6 +395,25 @@ class ConfigurationPropertiesBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ValueObject.class)
 	static class ValueObjectConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BadBeanConfiguration {
+
+		@Bean
+		@Lazy
+		BadBean badBean() {
+			return new BadBean();
+		}
+
+	}
+
+	static class BadBean {
+
+		BadBean() {
+			throw new IllegalStateException();
+		}
 
 	}
 
