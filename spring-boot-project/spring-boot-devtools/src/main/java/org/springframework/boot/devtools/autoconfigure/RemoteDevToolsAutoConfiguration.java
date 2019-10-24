@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.server.ServerHttpRequest;
 
 /**
@@ -126,7 +127,7 @@ public class RemoteDevToolsAutoConfiguration {
 			RemoteDevToolsProperties remote = properties.getRemote();
 			String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
 			String url = servletContextPath + remote.getContextPath() + "/restart";
-			logger.warn("Listening for remote restart updates on " + url);
+			logger.warn(LogMessage.format("Listening for remote restart updates on %s", url));
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
 		}

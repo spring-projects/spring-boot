@@ -26,6 +26,7 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link ApplicationListener} to initialize the {@link Restarter}.
@@ -73,7 +74,8 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
-			logger.info("Restart disabled due to System property '" + ENABLED_PROPERTY + "' being set to false");
+			logger.info(LogMessage.format("Restart disabled due to System property '%s' being set to false",
+					ENABLED_PROPERTY));
 			Restarter.disable();
 		}
 	}

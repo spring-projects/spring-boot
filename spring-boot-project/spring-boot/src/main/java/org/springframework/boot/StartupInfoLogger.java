@@ -112,16 +112,19 @@ class StartupInfoLogger {
 		long startTime = System.currentTimeMillis();
 		append(message, "on ", () -> InetAddress.getLocalHost().getHostName());
 		long resolveTime = System.currentTimeMillis() - startTime;
-		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD && logger.isWarnEnabled()) {
-			StringBuilder warning = new StringBuilder();
-			warning.append("InetAddress.getLocalHost().getHostName() took ");
-			warning.append(resolveTime);
-			warning.append(" milliseconds to respond.");
-			warning.append(" Please verify your network configuration");
-			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-				warning.append(" (macOS machines may need to add entries to /etc/hosts)");
-			}
-			logger.warn(warning.append("."));
+		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD) {
+			logger.warn(LogMessage.of(() -> {
+				StringBuilder warning = new StringBuilder();
+				warning.append("InetAddress.getLocalHost().getHostName() took ");
+				warning.append(resolveTime);
+				warning.append(" milliseconds to respond.");
+				warning.append(" Please verify your network configuration");
+				if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+					warning.append(" (macOS machines may need to add entries to /etc/hosts)");
+				}
+				warning.append(".");
+				return warning;
+			}));
 		}
 	}
 

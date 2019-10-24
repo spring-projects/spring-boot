@@ -50,6 +50,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
@@ -416,7 +417,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				system.setLogLevel(name, level);
 			}
 			catch (RuntimeException ex) {
-				this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
+				this.logger.error(LogMessage.format("Cannot set level '%s' for '%s'", level, name));
 			}
 		};
 	}
