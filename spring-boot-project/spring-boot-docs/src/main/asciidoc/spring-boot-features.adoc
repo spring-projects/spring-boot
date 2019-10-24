@@ -1215,8 +1215,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
-Although nested properties will also be validated when bound, it's good practice to also annotate the associated field as `@Valid`.
-This ensures that validation is triggered even if no nested properties are found.
+To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `AcmeProperties` example:
 
 [source,java,indent=0]
