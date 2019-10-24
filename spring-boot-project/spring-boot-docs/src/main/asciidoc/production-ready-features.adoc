@@ -1748,7 +1748,7 @@ To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
-Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
+When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
