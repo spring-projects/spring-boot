@@ -16,10 +16,6 @@ bomr:
         versions:
           # Switches to Jarkarta EE API dependencies resulting in duplicate classes
           - '[2.3.2,2.4)'
-      - project: jetty
-        versions:
-          # Contains incompatiable class change
-          - '9.4.20.v20190813'
       - project: netty
         versions:
           # https://github.com/reactor/reactor-netty/issues/844
