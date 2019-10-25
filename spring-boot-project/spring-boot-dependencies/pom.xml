@@ -165,7 +165,7 @@
 		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.7.2</solr.version>
 		<!-- deprecated in favor of "spring-framework.version" -->
-		<spring.version>5.1.10.RELEASE</spring.version>
+		<spring.version>5.1.11.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.1.11.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.1.2.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
