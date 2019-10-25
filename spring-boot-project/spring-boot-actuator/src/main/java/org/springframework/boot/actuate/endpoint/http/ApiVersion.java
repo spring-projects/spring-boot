@@ -75,7 +75,7 @@ public enum ApiVersion {
 			try {
 				return valueOf(type.toUpperCase());
 			}
-			catch (IllegalArgumentException ex) {
+			catch (IllegalArgumentException ignored) {
 			}
 		}
 		return null;
