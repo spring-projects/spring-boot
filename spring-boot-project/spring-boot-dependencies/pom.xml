@@ -142,7 +142,7 @@
 		<mysql.version>8.0.17</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.14</neo4j-ogm.version>
-		<netty.version>4.1.39.Final</netty.version>
+		<netty.version>4.1.43.Final</netty.version>
 		<netty-tcnative.version>2.0.26.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
