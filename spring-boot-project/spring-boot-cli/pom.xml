@@ -259,6 +259,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<descriptors>
 								<descriptor>src/main/assembly/jar-with-dependencies.xml</descriptor>
 							</descriptors>
@@ -281,6 +282,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<descriptors>
 								<descriptor>src/main/assembly/bin-package.xml</descriptor>
 							</descriptors>
