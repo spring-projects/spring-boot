@@ -100,11 +100,8 @@ public class HealthWebEndpointResponseMapper {
 	}
 
 	private boolean canSeeDetails(SecurityContext securityContext, ShowDetails showDetails) {
-		if (showDetails == ShowDetails.NEVER || (showDetails == ShowDetails.WHEN_AUTHORIZED
-				&& (securityContext.getPrincipal() == null || !isUserInRole(securityContext)))) {
-			return false;
-		}
-		return true;
+		return showDetails != ShowDetails.NEVER && (showDetails != ShowDetails.WHEN_AUTHORIZED
+				|| (securityContext.getPrincipal() != null && isUserInRole(securityContext)));
 	}
 
 	private boolean isUserInRole(SecurityContext securityContext) {
