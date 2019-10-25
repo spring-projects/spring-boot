@@ -1112,6 +1112,8 @@ For example, consider binding the following properties to a `Map`:
 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 
+NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
+
 
 [[boot-features-external-config-complex-type-merge]]
 ==== Merging Complex Types
