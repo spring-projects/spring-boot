@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.atomikos.util.Assert;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -29,6 +30,7 @@ import org.springframework.boot.context.properties.source.MockConfigurationPrope
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ValueObjectBinder}.
@@ -220,6 +222,20 @@ class ValueObjectBinderTests {
 		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
 	}
 
+	@Test
+	void bindWhenAllPropertiesBoundShouldClearConfigurationProperty() { // gh-18704
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "hello");
+		this.sources.add(source);
+		Bindable<ValidatingConstructorBean> target = Bindable.of(ValidatingConstructorBean.class);
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
+				.satisfies(this::noConfigurationProperty);
+	}
+
+	private void noConfigurationProperty(BindException ex) {
+		assertThat(ex.getProperty()).isNull();
+	}
+
 	static class ExampleValueBean {
 
 		private final int intValue;
@@ -409,6 +425,28 @@ class ValueObjectBinderTests {
 
 		String getProperty() {
 			return this.property;
+		}
+
+	}
+
+	static class ValidatingConstructorBean {
+
+		private final String foo;
+
+		private final String bar;
+
+		ValidatingConstructorBean(String foo, String bar) {
+			Assert.notNull("Foo must not be null", foo);
+			this.foo = foo;
+			this.bar = bar;
+		}
+
+		String getFoo() {
+			return this.foo;
+		}
+
+		String getBar() {
+			return this.bar;
 		}
 
 	}

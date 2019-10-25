@@ -61,6 +61,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			arg = (arg != null) ? arg : parameter.getDefaultValue(context.getConverter());
 			args.add(arg);
 		}
+		context.clearConfigurationProperty();
 		return bound ? valueObject.instantiate(args) : null;
 	}
 
