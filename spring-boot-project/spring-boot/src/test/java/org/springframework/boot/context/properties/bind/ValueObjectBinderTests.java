@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.atomikos.util.Assert;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -436,7 +436,7 @@ class ValueObjectBinderTests {
 		private final String bar;
 
 		ValidatingConstructorBean(String foo, String bar) {
-			Assert.notNull("Foo must not be null", foo);
+			Assert.notNull(foo, "Foo must not be null");
 			this.foo = foo;
 			this.bar = bar;
 		}
