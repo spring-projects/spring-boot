@@ -91,7 +91,7 @@ class NamedContributorsMapAdapterTests {
 	}
 
 	private TestNamedContributorsMapAdapter<String> createAdapter() {
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		map.put("one", "one");
 		map.put("two", "two");
 		TestNamedContributorsMapAdapter<String> adapter = new TestNamedContributorsMapAdapter<>(map, this::reverse);

@@ -67,7 +67,7 @@ class HealthContributorRegistryHealthIndicatorRegistryAdapter implements HealthI
 
 	@Override
 	public Map<String, HealthIndicator> getAll() {
-		Map<String, HealthIndicator> all = new LinkedHashMap<String, HealthIndicator>();
+		Map<String, HealthIndicator> all = new LinkedHashMap<>();
 		for (NamedContributor<?> namedContributor : this.contributorRegistry) {
 			if (namedContributor.getContributor() instanceof HealthIndicator) {
 				all.put(namedContributor.getName(), (HealthIndicator) namedContributor.getContributor());
