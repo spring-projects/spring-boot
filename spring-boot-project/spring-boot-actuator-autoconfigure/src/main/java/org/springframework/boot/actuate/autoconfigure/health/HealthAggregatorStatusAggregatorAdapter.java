@@ -43,7 +43,7 @@ class HealthAggregatorStatusAggregatorAdapter implements StatusAggregator {
 	@Override
 	public Status getAggregateStatus(Set<Status> statuses) {
 		int index = 0;
-		Map<String, Health> healths = new LinkedHashMap<String, Health>();
+		Map<String, Health> healths = new LinkedHashMap<>();
 		for (Status status : statuses) {
 			index++;
 			healths.put("health" + index, asHealth(status));

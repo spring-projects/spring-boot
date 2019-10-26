@@ -37,7 +37,7 @@ public class HealthIndicatorProperties {
 
 	private List<String> order = new ArrayList<>();
 
-	private final Map<String, Integer> httpMapping = new LinkedHashMap<String, Integer>();
+	private final Map<String, Integer> httpMapping = new LinkedHashMap<>();
 
 	@DeprecatedConfigurationProperty(replacement = "management.endpoint.health.status.order")
 	public List<String> getOrder() {
