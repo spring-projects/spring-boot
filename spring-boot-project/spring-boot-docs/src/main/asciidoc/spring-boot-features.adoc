@@ -3121,7 +3121,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
 	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=https://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
 
@@ -3130,7 +3130,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
 	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=https://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
 
