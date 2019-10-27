@@ -21,8 +21,7 @@ import javax.servlet.MultipartConfigElement;
 import org.springframework.util.unit.DataSize;
 
 /**
- * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
- * set using {@link DataSize} variants.
+ * Factory that can be used to create a {@link MultipartConfigElement}.
  *
  * @author Phillip Webb
  * @since 1.4.0
