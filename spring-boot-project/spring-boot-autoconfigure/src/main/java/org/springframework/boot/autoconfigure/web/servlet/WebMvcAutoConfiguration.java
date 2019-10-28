@@ -427,7 +427,8 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService mvcConversionService() {
-			WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat());
+			WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat(),
+					this.mvcProperties.getTimeFormat(), this.mvcProperties.getDateTimeFormat());
 			addFormatters(conversionService);
 			return conversionService;
 		}

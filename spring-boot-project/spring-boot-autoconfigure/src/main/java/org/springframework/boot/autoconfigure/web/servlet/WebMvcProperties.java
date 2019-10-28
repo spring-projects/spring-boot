@@ -62,6 +62,16 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
+	 * Time format to use. For instance, `HH:mm:ss`.
+	 */
+	private String timeFormat;
+
+	/**
+	 * Datetime format to use. For instance, `yyyy-MM-dd HH:mm:ss`.
+	 */
+	private String dateTimeFormat;
+
+	/**
 	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	 */
 	private boolean dispatchTraceRequest = false;
@@ -145,6 +155,22 @@ public class WebMvcProperties {
 
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
+	}
+
+	public String getTimeFormat() {
+		return this.timeFormat;
+	}
+
+	public void setTimeFormat(final String timeFormat) {
+		this.timeFormat = timeFormat;
+	}
+
+	public String getDateTimeFormat() {
+		return this.dateTimeFormat;
+	}
+
+	public void setDateTimeFormat(final String dateTimeFormat) {
+		this.dateTimeFormat = dateTimeFormat;
 	}
 
 	public boolean isIgnoreDefaultModelOnRedirect() {

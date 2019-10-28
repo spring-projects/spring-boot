@@ -48,15 +48,32 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private final String dateFormat;
 
+	private final String timeFormat;
+
+	private final String dateTimeFormat;
+
 	/**
 	 * Create a new WebConversionService that configures formatters with the provided date
 	 * format, or register the default ones if no custom format is provided.
 	 * @param dateFormat the custom date format to use for date conversions
 	 */
 	public WebConversionService(String dateFormat) {
+		this(dateFormat, null, null);
+	}
+
+	/**
+	 * Create a new WebConversionService that configures formatters with the provided date
+	 * and time formats, or register the default ones if no custom formats are provided.
+	 * @param dateFormat the custom date format to use for date conversions
+	 * @param timeFormat the custom time format to use for time conversions
+	 * @param dateTimeFormat the custom datetime format to use for datetime conversions
+	 */
+	public WebConversionService(String dateFormat, String timeFormat, String dateTimeFormat) {
 		super(false);
-		this.dateFormat = StringUtils.hasText(dateFormat) ? dateFormat : null;
-		if (this.dateFormat != null) {
+		this.dateFormat = getNonEmptyFormat(dateFormat);
+		this.timeFormat = getNonEmptyFormat(timeFormat);
+		this.dateTimeFormat = getNonEmptyFormat(dateTimeFormat);
+		if (this.dateFormat != null || this.timeFormat != null || this.dateTimeFormat != null) {
 			addFormatters();
 		}
 		else {
@@ -81,6 +98,17 @@ public class WebConversionService extends DefaultFormattingConversionService {
 			dateTime.setDateFormatter(
 					DateTimeFormatter.ofPattern(this.dateFormat).withResolverStyle(ResolverStyle.SMART));
 		}
+
+		if (this.timeFormat != null) {
+			dateTime.setTimeFormatter(
+					DateTimeFormatter.ofPattern(this.timeFormat).withResolverStyle(ResolverStyle.SMART));
+		}
+
+		if (this.dateTimeFormat != null) {
+			dateTime.setDateTimeFormatter(
+					DateTimeFormatter.ofPattern(this.dateTimeFormat).withResolverStyle(ResolverStyle.SMART));
+		}
+
 		dateTime.registerFormatters(this);
 	}
 
@@ -91,6 +119,10 @@ public class WebConversionService extends DefaultFormattingConversionService {
 			dateFormatterRegistrar.setFormatter(dateFormatter);
 		}
 		dateFormatterRegistrar.registerFormatters(this);
+	}
+
+	private static String getNonEmptyFormat(final String format) {
+		return StringUtils.hasText(format) ? format : null;
 	}
 
 }
