@@ -47,27 +47,23 @@ class ManagementPortSampleActuatorApplicationTests {
 
 	@Test
 	void testHome() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				new TestRestTemplate("user", "password").getForEntity("http://localhost:" + this.port, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
 	}
 
 	@Test
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword())
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
 				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
@@ -77,17 +73,15 @@ class ManagementPortSampleActuatorApplicationTests {
 
 	@Test
 	void testErrorPage() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
+				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("status")).isEqualTo(999);
+		assertThat(entity.getBody().get("status")).isEqualTo(999);
 	}
 
-	private String getPassword() {
-		return "password";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
+		return (ResponseEntity) entity;
 	}
 
 }

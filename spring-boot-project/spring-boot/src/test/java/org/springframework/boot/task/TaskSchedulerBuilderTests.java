@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TaskSchedulerBuilder}.
@@ -101,7 +101,7 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyZeroInteractions(customizer1);
+		verifyNoInteractions(customizer1);
 		verify(customizer2).customize(scheduler);
 	}
 

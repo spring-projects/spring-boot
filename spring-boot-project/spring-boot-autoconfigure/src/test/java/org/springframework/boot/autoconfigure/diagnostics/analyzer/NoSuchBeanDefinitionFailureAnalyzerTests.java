@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -155,6 +157,16 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 				.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
 	}
 
+	@Test
+	void failureAnalysisForConfigurationPropertiesThatMaybeShouldHaveBeenConstructorBound() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(ConstructorBoundConfigurationPropertiesConfiguration.class));
+		assertThat(analysis.getAction()).startsWith(
+				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
+		assertThat(analysis.getAction()).contains(
+				"Consider adding @ConstructorBinding to " + NeedsConstructorBindingProperties.class.getName());
+	}
+
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,
 			Class<?> type) {
 		String expected = String.format(
@@ -167,6 +179,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertThat(analysis.getAction()).startsWith(String.format(
 				"Consider revisiting the entries above or defining a bean of type '%s' in your configuration.",
 				type.getName()));
+		assertThat(analysis.getAction()).doesNotContain("@ConstructorBinding");
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
@@ -355,6 +368,27 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 		StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NeedsConstructorBindingProperties.class)
+	static class ConstructorBoundConfigurationPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class NeedsConstructorBindingProperties {
+
+		private final String name;
+
+		NeedsConstructorBindingProperties(String name) {
+			this.name = name;
+		}
+
+		String getName() {
+			return this.name;
 		}
 
 	}

@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Import;
  * <p>
  * This configuration class is active only when the RabbitMQ and Spring AMQP client
  * libraries are on the classpath.
- * <P>
+ * <p>
  * Registers the following beans:
  * <ul>
  * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there

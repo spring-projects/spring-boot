@@ -51,8 +51,7 @@ import javax.tools.StandardLocation;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
-		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
@@ -79,7 +78,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {
-		annotations.put("Configuration", "org.springframework.context.annotation.Configuration");
 		annotations.put("ConditionalOnClass", "org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
 		annotations.put("ConditionalOnBean", "org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		annotations.put("ConditionalOnSingleCandidate",
@@ -92,7 +90,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
-		attributes.put("Configuration", ValueExtractor.allFrom("value"));
 		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
 		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
 		attributes.put("ConditionalOnSingleCandidate", new OnBeanConditionValueExtractor());

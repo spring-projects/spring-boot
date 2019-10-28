@@ -14,7 +14,13 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<modules>
+		<module>org.springframework.boot.gradle.plugin</module>
 		<module>spring-boot-antlib</module>
 		<module>spring-boot-autoconfigure-processor</module>
 		<module>spring-boot-configuration-docs</module>

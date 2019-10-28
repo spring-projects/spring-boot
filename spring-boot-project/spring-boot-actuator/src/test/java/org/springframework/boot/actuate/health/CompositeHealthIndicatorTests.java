@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,7 +73,7 @@ class CompositeHealthIndicatorTests {
 
 	@Test
 	void testSerialization() throws Exception {
-		Map<String, HealthIndicator> indicators = new HashMap<>();
+		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
 		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(this.healthAggregator, indicators);

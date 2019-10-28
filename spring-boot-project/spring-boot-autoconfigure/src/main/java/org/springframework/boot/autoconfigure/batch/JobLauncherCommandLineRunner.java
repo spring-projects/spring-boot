@@ -51,6 +51,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
@@ -158,7 +159,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner, Ordered,
 			if (StringUtils.hasText(this.jobNames)) {
 				String[] jobsToRun = this.jobNames.split(",");
 				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
-					logger.debug("Skipped job: " + job.getName());
+					logger.debug(LogMessage.format("Skipped job: %s", job.getName()));
 					continue;
 				}
 			}
@@ -178,7 +179,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner, Ordered,
 					execute(job, jobParameters);
 				}
 				catch (NoSuchJobException ex) {
-					logger.debug("No job found in registry for job name: " + jobName);
+					logger.debug(LogMessage.format("No job found in registry for job name: %s", jobName));
 				}
 			}
 		}

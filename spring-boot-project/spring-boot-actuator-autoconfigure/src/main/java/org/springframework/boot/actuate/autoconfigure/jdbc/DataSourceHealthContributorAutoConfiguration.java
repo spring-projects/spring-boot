@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.health.AbstractHealthIndicator;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -60,7 +62,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 @ConditionalOnEnabledHealthIndicator("db")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class DataSourceHealthContributorAutoConfiguration extends
-		CompositeHealthContributorConfiguration<DataSourceHealthIndicator, DataSource> implements InitializingBean {
+		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
@@ -79,30 +81,33 @@ public class DataSourceHealthContributorAutoConfiguration extends
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources) {
-		return createContributor(filterDataSources(dataSources));
-	}
-
-	private Map<String, DataSource> filterDataSources(Map<String, DataSource> candidates) {
-		if (candidates == null) {
-			return null;
-		}
-		Map<String, DataSource> dataSources = new LinkedHashMap<>();
-		candidates.forEach((name, dataSource) -> {
-			if (!(dataSource instanceof AbstractRoutingDataSource)) {
-				dataSources.put(name, dataSource);
-			}
-		});
-		return dataSources;
+		return createContributor(dataSources);
 	}
 
 	@Override
-	protected DataSourceHealthIndicator createIndicator(DataSource source) {
+	protected AbstractHealthIndicator createIndicator(DataSource source) {
+		if (source instanceof AbstractRoutingDataSource) {
+			return new RoutingDataSourceHealthIndicator();
+		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
 
 	private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
+	}
+
+	/**
+	 * {@link HealthIndicator} used for {@link AbstractRoutingDataSource} beans where we
+	 * can't actually query for the status.
+	 */
+	static class RoutingDataSourceHealthIndicator extends AbstractHealthIndicator {
+
+		@Override
+		protected void doHealthCheck(Builder builder) throws Exception {
+			builder.unknown().withDetail("routing", true);
+		}
+
 	}
 
 }

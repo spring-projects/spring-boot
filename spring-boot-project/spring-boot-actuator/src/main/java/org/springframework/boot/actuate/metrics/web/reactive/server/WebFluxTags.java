@@ -20,6 +20,8 @@ import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.AbstractServerHttpResponse;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -133,9 +135,18 @@ public final class WebFluxTags {
 	 * @since 2.1.0
 	 */
 	public static Tag outcome(ServerWebExchange exchange) {
-		HttpStatus status = exchange.getResponse().getStatusCode();
-		Outcome outcome = (status != null) ? Outcome.forStatus(status.value()) : Outcome.UNKNOWN;
+		Integer statusCode = extractStatusCode(exchange);
+		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode) : Outcome.UNKNOWN;
 		return outcome.asTag();
+	}
+
+	private static Integer extractStatusCode(ServerWebExchange exchange) {
+		ServerHttpResponse response = exchange.getResponse();
+		if (response instanceof AbstractServerHttpResponse) {
+			return ((AbstractServerHttpResponse) response).getStatusCodeValue();
+		}
+		HttpStatus status = response.getStatusCode();
+		return (status != null) ? status.value() : null;
 	}
 
 }

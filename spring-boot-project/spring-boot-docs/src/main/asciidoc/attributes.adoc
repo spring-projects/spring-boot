@@ -16,7 +16,7 @@
 :spring-boot-version: current
 
 :github-repo: spring-projects/spring-boot
-:github-raw: https://raw.github.com/{github-repo}/{github-tag}
+:github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 
@@ -24,15 +24,15 @@
 :test-examples: {sources-root}/test/java/org/springframework/boot/docs
 
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
-:spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
+:spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
 :spring-boot-master-code: https://github.com/{github-repo}/tree/master
 :spring-boot-current-docs: https://docs.spring.io/spring-boot/docs/current/reference
 :spring-boot-actuator-restapi: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/
-:spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin
-:spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/html
+:spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/
+:spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/html/
 :spring-boot-gradle-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/pdf/spring-boot-gradle-plugin-reference.pdf
-:spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/html
+:spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/api/
 
 :spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
 :spring-boot-module-api: {spring-boot-api}/org/springframework/boot
@@ -94,10 +94,10 @@
 
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
-:gradle-docs: https://docs.gradle.org/4.2.1/userguide
-:hibernate-docs: https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html
+:gradle-docs: https://docs.gradle.org/current/userguide
+:hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api/
-:jetty-docs: https://www.eclipse.org/jetty/documentation/9.4.x
+:jetty-docs: https://www.eclipse.org/jetty/documentation/{jetty-version}
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/

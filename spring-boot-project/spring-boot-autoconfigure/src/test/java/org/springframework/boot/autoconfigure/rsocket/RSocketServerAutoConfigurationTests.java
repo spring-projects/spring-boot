@@ -19,9 +19,10 @@ package org.springframework.boot.autoconfigure.rsocket;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
+import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
+import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link RSocketServerAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Verónica Vásquez
  */
 class RSocketServerAutoConfigurationTests {
 
@@ -77,7 +79,18 @@ class RSocketServerAutoConfigurationTests {
 		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
 						.hasSingleBean(RSocketServerBootstrap.class)
-						.hasSingleBean(ServerRSocketFactoryCustomizer.class));
+						.hasSingleBean(ServerRSocketFactoryProcessor.class));
+	}
+
+	@Test
+	void shouldSetLocalServerPortWhenRSocketServerPortIsSet() {
+		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
+				.withInitializer(new RSocketPortInfoApplicationContextInitializer()).run((context) -> {
+					assertThat(context).hasSingleBean(RSocketServerFactory.class)
+							.hasSingleBean(RSocketServerBootstrap.class)
+							.hasSingleBean(ServerRSocketFactoryProcessor.class);
+					assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNotNull();
+				});
 	}
 
 	@Test

@@ -65,7 +65,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	void loadsPropertiesFromConfigFolderUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.configDir, ".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
@@ -76,7 +76,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	void loadsPropertiesFromConfigFolderUsingYml() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.configDir, ".spring-boot-devtools.yml"));
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
@@ -87,7 +87,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	void loadsPropertiesFromConfigFolderUsingYaml() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.configDir, ".spring-boot-devtools.yaml"));
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
@@ -99,14 +99,12 @@ class DevToolsHomePropertiesPostProcessorTests {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		properties.put("bar", "baz");
-		OutputStream out = new FileOutputStream(
-				new File(this.home + "/.config/spring-boot/", ".spring-boot-devtools.yaml"));
+		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		properties.store(out, null);
 		out.close();
 		Properties properties2 = new Properties();
 		properties2.put("abc", "jkl");
-		OutputStream out2 = new FileOutputStream(
-				new File(this.home + "/.config/spring-boot/", ".spring-boot-devtools.properties"));
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
 		properties2.store(out2, null);
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
@@ -122,8 +120,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		writeFile(properties, ".spring-boot-devtools.properties");
 		Properties properties2 = new Properties();
 		properties2.put("abc", "jkl");
-		OutputStream out2 = new FileOutputStream(
-				new File(this.home + "/.config/spring-boot/", ".spring-boot-devtools.properties"));
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
 		properties2.store(out2, null);
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
@@ -139,8 +136,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		writeFile(properties, ".spring-boot-devtools.properties");
 		Properties properties2 = new Properties();
 		properties2.put("abc", "jkl");
-		OutputStream out2 = new FileOutputStream(
-				new File(this.home + "/.config/spring-boot/", ".spring-boot-devtools.yml"));
+		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
 		properties2.store(out2, null);
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();

@@ -275,7 +275,7 @@ class FlywayAutoConfigurationTests {
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class)
 				.run((context) -> {
 					Flyway flyway = context.getBean(Flyway.class);
-					assertThat(flyway.getConfiguration().getJavaMigrations().length).isEqualTo(2);
+					assertThat(flyway.getConfiguration().getJavaMigrations()).hasSize(2);
 				});
 	}
 

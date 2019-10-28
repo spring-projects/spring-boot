@@ -16,4 +16,13 @@ The reference documentation consists of the following sections:
 <<spring-boot-cli.adoc#cli,Spring Boot CLI>> :: Installing the CLI, Using the CLI, Configuring the CLI, and more.
 <<build-tool-plugins.adoc#build-tool-plugins,Build Tool Plugins>> :: Maven Plugin, Gradle Plugin, Antlib, and more.
 <<howto.adoc#howto,"`How-to`" Guides>> :: Application Development, Configuration, Embedded Servers, Data Access, and many more.
-<<appendix.adoc#appendix,Appendices>> :: Properties, Metadata, Configuration, Dependencies, and more.
+
+The reference documentation has the following appendices:
+
+[horizontal]
+<<appendix-application-properties.adoc#common-application-properties,Application Properties>> :: Common application properties that can be used to configure your application.
+<<appendix-configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> :: Metadata used to describe configuration properties.
+<<appendix-auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
+<<appendix-test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> :: Test-autoconfiguration annotations used to test slices of your application.
+<<appendix-executable-jar-format.adoc#executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
+<<appendix-dependency-versions.adoc#appendix-dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.

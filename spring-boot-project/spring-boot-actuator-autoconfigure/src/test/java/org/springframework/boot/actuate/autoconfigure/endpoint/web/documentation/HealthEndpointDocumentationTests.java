@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.util.unit.DataSize;
 
@@ -73,28 +74,31 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void health() throws Exception {
 		FieldDescriptor status = fieldWithPath("status").description("Overall status of the application.");
-		FieldDescriptor components = fieldWithPath("details").description("The components that make up the health.");
-		FieldDescriptor componentStatus = fieldWithPath("details.*.status")
+		FieldDescriptor components = fieldWithPath("components").description("The components that make up the health.");
+		FieldDescriptor componentStatus = fieldWithPath("components.*.status")
 				.description("Status of a specific part of the application.");
-		FieldDescriptor componentDetails = subsectionWithPath("details.*.details")
+		FieldDescriptor nestedComponents = subsectionWithPath("components.*.components")
+				.description("The nested components that make up the health.").optional();
+		FieldDescriptor componentDetails = subsectionWithPath("components.*.details")
 				.description("Details of the health of a specific part of the application. "
 						+ "Presence is controlled by `management.endpoint.health.show-details`. May contain nested "
 						+ "components that make up the health.")
 				.optional();
-		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
-				.andDo(document("health", responseFields(status, components, componentStatus, componentDetails)));
+		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andDo(document("health",
+						responseFields(status, components, componentStatus, nestedComponents, componentDetails)));
 	}
 
 	@Test
 	void healthComponent() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/db")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/health/db").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andDo(document("health/component", responseFields(componentFields)));
 	}
 
 	@Test
 	void healthComponentInstance() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/broker/us1")).andExpect(status().isOk())
-				.andDo(document("health/instance", responseFields(componentFields)));
+		this.mockMvc.perform(get("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("health/instance", responseFields(componentFields)));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -142,7 +146,12 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 
 		@Override
-		public boolean includeDetails(SecurityContext securityContext) {
+		public boolean showComponents(SecurityContext securityContext) {
+			return true;
+		}
+
+		@Override
+		public boolean showDetails(SecurityContext securityContext) {
 			return true;
 		}
 

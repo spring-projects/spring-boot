@@ -410,7 +410,7 @@ If you find that specific auto-configuration classes that you do not want are be
 ----
 
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
-Finally, you can also control the list of auto-configuration classes to exclude by using the `spring.autoconfigure.exclude` property.
+Finally, you can also control the list of auto-configuration classes to exclude by using the configprop:spring.autoconfigure.exclude[] property.
 
 TIP: You can define exclusions both at the annotation level and by using the property.
 
@@ -685,14 +685,14 @@ While caching is very beneficial in production, it can be counter-productive dur
 For this reason, spring-boot-devtools disables the caching options by default.
 
 Cache options are usually configured by settings in your `application.properties` file.
-For example, Thymeleaf offers the `spring.thymeleaf.cache` property.
+For example, Thymeleaf offers the configprop:spring.thymeleaf.cache[] property.
 Rather than needing to set these properties manually, the `spring-boot-devtools` module automatically applies sensible development-time configuration.
 
 Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools will enable `DEBUG` logging for the `web` logging group.
 This will give you information about the incoming request, which handler is processing it, the response outcome, etc.
-If you wish to log all request details (including potentially sensitive information), you can turn on the `spring.http.log-request-details` configuration property.
+If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.http.log-request-details[] configuration property.
 
-NOTE: If you don't want property defaults to be applied you can set `spring.devtools.add-properties` to `false` in your `application.properties`.
+NOTE: If you don't want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
 
 TIP: For a complete list of the properties that are applied by the devtools, see {spring-boot-devtools-module-code}/env/DevToolsPropertyDefaultsPostProcessor.java[DevToolsPropertyDefaultsPostProcessor].
 
@@ -763,7 +763,7 @@ To disable the logging of the report, set the following property:
 Certain resources do not necessarily need to trigger a restart when they are changed.
 For example, Thymeleaf templates can be edited in-place.
 By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public`, or `/templates` does not trigger a restart but does trigger a <<using-boot-devtools-livereload, live reload>>.
-If you want to customize these exclusions, you can use the `spring.devtools.restart.exclude` property.
+If you want to customize these exclusions, you can use the configprop:spring.devtools.restart.exclude[] property.
 For example, to exclude only `/static` and `/public` you would set the following property:
 
 [indent=0]
@@ -771,24 +771,24 @@ For example, to exclude only `/static` and `/public` you would set the following
 	spring.devtools.restart.exclude=static/**,public/**
 ----
 
-TIP: If you want to keep those defaults and _add_ additional exclusions, use the `spring.devtools.restart.additional-exclude` property instead.
+TIP: If you want to keep those defaults and _add_ additional exclusions, use the configprop:spring.devtools.restart.additional-exclude[] property instead.
 
 
 
 [[using-boot-devtools-restart-additional-paths]]
 ==== Watching Additional Paths
 You may want your application to be restarted or reloaded when you make changes to files that are not on the classpath.
-To do so, use the `spring.devtools.restart.additional-paths` property to configure additional paths to watch for changes.
-You can use the `spring.devtools.restart.exclude` property <<using-boot-devtools-restart-exclude, described earlier>> to control whether changes beneath the additional paths trigger a full restart or a <<using-boot-devtools-livereload, live reload>>.
+To do so, use the configprop:spring.devtools.restart.additional-paths[] property to configure additional paths to watch for changes.
+You can use the configprop:spring.devtools.restart.exclude[] property <<using-boot-devtools-restart-exclude, described earlier>> to control whether changes beneath the additional paths trigger a full restart or a <<using-boot-devtools-livereload, live reload>>.
 
 
 
 [[using-boot-devtools-restart-disable]]
 ==== Disabling Restart
-If you do not want to use the restart feature, you can disable it by using the `spring.devtools.restart.enabled` property.
+If you do not want to use the restart feature, you can disable it by using the configprop:spring.devtools.restart.enabled[] property.
 In most cases, you can set this property in your `application.properties` (doing so still initializes the restart classloader, but it does not watch for file changes).
 
-If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the `spring.devtools.restart.enabled` `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
+If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -805,9 +805,9 @@ If you need to _completely_ disable restart support (for example, because it doe
 If you work with an IDE that continuously compiles changed files, you might prefer to trigger restarts only at specific times.
 To do so, you can use a "`trigger file`", which is a special file that must be modified when you want to actually trigger a restart check.
 
-NOTE: Any update to the file file will trigger a check, but restart only actually occurs if Devtools has detected it has something to do.
+NOTE: Any update to the file will trigger a check, but restart only actually occurs if Devtools has detected it has something to do.
 
-To use a trigger file, set the `spring.devtools.restart.trigger-file` property to the name (excluding any path) of your trigger file.
+To use a trigger file, set the configprop:spring.devtools.restart.trigger-file[] property to the name (excluding any path) of your trigger file.
 The trigger file must appear somewhere on your classpath.
 
 For example, if you have a project with the following structure:
@@ -822,7 +822,7 @@ For example, if you have a project with the following structure:
 
 Then your `trigger-file` property would be:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.devtools.restart.trigger-file=.reloadtrigger
 ----
@@ -881,7 +881,7 @@ If you find such a problem, you need to request a fix with the original authors.
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used to trigger a browser refresh when a resource is changed.
 LiveReload browser extensions are freely available for Chrome, Firefox and Safari from http://livereload.com/extensions/[livereload.com].
 
-If you do not want to start the LiveReload server when your application runs, you can set the `spring.devtools.livereload.enabled` property to `false`.
+If you do not want to start the LiveReload server when your application runs, you can set the configprop:spring.devtools.livereload.enabled[] property to `false`.
 
 NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.
@@ -891,19 +891,19 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 
 [[using-boot-devtools-globalsettings]]
 === Global Settings
-You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder (note that the filenames startswith "`.`"):
+You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder:
 
-. `.spring-boot-devtools.properties`
-. `.spring-boot-devtools.yaml`
-. `.spring-boot-devtools.yml`
+. `spring-boot-devtools.properties`
+. `spring-boot-devtools.yaml`
+. `spring-boot-devtools.yml`
 
 Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following property:
 
-.~/config/spring-boot/.spring-boot-devtools.properties
-[source,properties,indent=0]
+.~/.config/spring-boot/spring-boot-devtools.properties
+[source,properties,indent=0,configprops]
 ----
-	spring.devtools.reload.trigger-file=.reloadtrigger
+	spring.devtools.restart.trigger-file=.reloadtrigger
 ----
 
 NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` folder is searched for the presence of a `.spring-boot-devtools.properties` file.
@@ -935,9 +935,9 @@ To enable it, you need to make sure that `devtools` is included in the repackage
 	</build>
 ----
 
-Then you need to set a `spring.devtools.remote.secret` property, as shown in the following example:
+Then you need to set a configprop:spring.devtools.remote.secret[] property, as shown in the following example:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.devtools.remote.secret=mysecret
 ----
@@ -946,7 +946,7 @@ WARNING: Enabling `spring-boot-devtools` on a remote application is a security r
 You should never enable support on a production deployment.
 
 Remote devtools support is provided in two parts: a server-side endpoint that accepts connections and a client application that you run in your IDE.
-The server component is automatically enabled when the `spring.devtools.remote.secret` property is set.
+The server component is automatically enabled when the configprop:spring.devtools.remote.secret[] property is set.
 The client component must be launched manually.
 
 
@@ -984,7 +984,7 @@ A running remote client might resemble the following listing:
 ----
 
 NOTE: Because the remote client is using the same classpath as the real application it can directly read application properties.
-This is how the `spring.devtools.remote.secret` property is read and passed to the server for authentication.
+This is how the configprop:spring.devtools.remote.secret[] property is read and passed to the server for authentication.
 
 TIP: It is always advisable to use `https://` as the connection protocol, so that traffic is encrypted and passwords cannot be intercepted.
 
@@ -1017,7 +1017,7 @@ But it may also lead to application code inconsistency and failure to restart af
 
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	spring.devtools.restart.poll-interval=2s
 	spring.devtools.restart.quiet-period=1s

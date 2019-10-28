@@ -52,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
  * @author Andrew McGhie
+ * @author Rafiullah Hamedy
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -115,6 +116,12 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customDisableMaxHttpFormPostSize() {
+		bind("server.tomcat.max-http-form-post-size=-1");
+		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
+	}
+
+	@Test
 	void customMaxConnections() {
 		bind("server.tomcat.max-connections=5");
 		customizeAndRunServer((server) -> assertThat(
@@ -125,6 +132,13 @@ class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	void customMaxHttpPostSize() {
 		bind("server.tomcat.max-http-post-size=10000");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
+	}
+
+	@Test
+	void customMaxHttpFormPostSize() {
+		bind("server.tomcat.max-http-form-post-size=10000");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
 	}
@@ -243,6 +257,8 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
 		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
+		assertThat(remoteIpValve.getHostHeader()).isEqualTo("X-Forwarded-Host");
+		assertThat(remoteIpValve.getPortHeader()).isEqualTo("X-Forwarded-Port");
 		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
@@ -284,6 +300,14 @@ class TomcatWebServerFactoryCustomizerTests {
 	void testCustomizeMinSpareThreads() {
 		bind("server.tomcat.min-spare-threads=10");
 		assertThat(this.serverProperties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void customConnectionTimeout() {
+		bind("server.tomcat.connection-timeout=30s");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getConnectionTimeout())
+						.isEqualTo(30000));
 	}
 
 	@Test

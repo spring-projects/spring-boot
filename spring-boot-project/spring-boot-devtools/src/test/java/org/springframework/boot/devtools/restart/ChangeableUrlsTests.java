@@ -87,14 +87,17 @@ class ChangeableUrlsTests {
 		absolute.mkdirs();
 		URL absoluteUrl = absolute.toURI().toURL();
 		File jarWithClassPath = makeJarFileWithUrlsInManifestClassPath("project-core/target/classes/",
-				"project-web/target/classes/", "does-not-exist/target/classes", relative.getName() + "/", absoluteUrl);
+				"project-web/target/classes/", "project%20space/target/classes/", "does-not-exist/target/classes/",
+				relative.getName() + "/", absoluteUrl);
 		new File(jarWithClassPath.getParentFile(), "project-core/target/classes").mkdirs();
 		new File(jarWithClassPath.getParentFile(), "project-web/target/classes").mkdirs();
+		new File(jarWithClassPath.getParentFile(), "project space/target/classes").mkdirs();
 		ChangeableUrls urls = ChangeableUrls.fromClassLoader(
 				new URLClassLoader(new URL[] { jarWithClassPath.toURI().toURL(), makeJarFileWithNoManifest() }));
 		assertThat(urls.toList()).containsExactly(
 				new URL(jarWithClassPath.toURI().toURL(), "project-core/target/classes/"),
-				new URL(jarWithClassPath.toURI().toURL(), "project-web/target/classes/"), relative.toURI().toURL(),
+				new URL(jarWithClassPath.toURI().toURL(), "project-web/target/classes/"),
+				new URL(jarWithClassPath.toURI().toURL(), "project space/target/classes/"), relative.toURI().toURL(),
 				absoluteUrl);
 	}
 

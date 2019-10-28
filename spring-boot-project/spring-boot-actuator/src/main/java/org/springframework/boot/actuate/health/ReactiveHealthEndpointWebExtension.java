@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
@@ -65,19 +66,20 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext) {
-		return health(securityContext, NO_PATH);
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
+			SecurityContext securityContext) {
+		return health(apiVersion, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext,
-			@Selector(match = Match.ALL_REMAINING) String... path) {
-		return health(securityContext, false, path);
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
+			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(apiVersion, securityContext, false, path);
 	}
 
-	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext,
-			boolean alwaysIncludeDetails, String... path) {
-		HealthResult<Mono<? extends HealthComponent>> result = getHealth(securityContext, alwaysIncludeDetails, path);
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
+			SecurityContext securityContext, boolean showAll, String... path) {
+		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, securityContext, showAll, path);
 		if (result == null) {
 			return Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
@@ -94,12 +96,12 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	@Override
-	protected Mono<? extends HealthComponent> aggregateContributions(
+	protected Mono<? extends HealthComponent> aggregateContributions(ApiVersion apiVersion,
 			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
-			boolean includeDetails, Set<String> groupNames) {
+			boolean showComponents, Set<String> groupNames) {
 		return Flux.fromIterable(contributions.entrySet()).flatMap(NamedHealthComponent::create)
-				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth)
-				.map((components) -> this.getCompositeHealth(components, statusAggregator, includeDetails, groupNames));
+				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth).map((components) -> this
+						.getCompositeHealth(apiVersion, components, statusAggregator, showComponents, groupNames));
 	}
 
 	/**

@@ -17,6 +17,11 @@
 		<gradle.task>build</gradle.task>
 		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,7 +55,7 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+							<url>${spring-doc-resources.url}</url>
 							<unpack>true</unpack>
 							<outputDirectory>${refdocs.build.directory}/asciidoc</outputDirectory>
 						</configuration>
@@ -181,13 +186,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>springio</id>
-			<name>Spring IO releases repository</name>
-			<url>https://repo.spring.io/release</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>windows</id>
@@ -318,7 +316,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<highlightjsdir>js/highlight</highlightjsdir>
-										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<highlightjs-theme>github</highlightjs-theme>
 										<linkcss>true</linkcss>
 										<imagesdir>./images</imagesdir>
 										<icons>font</icons>
@@ -359,8 +357,8 @@
 						<dependencies>
 							<dependency>
 								<groupId>io.spring.asciidoctor</groupId>
-								<artifactId>spring-asciidoctor-extensions</artifactId>
-								<version>0.1.3.RELEASE</version>
+								<artifactId>spring-asciidoctor-extensions-block-switch</artifactId>
+								<version>${spring-asciidoctor-extensions.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>

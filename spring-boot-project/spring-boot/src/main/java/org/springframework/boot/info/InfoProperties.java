@@ -121,7 +121,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	/**
 	 * Property entry.
 	 */
-	public final class Entry {
+	public static final class Entry {
 
 		private final String key;
 

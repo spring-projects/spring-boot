@@ -16,6 +16,8 @@
 
 package org.springframework.boot.gradle.tasks.run;
 
+import java.lang.reflect.Method;
+
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
@@ -69,13 +71,25 @@ public class BootRun extends JavaExec {
 	public void exec() {
 		if (this.optimizedLaunch) {
 			setJvmArgs(getJvmArgs());
-			jvmArgs("-Xverify:none", "-XX:TieredStopAtLevel=1");
+			if (!isJava13OrLater()) {
+				jvmArgs("-Xverify:none");
+			}
+			jvmArgs("-XX:TieredStopAtLevel=1");
 		}
 		if (System.console() != null) {
 			// Record that the console is available here for AnsiOutput to detect later
 			this.getEnvironment().put("spring.output.ansi.console-available", true);
 		}
 		super.exec();
+	}
+
+	private boolean isJava13OrLater() {
+		for (Method method : String.class.getMethods()) {
+			if (method.getName().equals("stripIndent")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -22,7 +22,6 @@ import java.io.StringWriter;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +38,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic.Kind;
@@ -73,6 +71,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.DeprecatedConfigurationProperty";
 
+	static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.context.properties.ConstructorBinding";
+
 	static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.context.properties.bind.DefaultValue";
 
 	static final String ENDPOINT_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.Endpoint";
@@ -99,6 +99,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String deprecatedConfigurationPropertyAnnotation() {
 		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	protected String constructorBindingAnnotation() {
+		return CONSTRUCTOR_BINDING_ANNOTATION;
 	}
 
 	protected String defaultValueAnnotation() {
@@ -130,7 +134,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
-				defaultValueAnnotation(), endpointAnnotation(), readOperationAnnotation());
+				constructorBindingAnnotation(), defaultValueAnnotation(), endpointAnnotation(),
+				readOperationAnnotation());
 	}
 
 	@Override
@@ -159,36 +164,14 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(RoundEnvironment roundEnv,
 			TypeElement annotation) {
-		DeclaredType annotationType = (DeclaredType) annotation.asType();
 		Map<Element, List<Element>> result = new LinkedHashMap<>();
 		for (Element element : roundEnv.getRootElements()) {
-			LinkedList<Element> stack = new LinkedList<>();
-			stack.push(element);
-			collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack);
-			stack.removeFirst();
-			if (!stack.isEmpty()) {
-				result.put(element, Collections.unmodifiableList(stack));
+			List<Element> annotations = this.metadataEnv.getElementsAnnotatedOrMetaAnnotatedWith(element, annotation);
+			if (!annotations.isEmpty()) {
+				result.put(element, annotations);
 			}
 		}
 		return result;
-	}
-
-	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(DeclaredType annotationType,
-			LinkedList<Element> stack) {
-		Element element = stack.peekLast();
-		for (AnnotationMirror annotation : this.processingEnv.getElementUtils().getAllAnnotationMirrors(element)) {
-			Element annotationElement = annotation.getAnnotationType().asElement();
-			if (!stack.contains(annotationElement)) {
-				stack.addLast(annotationElement);
-				if (annotationElement.equals(annotationType.asElement())) {
-					return true;
-				}
-				if (!collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack)) {
-					stack.removeLast();
-				}
-			}
-		}
-		return false;
 	}
 
 	private void processElement(Element element) {

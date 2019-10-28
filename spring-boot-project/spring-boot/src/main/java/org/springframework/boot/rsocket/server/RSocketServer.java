@@ -50,9 +50,17 @@ public interface RSocketServer {
 	/**
 	 * Choice of transport protocol for the RSocket server.
 	 */
-	enum TRANSPORT {
+	enum Transport {
 
-		TCP, WEBSOCKET
+		/**
+		 * TCP transport protocol.
+		 */
+		TCP,
+
+		/**
+		 * WebSocket transport protocol.
+		 */
+		WEBSOCKET
 
 	}
 

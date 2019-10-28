@@ -15,6 +15,11 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
@@ -57,6 +62,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.oracle.ojdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.samskivert</groupId>
 			<artifactId>jmustache</artifactId>
 			<optional>true</optional>
@@ -74,11 +84,6 @@
 		<dependency>
 			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-tools</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

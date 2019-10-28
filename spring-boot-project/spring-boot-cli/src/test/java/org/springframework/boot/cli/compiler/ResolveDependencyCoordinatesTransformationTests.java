@@ -35,7 +35,6 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
@@ -197,8 +196,8 @@ final class ResolveDependencyCoordinatesTransformationTests {
 				new ConstantExpression("test"));
 		declarationExpression.addAnnotation(this.grabAnnotation);
 
-		BlockStatement code = new BlockStatement(
-				Arrays.asList((Statement) new ExpressionStatement(declarationExpression)), new VariableScope());
+		BlockStatement code = new BlockStatement(Arrays.asList(new ExpressionStatement(declarationExpression)),
+				new VariableScope());
 
 		MethodNode methodNode = new MethodNode("test", 0, new ClassNode(Void.class), new Parameter[0], new ClassNode[0],
 				code);

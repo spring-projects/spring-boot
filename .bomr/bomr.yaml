@@ -6,12 +6,8 @@ bomr:
       repository: spring-boot
       issue-labels:
         - 'type: dependency-upgrade'
-    policy: same-major-version
+    policy: same-minor-version
     prohibited:
-      - project: maven-invoker-plugin
-        versions:
-          # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
-          - '[3.2.0]'
       - project: derby
         versions:
           # 10.15 requires Java 9

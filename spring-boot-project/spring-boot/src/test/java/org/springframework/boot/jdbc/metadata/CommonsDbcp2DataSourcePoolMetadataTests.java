@@ -61,7 +61,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 	@Test
 	void getPoolUsageWithUnlimitedPool() {
 		DataSourcePoolMetadata unlimitedDataSource = createDataSourceMetadata(0, -1);
-		assertThat(unlimitedDataSource.getUsage()).isEqualTo(Float.valueOf(-1F));
+		assertThat(unlimitedDataSource.getUsage()).isEqualTo(-1f);
 	}
 
 	@Override

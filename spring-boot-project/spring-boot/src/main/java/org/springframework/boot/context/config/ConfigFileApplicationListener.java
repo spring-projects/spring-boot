@@ -259,7 +259,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	 * {@link BeanFactoryPostProcessor} to re-order our property sources below any
 	 * {@code @PropertySource} items added by the {@link ConfigurationClassPostProcessor}.
 	 */
-	private class PropertySourceOrderingPostProcessor implements BeanFactoryPostProcessor, Ordered {
+	private static class PropertySourceOrderingPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 		private ConfigurableApplicationContext context;
 

@@ -53,6 +53,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
@@ -119,8 +120,9 @@ public class RemoteClientConfiguration implements InitializingBean {
 			logger.warn("Remote restart is disabled.");
 		}
 		if (!this.remoteUrl.startsWith("https://")) {
-			logger.warn("The connection to " + this.remoteUrl
-					+ " is insecure. You should use a URL starting with 'https://'.");
+			logger.warn(LogMessage.format(
+					"The connection to %s is insecure. You should use a URL starting with 'https://'.",
+					this.remoteUrl));
 		}
 	}
 

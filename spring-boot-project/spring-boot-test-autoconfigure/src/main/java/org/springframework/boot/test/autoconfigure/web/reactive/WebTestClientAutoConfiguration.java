@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

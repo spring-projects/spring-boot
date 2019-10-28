@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -76,7 +77,7 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
-				logger.trace("Failed to load " + analyzerName, ex);
+				logger.trace(LogMessage.format("Failed to load %s", analyzerName), ex);
 			}
 		}
 		AnnotationAwareOrderComparator.sort(analyzers);
@@ -113,7 +114,7 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				}
 			}
 			catch (Throwable ex) {
-				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
+				logger.debug(LogMessage.format("FailureAnalyzer %s failed", analyzer), ex);
 			}
 		}
 		return null;

@@ -71,7 +71,7 @@ public enum Outcome {
 	}
 
 	/**
-	 * Return the @code Outcome} for the given HTTP {@code status} code.
+	 * Return the {@code Outcome} for the given HTTP {@code status} code.
 	 * @param status the HTTP status code
 	 * @return the matching Outcome
 	 */

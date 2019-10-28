@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cloud;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -53,5 +56,11 @@ public class CloudServiceConnectorsAutoConfiguration {
 
 	// Cloud configuration needs to happen early (before data, mongo etc.)
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
+
+	private static final Log logger = LogFactory.getLog(CloudServiceConnectorsAutoConfiguration.class);
+
+	public CloudServiceConnectorsAutoConfiguration() {
+		logger.warn("Support for Spring Cloud Connectors has been deprecated in favor of Java CFEnv");
+	}
 
 }

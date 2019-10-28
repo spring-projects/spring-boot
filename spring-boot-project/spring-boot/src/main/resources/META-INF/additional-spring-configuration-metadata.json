@@ -48,6 +48,18 @@
       "defaultValue": false
     },
     {
+      "name": "spring.banner.image.bitdepth",
+      "type": "java.lang.Integer",
+      "description": "The bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
+      "defaultValue": 4
+    },
+    {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
       "name": "debug",
       "type": "java.lang.Boolean",
       "description": "Enable debug logs.",
@@ -652,6 +664,13 @@
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Whether initialization should be performed lazily.",
       "defaultValue": false
+    },
+    {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether the application should have a shutdown hook registered.",
+      "defaultValue": true
     },
     {
       "name": "spring.main.show-banner",

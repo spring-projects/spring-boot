@@ -20,20 +20,25 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<disable.checks>false</disable.checks>
+		<git.url>https://github.com/spring-projects/spring-boot</git.url>
+		<git.connection>scm:git:git://github.com/spring-projects/spring-boot.git</git.connection>
+		<git.developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</git.developerConnection>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.5.4</maven.version>
 		<maven-resolver.version>1.1.1</maven-resolver.version>
-		<spock.version>1.0-groovy-2.4</spock.version>
-		<testcontainers.version>1.12.0</testcontainers.version>
+		<spock.version>1.3-groovy-2.5</spock.version>
+		<spring-asciidoctor-extensions.version>0.3.0.RELEASE</spring-asciidoctor-extensions.version>
+		<spring-doc-resources.version>0.1.3.RELEASE</spring-doc-resources.version>
+		<spring-doc-resources.url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
+		<testcontainers.version>1.12.2</testcontainers.version>
 		<testng.version>6.14.3</testng.version>
-		<spring-doc-resources.version>0.1.2.RELEASE</spring-doc-resources.version>
 	</properties>
 	<scm>
-		<url>https://github.com/spring-projects/spring-boot</url>
-		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
 	</scm>
 	<issueManagement>
 		<system>Github</system>
@@ -57,12 +62,12 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.3.3</version>
+				<version>1.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.mockk</groupId>
 				<artifactId>mockk</artifactId>
-				<version>1.9.1</version>
+				<version>1.9.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
@@ -92,7 +97,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.18</version>
+				<version>1.19</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
@@ -102,7 +107,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-archiver</artifactId>
-				<version>3.2.0</version>
+				<version>3.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
@@ -167,7 +172,7 @@
 			<dependency>
 				<groupId>org.apache.maven.shared</groupId>
 				<artifactId>maven-common-artifact-filters</artifactId>
-				<version>3.0.1</version>
+				<version>3.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -177,12 +182,12 @@
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
 				<artifactId>maven-plugin-annotations</artifactId>
-				<version>3.5.2</version>
+				<version>3.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-archiver</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
@@ -198,12 +203,6 @@
 				<groupId>org.spockframework</groupId>
 				<artifactId>spock-core</artifactId>
 				<version>${spock.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.spockframework</groupId>
@@ -279,7 +278,7 @@
 				<plugin>
 					<groupId>com.googlecode.maven-download-plugin</groupId>
 					<artifactId>download-maven-plugin</artifactId>
-					<version>1.4.1</version>
+					<version>1.4.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jetbrains.kotlin</groupId>
@@ -293,17 +292,12 @@
 				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>1.5.7.1</version>
+					<version>1.6.0</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.asciidoctor</groupId>
-							<artifactId>asciidoctorj</artifactId>
-							<version>1.5.8</version>
-						</dependency>
-						<dependency>
-							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctorj-pdf</artifactId>
-							<version>1.5.0-alpha.11</version>
+							<version>1.5.0-alpha.18</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -322,12 +316,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.5</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.6.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -341,17 +330,12 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.6.7</version>
+					<version>1.7.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
 					<artifactId>gmavenplus-plugin</artifactId>
-					<version>1.6.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.3.0.603</version>
+					<version>1.8.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

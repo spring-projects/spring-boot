@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.ShowDetails;
+import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -40,7 +40,9 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final HttpCodeStatusMapper httpCodeStatusMapper;
 
-	private final ShowDetails showDetails;
+	private final Show showComponents;
+
+	private final Show showDetails;
 
 	private final Collection<String> roles;
 
@@ -49,14 +51,17 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param members a predicate used to test for group membership
 	 * @param statusAggregator the status aggregator to use
 	 * @param httpCodeStatusMapper the HTTP code status mapper to use
+	 * @param showComponents the show components setting
 	 * @param showDetails the show details setting
 	 * @param roles the roles to match
 	 */
 	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
-			HttpCodeStatusMapper httpCodeStatusMapper, ShowDetails showDetails, Collection<String> roles) {
+			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails,
+			Collection<String> roles) {
 		this.members = members;
 		this.statusAggregator = statusAggregator;
 		this.httpCodeStatusMapper = httpCodeStatusMapper;
+		this.showComponents = showComponents;
 		this.showDetails = showDetails;
 		this.roles = roles;
 	}
@@ -67,9 +72,20 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	@Override
-	public boolean includeDetails(SecurityContext securityContext) {
-		ShowDetails showDetails = this.showDetails;
-		switch (showDetails) {
+	public boolean showComponents(SecurityContext securityContext) {
+		if (this.showComponents == null) {
+			return showDetails(securityContext);
+		}
+		return getShowResult(securityContext, this.showComponents);
+	}
+
+	@Override
+	public boolean showDetails(SecurityContext securityContext) {
+		return getShowResult(securityContext, this.showDetails);
+	}
+
+	private boolean getShowResult(SecurityContext securityContext, Show show) {
+		switch (show) {
 		case NEVER:
 			return false;
 		case ALWAYS:
@@ -77,7 +93,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 		case WHEN_AUTHORIZED:
 			return isAuthorized(securityContext);
 		}
-		throw new IllegalStateException("Unsupported ShowDetails value " + showDetails);
+		throw new IllegalStateException("Unsupported 'show' value " + show);
 	}
 
 	private boolean isAuthorized(SecurityContext securityContext) {

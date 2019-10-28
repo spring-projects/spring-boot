@@ -18,9 +18,11 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.springframework.core.ResolvableType;
@@ -42,6 +44,8 @@ public final class Bindable<T> {
 
 	private static final Annotation[] NO_ANNOTATIONS = {};
 
+	private static final Predicate<Constructor<?>> ANY_CONSTRUCTOR = (constructor) -> true;
+
 	private final ResolvableType type;
 
 	private final ResolvableType boxedType;
@@ -50,11 +54,15 @@ public final class Bindable<T> {
 
 	private final Annotation[] annotations;
 
-	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations) {
+	private final Predicate<Constructor<?>> constructorFilter;
+
+	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
+			Predicate<Constructor<?>> constructorFilter) {
 		this.type = type;
 		this.boxedType = boxedType;
 		this.value = value;
 		this.annotations = annotations;
+		this.constructorFilter = constructorFilter;
 	}
 
 	/**
@@ -105,6 +113,16 @@ public final class Bindable<T> {
 		return null;
 	}
 
+	/**
+	 * Return the constructor filter that can be used to limit the constructors that are
+	 * considered when binding.
+	 * @return the constructor filter
+	 * @since 2.2.0
+	 */
+	public Predicate<Constructor<?>> getConstructorFilter() {
+		return this.constructorFilter;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -149,7 +167,7 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations != null) ? annotations : NO_ANNOTATIONS);
+				(annotations != null) ? annotations : NO_ANNOTATIONS, this.constructorFilter);
 	}
 
 	/**
@@ -162,7 +180,7 @@ public final class Bindable<T> {
 				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
-		return new Bindable<>(this.type, this.boxedType, value, this.annotations);
+		return new Bindable<>(this.type, this.boxedType, value, this.annotations, this.constructorFilter);
 	}
 
 	/**
@@ -171,7 +189,19 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
-		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations);
+		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations, this.constructorFilter);
+	}
+
+	/**
+	 * Create an updated {@link Bindable} instance with a constructor filter that can be
+	 * used to limit the constructors considered when binding.
+	 * @param constructorFilter the constructor filter to use
+	 * @return an updated {@link Bindable}
+	 * @since 2.2.0
+	 */
+	public Bindable<T> withConstructorFilter(Predicate<Constructor<?>> constructorFilter) {
+		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations,
+				(constructorFilter != null) ? constructorFilter : ANY_CONSTRUCTOR);
 	}
 
 	/**
@@ -244,7 +274,7 @@ public final class Bindable<T> {
 	public static <T> Bindable<T> of(ResolvableType type) {
 		Assert.notNull(type, "Type must not be null");
 		ResolvableType boxedType = box(type);
-		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS);
+		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS, ANY_CONSTRUCTOR);
 	}
 
 	private static ResolvableType box(ResolvableType type) {

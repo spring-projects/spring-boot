@@ -21,6 +21,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
 
@@ -42,15 +43,15 @@ class HealthEndpointWebExtensionTests
 		HealthEndpoint delegate = mock(HealthEndpoint.class);
 		HealthWebEndpointResponseMapper responseMapper = mock(HealthWebEndpointResponseMapper.class);
 		assertThatIllegalStateException().isThrownBy(() -> new HealthEndpointWebExtension(delegate, responseMapper))
-				.withMessage(
-						"Unable to create class org.springframework.boot.actuate.health.HealthEndpointWebExtension "
-								+ "using deprecated constructor");
+				.withMessage("Unable to create class org.springframework.boot.actuate."
+						+ "health.HealthEndpointWebExtension using deprecated constructor");
 	}
 
 	@Test
 	void healthReturnsSystemHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE);
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(ApiVersion.LATEST,
+				SecurityContext.NONE);
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(SystemHealth.class);
@@ -60,8 +61,8 @@ class HealthEndpointWebExtensionTests
 	@Test
 	void healthWhenPathDoesNotExistReturnsHttp404() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE,
-				"missing");
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(ApiVersion.LATEST,
+				SecurityContext.NONE, "missing");
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
 	}
@@ -69,8 +70,8 @@ class HealthEndpointWebExtensionTests
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE,
-				"test");
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(ApiVersion.LATEST,
+				SecurityContext.NONE, "test");
 		assertThat(response.getBody()).isEqualTo(this.up);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}

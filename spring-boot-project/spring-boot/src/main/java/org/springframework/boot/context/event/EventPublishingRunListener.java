@@ -127,7 +127,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	private static class LoggingErrorHandler implements ErrorHandler {
 
-		private static Log logger = LogFactory.getLog(EventPublishingRunListener.class);
+		private static final Log logger = LogFactory.getLog(EventPublishingRunListener.class);
 
 		@Override
 		public void handleError(Throwable throwable) {

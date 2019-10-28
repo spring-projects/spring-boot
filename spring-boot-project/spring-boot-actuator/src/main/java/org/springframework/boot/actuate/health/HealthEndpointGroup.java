@@ -35,12 +35,20 @@ public interface HealthEndpointGroup {
 	boolean isMember(String name);
 
 	/**
-	 * Returns if {@link Health#getDetails() health details} should be included in the
+	 * Returns if {@link CompositeHealth#getComponents() health components} should be
+	 * shown in the response.
+	 * @param securityContext the endpoint security context
+	 * @return {@code true} to shown details or {@code false} to hide them
+	 */
+	boolean showComponents(SecurityContext securityContext);
+
+	/**
+	 * Returns if {@link Health#getDetails() health details} should be shown in the
 	 * response.
 	 * @param securityContext the endpoint security context
-	 * @return {@code true} to included details or {@code false} to hide them
+	 * @return {@code true} to shown details or {@code false} to hide them
 	 */
-	boolean includeDetails(SecurityContext securityContext);
+	boolean showDetails(SecurityContext securityContext);
 
 	/**
 	 * Returns the status aggregator that should be used for this group.

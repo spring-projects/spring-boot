@@ -29,7 +29,7 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 12 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 13 (included).
 {spring-framework-docs}[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -176,7 +176,7 @@ endif::[]
 
 TIP: The `spring-boot-starter-parent` is a great way to use Spring Boot, but it might not be suitable all of the time.
 Sometimes you may need to inherit from a different parent POM, or you might not like our default settings.
-In those cases, see <<using-boot-maven-without-a-parent>> for an alternative solution that uses an `import` scope.
+In those cases, see <<using-spring-boot.adoc#using-boot-maven-without-a-parent>> for an alternative solution that uses an `import` scope.
 
 
 
@@ -658,7 +658,7 @@ An uber jar packages all the classes from all the application's dependencies int
 The problem with this approach is that it becomes hard to see which libraries are in your application.
 It can also be problematic if the same filename is used (but with different content) in multiple jars.
 
-Spring Boot takes a <<appendix.adoc#executable-jar, different approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different approach>> and lets you actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.

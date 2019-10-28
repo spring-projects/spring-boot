@@ -551,7 +551,7 @@ public class Binder {
 			this.configurationProperty = configurationProperty;
 		}
 
-		private void clearConfigurationProperty() {
+		void clearConfigurationProperty() {
 			this.configurationProperty = null;
 		}
 

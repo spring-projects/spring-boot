@@ -17,12 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.AbstractHealthAggregator;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
@@ -41,9 +44,11 @@ import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -229,7 +234,8 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpointWebExtension() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<HealthComponent> response = webExtension.health(SecurityContext.NONE, true, "simple");
+			WebEndpointResponse<HealthComponent> response = webExtension.health(ApiVersion.V3, SecurityContext.NONE,
+					true, "simple");
 			Health health = (Health) response.getBody();
 			assertThat(response.getStatus()).isEqualTo(200);
 			assertThat(health.getDetails()).containsEntry("counter", 42);
@@ -240,7 +246,8 @@ class HealthEndpointAutoConfigurationTests {
 	void runWhenHasHealthEndpointWebExtensionBeanDoesNotCreateExtraHealthEndpointWebExtension() {
 		this.contextRunner.withUserConfiguration(HealthEndpointWebExtensionConfiguration.class).run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<HealthComponent> response = webExtension.health(SecurityContext.NONE, true, "simple");
+			WebEndpointResponse<HealthComponent> response = webExtension.health(ApiVersion.V3, SecurityContext.NONE,
+					true, "simple");
 			assertThat(response).isNull();
 		});
 	}
@@ -249,8 +256,8 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesReactiveHealthEndpointWebExtension() {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension webExtension = context.getBean(ReactiveHealthEndpointWebExtension.class);
-			Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension.health(SecurityContext.NONE,
-					true, "simple");
+			Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension.health(ApiVersion.V3,
+					SecurityContext.NONE, true, "simple");
 			Health health = (Health) (response.block().getBody());
 			assertThat(health.getDetails()).containsEntry("counter", 42);
 		});
@@ -262,10 +269,41 @@ class HealthEndpointAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveHealthEndpointWebExtension webExtension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
-					Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension
-							.health(SecurityContext.NONE, true, "simple");
+					Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension.health(ApiVersion.V3,
+							SecurityContext.NONE, true, "simple");
 					assertThat(response).isNull();
 				});
+	}
+
+	@Test // gh-18354
+	void runCreatesLegacyHealthAggregator() {
+		this.contextRunner.run((context) -> {
+			HealthAggregator aggregator = context.getBean(HealthAggregator.class);
+			Map<String, Health> healths = new LinkedHashMap<>();
+			healths.put("one", Health.up().build());
+			healths.put("two", Health.down().build());
+			Health result = aggregator.aggregate(healths);
+			assertThat(result.getStatus()).isEqualTo(Status.DOWN);
+		});
+	}
+
+	@Test // gh-18354
+	void runCreatesLegacyHealthStatusHttpMapper() {
+		this.contextRunner.run((context) -> {
+			HealthStatusHttpMapper mapper = context.getBean(HealthStatusHttpMapper.class);
+			assertThat(mapper.mapStatus(Status.DOWN)).isEqualTo(503);
+		});
+	}
+
+	@Test
+	void runWhenReactorAvailableCreatesReactiveHealthIndicatorRegistryBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthIndicatorRegistry.class));
+	}
+
+	@Test // gh-18570
+	void runWhenReactorUnavailableDoesNotCreateReactiveHealthIndicatorRegistryBean() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Mono.class.getPackage().getName()))
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveHealthIndicatorRegistry.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -264,10 +264,10 @@ public class SessionAutoConfiguration {
 		ServletSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.hazelcast.HazelcastSessionRepository",
-							"org.springframework.session.jdbc.JdbcOperationsSessionRepository",
-							"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
-							"org.springframework.session.data.redis.RedisOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.hazelcast.HazelcastIndexedSessionRepository",
+							"org.springframework.session.jdbc.JdbcIndexedSessionRepository",
+							"org.springframework.session.data.mongo.MongoIndexedSessionRepository",
+							"org.springframework.session.data.redis.RedisIndexedSessionRepository"));
 		}
 
 	}
@@ -282,8 +282,8 @@ public class SessionAutoConfiguration {
 		ReactiveSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository",
-							"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisSessionRepository",
+							"org.springframework.session.data.mongo.ReactiveMongoSessionRepository"));
 		}
 
 	}

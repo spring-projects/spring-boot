@@ -21,7 +21,9 @@ import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.util.Assert;
 
 /**
@@ -35,14 +37,21 @@ import org.springframework.util.Assert;
  */
 public class CompositeHealth extends HealthComponent {
 
-	private Status status;
+	private final Status status;
 
-	private Map<String, HealthComponent> details;
+	private final Map<String, HealthComponent> components;
 
-	CompositeHealth(Status status, Map<String, HealthComponent> details) {
+	private final Map<String, HealthComponent> details;
+
+	CompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
 		Assert.notNull(status, "Status must not be null");
 		this.status = status;
-		this.details = (details != null) ? new TreeMap<>(details) : details;
+		this.components = (apiVersion != ApiVersion.V3) ? null : sort(components);
+		this.details = (apiVersion != ApiVersion.V2) ? null : sort(components);
+	}
+
+	private Map<String, HealthComponent> sort(Map<String, HealthComponent> components) {
+		return (components != null) ? new TreeMap<>(components) : components;
 	}
 
 	@Override
@@ -51,7 +60,13 @@ public class CompositeHealth extends HealthComponent {
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, HealthComponent> getDetails() {
+	public Map<String, HealthComponent> getComponents() {
+		return this.components;
+	}
+
+	@JsonInclude(Include.NON_EMPTY)
+	@JsonProperty
+	Map<String, HealthComponent> getDetails() {
 		return this.details;
 	}
 

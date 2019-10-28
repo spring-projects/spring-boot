@@ -14,7 +14,7 @@ case "$JDK_VERSION" in
 		 ISSUE_TITLE="Upgrade Java 12 version in CI image"
 	;;
 	java13)
-		 BASE_URL="https://api.adoptopenjdk.net/v2/info/nightly/openjdk13"
+		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk13"
 		 ISSUE_TITLE="Upgrade Java 13 version in CI image"
 	;;
 	*)

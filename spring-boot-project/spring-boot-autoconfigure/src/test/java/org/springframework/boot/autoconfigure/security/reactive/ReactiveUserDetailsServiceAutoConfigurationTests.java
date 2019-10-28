@@ -21,13 +21,17 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.rsocket.EnableRSocketSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -57,6 +61,17 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 			ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
 			assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNotNull();
 		});
+	}
+
+	@Test
+	void userDetailsServiceWhenRSocketConfigured() {
+		new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
+						RSocketMessagingAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class))
+				.withUserConfiguration(TestRSocketSecurityConfiguration.class).run((context) -> {
+					ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
+					assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNotNull();
+				});
 	}
 
 	@Test
@@ -132,6 +147,13 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	@EnableWebFluxSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
 	static class TestSecurityConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableRSocketSecurity
+	@EnableConfigurationProperties(SecurityProperties.class)
+	static class TestRSocketSecurityConfiguration {
 
 	}
 

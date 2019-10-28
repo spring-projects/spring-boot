@@ -65,6 +65,11 @@ public final class Health extends HealthComponent {
 		this.details = Collections.unmodifiableMap(builder.details);
 	}
 
+	Health(Status status, Map<String, Object> details) {
+		this.status = status;
+		this.details = details;
+	}
+
 	/**
 	 * Return the status of the health.
 	 * @return the status (never {@code null})

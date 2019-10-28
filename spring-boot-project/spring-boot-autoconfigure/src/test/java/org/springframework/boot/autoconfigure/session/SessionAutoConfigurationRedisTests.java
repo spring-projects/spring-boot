@@ -35,12 +35,12 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -74,8 +74,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
-						JdbcOperationsSessionRepository.class, MongoOperationsSessionRepository.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+						JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.redis.port=" + redis.getFirstMappedPort())
 				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
@@ -123,8 +123,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
 			String sessionCreatedChannelPrefix, FlushMode flushMode, SaveMode saveMode, String cleanupCron) {
 		return (context) -> {
-			RedisOperationsSessionRepository repository = validateSessionRepository(context,
-					RedisOperationsSessionRepository.class);
+			RedisIndexedSessionRepository repository = validateSessionRepository(context,
+					RedisIndexedSessionRepository.class);
 			assertThat(repository.getSessionCreatedChannelPrefix()).isEqualTo(sessionCreatedChannelPrefix);
 			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
 			SpringBootRedisHttpSessionConfiguration configuration = context

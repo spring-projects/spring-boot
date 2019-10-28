@@ -12,7 +12,7 @@
 	<description>Spring Boot TomEE Deployment Test</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
-		<tomee.version>7.0.2</tomee.version>
+		<tomee.version>8.0.0</tomee.version>
 		<cargo.container.id>tomee1x</cargo.container.id>
 		<cargo.container.url>
 			https://archive.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip

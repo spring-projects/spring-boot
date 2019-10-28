@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -38,13 +39,13 @@ import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JarFileArchive}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Camille Vienot
  */
 class JarFileArchiveTests {
 
@@ -142,11 +143,16 @@ class JarFileArchiveTests {
 	}
 
 	@Test
-	void zip64ArchivesAreHandledGracefully() throws IOException {
+	void filesInZip64ArchivesAreAllListed() throws IOException {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		assertThatIllegalStateException().isThrownBy(() -> new JarFileArchive(file))
-				.withMessageContaining("Zip64 archives are not supported");
+		try (JarFileArchive zip64Archive = new JarFileArchive(file)) {
+			Iterator<Entry> entries = zip64Archive.iterator();
+			for (int i = 0; i < 65537; i++) {
+				assertThat(entries.hasNext()).as(i + "nth file is present").isTrue();
+				entries.next();
+			}
+		}
 	}
 
 	@Test
@@ -166,10 +172,13 @@ class JarFileArchiveTests {
 		output.closeEntry();
 		output.close();
 		JarFileArchive jarFileArchive = new JarFileArchive(file);
-		assertThatIllegalStateException().isThrownBy(() -> {
-			Archive archive = jarFileArchive.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
-			((JarFileArchive) archive).close();
-		}).withMessageContaining("Failed to get nested archive for entry nested/zip64.jar");
+		Archive nestedArchive = jarFileArchive.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
+		Iterator<Entry> it = nestedArchive.iterator();
+		for (int i = 0; i < 65537; i++) {
+			assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
+			it.next();
+		}
+		((JarFileArchive) nestedArchive).close();
 		jarFileArchive.close();
 	}
 

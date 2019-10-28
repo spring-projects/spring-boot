@@ -1,0 +1,14 @@
+[appendix]
+[[dependency-versions]]
+= Dependency versions
+include::{asciidoc-sources-root}/attributes.adoc[]
+
+This appendix provides details of the dependencies that are managed by Spring Boot.
+
+[[dependency-versions-coordinates]]
+== Managed Dependency Coordinates
+
+The following table provides details of all of the dependency versions that are provided by Spring Boot in its CLI (Command Line Interface), Maven dependency management, and Gradle plugin.
+When you declare a dependency on one of these artifacts without declaring a version, the version listed in the table is used.
+
+include::{generated-resources-root}/effective-pom.adoc[]

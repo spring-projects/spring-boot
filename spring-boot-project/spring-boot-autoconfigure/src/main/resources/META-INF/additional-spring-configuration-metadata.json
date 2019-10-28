@@ -719,7 +719,7 @@
       "name": "spring.mvc.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name" : "spring.mvc.media-types",
@@ -742,6 +742,13 @@
         "replacement" : "spring.resources.chain.compressed",
         "level" : "error"
       }
+    },
+    {
+      "name": "spring.quartz.jdbc.comment-prefix",
+      "defaultValue": [
+        "#",
+        "--"
+      ]
     },
     {
       "name": "spring.quartz.jdbc.initialize-schema",
@@ -2089,7 +2096,7 @@
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     }
   ],
   "hints": [
@@ -2160,6 +2167,28 @@
         },
         {
           "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.encoding",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.nio.charset.Charset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.locale",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.Locale"
+          }
         }
       ]
     },

@@ -15,6 +15,11 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<servlet-api.version>3.1.0</servlet-api.version>
 	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>

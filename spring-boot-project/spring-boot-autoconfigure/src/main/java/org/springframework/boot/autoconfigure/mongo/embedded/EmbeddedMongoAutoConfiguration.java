@@ -59,11 +59,14 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoClientDependsOnBea
 import org.springframework.boot.autoconfigure.data.mongo.ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration.EmbeddedMongoClientDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration.EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -84,6 +87,8 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, MongodStarter.class })
+@Import({ EmbeddedMongoClientDependsOnBeanFactoryPostProcessor.class,
+		EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor.class })
 public class EmbeddedMongoAutoConfiguration {
 
 	private static final byte[] IP4_LOOPBACK_ADDRESS = { 127, 0, 0, 1 };
@@ -212,30 +217,29 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link MongoClient} beans depend on any
+	 * Post processor to ensure that {@link MongoClient} beans depend on any
 	 * {@link MongodExecutable} beans.
 	 */
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
-	protected static class EmbeddedMongoDependencyConfiguration extends MongoClientDependsOnBeanFactoryPostProcessor {
+	static class EmbeddedMongoClientDependsOnBeanFactoryPostProcessor
+			extends MongoClientDependsOnBeanFactoryPostProcessor {
 
-		EmbeddedMongoDependencyConfiguration() {
+		EmbeddedMongoClientDependsOnBeanFactoryPostProcessor() {
 			super(MongodExecutable.class);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that
+	 * Post processor to ensure that
 	 * {@link com.mongodb.reactivestreams.client.MongoClient} beans depend on any
 	 * {@link MongodExecutable} beans.
 	 */
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class, ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration
+	static class EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
 			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
-		EmbeddedReactiveMongoDependencyConfiguration() {
+		EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor() {
 			super(MongodExecutable.class);
 		}
 

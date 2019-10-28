@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.web.test;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,7 +37,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -68,7 +66,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.ClassUtils;
@@ -233,9 +230,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(javax.ws.rs.core.MediaType.APPLICATION_JSON,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
@@ -281,8 +276,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 
 		@Bean
 		WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
@@ -311,8 +305,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 
 		@Bean
 		WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -39,10 +41,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -85,11 +91,14 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required %s that could not be found.%n",
 				(description != null) ? description : "A component", getBeanDescription(cause)));
-		List<Annotation> injectionAnnotations = findInjectionAnnotations(rootFailure);
-		if (!injectionAnnotations.isEmpty()) {
-			message.append(String.format("%nThe injection point has the following annotations:%n"));
-			for (Annotation injectionAnnotation : injectionAnnotations) {
-				message.append(String.format("\t- %s%n", injectionAnnotation));
+		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
+		if (injectionPoint != null) {
+			Annotation[] injectionAnnotations = injectionPoint.getAnnotations();
+			if (injectionAnnotations.length > 0) {
+				message.append(String.format("%nThe injection point has the following annotations:%n"));
+				for (Annotation injectionAnnotation : injectionAnnotations) {
+					message.append(String.format("\t- %s%n", injectionAnnotation));
+				}
 			}
 		}
 		if (!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty()) {
@@ -105,6 +114,18 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 				(!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty())
 						? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
+		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor) {
+			Constructor<?> constructor = (Constructor<?>) injectionPoint.getMember();
+			Class<?> declaringClass = constructor.getDeclaringClass();
+			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
+					.get(ConfigurationProperties.class);
+			if (configurationProperties.isPresent()) {
+				action = String.format(
+						"%s%nConsider adding @%s to %s if you intended to use constructor-based "
+								+ "configuration property binding.",
+						action, ConstructorBinding.class.getSimpleName(), constructor.getName());
+			}
+		}
 		return new FailureAnalysis(message.toString(), action, cause);
 	}
 
@@ -182,13 +203,13 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		}
 	}
 
-	private List<Annotation> findInjectionAnnotations(Throwable failure) {
+	private InjectionPoint findInjectionPoint(Throwable failure) {
 		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependencyException == null) {
-			return Collections.emptyList();
+			return null;
 		}
-		return Arrays.asList(unsatisfiedDependencyException.getInjectionPoint().getAnnotations());
+		return unsatisfiedDependencyException.getInjectionPoint();
 	}
 
 	private class Source {

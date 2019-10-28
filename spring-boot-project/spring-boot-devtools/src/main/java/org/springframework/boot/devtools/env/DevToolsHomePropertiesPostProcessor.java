@@ -24,7 +24,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.DevToolsEnablementDeducer;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -47,45 +47,53 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private static final String LEGACY_FILE_NAME = ".spring-boot-devtools.properties";
 
-	private static final String[] FILE_NAMES = new String[] { ".spring-boot-devtools.yml", ".spring-boot-devtools.yaml",
-			".spring-boot-devtools.properties" };
+	private static final String[] FILE_NAMES = new String[] { "spring-boot-devtools.yml", "spring-boot-devtools.yaml",
+			"spring-boot-devtools.properties" };
 
 	private static final String CONFIG_PATH = "/.config/spring-boot/";
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
-			List<PropertySource> propertySources = getPropertySources();
+			List<PropertySource<?>> propertySources = getPropertySources();
 			if (propertySources.isEmpty()) {
-				addPropertySource(LEGACY_FILE_NAME, (file) -> "devtools-local", propertySources);
+				addPropertySource(propertySources, LEGACY_FILE_NAME, (file) -> "devtools-local");
 			}
-			propertySources.forEach((source) -> environment.getPropertySources().addFirst(source));
+			propertySources.forEach(environment.getPropertySources()::addFirst);
 		}
 	}
 
-	private List<PropertySource> getPropertySources() {
-		List<PropertySource> propertySources = new ArrayList<>();
+	private List<PropertySource<?>> getPropertySources() {
+		List<PropertySource<?>> propertySources = new ArrayList<>();
 		for (String fileName : FILE_NAMES) {
-			addPropertySource(CONFIG_PATH + fileName, (file) -> "devtools-local: [" + file.toURI() + "]",
-					propertySources);
+			addPropertySource(propertySources, CONFIG_PATH + fileName, this::getPropertySourceName);
 		}
 		return propertySources;
 	}
 
-	private void addPropertySource(String fileName, Function<File, String> propertySourceName,
-			List<PropertySource> propertySources) {
-		Properties properties;
+	private String getPropertySourceName(File file) {
+		return "devtools-local: [" + file.toURI() + "]";
+	}
+
+	private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
+			Function<File, String> propertySourceNamer) {
 		File home = getHomeFolder();
-		File propertyFile = (home != null) ? new File(home, fileName) : null;
-		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
-			FileSystemResource resource = new FileSystemResource(propertyFile);
-			try {
-				properties = PropertiesLoaderUtils.loadProperties(resource);
-				propertySources.add(new PropertiesPropertySource(propertySourceName.apply(propertyFile), properties));
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Unable to load " + fileName, ex);
-			}
+		File file = (home != null) ? new File(home, fileName) : null;
+		FileSystemResource resource = (file != null) ? new FileSystemResource(file) : null;
+		if (resource != null && resource.exists() && resource.isFile()) {
+			addPropertySource(propertySources, resource, propertySourceNamer);
+		}
+	}
+
+	private void addPropertySource(List<PropertySource<?>> propertySources, FileSystemResource resource,
+			Function<File, String> propertySourceNamer) {
+		try {
+			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+			String name = propertySourceNamer.apply(resource.getFile());
+			propertySources.add(new PropertiesPropertySource(name, properties));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load " + resource.getFilename(), ex);
 		}
 	}
 

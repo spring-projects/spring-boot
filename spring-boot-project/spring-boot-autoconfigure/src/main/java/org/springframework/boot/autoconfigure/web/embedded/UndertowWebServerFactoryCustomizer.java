@@ -101,6 +101,8 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties::isDecodeUrl).to(options.server(UndertowOptions.DECODE_URL));
 		map.from(properties::getUrlCharset).as(Charset::name).to(options.server(UndertowOptions.URL_CHARSET));
 		map.from(properties::isAlwaysSetKeepAlive).to(options.server(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
+		map.from(properties::getNoRequestTimeout).asInt(Duration::toMillis)
+				.to(options.server(UndertowOptions.NO_REQUEST_TIMEOUT));
 		map.from(properties.getOptions()::getServer).to(options.forEach(options::server));
 		map.from(properties.getOptions()::getSocket).to(options.forEach(options::socket));
 	}

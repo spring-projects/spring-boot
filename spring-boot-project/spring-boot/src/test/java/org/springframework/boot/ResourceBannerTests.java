@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Toshiaki Maki
  */
 class ResourceBannerTests {
 
@@ -93,6 +94,22 @@ class ResourceBannerTests {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("This is red.");
+	}
+
+	@Test
+	void renderWith256Colors() {
+		Resource resource = new ByteArrayResource("${AnsiColor.208}This is orange.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("\033[38;5;208mThis is orange.\u001B[0m");
+	}
+
+	@Test
+	void renderWith256ColorsButDisabled() {
+		Resource resource = new ByteArrayResource("${AnsiColor.208}This is orange.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("This is orange.");
 	}
 
 	@Test

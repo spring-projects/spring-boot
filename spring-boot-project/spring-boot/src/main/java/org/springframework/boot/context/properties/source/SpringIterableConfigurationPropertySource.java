@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.springframework.boot.env.OriginTrackedMapPropertySource;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -236,8 +236,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		private static boolean isImmutable(EnumerablePropertySource<?> source) {
-			if (source instanceof OriginTrackedMapPropertySource) {
-				return ((OriginTrackedMapPropertySource) source).isImmutable();
+			if (source instanceof OriginLookup) {
+				return ((OriginLookup<?>) source).isImmutable();
 			}
 			if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
 				return source.getSource() == System.getenv();

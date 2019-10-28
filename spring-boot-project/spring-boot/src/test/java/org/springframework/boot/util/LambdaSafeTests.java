@@ -35,7 +35,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link LambdaSafe}.
@@ -88,7 +88,7 @@ class LambdaSafeTests {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class LambdaSafeTests {
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
 				.invokeAnd((c) -> c.handle(argument));
 		assertThat(result.hasResult()).isFalse();
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test
@@ -229,7 +229,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(null));
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test

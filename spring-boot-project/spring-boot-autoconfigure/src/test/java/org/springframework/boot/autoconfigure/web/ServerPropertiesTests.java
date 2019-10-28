@@ -75,6 +75,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Venil Noronha
  * @author Andrew McGhie
  * @author HaiTao Zhang
+ * @author Rafiullah Hamedy
  */
 class ServerPropertiesTests {
 
@@ -233,8 +234,8 @@ class ServerPropertiesTests {
 
 	@Test
 	void testCustomizeJettyIdleTimeout() {
-		bind("server.jetty.idle-timeout", "10s");
-		assertThat(this.properties.getJetty().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+		bind("server.jetty.thread-idle-timeout", "10s");
+		assertThat(this.properties.getJetty().getThreadIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test
@@ -311,6 +312,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() throws Exception {
+		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
+				.isEqualTo(getDefaultConnector().getMaxPostSize());
+	}
+
+	@Test
 	void tomcatUriEncodingMatchesConnectorDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getUriEncoding().name())
 				.isEqualTo(getDefaultConnector().getURIEncoding());
@@ -341,7 +348,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void jettyMaxHttpPostSizeMatchesDefault() throws Exception {
+	void jettyMaxHttpFormPostSizeMatchesDefault() throws Exception {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory
 				.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
@@ -393,7 +400,7 @@ class ServerPropertiesTests {
 			assertThat(failure.get()).isNotNull();
 			String message = failure.get().getCause().getMessage();
 			int defaultMaxPostSize = Integer.valueOf(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
+			assertThat(this.properties.getJetty().getMaxHttpFormPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
 		}
 		finally {
 			jetty.stop();

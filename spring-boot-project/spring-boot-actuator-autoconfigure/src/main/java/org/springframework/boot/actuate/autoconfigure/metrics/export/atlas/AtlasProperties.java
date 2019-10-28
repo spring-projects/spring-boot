@@ -33,6 +33,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AtlasProperties extends StepRegistryProperties {
 
 	/**
+	 * Number of threads to use with the metrics publishing scheduler.
+	 */
+	private Integer numThreads = 4;
+
+	/**
 	 * URI of the Atlas server.
 	 */
 	private String uri = "http://localhost:7101/api/v1/publish";
@@ -67,6 +72,16 @@ public class AtlasProperties extends StepRegistryProperties {
 	 * URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	 */
 	private String evalUri = "http://localhost:7101/lwc/api/v1/evaluate";
+
+	@Override
+	public Integer getNumThreads() {
+		return this.numThreads;
+	}
+
+	@Override
+	public void setNumThreads(Integer numThreads) {
+		this.numThreads = numThreads;
+	}
 
 	public String getUri() {
 		return this.uri;

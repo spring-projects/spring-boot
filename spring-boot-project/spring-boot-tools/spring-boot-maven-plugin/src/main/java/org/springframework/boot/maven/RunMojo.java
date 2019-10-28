@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -59,7 +60,7 @@ public class RunMojo extends AbstractRunMojo {
 	 * Whether the JVM's launch should be optimized.
 	 * @since 2.2.0
 	 */
-	@Parameter(property = "optimizedLaunch", defaultValue = "true")
+	@Parameter(property = "spring-boot.run.optimizedLaunch", defaultValue = "true")
 	private boolean optimizedLaunch;
 
 	@Override
@@ -81,9 +82,20 @@ public class RunMojo extends AbstractRunMojo {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (isFork() && this.optimizedLaunch) {
 			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
-			jvmArguments.getArgs().addFirst("-Xverify:none");
+			if (!isJava13OrLater()) {
+				jvmArguments.getArgs().addFirst("-Xverify:none");
+			}
 		}
 		return jvmArguments;
+	}
+
+	private boolean isJava13OrLater() {
+		for (Method method : String.class.getMethods()) {
+			if (method.getName().equals("stripIndent")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

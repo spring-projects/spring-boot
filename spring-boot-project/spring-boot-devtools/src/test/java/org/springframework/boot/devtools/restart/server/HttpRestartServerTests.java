@@ -38,7 +38,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link HttpRestartServer}.
@@ -92,7 +92,7 @@ class HttpRestartServerTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		verifyZeroInteractions(this.delegate);
+		verifyNoInteractions(this.delegate);
 		assertThat(response.getStatus()).isEqualTo(500);
 
 	}
@@ -103,7 +103,7 @@ class HttpRestartServerTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		request.setContent(new byte[] { 0, 0, 0 });
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		verifyZeroInteractions(this.delegate);
+		verifyNoInteractions(this.delegate);
 		assertThat(response.getStatus()).isEqualTo(500);
 	}
 

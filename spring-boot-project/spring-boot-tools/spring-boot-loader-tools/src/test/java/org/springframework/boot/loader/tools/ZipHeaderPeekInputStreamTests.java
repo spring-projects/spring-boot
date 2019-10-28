@@ -16,11 +16,6 @@
 
 package org.springframework.boot.loader.tools;
 
-/**
- * Tests for {@link ZipHeaderPeekInputStream}.
- *
- * @author Andy Wilkinson
- */
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -30,6 +25,11 @@ import org.springframework.boot.loader.tools.JarWriter.ZipHeaderPeekInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for {@link ZipHeaderPeekInputStream}.
+ *
+ * @author Andy Wilkinson
+ */
 class ZipHeaderPeekInputStreamTests {
 
 	@Test

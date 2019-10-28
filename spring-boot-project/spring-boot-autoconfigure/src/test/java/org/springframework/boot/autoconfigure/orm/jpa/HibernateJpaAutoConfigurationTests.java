@@ -112,8 +112,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void testDataScript() {
 		// This can't succeed because the data SQL is executed immediately after the
-		// schema
-		// and Hibernate hasn't initialized yet at that point
+		// schema and Hibernate hasn't initialized yet at that point
 		contextRunner().withPropertyValues("spring.datasource.data:classpath:/city.sql").run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);

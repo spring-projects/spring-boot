@@ -8,7 +8,6 @@
 		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-smoke-test-jersey</artifactId>
-	<packaging>war</packaging>
 	<name>Spring Boot Jersey Smoke Test</name>
 	<description>Spring Boot Jersey Smoke Test</description>
 	<properties>
@@ -24,11 +23,9 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<!-- Provided -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Test -->
 		<dependency>
