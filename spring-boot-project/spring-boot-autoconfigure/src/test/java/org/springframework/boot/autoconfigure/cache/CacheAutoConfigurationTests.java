@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.cache.Caching;
 import javax.cache.configuration.CompleteConfiguration;
@@ -254,6 +255,33 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues()).isFalse();
 					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName")).isEqualTo("prefix");
 					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
+				});
+	}
+
+	@Test
+	void redisCacheInitialCacheConfiguration() {
+		this.contextRunner.withUserConfiguration(RedisConfiguration.class)
+				.withPropertyValues("spring.cache.type=redis", "spring.cache.redis.time-to-live=15000",
+						"spring.cache.redis.cacheNullValues=false", "spring.cache.redis.keyPrefix=prefix",
+						"spring.cache.redis.useKeyPrefix=true",
+						"spring.cache.redis.initial-cache-configurations.test.time-to-live=30000",
+						"spring.cache.redis.initial-cache-configurations.test.cacheNullValues=true",
+						"spring.cache.redis.initial-cache-configurations.test.keyPrefix=prefixTest",
+						"spring.cache.redis.initial-cache-configurations.test.useKeyPrefix=false")
+				.run((context) -> {
+					RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
+					RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
+					assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(15));
+					assertThat(redisCacheConfiguration.getAllowCacheNullValues()).isFalse();
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName")).isEqualTo("prefix");
+					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
+					Map<String, RedisCacheConfiguration> initialCacheConfiguration = getInitialCacheConfiguration(
+							cacheManager);
+					RedisCacheConfiguration redisInitialCacheConfigurationTest = initialCacheConfiguration.get("test");
+					assertThat(redisInitialCacheConfigurationTest.getTtl()).isEqualTo(java.time.Duration.ofSeconds(30));
+					assertThat(redisInitialCacheConfigurationTest.getAllowCacheNullValues()).isTrue();
+					assertThat(redisInitialCacheConfigurationTest.getKeyPrefixFor("keyName")).isEqualTo("prefixTest");
+					assertThat(redisInitialCacheConfigurationTest.usePrefix()).isFalse();
 				});
 	}
 
@@ -671,6 +699,11 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
 		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+	}
+
+	private Map<String, RedisCacheConfiguration> getInitialCacheConfiguration(RedisCacheManager cacheManager) {
+		return (Map<String, RedisCacheConfiguration>) ReflectionTestUtils.getField(cacheManager,
+				"initialCacheConfiguration");
 	}
 
 	@Configuration(proxyBeanMethods = false)

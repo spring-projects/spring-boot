@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -57,8 +59,11 @@ class RedisCacheConfiguration {
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ObjectProvider<RedisCacheManagerBuilderCustomizer> redisCacheManagerBuilderCustomizers,
 			RedisConnectionFactory redisConnectionFactory, ResourceLoader resourceLoader) {
-		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(
-				determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
+		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory)
+				.cacheDefaults(determineConfiguration(cacheProperties, redisCacheConfiguration,
+						resourceLoader.getClassLoader()))
+				.withInitialCacheConfigurations(
+						createCacheConfigurations(cacheProperties, resourceLoader.getClassLoader()));
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -77,6 +82,11 @@ class RedisCacheConfiguration {
 	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
 			CacheProperties cacheProperties, ClassLoader classLoader) {
 		Redis redisProperties = cacheProperties.getRedis();
+		return createRedisCacheConfiguration(redisProperties, classLoader);
+	}
+
+	private org.springframework.data.redis.cache.RedisCacheConfiguration createRedisCacheConfiguration(
+			Redis redisProperties, ClassLoader classLoader) {
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
 		config = config.serializeValuesWith(
@@ -94,6 +104,12 @@ class RedisCacheConfiguration {
 			config = config.disableKeyPrefix();
 		}
 		return config;
+	}
+
+	private Map<String, org.springframework.data.redis.cache.RedisCacheConfiguration> createCacheConfigurations(
+			CacheProperties cacheProperties, ClassLoader classLoader) {
+		return cacheProperties.getRedis().getInitialCacheConfigurations().entrySet().stream().collect(Collectors.toMap(
+				(entry) -> entry.getKey(), (entry) -> createRedisCacheConfiguration(entry.getValue(), classLoader)));
 	}
 
 }

@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -56,7 +58,7 @@ public class CacheProperties {
 
 	private final JCache jcache = new JCache();
 
-	private final Redis redis = new Redis();
+	private final RedisGlobal redis = new RedisGlobal();
 
 	public CacheType getType() {
 		return this.type;
@@ -94,7 +96,7 @@ public class CacheProperties {
 		return this.jcache;
 	}
 
-	public Redis getRedis() {
+	public RedisGlobal getRedis() {
 		return this.redis;
 	}
 
@@ -287,6 +289,23 @@ public class CacheProperties {
 
 		public void setUseKeyPrefix(boolean useKeyPrefix) {
 			this.useKeyPrefix = useKeyPrefix;
+		}
+
+	}
+
+	public static class RedisGlobal extends Redis {
+
+		/**
+		 * Map of cache names to redis-specific cache properties.
+		 */
+		public Map<String, Redis> initialCacheConfigurations = new HashMap<>();
+
+		public Map<String, Redis> getInitialCacheConfigurations() {
+			return this.initialCacheConfigurations;
+		}
+
+		public void setInitialCacheConfigurations(Map<String, Redis> initialCacheConfigurations) {
+			this.initialCacheConfigurations = initialCacheConfigurations;
 		}
 
 	}
