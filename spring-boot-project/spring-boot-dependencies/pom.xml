@@ -191,7 +191,7 @@
 		<spring-data-releasetrain.version>Moore-RELEASE</spring-data-releasetrain.version>
 		<spring-framework.version>5.2.1.BUILD-SNAPSHOT</spring-framework.version>
 		<spring-hateoas.version>1.0.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.2.0.RELEASE</spring-integration.version>
+		<spring-integration.version>5.2.1.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-kafka.version>2.3.1.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
