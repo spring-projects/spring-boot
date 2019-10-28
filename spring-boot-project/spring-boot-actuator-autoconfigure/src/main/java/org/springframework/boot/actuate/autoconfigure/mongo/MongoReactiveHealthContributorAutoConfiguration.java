@@ -50,9 +50,8 @@ public class MongoReactiveHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = { "mongoReactiveHealthIndicator", "mongoReactiveHealthContributor" })
-	public ReactiveHealthContributor mongoReactiveHealthContributor(
-			Map<String, ReactiveMongoTemplate> reactiveMongoTemplates) {
+	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
+	public ReactiveHealthContributor mongoHealthContributor(Map<String, ReactiveMongoTemplate> reactiveMongoTemplates) {
 		return createContributor(reactiveMongoTemplates);
 	}
 

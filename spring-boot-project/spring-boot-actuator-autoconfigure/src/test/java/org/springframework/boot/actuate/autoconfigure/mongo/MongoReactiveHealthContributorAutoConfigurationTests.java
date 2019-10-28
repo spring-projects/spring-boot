@@ -45,14 +45,21 @@ class MongoReactiveHealthContributorAutoConfigurationTests {
 	@Test
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
-				.doesNotHaveBean(MongoHealthIndicator.class));
+				.hasBean("mongoHealthContributor"));
+	}
+
+	@Test
+	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoHealthContributorAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
+						.hasBean("mongoHealthContributor").doesNotHaveBean(MongoHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveHealthIndicator.class)
-						.doesNotHaveBean(MongoHealthIndicator.class));
+						.doesNotHaveBean("mongoHealthContributor"));
 	}
 
 }

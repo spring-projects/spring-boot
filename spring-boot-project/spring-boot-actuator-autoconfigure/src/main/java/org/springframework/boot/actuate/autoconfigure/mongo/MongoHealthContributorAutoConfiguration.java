@@ -43,7 +43,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @ConditionalOnClass(MongoTemplate.class)
 @ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
-@AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
+@AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoReactiveHealthContributorAutoConfiguration.class })
 public class MongoHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
 

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cassandra;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorAutoConfigurationTests.CassandraConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
 import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
@@ -44,13 +45,23 @@ class CassandraReactiveHealthContributorAutoConfigurationTests {
 	@Test
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraReactiveHealthIndicator.class)
-				.doesNotHaveBean(CassandraHealthIndicator.class));
+				.hasBean("cassandraHealthContributor"));
+	}
+
+	@Test
+	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(CassandraConfiguration.class,
+						CassandraHealthContributorAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(CassandraReactiveHealthIndicator.class)
+						.hasBean("cassandraHealthContributor").doesNotHaveBean(CassandraHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.cassandra.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(CassandraReactiveHealthIndicator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CassandraReactiveHealthIndicator.class)
+						.doesNotHaveBean("cassandraHealthContributor"));
 	}
 
 }
