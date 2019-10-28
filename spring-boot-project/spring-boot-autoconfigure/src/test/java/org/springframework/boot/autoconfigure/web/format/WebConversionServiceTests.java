@@ -50,9 +50,29 @@ class WebConversionServiceTests {
 		customDateFormat(java.time.LocalDate.of(2018, 1, 1));
 	}
 
+	@Test
+	void customTimeFormatWithJavaTime() {
+		customTimeFormat(java.time.LocalTime.of(13, 37, 42));
+	}
+
+	@Test
+	void customDateTimeFormatWithJavaTime() {
+		customDateTimeFormat(java.time.LocalDateTime.of(2019, 10, 28, 13, 37, 42));
+	}
+
 	private void customDateFormat(Object input) {
 		WebConversionService conversionService = new WebConversionService("dd*MM*yyyy");
 		assertThat(conversionService.convert(input, String.class)).isEqualTo("01*01*2018");
+	}
+
+	private void customTimeFormat(Object input) {
+		WebConversionService conversionService = new WebConversionService(null, "HH*mm*ss", null);
+		assertThat(conversionService.convert(input, String.class)).isEqualTo("13*37*42");
+	}
+
+	private void customDateTimeFormat(Object input) {
+		WebConversionService conversionService = new WebConversionService(null, null, "dd*MM*yyyy HH*mm*ss");
+		assertThat(conversionService.convert(input, String.class)).isEqualTo("28*10*2019 13*37*42");
 	}
 
 	@Test
