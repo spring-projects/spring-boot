@@ -45,6 +45,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Ryon Day
+ * @author Anthony Lofton
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisConnectionFactory.class)

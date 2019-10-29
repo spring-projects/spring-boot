@@ -32,7 +32,8 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Ryon Day
- * @since 1.3.0
+ * @author Anthony Lofton
+ * @since 2.2.1
  */
 @ConfigurationProperties(prefix = "spring.cache")
 public class CacheProperties {
