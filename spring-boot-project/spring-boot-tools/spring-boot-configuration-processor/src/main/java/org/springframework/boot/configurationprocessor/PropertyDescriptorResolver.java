@@ -158,12 +158,12 @@ class PropertyDescriptorResolver {
 
 		private ExecutableElement findBoundConstructor() {
 			ExecutableElement boundConstructor = null;
-			for (ExecutableElement canidate : this.constructors) {
-				if (!canidate.getParameters().isEmpty()) {
+			for (ExecutableElement candidate : this.constructors) {
+				if (!candidate.getParameters().isEmpty()) {
 					if (boundConstructor != null) {
 						return null;
 					}
-					boundConstructor = canidate;
+					boundConstructor = candidate;
 				}
 			}
 			return boundConstructor;
