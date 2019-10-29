@@ -937,6 +937,10 @@ public class RabbitProperties {
 
 		private static final int DEFAULT_PORT = 5672;
 
+		private static final String PREFIX_AMQP_SECURE = "amqps://";
+
+		private static final int DEFAULT_PORT_SECURE = 5671;
+
 		private String host;
 
 		private int port;
@@ -947,6 +951,8 @@ public class RabbitProperties {
 
 		private String virtualHost;
 
+		private boolean isSecureConnection;
+
 		private Address(String input) {
 			input = input.trim();
 			input = trimPrefix(input);
@@ -956,6 +962,10 @@ public class RabbitProperties {
 		}
 
 		private String trimPrefix(String input) {
+			if (input.startsWith(PREFIX_AMQP_SECURE)) {
+				this.isSecureConnection = true;
+				return input.substring(PREFIX_AMQP_SECURE.length());
+			}
 			if (input.startsWith(PREFIX_AMQP)) {
 				input = input.substring(PREFIX_AMQP.length());
 			}
@@ -992,7 +1002,12 @@ public class RabbitProperties {
 			int portIndex = input.indexOf(':');
 			if (portIndex == -1) {
 				this.host = input;
-				this.port = DEFAULT_PORT;
+				if (this.isSecureConnection) {
+					this.port = DEFAULT_PORT_SECURE;
+				} 
+				else {
+					this.port = DEFAULT_PORT;
+				}
 			}
 			else {
 				this.host = input.substring(0, portIndex);
