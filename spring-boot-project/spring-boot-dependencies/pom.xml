@@ -135,7 +135,7 @@
 		<!-- Deprecated in favor of "johnzon.version" -->
 		<johnzon-jsonb.version>1.2.1</johnzon-jsonb.version>
 		<johnzon.version>${johnzon-jsonb.version}</johnzon.version>
-		<jooq.version>3.12.1</jooq.version>
+		<jooq.version>3.12.2</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
