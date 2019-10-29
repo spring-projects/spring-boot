@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.data.jdbc.city;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
+@Table("CITY")
 public class City {
 
 	@Id
