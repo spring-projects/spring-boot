@@ -82,7 +82,7 @@
 		<infinispan.version>9.4.16.Final</infinispan.version>
 		<influxdb-java.version>2.14</influxdb-java.version>
 		<!-- deprecated since 2.1 in favor of "jackson-bom.version" -->
-		<jackson.version>2.9.9.20190807</jackson.version>
+		<jackson.version>2.9.10.20191020</jackson.version>
 		<jackson-bom.version>${jackson.version}</jackson-bom.version>
 		<janino.version>3.0.15</janino.version>
 		<javax-activation.version>1.2.0</javax-activation.version>
