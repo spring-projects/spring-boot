@@ -72,6 +72,13 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void usingSecuredConnections() {
+		this.properties.setAddresses("amqps://root:password@otherhost,amqps://root:password2@otherhost2");
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+		assertThat(this.properties.determineAddresses()).isEqualTo("otherhost:5671,otherhost2:5671");
+	}
+
+	@Test
 	void determinePortReturnsPortOfFirstAddress() {
 		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
