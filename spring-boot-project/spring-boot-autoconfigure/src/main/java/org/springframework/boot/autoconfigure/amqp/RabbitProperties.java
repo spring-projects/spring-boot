@@ -1027,7 +1027,8 @@ public class RabbitProperties {
 				this.host = input;
 				if (this.isSecureConnection) {
 					this.port = DEFAULT_PORT_SECURE;
-				} else {
+				} 
+				else {
 					this.port = DEFAULT_PORT;
 				}
 			}
