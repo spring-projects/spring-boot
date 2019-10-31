@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.WildcardType;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -41,9 +42,16 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Class<?> collectionType = (target.getValue() != null) ? List.class : target.getType().resolve(Object.class);
+		ResolvableType type;
+		if (target.getType().getType() instanceof WildcardType) {
+			type = target.getType();
+		}
+		else {
+			type = target.getType().asCollection();
+		}
 		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
-				target.getType().asCollection().getGenerics());
-		ResolvableType elementType = target.getType().asCollection().getGeneric();
+				type.getGenerics());
+		ResolvableType elementType = type.getGeneric();
 		IndexedCollectionSupplier result = new IndexedCollectionSupplier(
 				() -> CollectionFactory.createCollection(collectionType, elementType.resolve(), 0));
 		bindIndexed(name, target, elementBinder, aggregateType, elementType, result);
