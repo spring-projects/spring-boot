@@ -2538,8 +2538,9 @@ If you want to take complete control of Spring WebFlux, you can add your own `@C
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
 They are configured with `CodecConfigurer` to have sensible defaults by looking at the libraries available in your classpath.
 
-Spring Boot applies further customization by using `CodecCustomizer` instances.
-For example, `spring.jackson.*` configuration keys are applied to the Jackson codec.
+Spring Boot provides dedicated configuration properties for codecs, `+spring.codec.*+`.
+It also applies further customization by using `CodecCustomizer` instances.
+For example, `+spring.jackson.*+` configuration keys are applied to the Jackson codec.
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
@@ -2554,7 +2555,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 		public CodecCustomizer myCodecCustomizer() {
 			return codecConfigurer -> {
 				// ...
-			}
+			};
 		}
 
 	}
