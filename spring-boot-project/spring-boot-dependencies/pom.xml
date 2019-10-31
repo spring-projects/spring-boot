@@ -61,7 +61,7 @@
 		<ehcache.version>2.10.6</ehcache.version>
 		<ehcache3.version>3.8.1</ehcache3.version>
 		<embedded-mongo.version>2.2.0</embedded-mongo.version>
-		<flyway.version>6.0.7</flyway.version>
+		<flyway.version>6.0.8</flyway.version>
 		<freemarker.version>2.3.29</freemarker.version>
 		<elasticsearch.version>6.8.3</elasticsearch.version>
 		<glassfish-el.version>3.0.3</glassfish-el.version>
