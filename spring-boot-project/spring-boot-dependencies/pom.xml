@@ -2972,12 +2972,6 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-spring-service-connector</artifactId>
 				<version>${spring-cloud-connectors.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>log4j</artifactId>
-						<groupId>log4j</groupId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
