@@ -62,11 +62,11 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	private void writeDefaultValue(AsciidocBuilder builder) {
 		String defaultValue = (this.defaultValue != null) ? this.defaultValue : "";
-		defaultValue = defaultValue.replace("\\", "\\\\").replace("|", "\\|");
 		if (defaultValue.isEmpty()) {
 			builder.appendln("|");
 		}
 		else {
+			defaultValue = defaultValue.replace("\\", "\\\\").replace("|", "\\|");
 			builder.appendln("|`+", defaultValue, "+`");
 		}
 	}

@@ -185,7 +185,6 @@ class PropertyDescriptorResolver {
 				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
 			}
 			return false;
-
 		}
 
 	}
