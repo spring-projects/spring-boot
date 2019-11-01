@@ -88,7 +88,7 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		if (BindMethod.forClass(type) == BindMethod.VALUE_OBJECT) {
+		if (BindMethod.forType(type) == BindMethod.VALUE_OBJECT) {
 			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
 		}
 		GenericBeanDefinition definition = new GenericBeanDefinition();
