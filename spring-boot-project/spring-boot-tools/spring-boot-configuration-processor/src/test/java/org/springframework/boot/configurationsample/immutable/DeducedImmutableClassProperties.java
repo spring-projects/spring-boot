@@ -40,7 +40,7 @@ public class DeducedImmutableClassProperties {
 
 	public static class Nested {
 
-		private String name;
+		private final String name;
 
 		public Nested(String name) {
 			this.name = name;
