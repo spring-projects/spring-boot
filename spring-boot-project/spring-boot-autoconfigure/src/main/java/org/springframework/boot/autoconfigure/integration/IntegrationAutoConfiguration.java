@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +44,17 @@ import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.rsocket.ClientRSocketConnector;
+import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
+import org.springframework.integration.rsocket.ServerRSocketConnector;
+import org.springframework.integration.rsocket.ServerRSocketMessageHandler;
+import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.StringUtils;
+
+import io.rsocket.RSocketFactory;
+import io.rsocket.transport.netty.server.TcpServerTransport;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -134,6 +146,70 @@ public class IntegrationAutoConfiguration {
 		public IntegrationDataSourceInitializer integrationDataSourceInitializer(DataSource dataSource,
 				ResourceLoader resourceLoader, IntegrationProperties properties) {
 			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
+		}
+
+	}
+
+	/**
+	 * Integration RSocket configuration.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, RSocketFactory.class })
+	protected static class IntegrationRSocketConfiguration {
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(TcpServerTransport.class)
+		@AutoConfigureBefore(RSocketMessagingAutoConfiguration.class)
+		protected static class IntegrationRSocketServerConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean(ServerRSocketMessageHandler.class)
+			public RSocketMessageHandler serverRSocketMessageHandler(RSocketStrategies rSocketStrategies,
+					IntegrationProperties integrationProperties) {
+
+				RSocketMessageHandler messageHandler =
+						new ServerRSocketMessageHandler(
+								integrationProperties.getRSocket().getServer().isMessageMappingEnabled());
+				messageHandler.setRSocketStrategies(rSocketStrategies);
+				return messageHandler;
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			public ServerRSocketConnector serverRSocketConnector(ServerRSocketMessageHandler messageHandler) {
+				return new ServerRSocketConnector(messageHandler);
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		protected static class IntegrationRSocketClientConfiguration {
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "port")
+			public ClientRSocketConnector clientTcpRSocketConnector(IntegrationProperties integrationProperties,
+					RSocketStrategies rSocketStrategies) {
+
+				IntegrationProperties.RSocket.Client client = integrationProperties.getRSocket().getClient();
+				ClientRSocketConnector clientRSocketConnector =
+						new ClientRSocketConnector(client.getHost(), client.getPort());
+				clientRSocketConnector.setRSocketStrategies(rSocketStrategies);
+				return clientRSocketConnector;
+			}
+
+			@Bean
+			@ConditionalOnMissingBean
+			@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "uri")
+			public ClientRSocketConnector clientWebSocketRSocketConnector(IntegrationProperties integrationProperties,
+					RSocketStrategies rSocketStrategies) {
+
+				IntegrationProperties.RSocket.Client client = integrationProperties.getRSocket().getClient();
+				ClientRSocketConnector clientRSocketConnector = new ClientRSocketConnector(client.getUri());
+				clientRSocketConnector.setRSocketStrategies(rSocketStrategies);
+				return clientRSocketConnector;
+			}
+
 		}
 
 	}
