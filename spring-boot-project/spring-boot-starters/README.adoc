@@ -37,6 +37,9 @@ do as they were designed before this was clarified.
 | https://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
 
+| https://line.github.io/armeria/[Armeria]
+| https://github.com/line/armeria/
+
 | https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
