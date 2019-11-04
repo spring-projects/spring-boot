@@ -161,7 +161,7 @@
 		<selenium-htmlunit.version>2.33.0</selenium-htmlunit.version>
 		<sendgrid.version>4.3.0</sendgrid.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
-		<slf4j.version>1.7.28</slf4j.version>
+		<slf4j.version>1.7.29</slf4j.version>
 		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.7.2</solr.version>
 		<!-- deprecated in favor of "spring-framework.version" -->
