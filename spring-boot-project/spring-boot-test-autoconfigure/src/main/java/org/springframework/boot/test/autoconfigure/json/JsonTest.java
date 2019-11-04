@@ -68,7 +68,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @BootstrapWith(JsonTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
-@TypeExcludeFilters(JsonExcludeFilter.class)
+@TypeExcludeFilters(JsonTypeExcludeFilter.class)
 @AutoConfigureCache
 @AutoConfigureJson
 @AutoConfigureJsonTesters
