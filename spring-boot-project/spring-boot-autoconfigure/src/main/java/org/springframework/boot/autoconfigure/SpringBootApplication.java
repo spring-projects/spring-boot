@@ -40,8 +40,7 @@ import org.springframework.data.repository.Repository;
  * auto-configuration}, {@link ComponentScan component scanning}, and
  * {@link ConfigurationPropertiesScan configuration properties scanning}. This is a
  * convenience annotation that is equivalent to declaring {@code @Configuration},
- * {@code @EnableAutoConfiguration}, {@code @ComponentScan}, and
- * {@code @ConfigurationPropertiesScan}.
+ * {@code @EnableAutoConfiguration}, {@code @ComponentScan}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -56,7 +55,6 @@ import org.springframework.data.repository.Repository;
 @EnableAutoConfiguration
 @ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
 		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
-@ConfigurationPropertiesScan
 public @interface SpringBootApplication {
 
 	/**

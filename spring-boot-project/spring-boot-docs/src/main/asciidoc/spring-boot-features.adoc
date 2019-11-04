@@ -917,27 +917,31 @@ TIP: If you have more than one constructor for your class you can also use `@Con
 
 [[boot-features-external-config-enabling]]
 ==== Enabling `@ConfigurationProperties`-annotated types
-Spring Boot provides an infrastructure to bind such types and register them as beans automatically.
-If your application uses `@SpringBootApplication`, classes annotated with `@ConfigurationProperties` will automatically be scanned and registered as beans.
-By default, scanning will occur from the package of the class that declares this annotation.
-If you want to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan` directive on your `@SpringBootApplication`-annotated class as shown in the following example:
+Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.
+You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
-[source,java,indent=0]
-----
-	@SpringBootApplication
-	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
-	public class MyApplication {
-	}
-----
-
-Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration.
-In these cases, you can specify the list of types to process on any `@Configuration` class as shown in the following example:
+Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration or you want to enable them conditionally.
+In these cases, specify the list of types to process using the `@EnableConfigurationProperties` annotation.
+This can be done on any `@Configuration` class, as shown in the following example:
 
 [source,java,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AcmeProperties.class)
 	public class MyConfiguration {
+	}
+----
+
+To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
+Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
+By default, scanning will occur from the package of the class that declares the annotation.
+If you want to define specific packages to scan, you can do so as shown in the following example:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
+	public class MyApplication {
 	}
 ----
 
