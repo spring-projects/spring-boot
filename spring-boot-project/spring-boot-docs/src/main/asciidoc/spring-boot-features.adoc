@@ -3747,6 +3747,7 @@ You can define beans for the following jOOQ Types:
 * `ExecuteListenerProvider`
 * `VisitListenerProvider`
 * `TransactionListenerProvider`
+* `Settings`
 
 You can also create your own `org.jooq.Configuration` `@Bean` if you want to take complete control of the jOOQ configuration.
 
