@@ -423,8 +423,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		private Class<?> getFilter(Class<?> type) {
-			AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(type,
-					FilteredEndpoint.class);
+			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
+					FilteredEndpoint.class, false, true);
 			if (attributes == null) {
 				return null;
 			}
