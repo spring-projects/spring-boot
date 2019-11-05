@@ -504,7 +504,7 @@ class EndpointDiscovererTests {
 	static class SpecializedSuperclassTestEndpoint extends AbstractFilteredEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
