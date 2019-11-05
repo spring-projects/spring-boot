@@ -912,7 +912,11 @@ NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect t
 === Remote Applications
 The Spring Boot developer tools are not limited to local development.
 You can also use several features when running applications remotely.
-Remote support is opt-in.
+Remote support is opt-in as enabling it can be a security risk.
+It should only be enabled when running on a trusted network or when secured with SSL.
+If neither of these options is available to you, you should not use DevTools' remote support.
+You should never enable support on a production deployment.
+
 To enable it, you need to make sure that `devtools` is included in the repackaged archive, as shown in the following listing:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -930,15 +934,8 @@ To enable it, you need to make sure that `devtools` is included in the repackage
 	</build>
 ----
 
-Then you need to set a `spring.devtools.remote.secret` property, as shown in the following example:
-
-[source,properties,indent=0]
-----
-	spring.devtools.remote.secret=mysecret
-----
-
-WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk.
-You should never enable support on a production deployment.
+Then you need to set the `spring.devtools.remote.secret` property.
+Like any important password or secret, the value should be unique and strong such that it cannot be guessed or brute-forced.
 
 Remote devtools support is provided in two parts: a server-side endpoint that accepts connections and a client application that you run in your IDE.
 The server component is automatically enabled when the `spring.devtools.remote.secret` property is set.
