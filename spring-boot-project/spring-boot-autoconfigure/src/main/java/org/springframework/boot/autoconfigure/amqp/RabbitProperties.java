@@ -310,7 +310,7 @@ public class RabbitProperties {
 		return this.template;
 	}
 
-	public static class Ssl {
+	public class Ssl {
 
 		/**
 		 * Whether to enable SSL support.
@@ -364,6 +364,21 @@ public class RabbitProperties {
 
 		public boolean isEnabled() {
 			return this.enabled;
+		}
+
+		/**
+		 * Returns whether SSL is enabled from the first address, or the configured ssl
+		 * enabled flag if no addresses have been set.
+		 * @return whether ssl is enabled
+		 * @see #setAddresses(String)
+		 * @see #isEnabled()
+		 */
+		public boolean determineEnabled() {
+			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
+				return isEnabled();
+			}
+			Address address = RabbitProperties.this.parsedAddresses.get(0);
+			return address.secureConnection;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -937,6 +952,10 @@ public class RabbitProperties {
 
 		private static final int DEFAULT_PORT = 5672;
 
+		private static final String PREFIX_AMQP_SECURE = "amqps://";
+
+		private static final int DEFAULT_PORT_SECURE = 5671;
+
 		private String host;
 
 		private int port;
@@ -947,6 +966,8 @@ public class RabbitProperties {
 
 		private String virtualHost;
 
+		private boolean secureConnection;
+
 		private Address(String input) {
 			input = input.trim();
 			input = trimPrefix(input);
@@ -956,6 +977,10 @@ public class RabbitProperties {
 		}
 
 		private String trimPrefix(String input) {
+			if (input.startsWith(PREFIX_AMQP_SECURE)) {
+				this.secureConnection = true;
+				return input.substring(PREFIX_AMQP_SECURE.length());
+			}
 			if (input.startsWith(PREFIX_AMQP)) {
 				input = input.substring(PREFIX_AMQP.length());
 			}
@@ -992,7 +1017,7 @@ public class RabbitProperties {
 			int portIndex = input.indexOf(':');
 			if (portIndex == -1) {
 				this.host = input;
-				this.port = DEFAULT_PORT;
+				this.port = (this.secureConnection) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 			}
 			else {
 				this.host = input.substring(0, portIndex);
