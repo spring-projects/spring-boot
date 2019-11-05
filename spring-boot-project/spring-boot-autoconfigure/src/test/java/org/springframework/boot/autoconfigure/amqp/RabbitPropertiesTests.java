@@ -91,6 +91,18 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
+	void determinePortUsingAmqpReturnsPortOfFirstAddress() {
+		this.properties.setAddresses("amqp://root:password@otherhost,amqps://root:password2@otherhost2");
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
+	}
+
+	@Test
+	void determinePortUsingAmqpsReturnsPortOfFirstAddress() {
+		this.properties.setAddresses("amqps://root:password@otherhost,amqp://root:password2@otherhost2");
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
+	}
+
+	@Test
 	void virtualHostDefaultsToNull() {
 		assertThat(this.properties.getVirtualHost()).isNull();
 	}
@@ -221,6 +233,24 @@ class RabbitPropertiesTests {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
 		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit.example.com:1234");
+	}
+
+	@Test
+	void determineSslUsingAmqpsReturnsStateOfFirstAddress() {
+		this.properties.setAddresses("amqps://root:password@otherhost,amqp://root:password2@otherhost2");
+		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void determineSslUsingAmqpReturnsStateOfFirstAddress() {
+		this.properties.setAddresses("amqp://root:password@otherhost,amqps://root:password2@otherhost2");
+		assertThat(this.properties.getSsl().determineEnabled()).isFalse();
+	}
+
+	@Test
+	void determineSslReturnFlagPropertyWhenNoAddresses() {
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
 	}
 
 	@Test

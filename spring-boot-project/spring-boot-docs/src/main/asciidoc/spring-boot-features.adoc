@@ -5070,6 +5070,13 @@ For example, you might declare the following section in `application.properties`
 	spring.rabbitmq.password=secret
 ----
 
+Alternatively, you could configure the same connection using the `addresses` attributes:
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.addresses=amqp://admin:secret@localhost
+----
+
 If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `ConnectionFactory`.
 See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitProperties`] for more of the supported options.
 
