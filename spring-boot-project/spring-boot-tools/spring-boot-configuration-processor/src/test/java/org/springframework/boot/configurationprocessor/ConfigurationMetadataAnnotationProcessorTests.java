@@ -68,6 +68,7 @@ import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
@@ -968,6 +969,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
+	}
+
+	@Test
+	public void recursivePropertiesDoNotCauseAStackOverflow() {
+		compile(RecursiveProperties.class);
 	}
 
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {

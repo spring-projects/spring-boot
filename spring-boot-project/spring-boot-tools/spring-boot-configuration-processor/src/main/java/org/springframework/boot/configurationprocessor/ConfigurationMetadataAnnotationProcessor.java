@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -258,8 +259,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		Map<String, Object> fieldValues = members.getFieldValues();
 		processSimpleTypes(prefix, element, source, members, fieldValues);
 		processSimpleLombokTypes(prefix, element, source, members, fieldValues);
-		processNestedTypes(prefix, element, source, members);
-		processNestedLombokTypes(prefix, element, source, members);
+		Stack<TypeElement> seen = new Stack<>();
+		seen.push(element);
+		processNestedTypes(prefix, element, source, members, seen);
+		processNestedLombokTypes(prefix, element, source, members, seen);
 	}
 
 	private void processSimpleTypes(String prefix, TypeElement element, ExecutableElement source,
@@ -324,19 +327,19 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element, ExecutableElement source,
-			TypeElementMembers members) {
+			TypeElementMembers members, Stack<TypeElement> seen) {
 		members.getPublicGetters().forEach((name, getter) -> {
 			VariableElement field = members.getFields().get(name);
-			processNestedType(prefix, element, source, name, getter, field, getter.getReturnType());
+			processNestedType(prefix, element, source, name, getter, field, getter.getReturnType(), seen);
 		});
 	}
 
 	private void processNestedLombokTypes(String prefix, TypeElement element, ExecutableElement source,
-			TypeElementMembers members) {
+			TypeElementMembers members, Stack<TypeElement> seen) {
 		members.getFields().forEach((name, field) -> {
 			if (isLombokField(field, element)) {
 				ExecutableElement getter = members.getPublicGetter(name, field.asType());
-				processNestedType(prefix, element, source, name, getter, field, field.asType());
+				processNestedType(prefix, element, source, name, getter, field, field.asType(), seen);
 			}
 		});
 	}
@@ -378,7 +381,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processNestedType(String prefix, TypeElement element, ExecutableElement source, String name,
-			ExecutableElement getter, VariableElement field, TypeMirror returnType) {
+			ExecutableElement getter, VariableElement field, TypeMirror returnType, Stack<TypeElement> seen) {
 		Element returnElement = this.processingEnv.getTypeUtils().asElement(returnType);
 		boolean isNested = isNested(returnElement, field, element);
 		AnnotationMirror annotation = getAnnotation(getter, configurationPropertiesAnnotation());
@@ -387,7 +390,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			this.metadataCollector
 					.add(ItemMetadata.newGroup(nestedPrefix, this.typeUtils.getQualifiedName(returnElement),
 							this.typeUtils.getQualifiedName(element), (getter != null) ? getter.toString() : null));
-			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
+			TypeElement nestedElement = (TypeElement) returnElement;
+			if (!seen.contains(nestedElement)) {
+				seen.push(nestedElement);
+				processTypeElement(nestedPrefix, nestedElement, source);
+				seen.pop();
+			}
 		}
 	}
 
