@@ -2787,9 +2787,11 @@ Filters map to `+/*+`.
 
 If convention-based mapping is not flexible enough, you can use the `ServletRegistrationBean`, `FilterRegistrationBean`, and `ServletListenerRegistrationBean` classes for complete control.
 
-Filter beans can be ordered to control their position in the filter chain by using `@Order` or implemented `Ordered`.
 It is usually safe to leave Filter beans unordered.
-However, if a specific order is required, you should avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
+If a specific order is required, you should annotate the `Filter` with `@Order` or make it implement `Ordered`.
+You cannot configure the order of a `Filter` by annotating its bean method with `@Order`.
+If you cannot change the `Filter` class to add `@Order` or implement `Ordered`, you must define a `FilterRegistrationBean` for the `Filter` and set the registration bean's order using the `setOrder(int)` method.
+Avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
 If a Servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
 TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`).
