@@ -3743,6 +3743,7 @@ You can define beans for the following jOOQ Types:
 * `TransactionProvider`
 * `RecordMapperProvider`
 * `RecordUnmapperProvider`
+* `Settings`
 * `RecordListenerProvider`
 * `ExecuteListenerProvider`
 * `VisitListenerProvider`
