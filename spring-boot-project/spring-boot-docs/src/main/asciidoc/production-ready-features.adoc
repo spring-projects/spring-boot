@@ -461,6 +461,7 @@ TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpo
 === Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
 Endpoints can be exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
@@ -512,6 +513,7 @@ Before calling an operation method, the input received via JMX or an HTTP reques
 [[production-ready-endpoints-custom-web]]
 ==== Custom Web Endpoints
 Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 
 
@@ -968,6 +970,7 @@ The default convention is to use the `id` of the endpoint with a prefix of `/act
 For example, `health` is exposed as `/actuator/health`.
 
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 
 

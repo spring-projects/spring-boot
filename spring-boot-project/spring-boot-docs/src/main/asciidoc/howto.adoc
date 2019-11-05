@@ -1219,6 +1219,27 @@ include::{code-examples}/jersey/JerseySetStatusOverSendErrorExample.java[tag=res
 
 
 
+[[howto-jersey-alongside-another-web-framework]]
+=== Use Jersey Alongside Another Web Framework
+To use Jersey alongside another web framework, such as Spring MVC, it should be configured so that it will allow the other framework to handle requests that it cannot handle.
+First, configure Jersey to use a Filter rather than a Servlet by configuring the `spring.jersey.type` application property with a value of `filter`.
+Second, configure your `ResourceConfig` to forward requests that would have resulted in a 404, as shown in the following example.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Component
+	public class JerseyConfig extends ResourceConfig {
+
+		public JerseyConfig() {
+			register(Endpoint.class);
+			property(ServletProperties.FILTER_FORWARD_ON_404, true);
+		}
+
+	}
+----
+
+
+
 [[howto-http-clients]]
 == HTTP Clients
 Spring Boot offers a number of starters that work with HTTP clients.
