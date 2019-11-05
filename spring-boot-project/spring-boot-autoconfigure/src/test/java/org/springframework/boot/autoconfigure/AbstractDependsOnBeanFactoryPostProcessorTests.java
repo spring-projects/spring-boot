@@ -74,7 +74,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessorHasADefaultOrderOfZero() {
+	void postProcessorHasADefaultOrderOfZero() {
 		assertThat(new FooDependsOnBarTypePostProcessor().getOrder()).isEqualTo(0);
 	}
 
