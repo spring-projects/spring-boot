@@ -44,8 +44,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
@@ -895,6 +898,15 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getNested().getAge()).isEqualTo(10);
 	}
 
+	@Test // gh-18652
+	void loadWhenBeanFactoryContainsSingletonForConstructorBindingTypeShouldNotFail() {
+		ConfigurableListableBeanFactory beanFactory = this.context.getBeanFactory();
+		((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("test",
+				new RootBeanDefinition(ConstructorParameterProperties.class));
+		beanFactory.registerSingleton("test", new ConstructorParameterProperties("bar", 5));
+		load(TestConfiguration.class);
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
 	}
@@ -919,6 +931,12 @@ class ConfigurationPropertiesTests {
 	private void resetContext() {
 		this.context.close();
 		this.context = new AnnotationConfigApplicationContext();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class TestConfiguration {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

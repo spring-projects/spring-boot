@@ -40,11 +40,15 @@ class ConfigurationPropertiesBeanDefinitionValidator implements BeanFactoryPostP
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
-			BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
-			if (!(definition instanceof ConfigurationPropertiesValueObjectBeanDefinition)) {
+			if (!(beanFactory.containsSingleton(beanName) || isValueObjectBeanDefinition(beanFactory, beanName))) {
 				validate(beanFactory, beanName);
 			}
 		}
+	}
+
+	private boolean isValueObjectBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
+		BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
+		return (definition instanceof ConfigurationPropertiesValueObjectBeanDefinition);
 	}
 
 	@Override
