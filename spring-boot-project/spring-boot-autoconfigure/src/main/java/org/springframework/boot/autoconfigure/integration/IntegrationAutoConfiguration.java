@@ -19,9 +19,13 @@ package org.springframework.boot.autoconfigure.integration;
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
+import io.rsocket.RSocketFactory;
+import io.rsocket.transport.netty.server.TcpServerTransport;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +37,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -48,13 +53,11 @@ import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
 import org.springframework.integration.rsocket.ServerRSocketConnector;
 import org.springframework.integration.rsocket.ServerRSocketMessageHandler;
+import org.springframework.integration.rsocket.outbound.RSocketOutboundGateway;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.StringUtils;
-
-import io.rsocket.RSocketFactory;
-import io.rsocket.transport.netty.server.TcpServerTransport;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -155,7 +158,30 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, RSocketFactory.class })
+	@Conditional(IntegrationRSocketConfiguration.AnyRSocketChannelAdapterAvailable.class)
 	protected static class IntegrationRSocketConfiguration {
+
+		/**
+		 * Check if either a {@link IntegrationRSocketEndpoint} or
+		 * {@link RSocketOutboundGateway} bean is available.
+		 */
+		static class AnyRSocketChannelAdapterAvailable extends AnyNestedCondition {
+
+			AnyRSocketChannelAdapterAvailable() {
+				super(ConfigurationPhase.REGISTER_BEAN);
+			}
+
+			@ConditionalOnBean(IntegrationRSocketEndpoint.class)
+			static class IntegrationRSocketEndpointAvailable {
+
+			}
+
+			@ConditionalOnBean(RSocketOutboundGateway.class)
+			static class RSocketOutboundGatewayAvailable {
+
+			}
+
+		}
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(TcpServerTransport.class)

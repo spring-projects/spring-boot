@@ -16,10 +16,16 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.util.List;
+
 import javax.management.MBeanServer;
 
+import io.rsocket.transport.ClientTransport;
+import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -31,35 +37,32 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
-import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
-import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
-import org.springframework.integration.rsocket.inbound.RSocketInboundGateway;
+import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
+import org.springframework.integration.rsocket.ServerRSocketConnector;
+import org.springframework.integration.rsocket.ServerRSocketMessageHandler;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.invocation.reactive.HandlerMethodArgumentResolver;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
-
-import java.time.Duration;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -203,29 +206,43 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	void rocketServerSupport() {
+	void rsocketSupportEnabled() {
 		this.contextRunner.withUserConfiguration(RSocketServerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
 						RSocketStrategiesAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
 						RSocketRequesterAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.rsocket.server.port=7000",
-						"spring.integration.rsocket.client.port=7000",
+				.withPropertyValues("spring.rsocket.server.port=0",
+						"spring.integration.rsocket.client.port=0",
 						"spring.integration.rsocket.server.message-mapping-enabled=true")
-				.withInitializer(new RSocketPortInfoApplicationContextInitializer())
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ClientRSocketConnector.class);
+					assertThat(context)
+							.hasSingleBean(ClientRSocketConnector.class)
+							.hasBean("clientTcpRSocketConnector")
+							.hasSingleBean(ServerRSocketConnector.class)
+							.hasSingleBean(ServerRSocketMessageHandler.class)
+							.hasSingleBean(RSocketMessageHandler.class);
+
+					ServerRSocketMessageHandler serverRSocketMessageHandler =
+							context.getBean(ServerRSocketMessageHandler.class);
+					assertThat(context).getBean(RSocketMessageHandler.class).isSameAs(serverRSocketMessageHandler);
+
+					@SuppressWarnings("unchecked")
+					List<HandlerMethodArgumentResolver> handlerMethodArgumentResolvers =
+							(List<HandlerMethodArgumentResolver>) new DirectFieldAccessor(serverRSocketMessageHandler)
+									.getPropertyValue("invocableHelper.argumentResolvers.argumentResolvers");
+
+					assertThat(handlerMethodArgumentResolvers)
+							.extracting((resolver) -> resolver.getClass().getSimpleName())
+							.contains("HeaderMethodArgumentResolver", "DestinationVariableMethodArgumentResolver",
+									"RSocketRequesterMethodArgumentResolver", "PayloadMethodArgumentResolver",
+									"MessageHandlerMethodArgumentResolver");
 
 					ClientRSocketConnector clientRSocketConnector = context.getBean(ClientRSocketConnector.class);
+					ClientTransport clientTransport =
+							(ClientTransport) new DirectFieldAccessor(clientRSocketConnector)
+									.getPropertyValue("clientTransport");
 
-					String result =
-							clientRSocketConnector.getRSocketRequester()
-									.flatMap((rsocketRequester) ->
-											rsocketRequester.route("echo")
-													.data("hello")
-													.retrieveMono(String.class))
-									.block(Duration.ofSeconds(10));
-
-					assertThat(result).isEqualTo("HELLO");
+					assertThat(clientTransport).isInstanceOf(TcpClientTransport.class);
 				});
 	}
 
@@ -265,15 +282,20 @@ class IntegrationAutoConfigurationTests {
 	static class RSocketServerConfiguration {
 
 		@Bean
-		public RSocketInboundGateway rsocketInboundGatewayRequestReply() {
-			RSocketInboundGateway rsocketInboundGateway = new RSocketInboundGateway("echo");
-			rsocketInboundGateway.setRequestChannelName("requestReplyChannel");
-			return rsocketInboundGateway;
-		}
+		public IntegrationRSocketEndpoint mockIntegrationRSocketEndpoint() {
+			return new IntegrationRSocketEndpoint() {
 
-		@Transformer(inputChannel = "requestReplyChannel")
-		public Mono<String> echoTransformation(Flux<String> payload) {
-			return payload.next().map(String::toUpperCase);
+				@Override
+				public Mono<Void> handleMessage(Message<?> message) {
+					return null;
+				}
+
+				@Override
+				public String[] getPath() {
+					return new String[] {"/rsocketTestPath"};
+				}
+
+			};
 		}
 
 	}
