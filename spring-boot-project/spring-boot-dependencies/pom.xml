@@ -155,7 +155,7 @@
 		<mimepull.version>1.9.12</mimepull.version>
 		<mockito.version>3.1.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.12.0</mongo-driver-reactivestreams.version>
-		<mongodb.version>3.11.1</mongodb.version>
+		<mongodb.version>3.11.2</mongodb.version>
 		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.18</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
