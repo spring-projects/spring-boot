@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,7 +66,9 @@ public class BintrayService {
 		this.sonatypeService = sonatypeService;
 		String username = bintrayProperties.getUsername();
 		String apiKey = bintrayProperties.getApiKey();
-		builder = builder.basicAuthentication(username, apiKey);
+		if (StringUtils.hasLength(username)) {
+			builder = builder.basicAuthentication(username, apiKey);
+		}
 		this.restTemplate = builder.build();
 	}
 

@@ -30,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,19 +54,18 @@ public class ArtifactoryService {
 
 	private final RestTemplate restTemplate;
 
-	private final ArtifactoryProperties artifactoryProperties;
-
 	private final BintrayService bintrayService;
 
 	private static final ConsoleLogger console = new ConsoleLogger();
 
 	public ArtifactoryService(RestTemplateBuilder builder, ArtifactoryProperties artifactoryProperties,
 			BintrayService bintrayService) {
-		this.artifactoryProperties = artifactoryProperties;
 		this.bintrayService = bintrayService;
 		String username = artifactoryProperties.getUsername();
 		String password = artifactoryProperties.getPassword();
-		builder = builder.basicAuthentication(username, password);
+		if (StringUtils.hasLength(username)) {
+			builder = builder.basicAuthentication(username, password);
+		}
 		this.restTemplate = builder.build();
 	}
 

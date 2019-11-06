@@ -23,6 +23,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,15 +39,14 @@ public class SonatypeService {
 
 	private final RestTemplate restTemplate;
 
-	private final SonatypeProperties sonatypeProperties;
-
 	private static final ConsoleLogger console = new ConsoleLogger();
 
 	public SonatypeService(RestTemplateBuilder builder, SonatypeProperties sonatypeProperties) {
-		this.sonatypeProperties = sonatypeProperties;
 		String username = sonatypeProperties.getUserToken();
-		String apiKey = sonatypeProperties.getPasswordToken();
-		builder = builder.basicAuthentication(username, apiKey);
+		String password = sonatypeProperties.getPasswordToken();
+		if (StringUtils.hasLength(username)) {
+			builder = builder.basicAuthentication(username, password);
+		}
 		this.restTemplate = builder.build();
 	}
 
