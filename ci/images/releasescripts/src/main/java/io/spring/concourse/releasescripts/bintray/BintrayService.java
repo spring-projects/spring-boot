@@ -17,18 +17,24 @@
 package io.spring.concourse.releasescripts.bintray;
 
 import java.net.URI;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.sonatype.SonatypeProperties;
 import io.spring.concourse.releasescripts.sonatype.SonatypeService;
 import io.spring.concourse.releasescripts.system.ConsoleLogger;
+import org.awaitility.core.ConditionTimeoutException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import static org.awaitility.Awaitility.waitAtMost;
 
 /**
  * Central class for interacting with Bintray's REST API.
@@ -64,25 +70,29 @@ public class BintrayService {
 	}
 
 	public boolean isDistributionComplete(ReleaseInfo releaseInfo) {
-		RequestEntity<Void> publishedFilesRequest = getRequest(releaseInfo, 0);
 		RequestEntity<Void> allFilesRequest = getRequest(releaseInfo, 1);
-		Object[] allFiles = this.restTemplate.exchange(allFilesRequest, Object[].class).getBody();
-		int count = 0;
-		while (count < 120) {
-			Object[] publishedFiles = this.restTemplate.exchange(publishedFilesRequest, Object[].class).getBody();
-			int unpublished = allFiles.length - publishedFiles.length;
-			if (unpublished == 0) {
-				return true;
-			}
-			count++;
+		Object[] allFiles = waitAtMost(5, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
 			try {
-				Thread.sleep(20000);
+				return this.restTemplate.exchange(allFilesRequest, Object[].class).getBody();
 			}
-			catch (InterruptedException e) {
-
+			catch (HttpClientErrorException ex) {
+				if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
+					throw ex;
+				}
+				return null;
 			}
+		}, Objects::nonNull);
+		RequestEntity<Void> publishedFilesRequest = getRequest(releaseInfo, 0);
+		try {
+			waitAtMost(40, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
+				Object[] publishedFiles = this.restTemplate.exchange(publishedFilesRequest, Object[].class).getBody();
+				return allFiles.length == publishedFiles.length;
+			});
 		}
-		return false;
+		catch (ConditionTimeoutException ex) {
+			return false;
+		}
+		return true;
 	}
 
 	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {

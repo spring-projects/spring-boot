@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -40,6 +41,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
@@ -73,6 +75,11 @@ class BintrayServiceTests {
 
 	@Test
 	void isDistributionComplete() throws Exception {
+		this.server
+				.expect(requestTo(String.format(
+						"https://api.bintray.com/packages/%s/%s/%s/versions/%s/files?include_unpublished=%s",
+						this.properties.getSubject(), this.properties.getRepo(), "example", "1.1.0.RELEASE", 1)))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		setupGetPackageFiles(1, "all-package-files.json");
 		setupGetPackageFiles(0, "published-files.json");
 		setupGetPackageFiles(0, "all-package-files.json");
