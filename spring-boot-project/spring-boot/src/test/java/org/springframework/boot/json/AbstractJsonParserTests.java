@@ -101,6 +101,17 @@ public abstract class AbstractJsonParserTests {
 				.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
+		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void nestedLeadingAndTrailingWhitespace() {
+		Map<String, Object> map = this.parser.parseMap(
+				" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
+		assertThat(map).hasSize(1);
+		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
+		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
 	}
 
 	@Test
