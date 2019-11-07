@@ -77,7 +77,7 @@ resources:
     repository: ((docker-hub-organization))/spring-boot-ci-image
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: ((branch))
+    tag: 2.2.x
 - name: spring-boot-jdk11-ci-image
   type: docker-image
   icon: docker
@@ -85,7 +85,7 @@ resources:
     repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: ((branch))
+    tag: 2.2.x
 - name: spring-boot-jdk13-ci-image
   type: docker-image
   icon: docker
@@ -93,7 +93,7 @@ resources:
     repository: ((docker-hub-organization))/spring-boot-jdk13-ci-image
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: ((branch))
+    tag: 2.2.x
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
