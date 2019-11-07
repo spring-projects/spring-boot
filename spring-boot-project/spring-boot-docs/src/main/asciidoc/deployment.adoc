@@ -35,19 +35,29 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 
 More efficient container images can also be created by copying the dependencies to the image as a separate layer from the application classes and resources (which normally change more frequently).
 There is more than one way to achieve this layer separation.
-For example, using a `Dockerfile` you could express it in this form (assuming the jar is already unpacked at `target/dependency`):
+For example, using a `Dockerfile` you could express it in this form:
 
 [indent=0]
 ----
-	FROM openjdk:8-jdk-alpine
-	VOLUME /tmp
-	ARG DEPENDENCY=target/dependency
-	COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-	COPY ${DEPENDENCY}/META-INF /app/META-INF
-	COPY ${DEPENDENCY}/BOOT-INF/classes /app
-	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
-----
+    FROM openjdk:8-jdk-alpine AS builder
+    WORKDIR target/dependency
+    ARG fatjar
+    COPY ${fatjar} app.jar
+    RUN jar -xf ./app.jar
 
+    FROM openjdk:8-jre-alpine
+    VOLUME /tmp
+    ARG DEPENDENCY=target/dependency
+    COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
+    COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
+    COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
+    ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
+----
+and then build your docker image by passing the full path to your application jar:
+[indent=0]
+----
+docker build --build-arg fatjar=./full/path/to/your/springboot/app.jar
+----
 
 
 [[cloud-deployment]]
