@@ -150,7 +150,7 @@
 		<log4j2.version>2.12.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.10</lombok.version>
-		<mariadb.version>2.4.4</mariadb.version>
+		<mariadb.version>2.5.1</mariadb.version>
 		<micrometer.version>1.3.1</micrometer.version>
 		<mimepull.version>1.9.12</mimepull.version>
 		<mockito.version>3.1.0</mockito.version>
