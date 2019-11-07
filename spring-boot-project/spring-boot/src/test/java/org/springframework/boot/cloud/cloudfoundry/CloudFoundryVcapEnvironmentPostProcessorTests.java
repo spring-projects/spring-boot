@@ -117,6 +117,16 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
 	}
 
+	@Test
+	void testServicePropertiesContainingKeysWithDot() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_SERVICES={\"user-provided\":[{\"name\":\"test\",\"label\":\"test-label\","
+						+ "\"credentials\":{\"key.with.dots\":\"some-value\"}}]}");
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		assertThat(getProperty("vcap.services.test.name")).isEqualTo("test");
+		assertThat(getProperty("vcap.services.test.credentials[key.with.dots]")).isEqualTo("some-value");
+	}
+
 	private String getProperty(String key) {
 		return this.context.getEnvironment().getProperty(key);
 	}

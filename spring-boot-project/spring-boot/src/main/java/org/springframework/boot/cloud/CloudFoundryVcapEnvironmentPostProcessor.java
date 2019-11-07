@@ -230,6 +230,9 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		if (key.startsWith("[")) {
 			return path + key;
 		}
+		if (key.contains(".")) {
+			return path + "[" + key + "]";
+		}
 		return path + "." + key;
 	}
 
