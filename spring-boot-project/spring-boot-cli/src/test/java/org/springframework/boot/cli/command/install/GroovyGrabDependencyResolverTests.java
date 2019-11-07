@@ -115,7 +115,7 @@ class GroovyGrabDependencyResolverTests {
 				.resolve(Arrays.asList("junit:junit:4.11", "commons-logging:commons-logging:1.1.3"));
 		assertThat(resolved).hasSize(4);
 		assertThat(getNames(resolved)).containsOnly("junit-4.11.jar", "commons-logging-1.1.3.jar",
-				"hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
+				"hamcrest-core-2.2.jar", "hamcrest-2.2.jar");
 	}
 
 	Set<String> getNames(Collection<File> files) {
