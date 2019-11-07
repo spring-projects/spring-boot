@@ -16,12 +16,23 @@
 
 package org.springframework.boot.web.servlet;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -39,6 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class ServletComponentScanIntegrationTests {
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
@@ -61,6 +75,22 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
+	public void indexedComponentsAreRegistered() throws IOException {
+		writeIndex();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { this.temp.getRoot().toURI().toURL() },
+				getClass().getClassLoader())) {
+			this.context.setClassLoader(classLoader);
+			this.context.register(TestConfiguration.class);
+			new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+			this.context.refresh();
+			String port = this.context.getEnvironment().getProperty("local.server.port");
+			String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
+			assertThat(response).isEqualTo("alpha bravo");
+		}
+	}
+
+	@Test
 	public void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
@@ -76,6 +106,19 @@ public class ServletComponentScanIntegrationTests {
 		assertThat(multipartConfig.getMaxRequestSize()).isEqualTo(2048);
 		assertThat(multipartConfig.getMaxFileSize()).isEqualTo(1024);
 		assertThat(multipartConfig.getFileSizeThreshold()).isEqualTo(512);
+	}
+
+	private void writeIndex() throws IOException {
+		File metaInf = this.temp.newFolder("META-INF");
+		Properties index = new Properties();
+		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestFilter", WebFilter.class.getName());
+		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestListener",
+				WebListener.class.getName());
+		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestServlet",
+				WebServlet.class.getName());
+		try (FileWriter writer = new FileWriter(new File(metaInf, "spring.components"))) {
+			index.store(writer, null);
+		}
 	}
 
 	@Configuration
