@@ -37,9 +37,8 @@ import org.springframework.data.repository.Repository;
 /**
  * Indicates a {@link Configuration configuration} class that declares one or more
  * {@link Bean @Bean} methods and also triggers {@link EnableAutoConfiguration
- * auto-configuration}, {@link ComponentScan component scanning}, and
- * {@link ConfigurationPropertiesScan configuration properties scanning}. This is a
- * convenience annotation that is equivalent to declaring {@code @Configuration},
+ * auto-configuration} and {@link ComponentScan component scanning}. This is a convenience
+ * annotation that is equivalent to declaring {@code @Configuration},
  * {@code @EnableAutoConfiguration}, {@code @ComponentScan}.
  *
  * @author Phillip Webb
