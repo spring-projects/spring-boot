@@ -224,6 +224,9 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 		if (key.startsWith("[")) {
 			return path + key;
 		}
+		if (key.contains(".")) {
+			return path + "[" + key + "]";
+		}
 		return path + "." + key;
 	}
 
