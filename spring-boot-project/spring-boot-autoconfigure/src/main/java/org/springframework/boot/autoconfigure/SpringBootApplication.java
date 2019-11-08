@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -39,7 +38,7 @@ import org.springframework.data.repository.Repository;
  * {@link Bean @Bean} methods and also triggers {@link EnableAutoConfiguration
  * auto-configuration} and {@link ComponentScan component scanning}. This is a convenience
  * annotation that is equivalent to declaring {@code @Configuration},
- * {@code @EnableAutoConfiguration}, {@code @ComponentScan}.
+ * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
