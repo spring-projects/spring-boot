@@ -2916,8 +2916,6 @@ When running a Spring Boot application that uses an embedded servlet container (
 * Creating a custom `error.jsp` page does not override the default view for <<boot-features-error-handling,error handling>>.
   <<boot-features-error-handling-custom-error-pages,Custom error pages>> should be used instead.
 
-There is a {spring-boot-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so that you can see how to set things up.
-
 
 
 [[boot-features-reactive-server]]
