@@ -1,0 +1,257 @@
+= Contributing to Spring Boot
+
+Spring Boot is released under the Apache 2.0 license. If you would like to contribute
+something, or simply want to hack on the code this document should help you get started.
+
+
+
+== Code of Conduct
+This project adheres to the Contributor Covenant link:CODE_OF_CONDUCT.adoc[code of
+conduct]. By participating, you are expected to uphold this code. Please report
+unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+
+
+== Using GitHub Issues
+We use GitHub issues to track bugs and enhancements. If you have a general usage question
+please ask on https://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
+broader community monitor the https://stackoverflow.com/tags/spring-boot[`spring-boot`]
+tag.
+
+If you are reporting a bug, please help to speed up problem diagnosis by providing as
+much information as possible. Ideally, that would include a small sample project that
+reproduces the problem.
+
+
+
+== Reporting Security Vulnerabilities
+If you think you have found a security vulnerability in Spring Boot please *DO NOT*
+disclose it publicly until we've had a chance to fix it. Please don't report security
+vulnerabilities using GitHub issues, instead head over to https://pivotal.io/security and
+learn how to disclose them responsibly.
+
+
+
+== Sign the Contributor License Agreement
+Before we accept a non-trivial patch or pull request we will need you to
+https://cla.pivotal.io/sign/spring[sign the Contributor License Agreement].
+Signing the contributor's agreement does not grant anyone commit rights to the main
+repository, but it does mean that we can accept your contributions, and you will get an
+author credit if we do.  Active contributors might be asked to join the core team, and
+given the ability to merge pull requests.
+
+
+
+== Code Conventions and Housekeeping
+None of these is essential for a pull request, but they will all help.  They can also be
+added after the original pull request but before a merge.
+
+* We use the https://github.com/spring-io/spring-javaformat/[Spring JavaFormat] project
+  to apply code formatting conventions. If you use Eclipse and you follow the '`Importing
+  into eclipse`' instructions below you should get project specific formatting
+  automatically. You can also install the https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ Plugin]
+  or format the code from the Maven build by running
+  `./mvnw io.spring.javaformat:spring-javaformat-maven-plugin:apply`.
+* The build includes checkstyle rules for many of our code conventions. Run
+  `./mvnw validate` if you want to check you changes are compliant.
+* Make sure all new `.java` files to have a simple Javadoc class comment with at least an
+  `@author` tag identifying you, and preferably at least a paragraph on what the class is
+  for.
+* Add the ASF license header comment to all new `.java` files (copy from existing files
+  in the project)
+* Add yourself as an `@author` to the `.java` files that you modify substantially (more
+  than cosmetic changes).
+* Add some Javadocs.
+* A few unit tests would help a lot as well -- someone has to do it.
+* If no-one else is using your branch, please rebase it against the current master (or
+  other target branch in the main project).
+* When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
+  if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
+  message (where `XXXX` is the issue number).
+
+
+
+== Working with the Code
+If you don't have an IDE preference we would recommend that you use
+https://spring.io/tools/sts[Spring Tools Suite] or
+https://eclipse.org[Eclipse] when working with the code. We use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
+should also work without issue.
+
+
+
+=== Building from Source
+Spring Boot source can be built from the command line using
+https://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above. We
+include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather than
+needing to install Maven locally.
+
+
+
+==== Default Build
+The project can be built from the root directory using the standard Maven command:
+
+[indent=0]
+----
+	$ ./mvnw clean install
+----
+
+NOTE: You may need to increase the amount of memory available to Maven by setting
+a `MAVEN_OPTS` environment variable with the value `-Xmx512m`
+
+If you are rebuilding often, you might also want to skip the tests and the execution of
+checkstyle until you are ready to submit a pull request:
+
+[indent=0]
+----
+	$ ./mvnw clean install -DskipTests -Pfast
+----
+
+
+
+==== Full Build
+You can run a full build using the following command:
+
+[indent=0]
+----
+	$ ./mvnw -Pfull clean install
+----
+
+NOTE: As for the standard build, you may need to increase the amount of memory available
+to Maven by setting a `MAVEN_OPTS` environment variable with the value `-Xmx512m`. We
+generate more artifacts when running the full build (such as Javadoc jars), so you may
+find the process a little slower than the standard build.
+
+[TIP]
+====
+If you want to run a build without the smoke tests and integration tests, building the
+`spring-boot-project` module is enough. You can cd there and run the same command, or you
+can run this from the top-level directory:
+
+[indent=0]
+----
+	$ ./mvnw -f spring-boot-project -Pfull clean install
+----
+====
+
+
+
+=== Importing into Eclipse
+You can import the Spring Boot code into any Eclipse 2019-03-based distribution. The
+easiest way to setup a new environment is to use the Eclipse Installer with the provided
+`spring-boot-project.setup` file (in the `/eclipse` folder).
+
+
+==== Using the Eclipse Installer
+Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to
+provision a new environment. To use the installer:
+
+* Download and run the latest
+  https://www.eclipse.org/downloads/packages/installer[Eclipse Installer].
+* Switch to "Advanced Mode" using the drop down menu on the right.
+* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
+  install, `2019-03` as the product version, and click "`next`".
+* For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
+  and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
+  copy of the source code. Click "`OK`" to add the setup file to the list.
+* Double-click on "`Spring Boot`" from the project list to add it to the list that will
+  be provisioned then click "`Next`".
+* Click show all variables and make sure that "`Checkout Location`" points to the locally
+  cloned source code that you selected earlier. You might also want to pick a different
+  install location here.
+* Click "`Finish`" to install the software.
+
+Once complete you should find that a local workspace has been provisioned complete with
+all required Eclipse plugins. Projects will be grouped into working-sets to make the code
+easier to navigate.
+
+If you want to work on the `spring-boot-gradle-plugin` you should remove the imported Maven
+project and reimport it as a Gradle project.
+
+TIP: If you see import errors with `com.sun` packages make sure you have setup a valid
+`JavaSE-1.8` environment. From preferences select "`Java`", "`Installed JREs`",
+"`Execution Environments`" and make sure "`JavaSE-1.8`" points to a Java 1.8
+install (we use AdoptOpenJDK on our CI).
+
+
+
+==== Manual Installation with M2Eclipse
+If you prefer to install Eclipse yourself you should use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
+installed it is available from the "`Eclipse marketplace`".
+
+Spring Boot includes project specific source formatting settings, in order to have these
+work with m2eclipse, we provide an additional Eclipse plugin that you can install:
+
+
+
+===== Install the Spring Formatter plugin
+* Select "`Help`" -> "`Install New Software`".
+* Add `https://dl.bintray.com/spring/javaformat-eclipse/` as a site.
+* Install "Spring Java Format".
+
+NOTE: The plugin is optional. Projects can be imported without the plugins, your code
+changes just won't be automatically formatted.
+
+With the requisite eclipse plugins installed you can select
+`import existing maven projects` from the `file` menu to import the code. You will
+need to import the root `spring-boot` pom and the `spring-boot-smoke-tests` pom separately.
+
+
+
+=== Importing into IntelliJ IDEA
+**Please, do this first!**
+Go to `Preferences | Build, Execution, Deployment | Build Tools | Maven | Importing`
+and set `VM options for importer` to `-Xmx2g` to allocate sufficient memory for IDEA's
+Maven import process to parse the Spring Boot project structure. _Not doing so could
+mean the import fails silently, leaving the project setup incomplete._
+
+For the actual import use "`File`" -> "`Open`" and select the root `pom.xml`, or the
+`spring-boot-project/pom.xml` if you only want the Spring Boot project sources.
+
+
+
+==== Install the Spring Formatter plugin
+If you haven't done so, install the formatter plugin so that proper formatting rules are
+applied automatically when you reformat code in the IDE.
+
+* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[IntelliJ IDEA plugin].
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Plugins`".
+* Select the wheel and "`Install Plugin from Disk...`".
+* Select the jar file you've downloaded.
+
+
+
+==== Import additional code style
+The formatter does not cover all rules (such as order of imports) and an additional file
+needs to be added.
+
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Editor`" -> "`Code Style`".
+* Select the wheel and "`Import Scheme`" -> "`IntelliJ IDEA code style XML`".
+* Select `idea/codeStyleConfig.xml` from this repository.
+
+
+
+=== Importing into Other IDEs
+Maven is well supported by most Java IDEs. Refer to your vendor documentation.
+
+
+
+== Integration Tests
+The smoke tests run as part of the build when you `./mvnw install`.
+Due to the fact that they make use of the `spring-boot-maven-plugin`
+they cannot be called directly, and so instead are launched via the
+`maven-invoker-plugin`. If you encounter build failures running the integration tests,
+check the `build.log` file in the appropriate smoke test directory.
+
+
+== Cloning the git repository on Windows
+Some files in the git repository may exceed the Windows maximum file path (260
+characters), depending on where you clone the repository. If you get `Filename too long`
+errors, set the `core.longPaths=true` git option:
+
+```
+git clone -c core.longPaths=true https://github.com/spring-projects/spring-boot
+```

@@ -1,0 +1,12 @@
+{
+  "properties": [
+    {
+      "name": "deprecated.six.test",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "does.not.exist",
+        "level": "error"
+      }
+    }
+  ]
+}

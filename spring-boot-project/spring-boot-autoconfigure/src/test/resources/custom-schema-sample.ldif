@@ -1,0 +1,7 @@
+dn: dc=spring,dc=org
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+objectClass: exampleAuxiliaryClass
+dc: spring
+exampleAttributeName: exampleAttributeName

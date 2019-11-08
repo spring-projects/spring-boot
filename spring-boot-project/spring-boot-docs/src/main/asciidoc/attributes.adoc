@@ -1,0 +1,107 @@
+:doctype: book
+:idprefix:
+:idseparator: -
+:toc: left
+:toclevels: 4
+:tabsize: 4
+:numbered:
+:sectanchors:
+:sectnums:
+:icons: font
+:hide-uri-scheme:
+:docinfo: shared,private
+
+:spring-boot-artifactory-repo: snapshot
+:github-tag: master
+:spring-boot-version: current
+
+:github-repo: spring-projects/spring-boot
+:github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
+:github-issues: https://github.com/{github-repo}/issues/
+:github-wiki: https://github.com/{github-repo}/wiki
+
+:code-examples: {sources-root}/main/java/org/springframework/boot/docs
+:test-examples: {sources-root}/test/java/org/springframework/boot/docs
+
+:spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
+:spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
+:spring-boot-master-code: https://github.com/{github-repo}/tree/master
+:spring-boot-current-docs: https://docs.spring.io/spring-boot/docs/current/reference
+:spring-boot-actuator-restapi: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/
+:spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/
+:spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/html/
+:spring-boot-gradle-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/pdf/spring-boot-gradle-plugin-reference.pdf
+:spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/api/
+
+:spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
+:spring-boot-module-api: {spring-boot-api}/org/springframework/boot
+:spring-boot-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+:spring-boot-autoconfigure-module-api: {spring-boot-api}/org/springframework/boot/autoconfigure
+:spring-boot-actuator-module-code: {spring-boot-code}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:spring-boot-actuator-module-api: {spring-boot-api}/org/springframework/boot/actuate
+:spring-boot-actuator-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
+:spring-boot-actuator-autoconfigure-module-api: : {spring-boot-api}/org/springframework/boot/actuate/autoconfigure
+:spring-boot-cli-module-code: {spring-boot-code}/spring-boot-project/spring-boot-cli/src/main/java/org/springframework/boot/cli
+:spring-boot-cli-module-api: {spring-boot-api}/org/springframework/boot/cli
+:spring-boot-devtools-module-code: {spring-boot-code}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
+:spring-boot-devtools-module-api: {spring-boot-api}/org/springframework/boot/devtools
+:spring-boot-test-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test/src/main/java/org/springframework/boot/test
+:spring-boot-test-module-api: {spring-boot-api}/org/springframework/boot/test
+:spring-boot-test-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
+:spring-boot-test-autoconfigure-module-api: {spring-boot-api}/org/springframework/boot/test/autoconfigure
+
+:spring-amqp-api: https://docs.spring.io/spring-amqp/docs/{spring-amqp-version}/api/org/springframework/amqp
+:spring-batch: https://spring.io/projects/spring-batch
+:spring-batch-api: https://docs.spring.io/spring-batch/apidocs/org/springframework/batch
+:spring-data: https://spring.io/projects/spring-data
+:spring-data-cassandra: https://spring.io/projects/spring-data-cassandra
+:spring-data-commons-api: https://docs.spring.io/spring-data/commons/docs/{spring-data-commons-version}/api/org/springframework/data
+:spring-data-couchbase: https://spring.io/projects/spring-data-couchbase
+:spring-data-couchbase-docs: https://docs.spring.io/spring-data/couchbase/docs/{spring-data-couchbase-version}/reference/html/
+:spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
+:spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
+:spring-data-gemfire: https://spring.io/projects/spring-data-gemfire
+:spring-data-geode: https://spring.io/projects/spring-data-geode
+:spring-data-jpa: https://spring.io/projects/spring-data-jpa
+:spring-data-jpa-api: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/api/org/springframework/data/jpa
+:spring-data-jdbc-docs: https://docs.spring.io/spring-data/jdbc/docs/{spring-data-jdbc-version}/reference/html/
+:spring-data-ldap: https://spring.io/projects/spring-data-ldap
+:spring-data-mongodb: https://spring.io/projects/spring-data-mongodb
+:spring-data-mongodb-api: https://docs.spring.io/spring-data/mongodb/docs/{spring-data-mongodb-version}/api/org/springframework/data/mongodb
+:spring-data-neo4j: https://spring.io/projects/spring-data-neo4j
+:spring-data-neo4j-docs: https://docs.spring.io/spring-data/neo4j/docs/{spring-data-neo4j-version}/reference/html/
+:spring-data-redis: https://spring.io/projects/spring-data-redis
+:spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
+:spring-data-solr: https://spring.io/projects/spring-data-solr
+:spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
+:spring-framework: https://spring.io/projects/spring-framework
+:spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
+:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/spring-framework-reference/
+:spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html/
+:spring-integration: https://spring.io/projects/spring-integration
+:spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
+:spring-restdocs: https://spring.io/projects/spring-restdocs
+:spring-security: https://spring.io/projects/spring-security
+:spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/htmlsingle/
+:spring-security-oauth2: https://spring.io/projects/spring-security-oauth
+:spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
+:spring-session: https://spring.io/projects/spring-session
+:spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
+
+
+
+
+:ant-docs: https://ant.apache.org/manual
+:dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:gradle-docs: https://docs.gradle.org/current/userguide
+:hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
+:java-api: https://docs.oracle.com/javase/8/docs/api/
+:jetty-docs: https://www.eclipse.org/jetty/documentation/{jetty-version}
+:jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
+:junit5-docs: https://junit.org/junit5/docs/current/user-guide
+:kotlin-docs: https://kotlinlang.org/docs/reference/
+:micrometer-docs: https://micrometer.io/docs
+:micrometer-concepts-docs: {micrometer-docs}/concepts
+:micrometer-registry-docs: {micrometer-docs}/registry
+:tomcat-docs: https://tomcat.apache.org/tomcat-9.0-doc

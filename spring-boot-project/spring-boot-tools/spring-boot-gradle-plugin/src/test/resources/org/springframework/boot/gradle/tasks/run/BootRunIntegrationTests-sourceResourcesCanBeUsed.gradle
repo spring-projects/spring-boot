@@ -1,0 +1,8 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootRun {
+	sourceResources sourceSets.main
+}

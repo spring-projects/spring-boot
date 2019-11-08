@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+// tag::source-resources[]
+bootRun {
+	sourceResources sourceSets.main
+}
+// end::source-resources[]
+
+task configuredClasspath {
+	doLast {
+		println bootRun.classpath.files
+	}
+}

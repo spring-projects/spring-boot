@@ -1,0 +1,2443 @@
+{
+  "properties": [
+    {
+      "name": "security.basic.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable basic authentication.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.filter-dispatcher-types",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Security filter chain dispatcher types.",
+      "deprecation": {
+        "replacement": "spring.security.filter.dispatcher-types",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.filter-order",
+      "type": "java.lang.Integer",
+      "description": "Security filter chain order.",
+      "defaultValue": 0,
+      "deprecation": {
+        "replacement": "spring.security.filter.order",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.date-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.extended-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.locale",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-cookies",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-latency",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-server",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.time-zone",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.compression.enabled",
+      "description": "Whether response compression is enabled.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.compression.excluded-user-agents",
+      "description": "Comma-separated list of user agents for which responses should not be compressed."
+    },
+    {
+      "name": "server.compression.mime-types",
+      "description": "Comma-separated list of MIME types that should be compressed.",
+      "defaultValue": [
+        "text/html",
+        "text/xml",
+        "text/plain",
+        "text/css",
+        "text/javascript",
+        "application/javascript",
+        "application/json",
+        "application/xml"
+      ]
+    },
+    {
+      "name": "server.compression.min-response-size",
+      "description": "Minimum \"Content-Length\" value that is required for compression to be performed.",
+      "defaultValue": "2KB"
+    },
+    {
+      "name": "server.error.include-stacktrace",
+      "defaultValue": "never"
+    },
+    {
+      "name": "server.http2.enabled",
+      "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.port",
+      "defaultValue": 8080
+    },
+    {
+      "name": "server.servlet.jsp.class-name",
+      "description": "Class name of the servlet to use for JSPs. If registered is true and this class\n\t * is on the classpath then it will be registered.",
+      "defaultValue": "org.apache.jasper.servlet.JspServlet"
+    },
+    {
+      "name": "server.servlet.jsp.init-parameters",
+      "description": "Init parameters used to configure the JSP servlet."
+    },
+    {
+      "name": "server.servlet.jsp.registered",
+      "description": "Whether the JSP servlet is registered.",
+      "defaultValue": true
+    },
+    {
+      "name": "server.servlet.session.cookie.comment",
+      "description": "Comment for the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.domain",
+      "description": " Domain for the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.http-only",
+      "description": "Whether to use \"HttpOnly\" cookies for session cookies."
+    },
+    {
+      "name": "server.servlet.session.cookie.max-age",
+      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used."
+    },
+    {
+      "name": "server.servlet.session.cookie.name",
+      "description": "Session cookie name."
+    },
+    {
+      "name": "server.servlet.session.cookie.path",
+      "description": "Path of the session cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.secure",
+      "description": "Whether to always mark the session cookie as secure."
+    },
+    {
+      "name": "server.servlet.session.persistent",
+      "description": "Whether to persist session data between restarts.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.servlet.session.store-dir",
+      "description": "Directory used to store session data."
+    },
+    {
+      "name": "server.servlet.session.timeout",
+      "description": "Session timeout. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue": "30m"
+    },
+    {
+      "name": "server.servlet.session.tracking-modes",
+      "description": "Session tracking modes."
+    },
+    {
+      "name": "server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "server.ssl.client-auth",
+      "description": "Client authentication mode. Requires a trust store."
+    },
+    {
+      "name": "server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue":  "TLS"
+    },
+    {
+      "name": "server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-type",
+      "description": "Type of the trust store."
+    },
+    {
+      "name": "spring.aop.auto",
+      "type": "java.lang.Boolean",
+      "description": "Add @EnableAspectJAutoProxy.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.aop.proxy-target-class",
+      "type": "java.lang.Boolean",
+      "description": "Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.activemq.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.activemq.pool.max-sessions-per-connection"
+      }
+    },
+    {
+      "name": "spring.artemis.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.artemis.pool.max-sessions-per-connection"
+      }
+    },
+    {
+      "name": "spring.application.admin.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable admin features for the application.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.application.admin.jmx-name",
+      "type": "java.lang.String",
+      "description": "JMX name of the application admin MBean.",
+      "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
+    },
+    {
+      "name": "spring.autoconfigure.exclude",
+      "type": "java.util.List<java.lang.Class>",
+      "description": "Auto-configuration classes to exclude."
+    },
+    {
+      "name": "spring.batch.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.batch.job.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Execute all Spring Batch jobs in the context on startup.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.dao.exceptiontranslation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the PersistenceExceptionTranslationPostProcessor.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.datasource.initialization-mode",
+      "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.data.cassandra.contact-points",
+      "defaultValue": [
+        "localhost"
+      ]
+    },
+    {
+      "name": "spring.data.cassandra.compression",
+      "defaultValue": "none"
+    },
+    {
+      "name": "spring.data.cassandra.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Cassandra repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.cassandra.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Cassandra repositories.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.cassandra.repositories.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.couchbase.consistency",
+      "defaultValue": "read-your-own-writes"
+    },
+    {
+      "name": "spring.data.couchbase.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Couchbase repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.couchbase.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Couchbase repositories.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.couchbase.repositories.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-name",
+      "type": "java.lang.String",
+      "description": "Elasticsearch cluster name.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-nodes",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of cluster node addresses.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.properties",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional properties used to configure the client.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Elasticsearch repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.jdbc.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JDBC repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.jpa.repositories.bootstrap-mode",
+      "type": "org.springframework.data.repository.config.BootstrapMode",
+      "description": "Bootstrap mode for JPA repositories.",
+      "defaultValue": "default"
+    },
+    {
+      "name": "spring.data.jpa.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JPA repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.ldap.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable LDAP repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.mongodb.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Mongo repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.mongodb.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Mongo repositories.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.mongodb.repositories.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.mongodb.uri",
+      "defaultValue": "mongodb://localhost/test"
+    },
+    {
+      "name": "spring.data.neo4j.auto-index",
+      "defaultValue": "none"
+    },
+    {
+      "name": "spring.data.neo4j.open-in-view",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.neo4j.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Neo4j repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.redis.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Redis repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.rest.detection-strategy",
+      "defaultValue": "default"
+    },
+    {
+      "name": "spring.data.solr.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Solr repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.elasticsearch.jest.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ],
+      "deprecation": {
+        "reason": "The Jest client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.elasticsearch.rest.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
+      "name": "spring.info.build.location",
+      "defaultValue": "classpath:META-INF/build-info.properties"
+    },
+    {
+      "name": "spring.info.git.location",
+      "defaultValue": "classpath:git.properties"
+    },
+    {
+      "name": "spring.flyway.locations",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "defaultValue": [
+        "classpath:db/migration"
+      ]
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffixes",
+      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "defaultValue": [
+        ".sql"
+      ]
+    },
+    {
+      "name": "spring.freemarker.prefix",
+      "defaultValue": ""
+    },
+    {
+      "name": "spring.freemarker.suffix",
+      "defaultValue": ".ftlh"
+    },
+    {
+      "name": "spring.groovy.template.prefix",
+      "defaultValue": ""
+    },
+    {
+      "name": "spring.groovy.template.suffix",
+      "defaultValue": ".tpl"
+    },
+    {
+      "name": "spring.http.encoding.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable http encoding support.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "type": "java.lang.String",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.integration.jdbc.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.jersey.type",
+      "defaultValue": "servlet"
+    },
+    {
+      "name": "spring.jmx.default-domain",
+      "type": "java.lang.String",
+      "description": "JMX domain name."
+    },
+    {
+      "name": "spring.jmx.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Expose management beans to the JMX domain.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jmx.server",
+      "type": "java.lang.String",
+      "description": "MBeanServer bean name.",
+      "defaultValue": "mbeanServer"
+    },
+    {
+      "name": "spring.jmx.unique-names",
+      "type": "java.lang.Boolean",
+      "description": "Whether unique runtime object names should be ensured.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jpa.open-in-view",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JTA support.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.properties.allow-multiple-lrc",
+      "description": "Whether to allow multiple LRC resources to be enlisted into the same transaction.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.asynchronous2-pc",
+      "description": "Whether to enable asynchronously execution of two phase commit.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.background-recovery-interval",
+      "description": "Interval in minutes at which to run the recovery process in the background.",
+      "defaultValue": 1,
+      "deprecation": {
+        "replacement": "spring.jta.bitronix.properties.background-recovery-interval-seconds"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.background-recovery-interval-seconds",
+      "description": "Interval in seconds at which to run the recovery process in the background.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.bitronix.properties.current-node-only-recovery",
+      "description": "Whether to recover only the current node. Should be enabled if you run multiple instances of the transaction manager on the same JMS and JDBC resources.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.properties.debug-zero-resource-transaction",
+      "description": "Whether to log the creation and commit call stacks of transactions executed without a single enlisted resource.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.default-transaction-timeout",
+      "description": "Default transaction timeout, in seconds.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.bitronix.properties.disable-jmx",
+      "description": "Whether to enable JMX support.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.exception-analyzer",
+      "description": "Set the fully qualified name of the exception analyzer implementation to use."
+    },
+    {
+      "name": "spring.jta.bitronix.properties.filter-log-status",
+      "description": "Whether to enable filtering of logs so that only mandatory logs are written.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.force-batching-enabled",
+      "description": "Whether disk forces are batched.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.properties.forced-write-enabled",
+      "description": "Whether logs are forced to disk.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.properties.graceful-shutdown-interval",
+      "description": "Maximum amount of seconds the TM waits for transactions to get done before aborting them at shutdown time.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name",
+      "description": "JNDI name of the TransactionSynchronizationRegistry."
+    },
+    {
+      "name": "spring.jta.bitronix.properties.jndi-user-transaction-name",
+      "description": "JNDI name of the UserTransaction."
+    },
+    {
+      "name": "spring.jta.bitronix.properties.journal",
+      "description": "Name of the journal. Can be 'disk', 'null', or a class name.",
+      "defaultValue": "disk"
+    },
+    {
+      "name": "spring.jta.bitronix.properties.log-part1-filename",
+      "description": "Name of the first fragment of the journal.",
+      "defaultValue": "btm1.tlog"
+    },
+    {
+      "name": "spring.jta.bitronix.properties.log-part2-filename",
+      "description": "Name of the second fragment of the journal.",
+      "defaultValue": "btm2.tlog"
+    },
+    {
+      "name": "spring.jta.bitronix.properties.max-log-size-in-mb",
+      "description": "Maximum size in megabytes of the journal fragments.",
+      "defaultValue": 2
+    },
+    {
+      "name": "spring.jta.bitronix.properties.resource-configuration-filename",
+      "description": "ResourceLoader configuration file name."
+    },
+    {
+      "name": "spring.jta.bitronix.properties.server-id",
+      "description": "ASCII ID that must uniquely identify this TM instance. Defaults to the machine's IP address."
+    },
+    {
+      "name": "spring.jta.bitronix.properties.skip-corrupted-logs",
+      "description": "Skip corrupted transactions log entries. Use only at last resort when all you have to recover is a pair of corrupted files.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.properties.warn-about-zero-resource-transaction",
+      "description": "Whether to log a warning for transactions executed without a single enlisted resource.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.kafka.jaas.control-flag",
+      "defaultValue": "required"
+    },
+    {
+      "name": "spring.kafka.listener.type",
+      "defaultValue": "single"
+    },
+    {
+      "name": "spring.mail.test-connection",
+      "description": "Whether to test that the mail server is available on startup.",
+      "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.mongodb.embedded.features",
+      "defaultValue": [
+        "sync_delay"
+      ]
+    },
+    {
+      "name": "spring.mustache.prefix",
+      "defaultValue": "classpath:/templates/"
+    },
+    {
+      "name": "spring.mustache.suffix",
+      "defaultValue": ".mustache"
+    },
+    {
+      "name": "spring.mvc.formcontent.putfilter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HttpPutFormContentFilter.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "spring.mvc.formcontent.filter.enabled",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.formcontent.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's FormContentFilter.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.mvc.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
+      "defaultValue": false
+    },
+    {
+      "name" : "spring.mvc.media-types",
+      "type" : "java.util.Map<java.lang.String,org.springframework.http.MediaType>",
+      "description" : "Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.",
+      "deprecation" : {
+        "replacement" : "spring.mvc.contentnegotiation.media-types",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.locale-resolver",
+      "defaultValue": "accept-header"
+    },
+    {
+      "name" : "spring.resources.chain.gzipped",
+      "type" : "java.lang.Boolean",
+      "description" : "Whether to enable resolution of already gzipped resources. Checks for a resource name variant with the \"*.gz\" extension.",
+      "deprecation" : {
+        "replacement" : "spring.resources.chain.compressed",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.quartz.jdbc.comment-prefix",
+      "defaultValue": [
+        "#",
+        "--"
+      ]
+    },
+    {
+      "name": "spring.quartz.jdbc.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.quartz.job-store-type",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "spring.quartz.scheduler-name",
+      "defaultValue": "quartzScheduler"
+    },
+    {
+      "name": "spring.rabbitmq.cache.connection.mode",
+      "defaultValue": "channel"
+    },
+    {
+      "name": "spring.rabbitmq.dynamic",
+      "type": "java.lang.Boolean",
+      "description": "Whether to create an AmqpAdmin bean.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.rabbitmq.listener.type",
+      "defaultValue": "simple"
+    },
+    {
+      "name": "spring.reactor.stacktrace-mode.enabled",
+      "description": "Whether Reactor should collect stacktrace information at runtime.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.reactor.debug-agent.enabled"
+      }
+    },
+    {
+      "name": "spring.security.filter.dispatcher-types",
+      "defaultValue": [
+        "async",
+        "error",
+        "request"
+      ]
+    },
+    {
+      "name": "spring.security.filter.order",
+      "defaultValue": -100
+    },
+    {
+      "name": "spring.session.jdbc.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.session.hazelcast.flush-mode",
+      "defaultValue": "on-save"
+    },
+    {
+      "name": "spring.session.servlet.filter-dispatcher-types",
+      "defaultValue": [
+        "async",
+        "error",
+        "request"
+      ]
+    },
+    {
+      "name": "spring.session.redis.flush-mode",
+      "defaultValue": "on-save"
+    },
+    {
+      "name": "flyway.baseline-description",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.baseline-description",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.baseline-on-migrate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.baseline-on-migrate",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.baseline-version",
+      "type": "org.flywaydb.core.api.MigrationVersion",
+      "deprecation": {
+        "replacement": "spring.flyway.baseline-version",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.check-location",
+      "type": "java.lang.Boolean",
+      "description": "Check that migration scripts location exists.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.flyway.check-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.clean-on-validation-error",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.clean-on-validation-error",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable flyway.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.flyway.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.encoding",
+      "type": "java.nio.charset.Charset",
+      "description": "Encoding of SQL migrations.",
+      "deprecation": {
+        "replacement": "spring.flyway.encoding",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.init-description",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.init-on-migrate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.init-sqls",
+      "type": "java.util.List<java.lang.String>",
+      "description": "SQL statements to execute to initialize a connection immediately after obtaining\n it.",
+      "deprecation": {
+        "replacement": "spring.flyway.init-sqls",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.init-version",
+      "type": "org.flywaydb.core.api.MigrationVersion",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.locations",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Locations of migrations scripts. Can contain the special \"{vendor}\" placeholder to\n use vendor-specific locations.",
+      "deprecation": {
+        "replacement": "spring.flyway.locations",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.out-of-order",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.out-of-order",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.password",
+      "type": "java.lang.String",
+      "description": "Login password of the database to migrate.",
+      "deprecation": {
+        "replacement": "spring.flyway.password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.placeholder-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.placeholder-prefix",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.placeholder-replacement",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.placeholder-replacement",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.placeholder-suffix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.placeholder-suffix",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.placeholders",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "replacement": "spring.flyway.placeholders",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.schemas",
+      "type": "java.lang.String[]",
+      "deprecation": {
+        "replacement": "spring.flyway.schemas",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.sql-migration-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-prefix",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.sql-migration-separator",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-separator",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.sql-migration-suffix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-suffixes",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.table",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.table",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.target",
+      "type": "org.flywaydb.core.api.MigrationVersion",
+      "deprecation": {
+        "replacement": "spring.flyway.target",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.url",
+      "type": "java.lang.String",
+      "description": "JDBC url of the database to migrate. If not set, the primary configured data source\n is used.",
+      "deprecation": {
+        "replacement": "spring.flyway.url",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.user",
+      "type": "java.lang.String",
+      "description": "Login user of the database to migrate.",
+      "deprecation": {
+        "replacement": "spring.flyway.user",
+        "level": "error"
+      }
+    },
+    {
+      "name": "flyway.validate-on-migrate",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.validate-on-migrate",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.change-log",
+      "type": "java.lang.String",
+      "description": "Change log configuration path.",
+      "defaultValue": "classpath:/db/changelog/db.changelog-master.yaml",
+      "deprecation": {
+        "replacement": "spring.liquibase.change-log",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.check-change-log-location",
+      "type": "java.lang.Boolean",
+      "description": "Check the change log location exists.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Liquibase has its own check that checks if the change log location exists making this property redundant.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.contexts",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of runtime contexts to use.",
+      "deprecation": {
+        "replacement": "spring.liquibase.contexts",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.default-schema",
+      "type": "java.lang.String",
+      "description": "Default database schema.",
+      "deprecation": {
+        "replacement": "spring.liquibase.default-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.drop-first",
+      "type": "java.lang.Boolean",
+      "description": "Drop the database schema first.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.liquibase.drop-first",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable liquibase support.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.liquibase.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.labels",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of runtime labels to use.",
+      "deprecation": {
+        "replacement": "spring.liquibase.labels",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.parameters",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Change log parameters.",
+      "deprecation": {
+        "replacement": "spring.liquibase.parameters",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.password",
+      "type": "java.lang.String",
+      "description": "Login password of the database to migrate.",
+      "deprecation": {
+        "replacement": "spring.liquibase.password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.rollback-file",
+      "type": "java.io.File",
+      "description": "File to which rollback SQL will be written when an update is performed.",
+      "deprecation": {
+        "replacement": "spring.liquibase.rollback-file",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.url",
+      "type": "java.lang.String",
+      "description": "JDBC url of the database to migrate. If not set, the primary configured data source\n is used.",
+      "deprecation": {
+        "replacement": "spring.liquibase.url",
+        "level": "error"
+      }
+    },
+    {
+      "name": "liquibase.user",
+      "type": "java.lang.String",
+      "description": "Login user of the database to migrate.",
+      "deprecation": {
+        "replacement": "spring.liquibase.user",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.basic.authorize-mode",
+      "description": "Security authorize mode to apply.",
+      "defaultValue": "role",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.basic.path",
+      "type": "java.lang.String[]",
+      "description": "Comma-separated list of paths to secure.",
+      "defaultValue": [
+        "/**"
+      ],
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.basic.realm",
+      "type": "java.lang.String",
+      "description": "HTTP basic realm name.",
+      "defaultValue": "Spring",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.enable-csrf",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Cross Site Request Forgery support.",
+      "defaultValue": false,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.cache",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable cache control HTTP headers.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.content-security-policy",
+      "type": "java.lang.String",
+      "description": "Value for content security policy header.",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.content-security-policy-mode",
+      "description": "Content security policy mode.",
+      "defaultValue": "default",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.content-type",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable \"X-Content-Type-Options\" header.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.frame",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable \"X-Frame-Options\" header.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.hsts",
+      "description": "HTTP Strict Transport Security (HSTS) mode (none, domain, all).",
+      "defaultValue": "all",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.headers.xss",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable cross site scripting (XSS) protection.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.ignored",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of paths to exclude from the default secured paths.",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.require-ssl",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable secure channel for all requests.",
+      "defaultValue": false,
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.sessions",
+      "type": "org.springframework.security.config.http.SessionCreationPolicy",
+      "description": "Session creation policy (always, never, if_required, stateless).",
+      "defaultValue": "stateless",
+      "deprecation": {
+        "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.user.name",
+      "type": "java.lang.String",
+      "description": "Default user name.",
+      "defaultValue": "user",
+      "deprecation": {
+        "replacement": "spring.security.user.name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.user.password",
+      "type": "java.lang.String",
+      "description": "Password for the default user name.",
+      "deprecation": {
+        "replacement": "spring.security.user.password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "security.user.role",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Granted roles for the default user name.",
+      "deprecation": {
+        "replacement": "spring.security.user.roles",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.context-parameters",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "ServletContext parameters.",
+      "deprecation": {
+        "replacement": "server.servlet.context-parameters",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.context-path",
+      "type": "java.lang.String",
+      "description": "Context path of the application.",
+      "deprecation": {
+        "replacement": "server.servlet.context-path",
+        "level": "error"
+      }
+    },
+    {
+      "name" : "server.display-name",
+      "type" : "java.lang.String",
+      "description" : "Display name of the application.",
+      "defaultValue" : "application",
+      "deprecation" : {
+        "replacement" : "server.servlet.application-display-name",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "server.jsp-servlet.class-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "server.servlet.jsp.class-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jsp-servlet.init-parameters",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "replacement": "server.servlet.jsp.init-parameters",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jsp-servlet.registered",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "server.servlet.jsp.registered",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.max-http-post-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size in bytes of the HTTP post content.",
+      "defaultValue": 0,
+      "deprecation": {
+        "reason": "Use dedicated property for each container.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet-path",
+      "type": "java.lang.String",
+      "description": "Path of the main dispatcher servlet.",
+      "defaultValue": "/",
+      "deprecation": {
+        "replacement": "spring.mvc.servlet.path",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.path",
+      "type": "java.lang.String",
+      "description": "Path of the main dispatcher servlet.",
+      "defaultValue": "/",
+      "deprecation": {
+        "replacement": "spring.mvc.servlet.path",
+        "level": "error"
+      }
+    },
+    {
+      "name" : "server.session.cookie.comment",
+      "type" : "java.lang.String",
+      "description" : "Comment for the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.comment",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.domain",
+      "type" : "java.lang.String",
+      "description" : "Domain for the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.domain",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.http-only",
+      "type" : "java.lang.Boolean",
+      "description" : "\"HttpOnly\" flag for the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.http-only",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.max-age",
+      "type" : "java.time.Duration",
+      "description" : "Maximum age of the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.max-age",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.name",
+      "type" : "java.lang.String",
+      "description" : "Session cookie name.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.name",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.path",
+      "type" : "java.lang.String",
+      "description" : "Path of the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.path",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.cookie.secure",
+      "type" : "java.lang.Boolean",
+      "description" : "\"Secure\" flag for the session cookie.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.cookie.secure",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.persistent",
+      "type" : "java.lang.Boolean",
+      "description" : "Whether to persist session data between restarts.",
+      "defaultValue" : false,
+      "deprecation" : {
+        "replacement" : "server.servlet.session.persistent",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.store-dir",
+      "type" : "java.io.File",
+      "description" : "Directory used to store session data.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.store-dir",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.timeout",
+      "type" : "java.time.Duration",
+      "description" : "Session timeout. If a duration suffix is not specified, seconds will be used.",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.timeout",
+        "level" : "error"
+      }
+    }, {
+      "name" : "server.session.tracking-modes",
+      "type" : "java.util.Set<org.springframework.boot.web.servlet.server.Session.SessionTrackingMode>",
+      "description" : "Session tracking modes (one or more of the following: \"cookie\", \"url\", \"ssl\").",
+      "deprecation" : {
+        "replacement" : "server.servlet.session.tracking-modes",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "server.undertow.buffers-per-region",
+      "type": "java.lang.Integer",
+      "description": "Number of buffer per region.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.activemq.pool.create-connection-on-startup",
+      "type": "java.lang.Boolean",
+      "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.activemq.pool.expiry-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection expiration timeout.",
+      "defaultValue": "0ms",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.activemq.pool.reconnect-on-exception",
+      "type": "java.lang.Boolean",
+      "description": "Reset the connection when a \"JMSException\" occurs.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.batch.initializer.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
+      "deprecation": {
+        "replacement": "spring.batch.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.query",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the query (N1QL) service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.view",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the view service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.connect-timeout-millis",
+      "type": "java.lang.Integer",
+      "description": "Socket option: connection time out.",
+      "deprecation": {
+        "replacement": "spring.data.cassandra.connect-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.read-timeout-millis",
+      "type": "java.lang.Integer",
+      "description": "Socket option: read time out.",
+      "deprecation": {
+        "replacement": "spring.data.cassandra.read-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.compiler",
+      "type": "java.lang.String",
+      "description": "Compiler to use.",
+      "deprecation": {
+        "reason": "Not supported anymore as of Neo4j 3.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.datasource.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX support (if provided by the underlying pool).",
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.datasource.tomcat.jmx-enabled"
+      }
+    },
+    {
+      "name": "spring.datasource.initialize",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.datasource.initialization-mode",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.dry-run-output",
+      "type": "java.io.OutputStream",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
+    },
+    {
+      "name": "spring.flyway.error-handlers",
+      "type": "org.flywaydb.core.api.errorhandler.ErrorHandler[]",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-suffixes",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.undo-sql-migration-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Flyway pro edition only."
+      }
+    },
+    {
+      "name": "spring.git.properties",
+      "type": "java.lang.String",
+      "description": "Resource reference to a generated git info properties file.",
+      "deprecation": {
+        "replacement": "spring.info.git.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable support of multipart uploads.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.file-size-threshold",
+      "type": "java.lang.String",
+      "description": "Threshold after which files will be written to disk. Values can use the suffixes\n \"MB\" or \"KB\" to indicate megabytes or kilobytes respectively.",
+      "defaultValue": "0",
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.file-size-threshold",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.location",
+      "type": "java.lang.String",
+      "description": "Intermediate location of uploaded files.",
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.max-file-size",
+      "type": "java.lang.String",
+      "description": "Max file size. Values can use the suffixes \"MB\" or \"KB\" to indicate megabytes or\n kilobytes respectively.",
+      "defaultValue": "1MB",
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.max-file-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.max-request-size",
+      "type": "java.lang.String",
+      "description": "Max request size. Values can use the suffixes \"MB\" or \"KB\" to indicate megabytes or\n kilobytes respectively.",
+      "defaultValue": "10MB",
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.max-request-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.http.multipart.resolve-lazily",
+      "type": "java.lang.Boolean",
+      "description": "Whether to resolve the multipart request lazily at the time of file or parameter\n access.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.servlet.multipart.resolve-lazily",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jpa.hibernate.naming.strategy",
+      "type": "java.lang.String",
+      "description": "Hibernate 4 naming strategy fully qualified name. Not supported with Hibernate\n 5.",
+      "deprecation": {
+        "reason": "Auto-configuration for Hibernate 4 is no longer provided.",
+        "level": "error"
+      }
+    },
+    {
+      "name" : "spring.jta.narayana.default-timeout",
+      "type" : "java.time.Duration",
+      "description" : "Transaction timeout. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "60s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.expiry-scanners",
+      "type" : "java.util.List<java.lang.String>",
+      "description" : "Comma-separated list of expiry scanners.",
+      "defaultValue" : [ "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner" ],
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.log-dir",
+      "type" : "java.lang.String",
+      "description" : "Transaction object store directory.",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.one-phase-commit",
+      "type" : "java.lang.Boolean",
+      "description" : "Whether to enable one phase commit optimization.",
+      "defaultValue" : true,
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.periodic-recovery-period",
+      "type" : "java.time.Duration",
+      "description" : "Interval in which periodic recovery scans are performed. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "120s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    }, {
+      "name" : "spring.jta.narayana.recovery-backoff-period",
+      "type" : "java.time.Duration",
+      "description" : "Back off period between first and second phases of the recovery scan. If a duration suffix is not specified, seconds will be used.",
+      "defaultValue" : "10s",
+      "deprecation" : {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-db-pass",
+      "type": "java.lang.String",
+      "description": "Database password to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-db-user",
+      "type": "java.lang.String",
+      "description": "Database username to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-jms-pass",
+      "type": "java.lang.String",
+      "description": "JMS password to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-jms-user",
+      "type": "java.lang.String",
+      "description": "JMS username to be used by the recovery manager.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.recovery-modules",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of recovery modules.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.transaction-manager-id",
+      "type": "java.lang.String",
+      "description": "Unique transaction manager id.",
+      "defaultValue": "1",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.jta.narayana.xa-resource-orphan-filters",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of orphan filters.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Narayana support has moved to third party starter."
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.liquibase.check-change-log-location",
+      "type": "java.lang.Boolean",
+      "description": "Check the change log location exists.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Liquibase has it's own check that checks if the change log location exists making this property redundant.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.messages.cache-seconds",
+      "type": "java.lang.Integer",
+      "description": "Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.",
+      "deprecation": {
+        "replacement": "spring.messages.cache-duration",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.redis.pool.max-active",
+      "type": "java.lang.Integer",
+      "description": "Max number of connections that can be allocated by the pool at a given time.\n Use a negative value for no limit.",
+      "defaultValue": 8,
+      "deprecation": {
+        "replacement": "spring.redis.jedis.pool.max-idle",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.redis.pool.max-idle",
+      "type": "java.lang.Integer",
+      "description": "Max number of \"idle\" connections in the pool. Use a negative value to indicate\n an unlimited number of idle connections.",
+      "defaultValue": 8,
+      "deprecation": {
+        "replacement": "spring.redis.jedis.pool.max-idle",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.redis.pool.max-wait",
+      "type": "java.lang.Integer",
+      "description": "Maximum amount of time (in milliseconds) a connection allocation should block\n before throwing an exception when the pool is exhausted. Use a negative value\n to block indefinitely.",
+      "defaultValue": -1,
+      "deprecation": {
+        "replacement": "spring.redis.jedis.pool.max-wait",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.redis.pool.min-idle",
+      "type": "java.lang.Integer",
+      "description": "Target for the minimum number of idle connections to maintain in the pool. This\n setting only has an effect if it is positive.",
+      "defaultValue": 0,
+      "deprecation": {
+        "replacement": "spring.redis.jedis.pool.min-idle",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.resources.cache-period",
+      "type": "java.lang.Integer",
+      "description": "Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.",
+      "deprecation": {
+        "replacement": "spring.resources.cache.period",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.sendgrid.password",
+      "type": "java.lang.String",
+      "description": "SendGrid password.",
+      "deprecation": {
+        "reason": "The use of a username and password is no longer supported (Use spring.sendgrid.api-key instead).",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.sendgrid.username",
+      "type": "java.lang.String",
+      "description": "SendGrid username. Alternative to api key.",
+      "deprecation": {
+        "reason": "The use of a username and password is no longer supported (Use spring.sendgrid.api-key instead).",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.session.jdbc.initializer.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Create the required session tables on startup if necessary. Enabled\n automatically if the default table name is set or a custom schema is\n configured.",
+      "deprecation": {
+        "replacement": "spring.session.jdbc.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.session.mongo.collection-name",
+      "type": "java.lang.String",
+      "description": "Collection name used to store sessions.",
+      "defaultValue": "sessions",
+      "deprecation": {
+        "replacement": "spring.session.mongodb.collection-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.thymeleaf.content-type",
+      "type": "org.springframework.util.MimeType",
+      "description": "Content-Type value.",
+      "defaultValue": "text/html",
+      "deprecation": {
+        "replacement": "spring.thymeleaf.servlet.content-type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.thymeleaf.prefix",
+      "defaultValue": "classpath:/templates/"
+    },
+    {
+      "name": "spring.thymeleaf.suffix",
+      "defaultValue": ".html"
+    },
+    {
+      "name": "spring.webservices.wsdl-locations",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
+    },
+    {
+      "name": "spring.webflux.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
+      "defaultValue": false
+    }
+  ],
+  "hints": [
+    {
+      "name": "server.tomcat.relaxed-query-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.relaxed-path-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.encoding",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.nio.charset.Charset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.locale",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.Locale"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.liquibase.change-log",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.springframework.core.io.Resource"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.servlet.jsp.class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "javax.servlet.http.HttpServlet"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.cache.jcache.provider",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "javax.cache.spi.CachingProvider"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.data.cassandra.schema-action",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.springframework.data.cassandra.config.SchemaAction"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.data.mongodb.field-naming-strategy",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.data",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.driver-class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "java.sql.Driver"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.schema",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.xa.data-source-class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "javax.sql.XADataSource"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.consumer.auto-offset-reset",
+      "values": [
+        {
+          "value": "earliest",
+          "description": "Automatically reset the offset to the earliest offset."
+        },
+        {
+          "value": "latest",
+          "description": "Automatically reset the offset to the latest offset."
+        },
+        {
+          "value": "none",
+          "description": "Throw exception to the consumer if no previous offset is found for the consumer's group."
+        },
+        {
+          "value": "exception",
+          "description": "Throw exception to the consumer."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.consumer.key-deserializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Deserializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.consumer.value-deserializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Deserializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.producer.key-serializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Serializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.producer.value-serializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Serializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "values": [
+        {
+          "value": "gson"
+        },
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.jmx.server",
+      "providers": [
+        {
+          "name": "spring-bean-reference",
+          "parameters": {
+            "target": "javax.management.MBeanServer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.ddl-auto",
+      "values": [
+        {
+          "value": "none",
+          "description": "Disable DDL handling."
+        },
+        {
+          "value": "validate",
+          "description": "Validate the schema, make no changes to the database."
+        },
+        {
+          "value": "update",
+          "description": "Update the schema if necessary."
+        },
+        {
+          "value": "create",
+          "description": "Create the schema and destroy previous data."
+        },
+        {
+          "value": "create-drop",
+          "description": "Create and then destroy the schema at the end of the session."
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.naming.implicit-strategy",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.hibernate.boot.model.naming.ImplicitNamingStrategy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.naming.physical-strategy",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.hibernate.boot.model.naming.PhysicalNamingStrategy"
+          }
+        }
+      ]
+    }
+  ]
+}
+

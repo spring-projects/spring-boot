@@ -1,0 +1,20 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: springio/github-release-notes-generator
+    tag: '0.0.2'
+inputs:
+- name: git-repo
+- name: version
+outputs:
+- name: generated-release-notes
+params:
+  GITHUB_ORGANIZATION:
+  GITHUB_REPO:
+  GITHUB_USERNAME:
+  GITHUB_TOKEN:
+  RELEASE_TYPE:
+run:
+  path: git-repo/ci/scripts/generate-release-notes.sh

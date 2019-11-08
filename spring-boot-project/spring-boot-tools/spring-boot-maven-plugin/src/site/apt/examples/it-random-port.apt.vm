@@ -1,0 +1,82 @@
+ -----
+ Random port for integration tests
+ -----
+ Stephane Nicoll
+ -----
+ 2015-04-16
+ -----
+
+  One nice feature of the Spring Boot test integration is that it can allocate a free
+  port for the web application. When the <<<start>>> goal of the plugin is used, the
+  Spring Boot application is started separately, making it difficult to pass the actual
+  port to the integration test itself.
+
+  The example below showcases how you could achieve the same feature using the
+  {{{https://www.mojohaus.org/build-helper-maven-plugin/}build-helper-plugin}}:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>reserve-tomcat-port</id>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>tomcat.http.port</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>pre-integration-test</id>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <arguments>
+                <argument>--server.port=${tomcat.http.port}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-integration-test</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <test.server.port>${tomcat.http.port}</test.server.port>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+---
+
+  You can now retrieve the <<<test.server.port>>> system property in any of your integration test
+  to create a proper <<<URL>>> to the server.

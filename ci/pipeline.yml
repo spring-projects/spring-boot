@@ -1,0 +1,608 @@
+resource_types:
+- name: artifactory-resource
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    tag: 0.0.5
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+- name: github-status-resource
+  type: docker-image
+  source:
+    repository: dpb587/github-status-resource
+    tag: master
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
+resources:
+- name: git-repo
+  type: git
+  icon: github-circle
+  source:
+    uri: ((github-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: ((branch))
+- name: git-repo-windows
+  type: git
+  source:
+    uri: ((github-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: ((branch))
+    git_config:
+    - name: core.autocrlf
+      value: true
+  icon: github-circle
+- name: git-pull-request
+  type: pull-request
+  icon: source-pull
+  source:
+    access_token: ((github-ci-pull-request-token))
+    repo: ((github-repo-name))
+    base: ((branch))
+    ignore_paths: ["ci/*"]
+- name: github-pre-release
+  type: github-release
+  icon: briefcase-download-outline
+  source:
+    owner: spring-projects
+    repository: spring-boot
+    access_token: ((github-ci-release-token))
+    pre_release: true
+    release: false
+- name: github-release
+  type: github-release
+  icon: briefcase-download
+  source:
+    owner: spring-projects
+    repository: spring-boot
+    access_token: ((github-ci-release-token))
+    pre_release: false
+- name: ci-images-git-repo
+  type: git
+  icon: github-circle
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["ci/images/*"]
+- name: spring-boot-ci-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: ((docker-hub-organization))/spring-boot-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: spring-boot-jdk11-ci-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: spring-boot-jdk13-ci-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk13-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: artifactory-repo
+  type: artifactory-resource
+  icon: package-variant
+  source:
+    uri: ((artifactory-server))
+    username: ((artifactory-username))
+    password: ((artifactory-password))
+    build_name: ((build-name))
+- name: repo-status-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: build
+- name: repo-status-jdk11-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: jdk11-build
+- name: repo-status-jdk13-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: jdk13-build
+- name: slack-alert
+  type: slack-notification
+  icon: slack
+  source:
+    url: ((slack-webhook-url))
+- name: every-wednesday
+  type: time
+  icon: clock-outline
+  source:
+    start: 8:00 PM
+    stop: 9:00 PM
+    days: [Wednesday]
+- name: daily
+  type: time
+  source: { interval: "24h" }
+jobs:
+- name: build-spring-boot-ci-images
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - in_parallel:
+    - put: spring-boot-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-ci-image/Dockerfile
+    - put: spring-boot-jdk11-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
+    - put: spring-boot-jdk13-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk13-ci-image/Dockerfile
+- name: detect-jdk-updates
+  plan:
+  - get: git-repo
+  - get: every-wednesday
+    trigger: true
+  - get: spring-boot-ci-image
+  - in_parallel:
+    - task: detect-jdk8-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java8
+      image: spring-boot-ci-image
+    - task: detect-jdk11-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java11
+      image: spring-boot-ci-image
+    - task: detect-jdk13-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java13
+      image: spring-boot-ci-image
+- name: build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: true
+  - put: repo-status-build
+    params: { state: "pending", commit: "git-repo" }
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: ((task-timeout))
+      image: spring-boot-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - in_parallel:
+      - task: build-smoke-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-smoke-tests.yml
+      - task: build-integration-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      do:
+      - put: repo-status-build
+        params: { state: "failure", commit: "git-repo" }
+      - put: slack-alert
+        params:
+          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+          silent: true
+          icon_emoji: ":concourse:"
+          username: concourse-ci
+  - put: repo-status-build
+    params: { state: "success", commit: "git-repo" }
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      folder: distribution-repository
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      exclude:
+      - "**/*.effective-pom"
+      - "**/spring-boot-configuration-docs/**"
+      - "**/spring-boot-test-support/**"
+      artifact_set:
+      - include:
+        - "/**/spring-boot-docs-*.zip"
+        properties:
+          "zip.type": "docs"
+          "zip.deployed": "false"
+    on_failure:
+      do:
+      - put: slack-alert
+        params:
+          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+          silent: true
+          icon_emoji: ":concourse:"
+          username: concourse-ci
+  - put: slack-alert
+    params:
+      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+      silent: true
+      icon_emoji: ":concourse:"
+      username: concourse-ci
+- name: build-pull-requests
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    resource: git-pull-request
+    trigger: true
+    version: every
+  - do:
+    - put: git-pull-request
+      params:
+        path: git-repo
+        status: pending
+    - task: build-project
+      timeout: ((task-timeout))
+      image: spring-boot-ci-image
+      file: git-repo/ci/tasks/build-pr-project.yml
+    - in_parallel:
+      - task: build-smoke-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-smoke-tests.yml
+      - task: build-integration-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: ((task-timeout))
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_success:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: success
+    on_failure:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: failure
+- name: jdk11-build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-jdk11-ci-image
+  - get: git-repo
+    trigger: true
+  - put: repo-status-jdk11-build
+    params: { state: "pending", commit: "git-repo" }
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: ((task-timeout))
+      image: spring-boot-jdk11-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - in_parallel:
+      - task: build-smoke-tests
+        timeout: ((task-timeout))
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-smoke-tests.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      do:
+      - put: repo-status-jdk11-build
+        params: { state: "failure", commit: "git-repo" }
+      - put: slack-alert
+        params:
+          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+          silent: true
+          icon_emoji: ":concourse:"
+          username: concourse-ci
+  - put: repo-status-jdk11-build
+    params: { state: "success", commit: "git-repo" }
+  - put: slack-alert
+    params:
+      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+      silent: true
+      icon_emoji: ":concourse:"
+      username: concourse-ci
+- name: jdk13-build
+  serial: true
+  public: true
+  plan:
+    - get: spring-boot-jdk13-ci-image
+    - get: git-repo
+      trigger: true
+    - put: repo-status-jdk13-build
+      params: { state: "pending", commit: "git-repo" }
+    - do:
+        - task: build-project
+          privileged: true
+          timeout: 1h30m
+          image: spring-boot-jdk13-ci-image
+          file: git-repo/ci/tasks/build-project.yml
+        - in_parallel:
+            - task: build-smoke-tests
+              timeout: 1h30m
+              image: spring-boot-jdk13-ci-image
+              file: git-repo/ci/tasks/build-smoke-tests.yml
+            - task: build-integration-tests
+              timeout: 1h30m
+              image: spring-boot-jdk13-ci-image
+              file: git-repo/ci/tasks/build-integration-tests.yml
+            - task: build-deployment-tests
+              timeout: 1h30m
+              image: spring-boot-jdk13-ci-image
+              file: git-repo/ci/tasks/build-deployment-tests.yml
+      on_failure:
+        do:
+          - put: repo-status-jdk13-build
+            params: { state: "failure", commit: "git-repo" }
+          - put: slack-alert
+            params:
+              text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+              silent: true
+              icon_emoji: ":concourse:"
+              username: concourse-ci
+    - put: repo-status-jdk13-build
+      params: { state: "success", commit: "git-repo" }
+    - put: slack-alert
+      params:
+        text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+        silent: true
+        icon_emoji: ":concourse:"
+        username: concourse-ci
+- name: windows-build
+  serial: true
+  plan:
+    - get: git-repo
+      resource: git-repo-windows
+    - get: daily
+      trigger: true
+    - do:
+      - task: build-project
+        privileged: true
+        file: git-repo/ci/tasks/build-project-windows.yml
+        tags:
+        - WIN64
+        timeout: ((task-timeout))
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+              silent: true
+              icon_emoji: ":concourse:"
+              username: concourse-ci
+    - put: slack-alert
+      params:
+        text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+        silent: true
+        icon_emoji: ":concourse:"
+        username: concourse-ci
+- name: stage-milestone
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: M
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-rc
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RC
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-release
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RELEASE
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: promote-milestone
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-milestone]
+    params:
+      download_artifacts: false
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: M
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+  - task: generate-release-notes
+    file: git-repo/ci/tasks/generate-release-notes.yml
+    params:
+      RELEASE_TYPE: M
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_TOKEN: ((github-ci-release-token))
+  - put: github-pre-release
+    params:
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
+- name: promote-rc
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-rc]
+    params:
+      download_artifacts: false
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RC
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+  - task: generate-release-notes
+    file: git-repo/ci/tasks/generate-release-notes.yml
+    params:
+      RELEASE_TYPE: RC
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_TOKEN: ((github-ci-release-token))
+  - put: github-pre-release
+    params:
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
+- name: promote-release
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-release]
+    params:
+      download_artifacts: false
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+      BINTRAY_SUBJECT: ((bintray-subject))
+      BINTRAY_REPO: ((bintray-repo))
+      BINTRAY_USERNAME: ((bintray-username))
+      BINTRAY_API_KEY: ((bintray-api-key))
+- name: sync-to-maven-central
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+  - get: artifactory-repo
+    trigger: true
+    passed: [promote-release]
+    params:
+      download_artifacts: false
+      save_build_info: true
+  - task: sync-to-maven-central
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/sync-to-maven-central.yml
+    params:
+      BINTRAY_USERNAME: ((bintray-username))
+      BINTRAY_API_KEY: ((bintray-api-key))
+      SONATYPE_USER_TOKEN: ((sonatype-user-token))
+      SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
+      BINTRAY_SUBJECT: ((bintray-subject))
+      BINTRAY_REPO: ((bintray-repo))
+  - task: generate-release-notes
+    file: git-repo/ci/tasks/generate-release-notes.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_TOKEN: ((github-ci-release-token))
+  - put: github-release
+    params:
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
+groups:
+- name: "Build"
+  jobs: ["build", "jdk11-build", "jdk13-build", "windows-build"]
+- name: "Release"
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
+- name: "CI Images"
+  jobs: ["build-spring-boot-ci-images", "detect-jdk-updates"]
+- name: "Build Pull Requests"
+  jobs: ["build-pull-requests"]

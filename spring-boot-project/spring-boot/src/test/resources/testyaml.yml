@@ -1,0 +1,4 @@
+---
+my:
+    property: fromyamlfile
+    array: [1,2,3]

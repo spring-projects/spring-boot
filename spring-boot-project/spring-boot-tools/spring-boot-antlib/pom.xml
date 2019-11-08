@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-tools</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<artifactId>spring-boot-antlib</artifactId>
+	<name>Spring Boot Antlib</name>
+	<description>Spring Boot Antlib</description>
+	<properties>
+		<main.basedir>${basedir}/../../..</main.basedir>
+		<ant.version>1.9.3</ant.version>
+	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
+	<dependencies>
+		<!-- Compile -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader-tools</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Provided -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>${ant.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>org.springframework.boot:spring-boot-loader-tools</include>
+							<include>org.springframework:spring-core</include>
+						</includes>
+					</artifactSet>
+					<minimizeJar>true</minimizeJar>
+					<shadedArtifactAttached>false</shadedArtifactAttached>
+					<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+				</configuration>
+				<executions>
+					<execution>
+						<id>shade-runtime-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>antunit</id>
+						<phase>integration-test</phase>
+						<configuration>
+							<target>
+								<mkdir dir="${project.build.directory}/it" />
+								<copy todir="${project.build.directory}/it">
+									<fileset dir="${project.basedir}/src/it" />
+								</copy>
+								<path id="taskpath">
+									<fileset dir="${project.build.directory}"
+										includes="${project.build.finalName}.${project.packaging}" />
+								</path>
+								<pathconvert refid="taskpath" />
+								<typedef resource="org/springframework/boot/ant/antlib.xml" classpathref="taskpath" uri="antlib:org.springframework.boot.ant" />
+								<property name="build.compiler" value="${antBuildCompiler}" />
+								<antunit xmlns="antlib:org.apache.ant.antunit">
+									<propertyset>
+										<propertyref name="build.compiler" />
+									</propertyset>
+									<plainlistener />
+									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it"
+										includes="**/build.xml" />
+								</antunit>
+							</target>
+							<skip>${skipTests}</skip>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant</artifactId>
+						<version>${ant.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-launcher</artifactId>
+						<version>${ant.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-antunit</artifactId>
+						<version>1.3</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ivy</groupId>
+						<artifactId>ivy</artifactId>
+						<version>2.4.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.jdt.core.compiler</groupId>
+						<artifactId>ecj</artifactId>
+						<version>4.6.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>java-8</id>
+			<activation>
+				<jdk>[1.8,1.9)</jdk>
+			</activation>
+			<properties>
+				<antBuildCompiler>org.eclipse.jdt.core.JDTCompilerAdapter</antBuildCompiler>
+			</properties>
+		</profile>
+		<profile>
+			<id>java-9</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<properties>
+				<antBuildCompiler>modern</antBuildCompiler>
+			</properties>
+		</profile>
+	</profiles>
+</project>

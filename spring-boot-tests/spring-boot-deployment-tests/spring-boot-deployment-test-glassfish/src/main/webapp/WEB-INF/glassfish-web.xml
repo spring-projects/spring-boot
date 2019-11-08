@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glassfish-web-app error-url="">
+	<class-loader delegate="false"/>
+</glassfish-web-app>

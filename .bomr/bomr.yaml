@@ -1,0 +1,28 @@
+bomr:
+  bom: spring-boot-project/spring-boot-dependencies/pom.xml
+  upgrade:
+    github:
+      organization: spring-projects
+      repository: spring-boot
+      issue-labels:
+        - 'type: dependency-upgrade'
+    policy: same-minor-version
+    prohibited:
+      - project: derby
+        versions:
+          # 10.15 requires Java 9
+          - '[10.15,)'
+  verify:
+    ignored-dependencies:
+      # Avoid conflicting transitive requirements for
+      # io.grpc:grpc-core:jar:[1.0.1,1.0.1] (Jetty),
+      # io.grpc:grpc-core:jar:[1.14.0,1.14.0] (Micrometer's Azure Registry), and
+      # io.grpc:grpc-core:jar:[1.15.0,1.15.0] (Micrometer's Stackdriver Registry)
+      - 'io.micrometer:micrometer-registry-azure-monitor'
+      - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
+      - 'org.eclipse.jetty:jetty-home'
+    repositories:
+      # Caffeine Simulator's dependencies
+      - 'https://maven.imagej.net/content/repositories/public/'
+      # Spring Data GemFire's GemFire dependencies
+      - 'https://repo.spring.io/gemstone-release-pivotal-cache'

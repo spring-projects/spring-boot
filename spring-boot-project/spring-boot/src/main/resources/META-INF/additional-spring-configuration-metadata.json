@@ -1,0 +1,923 @@
+{
+  "groups": [
+    {
+      "name": "logging",
+      "type": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.banner.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Banner file encoding.",
+      "defaultValue": "UTF-8"
+    },
+    {
+      "name": "spring.banner.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner text resource location.",
+      "defaultValue": "classpath:banner.txt"
+    },
+    {
+      "name": "spring.banner.image.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner image file location (jpg or png can also be used).",
+      "defaultValue": "classpath:banner.gif"
+    },
+    {
+      "name": "spring.banner.image.width",
+      "type": "java.lang.Integer",
+      "description": "Width of the banner image in chars.",
+      "defaultValue": 76
+    },
+    {
+      "name": "spring.banner.image.height",
+      "type": "java.lang.Integer",
+      "description": "Height of the banner image in chars (default based on image height)."
+    },
+    {
+      "name": "spring.banner.image.margin",
+      "type": "java.lang.Integer",
+      "description": "Left hand image margin in chars.",
+      "defaultValue": 2
+    },
+    {
+      "name": "spring.banner.image.invert",
+      "type": "java.lang.Boolean",
+      "description": "Whether images should be inverted for dark terminal themes.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.banner.image.bitdepth",
+      "type": "java.lang.Integer",
+      "description": "The bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
+      "defaultValue": 4
+    },
+    {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
+      "name": "debug",
+      "type": "java.lang.Boolean",
+      "description": "Enable debug logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "logging.config",
+      "type": "java.lang.String",
+      "description": "Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.exception-conversion-word",
+      "type": "java.lang.String",
+      "description": "Conversion word used when logging exceptions.",
+      "defaultValue": "%wEx",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.name"
+      }
+    },
+    {
+      "name": "logging.file.clean-history-on-start",
+      "type": "java.lang.Boolean",
+      "description": "Whether to clean the archive log files on startup. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "logging.file.name",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.max-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum log file size. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "10MB"
+    },
+    {
+      "name": "logging.file.max-history",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of days archive log files are kept. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 7
+    },
+    {
+      "name": "logging.file.total-size-cap",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "0B"
+    },
+    {
+      "name": "logging.group",
+      "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
+      "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.group.db=org.hibernate,org.springframework.jdbc`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.level",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.path"
+      }
+    },
+    {
+      "name": "logging.pattern.console",
+      "type": "java.lang.String",
+      "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    },
+    {
+      "name": "logging.pattern.dateformat",
+      "type": "java.lang.String",
+      "description": "Appender pattern for log date format. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "yyyy-MM-dd HH:mm:ss.SSS"
+    },
+    {
+      "name": "logging.pattern.file",
+      "type": "java.lang.String",
+      "description": "Appender pattern for output to a file. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    },
+    {
+      "name": "logging.pattern.level",
+      "type": "java.lang.String",
+      "description": "Appender pattern for log level. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "%5p"
+    },
+    {
+      "name": "logging.pattern.rolling-file-name",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+    },
+    {
+      "name": "logging.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "description": "Register a shutdown hook for the logging system when it is initialized.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.application.name",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
+      "description": "Application name."
+    },
+    {
+      "name": "spring.beaninfo.ignore",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Whether to skip search of BeanInfo classes.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.config.additional-location",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file locations used in addition to the defaults."
+    },
+    {
+      "name": "spring.config.name",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file name.",
+      "defaultValue": "application"
+    },
+    {
+      "name": "spring.config.location",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Config file locations that replace the defaults."
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.borrow-connection-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for borrowing connections from the pool.",
+      "defaultValue": 30
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore the transacted flag when creating session.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.local-transaction-mode",
+      "type": "java.lang.Boolean",
+      "description": "Whether local transactions are desired.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.maintenance-interval",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, between runs of the pool's maintenance thread.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.max-idle-time",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.max-lifetime",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.max-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size of the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.min-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Minimum size of the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.reap-timeout",
+      "type": "java.lang.Integer",
+      "description": "Reap timeout, in seconds, for borrowed connections. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.unique-resource-name",
+      "type": "java.lang.String",
+      "description": "Unique name used to identify the resource during recovery.",
+      "defaultValue": "jmsConnectionFactory"
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.xa-connection-factory-class-name",
+      "type": "java.lang.String",
+      "description": "Vendor-specific implementation of XAConnectionFactory."
+    },
+    {
+      "name": "spring.jta.atomikos.connectionfactory.xa-properties",
+      "type": "java.util.Properties",
+      "description": "Vendor-specific XA properties."
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.borrow-connection-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for borrowing connections from the pool.",
+      "defaultValue": 30
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.concurrent-connection-validation",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use concurrent connection validation.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.default-isolation-level",
+      "type": "java.lang.Integer",
+      "description": "Default isolation level of connections provided by the pool."
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.login-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for establishing a database connection.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.maintenance-interval",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, between runs of the pool's maintenance thread.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.max-idle-time",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.max-lifetime",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.max-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size of the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.min-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Minimum size of the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.reap-timeout",
+      "type": "java.lang.Integer",
+      "description": "Reap timeout, in seconds, for borrowed connections. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.test-query",
+      "type": "java.lang.String",
+      "description": "SQL query or statement used to validate a connection before returning it."
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.unique-resource-name",
+      "type": "java.lang.String",
+      "description": "Unique name used to identify the resource during recovery.",
+      "defaultValue": "dataSource"
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.xa-data-source-class-name",
+      "type": "java.lang.String",
+      "description": "Vendor-specific implementation of XAConnectionFactory."
+    },
+    {
+      "name": "spring.jta.atomikos.datasource.xa-properties",
+      "type": "java.util.Properties",
+      "description": "Vendor-specific XA properties."
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.acquire-increment",
+      "type": "java.lang.Integer",
+      "description": "Number of connections to create when growing the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.acquisition-interval",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.acquisition-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for acquiring connections from the pool.",
+      "defaultValue": 30
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.allow-local-transactions",
+      "type": "java.lang.Boolean",
+      "description": "Whether the transaction manager should allow mixing XA and non-XA transactions.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.apply-transaction-timeout",
+      "type": "java.lang.Boolean",
+      "description": "Whether the transaction timeout should be set on the XAResource when it is enlisted.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.automatic-enlisting-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether resources should be enlisted and delisted automatically.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.cache-producers-consumers",
+      "type": "java.lang.Boolean",
+      "description": "Whether producers and consumers should be cached.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.class-name",
+      "type": "java.lang.String",
+      "description": "Underlying implementation class name of the XA resource."
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.defer-connection-release",
+      "type": "java.lang.Boolean",
+      "description": "Whether the provider can run many transactions on the same connection and supports transaction interleaving.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.disabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.driver-properties",
+      "type": "java.util.Properties",
+      "description": "Properties that should be set on the underlying implementation."
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.ignore-recovery-failures",
+      "type": "java.lang.Boolean",
+      "description": "Whether recovery failures should be ignored.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.max-idle-time",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.max-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size of the pool. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.min-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Minimum size of the pool.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.password",
+      "type": "java.lang.String",
+      "description": "Password to use to connect to the JMS provider."
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.share-transaction-connections",
+      "type": "java.lang.Boolean",
+      "description": "Whether connections in the ACCESSIBLE state can be shared within the context of a transaction.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.test-connections",
+      "type": "java.lang.Boolean",
+      "description": "Whether connections should be tested when acquired from the pool.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.two-pc-ordering-position",
+      "type": "java.lang.Integer",
+      "description": "Position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.unique-name",
+      "type": "java.lang.String",
+      "description": "Unique name used to identify the resource during recovery.",
+      "defaultValue": "jmsConnectionFactory"
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.use-tm-join",
+      "type": "java.lang.Boolean",
+      "description": "Whether TMJOIN should be used when starting XAResources.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.connectionfactory.user",
+      "type": "java.lang.String",
+      "description": "User to use to connect to the JMS provider."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.acquire-increment",
+      "type": "java.lang.Integer",
+      "description": "Number of connections to create when growing the pool.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.acquisition-interval",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.acquisition-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for acquiring connections from the pool.",
+      "defaultValue": 30
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.allow-local-transactions",
+      "type": "java.lang.Boolean",
+      "description": "Whether the transaction manager should allow mixing XA and non-XA transactions.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.apply-transaction-timeout",
+      "type": "java.lang.Boolean",
+      "description": "Whether the transaction timeout should be set on the XAResource when it is enlisted.",
+      "defaultValue": "false"
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.automatic-enlisting-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether resources should be enlisted and delisted automatically.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.class-name",
+      "type": "java.lang.String",
+      "description": "Underlying implementation class name of the XA resource."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.cursor-holdability",
+      "type": "java.lang.String",
+      "description": "Default cursor holdability for connections."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.defer-connection-release",
+      "type": "java.lang.Boolean",
+      "description": "Whether the database can run many transactions on the same connection and supports transaction interleaving.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.disabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.driver-properties",
+      "type": "java.util.Properties",
+      "description": "Properties that should be set on the underlying implementation."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.enable-jdbc4-connection-test",
+      "type": "java.lang.Boolean",
+      "description": "Whether Connection.isValid() is called when acquiring a connection from the pool.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.ignore-recovery-failures",
+      "type": "java.lang.Boolean",
+      "description": "Whether recovery failures should be ignored.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.isolation-level",
+      "type": "java.lang.String",
+      "description": "Default isolation level for connections."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.local-auto-commit",
+      "type": "java.lang.String",
+      "description": "Default auto-commit mode for local transactions."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.login-timeout",
+      "type": "java.lang.Integer",
+      "description": "Timeout, in seconds, for establishing a database connection."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.max-idle-time",
+      "type": "java.lang.Integer",
+      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
+      "defaultValue": 60
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.max-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size of the pool. 0 denotes no limit.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.min-pool-size",
+      "type": "java.lang.Integer",
+      "description": "Minimum size of the pool.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.prepared-statement-cache-size",
+      "type": "java.lang.Integer",
+      "description": "Target size of the prepared statement cache. 0 disables the cache.",
+      "defaultValue": 0
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.share-transaction-connections",
+      "type": "java.lang.Boolean",
+      "description": "Whether connections in the ACCESSIBLE state can be shared within the context of a transaction.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.test-query",
+      "type": "java.lang.String",
+      "description": "SQL query or statement used to validate a connection before returning it."
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.two-pc-ordering-position",
+      "type": "java.lang.Integer",
+      "description": "Position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, and always last is Integer.MAX_VALUE).",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.unique-name",
+      "type": "java.lang.String",
+      "description": "Unique name used to identify the resource during recovery.",
+      "defaultValue": "dataSource"
+    },
+    {
+      "name": "spring.jta.bitronix.datasource.use-tm-join",
+      "type": "java.lang.Boolean",
+      "description": "Whether TMJOIN should be used when starting XAResources.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.main.allow-bean-definition-overriding",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.main.banner-mode",
+      "type": "org.springframework.boot.Banner$Mode",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Mode used to display the banner when the application runs.",
+      "defaultValue": "console"
+    },
+    {
+      "name": "spring.main.lazy-initialization",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether initialization should be performed lazily.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether the application should have a shutdown hook registered.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.main.show-banner",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Display the banner when the application runs.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.main.banner-mode"
+      }
+    },
+    {
+      "name": "spring.main.sources",
+      "type": "java.util.Set<java.lang.String>",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Sources (class names, package names, or XML resource locations) to include in the ApplicationContext."
+    },
+    {
+      "name": "spring.main.web-application-type",
+      "type": "org.springframework.boot.WebApplicationType",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Flag to explicitly request a specific type of web application. If not set, auto-detected based on the classpath."
+    },
+    {
+      "name": "spring.main.web-environment",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Run the application in a web environment (auto-detected by default).",
+      "deprecation": {
+        "replacement": "spring.main.web-application-type"
+      }
+    },
+    {
+      "name": "spring.mandatory-file-encoding",
+      "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
+      "type": "java.nio.charset.Charset",
+      "description": "Expected character encoding the application must use."
+    },
+    {
+      "name": "spring.output.ansi.enabled",
+      "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
+      "description": "Configures the ANSI output.",
+      "defaultValue": "detect"
+    },
+    {
+      "name": "spring.pid.file",
+      "type": "java.lang.String",
+      "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
+      "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
+    },
+    {
+      "name": "spring.pid.fail-on-write-error",
+      "type": "java.lang.Boolean",
+      "description": "Fails if ApplicationPidFileWriter is used but it cannot write the PID file.",
+      "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
+    },
+    {
+      "name": "spring.profiles",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included."
+    },
+    {
+      "name": "spring.profiles.active",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
+    },
+    {
+      "name": "spring.profiles.include",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
+    },
+    {
+      "name": "spring.reactor.debug-agent.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
+      "defaultValue": true
+    },
+    {
+      "name": "trace",
+      "type": "java.lang.Boolean",
+      "description": "Enable trace logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "banner.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Banner file encoding.",
+      "defaultValue": "UTF-8",
+      "deprecation": {
+        "replacement": "spring.banner.charset",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.height",
+      "type": "java.lang.Integer",
+      "description": "Banner image height (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.height",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.invert",
+      "type": "java.lang.Boolean",
+      "description": "Invert images for dark console themes.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.banner.image.invert",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner image file location (jpg/png can also be used).",
+      "defaultValue": "banner.gif",
+      "deprecation": {
+        "replacement": "spring.banner.image.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.margin",
+      "type": "java.lang.Integer",
+      "description": "Left hand image margin (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.margin",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.image.width",
+      "type": "java.lang.Integer",
+      "description": "Banner image width (in chars).",
+      "deprecation": {
+        "replacement": "spring.banner.image.width",
+        "level": "error"
+      }
+    },
+    {
+      "name": "banner.location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Banner text resource location.",
+      "defaultValue": "classpath:banner.txt",
+      "deprecation": {
+        "replacement": "spring.banner.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.application.index",
+      "type": "java.lang.Integer",
+      "description": "Application index.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Application context ids are now unique by default."
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "logging.group.values",
+      "providers": [
+        {
+          "name": "logger-name",
+          "parameters": {
+            "group": false
+          }
+
+        }
+      ]
+    },
+    {
+      "name": "logging.level.keys",
+      "values": [
+        {
+          "value": "root",
+          "description": "Root logger used to assign the default logging level."
+        },
+        {
+          "value": "sql",
+          "description": "SQL logging group including Hibernate SQL logger."
+        },
+        {
+          "value": "web",
+          "description": "Web logging group including codecs."
+        }
+      ],
+      "providers": [
+        {
+          "name": "logger-name"
+        }
+      ]
+    },
+    {
+      "name": "logging.level.values",
+      "values": [
+        {
+          "value": "trace"
+        },
+        {
+          "value": "debug"
+        },
+        {
+          "value": "info"
+        },
+        {
+          "value": "warn"
+        },
+        {
+          "value": "error"
+        },
+        {
+          "value": "fatal"
+        },
+        {
+          "value": "off"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.active",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    },
+    {
+      "name": "spring.profiles.include",
+      "providers": [
+        {
+          "name": "spring-profile-name"
+        }
+      ]
+    }
+  ]
+}
+

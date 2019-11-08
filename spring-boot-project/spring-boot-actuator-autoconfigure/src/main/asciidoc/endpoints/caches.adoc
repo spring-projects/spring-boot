@@ -1,0 +1,89 @@
+[[caches]]
+= Caches (`caches`)
+
+The `caches` endpoint provides access to the application's caches.
+
+
+
+[[caches-all]]
+== Retrieving All Caches
+To retrieve the application's caches, make a `GET` request to `/actuator/caches`, as shown in the following curl-based example:
+
+include::{snippets}caches/all/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}caches/all/http-response.adoc[]
+
+
+
+[[caches-all-response-structure]]
+=== Response Structure
+The response contains details of the application's caches.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}caches/all/response-fields.adoc[]
+
+
+
+[[caches-named]]
+== Retrieving Caches by Name
+To retrieve a cache by name, make a `GET` request to `/actuator/caches/\{name}`, as shown in the following curl-based example:
+
+include::{snippets}caches/named/curl-request.adoc[]
+
+The preceding example retrieves information about the cache named `cities`.
+The resulting response is similar to the following:
+
+include::{snippets}caches/named/http-response.adoc[]
+
+
+
+[[caches-named-query-parameters]]
+=== Query Parameters
+If the requested name is specific enough to identify a single cache, no extra parameter is required.
+Otherwise, the `cacheManager` must be specified.
+The following table shows the supported query parameters:
+
+[cols="2,4"]
+include::{snippets}caches/named/request-parameters.adoc[]
+
+
+
+[[caches-named-response-structure]]
+=== Response Structure
+The response contains details of the requested cache.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}caches/named/response-fields.adoc[]
+
+
+
+[[caches-evict-all]]
+== Evict All Caches
+To clear all available caches, make a `DELETE` request to `/actuator/caches` as shown in the following curl-based example:
+
+include::{snippets}caches/evict-all/curl-request.adoc[]
+
+
+
+[[caches-evict-named]]
+== Evict a Cache by Name
+To evict a particular cache, make a `DELETE` request to `/actuator/caches/\{name}` as shown in the following curl-based example:
+
+include::{snippets}caches/evict-named/curl-request.adoc[]
+
+NOTE: As there are two caches named `countries`, the `cacheManager` has to be provided to specify which `Cache` should be cleared.
+
+
+
+[[caches-evict-named-request-structure]]
+=== Request Structure
+If the requested name is specific enough to identify a single cache, no extra parameter is required.
+Otherwise, the `cacheManager` must be specified.
+The following table shows the supported query parameters:
+
+[cols="2,4"]
+include::{snippets}caches/evict-named/request-parameters.adoc[]

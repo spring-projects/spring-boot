@@ -1,0 +1,4 @@
+<configuration>
+	<property name="FILE_LOG_PATTERN" value="bar" />
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+</configuration>

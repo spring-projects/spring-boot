@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+require 'json'
+require 'net/http'
+require 'yaml'
+
+class ForwardMerge
+  attr_reader :issue, :milestone, :message, :line
+  def initialize(issue, milestone, message, line)
+    @issue = issue
+    @milestone = milestone
+    @message = message
+    @line = line
+  end
+end
+
+def find_forward_merge(message_file)
+  rev=`git rev-parse -q --verify MERGE_HEAD`
+  return nil unless rev
+  message = File.read(message_file)
+  message.each_line do |line|
+    match = /^(?:Fixes|Closes) gh-(\d+) in ([\d\.]+(?:(?:M|RC)\d)?)$/.match(line)
+    if match then
+      issue = match[1]
+      milestone = match[2]
+      return ForwardMerge.new(issue, milestone, message, line)
+    end
+  end
+  return nil
+end
+
+def find_milestone(username, password, repository, title)
+  uri = URI("https://api.github.com/repos/#{repository}/milestones")
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl=true
+  request = Net::HTTP::Get.new(uri.path)
+  request.basic_auth(username, password)
+  response = http.request(request)
+  milestones = JSON.parse(response.body)
+  milestones.each do |milestone|
+    return milestone['number'] if milestone['title'] == title
+  end
+  puts "Milestone #{title} not found"
+  exit 1
+end
+
+def get_issue(username, password, repository, number)
+  uri = URI("https://api.github.com/repos/#{repository}/issues/#{number}")
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl=true
+  request = Net::HTTP::Get.new(uri.path)
+  request.basic_auth(username, password)
+  response = http.request(request)
+  return JSON.parse(response.body) unless response.code != '200'
+  puts "Failed to retrieve issue #{number}: #{response.message}"
+  exit 1
+end
+
+def create_issue(username, password, repository, original, title, labels, milestone, milestone_name, dry_run)
+  uri = URI("https://api.github.com/repos/#{repository}/issues")
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl=true
+  request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
+  request.basic_auth(username, password)
+  request.body = {
+    title: title,
+    labels: labels,
+    milestone: milestone.to_i,
+    body: "Forward port of issue ##{original} to #{milestone_name}."
+  }.to_json
+  if dry_run then
+    puts "Dry run"
+    puts "POSTing to #{uri} with body #{request.body}"
+    return "dry-run"
+  end
+  response = JSON.parse(http.request(request).body)
+  return response['number']
+end
+
+message_file=ARGV[0]
+forward_merge = find_forward_merge(message_file)
+exit 0 unless forward_merge
+config = YAML.load_file(File.join(Dir.home, '.spring-boot', 'forward-merge.yml'))
+username = config['github']['credentials']['username']
+password = config['github']['credentials']['password']
+dry_run = config['dry_run']
+repository = 'spring-projects/spring-boot'
+existing_issue = get_issue(username, password, repository, forward_merge.issue)
+title = existing_issue['title']
+labels = existing_issue['labels'].map { |label| label['name'] }
+labels << "status: forward-port"
+milestone = find_milestone(username, password, repository, forward_merge.milestone)
+new_issue_number = create_issue(username, password, repository, forward_merge.issue, title, labels, milestone, forward_merge.milestone, dry_run)
+puts "Created gh-#{new_issue_number} for forward port of gh-#{forward_merge.issue} into #{forward_merge.milestone}"
+rewritten_message = forward_merge.message.sub(forward_merge.line, "Closes gh-#{new_issue_number}\n")
+File.write(message_file, rewritten_message)

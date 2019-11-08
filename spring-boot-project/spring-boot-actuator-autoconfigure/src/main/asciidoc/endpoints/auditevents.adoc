@@ -1,0 +1,40 @@
+[[audit-events]]
+= Audit Events (`auditevents`)
+
+The `auditevents` endpoint provides information about the application's audit events.
+
+
+
+[[audit-events-retrieving]]
+== Retrieving Audit Events
+
+To retrieve the audit events, make a `GET` request to `/actuator/auditevents`, as shown in the following curl-based example:
+
+include::{snippets}auditevents/filtered/curl-request.adoc[]
+
+The preceding example retrieves `logout` events for the principal, `alice`, that occurred after 09:37 on 7 November 2017 in the UTC timezone.
+The resulting response is similar to the following:
+
+include::{snippets}auditevents/filtered/http-response.adoc[]
+
+
+
+[[audit-events-retrieving-query-parameters]]
+=== Query Parameters
+
+The endpoint uses query parameters to limit the events that it returns.
+The following table shows the supported query parameters:
+
+[cols="2,4"]
+include::{snippets}auditevents/filtered/request-parameters.adoc[]
+
+
+
+[[audit-events-retrieving-response-structure]]
+=== Response Structure
+
+The response contains details of all of the audit events that matched the query.
+The following table describes the structure of the response:
+
+[cols="2,1,3"]
+include::{snippets}auditevents/all/response-fields.adoc[]

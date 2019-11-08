@@ -1,0 +1,6 @@
+spring.profiles.active: test, another-test
+message: default
+---
+spring:
+  profiles: test,another-test
+message: multiprofile

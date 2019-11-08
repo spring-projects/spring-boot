@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "https://checkstyle.org/dtds/configuration_1_2.dtd">
+<module name="com.puppycrawl.tools.checkstyle.Checker">
+	<module name="io.spring.nohttp.checkstyle.check.NoHttpCheck">
+		<property name="whitelistFileName" value="${main.basedir}/src/checkstyle/nohttp-whitelist.txt"/>
+	</module>
+</module>

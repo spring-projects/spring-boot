@@ -1,0 +1,128 @@
+[[managing-dependencies]]
+== Managing dependencies
+
+When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically <<reacting-to-other-plugins-dependency-management,import the `spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
+This provides a similar dependency management experience to the one that's enjoyed by Maven users.
+For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
+To make use of this functionality, simply declare dependencies in the usual way but omit the version number:
+
+[source,groovy,indent=0,subs="verbatim",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/dependencies.gradle[tags=dependencies]
+----
+
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/dependencies.gradle.kts[tags=dependencies]
+----
+
+
+[[managing-dependencies-customizing]]
+=== Customizing managed versions
+
+The `spring-boot-dependencies` bom that is automatically imported when the dependency management plugin is applied uses properties to control the versions of the dependencies that it manages.
+Please refer to the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[bom] for a complete list of these properties.
+
+To customize a managed version you set its corresponding property.
+For example, to customize the version of SLF4J which is controlled by the `slf4j.version` property:
+
+[source,groovy,indent=0,subs="verbatim",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/custom-version.gradle[tags=custom-version]
+----
+
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/custom-version.gradle.kts[tags=custom-version]
+----
+
+
+WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
+Overriding versions may cause compatibility issues and should be done with care.
+
+
+
+[[managing-dependencies-using-in-isolation]]
+=== Using Spring Boot's dependency management in isolation
+
+Spring Boot's dependency management can be used in a project without applying Spring Boot's plugin to that project.
+The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to import the bom without having to know its group ID, artifact ID, or version.
+
+First, configure the project to depend on the Spring Boot plugin but do not apply it:
+
+ifeval::["{version-type}" == "RELEASE"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle[]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+endif::[]
+ifeval::["{version-type}" == "MILESTONE"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/depend-on-plugin-milestone.gradle[]
+----
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+endif::[]
+ifeval::["{version-type}" == "SNAPSHOT"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/depend-on-plugin-snapshot.gradle[]
+----
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+endif::[]
+
+The Spring Boot plugin's dependency on the dependency management plugin means that you can use the dependency management plugin without having to declare a dependency on it.
+This also means that you will automatically use the same version of the dependency management plugin as Spring Boot uses.
+
+Apply the dependency management plugin and then configure it to import Spring Boot's bom:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/configure-bom.gradle[tags=configure-bom]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
+----
+
+
+The Kotlin code above is a bit awkward.
+That's because we're using the imperative way of applying the dependency management plugin.
+
+We can make the code less awkward by applying the plugin from the root parent project, or by using the `plugins` block as we're doing for the Spring Boot plugin.
+A downside of this method is that it forces us to specify the version of the dependency management plugin:
+
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/managing-dependencies/configure-bom-with-plugins.gradle.kts[tags=configure-bom]
+----
+
+
+[[managing-dependencies-learning-more]]
+=== Learning more
+
+To learn more about the capabilities of the dependency management plugin, please refer to its {dependency-management-plugin-documentation}[documentation].

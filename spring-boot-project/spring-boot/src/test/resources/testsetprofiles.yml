@@ -1,0 +1,11 @@
+---
+spring:
+  profiles:
+    active: dev
+my:
+  property: fromyamlfile
+---
+spring:
+  profiles: dev
+my:
+  property: fromdevprofile

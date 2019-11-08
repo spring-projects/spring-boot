@@ -1,0 +1,211 @@
+= Starters
+
+Spring Boot Starters are a set of convenient dependency descriptors that you can include
+in your application. You get a one-stop-shop for all the Spring and related technology
+that you need without having to hunt through sample code and copy paste loads of
+dependency descriptors. For example, if you want to get started using Spring and
+JPA for database access just include the `spring-boot-starter-data-jpa` dependency in
+your project, and you are good to go.
+
+For complete details see the
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
+
+== Community Contributions
+If you create a starter for a technology that is not already in the standard list we can
+list it here. Just send a pull request for this page.
+
+WARNING: While the
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
+mentions that 3rd party starters should not start with `spring-boot`, some starters
+do as they were designed before this was clarified.
+
+|===
+| Name | Location
+
+| https://camel.apache.org/spring-boot.html[Apache Camel]
+| https://github.com/apache/camel/tree/master/components/camel-spring-boot
+
+| https://cxf.apache.org/docs/springboot.html[Apache CXF]
+| https://github.com/apache/cxf
+
+| https://qpid.apache.org/components/jms/[Apache Qpid]
+| https://github.com/amqphub/amqp-10-jms-spring-boot
+
+| https://wicket.apache.org/[Apache Wicket]
+| https://github.com/MarcGiffing/wicket-spring-boot
+
+| https://arangodb.com/[ArangoDB]
+| https://github.com/arangodb/spring-boot-starter
+
+| https://line.github.io/armeria/[Armeria]
+| https://github.com/line/armeria/
+
+| https://axoniq.io[Axon Framework]
+| https://github.com/AxonFramework/AxonFramework
+
+| https://azure.microsoft.com/[Azure]
+| https://github.com/Microsoft/azure-spring-boot-starters
+
+| https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview[Azure Application Insights]
+| https://github.com/Microsoft/ApplicationInsights-Java/tree/master/azure-application-insights-spring-boot-starter
+
+| https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
+| https://github.com/MarcGiffing/bucket4j-spring-boot-starter
+
+| https://camunda.org/[Camunda BPM]
+| https://github.com/camunda/camunda-bpm-spring-boot-starter
+
+| Charon reverse proxy
+| https://github.com/mkopylec/charon-spring-boot-starter
+
+| https://cloudant.com/[Cloudant]
+| https://github.com/icha024/cloudant-spring-boot-starter
+
+| https://www.couchbase.com/[Couchbase] HTTP session
+| https://github.com/mkopylec/session-couchbase-spring-boot-starter
+
+| DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
+| https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
+
+| https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
+| https://github.com/jliu666/docker-api-spring-boot
+
+| https://dozermapper.github.io/[Dozer]
+| https://github.com/DozerMapper/dozer
+
+| Elegant Error Handling for Spring Boot
+| https://github.com/alimate/errors-spring-boot-starter
+
+| ErroREST exception handler
+| https://github.com/mkopylec/errorest-spring-boot-starter
+
+| https://www.flowable.org/[Flowable]
+| https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
+
+| https://www.google.com/recaptcha[Google's reCAPTCHA]
+| https://github.com/mkopylec/recaptcha-spring-boot-starter
+
+| https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
+| https://github.com/graphql-java/graphql-spring-boot
+
+| https://javaee.github.io/grizzly/[Grizzly]
+| https://github.com/dabla/grizzly-spring-boot-starter
+
+| https://www.grpc.io/[gRPC]
+| https://github.com/LogNet/grpc-spring-boot-starter
+
+| https://ha-jdbc.github.io/[HA JDBC]
+| https://github.com/lievendoclo/hajdbc-spring-boot
+
+| https://github.com/jknack/handlebars.java[Handlebars]
+| https://github.com/allegro/handlebars-spring-boot-starter
+
+| https://hdiv.org/[HDIV]
+| https://github.com/hdiv/spring-boot-starter-hdiv
+
+| Hiatus for Spring Boot
+| https://github.com/jihor/hiatus-spring-boot
+
+| https://infinispan.org/[Infinispan]
+| https://github.com/infinispan/infinispan-spring-boot
+
+| https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
+| https://github.com/domix/jade4j-spring-boot-starter
+
+| https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
+| https://github.com/javamelody/javamelody/wiki/SpringBootStarter
+
+| https://javers.org[JaVers]
+| https://github.com/javers/javers
+
+| https://github.com/sbraconnier/jodconverter[JODConverter]
+| https://github.com/sbraconnier/jodconverter
+
+| JSF integration for various libraries
+| https://github.com/joinfaces/joinfaces
+
+| https://www.liquigraph.org/[Liquigraph]
+| https://github.com/liquigraph/liquigraph
+
+| https://logback.qos.ch/access.html[Logback-access]
+| https://github.com/akihyro/logback-access-spring-boot-starter
+
+| https://github.com/mybatis/mybatis-3[MyBatis]
+| https://github.com/mybatis/mybatis-spring-boot
+
+| https://github.com/jbosstm/narayana[Narayana]
+| https://github.com/snowdrop/narayana-spring-boot
+
+| https://developer.nexmo.com/[Nexmo]
+| https://github.com/nexmo/nexmo-spring-boot-starter
+
+| https://github.com/nutzam/nutz[Nutz]
+| https://github.com/nutzam/nutzmore
+
+| https://square.github.io/okhttp/[OkHttp]
+| https://github.com/freefair/okhttp-spring-boot
+
+| https://developer.okta.com/[Okta]
+| https://github.com/okta/okta-spring-boot
+
+| https://orika-mapper.github.io/orika-docs/[Orika]
+| https://github.com/akihyro/orika-spring-boot-starter
+
+| https://pebbletemplates.io/[Pebble Templates]
+| https://github.com/PebbleTemplates/pebble
+
+| https://picocli.info/[picocli]
+| https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
+
+| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
+| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
+| https://www.rabbitmq.com/[RabbitMQ] (Declarative configuration)
+| https://github.com/EugeneMsv/amqp-rabbit-spring-boot-autoconfigure
+
+| https://resteasy.jboss.org/[RESTEasy]
+| https://github.com/resteasy/resteasy-spring-boot
+
+| https://github.com/rollbar/rollbar-java/[Rollbar]
+| https://github.com/olmero/rollbar-spring-boot-starter
+
+| https://sentry.io[Sentry]
+| https://github.com/getsentry/sentry-java/tree/master/sentry-spring-boot-starter
+
+| SOAP Web Services support with Apache CXF
+| https://github.com/codecentric/cxf-spring-boot-starter
+
+| https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
+| https://github.com/codecentric/spring-boot-starter-batch-web
+
+| https://projects.spring.io/spring-shell/[Spring Shell]
+| https://github.com/fonimus/ssh-shell-spring-boot
+
+| https://github.com/savantly-net/sprout-platform[Sprout Platform]
+| https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
+
+| SSH Daemon
+| https://github.com/anand1st/sshd-shell-spring-boot
+
+| https://github.com/stripe/stripe-java[Stripe API]
+| https://github.com/pankajtandon/stripe-starter
+
+| https://github.com/StripesFramework/stripes[Stripes]
+| https://github.com/juanpablo-santos/stripes-spring-boot
+
+| https://github.com/structurizr/java[Structurizr]
+| https://github.com/Catalysts/structurizr-extensions
+
+| https://vaadin.com/[Vaadin]
+| https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
+
+| https://github.com/valiktor/valiktor[Valiktor]
+| https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
+
+| https://github.com/tomakehurst/wiremock[WireMock] and Spring REST Docs
+| https://github.com/ePages-de/restdocs-wiremock
+
+| https://alexo.github.io/wro4j/[Wro4j]
+| https://github.com/michael-simons/wro4j-spring-boot-starter
+
+|===

@@ -1,0 +1,2128 @@
+[[production-ready]]
+= Spring Boot Actuator: Production-ready Features
+include::attributes.adoc[]
+
+Spring Boot includes a number of additional features to help you monitor and manage your application when you push it to production.
+You can choose to manage and monitor your application by using HTTP endpoints or with JMX.
+Auditing, health, and metrics gathering can also be automatically applied to your application.
+
+
+
+[[production-ready-enabling]]
+== Enabling Production-ready Features
+The {spring-boot-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
+The simplest way to enable the features is to add a dependency to the `spring-boot-starter-actuator` '`Starter`'.
+
+.Definition of Actuator
+****
+An actuator is a manufacturing term that refers to a mechanical device for moving or controlling something.
+Actuators can generate a large amount of motion from a small change.
+****
+
+To add the actuator to a Maven based project, add the following '`Starter`' dependency:
+
+[source,xml,indent=0]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+For Gradle, use the following declaration:
+
+[source,groovy,indent=0]
+----
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-actuator")
+	}
+----
+
+
+
+[[production-ready-endpoints]]
+== Endpoints
+Actuator endpoints let you monitor and interact with your application.
+Spring Boot includes a number of built-in endpoints and lets you add your own.
+For example, the `health` endpoint provides basic application health information.
+
+Each individual endpoint can be <<production-ready-endpoints-enabling-endpoints, enabled or disabled>>.
+This controls whether or not the endpoint is created and its bean exists in the application context.
+To be remotely accessible an endpoint also has to be <<production-ready-endpoints-exposing-endpoints, exposed via JMX or HTTP>>.
+Most applications choose HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
+For example, by default, the `health` endpoint is mapped to `/actuator/health`.
+
+The following technology-agnostic endpoints are available:
+
+[cols="2,5"]
+|===
+| ID | Description
+
+| `auditevents`
+| Exposes audit events information for the current application.
+  Requires an `AuditEventRepository` bean.
+
+| `beans`
+| Displays a complete list of all the Spring beans in your application.
+
+| `caches`
+| Exposes available caches.
+
+| `conditions`
+| Shows the conditions that were evaluated on configuration and auto-configuration classes and the reasons why they did or did not match.
+
+| `configprops`
+| Displays a collated list of all `@ConfigurationProperties`.
+
+| `env`
+| Exposes properties from Spring's `ConfigurableEnvironment`.
+
+| `flyway`
+| Shows any Flyway database migrations that have been applied.
+  Requires one or more `Flyway` beans.
+
+| `health`
+| Shows application health information.
+
+| `httptrace`
+| Displays HTTP trace information (by default, the last 100 HTTP request-response exchanges).
+  Requires an `HttpTraceRepository` bean.
+
+| `info`
+| Displays arbitrary application info.
+
+| `integrationgraph`
+| Shows the Spring Integration graph.
+  Requires a dependency on `spring-integration-core`.
+
+| `loggers`
+| Shows and modifies the configuration of loggers in the application.
+
+| `liquibase`
+| Shows any Liquibase database migrations that have been applied.
+  Requires one or more `Liquibase` beans.
+
+| `metrics`
+| Shows '`metrics`' information for the current application.
+
+| `mappings`
+| Displays a collated list of all `@RequestMapping` paths.
+
+| `scheduledtasks`
+| Displays the scheduled tasks in your application.
+
+| `sessions`
+| Allows retrieval and deletion of user sessions from a Spring Session-backed session store.
+  Requires a Servlet-based web application using Spring Session.
+
+| `shutdown`
+| Lets the application be gracefully shutdown.
+  Disabled by default.
+
+| `threaddump`
+| Performs a thread dump.
+|===
+
+If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can use the following additional endpoints:
+
+[cols="2,5"]
+|===
+| ID | Description
+
+| `heapdump`
+| Returns an `hprof` heap dump file.
+
+| `jolokia`
+| Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
+  Requires a dependency on `jolokia-core`.
+
+| `logfile`
+| Returns the contents of the logfile (if `logging.file.name` or `logging.file.path` properties have been set).
+  Supports the use of the HTTP `Range` header to retrieve part of the log file's content.
+
+| `prometheus`
+| Exposes metrics in a format that can be scraped by a Prometheus server.
+  Requires a dependency on `micrometer-registry-prometheus`.
+|===
+
+To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
+
+
+
+[[production-ready-endpoints-enabling-endpoints]]
+=== Enabling Endpoints
+By default, all endpoints except for `shutdown` are enabled.
+To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
+The following example enables the `shutdown` endpoint:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.shutdown.enabled=true
+----
+
+If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
+The following example enables the `info` endpoint and disables all other endpoints:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.enabled-by-default=false
+	management.endpoint.info.enabled=true
+----
+
+NOTE: Disabled endpoints are removed entirely from the application context.
+If you want to change only the technologies over which an endpoint is exposed, use the <<production-ready-endpoints-exposing-endpoints, `include` and `exclude` properties>> instead.
+
+
+
+[[production-ready-endpoints-exposing-endpoints]]
+=== Exposing Endpoints
+Since Endpoints may contain sensitive information, careful consideration should be given about when to expose them.
+The following table shows the default exposure for the built-in endpoints:
+
+[cols="1,1,1"]
+|===
+| ID | JMX | Web
+
+| `auditevents`
+| Yes
+| No
+
+| `beans`
+| Yes
+| No
+
+| `caches`
+| Yes
+| No
+
+| `conditions`
+| Yes
+| No
+
+| `configprops`
+| Yes
+| No
+
+| `env`
+| Yes
+| No
+
+| `flyway`
+| Yes
+| No
+
+| `health`
+| Yes
+| Yes
+
+| `heapdump`
+| N/A
+| No
+
+| `httptrace`
+| Yes
+| No
+
+| `info`
+| Yes
+| Yes
+
+| `integrationgraph`
+| Yes
+| No
+
+| `jolokia`
+| N/A
+| No
+
+| `logfile`
+| N/A
+| No
+
+| `loggers`
+| Yes
+| No
+
+| `liquibase`
+| Yes
+| No
+
+| `metrics`
+| Yes
+| No
+
+| `mappings`
+| Yes
+| No
+
+| `prometheus`
+| N/A
+| No
+
+| `scheduledtasks`
+| Yes
+| No
+
+| `sessions`
+| Yes
+| No
+
+| `shutdown`
+| Yes
+| No
+
+| `threaddump`
+| Yes
+| No
+|===
+
+To change which endpoints are exposed, use the following technology-specific `include` and `exclude` properties:
+
+[cols="3,1"]
+|===
+| Property | Default
+
+| configprop:management.endpoints.jmx.exposure.exclude[]
+|
+
+| configprop:management.endpoints.jmx.exposure.include[]
+| `*`
+
+| configprop:management.endpoints.web.exposure.exclude[]
+|
+
+| configprop:management.endpoints.web.exposure.include[]
+| `info, health`
+|===
+
+The `include` property lists the IDs of the endpoints that are exposed.
+The `exclude` property lists the IDs of the endpoints that should not be exposed.
+The `exclude` property takes precedence over the `include` property.
+Both `include` and `exclude` properties can be configured with a list of endpoint IDs.
+
+For example, to stop exposing all endpoints over JMX and only expose the `health` and `info` endpoints, use the following property:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.jmx.exposure.include=health,info
+----
+
+`*` can be used to select all endpoints.
+For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.exposure.include=*
+	management.endpoints.web.exposure.exclude=env,beans
+----
+
+[NOTE]
+====
+`*` has a special meaning in YAML, so be sure to add quotes if you want to include (or exclude) all endpoints, as shown in the following example:
+
+[source,yaml,indent=0]
+----
+	management:
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
+----
+====
+
+NOTE: If your application is exposed publicly, we strongly recommend that you also <<production-ready-endpoints-security, secure your endpoints>>.
+
+TIP: If you want to implement your own strategy for when endpoints are exposed, you can register an `EndpointFilter` bean.
+
+
+
+[[production-ready-endpoints-security]]
+=== Securing HTTP Endpoints
+You should take care to secure HTTP endpoints in the same way that you would any other sensitive URL.
+If Spring Security is present, endpoints are secured by default using Spring Security’s content-negotiation strategy.
+If you wish to configure custom security for HTTP endpoints, for example, only allow users with a certain role to access them, Spring Boot provides some convenient `RequestMatcher` objects that can be used in combination with Spring Security.
+
+A typical Spring Security configuration might look something like the following example:
+
+[source,java,indent=0]
+----
+	@Configuration(proxyBeanMethods = false)
+	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+					requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
+			http.httpBasic();
+		}
+
+	}
+----
+
+The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
+Several other matcher methods are also available on `EndpointRequest`.
+See the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
+
+If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
+You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
+
+.application.properties
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.exposure.include=*
+----
+
+Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
+
+[source,java,indent=0]
+----
+	@Configuration(proxyBeanMethods = false)
+	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+				requests.anyRequest().permitAll());
+		}
+
+	}
+----
+
+
+
+[[production-ready-endpoints-caching]]
+=== Configuring Endpoints
+Endpoints automatically cache responses to read operations that do not take any parameters.
+To configure the amount of time for which an endpoint will cache a response, use its `cache.time-to-live` property.
+The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
+
+.application.properties
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.beans.cache.time-to-live=10s
+----
+
+NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the endpoint that is being configured.
+
+NOTE: When making an authenticated HTTP request, the `Principal` is considered as input to the endpoint and, therefore, the response will not be cached.
+
+
+
+[[production-ready-endpoints-hypermedia]]
+=== Hypermedia for Actuator Web Endpoints
+A "`discovery page`" is added with links to all the endpoints.
+The "`discovery page`" is available on `/actuator` by default.
+
+When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
+For example, if the management context path is `/management`, then the discovery page is available from `/management`.
+When the management context path is set to `/`, the discovery page is disabled to prevent the possibility of a clash with other mappings.
+
+
+
+[[production-ready-endpoints-cors]]
+=== CORS Support
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a flexible way what kind of cross-domain requests are authorized.
+If you use Spring MVC or Spring WebFlux, Actuator's web endpoints can be configured to support such scenarios.
+
+CORS support is disabled by default and is only enabled once the configprop:management.endpoints.web.cors.allowed-origins[] property has been set.
+The following configuration permits `GET` and `POST` calls from the `example.com` domain:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.cors.allowed-origins=https://example.com
+	management.endpoints.web.cors.allowed-methods=GET,POST
+----
+
+TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[CorsEndpointProperties] for a complete list of options.
+
+
+
+[[production-ready-endpoints-custom]]
+=== Implementing Custom Endpoints
+If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
+Endpoints can be exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
+
+You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
+These endpoints are restricted to their respective technologies.
+For example, `@WebEndpoint` is exposed only over HTTP and not over JMX.
+
+You can write technology-specific extensions by using `@EndpointWebExtension` and `@EndpointJmxExtension`.
+These annotations let you provide technology-specific operations to augment an existing endpoint.
+
+Finally, if you need access to web-framework-specific functionality, you can implement Servlet or Spring `@Controller` and `@RestController` endpoints at the cost of them not being available over JMX or when using a different web framework.
+
+
+
+[[production-ready-endpoints-custom-input]]
+==== Receiving Input
+Operations on an endpoint receive input via their parameters.
+When exposed via the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
+When exposed via JMX, the parameters are mapped to the parameters of the MBean's operations.
+Parameters are required by default.
+They can be made optional by annotating them with `@org.springframework.lang.Nullable`.
+
+Each root property in the JSON request body can be mapped to a parameter of the endpoint.
+Consider the following JSON request body:
+
+[source,json,indent=0]
+----
+	{
+		"name": "test",
+		"counter": 42
+	}
+----
+
+This can be used to invoke a write operation that takes `String name` and `int counter` parameters.
+
+TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
+In particular declaring a single parameter with a custom type defining a `name` and `counter` properties is not supported.
+
+NOTE: To allow the input to be mapped to the operation method's parameters, Java code implementing an endpoint should be compiled with `-parameters`, and Kotlin code implementing an endpoint should be compiled with `-java-parameters`.
+This will happen automatically if you are using Spring Boot's Gradle plugin or if you are using Maven and `spring-boot-starter-parent`.
+
+
+
+[[production-ready-endpoints-custom-input-conversion]]
+===== Input type conversion
+The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
+Before calling an operation method, the input received via JMX or an HTTP request is converted to the required types using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
+
+
+
+[[production-ready-endpoints-custom-web]]
+==== Custom Web Endpoints
+Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
+
+
+
+[[production-ready-endpoints-custom-web-predicate]]
+===== Web Endpoint Request Predicates
+A request predicate is automatically generated for each operation on a web-exposed endpoint.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-path]]
+===== Path
+The path of the predicate is determined by the ID of the endpoint and the base path of web-exposed endpoints.
+The default base path is `/actuator`.
+For example, an endpoint with the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
+
+The path can be further customized by annotating one or more parameters of the operation method with `@Selector`.
+Such a parameter is added to the path predicate as a path variable.
+The variable's value is passed into the operation method when the endpoint operation is invoked.
+If you want to capture all remaining path elements, you can add `@Selector(Match=ALL_REMAINING)` to the last parameter and make it a type that is conversion compatible with a `String[]`.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-http-method]]
+===== HTTP method
+The HTTP method of the predicate is determined by the operation type, as shown in the following table:
+
+[cols="3, 1"]
+|===
+| Operation | HTTP method
+
+| `@ReadOperation`
+| `GET`
+
+| `@WriteOperation`
+| `POST`
+
+| `@DeleteOperation`
+| `DELETE`
+|===
+
+
+
+[[production-ready-endpoints-custom-web-predicate-consumes]]
+===== Consumes
+For a `@WriteOperation` (HTTP `POST`) that uses the request body, the consumes clause of the predicate is `application/vnd.spring-boot.actuator.v2+json, application/json`.
+For all other operations the consumes clause is empty.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-produces]]
+===== Produces
+The produces clause of the predicate can be determined by the `produces` attribute of the `@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations.
+The attribute is optional.
+If it is not used, the produces clause is determined automatically.
+
+If the operation method returns `void` or `Void` the produces clause is empty.
+If the operation method returns a `org.springframework.core.io.Resource`, the produces clause is `application/octet-stream`.
+For all other operations the produces clause is `application/vnd.spring-boot.actuator.v2+json, application/json`.
+
+
+
+[[production-ready-endpoints-custom-web-response-status]]
+===== Web Endpoint Response Status
+The default response status for an endpoint operation depends on the operation type (read, write, or delete) and what, if anything, the operation returns.
+
+A `@ReadOperation` returns a value, the response status will be 200 (OK).
+If it does not return a value, the response status will be 404 (Not Found).
+
+If a `@WriteOperation` or `@DeleteOperation` returns a value, the response status will be 200 (OK).
+If it does not return a value the response status will be 204 (No Content).
+
+If an operation is invoked without a required parameter, or with a parameter that cannot be converted to the required type, the operation method will not be called and the response status will be 400 (Bad Request).
+
+
+
+[[production-ready-endpoints-custom-web-range-requests]]
+===== Web Endpoint Range Requests
+An HTTP range request can be used to request part of an HTTP resource.
+When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
+
+NOTE: Range requests are not supported when using Jersey.
+
+
+
+[[production-ready-endpoints-custom-web-security]]
+===== Web Endpoint Security
+An operation on a web endpoint or a web-specific endpoint extension can receive the current `java.security.Principal` or `org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter.
+The former is typically used in conjunction with `@Nullable` to provide different behavior for authenticated and unauthenticated users.
+The latter is typically used to perform authorization checks using its `isUserInRole(String)` method.
+
+
+
+[[production-ready-endpoints-custom-servlet]]
+==== Servlet endpoints
+A `Servlet` can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
+Servlet endpoints provide deeper integration with the Servlet container but at the expense of portability.
+They are intended to be used to expose an existing `Servlet` as an endpoint.
+For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever possible.
+
+
+
+[[production-ready-endpoints-custom-controller]]
+==== Controller endpoints
+`@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint that is only exposed by Spring MVC or Spring WebFlux.
+Methods are mapped using the standard annotations for Spring MVC and Spring WebFlux such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
+Controller endpoints provide deeper integration with Spring's web frameworks but at the expense of portability.
+The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever possible.
+
+
+
+[[production-ready-health]]
+=== Health Information
+You can use health information to check the status of your running application.
+It is often used by monitoring software to alert someone when a production system goes down.
+The information exposed by the `health` endpoint depends on the configprop:management.endpoint.health.show-details[] and configprop:management.endpoint.health.show-components[] properties which can be configured with one of the following values:
+
+[cols="1, 3"]
+|===
+| Name | Description
+
+| `never`
+| Details are never shown.
+
+| `when-authorized`
+| Details are only shown to authorized users.
+  Authorized roles can be configured using `management.endpoint.health.roles`.
+
+| `always`
+| Details are shown to all users.
+|===
+
+The default value is `never`.
+A user is considered to be authorized when they are in one or more of the endpoint's roles.
+If the endpoint has no configured roles (the default) all authenticated users are considered to be authorized.
+The roles can be configured using the configprop:management.endpoint.health.roles[] property.
+
+NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
+
+Health information is collected from the content of a {spring-boot-actuator-module-code}/health/HealthContributorRegistry.java[`HealthContributorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] instances defined in your `ApplicationContext`).
+Spring Boot includes a number of auto-configured `HealthContributors` and you can also write your own.
+
+A `HealthContributor` can either be a `HealthIndicator` or a `CompositeHealthContributor`.
+A `HealthIndicator` provides actual health information, including a `Status`.
+A `CompositeHealthContributor` provides a composite of other `HealthContributors`.
+Taken together, contributors form a tree structure to represent the overall system health.
+
+By default, the final system health is derived by a `StatusAggregator` which sorts the statuses from each `HealthIndicator` based on an ordered list of statuses.
+The first status in the sorted list is used as the overall health status.
+If no `HealthIndicator` returns a status that is known to the `StatusAggregator`, an `UNKNOWN` status is used.
+
+TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
+
+
+
+==== Auto-configured HealthIndicators
+The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
+
+[cols="4,6"]
+|===
+| Name | Description
+
+| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
+| Checks that a Cassandra database is up.
+
+| {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
+| Checks that a Couchbase cluster is up.
+
+| {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
+| Checks for low disk space.
+
+| {spring-boot-actuator-module-code}/elasticsearch/ElasticSearchRestHealthContributorAutoConfiguration.java[`ElasticSearchRestHealthContributorAutoConfiguration`]
+| Checks that an Elasticsearch cluster is up.
+
+| {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
+| Checks that a Hazelcast server is up.
+
+| {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
+| Checks that an InfluxDB server is up.
+
+| {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
+| Checks that a JMS broker is up.
+
+| {spring-boot-actuator-module-code}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
+| Checks that a mail server is up.
+
+| {spring-boot-actuator-module-code}/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
+| Checks that a Mongo database is up.
+
+| {spring-boot-actuator-module-code}/health/PingHealthIndicator.java[`PingHealthIndicator`]
+| Always responds with `UP`.
+
+| {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
+| Checks that a Rabbit server is up.
+
+| {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
+| Checks that a Redis server is up.
+
+| {spring-boot-actuator-module-code}/solr/SolrHealthIndicator.java[`SolrHealthIndicator`]
+| Checks that a Solr server is up.
+|===
+
+TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
+
+
+
+==== Writing Custom HealthIndicators
+To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
+You need to provide an implementation of the `health()` method and return a `Health` response.
+The `Health` response should include a status and can optionally include additional details to be displayed.
+The following code shows a sample `HealthIndicator` implementation:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.actuate.health.Health;
+	import org.springframework.boot.actuate.health.HealthIndicator;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyHealthIndicator implements HealthIndicator {
+
+		@Override
+		public Health health() {
+			int errorCode = check(); // perform some specific health check
+			if (errorCode != 0) {
+				return Health.down().withDetail("Error Code", errorCode).build();
+			}
+			return Health.up().build();
+		}
+
+	}
+----
+
+NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
+In the preceding example, the health information is available in an entry named `my`.
+
+In addition to Spring Boot's predefined {spring-boot-actuator-module-code}/health/Status.java[`Status`] types, it is also possible for `Health` to return a custom `Status` that represents a new system state.
+In such cases, a custom implementation of the {spring-boot-actuator-module-code}/health/StatusAggregator.java[`StatusAggregator`] interface also needs to be provided, or the default implementation has to be configured by using the configprop:management.endpoint.health.status.order[] configuration property.
+
+For example, assume a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` implementations.
+To configure the severity order, add the following property to your application properties:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
+----
+
+The HTTP status code in the response reflects the overall health status (for example, `UP` maps to 200, while `OUT_OF_SERVICE` and `DOWN` map to 503).
+You might also want to register custom status mappings if you access the health endpoint over HTTP.
+For example, the following property maps `FATAL` to 503 (service unavailable):
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.status.http-mapping.fatal=503
+----
+
+TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
+
+The following table shows the default status mappings for the built-in statuses:
+
+[cols="1,3"]
+|===
+| Status | Mapping
+
+| DOWN
+| SERVICE_UNAVAILABLE (503)
+
+| OUT_OF_SERVICE
+| SERVICE_UNAVAILABLE (503)
+
+| UP
+| No mapping by default, so http status is 200
+
+| UNKNOWN
+| No mapping by default, so http status is 200
+|===
+
+
+
+[[reactive-health-indicators]]
+==== Reactive Health Indicators
+For reactive applications, such as those using Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
+Similar to a traditional `HealthContributor`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] and {spring-boot-actuator-module-code}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
+Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
+
+TIP: In a reactive application, The `ReactiveHealthContributorRegistry` can be used to register and unregister health indicators at runtime.
+
+To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
+The following code shows a sample `ReactiveHealthIndicator` implementation:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
+
+		@Override
+		public Mono<Health> health() {
+			return doHealthCheck() //perform some specific health check that returns a Mono<Health>
+				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()));
+		}
+
+	}
+----
+
+TIP: To handle the error automatically, consider extending from `AbstractReactiveHealthIndicator`.
+
+
+
+==== Auto-configured ReactiveHealthIndicators
+The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when appropriate:
+
+[cols="1,4"]
+|===
+| Name | Description
+
+| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`]
+| Checks that a Cassandra database is up.
+
+| {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
+| Checks that a Couchbase cluster is up.
+
+| {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
+| Checks that a Mongo database is up.
+
+| {spring-boot-actuator-module-code}/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
+| Checks that a Redis server is up.
+|===
+
+TIP: If necessary, reactive indicators replace the regular ones.
+Also, any `HealthIndicator` that is not handled explicitly is wrapped automatically.
+
+
+
+==== Health Groups
+It's sometimes useful to organize health indicators into groups that can be used for different purposes.
+For example, if you deploy your application to Kubernetes, you may want one different sets of health indicators for your "`liveness`" and "`readiness`" probes.
+
+To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
+For example, to create a group that includes only database indicators you can define the following:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.custom.include=db
+----
+
+You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
+
+By default groups will inherit the same `StatusAggregator` and `HttpCodeStatusMapper` settings as the system health, however, these can also be defined on a per-group basis.
+It's also possible to override the `show-details` and `roles` properties if required:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.custom.show-details=when-authorized
+	management.endpoint.health.group.custom.roles=admin
+	management.endpoint.health.group.custom.status.order=fatal,up
+	management.endpoint.health.group.custom.status.http-mapping.fatal=500
+
+----
+
+TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
+
+
+
+[[production-ready-application-info]]
+=== Application Information
+Application information exposes various information collected from all {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
+Spring Boot includes a number of auto-configured `InfoContributor` beans, and you can write your own.
+
+
+
+[[production-ready-application-info-autoconfigure]]
+==== Auto-configured InfoContributors
+The following `InfoContributor` beans are auto-configured by Spring Boot, when appropriate:
+
+[cols="1,4"]
+|===
+| Name | Description
+
+| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
+| Exposes any key from the `Environment` under the `info` key.
+
+| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
+| Exposes git information if a `git.properties` file is available.
+
+| {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
+| Exposes build information if a `META-INF/build-info.properties` file is available.
+|===
+
+TIP: It is possible to disable them all by setting the configprop:management.info.defaults.enabled[] property.
+
+
+
+[[production-ready-application-info-env]]
+==== Custom Application Information
+You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
+All `Environment` properties under the `info` key are automatically exposed.
+For example, you could add the following settings to your `application.properties` file:
+
+[source,properties,indent=0,configprops]
+----
+	info.app.encoding=UTF-8
+	info.app.java.source=1.8
+	info.app.java.target=1.8
+----
+
+[TIP]
+====
+Rather than hardcoding those values, you could also <<howto.adoc#howto-automatic-expansion,expand info properties at build time>>.
+
+Assuming you use Maven, you could rewrite the preceding example as follows:
+
+[source,properties,indent=0,configprops]
+----
+	info.app.encoding=@project.build.sourceEncoding@
+	info.app.java.source=@java.version@
+	info.app.java.target=@java.version@
+----
+====
+
+
+
+[[production-ready-application-info-git]]
+==== Git Commit Information
+Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
+If a `GitProperties` bean is available, the `git.branch`, `git.commit.id`, and `git.commit.time` properties are exposed.
+
+TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
+See "<<howto.adoc#howto-git-info,Generate git information>>" for more details.
+
+If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	management.info.git.mode=full
+----
+
+
+
+[[production-ready-application-info-build]]
+==== Build Information
+If a `BuildProperties` bean is available, the `info` endpoint can also publish information about your build.
+This happens if a `META-INF/build-info.properties` file is available in the classpath.
+
+TIP: The Maven and Gradle plugins can both generate that file.
+See "<<howto.adoc#howto-build-info,Generate build information>>" for more details.
+
+
+
+[[production-ready-application-info-custom]]
+==== Writing Custom InfoContributors
+To provide custom application information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] interface.
+
+The following example contributes an `example` entry with a single value:
+
+[source,java,indent=0]
+----
+	import java.util.Collections;
+
+	import org.springframework.boot.actuate.info.Info;
+	import org.springframework.boot.actuate.info.InfoContributor;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class ExampleInfoContributor implements InfoContributor {
+
+		@Override
+		public void contribute(Info.Builder builder) {
+			builder.withDetail("example",
+					Collections.singletonMap("key", "value"));
+		}
+
+	}
+----
+
+If you reach the `info` endpoint, you should see a response that contains the following additional entry:
+
+[source,json,indent=0]
+----
+	{
+		"example": {
+			"key" : "value"
+		}
+	}
+----
+
+
+
+[[production-ready-monitoring]]
+== Monitoring and Management over HTTP
+If you are developing a web application, Spring Boot Actuator auto-configures all enabled endpoints to be exposed over HTTP.
+The default convention is to use the `id` of the endpoint with a prefix of `/actuator` as the URL path.
+For example, `health` is exposed as `/actuator/health`.
+
+TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
+
+
+
+[[production-ready-customizing-management-server-context-path]]
+=== Customizing the Management Endpoint Paths
+Sometimes, it is useful to customize the prefix for the management endpoints.
+For example, your application might already use `/actuator` for another purpose.
+You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.base-path=/manage
+----
+
+The preceding `application.properties` example changes the endpoint from `/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
+
+NOTE: Unless the management port has been configured to <<production-ready-customizing-management-server-port,expose endpoints by using a different HTTP port>>, `management.endpoints.web.base-path` is relative to `server.servlet.context-path`.
+If `management.server.port` is configured, `management.endpoints.web.base-path` is relative to `management.server.servlet.context-path`.
+
+If you want to map endpoints to a different path, you can use the configprop:management.endpoints.web.path-mapping[] property.
+
+The following example remaps `/actuator/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.web.path-mapping.health=healthcheck
+----
+
+
+
+[[production-ready-customizing-management-server-port]]
+=== Customizing the Management Server Port
+Exposing management endpoints by using the default HTTP port is a sensible choice for cloud-based deployments.
+If, however, your application runs inside your own data center, you may prefer to expose endpoints by using a different HTTP port.
+
+You can set the configprop:management.server.port[] property to change the HTTP port, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.server.port=8081
+----
+
+NOTE: On Cloud Foundry, applications only receive requests on port 8080 for both HTTP and TCP routing, by default.
+If you want to use a custom management port on Cloud Foundry, you will need to explicitly set up the application's routes to forward traffic to the custom port.
+
+
+
+[[production-ready-management-specific-ssl]]
+=== Configuring Management-specific SSL
+When configured to use a custom port, the management server can also be configured with its own SSL by using the various `management.server.ssl.*` properties.
+For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as shown in the following property settings:
+
+[source,properties,indent=0,configprops]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:store.jks
+	server.ssl.key-password=secret
+	management.server.port=8080
+	management.server.ssl.enabled=false
+----
+
+Alternatively, both the main server and the management server can use SSL but with different key stores, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:main.jks
+	server.ssl.key-password=secret
+	management.server.port=8080
+	management.server.ssl.enabled=true
+	management.server.ssl.key-store=classpath:management.jks
+	management.server.ssl.key-password=secret
+----
+
+
+
+[[production-ready-customizing-management-server-address]]
+=== Customizing the Management Server Address
+You can customize the address that the management endpoints are available on by setting the configprop:management.server.address[] property.
+Doing so can be useful if you want to listen only on an internal or ops-facing network or to listen only for connections from `localhost`.
+
+NOTE: You can listen on a different address only when the port differs from the main server port.
+
+The following example `application.properties` does not allow remote management connections:
+
+[source,properties,indent=0,configprops]
+----
+	management.server.port=8081
+	management.server.address=127.0.0.1
+----
+
+
+
+[[production-ready-disabling-http-endpoints]]
+=== Disabling HTTP Endpoints
+If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.server.port=-1
+----
+
+This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.web.exposure.exclude=*
+----
+
+
+
+[[production-ready-jmx]]
+== Monitoring and Management over JMX
+Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
+By default, this feature is not enabled and can be turned on by setting the configuration property configprop:spring.jmx.enabled[] to `true`.
+Spring Boot exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain by default.
+
+
+
+[[production-ready-custom-mbean-names]]
+=== Customizing MBean Names
+The name of the MBean is usually generated from the `id` of the endpoint.
+For example, the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
+
+If your application contains more than one Spring `ApplicationContext`, you may find that names clash.
+To solve this problem, you can set the configprop:spring.jmx.unique-names[] property to `true` so that MBean names are always unique.
+
+You can also customize the JMX domain under which endpoints are exposed.
+The following settings show an example of doing so in `application.properties`:
+
+[source,properties,indent=0,configprops]
+----
+	spring.jmx.unique-names=true
+	management.endpoints.jmx.domain=com.example.myapp
+----
+
+
+
+[[production-ready-disable-jmx-endpoints]]
+=== Disabling JMX Endpoints
+If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoints.jmx.exposure.exclude=*
+----
+
+
+
+[[production-ready-jolokia]]
+=== Using Jolokia for JMX over HTTP
+Jolokia is a JMX-HTTP bridge that provides an alternative method of accessing JMX beans.
+To use Jolokia, include a dependency to `org.jolokia:jolokia-core`.
+For example, with Maven, you would add the following dependency:
+
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>org.jolokia</groupId>
+		<artifactId>jolokia-core</artifactId>
+	</dependency>
+----
+
+The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
+You can then access it by using `/actuator/jolokia` on your management HTTP server.
+
+
+
+[[production-ready-customizing-jolokia]]
+==== Customizing Jolokia
+Jolokia has a number of settings that you would traditionally configure by setting servlet parameters.
+With Spring Boot, you can use your `application.properties` file.
+To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.jolokia.config.debug=true
+----
+
+
+
+[[production-ready-disabling-jolokia]]
+==== Disabling Jolokia
+If you use Jolokia but do not want Spring Boot to configure it, set the configprop:management.endpoint.jolokia.enabled[] property to `false`, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.jolokia.enabled=false
+----
+
+
+
+[[production-ready-loggers]]
+== Loggers
+Spring Boot Actuator includes the ability to view and configure the log levels of your application at runtime.
+You can view either the entire list or an individual logger's configuration, which is made up of both the explicitly configured logging level as well as the effective logging level given to it by the logging framework.
+These levels can be one of:
+
+* `TRACE`
+* `DEBUG`
+* `INFO`
+* `WARN`
+* `ERROR`
+* `FATAL`
+* `OFF`
+* `null`
+
+`null` indicates that there is no explicit configuration.
+
+
+
+[[production-ready-logger-configuration]]
+=== Configure a Logger
+To configure a given logger, `POST` a partial entity to the resource's URI, as shown in the following example:
+
+[source,json,indent=0]
+----
+	{
+		"configuredLevel": "DEBUG"
+	}
+----
+
+TIP: To "`reset`" the specific level of the logger (and use the default configuration instead), you can pass a value of `null` as the `configuredLevel`.
+
+
+
+[[production-ready-metrics]]
+== Metrics
+Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports numerous monitoring systems, including:
+
+- <<production-ready-metrics-export-appoptics,AppOptics>>
+- <<production-ready-metrics-export-atlas,Atlas>>
+- <<production-ready-metrics-export-datadog,Datadog>>
+- <<production-ready-metrics-export-dynatrace,Dynatrace>>
+- <<production-ready-metrics-export-elastic,Elastic>>
+- <<production-ready-metrics-export-ganglia,Ganglia>>
+- <<production-ready-metrics-export-graphite,Graphite>>
+- <<production-ready-metrics-export-humio,Humio>>
+- <<production-ready-metrics-export-influx,Influx>>
+- <<production-ready-metrics-export-jmx,JMX>>
+- <<production-ready-metrics-export-kairos,KairosDB>>
+- <<production-ready-metrics-export-newrelic,New Relic>>
+- <<production-ready-metrics-export-prometheus,Prometheus>>
+- <<production-ready-metrics-export-signalfx,SignalFx>>
+- <<production-ready-metrics-export-simple,Simple (in-memory)>>
+- <<production-ready-metrics-export-statsd,StatsD>>
+- <<production-ready-metrics-export-wavefront,Wavefront>>
+
+TIP: To learn more about Micrometer's capabilities, please refer to its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
+
+
+
+[[production-ready-metrics-getting-started]]
+=== Getting started
+Spring Boot auto-configures a composite `MeterRegistry` and adds a registry to the composite for each of the supported implementations that it finds on the classpath.
+Having a dependency on `micrometer-registry-\{system}` in your runtime classpath is enough for Spring Boot to configure the registry.
+
+Most registries share common features.
+For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
+For example, to disable Datadog:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.datadog.enabled=false
+----
+
+Spring Boot will also add any auto-configured registries to the global static composite registry on the `Metrics` class unless you explicitly tell it not to:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.use-global-registry=false
+----
+
+You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
+
+[source,java,indent=0]
+----
+	@Bean
+	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
+		return registry -> registry.config().commonTags("region", "us-east-1");
+	}
+----
+
+You can apply customizations to particular registry implementations by being more specific about the generic type:
+
+[source,java,indent=0]
+----
+	@Bean
+	MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
+		return registry -> registry.config().namingConvention(MY_CUSTOM_CONVENTION);
+	}
+----
+
+With that setup in place you can inject `MeterRegistry` in your components and register metrics:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/metrics/SampleBean.java[tag=example]
+----
+
+Spring Boot also <<production-ready-metrics-meter,configures built-in instrumentation>> (i.e. `MeterBinder` implementations) that you can control via configuration or dedicated annotation markers.
+
+
+
+[[production-ready-metrics-export]]
+=== Supported monitoring systems
+
+
+
+[[production-ready-metrics-export-appoptics]]
+==== AppOptics
+By default, the AppOptics registry pushes metrics to `https://api.appoptics.com/v1/measurements` periodically.
+To export metrics to SaaS {micrometer-registry-docs}/appoptics[AppOptics], your API token must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.appoptics.api-token=YOUR_TOKEN
+----
+
+
+
+[[production-ready-metrics-export-atlas]]
+==== Atlas
+By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
+The location of the https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.atlas.uri=https://atlas.example.com:7101/api/v1/publish
+----
+
+
+
+[[production-ready-metrics-export-datadog]]
+==== Datadog
+Datadog registry pushes metrics to https://www.datadoghq.com[datadoghq] periodically.
+To export metrics to {micrometer-registry-docs}/datadog[Datadog], your API key must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.datadog.api-key=YOUR_KEY
+----
+
+You can also change the interval at which metrics are sent to Datadog:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.datadog.step=30s
+----
+
+
+
+[[production-ready-metrics-export-dynatrace]]
+==== Dynatrace
+Dynatrace registry pushes metrics to the configured URI periodically.
+To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.dynatrace.api-token=YOUR_TOKEN
+	management.metrics.export.dynatrace.device-id=YOUR_DEVICE_ID
+	management.metrics.export.dynatrace.uri=YOUR_URI
+----
+
+You can also change the interval at which metrics are sent to Dynatrace:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.dynatrace.step=30s
+----
+
+
+
+[[production-ready-metrics-export-elastic]]
+==== Elastic
+By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
+The location of the Elastic server to use can be provided using the following property:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.elastic.host=https://elastic.example.com:8086
+----
+
+
+
+[[production-ready-metrics-export-ganglia]]
+==== Ganglia
+By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
+The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.ganglia.host=ganglia.example.com
+	management.metrics.export.ganglia.port=9649
+----
+
+
+
+[[production-ready-metrics-export-graphite]]
+==== Graphite
+By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
+The https://graphiteapp.org[Graphite server] host and port to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.graphite.host=graphite.example.com
+	management.metrics.export.graphite.port=9004
+----
+
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
+
+TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
+An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
+
+[source,java]
+----
+@Bean
+public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
+	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+}
+----
+
+
+
+[[production-ready-metrics-export-humio]]
+==== Humio
+By default, the Humio registry pushes metrics to https://cloud.humio.com periodically.
+To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], your API token must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.humio.api-token=YOUR_TOKEN
+----
+
+You should also configure one or more tags to identify the data source to which metrics will be pushed:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.humio.tags.alpha=a
+	management.metrics.export.humio.tags.bravo=b
+----
+
+
+
+[[production-ready-metrics-export-influx]]
+==== Influx
+By default, metrics are exported to {micrometer-registry-docs}/influx[Influx] running on your local machine.
+The location of the https://www.influxdata.com[Influx server] to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.influx.uri=https://influx.example.com:8086
+----
+
+
+
+[[production-ready-metrics-export-jmx]]
+==== JMX
+Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
+By default, metrics are exported to the `metrics` JMX domain.
+The domain to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.jmx.domain=com.example.app.metrics
+----
+
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
+
+TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
+An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
+
+[source,java]
+----
+@Bean
+public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+}
+----
+
+
+
+[[production-ready-metrics-export-kairos]]
+==== KairosDB
+By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
+The location of the https://kairosdb.github.io/[KairosDB server] to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.kairos.uri=https://kairosdb.example.com:8080/api/v1/datapoints
+----
+
+
+
+[[production-ready-metrics-export-newrelic]]
+==== New Relic
+New Relic registry pushes metrics to {micrometer-registry-docs}/new-relic[New Relic] periodically.
+To export metrics to https://newrelic.com[New Relic], your API key and account id must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.newrelic.api-key=YOUR_KEY
+	management.metrics.export.newrelic.account-id=YOUR_ACCOUNT_ID
+----
+
+You can also change the interval at which metrics are sent to New Relic:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.newrelic.step=30s
+----
+
+
+
+[[production-ready-metrics-export-prometheus]]
+==== Prometheus
+{micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual app instances for metrics.
+Spring Boot provides an actuator endpoint available at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
+
+TIP: The endpoint is not available by default and must be exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
+
+Here is an example `scrape_config` to add to `prometheus.yml`:
+
+[source,yaml,indent=0]
+----
+	scrape_configs:
+	  - job_name: 'spring'
+		metrics_path: '/actuator/prometheus'
+		static_configs:
+		  - targets: ['HOST:PORT']
+----
+
+For ephemeral or batch jobs which may not exist long enough to be scraped, https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support can be used to expose their metrics to Prometheus.
+To enable Prometheus Pushgateway support, add the following dependency to your project:
+
+[source,xml,indent=0]
+----
+<dependency>
+	<groupId>io.prometheus</groupId>
+	<artifactId>simpleclient_pushgateway</artifactId>
+</dependency>
+----
+
+When the Prometheus Pushgateway dependency is present on the classpath, Spring Boot auto-configures a `PrometheusPushGatewayManager` bean.
+This manages the pushing of metrics to a Prometheus Pushgateway.
+The `PrometheusPushGatewayManager` can be tuned using properties under `management.metrics.export.prometheus.pushgateway`.
+For advanced configuration, you can also provide your own `PrometheusPushGatewayManager` bean.
+
+
+
+[[production-ready-metrics-export-signalfx]]
+==== SignalFx
+SignalFx registry pushes metrics to {micrometer-registry-docs}/signalfx[SignalFx] periodically.
+To export metrics to https://www.signalfx.com[SignalFx], your access token must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.signalfx.access-token=YOUR_ACCESS_TOKEN
+----
+
+You can also change the interval at which metrics are sent to SignalFx:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.signalfx.step=30s
+----
+
+
+
+[[production-ready-metrics-export-simple]]
+==== Simple
+Micrometer ships with a simple, in-memory backend that is automatically used as a fallback if no other registry is configured.
+This allows you to see what metrics are collected in the <<production-ready-metrics-endpoint,metrics endpoint>>.
+
+The in-memory backend disables itself as soon as you're using any of the other available backend.
+You can also disable it explicitly:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.simple.enabled=false
+----
+
+
+
+[[production-ready-metrics-export-statsd]]
+==== StatsD
+The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
+By default, metrics are exported to a {micrometer-registry-docs}/statsd[StatsD] agent running on your local machine.
+The StatsD agent host and port to use can be provided using:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.statsd.host=statsd.example.com
+	management.metrics.export.statsd.port=9125
+----
+
+You can also change the StatsD line protocol to use (default to Datadog):
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.statsd.flavor=etsy
+----
+
+
+
+[[production-ready-metrics-export-wavefront]]
+==== Wavefront
+Wavefront registry pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront] periodically.
+If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, your API token must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.wavefront.api-token=YOUR_API_TOKEN
+----
+
+Alternatively, you may use a Wavefront sidecar or an internal proxy set up in your environment that forwards metrics data to the Wavefront API host:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.wavefront.uri=proxy://localhost:2878
+----
+
+TIP: If publishing metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the documentation]), the host must be in the `proxy://HOST:PORT` format.
+
+You can also change the interval at which metrics are sent to Wavefront:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.wavefront.step=30s
+----
+
+
+
+[[production-ready-metrics-meter]]
+=== Supported Metrics
+Spring Boot registers the following core metrics when applicable:
+
+* JVM metrics, report utilization of:
+** Various memory and buffer pools
+** Statistics related to garbage collection
+** Threads utilization
+** Number of classes loaded/unloaded
+* CPU metrics
+* File descriptor metrics
+* Kafka consumer metrics
+* Log4j2 metrics: record the number of events logged to Log4j2 at each level
+* Logback metrics: record the number of events logged to Logback at each level
+* Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
+* Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
+* {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
+
+
+
+[[production-ready-metrics-spring-mvc]]
+==== Spring MVC Metrics
+Auto-configuration enables the instrumentation of requests handled by Spring MVC.
+When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
+Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
+
+[source,java,indent=0]
+----
+	@RestController
+	@Timed <1>
+	public class MyController {
+
+		@GetMapping("/api/people")
+		@Timed(extraTags = { "region", "us-east-1" }) <2>
+		@Timed(value = "all.people", longTask = true) <3>
+		public List<Person> listPeople() { ... }
+
+	}
+----
+<1> A controller class to enable timings on every request handler in the controller.
+<2> A method to enable for an individual endpoint.
+    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
+<3> A method with `longTask = true` to enable a long task timer for the method.
+    Long task timers require a separate metric name, and can be stacked with a short task timer.
+
+By default, metrics are generated with the name, `http.server.requests`.
+The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+
+By default, Spring MVC-related metrics are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `exception`
+| Simple class name of any exception that was thrown while handling the request.
+
+| `method`
+| Request's method (for example, `GET` or `POST`)
+
+| `outcome`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+
+| `status`
+| Response's HTTP status code (for example, `200` or `500`)
+
+| `uri`
+| Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
+|===
+
+To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
+
+
+
+[[production-ready-metrics-web-flux]]
+==== Spring WebFlux Metrics
+Auto-configuration enables the instrumentation of all requests handled by WebFlux controllers and functional handlers.
+
+By default, metrics are generated with the name `http.server.requests`.
+You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+
+By default, WebFlux-related metrics are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `exception`
+| Simple class name of any exception that was thrown while handling the request.
+
+| `method`
+| Request's method (for example, `GET` or `POST`)
+
+| `outcome`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+
+| `status`
+| Response's HTTP status code (for example, `200` or `500`)
+
+| `uri`
+| Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
+|===
+
+To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+
+
+
+[[production-ready-metrics-jersey-server]]
+==== Jersey Server Metrics
+When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
+When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
+Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
+
+[source,java,indent=0]
+----
+	@Component
+	@Path("/api/people")
+	@Timed <1>
+	public class Endpoint {
+		@GET
+		@Timed(extraTags = { "region", "us-east-1" }) <2>
+		@Timed(value = "all.people", longTask = true) <3>
+		public List<Person> listPeople() { ... }
+	}
+----
+<1> On a resource class to enable timings on every request handler in the resource.
+<2> On a method to enable for an individual endpoint.
+    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
+<3> On a method with `longTask = true` to enable a long task timer for the method.
+    Long task timers require a separate metric name, and can be stacked with a short task timer.
+
+By default, metrics are generated with the name, `http.server.requests`.
+The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+
+By default, Jersey server metrics are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `exception`
+| Simple class name of any exception that was thrown while handling the request.
+
+| `method`
+| Request's method (for example, `GET` or `POST`)
+
+| `outcome`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
+
+| `status`
+| Response's HTTP status code (for example, `200` or `500`)
+
+| `uri`
+| Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
+|===
+
+To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
+
+
+
+[[production-ready-metrics-http-clients]]
+==== HTTP Client Metrics
+Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
+For that, you have to get injected with an auto-configured builder and use it to create instances:
+
+* `RestTemplateBuilder` for `RestTemplate`
+* `WebClient.Builder` for `WebClient`
+
+It is also possible to apply manually the customizers responsible for this instrumentation, namely `MetricsRestTemplateCustomizer` and `MetricsWebClientCustomizer`.
+
+By default, metrics are generated with the name, `http.client.requests`.
+The name can be customized by setting the configprop:management.metrics.web.client.request.metric-name[] property.
+
+By default, metrics generated by an instrumented client are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `clientName`
+| Host portion of the URI
+
+| `method`
+| Request's method (for example, `GET` or `POST`)
+
+| `outcome`
+| Request's outcome based on the status code of the response.
+  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`, `UNKNOWN` otherwise
+
+| `status`
+| Response's HTTP status code if available (for example, `200` or `500`), or `IO_ERROR` in case of I/O issues, `CLIENT_ERROR` otherwise
+
+| `uri`
+| Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
+|===
+
+To customize the tags, and depending on your choice of client, you can provide a `@Bean` that implements `RestTemplateExchangeTagsProvider` or `WebClientExchangeTagsProvider`.
+There are convenience static functions in `RestTemplateExchangeTags` and `WebClientExchangeTags`.
+
+
+
+[[production-ready-metrics-cache]]
+==== Cache Metrics
+Auto-configuration enables the instrumentation of all available ``Cache``s on startup with metrics prefixed with `cache`.
+Cache instrumentation is standardized for a basic set of metrics.
+Additional, cache-specific metrics are also available.
+
+The following cache libraries are supported:
+
+* Caffeine
+* EhCache 2
+* Hazelcast
+* Any compliant JCache (JSR-107) implementation
+
+Metrics are tagged by the name of the cache and by the name of the `CacheManager` that is derived from the bean name.
+
+NOTE: Only caches that are available on startup are bound to the registry.
+For caches created on-the-fly or programmatically after the startup phase, an explicit registration is required.
+A `CacheMetricsRegistrar` bean is made available to make that process easier.
+
+
+
+[[production-ready-metrics-jdbc]]
+==== DataSource Metrics
+Auto-configuration enables the instrumentation of all available `DataSource` objects with metrics prefixed with `jdbc.connections`.
+Data source instrumentation results in gauges representing the currently active, idle, maximum allowed, and minimum allowed connections in the pool.
+
+Metrics are also tagged by the name of the `DataSource` computed based on the bean name.
+
+TIP: By default, Spring Boot provides metadata for all supported data sources; you can add additional `DataSourcePoolMetadataProvider` beans if your favorite data source isn't supported out of the box.
+See `DataSourcePoolMetadataProvidersConfiguration` for examples.
+
+Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
+Each metric is tagged by the name of the Pool (can be controlled with `spring.datasource.name`).
+
+
+
+[[production-ready-metrics-hibernate]]
+==== Hibernate Metrics
+Auto-configuration enables the instrumentation of all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate`.
+
+Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from the bean name.
+
+To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
+You can enable that on the auto-configured `EntityManagerFactory` as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	spring.jpa.properties.hibernate.generate_statistics=true
+----
+
+
+
+[[production-ready-metrics-rabbitmq]]
+==== RabbitMQ Metrics
+Auto-configuration will enable the instrumentation of all available RabbitMQ connection factories with a metric named `rabbitmq`.
+
+
+
+[[production-ready-metrics-custom]]
+=== Registering custom metrics
+To register custom metrics, inject `MeterRegistry` into your component, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
+----
+
+If you find that you repeatedly instrument a suite of metrics across components or applications, you may encapsulate this suite in a `MeterBinder` implementation.
+By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
+
+
+
+[[production-ready-metrics-per-meter-properties]]
+=== Customizing individual metrics
+If you need to apply customizations to specific `Meter` instances you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
+By default, all `MeterFilter` beans will be automatically applied to the micrometer `MeterRegistry.Config`.
+
+For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
+----
+
+
+
+[[production-ready-metrics-common-tags]]
+==== Common tags
+Common tags are generally used for dimensional drill-down on the operating environment like host, instance, region, stack, etc.
+Commons tags are applied to all meters and can be configured as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.tags.region=us-east-1
+	management.metrics.tags.stack=prod
+----
+
+The example above adds `region` and `stack` tags to all meters with a value of `us-east-1` and `prod` respectively.
+
+NOTE: The order of common tags is important if you are using Graphite.
+As the order of common tags cannot be guaranteed using this approach, Graphite users are advised to define a custom `MeterFilter` instead.
+
+
+
+==== Per-meter properties
+In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
+Per-meter customizations apply to any all meter IDs that start with the given name.
+For example, the following will disable any meters that have an ID starting with `example.remote`
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.enable.example.remote=false
+----
+
+The following properties allow per-meter customization:
+
+.Per-meter customizations
+|===
+| Property | Description
+
+| configprop:management.metrics.enable[]
+| Whether to deny meters from emitting any metrics.
+
+| configprop:management.metrics.distribution.percentiles-histogram[]
+| Whether to publish a histogram suitable for computing aggregable (across dimension) percentile approximations.
+
+| configprop:management.metrics.distribution.minimum-expected-value[], configprop:management.metrics.distribution.maximum-expected-value[]
+| Publish less histogram buckets by clamping the range of expected values.
+
+| configprop:management.metrics.distribution.percentiles[]
+| Publish percentile values computed in your application
+
+| configprop:management.metrics.distribution.sla[]
+| Publish a cumulative histogram with buckets defined by your SLAs.
+|===
+
+For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
+
+
+
+[[production-ready-metrics-endpoint]]
+=== Metrics endpoint
+Spring Boot provides a `metrics` endpoint that can be used diagnostically to examine the metrics collected by an application.
+The endpoint is not available by default and must be exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
+
+Navigating to `/actuator/metrics` displays a list of available meter names.
+You can drill down to view information about a particular meter by providing its name as a selector, e.g. `/actuator/metrics/jvm.memory.max`.
+
+[TIP]
+====
+The name you use here should match the name used in the code, not the name after it has been naming-convention normalized for a monitoring system it is shipped to.
+In other words, if `jvm.memory.max` appears as `jvm_memory_max` in Prometheus because of its snake case naming convention, you should still use `jvm.memory.max` as the selector when inspecting the meter in the `metrics` endpoint.
+====
+
+You can also add any number of `tag=KEY:VALUE` query parameters to the end of the URL to dimensionally drill down on a meter, e.g. `/actuator/metrics/jvm.memory.max?tag=area:nonheap`.
+
+[TIP]
+====
+The reported measurements are the _sum_ of the statistics of all meters matching the meter name and any tags that have been applied.
+So in the example above, the returned "Value" statistic is the sum of the maximum memory footprints of "Code Cache", "Compressed Class Space", and "Metaspace" areas of the heap.
+If you just wanted to see the maximum size for the "Metaspace", you could add an additional `tag=id:Metaspace`, i.e. `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
+====
+
+
+
+[[production-ready-auditing]]
+== Auditing
+Once Spring Security is in play, Spring Boot Actuator has a flexible audit framework that publishes events (by default, "`authentication success`", "`failure`" and "`access denied`" exceptions).
+This feature can be very useful for reporting and for implementing a lock-out policy based on authentication failures.
+
+Auditing can be enabled by providing a bean of type `AuditEventRepository` in your application's configuration.
+For convenience, Spring Boot offers an `InMemoryAuditEventRepository`.
+`InMemoryAuditEventRepository` has limited capabilities and we recommend using it only for development environments.
+For production environments, consider creating your own alternative `AuditEventRepository` implementation.
+
+
+
+[[production-ready-auditing-custom]]
+=== Custom Auditing
+To customize published security events, you can provide your own implementations of `AbstractAuthenticationAuditListener` and `AbstractAuthorizationAuditListener`.
+
+You can also use the audit services for your own business events.
+To do so, either inject the `AuditEventRepository` bean into your own components and use that directly or publish an `AuditApplicationEvent` with the Spring `ApplicationEventPublisher` (by implementing `ApplicationEventPublisherAware`).
+
+
+
+[[production-ready-http-tracing]]
+== HTTP Tracing
+HTTP Tracing can be enabled by providing a bean of type `HttpTraceRepository` in your application's configuration.
+For convenience, Spring Boot offers an `InMemoryHttpTraceRepository` that stores traces for the last 100 request-response exchanges, by default.
+`InMemoryHttpTraceRepository` is limited compared to other tracing solutions and we recommend using it only for development environments.
+For production environments, use of a production-ready tracing or observability solution, such as Zipkin or Spring Cloud Sleuth, is recommended.
+Alternatively, create your own `HttpTraceRepository` that meets your needs.
+
+The `httptrace` endpoint can be used to obtain information about the request-response exchanges that are stored in the `HttpTraceRepository`.
+
+
+
+[[production-ready-http-tracing-custom]]
+=== Custom HTTP tracing
+To customize the items that are included in each trace, use the configprop:management.trace.http.include[] configuration property.
+For advanced customization, consider registering your own `HttpExchangeTracer` implementation.
+
+
+
+[[production-ready-process-monitoring]]
+== Process Monitoring
+In the `spring-boot` module, you can find two classes to create files that are often useful for process monitoring:
+
+* `ApplicationPidFileWriter` creates a file containing the application PID (by default, in the application directory with a file name of `application.pid`).
+* `WebServerPortFileWriter` creates a file (or files) containing the ports of the running web server (by default, in the application directory with a file name of `application.port`).
+
+By default, these writers are not activated, but you can enable:
+
+* <<production-ready-process-monitoring-configuration,By Extending Configuration>>
+* <<production-ready-process-monitoring-programmatically>>
+
+
+
+[[production-ready-process-monitoring-configuration]]
+=== Extending Configuration
+In the `META-INF/spring.factories` file, you can activate the listener(s) that writes a PID file, as shown in the following example:
+
+[indent=0]
+----
+	org.springframework.context.ApplicationListener=\
+	org.springframework.boot.context.ApplicationPidFileWriter,\
+	org.springframework.boot.web.context.WebServerPortFileWriter
+----
+
+
+
+[[production-ready-process-monitoring-programmatically]]
+=== Programmatically
+You can also activate a listener by invoking the `SpringApplication.addListeners(...)` method and passing the appropriate `Writer` object.
+This method also lets you customize the file name and path in the `Writer` constructor.
+
+
+
+[[production-ready-cloudfoundry]]
+== Cloud Foundry Support
+Spring Boot's actuator module includes additional support that is activated when you deploy to a compatible Cloud Foundry instance.
+The `/cloudfoundryapplication` path provides an alternative secured route to all `@Endpoint` beans.
+
+The extended support lets Cloud Foundry management UIs (such as the web application that you can use to view deployed applications) be augmented with Spring Boot actuator information.
+For example, an application status page may include full health information instead of the typical "`running`" or "`stopped`" status.
+
+NOTE: The `/cloudfoundryapplication` path is not directly accessible to regular users.
+In order to use the endpoint, a valid UAA token must be passed with the request.
+
+
+
+[[production-ready-cloudfoundry-disable]]
+=== Disabling Extended Cloud Foundry Actuator Support
+If you want to fully disable the `/cloudfoundryapplication` endpoints, you can add the following setting to your `application.properties` file:
+
+
+.application.properties
+[source,properties,indent=0,configprops]
+----
+	management.cloudfoundry.enabled=false
+----
+
+
+
+[[production-ready-cloudfoundry-ssl]]
+=== Cloud Foundry Self-signed Certificates
+By default, the security verification for `/cloudfoundryapplication` endpoints makes SSL calls to various Cloud Foundry services.
+If your Cloud Foundry UAA or Cloud Controller services use self-signed certificates, you need to set the following property:
+
+.application.properties
+[source,properties,indent=0,configprops]
+----
+	management.cloudfoundry.skip-ssl-validation=true
+----
+
+
+
+=== Custom context path
+If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints will not be available at the root of the application.
+For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
+
+If you expect the Cloud Foundry endpoints to always be available at `/cloudfoundryapplication/*`, regardless of the server's context-path, you will need to explicitly configure that in your application.
+The configuration will differ depending on the web server in use.
+For Tomcat, the following configuration can be added:
+
+[source,java,indent=0]
+----
+include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[tag=configuration]
+----
+
+
+
+[[production-ready-whats-next]]
+== What to Read Next
+If you want to explore some of the concepts discussed in this chapter, you can take a look at the actuator {spring-boot-code}/spring-boot-samples[sample applications].
+You also might want to read about graphing tools such as https://graphiteapp.org[Graphite].
+
+Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment options`'>> or jump ahead for some in-depth information about Spring Boot's _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

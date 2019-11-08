@@ -1,0 +1,37 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+if (project.hasProperty('applyDependencyManagementPlugin')) {
+	apply plugin: 'io.spring.dependency-management'
+	dependencyManagement {
+		resolutionStrategy {
+			eachDependency {
+				if (it.requested.group == 'org.springframework.boot') {
+					it.useVersion project.bootVersion
+				}
+			}
+		}
+	}
+}
+
+repositories {
+	maven { url 'file:repository' }
+}
+
+task doesNotHaveDependencyManagement {
+	doLast {
+		if (project.extensions.findByName('dependencyManagement') != null) {
+			throw new GradleException('Found dependency management extension')
+		}
+	}
+}
+
+task hasDependencyManagement {
+	doLast {
+		if (!dependencyManagement.managedVersions) {
+			throw new GradleException('No managed versions have been configured')
+		}
+	}
+}

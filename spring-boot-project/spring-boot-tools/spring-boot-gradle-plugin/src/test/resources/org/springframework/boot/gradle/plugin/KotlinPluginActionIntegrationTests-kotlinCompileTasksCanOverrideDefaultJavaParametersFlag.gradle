@@ -1,0 +1,19 @@
+plugins {
+	id 'org.springframework.boot' version '{version}'
+}
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+
+tasks.withType(KotlinCompile) {
+	kotlinOptions.javaParameters = false
+}
+
+task('kotlinCompileTasksJavaParameters') {
+	doFirst {
+		tasks.withType(KotlinCompile) {
+			println "$name java parameters: ${kotlinOptions.javaParameters}"
+		}
+	}
+}

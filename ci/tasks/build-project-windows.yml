@@ -1,0 +1,6 @@
+---
+platform: windows
+inputs:
+- name: git-repo
+run:
+  path: git-repo/ci/scripts/build-project-windows.bat

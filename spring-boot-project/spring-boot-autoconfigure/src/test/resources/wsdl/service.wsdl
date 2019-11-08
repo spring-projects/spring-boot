@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="https://www.springframework.org/spring-ws/wsdl"
+	targetNamespace="https://www.springframework.org/spring-ws/wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			elementFormDefault="qualified"
+			targetNamespace="https://www.springframework.org/spring-ws/wsdl">
+			<xsd:element name="request" type="xsd:string" />
+			<xsd:element name="response" type="xsd:string" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="responseMessage">
+		<wsdl:part name="body" element="tns:response" />
+	</wsdl:message>
+	<wsdl:message name="requestMessage">
+		<wsdl:part name="body" element="tns:request" />
+	</wsdl:message>
+	<wsdl:portType name="portType">
+		<wsdl:operation name="operation">
+			<wsdl:input message="tns:requestMessage" name="request" />
+			<wsdl:output message="tns:responseMessage"
+				name="response" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="binding" type="tns:portType">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="operation">
+			<soap:operation soapAction="" />
+			<wsdl:input name="request">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="response">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="service">
+		<wsdl:port binding="tns:binding" name="port">
+			<soap:address location="/services" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

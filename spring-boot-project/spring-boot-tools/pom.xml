@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-parent</artifactId>
+		<version>${revision}</version>
+		<relativePath>../spring-boot-parent</relativePath>
+	</parent>
+	<artifactId>spring-boot-tools</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Boot Tools</name>
+	<description>Spring Boot Tools</description>
+	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
+	</properties>
+	<scm>
+		<url>${git.url}</url>
+		<connection>${git.connection}</connection>
+		<developerConnection>${git.developerConnection}</developerConnection>
+	</scm>
+	<modules>
+		<module>org.springframework.boot.gradle.plugin</module>
+		<module>spring-boot-antlib</module>
+		<module>spring-boot-autoconfigure-processor</module>
+		<module>spring-boot-configuration-docs</module>
+		<module>spring-boot-configuration-metadata</module>
+		<module>spring-boot-configuration-processor</module>
+		<module>spring-boot-gradle-plugin</module>
+		<module>spring-boot-loader</module>
+		<module>spring-boot-loader-tools</module>
+		<module>spring-boot-maven-plugin</module>
+		<module>spring-boot-test-support</module>
+	</modules>
+</project>
