@@ -62,7 +62,8 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 
 	@ReadOperation
 	public HealthComponent health() {
-		return health(ApiVersion.V3, EMPTY_PATH);
+		HealthComponent health = health(ApiVersion.V3, EMPTY_PATH);
+		return (health != null) ? health : DEFAULT_HEALTH;
 	}
 
 	@ReadOperation

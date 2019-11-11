@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * Example {@link SpringBootApplication @SpringBootApplication} used with
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Phillip Webb
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class ExampleWebClientApplication {
 
 }

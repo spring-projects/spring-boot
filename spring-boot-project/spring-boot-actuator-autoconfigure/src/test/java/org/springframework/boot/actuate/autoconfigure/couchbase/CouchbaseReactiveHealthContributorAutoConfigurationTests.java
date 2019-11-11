@@ -43,13 +43,21 @@ class CouchbaseReactiveHealthContributorAutoConfigurationTests {
 	@Test
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-				.doesNotHaveBean(CouchbaseHealthIndicator.class));
+				.hasBean("couchbaseHealthContributor"));
+	}
+
+	@Test
+	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(CouchbaseHealthContributorAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
+						.hasBean("couchbaseHealthContributor").doesNotHaveBean(CouchbaseHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
+						.doesNotHaveBean("couchbaseHealthContributor"));
 	}
 
 }

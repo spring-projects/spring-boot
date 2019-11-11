@@ -51,8 +51,8 @@ public class CassandraReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = { "cassandraReactiveHealthIndicator", "cassandraReactiveHealthContributor" })
-	public ReactiveHealthContributor cassandraReactiveHealthContributor(
+	@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
+	public ReactiveHealthContributor cassandraHealthContributor(
 			Map<String, ReactiveCassandraOperations> reactiveCassandraOperations) {
 		return createContributor(reactiveCassandraOperations);
 	}

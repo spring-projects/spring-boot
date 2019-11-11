@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -178,6 +179,16 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runCreatesHealthContributorRegistryContainingHealthBeans() {
 		this.contextRunner.run((context) -> {
+			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
+			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "ping", "reactive");
+		});
+	}
+
+	@Test
+	void runWhenNoReactorCreatesHealthContributorRegistryContainingHealthBeans() {
+		ClassLoader classLoader = new FilteredClassLoader(Mono.class, Flux.class);
+		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
 			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
 			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "ping");

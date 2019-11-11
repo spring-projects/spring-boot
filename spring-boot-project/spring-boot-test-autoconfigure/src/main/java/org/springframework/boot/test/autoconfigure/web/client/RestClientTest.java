@@ -72,7 +72,7 @@ import org.springframework.web.client.RestTemplate;
 @BootstrapWith(RestClientTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
-@TypeExcludeFilters(RestClientExcludeFilter.class)
+@TypeExcludeFilters(RestClientTypeExcludeFilter.class)
 @AutoConfigureCache
 @AutoConfigureWebClient
 @AutoConfigureMockRestServiceServer

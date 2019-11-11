@@ -36,9 +36,9 @@ import org.springframework.util.Assert;
  */
 abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C> {
 
-	private Map<String, V> map;
+	private final Map<String, V> map;
 
-	private Function<V, ? extends C> valueAdapter;
+	private final Function<V, ? extends C> valueAdapter;
 
 	NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
 		Assert.notNull(map, "Map must not be null");

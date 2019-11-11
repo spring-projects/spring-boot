@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.codec.CodecProperties;
 import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -67,11 +68,11 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	void loggingRequestDetailsBeanShouldHaveOrderZero() {
+	void defaultCodecCustomizerBeanShouldHaveOrderZero() {
 		this.contextRunner.run((context) -> {
 			Method customizerMethod = ReflectionUtils.findMethod(
-					CodecsAutoConfiguration.LoggingCodecConfiguration.class, "loggingCodecCustomizer",
-					HttpProperties.class);
+					CodecsAutoConfiguration.DefaultCodecsConfiguration.class, "defaultCodecCustomizer",
+					HttpProperties.class, CodecProperties.class);
 			Integer order = new TestAnnotationAwareOrderComparator().findOrder(customizerMethod);
 			assertThat(order).isEqualTo(0);
 		});
@@ -96,6 +97,16 @@ class CodecsAutoConfigurationTests {
 					assertThat(codecCustomizers).hasSize(3);
 					assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
 				});
+	}
+
+	@Test
+	void maxInMemorySizeEnforcedInDefaultCodecs() {
+		this.contextRunner.withPropertyValues("spring.codec.max-in-memory-size=1MB").run((context) -> {
+			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
+			customizer.customize(configurer);
+			assertThat(configurer.defaultCodecs()).hasFieldOrPropertyWithValue("maxInMemorySize", 1048576);
+		});
 	}
 
 	static class TestAnnotationAwareOrderComparator extends AnnotationAwareOrderComparator {

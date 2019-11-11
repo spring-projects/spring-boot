@@ -342,8 +342,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				ErrorHandler errorHandler = context.getErrorHandler();
-				context.setErrorHandler(new JettyEmbeddedErrorHandler(errorHandler));
+				JettyEmbeddedErrorHandler errorHandler = new JettyEmbeddedErrorHandler();
+				context.setErrorHandler(errorHandler);
 				addJettyErrorPages(errorHandler, getErrorPages());
 			}
 

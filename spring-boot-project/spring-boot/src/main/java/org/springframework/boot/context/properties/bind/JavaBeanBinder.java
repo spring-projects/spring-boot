@@ -42,6 +42,8 @@ import org.springframework.core.ResolvableType;
  */
 class JavaBeanBinder implements DataObjectBinder {
 
+	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
+
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder) {

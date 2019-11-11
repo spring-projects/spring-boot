@@ -103,8 +103,8 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		Constructor<?>[] constructors = MultipleConstructorsBean.class.getDeclaredConstructors();
 		Constructor<?> constructor = (constructors[0].getParameterCount() == 1) ? constructors[0] : constructors[1];
-		MultipleConstructorsBean bound = this.binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)
-				.withConstructorFilter((candidate) -> candidate.equals(constructor))).get();
+		Binder binder = new Binder(this.sources, null, null, null, null, (type) -> constructor);
+		MultipleConstructorsBean bound = binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).get();
 		assertThat(bound.getIntValue()).isEqualTo(12);
 	}
 

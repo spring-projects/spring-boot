@@ -50,8 +50,8 @@ public class CouchbaseReactiveHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<CouchbaseReactiveHealthIndicator, Cluster> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = { "couchbaseReactiveHealthIndicator", "couchbaseReactiveHealthContributor" })
-	public ReactiveHealthContributor couchbaseReactiveHealthContributor(Map<String, Cluster> clusters) {
+	@ConditionalOnMissingBean(name = { "couchbaseHealthIndicator", "couchbaseHealthContributor" })
+	public ReactiveHealthContributor couchbaseHealthContributor(Map<String, Cluster> clusters) {
 		return createContributor(clusters);
 	}
 

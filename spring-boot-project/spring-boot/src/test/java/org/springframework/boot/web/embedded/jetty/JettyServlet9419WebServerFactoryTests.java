@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -36,7 +37,7 @@ class JettyServlet9419WebServerFactoryTests extends AbstractJettyServletWebServe
 
 	@Test
 	void correctVersionOfJettyUsed() {
-		assertThat(JettyEmbeddedErrorHandler.ERROR_PAGE_FOR_METHOD_AVAILABLE).isFalse();
+		assertThat(ErrorHandler.class.getPackage().getImplementationVersion()).isEqualTo("9.4.19.v20190610");
 	}
 
 }

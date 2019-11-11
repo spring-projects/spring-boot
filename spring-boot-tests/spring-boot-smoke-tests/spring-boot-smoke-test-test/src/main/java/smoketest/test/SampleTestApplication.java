@@ -18,6 +18,7 @@ package smoketest.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * Sample application to demonstrate testing.
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Phillip Webb
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class SampleTestApplication {
 
 	// NOTE: this application will intentionally not start without MySQL, the test will

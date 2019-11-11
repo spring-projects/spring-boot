@@ -209,7 +209,8 @@ class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
 			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"),
+					EndpointId.of("specialized-superclass"));
 		});
 	}
 
@@ -252,7 +253,7 @@ class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
 				EndpointId id = endpoint.getEndpointId();
-				return !id.equals(EndpointId.of("specialized"));
+				return !id.equals(EndpointId.of("specialized")) && !id.equals(EndpointId.of("specialized-superclass"));
 			};
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context,
 					Collections.singleton(filter));
@@ -401,7 +402,8 @@ class EndpointDiscovererTests {
 
 	}
 
-	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, SpecializedExtension.class })
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, SpecializedSuperclassTestEndpoint.class,
+			SpecializedExtension.class })
 	static class SpecializedEndpointsConfiguration {
 
 	}
@@ -486,6 +488,20 @@ class EndpointDiscovererTests {
 
 	@SpecializedEndpoint(id = "specialized")
 	static class SpecializedTestEndpoint {
+
+		@ReadOperation
+		Object getAll() {
+			return null;
+		}
+
+	}
+
+	@SpecializedEndpoint(id = "specialized-superclass")
+	static class AbstractFilteredEndpoint {
+
+	}
+
+	static class SpecializedSuperclassTestEndpoint extends AbstractFilteredEndpoint {
 
 		@ReadOperation
 		Object getAll() {

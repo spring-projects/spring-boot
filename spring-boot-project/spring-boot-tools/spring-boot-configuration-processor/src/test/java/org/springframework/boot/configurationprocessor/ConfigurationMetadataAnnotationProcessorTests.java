@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
+import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
@@ -359,6 +360,11 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueCharacterProperties.class))
 				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	void recursivePropertiesDoNotCauseAStackOverflow() {
+		compile(RecursiveProperties.class);
 	}
 
 }

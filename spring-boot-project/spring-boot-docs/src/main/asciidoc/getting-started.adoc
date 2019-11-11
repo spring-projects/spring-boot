@@ -128,6 +128,19 @@ The following listing shows a typical `pom.xml` file:
 			<version>{spring-boot-version}</version>
 		</parent>
 
+		<!-- Override inherited settings -->
+		<description/>
+		<developers>
+    		<developer/>
+		</developers>
+		<licenses>
+    		<license/>
+		</licenses>
+		<scm>
+    		<url/>
+		</scm>
+		<url/>
+
 		<!-- Add typical dependencies for a web application -->
 		<dependencies>
 			<dependency>
@@ -460,6 +473,18 @@ Open your favorite text editor and add the following:
 			<artifactId>spring-boot-starter-parent</artifactId>
 			<version>{spring-boot-version}</version>
 		</parent>
+
+		<description/>
+		<developers>
+			<developer/>
+		</developers>
+		<licenses>
+			<license/>
+		</licenses>
+		<scm>
+			<url/>
+		</scm>
+		<url/>
 
 		<!-- Additional lines to be added here... -->
 

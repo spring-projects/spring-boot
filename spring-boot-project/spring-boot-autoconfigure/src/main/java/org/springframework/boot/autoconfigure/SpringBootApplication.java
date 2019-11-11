@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -37,11 +36,9 @@ import org.springframework.data.repository.Repository;
 /**
  * Indicates a {@link Configuration configuration} class that declares one or more
  * {@link Bean @Bean} methods and also triggers {@link EnableAutoConfiguration
- * auto-configuration}, {@link ComponentScan component scanning}, and
- * {@link ConfigurationPropertiesScan configuration properties scanning}. This is a
- * convenience annotation that is equivalent to declaring {@code @Configuration},
- * {@code @EnableAutoConfiguration}, {@code @ComponentScan}, and
- * {@code @ConfigurationPropertiesScan}.
+ * auto-configuration} and {@link ComponentScan component scanning}. This is a convenience
+ * annotation that is equivalent to declaring {@code @Configuration},
+ * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -56,7 +53,6 @@ import org.springframework.data.repository.Repository;
 @EnableAutoConfiguration
 @ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
 		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
-@ConfigurationPropertiesScan
 public @interface SpringBootApplication {
 
 	/**

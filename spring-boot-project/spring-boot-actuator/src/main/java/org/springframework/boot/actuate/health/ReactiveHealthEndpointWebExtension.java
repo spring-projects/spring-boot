@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,7 +82,9 @@ public class ReactiveHealthEndpointWebExtension
 			SecurityContext securityContext, boolean showAll, String... path) {
 		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, securityContext, showAll, path);
 		if (result == null) {
-			return Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
+			return (Arrays.equals(path, NO_PATH))
+					? Mono.just(new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK))
+					: Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
 		HealthEndpointGroup group = result.getGroup();
 		return result.getHealth().map((health) -> {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,18 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(SystemHealth.class);
 		assertThat(response.getStatus()).isEqualTo(200);
+	}
+
+	@Test
+	void healthWithNoContributorReturnsUp() {
+		assertThat(this.registry).isEmpty();
+		WebEndpointResponse<? extends HealthComponent> response = create(this.registry,
+				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap()))
+						.health(ApiVersion.LATEST, SecurityContext.NONE).block();
+		assertThat(response.getStatus()).isEqualTo(200);
+		HealthComponent health = response.getBody();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health).isInstanceOf(Health.class);
 	}
 
 	@Test

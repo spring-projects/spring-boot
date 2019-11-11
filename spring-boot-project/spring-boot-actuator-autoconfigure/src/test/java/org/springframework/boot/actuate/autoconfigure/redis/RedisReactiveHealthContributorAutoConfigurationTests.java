@@ -40,16 +40,22 @@ class RedisReactiveHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(RedisReactiveHealthContributorAutoConfiguration.class)
-						.doesNotHaveBean(RedisHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RedisReactiveHealthIndicator.class)
+				.hasBean("redisHealthContributor"));
+	}
+
+	@Test
+	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisHealthContributorAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(RedisReactiveHealthIndicator.class)
+						.hasBean("redisHealthContributor").doesNotHaveBean(RedisHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(RedisReactiveHealthIndicator.class)
-						.doesNotHaveBean(RedisHealthIndicator.class));
+						.doesNotHaveBean("redisHealthContributor"));
 	}
 
 }
