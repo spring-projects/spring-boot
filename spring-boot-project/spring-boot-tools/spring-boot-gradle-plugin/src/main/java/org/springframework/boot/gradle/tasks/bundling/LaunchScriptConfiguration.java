@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,11 +51,32 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
 		Project project = archiveTask.getProject();
-		putIfMissing(this.properties, "initInfoProvides", archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()),
-				archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()),
-				archiveTask.getBaseName());
+		String baseName = getArchiveBaseName(archiveTask);
+		putIfMissing(this.properties, "initInfoProvides", baseName);
+		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()), baseName);
+		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()), baseName);
+	}
+
+	private static String getArchiveBaseName(AbstractArchiveTask task) {
+		try {
+			Method method = findMethod(task.getClass(), "getArchiveBaseName");
+			if (method != null) {
+				return (String) method.invoke(task);
+			}
+		}
+		catch (Exception ex) {
+			// Continue
+		}
+		return task.getBaseName();
+	}
+
+	private static Method findMethod(Class<?> type, String name) {
+		for (Method candidate : type.getMethods()) {
+			if (candidate.getName().equals(name)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	/**

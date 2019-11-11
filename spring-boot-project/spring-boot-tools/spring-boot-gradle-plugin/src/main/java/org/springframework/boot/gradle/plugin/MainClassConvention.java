@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.plugins.JavaApplication;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -53,11 +54,9 @@ final class MainClassConvention implements Callable<Object> {
 		if (springBootExtension != null && springBootExtension.getMainClassName() != null) {
 			return springBootExtension.getMainClassName();
 		}
-		if (this.project.hasProperty("mainClassName")) {
-			Object mainClassName = this.project.property("mainClassName");
-			if (mainClassName != null) {
-				return mainClassName;
-			}
+		JavaApplication javaApplication = this.project.getConvention().findByType(JavaApplication.class);
+		if (javaApplication != null && javaApplication.getMainClassName() != null) {
+			return javaApplication.getMainClassName();
 		}
 		return resolveMainClass();
 	}
