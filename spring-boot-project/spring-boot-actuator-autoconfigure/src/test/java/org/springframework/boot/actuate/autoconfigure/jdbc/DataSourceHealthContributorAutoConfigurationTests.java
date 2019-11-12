@@ -72,7 +72,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	void runWithRoutingAndEmbeddedDataSourceShouldFilterRoutingDataSource() {
+	void runWithRoutingAndEmbeddedDataSourceShouldIncludeRoutingDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
 				.run((context) -> {
 					CompositeHealthContributor composite = context.getBean(CompositeHealthContributor.class);
@@ -83,7 +83,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	void runWithOnlyRoutingDataSourceShouldFilterRoutingDataSource() {
+	void runWithOnlyRoutingDataSourceShouldIncludeRoutingDataSource() {
 		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(RoutingDataSourceHealthIndicator.class));
 	}
