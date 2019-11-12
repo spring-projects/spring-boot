@@ -61,7 +61,7 @@ class RequestPredicateFactoryTests {
 	}
 
 	@Test
-	void getRequestPredicateReturnsRedicateWithPath() {
+	void getRequestPredicateReturnsPredicateWithPath() {
 		DiscoveredOperationMethod operationMethod = getDiscoveredOperationMethod(ValidSelectors.class);
 		WebOperationRequestPredicate requestPredicate = this.factory.getRequestPredicate(this.rootPath,
 				operationMethod);
