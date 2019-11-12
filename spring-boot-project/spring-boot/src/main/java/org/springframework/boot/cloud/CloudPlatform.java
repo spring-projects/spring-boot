@@ -16,13 +16,13 @@
 
 package org.springframework.boot.cloud;
 
+import java.io.File;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-
-import java.io.File;
 
 /**
  * Simple detection for well known cloud platforms. For more advanced cloud provider
@@ -112,7 +112,7 @@ public enum CloudPlatform {
 			return false;
 		}
 
-		boolean isSecretLocationExists(){
+		boolean isSecretLocationExists() {
 			File file = new File(SECRET_LOCATION);
 			return file.exists() && file.isDirectory();
 		}

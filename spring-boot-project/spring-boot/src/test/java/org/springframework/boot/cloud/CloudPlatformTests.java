@@ -16,18 +16,17 @@
 
 package org.springframework.boot.cloud;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -106,8 +105,9 @@ class CloudPlatformTests {
 		environment.getPropertySources().addFirst(propertySource);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		File path = new File("/var/run/secrets/kubernetes.io");
-		if ( !path.exists() && !path.isDirectory())
+		if (!path.exists() && !path.isDirectory()) {
 			assertThat(platform).isNull();
+		}
 
 	}
 
