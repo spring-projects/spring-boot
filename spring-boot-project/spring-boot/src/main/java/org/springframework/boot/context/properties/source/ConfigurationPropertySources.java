@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
 public final class ConfigurationPropertySources {
 
 	/**
-	 * The name of the {@link PropertySource} {@link #adapt adapter}.
+	 * The name of the {@link PropertySource} {@link #attach(Environment) adapter}.
 	 */
 	private static final String ATTACHED_PROPERTY_SOURCE_NAME = "configurationProperties";
 
