@@ -68,7 +68,7 @@ class MainClassConventionTests {
 	}
 
 	@Test
-	void springBootExtensionMainClassNameIsUsedInPreferenceToMainClassNameProjectProperty() throws Exception {
+	void springBootExtensionMainClassNameIsUsedInPreferenceToJavaApplicationExtensionMainClassName() throws Exception {
 		this.project.getPlugins().apply(ApplicationPlugin.class);
 		JavaApplication javaApplication = this.project.getExtensions().findByType(JavaApplication.class);
 		javaApplication.setMainClassName("com.example.JavaApplicationMainClass");
