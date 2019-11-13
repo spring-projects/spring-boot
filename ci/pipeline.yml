@@ -293,11 +293,11 @@ jobs:
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-samples.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_failure:
