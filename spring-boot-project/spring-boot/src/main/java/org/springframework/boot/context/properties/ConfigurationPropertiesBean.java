@@ -308,7 +308,7 @@ public final class ConfigurationPropertiesBean {
 		VALUE_OBJECT;
 
 		static BindMethod forType(Class<?> type) {
-			return (ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(type) != null)
+			return (ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(type, false) != null)
 					? VALUE_OBJECT : JAVA_BEAN;
 		}
 

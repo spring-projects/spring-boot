@@ -522,6 +522,8 @@ public class Binder {
 
 		private final Deque<Class<?>> dataObjectBindings = new ArrayDeque<>();
 
+		private final Deque<Class<?>> constructorBindings = new ArrayDeque<>();
+
 		private ConfigurationProperty configurationProperty;
 
 		Context() {
@@ -580,6 +582,18 @@ public class Binder {
 
 		void clearConfigurationProperty() {
 			this.configurationProperty = null;
+		}
+
+		void pushConstructorBoundTypes(Class<?> value) {
+			this.constructorBindings.push(value);
+		}
+
+		boolean isNestedConstructorBinding() {
+			return !this.constructorBindings.isEmpty();
+		}
+
+		void popConstructorBoundTypes() {
+			this.constructorBindings.pop();
 		}
 
 		PlaceholdersResolver getPlaceholdersResolver() {

@@ -213,7 +213,7 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
 		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(ConstructorBindingOnConstructor.class)).isNotNull();
+				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
 	}
 
 	@Test

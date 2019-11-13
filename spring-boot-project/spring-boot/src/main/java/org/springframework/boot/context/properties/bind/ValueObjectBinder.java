@@ -53,10 +53,11 @@ class ValueObjectBinder implements DataObjectBinder {
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
 			DataObjectPropertyBinder propertyBinder) {
-		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider);
+		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider, context);
 		if (valueObject == null) {
 			return null;
 		}
+		context.pushConstructorBoundTypes(target.getType().resolve());
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<Object> args = new ArrayList<>(parameters.size());
 		boolean bound = false;
@@ -67,12 +68,13 @@ class ValueObjectBinder implements DataObjectBinder {
 			args.add(arg);
 		}
 		context.clearConfigurationProperty();
+		context.popConstructorBoundTypes();
 		return bound ? valueObject.instantiate(args) : null;
 	}
 
 	@Override
 	public <T> T create(Bindable<T> target, Binder.Context context) {
-		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider);
+		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider, context);
 		if (valueObject == null) {
 			return null;
 		}
@@ -104,12 +106,14 @@ class ValueObjectBinder implements DataObjectBinder {
 		abstract List<ConstructorParameter> getConstructorParameters();
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Bindable<T> bindable, BindConstructorProvider constructorProvider) {
+		static <T> ValueObject<T> get(Bindable<T> bindable, BindConstructorProvider constructorProvider,
+				Binder.Context context) {
 			Class<T> type = (Class<T>) bindable.getType().resolve();
 			if (type == null || type.isEnum() || Modifier.isAbstract(type.getModifiers())) {
 				return null;
 			}
-			Constructor<?> bindConstructor = constructorProvider.getBindConstructor(bindable);
+			Constructor<?> bindConstructor = constructorProvider.getBindConstructor(bindable,
+					context.isNestedConstructorBinding());
 			if (bindConstructor == null) {
 				return null;
 			}

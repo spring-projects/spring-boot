@@ -30,7 +30,7 @@ import org.springframework.core.KotlinDetector;
 class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 	@Override
-	public Constructor<?> getBindConstructor(Bindable<?> bindable) {
+	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
 		Class<?> type = bindable.getType().resolve();
 		if (bindable.getValue() != null || type == null) {
 			return null;
