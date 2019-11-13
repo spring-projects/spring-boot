@@ -51,7 +51,7 @@ public class EndpointMediaTypes {
 	 * @since 2.2.0
 	 */
 	public EndpointMediaTypes(String... producedAndConsumed) {
-		this((producedAndConsumed != null) ? Arrays.asList(producedAndConsumed) : (List<String>) null);
+		this((producedAndConsumed != null) ? Arrays.asList(producedAndConsumed) : null);
 	}
 
 	/**
