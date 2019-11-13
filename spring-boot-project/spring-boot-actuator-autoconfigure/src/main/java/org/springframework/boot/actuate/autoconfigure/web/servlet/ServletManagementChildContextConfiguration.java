@@ -190,7 +190,7 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog != null && requestLog instanceof CustomRequestLog) {
+			if (requestLog instanceof CustomRequestLog) {
 				customizeRequestLog((CustomRequestLog) requestLog);
 			}
 		}
