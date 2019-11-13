@@ -37,16 +37,16 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 	static final ConfigurationPropertiesBindConstructorProvider INSTANCE = new ConfigurationPropertiesBindConstructorProvider();
 
 	@Override
-	public Constructor<?> getBindConstructor(Bindable<?> bindable) {
-		return getBindConstructor(bindable.getType().resolve());
+	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
+		return getBindConstructor(bindable.getType().resolve(), isNestedConstructorBinding);
 	}
 
-	Constructor<?> getBindConstructor(Class<?> type) {
+	Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
 		if (type == null) {
 			return null;
 		}
 		Constructor<?> constructor = findConstructorBindingAnnotatedConstructor(type);
-		if (constructor == null && isConstructorBindingAnnotatedType(type)) {
+		if (constructor == null && (isConstructorBindingAnnotatedType(type) || isNestedConstructorBinding)) {
 			constructor = deduceBindConstructor(type);
 		}
 		return constructor;
