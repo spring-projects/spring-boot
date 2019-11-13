@@ -326,11 +326,11 @@ jobs:
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_failure:
@@ -363,20 +363,20 @@ jobs:
     - do:
         - task: build-project
           privileged: true
-          timeout: 1h30m
+          timeout: ((task-timeout))
           image: spring-boot-jdk13-ci-image
           file: git-repo/ci/tasks/build-project.yml
         - in_parallel:
             - task: build-smoke-tests
-              timeout: 1h30m
+              timeout: ((task-timeout))
               image: spring-boot-jdk13-ci-image
               file: git-repo/ci/tasks/build-smoke-tests.yml
             - task: build-integration-tests
-              timeout: 1h30m
+              timeout: ((task-timeout))
               image: spring-boot-jdk13-ci-image
               file: git-repo/ci/tasks/build-integration-tests.yml
             - task: build-deployment-tests
-              timeout: 1h30m
+              timeout: ((task-timeout))
               image: spring-boot-jdk13-ci-image
               file: git-repo/ci/tasks/build-deployment-tests.yml
       on_failure:
