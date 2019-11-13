@@ -39,25 +39,28 @@ For example, using a `Dockerfile` you could express it in this form:
 
 [indent=0]
 ----
-    FROM openjdk:8-jdk-alpine AS builder
-    WORKDIR target/dependency
-    ARG fatjar
-    COPY ${fatjar} app.jar
-    RUN jar -xf ./app.jar
+	FROM openjdk:8-jdk-alpine AS builder
+	WORKDIR target/dependency
+	ARG appjar
+	COPY ${appjar} app.jar
+	RUN jar -xf ./app.jar
 
-    FROM openjdk:8-jre-alpine
-    VOLUME /tmp
-    ARG DEPENDENCY=target/dependency
-    COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-    COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
-    COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
-    ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
+	FROM openjdk:8-jre-alpine
+	VOLUME /tmp
+	ARG DEPENDENCY=target/dependency
+	COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
+	COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
+	COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
+	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
 ----
-and then build your docker image by passing the full path to your application jar:
+
+Assuming the above `Dockerfile` is the current directory, your docker image can be built specifying the path to your application jar, as show in the following example:
+
 [indent=0]
 ----
-docker build --build-arg fatjar=./full/path/to/your/springboot/app.jar
+	docker build --build-arg appjar=path/to/myapp.jar .
 ----
+
 
 
 [[cloud-deployment]]
