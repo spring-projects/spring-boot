@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.boot.logging.DeferredLog;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -89,9 +90,9 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationEvent> {
 
-	private static final Log logger = LogFactory.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
+	private static final DeferredLog logger = new DeferredLog();
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
@@ -124,6 +125,13 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			else {
 				propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
 			}
+		}
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationPreparedEvent) {
+			logger.switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
 		}
 	}
 
