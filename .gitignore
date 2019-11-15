@@ -17,6 +17,7 @@
 .recommenders
 .settings
 .springBeans
+.vscode
 /code
 MANIFEST.MF
 _site/
