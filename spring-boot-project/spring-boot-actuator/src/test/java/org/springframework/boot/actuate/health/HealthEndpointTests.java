@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,15 @@ class HealthEndpointTests
 		HealthComponent health = create(this.registry, this.groups).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(SystemHealth.class);
+	}
+
+	@Test
+	void healthWithNoContributorReturnsUp() {
+		assertThat(this.registry).isEmpty();
+		HealthComponent health = create(this.registry,
+				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap())).health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health).isInstanceOf(Health.class);
 	}
 
 	@Test

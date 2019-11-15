@@ -339,11 +339,13 @@ class JavaBeanBinderTests {
 
 	@Test
 	void bindToInstanceWhenNoDefaultConstructorShouldBind() {
+		Binder binder = new Binder(this.sources, null, null, null, null,
+				(bindable, isNestedConstructorBinding) -> null);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
 		ExampleWithNonDefaultConstructor bean = new ExampleWithNonDefaultConstructor("faf");
-		ExampleWithNonDefaultConstructor boundBean = this.binder
+		ExampleWithNonDefaultConstructor boundBean = binder
 				.bind("foo", Bindable.of(ExampleWithNonDefaultConstructor.class).withExistingValue(bean)).get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getValue()).isEqualTo("bar");

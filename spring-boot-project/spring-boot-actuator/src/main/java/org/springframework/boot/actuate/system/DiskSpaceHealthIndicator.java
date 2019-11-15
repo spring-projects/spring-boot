@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -62,7 +63,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
+			logger.warn(LogMessage.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
 					diskFreeInBytes, this.threshold));
 			builder.down();
 		}

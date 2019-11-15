@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -29,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.stereotype.Component;
@@ -69,6 +69,16 @@ class ConfigurationPropertiesBeanTests {
 			assertThat(valueObject.getType()).isEqualTo(ValueObject.class);
 			assertThat(valueObject.getAnnotation()).isNotNull();
 			assertThat(valueObject.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		}
+	}
+
+	@Test
+	void getAllWhenHasBadBeanDoesNotFail() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				NonAnnotatedComponent.class, AnnotatedComponent.class, AnnotatedBeanConfiguration.class,
+				ValueObjectConfiguration.class, BadBeanConfiguration.class)) {
+			Map<String, ConfigurationPropertiesBean> all = ConfigurationPropertiesBean.getAll(context);
+			assertThat(all).isNotEmpty();
 		}
 	}
 
@@ -202,8 +212,8 @@ class ConfigurationPropertiesBeanTests {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
-		assertThat(Arrays.stream(ConstructorBindingOnConstructor.class.getDeclaredConstructors())
-				.filter(target.getConstructorFilter())).hasSize(1);
+		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
+				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
 	}
 
 	@Test
@@ -219,27 +229,27 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingReturnsJavaBean() {
-		BindMethod bindType = BindMethod.forClass(NoConstructorBinding.class);
+	void bindTypeForTypeWhenNoConstructorBindingReturnsJavaBean() {
+		BindMethod bindType = BindMethod.forType(NoConstructorBinding.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingOnTypeReturnsValueObject() {
-		BindMethod bindType = BindMethod.forClass(ConstructorBindingOnType.class);
+	void bindTypeForTypeWhenNoConstructorBindingOnTypeReturnsValueObject() {
+		BindMethod bindType = BindMethod.forType(ConstructorBindingOnType.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingOnConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.forClass(ConstructorBindingOnConstructor.class);
+	void bindTypeForTypeWhenNoConstructorBindingOnConstructorReturnsValueObject() {
+		BindMethod bindType = BindMethod.forType(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForClassWhenConstructorBindingOnMultipleConstructorsThrowsException() {
+	void bindTypeForTypeWhenConstructorBindingOnMultipleConstructorsThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> BindMethod.forClass(ConstructorBindingOnMultipleConstructors.class))
+				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
 				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 						+ " has more than one @ConstructorBinding constructor");
 	}
@@ -384,6 +394,25 @@ class ConfigurationPropertiesBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ValueObject.class)
 	static class ValueObjectConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BadBeanConfiguration {
+
+		@Bean
+		@Lazy
+		BadBean badBean() {
+			return new BadBean();
+		}
+
+	}
+
+	static class BadBean {
+
+		BadBean() {
+			throw new IllegalStateException();
+		}
 
 	}
 

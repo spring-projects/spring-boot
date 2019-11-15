@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,7 +80,9 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 			boolean showAll, String... path) {
 		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, showAll, path);
 		if (result == null) {
-			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
+			return (Arrays.equals(path, NO_PATH))
+					? new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK)
+					: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
 		HealthComponent health = result.getHealth();
 		HealthEndpointGroup group = result.getGroup();

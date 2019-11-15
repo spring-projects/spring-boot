@@ -42,6 +42,7 @@ import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -78,8 +79,8 @@ public class ImageBanner implements Banner {
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
-					+ "')");
+			logger.warn(LogMessage.format("Image banner not printable: %s (%s: '%s')", this.image, ex.getClass(),
+					ex.getMessage()));
 			logger.debug("Image banner printing failure", ex);
 		}
 		finally {

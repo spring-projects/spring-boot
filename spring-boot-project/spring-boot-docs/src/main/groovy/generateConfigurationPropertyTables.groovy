@@ -24,7 +24,7 @@ def generateConfigMetadataDocumentation() {
 		builder
 				.addSection("core")
 					.withKeyPrefixes("debug", "trace", "logging", "spring.aop", "spring.application",
-						"spring.autoconfigure", "spring.banner", "spring.beaninfo", "spring.config",
+						"spring.autoconfigure", "spring.banner", "spring.beaninfo", "spring.codec", "spring.config",
 						"spring.info", "spring.jmx", "spring.main", "spring.messages", "spring.pid",
 						"spring.profiles", "spring.quartz", "spring.reactor", "spring.task",
 						"spring.mandatory-file-encoding", "info", "spring.output.ansi.enabled")

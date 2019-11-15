@@ -55,8 +55,6 @@ public class Binder {
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
-	private static final DataObjectBinder[] DATA_OBJECT_BINDERS = { new ValueObjectBinder(), new JavaBeanBinder() };
-
 	private final Iterable<ConfigurationPropertySource> sources;
 
 	private final PlaceholdersResolver placeholdersResolver;
@@ -66,6 +64,8 @@ public class Binder {
 	private final Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	private final BindHandler defaultBindHandler;
+
+	private final List<DataObjectBinder> dataObjectBinders;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -137,6 +137,27 @@ public class Binder {
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler) {
+		this(sources, placeholdersResolver, conversionService, propertyEditorInitializer, defaultBindHandler, null);
+	}
+
+	/**
+	 * Create a new {@link Binder} instance for the specified sources.
+	 * @param sources the sources used for binding
+	 * @param placeholdersResolver strategy to resolve any property placeholders
+	 * @param conversionService the conversion service to convert values (or {@code null}
+	 * to use {@link ApplicationConversionService})
+	 * @param propertyEditorInitializer initializer used to configure the property editors
+	 * that can convert values (or {@code null} if no initialization is required). Often
+	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
+	 * @param defaultBindHandler the default bind handler to use if none is specified when
+	 * binding
+	 * @param constructorProvider the constructor provider which provides the bind
+	 * constructor to use when binding
+	 * @since 2.2.1
+	 */
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
+			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
+			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
@@ -144,6 +165,12 @@ public class Binder {
 				: ApplicationConversionService.getSharedInstance();
 		this.propertyEditorInitializer = propertyEditorInitializer;
 		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
+		if (constructorProvider == null) {
+			constructorProvider = BindConstructorProvider.DEFAULT;
+		}
+		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
+		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
+		this.dataObjectBinders = Collections.unmodifiableList(Arrays.asList(valueObjectBinder, javaBeanBinder));
 	}
 
 	/**
@@ -315,7 +342,7 @@ public class Binder {
 	}
 
 	private Object create(Bindable<?> target, Context context) {
-		for (DataObjectBinder dataObjectBinder : DATA_OBJECT_BINDERS) {
+		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
 			Object instance = dataObjectBinder.create(target, context);
 			if (instance != null) {
 				return instance;
@@ -421,7 +448,7 @@ public class Binder {
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
 		return context.withDataObject(type, () -> {
-			for (DataObjectBinder dataObjectBinder : DATA_OBJECT_BINDERS) {
+			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
 				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
 				if (instance != null) {
 					return instance;
@@ -495,6 +522,8 @@ public class Binder {
 
 		private final Deque<Class<?>> dataObjectBindings = new ArrayDeque<>();
 
+		private final Deque<Class<?>> constructorBindings = new ArrayDeque<>();
+
 		private ConfigurationProperty configurationProperty;
 
 		Context() {
@@ -551,8 +580,20 @@ public class Binder {
 			this.configurationProperty = configurationProperty;
 		}
 
-		private void clearConfigurationProperty() {
+		void clearConfigurationProperty() {
 			this.configurationProperty = null;
+		}
+
+		void pushConstructorBoundTypes(Class<?> value) {
+			this.constructorBindings.push(value);
+		}
+
+		boolean isNestedConstructorBinding() {
+			return !this.constructorBindings.isEmpty();
+		}
+
+		void popConstructorBoundTypes() {
+			this.constructorBindings.pop();
 		}
 
 		PlaceholdersResolver getPlaceholdersResolver() {

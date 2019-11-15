@@ -41,6 +41,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
@@ -84,9 +85,10 @@ public class GroovyTemplateAutoConfiguration {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
 				if (!location.exists(this.applicationContext)) {
-					logger.warn("Cannot find template location: " + location
-							+ " (please add some templates, check your Groovy "
-							+ "configuration, or set spring.groovy.template.check-template-location=false)");
+					logger.warn(LogMessage.format(
+							"Cannot find template location: %s (please add some templates, check your Groovy "
+									+ "configuration, or set spring.groovy.template.check-template-location=false)",
+							location));
 				}
 			}
 		}

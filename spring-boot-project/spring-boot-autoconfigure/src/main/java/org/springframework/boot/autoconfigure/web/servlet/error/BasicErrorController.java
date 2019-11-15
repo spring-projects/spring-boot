@@ -96,7 +96,7 @@ public class BasicErrorController extends AbstractErrorController {
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		if (status == HttpStatus.NO_CONTENT) {
-			return new ResponseEntity<Map<String, Object>>(status);
+			return new ResponseEntity<>(status);
 		}
 		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);

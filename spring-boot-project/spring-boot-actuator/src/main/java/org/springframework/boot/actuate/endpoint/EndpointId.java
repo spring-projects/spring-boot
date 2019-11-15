@@ -45,7 +45,7 @@ public final class EndpointId {
 
 	private static final Pattern WARNING_PATTERN = Pattern.compile("[\\.\\-]+");
 
-	private static final String MIGRATE_LEGACY_NAMES_PROPRTY = "management.endpoints.migrate-legacy-ids";
+	private static final String MIGRATE_LEGACY_NAMES_PROPERTY = "management.endpoints.migrate-legacy-ids";
 
 	private final String value;
 
@@ -130,7 +130,7 @@ public final class EndpointId {
 	}
 
 	private static String migrateLegacyId(Environment environment, String value) {
-		if (environment.getProperty(MIGRATE_LEGACY_NAMES_PROPRTY, Boolean.class, false)) {
+		if (environment.getProperty(MIGRATE_LEGACY_NAMES_PROPERTY, Boolean.class, false)) {
 			return value.replace(".", "");
 		}
 		return value;

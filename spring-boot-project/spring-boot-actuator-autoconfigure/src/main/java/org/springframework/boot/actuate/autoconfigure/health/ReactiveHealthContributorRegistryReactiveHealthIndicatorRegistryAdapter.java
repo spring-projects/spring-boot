@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.health.HealthContributorRegistry;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
@@ -29,8 +27,8 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.util.Assert;
 
 /**
- * Adapter class to convert a {@link HealthContributorRegistry} to a legacy
- * {@link HealthIndicatorRegistry}.
+ * Adapter class to convert a {@link ReactiveHealthContributorRegistry} to a legacy
+ * {@link ReactiveHealthIndicatorRegistry}.
  *
  * @author Phillip Webb
  */

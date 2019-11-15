@@ -68,6 +68,24 @@ class IncludeExcludeGroupMemberPredicateTests {
 		assertThat(predicate).rejects("a", "b", "c", "d");
 	}
 
+	@Test
+	void testWhenCamelCaseIncludeAcceptsOnlyIncluded() {
+		Predicate<String> predicate = include("myEndpoint").exclude();
+		assertThat(predicate).accepts("myEndpoint").rejects("d");
+	}
+
+	@Test
+	void testWhenHyphenCaseIncludeAcceptsOnlyIncluded() {
+		Predicate<String> predicate = include("my-endpoint").exclude();
+		assertThat(predicate).accepts("my-endpoint").rejects("d");
+	}
+
+	@Test
+	void testWhenExtraWhitespaceAcceptsTrimmedVersion() {
+		Predicate<String> predicate = include("  myEndpoint  ").exclude();
+		assertThat(predicate).accepts("myEndpoint").rejects("d");
+	}
+
 	private Builder include(String... include) {
 		return new Builder(include);
 	}

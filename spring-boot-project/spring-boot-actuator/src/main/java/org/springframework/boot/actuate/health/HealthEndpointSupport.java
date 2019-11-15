@@ -34,6 +34,8 @@ import org.springframework.util.Assert;
  */
 abstract class HealthEndpointSupport<C, T> {
 
+	static final Health DEFAULT_HEALTH = Health.up().build();
+
 	private final ContributorRegistry<C> registry;
 
 	private final HealthEndpointGroups groups;
@@ -80,7 +82,7 @@ abstract class HealthEndpointSupport<C, T> {
 		Object contributor = getContributor(path, pathOffset);
 		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails,
 				isSystemHealth ? this.groups.getNames() : null);
-		return (health != null) ? new HealthResult<T>(health, group) : null;
+		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,10 +114,12 @@ abstract class HealthEndpointSupport<C, T> {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> namedContributor : namedContributors) {
 			String name = namedContributor.getName();
+			C contributor = namedContributor.getContributor();
 			if (group.isMember(name)) {
-				T contribution = getContribution(apiVersion, group, namedContributor.getContributor(), showComponents,
-						showDetails, null);
-				contributions.put(name, contribution);
+				T contribution = getContribution(apiVersion, group, contributor, showComponents, showDetails, null);
+				if (contribution != null) {
+					contributions.put(name, contribution);
+				}
 			}
 		}
 		if (contributions.isEmpty()) {
@@ -132,13 +136,17 @@ abstract class HealthEndpointSupport<C, T> {
 
 	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
-		Status status = statusAggregator.getAggregateStatus(
-				components.values().stream().map(HealthComponent::getStatus).collect(Collectors.toSet()));
+		Status status = statusAggregator
+				.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> instances = showComponents ? components : null;
 		if (groupNames != null) {
 			return new SystemHealth(apiVersion, status, instances, groupNames);
 		}
 		return new CompositeHealth(apiVersion, status, instances);
+	}
+
+	private Status getStatus(HealthComponent component) {
+		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 
 	/**

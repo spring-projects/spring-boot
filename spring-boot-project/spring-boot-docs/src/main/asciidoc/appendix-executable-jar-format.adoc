@@ -163,47 +163,6 @@ The classpath is deduced from the nested jars.
 
 
 
-[[executable-jar-exploded-archives]]
-=== Containers and Exploded Archives
-If you are running your application from a container, you can use the unexploded jar file as above, but it is also often an advantage to explode it and run it in a different way.
-Certain PaaS implementations may also choose to unpack archives before they run.
-For example, Cloud Foundry operates this way.
-The simplest way to run an unpacked archive is by starting the appropriate launcher, as follows:
-
-[indent=0]
-----
-	$ jar -xf myapp.jar
-	$ java org.springframework.boot.loader.JarLauncher
-----
-
-This is actually slightly faster on startup (depending on the size of the jar) than running from an unexploded archive.
-At runtime you shouldn't expect any differences.
-
-Once you have unpacked the jar file, you can also get an extra boost to startup time by running the app with its "natural" main method instead of the `JarLauncher`. For example:
-
-[indent=0]
-----
-	$ jar -xf myapp.jar
-	$ java -cp BOOT-INF/classes:BOOT-INF/lib/* com.example.MyApplication
-----
-
-More efficient container images can also be created by copying the dependencies to the image as a separate layer from the application classes and resources (which normally change more frequently).
-There is more than one way to achieve this layer separation.
-For example, using a `Dockerfile` you could express it in this form (assuming the jar is already unpacked at `target/dependency`):
-
-[indent=0]
-----
-FROM openjdk:8-jdk-alpine
-VOLUME /tmp
-ARG DEPENDENCY=target/dependency
-COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY ${DEPENDENCY}/META-INF /app/META-INF
-COPY ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
-----
-
-
-
 [[executable-jar-property-launcher-features]]
 == `PropertiesLauncher` Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).

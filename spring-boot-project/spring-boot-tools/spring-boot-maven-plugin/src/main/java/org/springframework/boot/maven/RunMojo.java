@@ -60,7 +60,7 @@ public class RunMojo extends AbstractRunMojo {
 	 * Whether the JVM's launch should be optimized.
 	 * @since 2.2.0
 	 */
-	@Parameter(property = "optimizedLaunch", defaultValue = "true")
+	@Parameter(property = "spring-boot.run.optimizedLaunch", defaultValue = "true")
 	private boolean optimizedLaunch;
 
 	@Override

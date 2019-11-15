@@ -31,7 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -40,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint}.
@@ -55,9 +58,33 @@ class ConfigurationPropertiesReportEndpointTests {
 			.withUserConfiguration(EndpointConfig.class);
 
 	@Test
-	void descriptorDetectsRelevantProperties() {
+	void descriptorWithJavaBeanBindMethodDetectsRelevantProperties() {
 		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
 				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+	}
+
+	@Test
+	void descriptorWithValueObjectBindMethodDetectsRelevantProperties() {
+		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class).run(assertProperties(
+				"immutable",
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+	}
+
+	@Test
+	void descriptorWithValueObjectBindMethodUseDedicatedConstructor() {
+		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class).run(assertProperties(
+				"multiconstructor", (properties) -> assertThat(properties).containsOnly(entry("name", "test"))));
+	}
+
+	@Test
+	void descriptorWithValueObjectBindMethodHandleNestedType() {
+		this.contextRunner.withPropertyValues("immutablenested.nested.name=nested", "immutablenested.nested.counter=42")
+				.withUserConfiguration(ImmutableNestedPropertiesConfiguration.class)
+				.run(assertProperties("immutablenested", (properties) -> {
+					assertThat(properties).containsOnlyKeys("name", "nested");
+					Map<String, Object> nested = (Map<String, Object>) properties.get("nested");
+					assertThat(nested).containsOnly(entry("name", "nested"), entry("counter", 42));
+				}));
 	}
 
 	@Test
@@ -236,6 +263,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private Duration duration = Duration.ofSeconds(10);
 
+		private String ignored = "dummy";
+
 		public String getDbPassword() {
 			return this.dbPassword;
 		}
@@ -266,6 +295,146 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public void setDuration(Duration duration) {
 			this.duration = duration;
+		}
+
+		public String getIgnored() {
+			return this.ignored;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ImmutableProperties.class)
+	static class ImmutablePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(prefix = "immutable")
+	@ConstructorBinding
+	public static class ImmutableProperties {
+
+		private final String dbPassword;
+
+		private final String myTestProperty;
+
+		private final String nullValue;
+
+		private final Duration duration;
+
+		private final String ignored;
+
+		ImmutableProperties(@DefaultValue("123456") String dbPassword, @DefaultValue("654321") String myTestProperty,
+				String nullValue, @DefaultValue("10s") Duration duration) {
+			this.dbPassword = dbPassword;
+			this.myTestProperty = myTestProperty;
+			this.nullValue = nullValue;
+			this.duration = duration;
+			this.ignored = "dummy";
+		}
+
+		public String getDbPassword() {
+			return this.dbPassword;
+		}
+
+		public String getMyTestProperty() {
+			return this.myTestProperty;
+		}
+
+		public String getNullValue() {
+			return this.nullValue;
+		}
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public String getIgnored() {
+			return this.ignored;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(MultiConstructorProperties.class)
+	static class MultiConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(prefix = "multiconstructor")
+	@ConstructorBinding
+	public static class MultiConstructorProperties {
+
+		private final String name;
+
+		private final int counter;
+
+		MultiConstructorProperties(String name, int counter) {
+			this.name = name;
+			this.counter = counter;
+		}
+
+		@ConstructorBinding
+		MultiConstructorProperties(@DefaultValue("test") String name) {
+			this.name = name;
+			this.counter = 42;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public int getCounter() {
+			return this.counter;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ImmutableNestedProperties.class)
+	static class ImmutableNestedPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("immutablenested")
+	@ConstructorBinding
+	public static class ImmutableNestedProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		ImmutableNestedProperties(@DefaultValue("parent") String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
+		public static class Nested {
+
+			private final String name;
+
+			private final int counter;
+
+			Nested(String name, int counter) {
+				this.name = name;
+				this.counter = counter;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public int getCounter() {
+				return this.counter;
+			}
+
 		}
 
 	}

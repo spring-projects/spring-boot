@@ -43,8 +43,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @since 2.2.1
  */
-class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebMvcTest> {
+public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebMvcTest> {
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 

@@ -132,7 +132,7 @@ class ElasticsearchJestHealthIndicatorTests {
 			json = "{\n  \"error\": \"Server Error\",\n  \"status\": \"" + status + "\"\n}";
 		}
 		searchResult.setJsonString(json);
-		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());
+		searchResult.setJsonObject(JsonParser.parseString(json).getAsJsonObject());
 		searchResult.setResponseCode(responseCode);
 		searchResult.setSucceeded(succeeded);
 		return searchResult;

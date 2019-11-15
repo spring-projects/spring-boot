@@ -55,7 +55,7 @@ public class RSocketPortInfoApplicationContextInitializer
 
 		private static final String PROPERTY_NAME = "local.rsocket.server.port";
 
-		private ConfigurableApplicationContext applicationContext;
+		private final ConfigurableApplicationContext applicationContext;
 
 		Listener(ConfigurableApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;

@@ -21,6 +21,7 @@ org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfi
 org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\

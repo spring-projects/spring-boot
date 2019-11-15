@@ -28,6 +28,7 @@ import java.nio.channels.SocketChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -54,7 +55,7 @@ public class SocketTargetServerConnection implements TargetServerConnection {
 	@Override
 	public ByteChannel open(int socketTimeout) throws IOException {
 		SocketAddress address = new InetSocketAddress(this.portProvider.getPort());
-		logger.trace("Opening tunnel connection to target server on " + address);
+		logger.trace(LogMessage.format("Opening tunnel connection to target server on %s", address));
 		SocketChannel channel = SocketChannel.open(address);
 		channel.socket().setSoTimeout(socketTimeout);
 		return new TimeoutAwareChannel(channel);

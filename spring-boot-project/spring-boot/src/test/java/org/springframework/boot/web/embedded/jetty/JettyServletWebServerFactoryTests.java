@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -30,6 +32,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -60,7 +63,10 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 
 	@Test
 	void correctVersionOfJettyUsed() {
-		assertThat(JettyEmbeddedErrorHandler.ERROR_PAGE_FOR_METHOD_AVAILABLE).isTrue();
+		String jettyVersion = ErrorHandler.class.getPackage().getImplementationVersion();
+		Matcher matcher = Pattern.compile("[0-9]+.[0-9]+.([0-9]+)[\\.-].*").matcher(jettyVersion);
+		assertThat(matcher.find()).isTrue();
+		assertThat(Integer.valueOf(matcher.group(1))).isGreaterThan(19);
 	}
 
 	@Test

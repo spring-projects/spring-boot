@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration.RoutingDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
@@ -71,10 +72,20 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	void runShouldFilterRoutingDataSource() {
+	void runWithRoutingAndEmbeddedDataSourceShouldIncludeRoutingDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
-				.run((context) -> assertThat(context).hasSingleBean(DataSourceHealthIndicator.class)
-						.doesNotHaveBean(CompositeHealthContributor.class));
+				.run((context) -> {
+					CompositeHealthContributor composite = context.getBean(CompositeHealthContributor.class);
+					assertThat(composite.getContributor("dataSource")).isInstanceOf(DataSourceHealthIndicator.class);
+					assertThat(composite.getContributor("routingDataSource"))
+							.isInstanceOf(RoutingDataSourceHealthIndicator.class);
+				});
+	}
+
+	@Test
+	void runWithOnlyRoutingDataSourceShouldIncludeRoutingDataSource() {
+		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
+				.run((context) -> assertThat(context).hasSingleBean(RoutingDataSourceHealthIndicator.class));
 	}
 
 	@Test

@@ -177,8 +177,7 @@ class HealthEndpointWebIntegrationTests {
 		ReactiveHealthContributorRegistry reactiveHealthContributorRegistry(
 				Map<String, HealthContributor> healthContributorBeans,
 				Map<String, ReactiveHealthContributor> reactiveHealthContributorBeans) {
-			Map<String, ReactiveHealthContributor> allIndicators = new LinkedHashMap<String, ReactiveHealthContributor>(
-					reactiveHealthContributorBeans);
+			Map<String, ReactiveHealthContributor> allIndicators = new LinkedHashMap<>(reactiveHealthContributorBeans);
 			healthContributorBeans.forEach((name, contributor) -> allIndicators.computeIfAbsent(name,
 					(key) -> ReactiveHealthContributor.adapt(contributor)));
 			return new DefaultReactiveHealthContributorRegistry(allIndicators);

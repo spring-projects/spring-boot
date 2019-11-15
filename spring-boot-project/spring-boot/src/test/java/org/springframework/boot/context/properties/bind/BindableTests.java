@@ -19,8 +19,6 @@ package org.springframework.boot.context.properties.bind;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Constructor;
-import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -170,23 +168,10 @@ class BindableTests {
 	}
 
 	@Test // gh-18218
-	void withSuppliedValueValueDoesNotForgetAnnotations() {
+	void withSuppliedValueDoesNotForgetAnnotations() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withSuppliedValue(() -> "");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
-	}
-
-	@Test
-	void withConstructorFilterSetsConstructorFilter() {
-		Predicate<Constructor<?>> constructorFilter = (constructor) -> false;
-		Bindable<?> bindable = Bindable.of(TestNewInstance.class).withConstructorFilter(constructorFilter);
-		assertThat(bindable.getConstructorFilter()).isSameAs(constructorFilter);
-	}
-
-	@Test
-	void withConstructorFilterWhenFilterIsNullMatchesAll() {
-		Bindable<?> bindable = Bindable.of(TestNewInstance.class).withConstructorFilter(null);
-		assertThat(bindable.getConstructorFilter()).isSameAs(Bindable.of(TestNewInstance.class).getConstructorFilter());
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

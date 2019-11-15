@@ -55,7 +55,7 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 			enumType = enumType.getSuperclass();
 		}
 		Assert.notNull(enumType, () -> "The target type " + targetType.getName() + " does not refer to an enum");
-		return new LenientToEnumConverter<E>((Class<E>) enumType);
+		return new LenientToEnumConverter<>((Class<E>) enumType);
 	}
 
 	@SuppressWarnings("unchecked")

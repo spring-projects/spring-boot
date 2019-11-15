@@ -917,27 +917,31 @@ TIP: If you have more than one constructor for your class you can also use `@Con
 
 [[boot-features-external-config-enabling]]
 ==== Enabling `@ConfigurationProperties`-annotated types
-Spring Boot provides an infrastructure to bind such types and register them as beans automatically.
-If your application uses `@SpringBootApplication`, classes annotated with `@ConfigurationProperties` will automatically be scanned and registered as beans.
-By default, scanning will occur from the package of the class that declares this annotation.
-If you want to define specific packages to scan, you can do so using an explicit `@ConfigurationPropertiesScan` directive on your `@SpringBootApplication`-annotated class as shown in the following example:
+Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.
+You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
-[source,java,indent=0]
-----
-	@SpringBootApplication
-	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
-	public class MyApplication {
-	}
-----
-
-Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration.
-In these cases, you can specify the list of types to process on any `@Configuration` class as shown in the following example:
+Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration or you want to enable them conditionally.
+In these cases, specify the list of types to process using the `@EnableConfigurationProperties` annotation.
+This can be done on any `@Configuration` class, as shown in the following example:
 
 [source,java,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AcmeProperties.class)
 	public class MyConfiguration {
+	}
+----
+
+To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
+Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
+By default, scanning will occur from the package of the class that declares the annotation.
+If you want to define specific packages to scan, you can do so as shown in the following example:
+
+[source,java,indent=0]
+----
+	@SpringBootApplication
+	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
+	public class MyApplication {
 	}
 ----
 
@@ -1111,6 +1115,8 @@ For example, consider binding the following properties to a `Map`:
 ----
 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
+
+NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
 
 
 [[boot-features-external-config-complex-type-merge]]
@@ -1326,8 +1332,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
-Although nested properties will also be validated when bound, it's good practice to also annotate the associated field as `@Valid`.
-This ensures that validation is triggered even if no nested properties are found.
+To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `AcmeProperties` example:
 
 [source,java,indent=0]
@@ -1483,6 +1488,8 @@ TIP: There are a lot of logging frameworks available for Java.
 Do not worry if the above list seems confusing.
 Generally, you do not need to change your logging dependencies and the Spring Boot defaults work just fine.
 
+TIP: When you deploy your application to a servlet container or application server, logging performed via the Java Util Logging API is not routed into your application's logs.
+This prevents logging performed by the container or other applications that have been deployed to it from appearing in your application's logs.
 
 
 [[boot-features-logging-format]]
@@ -2537,8 +2544,9 @@ If you want to take complete control of Spring WebFlux, you can add your own `@C
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
 They are configured with `CodecConfigurer` to have sensible defaults by looking at the libraries available in your classpath.
 
-Spring Boot applies further customization by using `CodecCustomizer` instances.
-For example, `spring.jackson.*` configuration keys are applied to the Jackson codec.
+Spring Boot provides dedicated configuration properties for codecs, `+spring.codec.*+`.
+It also applies further customization by using `CodecCustomizer` instances.
+For example, `+spring.jackson.*+` configuration keys are applied to the Jackson codec.
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
@@ -2553,7 +2561,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 		public CodecCustomizer myCodecCustomizer() {
 			return codecConfigurer -> {
 				// ...
-			}
+			};
 		}
 
 	}
@@ -2781,9 +2789,11 @@ Filters map to `+/*+`.
 
 If convention-based mapping is not flexible enough, you can use the `ServletRegistrationBean`, `FilterRegistrationBean`, and `ServletListenerRegistrationBean` classes for complete control.
 
-Filter beans can be ordered to control their position in the filter chain by using `@Order` or implemented `Ordered`.
 It is usually safe to leave Filter beans unordered.
-However, if a specific order is required, you should avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
+If a specific order is required, you should annotate the `Filter` with `@Order` or make it implement `Ordered`.
+You cannot configure the order of a `Filter` by annotating its bean method with `@Order`.
+If you cannot change the `Filter` class to add `@Order` or implement `Ordered`, you must define a `FilterRegistrationBean` for the `Filter` and set the registration bean's order using the `setOrder(int)` method.
+Avoid configuring a Filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
 If a Servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
 TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`).
@@ -2905,8 +2915,6 @@ When running a Spring Boot application that uses an embedded servlet container (
 
 * Creating a custom `error.jsp` page does not override the default view for <<boot-features-error-handling,error handling>>.
   <<boot-features-error-handling-custom-error-pages,Custom error pages>> should be used instead.
-
-There is a {spring-boot-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so that you can see how to set things up.
 
 
 
@@ -3120,7 +3128,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
 	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=https://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-1.redirect-uri=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
 
@@ -3129,7 +3137,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
 	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
 	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=https://my-redirect-uri.com
+	spring.security.oauth2.client.registration.my-client-2.redirect-uri=https://my-redirect-uri.com
 	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
 	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
 
@@ -3737,6 +3745,7 @@ You can define beans for the following jOOQ Types:
 * `TransactionProvider`
 * `RecordMapperProvider`
 * `RecordUnmapperProvider`
+* `Settings`
 * `RecordListenerProvider`
 * `ExecuteListenerProvider`
 * `VisitListenerProvider`
@@ -5059,6 +5068,13 @@ For example, you might declare the following section in `application.properties`
 	spring.rabbitmq.password=secret
 ----
 
+Alternatively, you could configure the same connection using the `addresses` attributes:
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.addresses=amqp://admin:secret@localhost
+----
+
 If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `ConnectionFactory`.
 See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitProperties`] for more of the supported options.
 
@@ -5920,7 +5936,7 @@ The annotation works by <<boot-features-testing-spring-boot-applications-detecti
 In addition to `@SpringBootTest` a number of other annotations are also provided for <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,testing more specific slices>> of an application.
 
 TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there's no need to add the equivalent `@RunWith(SpringExtension.class)` as `@SpringBootTest` and the other `@…Test` annotations are already annotated with it.
+If you are using JUnit 5, there's no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@…Test` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server.
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how your tests run:
@@ -6315,7 +6331,7 @@ The following example uses `MockMvc`:
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
-If you use HtmlUnit or Selenium, auto-configuration also provides an HTMLUnit `WebClient` bean and/or a `WebDriver` bean.
+If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
 [source,java,indent=0]

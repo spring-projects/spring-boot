@@ -56,110 +56,95 @@ For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
 The following technology-agnostic endpoints are available:
 
-[cols="2,5,2"]
+[cols="2,5"]
 |===
-| ID | Description | Enabled by default
+| ID | Description
 
 | `auditevents`
 | Exposes audit events information for the current application.
-| Yes. Requires an `AuditEventRepository` bean
+  Requires an `AuditEventRepository` bean.
 
 | `beans`
 | Displays a complete list of all the Spring beans in your application.
-| Yes
 
 | `caches`
 | Exposes available caches.
-| Yes
 
 | `conditions`
 | Shows the conditions that were evaluated on configuration and auto-configuration classes and the reasons why they did or did not match.
-| Yes
 
 | `configprops`
 | Displays a collated list of all `@ConfigurationProperties`.
-| Yes
 
 | `env`
 | Exposes properties from Spring's `ConfigurableEnvironment`.
-| Yes
 
 | `flyway`
 | Shows any Flyway database migrations that have been applied.
-| Yes
+  Requires one or more `Flyway` beans.
 
 | `health`
 | Shows application health information.
-| Yes
 
 | `httptrace`
 | Displays HTTP trace information (by default, the last 100 HTTP request-response exchanges).
-| Yes. Requires an `HttpTraceRepository` bean
+  Requires an `HttpTraceRepository` bean.
 
 | `info`
 | Displays arbitrary application info.
-| Yes
 
 | `integrationgraph`
 | Shows the Spring Integration graph.
-| Yes
+  Requires a dependency on `spring-integration-core`.
 
 | `loggers`
 | Shows and modifies the configuration of loggers in the application.
-| Yes
 
 | `liquibase`
 | Shows any Liquibase database migrations that have been applied.
-| Yes
+  Requires one or more `Liquibase` beans.
 
 | `metrics`
 | Shows '`metrics`' information for the current application.
-| Yes
 
 | `mappings`
 | Displays a collated list of all `@RequestMapping` paths.
-| Yes
 
 | `scheduledtasks`
 | Displays the scheduled tasks in your application.
-| Yes
 
 | `sessions`
 | Allows retrieval and deletion of user sessions from a Spring Session-backed session store.
-  Not available when using Spring Session's support for reactive web applications.
-| Yes
+  Requires a Servlet-based web application using Spring Session.
 
 | `shutdown`
 | Lets the application be gracefully shutdown.
-| No
+  Disabled by default.
 
 | `threaddump`
 | Performs a thread dump.
-| Yes
 |===
 
 If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can use the following additional endpoints:
 
-[cols="2,5,2"]
+[cols="2,5"]
 |===
-| ID | Description | Enabled by default
+| ID | Description
 
 | `heapdump`
 | Returns an `hprof` heap dump file.
-| Yes
 
 | `jolokia`
 | Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
-| Yes
+  Requires a dependency on `jolokia-core`.
 
 | `logfile`
 | Returns the contents of the logfile (if `logging.file.name` or `logging.file.path` properties have been set).
   Supports the use of the HTTP `Range` header to retrieve part of the log file's content.
-| Yes
 
 | `prometheus`
 | Exposes metrics in a format that can be scraped by a Prometheus server.
-| Yes
+  Requires a dependency on `micrometer-registry-prometheus`.
 |===
 
 To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
@@ -458,6 +443,7 @@ TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpo
 === Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
 Endpoints can be exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
@@ -509,6 +495,7 @@ Before calling an operation method, the input received via JMX or an HTTP reques
 [[production-ready-endpoints-custom-web]]
 ==== Custom Web Endpoints
 Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 
 
@@ -684,9 +671,6 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 | {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
 | Checks that a Hazelcast server is up.
-
-| {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
-| Checks that an InfluxDB server is up.
 
 | {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.
@@ -1005,6 +989,7 @@ The default convention is to use the `id` of the endpoint with a prefix of `/act
 For example, `health` is exposed as `/actuator/health`.
 
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
+If both Jersey and Spring MVC are available, Spring MVC will be used.
 
 
 
@@ -1751,7 +1736,7 @@ To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
-Auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
+When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
@@ -2137,7 +2122,6 @@ include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[
 
 [[production-ready-whats-next]]
 == What to Read Next
-If you want to explore some of the concepts discussed in this chapter, you can take a look at the actuator {spring-boot-code}/spring-boot-samples[sample applications].
-You also might want to read about graphing tools such as https://graphiteapp.org[Graphite].
+You might want to read about graphing tools such as https://graphiteapp.org[Graphite].
 
 Otherwise, you can continue on, to read about <<deployment.adoc#deployment, '`deployment options`'>> or jump ahead for some in-depth information about Spring Boot's _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

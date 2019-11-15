@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.rsocket;
 
-import java.util.List;
-
 import io.rsocket.RSocketFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
@@ -34,6 +31,8 @@ import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RSocketSecurityAutoConfiguration}.
@@ -59,15 +58,14 @@ class RSocketSecurityAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationAddsCustomizerForServerRSocketFactory() {
-		RSocketFactory.ServerRSocketFactory factory = Mockito.mock(RSocketFactory.ServerRSocketFactory.class);
+		RSocketFactory.ServerRSocketFactory factory = mock(RSocketFactory.ServerRSocketFactory.class);
 		ArgumentCaptor<SecuritySocketAcceptorInterceptor> captor = ArgumentCaptor
 				.forClass(SecuritySocketAcceptorInterceptor.class);
 		this.contextRunner.run((context) -> {
 			ServerRSocketFactoryProcessor customizer = context.getBean(ServerRSocketFactoryProcessor.class);
 			customizer.process(factory);
-			Mockito.verify(factory).addSocketAcceptorPlugin(captor.capture());
-			List<SecuritySocketAcceptorInterceptor> values = captor.getAllValues();
-			assertThat(values.get(0)).isInstanceOf(SecuritySocketAcceptorInterceptor.class);
+			verify(factory).addSocketAcceptorPlugin(captor.capture());
+			assertThat(captor.getValue()).isInstanceOf(SecuritySocketAcceptorInterceptor.class);
 		});
 	}
 

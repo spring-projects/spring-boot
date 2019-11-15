@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link DispatcherFilter}.
@@ -82,7 +82,7 @@ class DispatcherFilterTests {
 		ServletRequest request = mock(ServletRequest.class);
 		ServletResponse response = mock(ServletResponse.class);
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.dispatcher);
+		verifyNoInteractions(this.dispatcher);
 		verify(this.chain).doFilter(request, response);
 	}
 
@@ -100,7 +100,7 @@ class DispatcherFilterTests {
 		HttpServletResponse response = new MockHttpServletResponse();
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.chain);
+		verifyNoInteractions(this.chain);
 		verify(this.dispatcher).handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
 		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;

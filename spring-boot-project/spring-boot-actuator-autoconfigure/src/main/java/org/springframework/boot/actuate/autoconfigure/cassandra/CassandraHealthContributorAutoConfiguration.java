@@ -47,7 +47,8 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 @ConditionalOnClass({ Cluster.class, CassandraOperations.class })
 @ConditionalOnBean(CassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
-@AutoConfigureAfter({ CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class })
+@AutoConfigureAfter({ CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+		CassandraReactiveHealthContributorAutoConfiguration.class })
 public class CassandraHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<CassandraHealthIndicator, CassandraOperations> {
 

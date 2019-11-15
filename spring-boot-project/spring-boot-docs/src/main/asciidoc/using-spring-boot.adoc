@@ -298,7 +298,7 @@ The <<using-boot-using-springbootapplication-annotation, `@SpringBootApplication
 For example, if you are writing a JPA application, the package of the `@SpringBootApplication` annotated class is used to search for `@Entity` items.
 Using a root package also allows component scan to apply only on your project.
 
-TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` `@ComponentScan`, and `@ConfigurationPropertiesScan` annotations that it imports defines that behaviour so you can also use those instead.
+TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behaviour so you can also use those instead.
 
 The following listing shows a typical layout:
 
@@ -480,7 +480,6 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 
 * `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's auto-configuration mechanism>>
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
-* `@ConfigurationPropertiesScan`: enable `@ConfigurationProperties` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional configuration classes
 
 [source,java,indent=0]
@@ -490,7 +489,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan
+	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
 	public class Application {
 
 		public static void main(String[] args) {
@@ -917,7 +916,11 @@ NOTE: Profiles activated in the above files will not affect the loading of <<spr
 === Remote Applications
 The Spring Boot developer tools are not limited to local development.
 You can also use several features when running applications remotely.
-Remote support is opt-in.
+Remote support is opt-in as enabling it can be a security risk.
+It should only be enabled when running on a trusted network or when secured with SSL.
+If neither of these options is available to you, you should not use DevTools' remote support.
+You should never enable support on a production deployment.
+
 To enable it, you need to make sure that `devtools` is included in the repackaged archive, as shown in the following listing:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -935,15 +938,8 @@ To enable it, you need to make sure that `devtools` is included in the repackage
 	</build>
 ----
 
-Then you need to set a configprop:spring.devtools.remote.secret[] property, as shown in the following example:
-
-[source,properties,indent=0,configprops]
-----
-	spring.devtools.remote.secret=mysecret
-----
-
-WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk.
-You should never enable support on a production deployment.
+Then you need to set the configprop:spring.devtools.remote.secret[] property.
+Like any important password or secret, the value should be unique and strong such that it cannot be guessed or brute-forced.
 
 Remote devtools support is provided in two parts: a server-side endpoint that accepts connections and a client application that you run in your IDE.
 The server component is automatically enabled when the configprop:spring.devtools.remote.secret[] property is set.
@@ -976,7 +972,7 @@ A running remote client might resemble the following listing:
 	 =========|_|==============|___/===================================/_/_/_/
 	 :: Spring Boot Remote :: {spring-boot-version}
 
-	2015-06-10 18:25:06.632  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 14938 (/Users/pwebb/projects/spring-boot/code/spring-boot-devtools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code/spring-boot-samples/spring-boot-sample-devtools)
+	2015-06-10 18:25:06.632  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 14938 (/Users/pwebb/projects/spring-boot/code/spring-boot-project/spring-boot-devtools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code)
 	2015-06-10 18:25:06.671  INFO 14938 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a17b7b6: startup date [Wed Jun 10 18:25:06 PDT 2015]; root of context hierarchy
 	2015-06-10 18:25:07.043  WARN 14938 --- [           main] o.s.b.d.r.c.RemoteClientConfiguration    : The connection to http://localhost:8080 is insecure. You should use a URL starting with 'https://'.
 	2015-06-10 18:25:07.074  INFO 14938 --- [           main] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729

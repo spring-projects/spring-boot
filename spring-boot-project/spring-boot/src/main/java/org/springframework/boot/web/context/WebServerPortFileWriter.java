@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.system.SystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -91,7 +92,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 			portFile.deleteOnExit();
 		}
 		catch (Exception ex) {
-			logger.warn(String.format("Cannot create port file %s", this.file));
+			logger.warn(LogMessage.format("Cannot create port file %s", this.file));
 		}
 	}
 

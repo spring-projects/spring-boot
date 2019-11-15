@@ -66,7 +66,7 @@ public class SimpleHttpCodeStatusMapper implements HttpCodeStatusMapper {
 	}
 
 	private static Map<String, Integer> getUniformMappings(Map<String, Integer> mappings) {
-		Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+		Map<String, Integer> result = new LinkedHashMap<>();
 		for (Map.Entry<String, Integer> entry : mappings.entrySet()) {
 			String code = getUniformCode(entry.getKey());
 			if (code != null) {

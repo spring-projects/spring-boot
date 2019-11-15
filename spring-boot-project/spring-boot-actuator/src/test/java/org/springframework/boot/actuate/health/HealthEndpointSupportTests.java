@@ -207,6 +207,14 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		assertThat(getHealth(result)).isNotInstanceOf(SystemHealth.class);
 	}
 
+	@Test
+	void getHealthWithEmptyCompositeReturnsNullResult() { // gh-18687
+		this.registry.registerContributor("test", createCompositeContributor(Collections.emptyMap()));
+		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
+				false);
+		assertThat(result).isNull();
+	}
+
 	protected abstract HealthEndpointSupport<C, T> create(R registry, HealthEndpointGroups groups);
 
 	protected abstract R createRegistry();
