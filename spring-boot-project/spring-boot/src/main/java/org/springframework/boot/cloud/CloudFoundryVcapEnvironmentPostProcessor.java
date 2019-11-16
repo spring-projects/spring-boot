@@ -29,7 +29,6 @@ import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.logging.DeferredLog;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -90,7 +89,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationEvent> {
+public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationPreparedEvent> {
 
 	private static final DeferredLog logger = new DeferredLog();
 
@@ -129,10 +128,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationPreparedEvent) {
-			logger.switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
-		}
+	public void onApplicationEvent(ApplicationPreparedEvent event) {
+		logger.switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
 	}
 
 	private void addWithPrefix(Properties properties, Properties other, String prefix) {
