@@ -87,7 +87,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	@Override
 	public Certificate[] getCertificates() {
-		if (this.jarFile.isSigned() && this.certificates == null) {
+		if (this.jarFile.isSigned() && this.certificates == null && isSignable()) {
 			this.jarFile.setupEntryCertificates(this);
 		}
 		return this.certificates;
@@ -109,6 +109,10 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 	@Override
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
+	}
+
+	private boolean isSignable() {
+		return !isDirectory() && !getName().startsWith("META-INF");
 	}
 
 }

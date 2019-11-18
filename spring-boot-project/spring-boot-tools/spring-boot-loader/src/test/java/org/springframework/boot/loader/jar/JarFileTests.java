@@ -28,6 +28,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.Certificate;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -404,17 +407,27 @@ class JarFileTests {
 		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
 		jarFile.getManifest();
 		Enumeration<JarEntry> jarEntries = jarFile.entries();
+
+		// Make sure this whole certificates routine runs in an acceptable time (few
+		// seconds at most)
+		// Some signed jars took from 30s to 5 min depending on the implementation.
+		Instant start = Instant.now();
 		while (jarEntries.hasMoreElements()) {
 			JarEntry jarEntry = jarEntries.nextElement();
 			InputStream inputStream = jarFile.getInputStream(jarEntry);
 			inputStream.skip(Long.MAX_VALUE);
 			inputStream.close();
+
+			Certificate[] certs = jarEntry.getCertificates();
 			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
 					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertThat(jarEntry.getCertificates()).isNotNull();
+				assertThat(certs).isNotNull();
 			}
 		}
 		jarFile.close();
+
+		// 3 seconds is still quite long, but low enough to catch most problems
+		assertThat(ChronoUnit.SECONDS.between(start, Instant.now())).isLessThanOrEqualTo(3L);
 	}
 
 	@Test
