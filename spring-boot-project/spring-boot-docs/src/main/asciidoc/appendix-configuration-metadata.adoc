@@ -752,12 +752,12 @@ Consider the following class:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ConfigurationProperties(prefix="acme.messaging")
+	@ConfigurationProperties(prefix = "acme.messaging")
 	public class MessagingProperties {
 
-		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b")) ;
+		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b"));
 
-		private ContainerType = ContainerType.SIMPLE;
+		private ContainerType containerType = ContainerType.SIMPLE;
 
 		// ... getter and setters
 
