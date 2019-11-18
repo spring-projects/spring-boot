@@ -42,6 +42,14 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 			.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test
+	void throwNoSuchBeanDefinitionSingletonBean() {
+		this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class)
+				.withInitializer((context) -> context.getBeanFactory().registerSingleton("fooSingleton", new Foo()))
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasMessageContaining("No bean named 'fooSingleton' available"));
+	}
+
+	@Test
 	void fooBeansShouldDependOnBarBeanNames() {
 		this.contextRunner
 				.withUserConfiguration(FooDependsOnBarNamePostProcessor.class, FooBarFactoryBeanConfiguration.class)
@@ -85,17 +93,15 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 				"barFactoryBean");
 	}
 
-	private BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
-		try {
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+		if (beanFactory.containsBeanDefinition(beanName)) {
 			return beanFactory.getBeanDefinition(beanName);
 		}
-		catch (NoSuchBeanDefinitionException ex) {
-			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
-			}
-			throw ex;
+		BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
+		if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
+			return getBeanDefinition(beanName, ((ConfigurableListableBeanFactory) parentBeanFactory));
 		}
+		throw new NoSuchBeanDefinitionException(beanName);
 	}
 
 	static class Foo {
@@ -138,7 +144,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	static class FooDependsOnBarTypePostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
-		protected FooDependsOnBarTypePostProcessor() {
+		FooDependsOnBarTypePostProcessor() {
 			super(Foo.class, FooFactoryBean.class, Bar.class, BarFactoryBean.class);
 		}
 

@@ -134,16 +134,14 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
-		try {
+		if (beanFactory.containsBeanDefinition(beanName)) {
 			return beanFactory.getBeanDefinition(beanName);
 		}
-		catch (NoSuchBeanDefinitionException ex) {
-			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
-			}
-			throw ex;
+		BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
+		if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
+			return getBeanDefinition(beanName, ((ConfigurableListableBeanFactory) parentBeanFactory));
 		}
+		throw new NoSuchBeanDefinitionException(beanName);
 	}
 
 }
