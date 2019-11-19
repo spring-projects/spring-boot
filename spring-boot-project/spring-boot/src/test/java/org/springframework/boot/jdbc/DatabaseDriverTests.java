@@ -82,6 +82,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("DB3 XDB for AS/400")).isEqualTo(DatabaseDriver.DB2_AS400);
 		assertThat(DatabaseDriver.fromProductName("Teradata")).isEqualTo(DatabaseDriver.TERADATA);
 		assertThat(DatabaseDriver.fromProductName("Informix Dynamic Server")).isEqualTo(DatabaseDriver.INFORMIX);
+		assertThat(DatabaseDriver.fromProductName("Testcontainers")).isEqualTo(DatabaseDriver.TESTCONTAINERS);
 	}
 
 	@Test
@@ -112,6 +113,8 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-sqli://localhost:1533/sample"))
 				.isEqualTo(DatabaseDriver.INFORMIX);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-direct://sample")).isEqualTo(DatabaseDriver.INFORMIX);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:tc:sample://localhost:3306/sample"))
+				.isEqualTo(DatabaseDriver.TESTCONTAINERS);
 	}
 
 }

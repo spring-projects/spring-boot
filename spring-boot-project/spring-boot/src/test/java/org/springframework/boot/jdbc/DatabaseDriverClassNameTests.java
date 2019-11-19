@@ -44,9 +44,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DatabaseDriverClassNameTests {
 
-	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
-			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-					DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
+	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections.unmodifiableSet(
+			EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX, DatabaseDriver.HANA,
+					DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT, DatabaseDriver.TESTCONTAINERS));
 
 	@ParameterizedTest(name = "{0} {2}")
 	@MethodSource

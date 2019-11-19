@@ -201,7 +201,14 @@ public enum DatabaseDriver {
 	/**
 	 * Testcontainers.
 	 */
-	TC("Testcontainers", "org.testcontainers.jdbc.ContainerDatabaseDriver");
+	TESTCONTAINERS("Testcontainers", "org.testcontainers.jdbc.ContainerDatabaseDriver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("tc");
+		}
+
+	};
 
 	private final String productName;
 
