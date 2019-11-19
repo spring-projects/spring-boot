@@ -74,7 +74,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithAuthorizedUserInvokeSupplier() {
+	public void mapDetailsWithAuthorizedUserInvokesSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
