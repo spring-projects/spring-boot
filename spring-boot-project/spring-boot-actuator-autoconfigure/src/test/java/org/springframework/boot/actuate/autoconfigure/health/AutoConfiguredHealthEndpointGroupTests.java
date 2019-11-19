@@ -161,21 +161,21 @@ class AutoConfiguredHealthEndpointGroupTests {
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsNeverReturnsFalse() {
+	void showComponentsWhenShowComponentsIsNeverReturnsFalse() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.NEVER, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.showComponents(SecurityContext.NONE)).isFalse();
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsAlwaysReturnsTrue() {
+	void showComponentsWhenShowComponentsIsAlwaysReturnsTrue() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.ALWAYS, Show.NEVER, Collections.emptySet());
 		assertThat(group.showComponents(SecurityContext.NONE)).isTrue();
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsWhenAuthorizedAndPrincipalIsNullReturnsFalse() {
+	void showComponentsWhenShowComponentsIsWhenAuthorizedAndPrincipalIsNullReturnsFalse() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Collections.emptySet());
@@ -184,7 +184,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsWhenAuthorizedAndRolesAreEmptyReturnsTrue() {
+	void showComponentsWhenShowComponentsIsWhenAuthorizedAndRolesAreEmptyReturnsTrue() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Collections.emptySet());
@@ -193,7 +193,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsWhenAuthorizedAndUseIsInRoleReturnsTrue() {
+	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUseIsInRoleReturnsTrue() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Arrays.asList("admin", "root", "bossmode"));
@@ -203,7 +203,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 	}
 
 	@Test
-	void showComponentsWhenShowDetailsIsWhenAuthorizedAndUseIsNotInRoleReturnsFalse() {
+	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUseIsNotInRoleReturnsFalse() {
 		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
 				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Arrays.asList("admin", "rot", "bossmode"));
