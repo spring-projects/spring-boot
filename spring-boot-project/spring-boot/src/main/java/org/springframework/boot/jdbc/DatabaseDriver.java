@@ -196,6 +196,18 @@ public enum DatabaseDriver {
 			return Arrays.asList("informix-sqli", "informix-direct");
 		}
 
+	},
+
+	/**
+	 * Testcontainers.
+	 */
+	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("tc");
+		}
+
 	};
 
 	private final String productName;
