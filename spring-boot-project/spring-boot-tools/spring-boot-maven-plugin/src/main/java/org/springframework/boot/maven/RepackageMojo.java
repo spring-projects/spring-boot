@@ -112,7 +112,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * attached as a supplemental artifact with that classifier. Attaching the artifact
 	 * allows to deploy it alongside to the original one, see <a href=
 	 * "https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
-	 * > the maven documentation for more details</a>.
+	 * >the Maven documentation for more details</a>.
 	 * @since 1.0.0
 	 */
 	@Parameter

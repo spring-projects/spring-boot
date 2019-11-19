@@ -1,0 +1,395 @@
+[[repackage]]
+== Packaging executable archives
+
+The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
+
+Packaging an executable archive is performed by the `repackage` goal, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+TIP: If you are using `spring-boot-starter-parent`, such execution is already pre-configured with a `repackage` execution id so that only the plugin definition should be added.
+
+The example above repackages a jar or war that is built during the package phase of the Maven lifecycle, including any `provided` dependencies that are defined in the project.
+If some of these dependencies need to be excluded, you can use one of the exclude options, see the <<repackage-example-exclude-dependency,dependency exclusion>> for more details.
+
+NOTE: The `outputFileNameMapping` feature of the `maven-war-plugin` is currently not supported.
+
+Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
+In order to make that work with `war` packaging, the `spring-boot-devtools` dependency must be set as `optional` or with the `provided` scope.
+
+The original (i.e. non executable) artifact is renamed to `.original` by default but it is also possible to keep the original artifact using a custom classifier.
+
+The plugin rewrites your manifest, and in particular it manages the "Main-Class" and "Start-Class" entries, so if the defaults don't work you have to configure those there (not in the jar plugin).
+The "Main-Class" in the manifest is actually controlled by the "layout" property of the Spring Boot plugin, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{version}</version>
+				<configuration>
+					<mainClass>${start.class}</mainClass>
+					<layout>ZIP</layout>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+The `layout` property defaults to a guess based on the archive type (`jar` or `war`). The following layouts are available:
+
+* `JAR`: regular executable JAR layout.
+* `WAR`: executable WAR layout. `provided` dependencies are placed in `WEB-INF/lib-provided` to avoid any clash when the `war` is deployed in a servlet container.
+* `ZIP` (alias to `DIR`): similar to the `JAR` layout using `PropertiesLauncher`.
+* `NONE`: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
+
+include::{generated-resources-root}/goals/repackage.adoc[leveloffset=+1]
+
+[[repackage-examples]]
+=== Examples
+
+[[repackage-example-custom-classifier]]
+==== Custom Classifier
+By default, the `repackage` goal replaces the original artifact with the repackaged one.
+That is a sane behavior for modules that represent an application but if your module is used as a dependency of another module, you need to provide a classifier for the repackaged one.
+The reason for that is that application classes are packaged in `BOOT-INF/classes` so that the dependent module cannot load a repackaged jar's classes.
+
+If that is the case or if you prefer to keep the original artifact and attach the repackaged one with a different classifier, configure the plugin as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<classifier>exec</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+If you are using `spring-boot-starter-parent`, the `repackage` goal is executed automatically in an execution with id `repackage`.
+In that setup, only the configuration should be specified, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<configuration>
+								<classifier>exec</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate two artifacts: the original one and the repackaged counter part produced by the repackage goal.
+Both will be installed/deployed transparently.
+
+You can also use the same configuration if you want to repackage a secondary artifact the same way the main artifact is replaced.
+The following configuration installs/deploys a single `task` classified artifact with the repackaged application:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>{maven-jar-plugin-version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+							<phase>package</phase>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` runs at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
+Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>default-jar</id>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+
+
+[[repackage-example-custom-name]]
+==== Custom Name
+If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, simply use the standard `finalName`, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<finalName>my-app</finalName>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate the repackaged artifact in `target/my-app.jar`.
+
+
+
+[[repackage-example-local-artifact]]
+==== Local Repackaged Artifact
+By default, the `repackage` goal replaces the original artifact with the executable one.
+If you need to only deploy the original jar and yet be able to run your app with the regular file name, configure the plugin as follows:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<attach>false</attach>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration generates two artifacts: the original one and the executable counter part produced by the `repackage` goal.
+Only the original one will be installed/deployed.
+
+
+
+[[repackage-example-custom-layout]]
+==== Custom Layout
+Spring Boot repackages the jar file for this project using a custom layout factory defined in the additional jar file, provided as a dependency to the build plugin:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<layoutFactory implementation="com.example.CustomLayoutFactory">
+									<customProperty>value</customProperty>
+								</layoutFactory>
+							</configuration>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>com.example</groupId>
+							<artifactId>custom-layout</artifactId>
+							<version>0.0.1.BUILD-SNAPSHOT</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The layout factory is provided as an implementation of `LayoutFactory` (from `spring-boot-loader-tools`) explicitly specified in the pom.
+If there is only one custom `LayoutFactory` on the plugin classpath and it is listed in `META-INF/spring.factories` then it is unnecessary to explicitly set it in the plugin configuration.
+
+Layout factories are always ignored if an explicit <<goals-repackage-optional-parameters-layout,layout>> is set.
+
+
+
+[[repackage-example-exclude-dependency]]
+==== Dependency Exclusion
+By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
+A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
+
+Some of these dependencies may not be required at all and should be excluded from the executable jar.
+For consistency, they should not be present either when running the application.
+
+There are two ways one can exclude a dependency from being packaged/used at runtime:
+
+* Exclude a specific artifact identified by `groupId` and `artifactId`, optionally with a `classifier` if needed.
+* Exclude any artifact belonging to a given `groupId`.
+
+The following example excludes `com.foo:bar`, and only that artifact:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>com.foo</groupId>
+								<artifactId>bar</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This example excludes any artifact belonging to the `com.foo` group:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<excludeGroupIds>com.foo</excludeGroupIds>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----

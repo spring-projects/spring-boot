@@ -1250,8 +1250,8 @@
 											<groupId>org.springframework.boot</groupId>
 											<artifactId>spring-boot-maven-plugin</artifactId>
 											<version>${revision}</version>
-											<classifier>site</classifier>
-											<type>jar</type>
+											<classifier>docs</classifier>
+											<type>zip</type>
 											<outputDirectory>
 												${project.build.directory}/contents/maven-plugin
 											</outputDirectory>
