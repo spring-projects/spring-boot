@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -24,6 +25,9 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.StatusAggregator;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -97,10 +101,34 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	private boolean isAuthorized(SecurityContext securityContext) {
-		if (securityContext.getPrincipal() == null) {
+		Principal principal = securityContext.getPrincipal();
+		if (principal == null) {
 			return false;
 		}
-		return CollectionUtils.isEmpty(this.roles) || this.roles.stream().anyMatch(securityContext::isUserInRole);
+		if (CollectionUtils.isEmpty(this.roles)) {
+			return true;
+		}
+		boolean checkAuthorities = isSpringSecurityAuthentication(principal);
+		for (String role : this.roles) {
+			if (securityContext.isUserInRole(role)) {
+				return true;
+			}
+			if (checkAuthorities) {
+				Authentication authentication = (Authentication) principal;
+				for (GrantedAuthority authority : authentication.getAuthorities()) {
+					String name = authority.getAuthority();
+					if (role.equals(name)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isSpringSecurityAuthentication(Principal principal) {
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication", null)
+				&& (principal instanceof Authentication);
 	}
 
 	@Override
