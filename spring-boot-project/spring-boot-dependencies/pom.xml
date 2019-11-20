@@ -169,7 +169,7 @@
 		<spring-amqp.version>2.1.12.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.1.2.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
-		<spring-data-releasetrain.version>Lovelace-SR12</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Lovelace-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.2.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.1.9.RELEASE</spring-integration.version>
