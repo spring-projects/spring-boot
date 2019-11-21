@@ -32,8 +32,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Stop a spring application that has been started by the "start" goal. Typically invoked
- * once a test suite has completed.
+ * Stop an application that has been started by the "start" goal. Typically invoked once a
+ * test suite has completed.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

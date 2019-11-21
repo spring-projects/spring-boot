@@ -34,7 +34,7 @@ import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
 /**
- * Run an executable archive application.
+ * Run an application in place.
  *
  * @author Phillip Webb
  * @author Dmytro Nosan
