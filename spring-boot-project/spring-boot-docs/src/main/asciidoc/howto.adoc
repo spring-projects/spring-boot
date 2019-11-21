@@ -2338,7 +2338,7 @@ To generate build information with Maven, add an execution for the `build-info` 
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin documentation] for more details.
+TIP: See the {spring-boot-maven-plugin-docs}/#build-info[Spring Boot Maven Plugin documentation] for more details.
 
 The following example does the same with Gradle:
 
