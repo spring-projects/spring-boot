@@ -19,11 +19,13 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -46,7 +48,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private final long timeToLive;
 
-	private volatile CachedResponse cachedResponse;
+	private final Map<ApiVersion, CachedResponse> cachedResponses;
 
 	/**
 	 * Create a new instance with the target {@link OperationInvoker} to use to compute
@@ -58,6 +60,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 		Assert.isTrue(timeToLive > 0, "TimeToLive must be strictly positive");
 		this.invoker = invoker;
 		this.timeToLive = timeToLive;
+		this.cachedResponses = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -74,11 +77,12 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return this.invoker.invoke(context);
 		}
 		long accessTime = System.currentTimeMillis();
-		CachedResponse cached = this.cachedResponse;
+		ApiVersion contextApiVersion = context.getApiVersion();
+		CachedResponse cached = this.cachedResponses.get(contextApiVersion);
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
 			Object response = this.invoker.invoke(context);
 			cached = createCachedResponse(response, accessTime);
-			this.cachedResponse = cached;
+			this.cachedResponses.put(contextApiVersion, cached);
 		}
 		return cached.getResponse();
 	}
