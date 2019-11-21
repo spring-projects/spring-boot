@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
@@ -150,6 +151,26 @@ class CachingOperationInvokerTests {
 		}
 		invoker.invoke(context);
 		verify(target, times(2)).invoke(context);
+	}
+
+	@Test
+	void targetInvokedWithDifferentApiVersion() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Object expectedV2 = new Object();
+		Object expectedV3 = new Object();
+		InvocationContext contextV2 = new InvocationContext(ApiVersion.V2, mock(SecurityContext.class),
+				Collections.emptyMap());
+		InvocationContext contextV3 = new InvocationContext(ApiVersion.V3, mock(SecurityContext.class),
+				Collections.emptyMap());
+		given(target.invoke(contextV2)).willReturn(expectedV2);
+		given(target.invoke(contextV3)).willReturn(expectedV3);
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		Object response = invoker.invoke(contextV2);
+		assertThat(response).isSameAs(expectedV2);
+		verify(target, times(1)).invoke(contextV2);
+		Object cachedResponse = invoker.invoke(contextV3);
+		assertThat(cachedResponse).isNotSameAs(response);
+		verify(target, times(1)).invoke(contextV3);
 	}
 
 	private static class MonoOperationInvoker implements OperationInvoker {
