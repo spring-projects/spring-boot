@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.validation.Valid;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -213,6 +214,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
+	@Disabled
 	void responseCommitted() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
