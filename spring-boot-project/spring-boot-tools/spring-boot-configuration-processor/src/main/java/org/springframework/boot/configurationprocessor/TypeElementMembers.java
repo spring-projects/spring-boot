@@ -132,7 +132,7 @@ class TypeElementMembers {
 
 		// Chain generic type, <T extends classType>
 		List<? extends TypeMirror> genericTypes = ((DeclaredType) classType).getTypeArguments();
-		return genericTypes.stream().anyMatch(genericType -> {
+		return genericTypes.stream().anyMatch((genericType) -> {
 			TypeMirror upperBound = ((TypeVariable) genericType).getUpperBound();
 			String classTypeName = typeUtils.getQualifiedName(((DeclaredType) classType).asElement());
 			String genericTypeName = typeUtils.getQualifiedName(((DeclaredType) upperBound).asElement());
