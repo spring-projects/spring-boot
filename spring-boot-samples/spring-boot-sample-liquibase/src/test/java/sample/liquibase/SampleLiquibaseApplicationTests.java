@@ -17,7 +17,10 @@
 package sample.liquibase;
 
 import java.net.ConnectException;
+import java.util.Locale;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -30,6 +33,19 @@ public class SampleLiquibaseApplicationTests {
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
+
+	private Locale defaultLocale;
+
+	@Before
+	public void init() throws SecurityException {
+		this.defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.ENGLISH);
+	}
+
+	@After
+	public void restoreLocale() {
+		Locale.setDefault(this.defaultLocale);
+	}
 
 	@Test
 	public void testDefaultSettings() throws Exception {
