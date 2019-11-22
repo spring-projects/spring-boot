@@ -116,12 +116,11 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void chainGenericProperties() {
 		ConfigurationMetadata metadata = compile(ChainGenericProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ChainGenericProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("generic.config", ChainGenericConfig.class)
-				.fromSource(ChainGenericProperties.class).withDescription("Generic config.").withDefaultValue(null));
-		assertThat(metadata).has(
-				Metadata.withProperty("generic.config.ping-timeout", Integer.TYPE).fromSource(ChainGenericConfig.class)
-						.withDescription("Generic config pingTimeout.").withDefaultValue(null));
-		assertThat(metadata.getItems()).hasSize(1);
+		assertThat(metadata).has(Metadata.withGroup("generic.config", ChainGenericConfig.class)
+				.fromSource(ChainGenericProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.config.ping-timeout", Integer.class)
+				.fromSource(ChainGenericConfig.class).withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 }

@@ -27,6 +27,9 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 @ConfigurationProperties("generic")
 public class ChainGenericProperties {
 
+	/**
+	 * Generic config.
+	 */
 	@NestedConfigurationProperty
 	private ChainGenericConfig config;
 

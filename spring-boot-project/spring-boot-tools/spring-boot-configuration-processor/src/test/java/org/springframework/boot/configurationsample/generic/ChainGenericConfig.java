@@ -24,6 +24,9 @@ package org.springframework.boot.configurationsample.generic;
  */
 public class ChainGenericConfig<T extends ChainGenericConfig> {
 
+	/**
+	 * Generic config pingTimeout.
+	 */
 	private Integer pingTimeout = 1000;
 
 	public int getPingTimeout() {
