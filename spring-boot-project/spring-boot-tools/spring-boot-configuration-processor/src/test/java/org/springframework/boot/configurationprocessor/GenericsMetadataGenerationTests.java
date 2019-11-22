@@ -20,7 +20,15 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.generic.*;
+import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
+import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
+import org.springframework.boot.configurationsample.generic.GenericConfig;
+import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
+import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
+import org.springframework.boot.configurationsample.generic.UpperBoundGenericPojo;
+import org.springframework.boot.configurationsample.generic.WildcardConfig;
+import org.springframework.boot.configurationsample.generic.ChainGenericProperties;
+import org.springframework.boot.configurationsample.generic.ChainGenericConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
