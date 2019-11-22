@@ -20,13 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
-import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
-import org.springframework.boot.configurationsample.generic.GenericConfig;
-import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
-import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
-import org.springframework.boot.configurationsample.generic.UpperBoundGenericPojo;
-import org.springframework.boot.configurationsample.generic.WildcardConfig;
+import org.springframework.boot.configurationsample.generic.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -110,4 +104,15 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
+	@Test
+	void chainGenericProperties() {
+		ConfigurationMetadata metadata = compile(ChainGenericProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ChainGenericProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.config", ChainGenericConfig.class)
+				.fromSource(ChainGenericProperties.class).withDescription("Generic config.").withDefaultValue(null));
+		assertThat(metadata).has(Metadata
+				.withProperty("generic.config.ping-timeout", Integer.TYPE)
+				.fromSource(ChainGenericConfig.class).withDescription("Generic config pingTimeout.").withDefaultValue(null));
+		assertThat(metadata.getItems()).hasSize(1);
+	}
 }
