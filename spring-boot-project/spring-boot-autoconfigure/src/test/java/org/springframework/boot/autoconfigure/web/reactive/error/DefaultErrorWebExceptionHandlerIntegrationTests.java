@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.validation.Valid;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -214,13 +213,13 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	@Disabled
 	void responseCommitted() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
 					.isThrownBy(() -> client.get().uri("/commit").exchange().expectStatus())
-					.withCauseInstanceOf(IllegalStateException.class).withMessageContaining("already committed!");
+					.withCauseInstanceOf(IllegalStateException.class)
+					.withMessageContaining("Error occurred after response was completed");
 		});
 	}
 
