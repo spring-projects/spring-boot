@@ -31,6 +31,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
 
 /**
@@ -129,13 +130,14 @@ class TypeElementMembers {
 			return true;
 		}
 
-		// Chain generic type
-		List<? extends TypeMirror> arguments = ((DeclaredType) classType).getTypeArguments();
-		if (arguments.size() != 1) {
-			return false;
-		}
-		TypeMirror classGenericType = arguments.get(0);
-		return typeUtils.isSameType(classGenericType, returnType);
+		// Chain generic type, <T extends classType>
+		List<? extends TypeMirror> genericTypes = ((DeclaredType) classType).getTypeArguments();
+		return genericTypes.stream().anyMatch(genericType -> {
+			TypeMirror upperBound = ((TypeVariable) genericType).getUpperBound();
+			String classTypeName = typeUtils.getQualifiedName(((DeclaredType) classType).asElement());
+			String genericTypeName = typeUtils.getQualifiedName(((DeclaredType) upperBound).asElement());
+			return classTypeName.equals(genericTypeName);
+		});
 	}
 
 	private String getAccessorName(String methodName) {
