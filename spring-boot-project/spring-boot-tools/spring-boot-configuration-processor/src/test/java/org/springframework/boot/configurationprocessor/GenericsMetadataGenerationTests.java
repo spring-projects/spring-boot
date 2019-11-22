@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
+import org.springframework.boot.configurationsample.generic.ChainGenericConfig;
+import org.springframework.boot.configurationsample.generic.ChainGenericProperties;
 import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
 import org.springframework.boot.configurationsample.generic.GenericConfig;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
@@ -107,6 +109,17 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>").fromSource(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.integers")
 				.ofType("java.util.List<? super java.lang.Integer>").fromSource(WildcardConfig.class));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void chainGenericProperties() {
+		ConfigurationMetadata metadata = compile(ChainGenericProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ChainGenericProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("generic.config", ChainGenericConfig.class)
+				.fromSource(ChainGenericProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.config.ping-timeout", Integer.class)
+				.fromSource(ChainGenericConfig.class).withDefaultValue(null));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 

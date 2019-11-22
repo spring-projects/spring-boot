@@ -28,8 +28,10 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
 
 /**
@@ -116,8 +118,26 @@ class TypeElementMembers {
 
 	private boolean isSetterReturnType(ExecutableElement method) {
 		TypeMirror returnType = method.getReturnType();
-		return (TypeKind.VOID == returnType.getKind()
-				|| this.env.getTypeUtils().isSameType(method.getEnclosingElement().asType(), returnType));
+		// void
+		if (TypeKind.VOID == returnType.getKind()) {
+			return true;
+		}
+
+		TypeMirror classType = method.getEnclosingElement().asType();
+		TypeUtils typeUtils = this.env.getTypeUtils();
+		// Chain
+		if (typeUtils.isSameType(classType, returnType)) {
+			return true;
+		}
+
+		// Chain generic type, <T extends classType>
+		List<? extends TypeMirror> genericTypes = ((DeclaredType) classType).getTypeArguments();
+		return genericTypes.stream().anyMatch((genericType) -> {
+			TypeMirror upperBound = ((TypeVariable) genericType).getUpperBound();
+			String classTypeName = typeUtils.getQualifiedName(((DeclaredType) classType).asElement());
+			String genericTypeName = typeUtils.getQualifiedName(((DeclaredType) upperBound).asElement());
+			return classTypeName.equals(genericTypeName);
+		});
 	}
 
 	private String getAccessorName(String methodName) {
