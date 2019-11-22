@@ -30,7 +30,6 @@ import org.springframework.boot.configurationsample.generic.UnresolvedGenericPro
 import org.springframework.boot.configurationsample.generic.UpperBoundGenericPojo;
 import org.springframework.boot.configurationsample.generic.WildcardConfig;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -119,9 +118,10 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ChainGenericProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.config", ChainGenericConfig.class)
 				.fromSource(ChainGenericProperties.class).withDescription("Generic config.").withDefaultValue(null));
-		assertThat(metadata).has(Metadata
-				.withProperty("generic.config.ping-timeout", Integer.TYPE)
-				.fromSource(ChainGenericConfig.class).withDescription("Generic config pingTimeout.").withDefaultValue(null));
+		assertThat(metadata).has(
+				Metadata.withProperty("generic.config.ping-timeout", Integer.TYPE).fromSource(ChainGenericConfig.class)
+						.withDescription("Generic config pingTimeout.").withDefaultValue(null));
 		assertThat(metadata.getItems()).hasSize(1);
 	}
+
 }

@@ -37,4 +37,5 @@ public class ChainGenericProperties {
 	public void setConfig(ChainGenericConfig config) {
 		this.config = config;
 	}
+
 }

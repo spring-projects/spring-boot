@@ -34,4 +34,5 @@ public class ChainGenericConfig<T extends ChainGenericConfig> {
 		this.pingTimeout = pingTimeout;
 		return (T) this;
 	}
+
 }
