@@ -81,6 +81,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author HaiTao Zhang
+ * @author Franjo Zilic
  */
 class RabbitAutoConfigurationTests {
 
@@ -713,6 +714,24 @@ class RabbitAutoConfigurationTests {
 			trustManager = ReflectionTestUtils.getField(trustManager, "tm");
 		}
 		return (TrustManager) trustManager;
+	}
+
+	@Test
+	void testChangeDefaultRequestedChannelMax() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.requestedChannelMax:12").run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+					assertThat(rabbitConnectionFactory.getRequestedChannelMax()).isEqualTo(12);
+				});
+	}
+
+	@Test
+	void testKeepDefaultRequestedChannelMax() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+			assertThat(rabbitConnectionFactory.getRequestedChannelMax())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
+		});
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {

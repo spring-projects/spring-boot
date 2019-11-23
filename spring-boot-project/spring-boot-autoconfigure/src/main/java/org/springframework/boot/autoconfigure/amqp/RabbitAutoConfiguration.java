@@ -140,6 +140,7 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(factory::setConnectionTimeout);
+			map.from(properties::getRequestedChannelMax).whenNonNull().to(factory::setRequestedChannelMax);
 			factory.afterPropertiesSet();
 			return factory;
 		}
