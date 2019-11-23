@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Josh Thornhill
  * @author Gary Russell
  * @author Artsiom Yudovin
+ * @author Franjo Zilic
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -101,6 +102,12 @@ public class RabbitProperties {
 	 * Connection timeout. Set it to zero to wait forever.
 	 */
 	private Duration connectionTimeout;
+
+	/**
+	 * Requested Channel Max. Set it to zero for unlimited. Default is 2047 from RabbitMQ
+	 * java client versions 4.7.0 and 5.3.0.
+	 */
+	private int requestedChannelMax = 2047;
 
 	/**
 	 * Cache configuration.
@@ -298,6 +305,10 @@ public class RabbitProperties {
 		return this.connectionTimeout;
 	}
 
+	public int getRequestedChannelMax() {
+		return this.requestedChannelMax;
+	}
+
 	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
 		this.publisherConfirmType = publisherConfirmType;
 	}
@@ -308,6 +319,10 @@ public class RabbitProperties {
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
+	}
+
+	public void setConnectionTimeout(int requestedChannelMax) {
+		this.requestedChannelMax = requestedChannelMax;
 	}
 
 	public Cache getCache() {
