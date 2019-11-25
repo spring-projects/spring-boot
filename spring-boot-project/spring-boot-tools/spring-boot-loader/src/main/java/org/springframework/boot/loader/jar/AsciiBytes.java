@@ -77,11 +77,11 @@ final class AsciiBytes {
 		this.length = length;
 	}
 
-	public int length() {
+	int length() {
 		return this.length;
 	}
 
-	public boolean startsWith(AsciiBytes prefix) {
+	boolean startsWith(AsciiBytes prefix) {
 		if (this == prefix) {
 			return true;
 		}
@@ -96,7 +96,7 @@ final class AsciiBytes {
 		return true;
 	}
 
-	public boolean endsWith(AsciiBytes postfix) {
+	boolean endsWith(AsciiBytes postfix) {
 		if (this == postfix) {
 			return true;
 		}
@@ -112,11 +112,11 @@ final class AsciiBytes {
 		return true;
 	}
 
-	public AsciiBytes substring(int beginIndex) {
+	AsciiBytes substring(int beginIndex) {
 		return substring(beginIndex, this.length);
 	}
 
-	public AsciiBytes substring(int beginIndex, int endIndex) {
+	AsciiBytes substring(int beginIndex, int endIndex) {
 		int length = endIndex - beginIndex;
 		if (this.offset + length > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
@@ -124,7 +124,7 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	public boolean matches(CharSequence name, char suffix) {
+	boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
 		int totalLen = nameLen + ((suffix != 0) ? 1 : 0);
@@ -239,7 +239,7 @@ final class AsciiBytes {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public static int hashCode(CharSequence charSequence) {
+	static int hashCode(CharSequence charSequence) {
 		// We're compatible with String's hashCode()
 		if (charSequence instanceof StringSequence) {
 			// ... but save making an unnecessary String for StringSequence
@@ -248,7 +248,7 @@ final class AsciiBytes {
 		return charSequence.toString().hashCode();
 	}
 
-	public static int hashCode(int hash, char suffix) {
+	static int hashCode(int hash, char suffix) {
 		return (suffix != 0) ? (31 * hash + suffix) : hash;
 	}
 

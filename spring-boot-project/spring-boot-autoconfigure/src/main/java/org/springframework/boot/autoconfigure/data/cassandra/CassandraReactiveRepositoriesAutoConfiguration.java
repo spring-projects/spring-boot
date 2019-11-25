@@ -38,11 +38,11 @@ import org.springframework.data.cassandra.repository.support.ReactiveCassandraRe
  * @since 2.0.0
  * @see EnableReactiveCassandraRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveSession.class, ReactiveCassandraRepository.class })
 @ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.REACTIVE)
 @ConditionalOnMissingBean(ReactiveCassandraRepositoryFactoryBean.class)
-@Import(CassandraReactiveRepositoriesAutoConfigureRegistrar.class)
+@Import(CassandraReactiveRepositoriesRegistrar.class)
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)
 public class CassandraReactiveRepositoriesAutoConfiguration {
 

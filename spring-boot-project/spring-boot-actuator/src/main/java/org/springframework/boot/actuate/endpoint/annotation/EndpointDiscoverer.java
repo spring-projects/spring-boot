@@ -44,8 +44,10 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -139,7 +141,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private EndpointBean createEndpointBean(String beanName) {
 		Object bean = this.applicationContext.getBean(beanName);
-		return new EndpointBean(beanName, bean);
+		return new EndpointBean(this.applicationContext.getEnvironment(), beanName, bean);
 	}
 
 	private void addExtensionBeans(Collection<EndpointBean> endpointBeans) {
@@ -158,7 +160,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private ExtensionBean createExtensionBean(String beanName) {
 		Object bean = this.applicationContext.getBean(beanName);
-		return new ExtensionBean(beanName, bean);
+		return new ExtensionBean(this.applicationContext.getEnvironment(), beanName, bean);
 	}
 
 	private void addExtensionBean(EndpointBean endpointBean, ExtensionBean extensionBean) {
@@ -283,7 +285,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return isFilterMatch(instance, endpoint);
 		}
 		return false;
-
 	}
 
 	private boolean isFilterMatch(EndpointFilter<E> filter, EndpointBean endpointBean) {
@@ -401,60 +402,56 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
-		EndpointBean(String beanName, Object bean) {
-			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(bean.getClass(),
-					Endpoint.class, true, true);
-			String id = attributes.getString("id");
+		EndpointBean(Environment environment, String beanName, Object bean) {
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
+			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
 					() -> "No @Endpoint id attribute specified for " + bean.getClass().getName());
 			this.beanName = beanName;
 			this.bean = bean;
-			this.id = EndpointId.of(id);
-			this.enabledByDefault = (Boolean) attributes.get("enableByDefault");
+			this.id = EndpointId.of(environment, id);
+			this.enabledByDefault = annotation.getBoolean("enableByDefault");
 			this.filter = getFilter(this.bean.getClass());
 		}
 
-		public void addExtension(ExtensionBean extensionBean) {
+		void addExtension(ExtensionBean extensionBean) {
 			this.extensions.add(extensionBean);
 		}
 
-		public Set<ExtensionBean> getExtensions() {
+		Set<ExtensionBean> getExtensions() {
 			return this.extensions;
 		}
 
 		private Class<?> getFilter(Class<?> type) {
-			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
-					FilteredEndpoint.class, false, true);
-			if (attributes == null) {
-				return null;
-			}
-			return attributes.getClass("value");
+			return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).get(FilteredEndpoint.class)
+					.getValue(MergedAnnotation.VALUE, Class.class).orElse(null);
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getId() {
+		EndpointId getId() {
 			return this.id;
 		}
 
-		public boolean isEnabledByDefault() {
+		boolean isEnabledByDefault() {
 			return this.enabledByDefault;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 
 	}
 
 	/**
-	 * Information about an {@link EndpointExtension EndpointExtension} bean.
+	 * Information about an {@link EndpointExtension @EndpointExtension} bean.
 	 */
 	private static class ExtensionBean {
 
@@ -466,33 +463,33 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final Class<?> filter;
 
-		ExtensionBean(String beanName, Object bean) {
+		ExtensionBean(Environment environment, String beanName, Object bean) {
 			this.bean = bean;
 			this.beanName = beanName;
-			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(bean.getClass(),
-					EndpointExtension.class, false, true);
-			Class<?> endpointType = attributes.getClass("endpoint");
-			AnnotationAttributes endpointAttributes = AnnotatedElementUtils.findMergedAnnotationAttributes(endpointType,
-					Endpoint.class, true, true);
-			Assert.state(endpointAttributes != null,
+			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(EndpointExtension.class);
+			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
+			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
+					.from(endpointType, SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
+			Assert.state(endpointAnnotation.isPresent(),
 					() -> "Extension " + endpointType.getName() + " does not specify an endpoint");
-			this.endpointId = EndpointId.of(endpointAttributes.getString("id"));
-			this.filter = attributes.getClass("filter");
+			this.endpointId = EndpointId.of(environment, endpointAnnotation.getString("id"));
+			this.filter = extensionAnnotation.getClass("filter");
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getEndpointId() {
+		EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 

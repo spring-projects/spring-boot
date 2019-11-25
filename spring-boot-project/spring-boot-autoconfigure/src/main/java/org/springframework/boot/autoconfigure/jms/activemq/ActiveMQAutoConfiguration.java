@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(JmsAutoConfiguration.class)
 @AutoConfigureAfter({ JndiConnectionFactoryAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })

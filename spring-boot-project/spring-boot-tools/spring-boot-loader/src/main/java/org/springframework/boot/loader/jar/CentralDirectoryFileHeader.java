@@ -93,7 +93,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		}
 	}
 
-	public AsciiBytes getName() {
+	AsciiBytes getName() {
 		return this.name;
 	}
 
@@ -102,7 +102,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return this.name.matches(name, suffix);
 	}
 
-	public boolean isDirectory() {
+	boolean isDirectory() {
 		return this.name.endsWith(SLASH);
 	}
 
@@ -111,7 +111,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return (int) Bytes.littleEndianValue(this.header, this.headerOffset + 10, 2);
 	}
 
-	public long getTime() {
+	long getTime() {
 		long datetime = Bytes.littleEndianValue(this.header, this.headerOffset + 12, 4);
 		return decodeMsDosFormatDateTime(datetime);
 	}
@@ -130,7 +130,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return localDateTime.toEpochSecond(ZoneId.systemDefault().getRules().getOffset(localDateTime)) * 1000;
 	}
 
-	public long getCrc() {
+	long getCrc() {
 		return Bytes.littleEndianValue(this.header, this.headerOffset + 16, 4);
 	}
 
@@ -144,11 +144,15 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return Bytes.littleEndianValue(this.header, this.headerOffset + 24, 4);
 	}
 
-	public byte[] getExtra() {
+	byte[] getExtra() {
 		return this.extra;
 	}
 
-	public AsciiBytes getComment() {
+	boolean hasExtra() {
+		return this.extra.length > 0;
+	}
+
+	AsciiBytes getComment() {
 		return this.comment;
 	}
 
@@ -164,8 +168,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment, this.localHeaderOffset);
 	}
 
-	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, int offset,
-			JarEntryFilter filter) throws IOException {
+	static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, int offset, JarEntryFilter filter)
+			throws IOException {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		byte[] bytes = data.read(offset, 46);
 		fileHeader.load(bytes, 0, data, offset, filter);

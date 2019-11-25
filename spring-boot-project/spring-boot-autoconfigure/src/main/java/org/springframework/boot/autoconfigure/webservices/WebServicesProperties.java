@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
- * {@link ConfigurationProperties} for Spring Web Services.
+ * {@link ConfigurationProperties @ConfigurationProperties} for Spring Web Services.
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll

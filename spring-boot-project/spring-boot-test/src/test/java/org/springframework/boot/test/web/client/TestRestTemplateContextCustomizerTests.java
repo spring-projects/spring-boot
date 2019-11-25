@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.web.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -36,11 +36,11 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class TestRestTemplateContextCustomizerTests {
+class TestRestTemplateContextCustomizerTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
+	void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
 		new ApplicationContextRunner(TestApplicationContext::new).withInitializer((context) -> {
 			MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
 			given(configuration.getTestClass()).willReturn((Class) TestClass.class);
@@ -53,7 +53,7 @@ public class TestRestTemplateContextCustomizerTests {
 
 	}
 
-	private static class TestApplicationContext extends AbstractApplicationContext {
+	static class TestApplicationContext extends AbstractApplicationContext {
 
 		private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 

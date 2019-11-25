@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Atlas metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Atlas metrics
+ * export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
@@ -30,6 +31,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "management.metrics.export.atlas")
 public class AtlasProperties extends StepRegistryProperties {
+
+	/**
+	 * Number of threads to use with the metrics publishing scheduler.
+	 */
+	private Integer numThreads = 4;
 
 	/**
 	 * URI of the Atlas server.
@@ -66,6 +72,16 @@ public class AtlasProperties extends StepRegistryProperties {
 	 * URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	 */
 	private String evalUri = "http://localhost:7101/lwc/api/v1/evaluate";
+
+	@Override
+	public Integer getNumThreads() {
+		return this.numThreads;
+	}
+
+	@Override
+	public void setNumThreads(Integer numThreads) {
+		this.numThreads = numThreads;
+	}
 
 	public String getUri() {
 		return this.uri;

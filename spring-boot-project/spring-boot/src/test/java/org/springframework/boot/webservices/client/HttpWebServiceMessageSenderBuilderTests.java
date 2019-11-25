@@ -19,7 +19,7 @@ package org.springframework.boot.webservices.client;
 import java.time.Duration;
 
 import org.apache.http.client.config.RequestConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -36,10 +36,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HttpWebServiceMessageSenderBuilderTests {
+class HttpWebServiceMessageSenderBuilderTests {
 
 	@Test
-	public void buildWithRequestFactorySupplier() {
+	void buildWithRequestFactorySupplier() {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequestMessageSender messageSender = build(
 				new HttpWebServiceMessageSenderBuilder().requestFactory(() -> requestFactory));
@@ -47,7 +47,7 @@ public class HttpWebServiceMessageSenderBuilderTests {
 	}
 
 	@Test
-	public void buildWithReadAndConnectTimeout() {
+	void buildWithReadAndConnectTimeout() {
 		ClientHttpRequestMessageSender messageSender = build(
 				new HttpWebServiceMessageSenderBuilder().requestFactory(SimpleClientHttpRequestFactory::new)
 						.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(2)));
@@ -58,7 +58,7 @@ public class HttpWebServiceMessageSenderBuilderTests {
 	}
 
 	@Test
-	public void buildUsesHttpComponentsByDefault() {
+	void buildUsesHttpComponentsByDefault() {
 		ClientHttpRequestMessageSender messageSender = build(new HttpWebServiceMessageSenderBuilder()
 				.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(2)));
 		ClientHttpRequestFactory requestFactory = messageSender.getRequestFactory();

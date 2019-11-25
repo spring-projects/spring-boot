@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
@@ -38,13 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class SecurityRequestMatchersManagementContextConfigurationTests {
+class SecurityRequestMatchersManagementContextConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class));
 
 	@Test
-	public void configurationConditionalOnWebApplication() {
+	void configurationConditionalOnWebApplication() {
 		new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
 				.withUserConfiguration(TestMvcConfiguration.class)
@@ -52,7 +52,7 @@ public class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void configurationConditionalOnRequestMatcherClass() {
+	void configurationConditionalOnRequestMatcherClass() {
 		this.contextRunner
 				.withClassLoader(
 						new FilteredClassLoader("org.springframework.security.web.util.matcher.RequestMatcher"))
@@ -60,7 +60,7 @@ public class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void registersRequestMatcherProviderIfMvcPresent() {
+	void registersRequestMatcherProviderIfMvcPresent() {
 		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class).run((context) -> {
 			AntPathRequestMatcherProvider matcherProvider = context.getBean(AntPathRequestMatcherProvider.class);
 			RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
@@ -69,7 +69,7 @@ public class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
+	void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 				.withUserConfiguration(TestJerseyConfiguration.class).run((context) -> {
 					AntPathRequestMatcherProvider matcherProvider = context
@@ -80,47 +80,47 @@ public class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
+	void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void mvcRequestMatcherProviderConditionalOnDispatcherServletPathBean() {
+	void mvcRequestMatcherProviderConditionalOnDispatcherServletPathBean() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
+	void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.glassfish.jersey.server.ResourceConfig"))
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
+	void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
 				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 				.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestMvcConfiguration {
 
 		@Bean
-		public DispatcherServletPath dispatcherServletPath() {
+		DispatcherServletPath dispatcherServletPath() {
 			return () -> "/custom";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestJerseyConfiguration {
 
 		@Bean
-		public JerseyApplicationPath jerseyApplicationPath() {
+		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/admin";
 		}
 

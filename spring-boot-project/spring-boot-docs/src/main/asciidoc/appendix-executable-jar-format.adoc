@@ -1,15 +1,17 @@
 [appendix]
 [[executable-jar]]
-== The Executable Jar Format
+= The Executable Jar Format
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 The `spring-boot-loader` modules lets Spring Boot support executable jar and war files.
 If you use the Maven plugin or the Gradle plugin, executable jars are automatically generated, and you generally do not need to know the details of how they work.
 
-If you need to create executable jars from a different build system or if you are just curious about the underlying technology, this section provides some background.
+If you need to create executable jars from a different build system or if you are just curious about the underlying technology, this appendix provides some background.
 
 
 
 [[executable-jar-nested-jars]]
-=== Nested JARs
+== Nested JARs
 Java does not provide any standard way to load nested jar files (that is, jar files that are themselves contained within a jar).
 This can be problematic if you need to distribute a self-contained application that can be run from the command line without unpacking.
 
@@ -22,7 +24,7 @@ Spring Boot takes a different approach and lets you actually nest jars directly.
 
 
 [[executable-jar-jar-file-structure]]
-==== The Executable Jar File Structure
+=== The Executable Jar File Structure
 Spring Boot Loader-compatible jar files should be structured in the following way:
 
 [indent=0]
@@ -52,7 +54,7 @@ Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 [[executable-jar-war-file-structure]]
-==== The Executable War File Structure
+=== The Executable War File Structure
 Spring Boot Loader-compatible war files should be structured in the following way:
 
 [indent=0]
@@ -86,7 +88,7 @@ Any dependencies that are required when running embedded but are not required wh
 
 
 [[executable-jar-jarfile]]
-=== Spring Boot's "`JarFile`" Class
+== Spring Boot's "`JarFile`" Class
 The core class used to support loading nested jars is `org.springframework.boot.loader.jar.JarFile`.
 It lets you load jar content from a standard jar file or from nested child jar data.
 When first loaded, the location of each `JarEntry` is mapped to a physical file offset of the outer jar, as shown in the following example:
@@ -113,7 +115,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 
 
 [[executable-jar-jarfile-compatibility]]
-==== Compatibility with the Standard Java "`JarFile`"
+=== Compatibility with the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.
 The `getURL()` method returns a `URL` that opens a connection compatible with `java.net.JarURLConnection` and can be used with Java's `URLClassLoader`.
@@ -121,7 +123,7 @@ The `getURL()` method returns a `URL` that opens a connection compatible with `j
 
 
 [[executable-jar-launching]]
-=== Launching Executable Jars
+== Launching Executable Jars
 The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that is used as an executable jar's main entry point.
 It is the actual `Main-Class` in your jar file, and it is used to setup an appropriate `URLClassLoader` and ultimately call your `main()` method.
 
@@ -136,7 +138,7 @@ You can add additional locations by setting an environment variable called `LOAD
 
 
 [[executable-jar-launcher-manifest]]
-==== Launcher Manifest
+=== Launcher Manifest
 You need to specify an appropriate `Launcher` as the `Main-Class` attribute of `META-INF/MANIFEST.MF`.
 The actual class that you want to launch (that is, the class that contains a `main` method) should be specified in the `Start-Class` attribute.
 
@@ -161,22 +163,8 @@ The classpath is deduced from the nested jars.
 
 
 
-[[executable-jar-exploded-archives]]
-==== Exploded Archives
-Certain PaaS implementations may choose to unpack archives before they run.
-For example, Cloud Foundry operates this way.
-You can run an unpacked archive by starting the appropriate launcher, as follows:
-
-[indent=0]
-----
-	$ unzip -q myapp.jar
-	$ java org.springframework.boot.loader.JarLauncher
-----
-
-
-
 [[executable-jar-property-launcher-features]]
-=== `PropertiesLauncher` Features
+== `PropertiesLauncher` Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
 The following table describes these properties:
 
@@ -260,7 +248,7 @@ The following rules apply to working with `PropertiesLauncher`:
 
 
 [[executable-jar-restrictions]]
-=== Executable Jar Restrictions
+== Executable Jar Restrictions
 You need to consider the following restrictions when working with a Spring Boot Loader packaged application:
 
 
@@ -283,7 +271,7 @@ For this reason, you should consider a different logging implementation.
 
 
 [[executable-jar-alternatives]]
-=== Alternative Single Jar Solutions
+== Alternative Single Jar Solutions
 If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the following alternatives:
 
 * https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]

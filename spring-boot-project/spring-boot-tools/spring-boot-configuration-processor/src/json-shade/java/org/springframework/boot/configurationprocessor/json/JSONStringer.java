@@ -242,7 +242,6 @@ public class JSONStringer {
 		if (value instanceof JSONArray) {
 			((JSONArray) value).writeTo(this);
 			return this;
-
 		}
 		else if (value instanceof JSONObject) {
 			((JSONObject) value).writeTo(this);

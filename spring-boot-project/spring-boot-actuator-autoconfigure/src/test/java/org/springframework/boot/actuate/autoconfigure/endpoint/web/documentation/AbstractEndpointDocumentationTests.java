@@ -118,7 +118,7 @@ public abstract class AbstractEndpointDocumentationTests {
 				.collect(Collectors.toList());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,

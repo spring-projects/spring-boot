@@ -18,7 +18,7 @@ package org.springframework.boot.test.context;
 
 import javax.servlet.ServletContext;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +27,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
@@ -37,12 +38,13 @@ import org.springframework.web.servlet.DispatcherServlet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Base class for {@link SpringBootTest} tests configured to start an embedded web server.
+ * Base class for {@link SpringBootTest @SpringBootTest} tests configured to start an
+ * embedded web server.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
+abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@LocalServerPort
 	private int port = 0;
@@ -59,61 +61,62 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	public WebApplicationContext getContext() {
+	WebApplicationContext getContext() {
 		return this.context;
 	}
 
-	public TestRestTemplate getRestTemplate() {
+	TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}
 
 	@Test
-	public void runAndTestHttpEndpoint() {
+	void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
 		String body = new RestTemplate().getForObject("http://localhost:" + this.port + "/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void injectTestRestTemplate() {
+	void injectTestRestTemplate() {
 		String body = this.restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() {
+	void annotationAttributesOverridePropertiesFile() {
 		assertThat(this.value).isEqualTo(123);
 	}
 
 	@Test
-	public void validateWebApplicationContextIsSet() {
+	void validateWebApplicationContextIsSet() {
 		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	protected abstract static class AbstractConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(this.port);
 			return factory;
 		}
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@RequestMapping("/")
-		public String home() {
+		String home() {
 			return "Hello World";
 		}
 

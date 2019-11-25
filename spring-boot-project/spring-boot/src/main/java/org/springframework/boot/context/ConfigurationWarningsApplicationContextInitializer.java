@@ -143,7 +143,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 			if (problematicPackages.isEmpty()) {
 				return null;
 			}
-			return "Your ApplicationContext is unlikely to " + "start due to a @ComponentScan of "
+			return "Your ApplicationContext is unlikely to start due to a @ComponentScan of "
 					+ StringUtils.collectionToDelimitedString(problematicPackages, ", ") + ".";
 		}
 

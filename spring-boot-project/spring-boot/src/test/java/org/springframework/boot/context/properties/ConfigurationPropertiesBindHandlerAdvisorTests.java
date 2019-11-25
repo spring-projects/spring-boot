@@ -20,8 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -41,17 +41,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesBindHandlerAdvisorTests {
+class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		this.context.close();
 	}
 
 	@Test
-	public void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
+	void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
 		load(WithoutConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
 				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 	}
 
 	@Test
-	public void loadWithConfigurationPropertiesBindHandlerAdvisor() {
+	void loadWithConfigurationPropertiesBindHandlerAdvisor() {
 		load(WithConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
 				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");
@@ -89,13 +89,13 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 		return this.context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(BindingServiceProperties.class)
 	static class WithoutConfigurationPropertiesBindHandlerAdvisor {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(BindingServiceProperties.class)
 	@Import(DefaultValuesConfigurationPropertiesBindHandlerAdvisor.class)
 	static class WithConfigurationPropertiesBindHandlerAdvisor {
@@ -133,7 +133,6 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 				}
 			}
 			return super.onStart(name, target, context);
-
 		}
 
 		private ConfigurationPropertyName getDefaultName(ConfigurationPropertyName name) {
@@ -154,7 +153,7 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 		private Map<String, BindingProperties> bindings = new TreeMap<>();
 
-		public Map<String, BindingProperties> getBindings() {
+		Map<String, BindingProperties> getBindings() {
 			return this.bindings;
 		}
 
@@ -166,19 +165,19 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 		private String contentType = "application/json";
 
-		public String getDestination() {
+		String getDestination() {
 			return this.destination;
 		}
 
-		public void setDestination(String destination) {
+		void setDestination(String destination) {
 			this.destination = destination;
 		}
 
-		public String getContentType() {
+		String getContentType() {
 			return this.contentType;
 		}
 
-		public void setContentType(String contentType) {
+		void setContentType(String contentType) {
 			this.contentType = contentType;
 		}
 

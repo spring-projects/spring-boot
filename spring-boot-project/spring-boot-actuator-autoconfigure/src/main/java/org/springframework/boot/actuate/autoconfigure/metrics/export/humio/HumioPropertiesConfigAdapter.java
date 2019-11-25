@@ -44,6 +44,7 @@ class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<H
 	}
 
 	@Override
+	@Deprecated
 	public String repository() {
 		return get(HumioProperties::getRepository, HumioConfig.super::repository);
 	}

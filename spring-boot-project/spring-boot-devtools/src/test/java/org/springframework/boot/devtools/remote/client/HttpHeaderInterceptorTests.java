@@ -18,8 +18,8 @@ package org.springframework.boot.devtools.remote.client;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -39,7 +39,7 @@ import static org.mockito.BDDMockito.given;
  * @author Rob Winch
  * @since 1.3.0
  */
-public class HttpHeaderInterceptorTests {
+class HttpHeaderInterceptorTests {
 
 	private String name;
 
@@ -59,8 +59,8 @@ public class HttpHeaderInterceptorTests {
 
 	private MockHttpServletRequest httpRequest;
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeEach
+	void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
@@ -72,31 +72,31 @@ public class HttpHeaderInterceptorTests {
 	}
 
 	@Test
-	public void constructorNullHeaderName() {
+	void constructorNullHeaderName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
-	public void constructorEmptyHeaderName() {
+	void constructorEmptyHeaderName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
-	public void constructorNullHeaderValue() {
+	void constructorNullHeaderValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
-	public void constructorEmptyHeaderValue() {
+	void constructorEmptyHeaderValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
-	public void intercept() throws IOException {
+	void intercept() throws IOException {
 		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body, this.execution);
 		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
 		assertThat(result).isEqualTo(this.response);

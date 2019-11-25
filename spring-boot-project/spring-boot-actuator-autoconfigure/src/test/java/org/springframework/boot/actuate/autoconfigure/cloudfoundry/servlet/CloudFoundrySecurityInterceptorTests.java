@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundrySecurityInterceptorTests {
+class CloudFoundrySecurityInterceptorTests {
 
 	@Mock
 	private TokenValidator tokenValidator;
@@ -53,15 +53,15 @@ public class CloudFoundrySecurityInterceptorTests {
 
 	private MockHttpServletRequest request;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 		this.request = new MockHttpServletRequest();
 	}
 
 	@Test
-	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() {
+	void preHandleWhenRequestIsPreFlightShouldReturnTrue() {
 		this.request.setMethod("OPTIONS");
 		this.request.addHeader(HttpHeaders.ORIGIN, "https://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
@@ -70,20 +70,20 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenTokenIsMissingShouldReturnFalse() {
+	void preHandleWhenTokenIsMissingShouldReturnFalse() {
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() {
+	void preHandleWhenTokenIsNotBearerShouldReturnFalse() {
 		this.request.addHeader("Authorization", mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
+	void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
@@ -91,7 +91,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
+	void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
@@ -99,7 +99,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenAccessIsNotAllowedShouldReturnFalse() {
+	void preHandleWhenAccessIsNotAllowedShouldReturnFalse() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.RESTRICTED);
@@ -108,7 +108,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithFullAccess() {
+	void preHandleSuccessfulWithFullAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.FULL);
@@ -122,7 +122,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithRestrictedAccess() {
+	void preHandleSuccessfulWithRestrictedAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.RESTRICTED);

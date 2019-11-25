@@ -23,10 +23,10 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-public class JupiterTestFactoryExample {
+class JupiterTestFactoryExample {
 
 	@TestFactory
-	public Collection<DynamicNode> testFactory() {
+	Collection<DynamicNode> testFactory() {
 		return Arrays.asList(DynamicTest.dynamicTest("Some dynamic test", () -> {
 			// Test
 		}));

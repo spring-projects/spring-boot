@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
@@ -39,6 +40,7 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
@@ -48,6 +50,7 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -56,11 +59,14 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoClientDependsOnBea
 import org.springframework.boot.autoconfigure.data.mongo.ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration.EmbeddedMongoClientDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration.EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -77,10 +83,12 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Issam El-atif
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, MongodStarter.class })
+@Import({ EmbeddedMongoClientDependsOnBeanFactoryPostProcessor.class,
+		EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor.class })
 public class EmbeddedMongoAutoConfiguration {
 
 	private static final byte[] IP4_LOOPBACK_ADDRESS = { 127, 0, 0, 1 };
@@ -89,28 +97,19 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	private final EmbeddedMongoProperties embeddedProperties;
-
-	private final ApplicationContext context;
-
-	private final IRuntimeConfig runtimeConfig;
-
-	public EmbeddedMongoAutoConfiguration(MongoProperties properties, EmbeddedMongoProperties embeddedProperties,
-			ApplicationContext context, IRuntimeConfig runtimeConfig) {
+	public EmbeddedMongoAutoConfiguration(MongoProperties properties, EmbeddedMongoProperties embeddedProperties) {
 		this.properties = properties;
-		this.embeddedProperties = embeddedProperties;
-		this.context = context;
-		this.runtimeConfig = runtimeConfig;
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig) throws IOException {
+	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig, IRuntimeConfig runtimeConfig,
+			ApplicationContext context) throws IOException {
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort == null || configuredPort == 0) {
-			setEmbeddedPort(mongodConfig.net().getPort());
+			setEmbeddedPort(context, mongodConfig.net().getPort());
 		}
-		MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
+		MongodStarter mongodStarter = getMongodStarter(runtimeConfig);
 		return mongodStarter.prepare(mongodConfig);
 	}
 
@@ -123,9 +122,9 @@ public class EmbeddedMongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IMongodConfig embeddedMongoConfiguration() throws IOException {
-		MongodConfigBuilder builder = new MongodConfigBuilder().version(determineVersion());
-		EmbeddedMongoProperties.Storage storage = this.embeddedProperties.getStorage();
+	public IMongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
+		MongodConfigBuilder builder = new MongodConfigBuilder().version(determineVersion(embeddedProperties));
+		EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
 		if (storage != null) {
 			String databaseDir = storage.getDatabaseDir();
 			String replSetName = storage.getReplSetName();
@@ -143,17 +142,17 @@ public class EmbeddedMongoAutoConfiguration {
 		return builder.build();
 	}
 
-	private IFeatureAwareVersion determineVersion() {
-		if (this.embeddedProperties.getFeatures() == null) {
+	private IFeatureAwareVersion determineVersion(EmbeddedMongoProperties embeddedProperties) {
+		if (embeddedProperties.getFeatures() == null) {
 			for (Version version : Version.values()) {
-				if (version.asInDownloadPath().equals(this.embeddedProperties.getVersion())) {
+				if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {
 					return version;
 				}
 			}
-			return Versions.withFeatures(new GenericVersion(this.embeddedProperties.getVersion()));
+			return Versions.withFeatures(new GenericVersion(embeddedProperties.getVersion()));
 		}
-		return Versions.withFeatures(new GenericVersion(this.embeddedProperties.getVersion()),
-				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
+		return Versions.withFeatures(new GenericVersion(embeddedProperties.getVersion()),
+				embeddedProperties.getFeatures().toArray(new Feature[0]));
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -163,8 +162,8 @@ public class EmbeddedMongoAutoConfiguration {
 		return InetAddress.getByName(this.properties.getHost());
 	}
 
-	private void setEmbeddedPort(int port) {
-		setPortProperty(this.context, port);
+	private void setEmbeddedPort(ApplicationContext context, int port) {
+		setPortProperty(context, port);
 	}
 
 	private void setPortProperty(ApplicationContext currentContext, int port) {
@@ -188,53 +187,59 @@ public class EmbeddedMongoAutoConfiguration {
 		return (Map<String, Object>) propertySource.getSource();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Logger.class)
 	@ConditionalOnMissingBean(IRuntimeConfig.class)
 	static class RuntimeConfigConfiguration {
 
 		@Bean
-		public IRuntimeConfig embeddedMongoRuntimeConfig() {
+		IRuntimeConfig embeddedMongoRuntimeConfig(
+				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),
 					Processors.logTo(logger, Slf4jLevel.ERROR),
 					Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
 			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger).processOutput(processOutput)
-					.artifactStore(getArtifactStore(logger)).daemonProcess(false).build();
+					.artifactStore(getArtifactStore(logger, downloadConfigBuilderCustomizers.orderedStream()))
+					.daemonProcess(false).build();
 		}
 
-		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
-			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(new DownloadConfigBuilder()
-					.defaultsForCommand(Command.MongoD).progressListener(new Slf4jProgressListener(logger)).build());
+		private ArtifactStoreBuilder getArtifactStore(Logger logger,
+				Stream<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
+			DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
+					.defaultsForCommand(Command.MongoD);
+			downloadConfigBuilder.progressListener(new Slf4jProgressListener(logger));
+			downloadConfigBuilderCustomizers.forEach((customizer) -> customizer.customize(downloadConfigBuilder));
+			IDownloadConfig downloadConfig = downloadConfigBuilder.build();
+			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link MongoClient} beans depend on any
+	 * Post processor to ensure that {@link MongoClient} beans depend on any
 	 * {@link MongodExecutable} beans.
 	 */
-	@Configuration
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
-	protected static class EmbeddedMongoDependencyConfiguration extends MongoClientDependsOnBeanFactoryPostProcessor {
+	static class EmbeddedMongoClientDependsOnBeanFactoryPostProcessor
+			extends MongoClientDependsOnBeanFactoryPostProcessor {
 
-		EmbeddedMongoDependencyConfiguration() {
+		EmbeddedMongoClientDependsOnBeanFactoryPostProcessor() {
 			super(MongodExecutable.class);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that
+	 * Post processor to ensure that
 	 * {@link com.mongodb.reactivestreams.client.MongoClient} beans depend on any
 	 * {@link MongodExecutable} beans.
 	 */
-	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class, ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration
+	static class EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
 			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
-		EmbeddedReactiveMongoDependencyConfiguration() {
+		EmbeddedReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor() {
 			super(MongodExecutable.class);
 		}
 

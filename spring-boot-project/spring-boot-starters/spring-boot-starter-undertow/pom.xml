@@ -39,12 +39,12 @@
 			<artifactId>undertow-websockets-jsr</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
-			<artifactId>javax.el</artifactId>
+			<artifactId>jakarta.el</artifactId>
 		</dependency>
 	</dependencies>
 </project>

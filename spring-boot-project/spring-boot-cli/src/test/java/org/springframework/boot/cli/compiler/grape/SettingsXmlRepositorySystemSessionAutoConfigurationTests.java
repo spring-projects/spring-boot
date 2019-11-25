@@ -27,8 +27,8 @@ import org.eclipse.aether.repository.AuthenticationContext;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -44,28 +44,28 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
+class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 	@Mock
 	private RepositorySystem repositorySystem;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void basicSessionCustomization() {
+	void basicSessionCustomization() {
 		assertSessionCustomization("src/test/resources/maven-settings/basic");
 	}
 
 	@Test
-	public void encryptedSettingsSessionCustomization() {
+	void encryptedSettingsSessionCustomization() {
 		assertSessionCustomization("src/test/resources/maven-settings/encrypted");
 	}
 
 	@Test
-	public void propertyInterpolation() {
+	void propertyInterpolation() {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 		given(this.repositorySystem.newLocalRepositoryManager(eq(session), any(LocalRepository.class)))
 				.willAnswer((invocation) -> {

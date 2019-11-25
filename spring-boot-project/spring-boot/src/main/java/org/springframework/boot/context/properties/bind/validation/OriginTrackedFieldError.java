@@ -50,7 +50,7 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 		return super.toString() + "; origin " + this.origin;
 	}
 
-	public static FieldError of(FieldError fieldError, Origin origin) {
+	static FieldError of(FieldError fieldError, Origin origin) {
 		if (fieldError == null || origin == null) {
 			return fieldError;
 		}

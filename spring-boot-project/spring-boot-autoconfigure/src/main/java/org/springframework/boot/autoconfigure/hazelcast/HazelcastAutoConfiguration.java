@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Import;
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
 @Import({ HazelcastClientConfiguration.class, HazelcastServerConfiguration.class })

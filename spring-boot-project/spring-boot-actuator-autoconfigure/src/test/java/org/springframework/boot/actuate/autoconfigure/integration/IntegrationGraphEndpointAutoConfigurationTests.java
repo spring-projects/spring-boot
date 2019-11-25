@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,19 +33,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Tim Ysewyn
  * @author Stephane Nicoll
  */
-public class IntegrationGraphEndpointAutoConfigurationTests {
+class IntegrationGraphEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
 					IntegrationGraphEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=integrationgraph")
+				.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.integrationgraph.enabled:false").run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
@@ -53,7 +54,15 @@ public class IntegrationGraphEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
+			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
+		});
+	}
+
+	@Test
+	void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
 		ApplicationContextRunner noSpringIntegrationRunner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
 		noSpringIntegrationRunner.run((context) -> {

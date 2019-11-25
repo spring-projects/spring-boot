@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,55 +25,55 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class EndpointMappingTests {
+class EndpointMappingTests {
 
 	@Test
-	public void normalizationTurnsASlashIntoAnEmptyString() {
+	void normalizationTurnsASlashIntoAnEmptyString() {
 		assertThat(new EndpointMapping("/").getPath()).isEqualTo("");
 	}
 
 	@Test
-	public void normalizationLeavesAnEmptyStringAsIs() {
+	void normalizationLeavesAnEmptyStringAsIs() {
 		assertThat(new EndpointMapping("").getPath()).isEqualTo("");
 	}
 
 	@Test
-	public void normalizationRemovesATrailingSlash() {
+	void normalizationRemovesATrailingSlash() {
 		assertThat(new EndpointMapping("/test/").getPath()).isEqualTo("/test");
 	}
 
 	@Test
-	public void normalizationAddsALeadingSlash() {
+	void normalizationAddsALeadingSlash() {
 		assertThat(new EndpointMapping("test").getPath()).isEqualTo("/test");
 	}
 
 	@Test
-	public void normalizationAddsALeadingSlashAndRemovesATrailingSlash() {
+	void normalizationAddsALeadingSlashAndRemovesATrailingSlash() {
 		assertThat(new EndpointMapping("test/").getPath()).isEqualTo("/test");
 	}
 
 	@Test
-	public void normalizationLeavesAPathWithALeadingSlashAndNoTrailingSlashAsIs() {
+	void normalizationLeavesAPathWithALeadingSlashAndNoTrailingSlashAsIs() {
 		assertThat(new EndpointMapping("/test").getPath()).isEqualTo("/test");
 	}
 
 	@Test
-	public void subPathForAnEmptyStringReturnsBasePath() {
+	void subPathForAnEmptyStringReturnsBasePath() {
 		assertThat(new EndpointMapping("/test").createSubPath("")).isEqualTo("/test");
 	}
 
 	@Test
-	public void subPathWithALeadingSlashIsSeparatedFromBasePathBySingleSlash() {
+	void subPathWithALeadingSlashIsSeparatedFromBasePathBySingleSlash() {
 		assertThat(new EndpointMapping("/test").createSubPath("/one")).isEqualTo("/test/one");
 	}
 
 	@Test
-	public void subPathWithoutALeadingSlashIsSeparatedFromBasePathBySingleSlash() {
+	void subPathWithoutALeadingSlashIsSeparatedFromBasePathBySingleSlash() {
 		assertThat(new EndpointMapping("/test").createSubPath("one")).isEqualTo("/test/one");
 	}
 
 	@Test
-	public void trailingSlashIsRemovedFromASubPath() {
+	void trailingSlashIsRemovedFromASubPath() {
 		assertThat(new EndpointMapping("/test").createSubPath("one/")).isEqualTo("/test/one");
 	}
 

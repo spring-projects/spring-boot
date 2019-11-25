@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -27,23 +27,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ConfigurationPropertyNameAliasesTests {
+class ConfigurationPropertyNameAliasesTests {
 
 	@Test
-	public void createWithStringWhenNullNameShouldThrowException() {
+	void createWithStringWhenNullNameShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void createWithStringShouldAddMapping() {
+	void createWithStringShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
 				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
-	public void createWithNameShouldAddMapping() {
+	void createWithNameShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases(
 				ConfigurationPropertyName.of("foo"), ConfigurationPropertyName.of("bar"),
 				ConfigurationPropertyName.of("baz"));
@@ -52,7 +52,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addAliasesFromStringShouldAddMapping() {
+	void addAliasesFromStringShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
@@ -60,7 +60,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addAliasesFromNameShouldAddMapping() {
+	void addAliasesFromNameShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases(ConfigurationPropertyName.of("foo"), ConfigurationPropertyName.of("bar"),
 				ConfigurationPropertyName.of("baz"));
@@ -69,7 +69,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addWhenHasExistingShouldAddAdditionalMappings() {
+	void addWhenHasExistingShouldAddAdditionalMappings() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
@@ -78,13 +78,13 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getAliasesWhenNotMappedShouldReturnEmptyList() {
+	void getAliasesWhenNotMappedShouldReturnEmptyList() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo"))).isEmpty();
 	}
 
 	@Test
-	public void getAliasesWhenMappedShouldReturnMapping() {
+	void getAliasesWhenMappedShouldReturnMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
@@ -92,7 +92,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getNameForAliasWhenHasMappingShouldReturnName() {
+	void getNameForAliasWhenHasMappingShouldReturnName() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
@@ -103,7 +103,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getNameForAliasWhenNotMappedShouldReturnNull() {
+	void getNameForAliasWhenNotMappedShouldReturnNull() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("baz"))).isNull();

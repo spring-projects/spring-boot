@@ -25,8 +25,8 @@ import java.util.List;
 import liquibase.servicelocator.CustomResolverServiceLocator;
 import liquibase.servicelocator.DefaultPackageScanClassResolver;
 import liquibase.servicelocator.ServiceLocator;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -43,19 +43,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class LiquibaseServiceLocatorApplicationListenerTests {
+class LiquibaseServiceLocatorApplicationListenerTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void replacesServiceLocator() throws IllegalAccessException {
+	void replacesServiceLocator() throws IllegalAccessException {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -64,7 +64,7 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 	}
 
 	@Test
-	public void replaceServiceLocatorBacksOffIfNotPresent() throws IllegalAccessException {
+	void replaceServiceLocatorBacksOffIfNotPresent() throws IllegalAccessException {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -82,8 +82,8 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		return field.get(instance);
 	}
 
-	@Configuration
-	public static class Conf {
+	@Configuration(proxyBeanMethods = false)
+	static class Conf {
 
 	}
 

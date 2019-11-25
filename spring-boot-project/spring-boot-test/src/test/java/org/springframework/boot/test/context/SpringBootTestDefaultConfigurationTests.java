@@ -16,35 +16,35 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} (detectDefaultConfigurationClasses).
+ * Tests for {@link SpringBootTest @SpringBootTest} (detectDefaultConfigurationClasses).
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
-public class SpringBootTestDefaultConfigurationTests {
+class SpringBootTestDefaultConfigurationTests {
 
 	@Autowired
 	private Config config;
 
 	@Test
-	public void nestedConfigClasses() {
+	void nestedConfigClasses() {
 		assertThat(this.config).isNotNull();
 	}
 
-	@Configuration
-	protected static class Config {
+	@Configuration(proxyBeanMethods = false)
+	static class Config {
 
 	}
 

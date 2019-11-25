@@ -24,8 +24,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to a
- * {@link SimpleMeterRegistry}.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to a {@link SimpleMeterRegistry}.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll

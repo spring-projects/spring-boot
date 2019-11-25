@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.info;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -40,33 +40,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class InfoContributorAutoConfigurationTests {
+class InfoContributorAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void disableEnvContributor() {
+	void disableEnvContributor() {
 		load("management.info.env.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(0);
 	}
 
 	@Test
-	public void defaultInfoContributorsDisabled() {
+	void defaultInfoContributorsDisabled() {
 		load("management.info.defaults.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(0);
 	}
 
 	@Test
-	public void defaultInfoContributorsDisabledWithCustomOne() {
+	void defaultInfoContributorsDisabledWithCustomOne() {
 		load(CustomInfoContributorConfiguration.class, "management.info.defaults.enabled:false");
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(1);
@@ -75,7 +75,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void gitPropertiesDefaultMode() {
+	void gitPropertiesDefaultMode() {
 		load(GitPropertiesConfiguration.class);
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("gitInfoContributor");
@@ -89,7 +89,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void gitPropertiesFullMode() {
+	void gitPropertiesFullMode() {
 		load(GitPropertiesConfiguration.class, "management.info.git.mode=full");
 		Map<String, Object> content = invokeContributor(
 				this.context.getBean("gitInfoContributor", InfoContributor.class));
@@ -101,7 +101,7 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Test
-	public void customGitInfoContributor() {
+	void customGitInfoContributor() {
 		load(CustomGitInfoContributorConfiguration.class);
 		assertThat(this.context.getBean(GitInfoContributor.class))
 				.isSameAs(this.context.getBean("customGitInfoContributor"));
@@ -109,7 +109,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void buildProperties() {
+	void buildProperties() {
 		load(BuildPropertiesConfiguration.class);
 		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("buildInfoContributor");
@@ -123,7 +123,7 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Test
-	public void customBuildInfoContributor() {
+	void customBuildInfoContributor() {
 		load(CustomBuildInfoContributorConfiguration.class);
 		assertThat(this.context.getBean(BuildInfoContributor.class))
 				.isSameAs(this.context.getBean("customBuildInfoContributor"));
@@ -150,11 +150,11 @@ public class InfoContributorAutoConfigurationTests {
 		this.context = context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class GitPropertiesConfiguration {
 
 		@Bean
-		public GitProperties gitProperties() {
+		GitProperties gitProperties() {
 			Properties properties = new Properties();
 			properties.put("branch", "master");
 			properties.put("commit.id", "abcdefg");
@@ -164,11 +164,11 @@ public class InfoContributorAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BuildPropertiesConfiguration {
 
 		@Bean
-		public BuildProperties buildProperties() {
+		BuildProperties buildProperties() {
 			Properties properties = new Properties();
 			properties.put("group", "com.example");
 			properties.put("artifact", "demo");
@@ -178,32 +178,32 @@ public class InfoContributorAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomInfoContributorConfiguration {
 
 		@Bean
-		public InfoContributor customInfoContributor() {
+		InfoContributor customInfoContributor() {
 			return (builder) -> {
 			};
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomGitInfoContributorConfiguration {
 
 		@Bean
-		public GitInfoContributor customGitInfoContributor() {
+		GitInfoContributor customGitInfoContributor() {
 			return new GitInfoContributor(new GitProperties(new Properties()));
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomBuildInfoContributorConfiguration {
 
 		@Bean
-		public BuildInfoContributor customBuildInfoContributor() {
+		BuildInfoContributor customBuildInfoContributor() {
 			return new BuildInfoContributor(new BuildProperties(new Properties()));
 		}
 

@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
@@ -45,10 +46,29 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
 	 */
+	@Deprecated
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
 			String metricName) {
-		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry, tagProvider, metricName);
+		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
+	}
+
+	/**
+	 * Creates a new {@code MetricsRestTemplateInterceptor}. When {@code autoTimeRequests}
+	 * is set to {@code true}, the interceptor records metrics using the given
+	 * {@code meterRegistry} with tags provided by the given {@code tagProvider} and with
+	 * {@link AutoTimer auto-timed configuration}.
+	 * @param meterRegistry the meter registry
+	 * @param tagProvider the tag provider
+	 * @param metricName the name of the recorded metric
+	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
+	 * @since 2.2.0
+	 */
+	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
+		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry, tagProvider, metricName, autoTimer);
 	}
 
 	@Override

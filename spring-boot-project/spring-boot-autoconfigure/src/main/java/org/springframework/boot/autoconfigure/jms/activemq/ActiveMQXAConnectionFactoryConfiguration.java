@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Primary;
  * @author Phillip Webb
  * @author Aurélien Leboulanger
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(TransactionManager.class)
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)
@@ -48,7 +48,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
-	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
+	ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper)
 			throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
@@ -60,7 +60,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
-	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
+	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 		return new ActiveMQConnectionFactoryFactory(properties,
 				factoryCustomizers.orderedStream().collect(Collectors.toList()))

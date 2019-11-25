@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.Base64;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Credentials;
@@ -36,62 +36,63 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Neo4jProperties}.
  *
  * @author Stephane Nicoll
+ * @author Michael Simons
  */
-public class Neo4jPropertiesTests {
+class Neo4jPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void defaultUseEmbeddedInMemoryIfAvailable() {
+	void defaultUseEmbeddedInMemoryIfAvailable() {
 		Neo4jProperties properties = load(true);
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, null);
 	}
 
 	@Test
-	public void defaultUseBoltDriverIfEmbeddedDriverIsNotAvailable() {
+	void defaultUseBoltDriverIfEmbeddedDriverIsNotAvailable() {
 		Neo4jProperties properties = load(false);
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
-	public void httpUriUseHttpDriver() {
+	void httpUriUseHttpDriver() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
 	}
 
 	@Test
-	public void httpsUriUseHttpDriver() {
+	void httpsUriUseHttpDriver() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=https://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "https://localhost:7474");
 	}
 
 	@Test
-	public void boltUriUseBoltDriver() {
+	void boltUriUseBoltDriver() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=bolt://localhost:7687");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost:7687");
 	}
 
 	@Test
-	public void fileUriUseEmbeddedServer() {
+	void fileUriUseEmbeddedServer() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=file://var/tmp/graph.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, "file://var/tmp/graph.db");
 	}
 
 	@Test
-	public void credentialsAreSet() {
+	void credentialsAreSet() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=http://localhost:7474",
 				"spring.data.neo4j.username=user", "spring.data.neo4j.password=secret");
 		Configuration configuration = properties.createConfiguration();
@@ -100,39 +101,53 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void credentialsAreSetFromUri() {
-		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=http://user:secret@my-server:7474");
+	void credentialsAreSetFromUri() {
+		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=https://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://my-server:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "https://my-server:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 
 	@Test
-	public void autoIndexNoneByDefault() {
+	void autoIndexNoneByDefault() {
 		Neo4jProperties properties = load(true);
 		Configuration configuration = properties.createConfiguration();
 		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.NONE);
 	}
 
 	@Test
-	public void autoIndexCanBeConfigured() {
+	void autoIndexCanBeConfigured() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.auto-index=validate");
 		Configuration configuration = properties.createConfiguration();
 		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.VALIDATE);
 	}
 
 	@Test
-	public void embeddedModeDisabledUseBoltUri() {
+	void embeddedModeDisabledUseBoltUri() {
 		Neo4jProperties properties = load(true, "spring.data.neo4j.embedded.enabled=false");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
-	public void embeddedModeWithRelativeLocation() {
-		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=file:target/neo4j/my.db");
+	void embeddedModeWithRelativeLocation() {
+		Neo4jProperties properties = load(true, "spring.data.neo4j.uri=file:relative/path/to/my.db");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, "file:target/neo4j/my.db");
+		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, "file:relative/path/to/my.db");
+	}
+
+	@Test
+	void nativeTypesAreSetToFalseByDefault() {
+		Neo4jProperties properties = load(true);
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isFalse();
+	}
+
+	@Test
+	void nativeTypesCanBeConfigured() {
+		Neo4jProperties properties = load(true, "spring.data.neo4j.use-native-types=true");
+		Configuration configuration = properties.createConfiguration();
+		assertThat(configuration.getUseNativeTypes()).isTrue();
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
@@ -155,7 +170,7 @@ public class Neo4jPropertiesTests {
 		}
 	}
 
-	public Neo4jProperties load(boolean embeddedAvailable, String... environment) {
+	Neo4jProperties load(boolean embeddedAvailable, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (!embeddedAvailable) {
 			ctx.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
@@ -167,7 +182,7 @@ public class Neo4jPropertiesTests {
 		return this.context.getBean(Neo4jProperties.class);
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class TestConfiguration {
 

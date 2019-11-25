@@ -35,7 +35,7 @@ public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyze
 
 	private static final String ACTION = "Consider injecting the bean as one of its "
 			+ "interfaces or forcing the use of CGLib-based "
-			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or " + "@EnableCaching.";
+			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {

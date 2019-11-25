@@ -28,8 +28,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -57,29 +56,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link SpringRunner}.
+ * {@link org.springframework.test.context.junit.jupiter.SpringExtension}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze
  */
-public class BasicErrorControllerDirectMockMvcTests {
+class BasicErrorControllerDirectMockMvcTests {
 
 	private ConfigurableWebApplicationContext wac;
 
 	private MockMvc mockMvc;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		ApplicationContextTestUtils.closeAll(this.wac);
 	}
 
-	public void setup(ConfigurableWebApplicationContext context) {
+	void setup(ConfigurableWebApplicationContext context) {
 		this.wac = context;
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 
 	@Test
-	public void errorPageAvailableWithParentContext() throws Exception {
+	void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
 				.child(ChildConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
@@ -89,7 +88,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorPageAvailableWithMvcIncluded() throws Exception {
+	void errorPageAvailableWithMvcIncluded() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
@@ -99,7 +98,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
+	void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
 		assertThatExceptionOfType(ServletException.class)
@@ -107,7 +106,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	public void errorControllerWithAop() throws Exception {
+	void errorControllerWithAop() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
@@ -126,58 +125,58 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	protected static class ParentConfiguration {
+	static class ParentConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@EnableWebMvc
-	protected static class WebMvcIncludedConfiguration {
+	static class WebMvcIncludedConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(WebMvcIncludedConfiguration.class, args);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	protected static class VanillaConfiguration {
+	static class VanillaConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(VanillaConfiguration.class, args);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	protected static class ChildConfiguration {
+	static class ChildConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			new SpringApplicationBuilder(ParentConfiguration.class).child(ChildConfiguration.class).run(args);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
 	@MinimalWebConfiguration
 	@Aspect
-	protected static class WithAopConfiguration {
+	static class WithAopConfiguration {
 
 		@Pointcut("within(@org.springframework.stereotype.Controller *)")
 		private void controllerPointCut() {
 		}
 
 		@Around("controllerPointCut()")
-		public Object mvcAdvice(ProceedingJoinPoint pjp) throws Throwable {
+		Object mvcAdvice(ProceedingJoinPoint pjp) throws Throwable {
 			return pjp.proceed();
 		}
 

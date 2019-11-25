@@ -21,29 +21,27 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest} when loading resources via {@link ServletContext}.
+ * Tests for {@link WebMvcTest @WebMvcTest} when loading resources via
+ * {@link ServletContext}.
  *
  * @author Lorenzo Dee
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
-public class WebMvcTestServletContextResourceTests {
+class WebMvcTestServletContextResourceTests {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	void getResourceLocation() throws Exception {
 		testResource("/inwebapp", "src/main/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");

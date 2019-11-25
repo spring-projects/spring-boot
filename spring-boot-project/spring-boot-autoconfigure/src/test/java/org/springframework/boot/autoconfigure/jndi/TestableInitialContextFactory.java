@@ -88,7 +88,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 										// available
 		}
 
-		public void clearAll() {
+		void clearAll() {
 			this.bindings.clear();
 		}
 

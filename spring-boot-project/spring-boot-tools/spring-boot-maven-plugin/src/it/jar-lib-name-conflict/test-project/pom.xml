@@ -51,9 +51,9 @@
 			<version>0.0.1.BUILD-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>@servlet-api.version@</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>@jakarta-servlet.version@</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -42,6 +42,8 @@ org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveRestClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration,\
@@ -98,12 +100,17 @@ org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
-org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.rsocket.RSocketSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration,\
@@ -140,6 +147,7 @@ org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAuto
 # Failure analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
+org.springframework.boot.autoconfigure.flyway.FlywayMigrationScriptMissingFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer

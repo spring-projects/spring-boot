@@ -16,8 +16,12 @@
 
 package org.springframework.boot.cli;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,23 +30,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class DirectorySourcesIntegrationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class DirectorySourcesIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/dir-sample/");
+	@RegisterExtension
+	CliTester cli;
+
+	DirectorySourcesIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("src/test/resources/dir-sample/", output);
+	}
 
 	@Test
-	public void runDirectory() throws Exception {
+	void runDirectory() throws Exception {
 		assertThat(this.cli.run("code")).contains("Hello World");
 	}
 
 	@Test
-	public void runDirectoryRecursive() throws Exception {
+	void runDirectoryRecursive() throws Exception {
 		assertThat(this.cli.run("")).contains("Hello World");
 	}
 
 	@Test
-	public void runPathPattern() throws Exception {
+	void runPathPattern() throws Exception {
 		assertThat(this.cli.run("**/*.groovy")).contains("Hello World");
 	}
 

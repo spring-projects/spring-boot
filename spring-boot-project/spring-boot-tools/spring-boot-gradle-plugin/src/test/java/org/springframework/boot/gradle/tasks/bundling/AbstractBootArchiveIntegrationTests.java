@@ -23,11 +23,10 @@ import java.util.jar.JarFile;
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.loader.tools.FileUtils;
 
@@ -38,11 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public abstract class AbstractBootArchiveIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
 	private final String taskName;
 
@@ -50,13 +48,13 @@ public abstract class AbstractBootArchiveIntegrationTests {
 		this.taskName = taskName;
 	}
 
-	@Test
+	@TestTemplate
 	public void basicBuild() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void reproducibleArchive()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException, InterruptedException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
@@ -70,7 +68,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(firstHash).isEqualTo(secondHash);
 	}
 
-	@Test
+	@TestTemplate
 	public void upToDateWhenBuiltTwice()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
@@ -79,7 +77,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
-	@Test
+	@TestTemplate
 	public void upToDateWhenBuiltTwiceWithLaunchScriptIncluded()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
@@ -88,7 +86,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenLaunchScriptWasNotIncludedAndThenIsIncluded() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -96,7 +94,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenLaunchScriptWasIncludedAndThenIsNotIncluded() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -104,7 +102,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenLaunchScriptPropertyChanges() {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", "-PlaunchScriptProperty=foo", this.taskName)
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -112,7 +110,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void applicationPluginMainClassNameIsUsed() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -122,7 +120,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void springBootExtensionMainClassNameIsUsed() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -132,7 +130,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 		}
 	}
 
-	@Test
+	@TestTemplate
 	public void duplicatesAreHandledGracefully() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);

@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -38,20 +38,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
+class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 
 	private ConditionEvaluationReportAutoConfigurationImportListener listener;
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.listener = new ConditionEvaluationReportAutoConfigurationImportListener();
 		this.listener.setBeanFactory(this.beanFactory);
 	}
 
 	@Test
-	public void shouldBeInSpringFactories() {
+	void shouldBeInSpringFactories() {
 		List<AutoConfigurationImportListener> factories = SpringFactoriesLoader
 				.loadFactories(AutoConfigurationImportListener.class, null);
 		assertThat(factories)
@@ -59,7 +59,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordCandidates() {
+	void onAutoConfigurationImportEventShouldRecordCandidates() {
 		List<String> candidateConfigurations = Collections.singletonList("Test");
 		Set<String> exclusions = Collections.emptySet();
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
@@ -70,7 +70,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordExclusions() {
+	void onAutoConfigurationImportEventShouldRecordExclusions() {
 		List<String> candidateConfigurations = Collections.emptyList();
 		Set<String> exclusions = Collections.singleton("Test");
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
@@ -81,7 +81,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
+	void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
 				Collections.emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
@@ -94,7 +94,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldApplyExclusionsGloballyWhenExclusionIsAlreadyApplied() {
+	void onAutoConfigurationImportEventShouldApplyExclusionsGloballyWhenExclusionIsAlreadyApplied() {
 		AutoConfigurationImportEvent excludeEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
 				Collections.singleton("First"));
 		this.listener.onAutoConfigurationImportEvent(excludeEvent);

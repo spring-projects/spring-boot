@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -37,19 +37,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SimpleMetricsExportAutoConfigurationTests {
+class SimpleMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresConfigAndMeterRegistry() {
+	void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(SimpleMeterRegistry.class).hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
 	}
 
 	@Test
-	public void backsOffWhenSpecificallyDisabled() {
+	void backsOffWhenSpecificallyDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.simple.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
@@ -57,44 +57,44 @@ public class SimpleMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsConfigToBeCustomized() {
+	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void backsOffEntirelyWithCustomMeterRegistry() {
+	void backsOffEntirelyWithCustomMeterRegistry() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(MeterRegistry.class).hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public SimpleConfig customConfig() {
+		SimpleConfig customConfig() {
 			return (key) -> null;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public MeterRegistry customRegistry() {
+		MeterRegistry customRegistry() {
 			return mock(MeterRegistry.class);
 		}
 

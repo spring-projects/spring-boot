@@ -41,7 +41,7 @@ public class MongoClientDependsOnBeanFactoryPostProcessor extends AbstractDepend
 	 * dependencies upon beans with the given names.
 	 * @param dependsOn names of the beans to depend upon
 	 * @deprecated since 2.1.7 in favor of
-	 * {@link #MongoClientDependsOnBeanFactoryPostProcessor}
+	 * {@link #MongoClientDependsOnBeanFactoryPostProcessor(Class...)}
 	 */
 	@Deprecated
 	public MongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {

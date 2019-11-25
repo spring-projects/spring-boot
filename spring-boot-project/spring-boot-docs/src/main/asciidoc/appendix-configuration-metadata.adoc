@@ -1,6 +1,8 @@
 [appendix]
 [[configuration-metadata]]
-== Configuration Metadata
+= Configuration Metadata
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 Spring Boot jars include metadata files that provide details of all supported configuration properties.
 The files are designed to let IDE developers offer contextual help and "`code completion`" as users are working with `application.properties` or `application.yml` files.
 
@@ -10,7 +12,7 @@ However, it is possible to <<configuration-metadata-additional-metadata,write pa
 
 
 [[configuration-metadata-format]]
-=== Metadata Format
+== Metadata Format
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
 They use a simple JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
 
@@ -79,7 +81,7 @@ They use a simple JSON format with items categorized under either "`groups`" or 
 Each "`property`" is a configuration item that the user specifies with a given value.
 For example, `server.port` and `server.address` might be specified in `application.properties`, as follows:
 
-[source,properties,indent=0]
+[source,properties,indent=0,configprops]
 ----
 	server.port=9090
 	server.address=127.0.0.1
@@ -92,12 +94,12 @@ NOTE: It is not required that every "`property`" has a "`group`".
 Some properties might exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a given property.
-For example, when a developer is configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
+For example, when a developer is configuring the configprop:spring.jpa.hibernate.ddl-auto[] property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
 
 
 
 [[configuration-metadata-group-attributes]]
-==== Group Attributes
+=== Group Attributes
 The JSON object contained in the `groups` array can contain the attributes shown in the following table:
 
 [cols="1,1,4"]
@@ -138,7 +140,7 @@ The JSON object contained in the `groups` array can contain the attributes shown
 
 
 [[configuration-metadata-property-attributes]]
-==== Property Attributes
+=== Property Attributes
 The JSON object contained in the `properties` array can contain the attributes described in the following table:
 
 [cols="1,1,4"]
@@ -253,7 +255,7 @@ Doing so is particularly useful when a `replacement` is provided.
 
 
 [[configuration-metadata-hints-attributes]]
-==== Hint Attributes
+=== Hint Attributes
 The JSON object contained in the `hints` array can contain the attributes shown in the following table:
 
 [cols="1,1,4"]
@@ -316,7 +318,7 @@ The JSON object contained in the `providers` attribute of each `hint` element ca
 
 
 [[configuration-metadata-repeated-items]]
-==== Repeated Metadata Items
+=== Repeated Metadata Items
 Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file.
 For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
 While the same names appearing in the metadata multiple times should not be common, consumers of metadata should take care to ensure that they support it.
@@ -324,14 +326,14 @@ While the same names appearing in the metadata multiple times should not be comm
 
 
 [[configuration-metadata-providing-manual-hints]]
-=== Providing Manual Hints
+== Providing Manual Hints
 To improve the user experience and further assist the user in configuring a given property, you can provide additional metadata that:
 
 * Describes the list of potential values for a property.
 * Associates a provider, to attach a well defined semantic to a property, so that a tool can discover the list of potential values based on the project's context.
 
 
-==== Value Hint
+=== Value Hint
 The `name` attribute of each hint refers to the `name` of a property.
 In the <<configuration-metadata-format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
@@ -376,7 +378,7 @@ If your IDE supports it, this is by far the most effective approach to auto-comp
 
 
 
-==== Value Providers
+=== Value Providers
 Providers are a powerful way to attach semantics to a property.
 In this section, we define the official providers that you can use for your own hints.
 However, your favorite IDE may implement some of these or none of them.
@@ -419,7 +421,7 @@ If no provider for a given property is supported, no special content assistance 
 
 
 
-===== Any
+==== Any
 The special **any** provider value permits any additional values to be provided.
 Regular value validation based on the property type should be applied if this is supported.
 
@@ -451,7 +453,7 @@ The following example offers `on` and `off` as auto-completion values for `syste
 
 Note that, in the preceding example, any other value is also allowed.
 
-===== Class Reference
+==== Class Reference
 The **class-reference** provider auto-completes classes available in the project.
 This provider supports the following parameters:
 
@@ -494,7 +496,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 
 
 
-===== Handle As
+==== Handle As
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
 This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
 This provider supports the following parameters:
@@ -543,7 +545,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 
 
-===== Logger Name
+==== Logger Name
 The **logger-name** provider auto-completes valid logger names and <<spring-boot-features.adoc#boot-features-custom-log-groups,logger groups>>.
 Typically, package and class names available in the current project can be auto-completed.
 If groups are enabled (default) and if a custom logger group is identified in the configuration, auto-completion for it should be provided.
@@ -629,7 +631,7 @@ As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
 
 
 
-===== Spring Bean Reference
+==== Spring Bean Reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
 This provider supports the following parameters:
 
@@ -668,7 +670,7 @@ If you provide that hint, you still need to transform the bean name into an actu
 
 
 
-===== Spring Profile Name
+==== Spring Profile Name
 The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
 
 The following metadata snippet corresponds to the standard `spring.profiles.active` property that defines the name of the Spring profile(s) to enable:
@@ -690,7 +692,7 @@ The following metadata snippet corresponds to the standard `spring.profiles.acti
 
 
 [[configuration-metadata-annotation-processor]]
-=== Generating Your Own Metadata by Using the Annotation Processor
+== Generating Your Own Metadata by Using the Annotation Processor
 You can easily generate your own configuration metadata file from items annotated with `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
 The jar includes a Java annotation processor which is invoked as your project is compiled.
 To use the processor, include a dependency on `spring-boot-configuration-processor`.
@@ -738,9 +740,10 @@ The Javadoc for field values within configuration classes is used to populate th
 
 NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
-Properties are discovered through the presence of standard getters and setters with special handling for collection types (that is detected even if only a getter is present).
-The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
+If the class has a single constructor with at least one parameters, one property is created per constructor parameter.
+Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection types (that is detected even if only a getter is present).
 
+The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
 
 The annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 In the cases where a `Collection` or `Enum` property has a non-empty default value, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
@@ -775,7 +778,7 @@ In order to document default values for properties in the class above, you could
 	{"properties": [
 		{
 			"name": "acme.messaging.addresses",
-			"defaultValue": ["a, b"]
+			"defaultValue": ["a", "b"]
 		},
 		{
 			"name": "acme.messaging.container-type",
@@ -808,7 +811,7 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 
 
 [[configuration-metadata-nested-properties]]
-==== Nested Properties
+=== Nested Properties
 The annotation processor automatically considers inner classes as nested properties.
 Consider the following class:
 
@@ -844,7 +847,7 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 
 
 [[configuration-metadata-additional-metadata]]
-==== Adding Additional Metadata
+=== Adding Additional Metadata
 Spring Boot's configuration file handling is quite flexible, and it is often the case that properties may exist that are not bound to a `@ConfigurationProperties` bean.
 You may also need to tune some attributes of an existing key.
 To support such cases and let you provide custom "hints", the annotation processor automatically merges items from `META-INF/additional-spring-configuration-metadata.json` into the main metadata file.

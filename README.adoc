@@ -1,5 +1,6 @@
-= Spring Boot image:https://ci.spring.io/api/v1/teams/spring-boot/pipelines/spring-boot-2.1.x/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/spring-boot/pipelines/spring-boot-2.1.x?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+= Spring Boot image:https://ci.spring.io/api/v1/teams/spring-boot/pipelines/spring-boot-2.3.x/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/spring-boot/pipelines/spring-boot-2.3.x?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 :docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
+:github: https://github.com/spring-projects/spring-boot
 
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
@@ -22,12 +23,11 @@ diverge from the defaults
 
 
 == Installation and Getting Started
-The {docs}/htmlsingle/[reference documentation] includes detailed
-{docs}/htmlsingle/#getting-started-installing-spring-boot[installation instructions]
-as well as a comprehensive {docs}/htmlsingle/#getting-started-first-application[``getting
-started``] guide. Documentation is published in {docs}/htmlsingle/[HTML],
-{docs}/pdf/spring-boot-reference.pdf[PDF] and {docs}/epub/spring-boot-reference.epub[EPUB]
-formats.
+The {docs}/html/[reference documentation] includes detailed
+{docs}/html/getting-started.html#getting-started-installing-spring-boot[installation
+instructions] as well as a comprehensive
+{docs}/html/getting-started.html#getting-started-first-application[``getting started``]
+guide.
 
 Here is a quick teaser of a complete Spring Boot application in Java:
 
@@ -58,18 +58,18 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 == Getting help
 Having trouble with Spring Boot? We'd like to help!
 
-* Check the {docs}/htmlsingle/[reference documentation], especially the
-  {docs}/htmlsingle/#howto[How-to's] -- they provide solutions to the most common
+* Check the {docs}/html/[reference documentation], especially the
+  {docs}/html/howto.html#howto[How-to's] -- they provide solutions to the most common
   questions.
 * Learn the Spring basics -- Spring Boot builds on many other Spring projects, check
   the https://spring.io[spring.io] web-site for a wealth of reference documentation. If
   you are just starting out with Spring, try one of the https://spring.io/guides[guides].
-* If you are upgrading, read the https://github.com/spring-projects/spring-boot/wiki[release notes]
-  for upgrade instructions and "new and noteworthy" features.
+* If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and
+  "new and noteworthy" features.
 * Ask a question - we monitor https://stackoverflow.com[stackoverflow.com] for questions
   tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`]. You can also chat
   with the community on https://gitter.im/spring-projects/spring-boot[Gitter].
-* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues[github.com/spring-projects/spring-boot/issues].
+* Report bugs with Spring Boot at {github}/issues[github.com/spring-projects/spring-boot/issues].
 
 
 
@@ -77,18 +77,16 @@ Having trouble with Spring Boot? We'd like to help!
 Spring Boot uses GitHub's integrated issue tracking system to record bugs and feature
 requests. If you want to raise an issue, please follow the recommendations below:
 
-* Before you log a bug, please https://github.com/spring-projects/spring-boot/search?type=Issues[search the issue tracker]
-  to see if someone has already reported the problem.
-* If the issue doesn't already exist, https://github.com/spring-projects/spring-boot/issues/new[create a new issue].
+* Before you log a bug, please search the {github}/issues[issue tracker] to see if someone
+  has already reported the problem.
+* If the issue doesn't already exist, {github}/issues/new[create a new issue].
 * Please provide as much information as possible with the issue report, we like to know
   the version of Spring Boot that you are using, as well as your Operating System and
   JVM version.
 * If you need to paste code, or include a stack trace use Markdown +++```+++ escapes
   before and after your text.
-* If possible try to create a test-case or project that replicates the issue. You can
-  submit sample projects as pull-requests against the
-  https://github.com/spring-projects/spring-boot-issues[spring-boot-issues] GitHub
-  project. Use the issue number for the name of your project.
+* If possible try to create a test-case or project that replicates the problem and attach
+  it to the issue.
 
 
 
@@ -151,7 +149,7 @@ Once this is done, you can build the reference documentation with the command be
 	$ ./mvnw clean prepare-package -pl spring-boot-project/spring-boot-docs -Pdefault,full
 ----
 
-TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/contents/reference`
+TIP: The generated documentation is available from `spring-boot-project/spring-boot-docs/target/generated-docs/reference/html`
 
 
 == Modules
@@ -250,9 +248,6 @@ running a fully packaged application.
 Groovy samples for use with the command line application are available in
 link:spring-boot-project/spring-boot-cli/samples[spring-boot-cli/samples]. To run the CLI samples type
 `spring run <sample>.groovy` from samples directory.
-
-Java samples are available in link:spring-boot-samples[spring-boot-samples] and should
-be built with maven and run by invoking `java -jar target/<sample>.jar`.
 
 
 

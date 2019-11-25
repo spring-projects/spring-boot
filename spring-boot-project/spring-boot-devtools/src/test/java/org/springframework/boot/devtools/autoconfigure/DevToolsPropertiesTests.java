@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,12 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DevToolsPropertiesTests {
+class DevToolsPropertiesTests {
 
 	private final DevToolsProperties devToolsProperties = new DevToolsProperties();
 
 	@Test
-	public void additionalExcludeKeepsDefaults() {
+	void additionalExcludeKeepsDefaults() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setAdditionalExclude("foo/**,bar/**");
 		assertThat(restart.getAllExclude()).containsOnly("META-INF/maven/**", "META-INF/resources/**", "resources/**",
@@ -39,7 +39,7 @@ public class DevToolsPropertiesTests {
 	}
 
 	@Test
-	public void additionalExcludeNoDefault() {
+	void additionalExcludeNoDefault() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setExclude("");
 		restart.setAdditionalExclude("foo/**,bar/**");
@@ -47,7 +47,7 @@ public class DevToolsPropertiesTests {
 	}
 
 	@Test
-	public void additionalExcludeCustomDefault() {
+	void additionalExcludeCustomDefault() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setExclude("biz/**");
 		restart.setAdditionalExclude("foo/**,bar/**");

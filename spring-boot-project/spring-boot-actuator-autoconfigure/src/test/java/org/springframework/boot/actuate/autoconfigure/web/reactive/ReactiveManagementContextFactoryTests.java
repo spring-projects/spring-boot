@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -34,14 +34,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ReactiveManagementContextFactoryTests {
+class ReactiveManagementContextFactoryTests {
 
 	private ReactiveManagementContextFactory factory = new ReactiveManagementContextFactory();
 
 	private AnnotationConfigReactiveWebServerApplicationContext parent = new AnnotationConfigReactiveWebServerApplicationContext();
 
 	@Test
-	public void createManagementContextShouldCreateChildContextWithConfigClasses() {
+	void createManagementContextShouldCreateChildContextWithConfigClasses() {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
 		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory
@@ -55,32 +55,32 @@ public class ReactiveManagementContextFactoryTests {
 		this.parent.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParentConfiguration {
 
 		@Bean
-		public ReactiveWebServerFactory reactiveWebServerFactory() {
+		ReactiveWebServerFactory reactiveWebServerFactory() {
 			return mock(ReactiveWebServerFactory.class);
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return mock(HttpHandler.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration1 {
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return mock(HttpHandler.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration2 {
 
 	}

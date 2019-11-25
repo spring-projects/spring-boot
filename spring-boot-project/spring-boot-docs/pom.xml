@@ -13,6 +13,7 @@
 	<description>Spring Boot Docs</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -61,6 +62,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-docs</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
 		</dependency>
 		<dependency>
@@ -68,8 +74,34 @@
 			<artifactId>spring-boot-test-autoconfigure</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-library</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -114,6 +146,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-cbor</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -282,13 +319,28 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-registry-wavefront</artifactId>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-wavefront</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-tools</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.rsocket</groupId>
+			<artifactId>rsocket-transport-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -329,34 +381,45 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.json.bind</groupId>
+			<artifactId>jakarta.json.bind-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.json.bind</groupId>
-			<artifactId>javax.json.bind-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -446,6 +509,12 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.ws.rs</groupId>
+					<artifactId>javax.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -496,6 +565,12 @@
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.transaction</groupId>
+					<artifactId>jta</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -531,6 +606,24 @@
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>javax-websocket-server-impl</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.websocket</groupId>
+					<artifactId>javax.websocket-client-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -546,6 +639,12 @@
 			<groupId>org.eclipse.jetty.http2</groupId>
 			<artifactId>http2-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
@@ -566,10 +665,16 @@
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring4</artifactId>
+			<artifactId>jersey-spring5</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -579,7 +684,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
+			<artifactId>hamcrest</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -593,14 +698,48 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-reflect</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.persistence</groupId>
+					<artifactId>javax.persistence-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -611,6 +750,12 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
@@ -619,7 +764,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring4-embedded</artifactId>
+			<artifactId>infinispan-spring5-embedded</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -781,6 +926,16 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -790,6 +945,15 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-rsocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-saml2-service-provider</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -806,6 +970,12 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-hazelcast</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
@@ -896,6 +1066,12 @@
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -906,6 +1082,12 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -1015,6 +1197,24 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-doc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>${spring-doc-resources.url}</url>
+									<unpack>true</unpack>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
 						<executions>
@@ -1050,8 +1250,8 @@
 											<groupId>org.springframework.boot</groupId>
 											<artifactId>spring-boot-maven-plugin</artifactId>
 											<version>${revision}</version>
-											<classifier>site</classifier>
-											<type>jar</type>
+											<classifier>docs</classifier>
+											<type>zip</type>
 											<outputDirectory>
 												${project.build.directory}/contents/maven-plugin
 											</outputDirectory>
@@ -1168,6 +1368,28 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-asciidoc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/asciidoc</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>xml-maven-plugin</artifactId>
 						<version>1.0.1</version>
@@ -1239,6 +1461,7 @@
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateConfigurationPropertyTables.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>
@@ -1282,170 +1505,147 @@
 					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<configuration>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<resources>
+								<resource>
+									<directory>${refdocs.build.directory}</directory>
+									<excludes>
+										<exclude>**/*.*adoc</exclude>
+									</excludes>
+								</resource>
+							</resources>
+							<attributes>
+								<spring-boot-artifactory-repo>${spring-boot-artifactory-repo}</spring-boot-artifactory-repo>
+								<github-tag>${github-tag}</github-tag>
+								<sources-root>${project.basedir}/src</sources-root>
+								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
+								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
+								<jetty-version>${jetty.version}</jetty-version>
+								<jooq-version>${jooq.version}</jooq-version>
+								<spring-boot-version>${revision}</spring-boot-version>
+								<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
+								<spring-data-couchbase-version>${flattenedpom.version.org.springframework.data.spring-data-couchbase}</spring-data-couchbase-version>
+								<spring-data-commons-version>${flattenedpom.version.org.springframework.data.spring-data-commons}</spring-data-commons-version>
+								<spring-data-jpa-version>${flattenedpom.version.org.springframework.data.spring-data-jpa}</spring-data-jpa-version>
+								<spring-data-jdbc-version>${flattenedpom.version.org.springframework.data.spring-data-jdbc}</spring-data-jdbc-version>
+								<spring-data-mongodb-version>${flattenedpom.version.org.springframework.data.spring-data-mongodb}</spring-data-mongodb-version>
+								<spring-data-neo4j-version>${flattenedpom.version.org.springframework.data.spring-data-neo4j}</spring-data-neo4j-version>
+								<spring-data-rest-version>${flattenedpom.version.org.springframework.data.spring-data-rest-core}</spring-data-rest-version>
+								<spring-data-solr-version>${flattenedpom.version.org.springframework.data.spring-data-solr}</spring-data-solr-version>
+								<spring-framework-version>${spring-framework.version}</spring-framework-version>
+								<spring-integration-version>${spring-integration.version}</spring-integration-version>
+								<spring-security-version>${spring-security.version}</spring-security-version>
+								<spring-webservices-version>${spring-ws.version}</spring-webservices-version>
+							</attributes>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>io.spring.asciidoctor</groupId>
+								<artifactId>spring-asciidoctor-extensions-spring-boot</artifactId>
+								<version>${spring-asciidoctor-extensions.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-actuator-autoconfigure</artifactId>
+								<version>${revision}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-autoconfigure</artifactId>
+								<version>${revision}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-devtools</artifactId>
+								<version>${revision}</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
-								<id>generate-docbook</id>
+								<id>generate-html-documentation</id>
 								<phase>prepare-package</phase>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<sourceDocumentName>index.adoc</sourceDocumentName>
-									<backend>docbook5</backend>
+									<backend>html5</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>.adoc</sourceDocumentExtension>
+										<sourceDocumentExtension>.htmladoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
 									<doctype>book</doctype>
 									<attributes>
-										<docinfo>true</docinfo>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>github</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
 										<attribute-missing>warn</attribute-missing>
-										<spring-boot-artifactory-repo>${spring-boot-artifactory-repo}</spring-boot-artifactory-repo>
-										<github-tag>${github-tag}</github-tag>
-										<jooq-version>${jooq.version}</jooq-version>
-										<spring-boot-version>${revision}</spring-boot-version>
-										<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
-										<spring-data-couchbase-version>${flattenedpom.version.org.springframework.data.spring-data-couchbase}</spring-data-couchbase-version>
-										<spring-data-commons-version>${flattenedpom.version.org.springframework.data.spring-data-commons}</spring-data-commons-version>
-										<spring-data-jpa-version>${flattenedpom.version.org.springframework.data.spring-data-jpa}</spring-data-jpa-version>
-										<spring-data-jdbc-version>${flattenedpom.version.org.springframework.data.spring-data-jdbc}</spring-data-jdbc-version>
-										<spring-data-mongodb-version>${flattenedpom.version.org.springframework.data.spring-data-mongodb}</spring-data-mongodb-version>
-										<spring-data-neo4j-version>${flattenedpom.version.org.springframework.data.spring-data-neo4j}</spring-data-neo4j-version>
-										<spring-data-rest-version>${flattenedpom.version.org.springframework.data.spring-data-rest-core}</spring-data-rest-version>
-										<spring-data-solr-version>${flattenedpom.version.org.springframework.data.spring-data-solr}</spring-data-solr-version>
-										<spring-framework-version>${spring-framework.version}</spring-framework-version>
-										<spring-integration-version>${spring-integration.version}</spring-integration-version>
-										<spring-security-version>${spring-security.version}</spring-security-version>
-										<spring-webservices-version>${spring-ws.version}</spring-webservices-version>
 									</attributes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>com.agilejava.docbkx</groupId>
-						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.17</version>
-						<configuration>
-							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
-							<includes>index.xml</includes>
-							<xincludeSupported>true</xincludeSupported>
-							<chunkedOutput>false</chunkedOutput>
-							<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-							<useExtensions>1</useExtensions>
-							<highlightSource>1</highlightSource>
-							<highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml</highlightXslthlConfig>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>net.sf.xslthl</groupId>
-								<artifactId>xslthl</artifactId>
-								<version>2.1.0</version>
-							</dependency>
-							<dependency>
-								<groupId>net.sf.docbook</groupId>
-								<artifactId>docbook-xml</artifactId>
-								<version>5.0-all</version>
-								<classifier>resources</classifier>
-								<type>zip</type>
-								<scope>runtime</scope>
-							</dependency>
-						</dependencies>
-						<executions>
-							<execution>
-								<id>html-single</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/target/docbook/htmlsingle">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
+									<logHandler>
+										<outputToConsole>false</outputToConsole>
+										<failIf>
+											<severity>INFO</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
-								<id>html</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
+								<id>generate-htmlsingle-documentation</id>
 								<phase>prepare-package</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
 								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
-									<chunkedOutput>true</chunkedOutput>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/target/docbook/html">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
+									<backend>html5</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>.htmlsingleadoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/htmlsingle</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>github</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
+									</attributes>
+									<logHandler>
+										<outputToConsole>false</outputToConsole>
+										<failIf>
+											<severity>INFO</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
-								<id>pdf</id>
-								<goals>
-									<goal>generate-pdf</goal>
-								</goals>
+								<id>generate-pdf-documentation</id>
 								<phase>prepare-package</phase>
-								<configuration>
-									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.pdf" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
-											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>epub</id>
 								<goals>
-									<goal>generate-epub3</goal>
+									<goal>process-asciidoc</goal>
 								</goals>
-								<phase>prepare-package</phase>
 								<configuration>
-									<epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
-									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
-									<preProcess>
-										<copy todir="${basedir}/target/docbook/epub/images">
-											<fileset dir="${basedir}/src/main/docbook/images">
-												<include name="*.png" />
-											</fileset>
-										</copy>
-									</preProcess>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/epub">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.epub" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/epub/index.epub"
-											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
-									</postProcess>
+									<backend>pdf</backend>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>pdfadoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${refdocs.build.directory}</directory>
+											<excludes>
+												<exclude>**/*</exclude>
+											</excludes>
+										</resource>
+									</resources>
 								</configuration>
 							</execution>
 						</executions>
@@ -1491,6 +1691,7 @@
 												src="${project.build.directory}/${project.artifactId}-${revision}-javadoc.jar"
 												prefix="api" />
 											<fileset dir="${project.build.directory}/contents" />
+											<fileset dir="${project.build.directory}/generated-docs" />
 										</zip>
 									</target>
 								</configuration>
@@ -1520,7 +1721,7 @@
 										</stringutil>
 										<var name="github-tag" value="v${revision}" />
 										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="2.1.x" />
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>

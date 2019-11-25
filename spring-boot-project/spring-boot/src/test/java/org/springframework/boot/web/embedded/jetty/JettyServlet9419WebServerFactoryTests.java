@@ -17,12 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,15 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions({ "jetty-*.jar", "tomcat-embed*.jar" })
 @ClassPathOverrides({ "org.eclipse.jetty:jetty-io:9.4.19.v20190610", "org.eclipse.jetty:jetty-server:9.4.19.v20190610",
 		"org.eclipse.jetty:jetty-servlet:9.4.19.v20190610", "org.eclipse.jetty:jetty-util:9.4.19.v20190610",
 		"org.eclipse.jetty:jetty-webapp:9.4.19.v20190610", "org.mortbay.jasper:apache-jsp:8.5.40" })
-public class JettyServlet9419WebServerFactoryTests extends AbstractJettyServletWebServerFactoryTests {
+class JettyServlet9419WebServerFactoryTests extends AbstractJettyServletWebServerFactoryTests {
 
 	@Test
-	public void correctVersionOfJettyUsed() {
+	void correctVersionOfJettyUsed() {
 		assertThat(ErrorHandler.class.getPackage().getImplementationVersion()).isEqualTo("9.4.19.v20190610");
 	}
 

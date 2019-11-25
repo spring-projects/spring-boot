@@ -23,7 +23,7 @@ import java.util.Set;
 
 import javax.validation.constraints.Min;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -42,30 +42,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class BindFailureAnalyzerTests {
+class BindFailureAnalyzerTests {
 
 	@Test
-	public void analysisForUnboundElementsIsNull() {
+	void analysisForUnboundElementsIsNull() {
 		FailureAnalysis analysis = performAnalysis(UnboundElementsFailureConfiguration.class,
 				"test.foo.listValue[0]=hello", "test.foo.listValue[2]=world");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void analysisForValidationExceptionIsNull() {
+	void analysisForValidationExceptionIsNull() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=1");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void bindExceptionDueToOtherFailure() {
+	void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class, "test.foo.value=alpha");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
 				"\"test.foo.value\" from property source \"test\"", "failed to convert java.lang.String to int"));
 	}
 
 	@Test
-	public void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
+	void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
 		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class, "test.foo.fruit=apple,strawberry");
 		for (Fruit fruit : Fruit.values()) {
 			assertThat(analysis.getAction()).contains(fruit.name());
@@ -73,7 +73,7 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
+	void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
 		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class, "test.foo.value=hello");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
 				"\"test.foo.value\" from property source \"test\"", "This is a failure"));
@@ -108,7 +108,7 @@ public class BindFailureAnalyzerTests {
 		MutablePropertySources sources = context.getEnvironment().getPropertySources();
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
-			int index = pair.indexOf("=");
+			int index = pair.indexOf('=');
 			String key = (index > 0) ? pair.substring(0, index) : pair;
 			String value = (index > 0) ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
@@ -148,11 +148,11 @@ public class BindFailureAnalyzerTests {
 		@Min(value = 5, message = "at least five")
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
@@ -163,11 +163,11 @@ public class BindFailureAnalyzerTests {
 
 		private List<String> listValue;
 
-		public List<String> getListValue() {
+		List<String> getListValue() {
 			return this.listValue;
 		}
 
-		public void setListValue(List<String> listValue) {
+		void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
 
@@ -178,11 +178,11 @@ public class BindFailureAnalyzerTests {
 
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
@@ -193,11 +193,11 @@ public class BindFailureAnalyzerTests {
 
 		private Set<Fruit> fruit;
 
-		public Set<Fruit> getFruit() {
+		Set<Fruit> getFruit() {
 			return this.fruit;
 		}
 
-		public void setFruit(Set<Fruit> fruit) {
+		void setFruit(Set<Fruit> fruit) {
 			this.fruit = fruit;
 		}
 
@@ -208,11 +208,11 @@ public class BindFailureAnalyzerTests {
 
 		private String value;
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			throw new RuntimeException("This is a failure");
 		}
 

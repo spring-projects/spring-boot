@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
 public class TomcatMetricsAutoConfiguration {

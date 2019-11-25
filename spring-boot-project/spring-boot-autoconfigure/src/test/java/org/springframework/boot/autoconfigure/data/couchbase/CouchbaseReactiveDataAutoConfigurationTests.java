@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
@@ -53,39 +53,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Alex Derkach
  */
-public class CouchbaseReactiveDataAutoConfigurationTests {
+class CouchbaseReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void disabledIfCouchbaseIsNotConfigured() {
+	void disabledIfCouchbaseIsNotConfigured() {
 		load(null);
 		assertThat(this.context.getBeansOfType(IndexManager.class)).isEmpty();
 	}
 
 	@Test
-	public void customConfiguration() {
+	void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
 		RxJavaCouchbaseTemplate rxJavaCouchbaseTemplate = this.context.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(rxJavaCouchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
-	public void validatorIsPresent() {
+	void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
 		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CouchbaseMappingContext mappingContext = this.context.getBean(CouchbaseMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
@@ -94,7 +94,7 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionsConfig.class);
 		RxJavaCouchbaseTemplate template = this.context.getBean(RxJavaCouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
@@ -129,18 +129,18 @@ public class CouchbaseReactiveDataAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CouchbaseTestConfigurer.class)
 	static class CustomConversionsConfig {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
-		public CouchbaseCustomConversions myCustomConversions() {
+		CouchbaseCustomConversions myCustomConversions() {
 			return new CouchbaseCustomConversions(Collections.singletonList(new MyConverter()));
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
 	@Import(CustomCouchbaseConfiguration.class)
 	static class EntityScanConfig {

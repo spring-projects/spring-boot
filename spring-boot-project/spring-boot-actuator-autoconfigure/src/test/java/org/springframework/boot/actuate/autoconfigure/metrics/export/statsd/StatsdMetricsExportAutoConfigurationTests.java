@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
 import io.micrometer.statsd.StatsdMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -35,44 +35,44 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class StatsdMetricsExportAutoConfigurationTests {
+class StatsdMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(StatsdMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresItsConfigMeterRegistryAndMetrics() {
+	void autoConfiguresItsConfigMeterRegistryAndMetrics() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
 						.hasSingleBean(StatsdConfig.class).hasSingleBean(StatsdMetrics.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.export.statsd.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
 						.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(StatsdMeterRegistry.class).hasSingleBean(StatsdConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
 				.hasSingleBean(StatsdMeterRegistry.class).hasBean("customRegistry").hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			StatsdMeterRegistry registry = context.getBean(StatsdMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();
@@ -81,33 +81,33 @@ public class StatsdMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public StatsdConfig customConfig() {
+		StatsdConfig customConfig() {
 			return (key) -> null;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
+		StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
 			return new StatsdMeterRegistry(config, clock);
 		}
 

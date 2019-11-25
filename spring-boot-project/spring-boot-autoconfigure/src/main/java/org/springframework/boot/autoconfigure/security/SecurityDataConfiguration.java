@@ -28,7 +28,7 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
  * @author Rob Winch
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SecurityEvaluationContextExtension.class)
 public class SecurityDataConfiguration {
 

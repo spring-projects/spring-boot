@@ -41,7 +41,7 @@ public class EmptyTypeMethodConfig {
 		return new Foo();
 	}
 
-	public static class Foo {
+	static class Foo {
 
 	}
 

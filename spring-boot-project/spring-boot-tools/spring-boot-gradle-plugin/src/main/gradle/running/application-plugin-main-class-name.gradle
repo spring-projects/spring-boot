@@ -5,7 +5,9 @@ plugins {
 }
 
 // tag::main-class[]
-mainClassName = 'com.example.ExampleApplication'
+application {
+	mainClassName = 'com.example.ExampleApplication'
+}
 // end::main-class[]
 
 task configuredMainClass {

@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(MongoDbFactory.class)
 class MongoDbFactoryDependentConfiguration {
 
@@ -59,13 +59,13 @@ class MongoDbFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoOperations.class)
-	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
+	MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
 		return new MongoTemplate(mongoDbFactory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
-	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
+	MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
 			MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
@@ -75,7 +75,7 @@ class MongoDbFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
-	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
+	GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory, this.properties),
 				mongoTemplate.getConverter());
 	}

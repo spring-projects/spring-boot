@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micrometer.jmx.JmxMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration;
@@ -40,12 +40,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class MetricsAutoConfigurationIntegrationTests {
+class MetricsAutoConfigurationIntegrationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple());
 
 	@Test
-	public void propertyBasedMeterFilteringIsAutoConfigured() {
+	void propertyBasedMeterFilteringIsAutoConfigured() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.my.org=false").run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			registry.timer("my.org.timer");
@@ -54,7 +54,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void propertyBasedCommonTagsIsAutoConfigured() {
+	void propertyBasedCommonTagsIsAutoConfigured() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.tags.region=test", "management.metrics.tags.origin=local")
 				.run((context) -> {
@@ -66,13 +66,13 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void simpleMeterRegistryIsUsedAsAFallback() {
+	void simpleMeterRegistryIsUsedAsAFallback() {
 		this.contextRunner.run(
 				(context) -> assertThat(context.getBean(MeterRegistry.class)).isInstanceOf(SimpleMeterRegistry.class));
 	}
 
 	@Test
-	public void emptyCompositeIsCreatedWhenNoMeterRegistriesAreAutoConfigured() {
+	void emptyCompositeIsCreatedWhenNoMeterRegistriesAreAutoConfigured() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo()).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry).isInstanceOf(CompositeMeterRegistry.class);
@@ -81,14 +81,14 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void noCompositeIsCreatedWhenASingleMeterRegistryIsAutoConfigured() {
+	void noCompositeIsCreatedWhenASingleMeterRegistryIsAutoConfigured() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
 						.isInstanceOf(GraphiteMeterRegistry.class));
 	}
 
 	@Test
-	public void noCompositeIsCreatedWithMultipleRegistriesAndOneThatIsPrimary() {
+	void noCompositeIsCreatedWithMultipleRegistriesAndOneThatIsPrimary() {
 		new ApplicationContextRunner()
 				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
 						JmxMetricsExportAutoConfiguration.class))
@@ -98,7 +98,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void compositeCreatedWithMultipleRegistries() {
+	void compositeCreatedWithMultipleRegistries() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
 				JmxMetricsExportAutoConfiguration.class)).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -109,12 +109,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class PrimaryMeterRegistryConfiguration {
 
 		@Primary
 		@Bean
-		public MeterRegistry simpleMeterRegistry() {
+		MeterRegistry simpleMeterRegistry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		}
 

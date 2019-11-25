@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -30,10 +30,12 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -44,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -53,21 +55,21 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc").run(this::validateDefaultConfig);
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
-						MongoOperationsSessionRepository.class, RedisOperationsSessionRepository.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+						MongoIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
 				.run(this::validateDefaultConfig);
 	}
 
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
-		JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-				JdbcOperationsSessionRepository.class);
+		JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+				JdbcIndexedSessionRepository.class);
 		assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 				.isEqualTo(DataSourceInitializationMode.EMBEDDED);
@@ -78,7 +80,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void filterOrderCanBeCustomized() {
+	void filterOrderCanBeCustomized() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.servlet.filter-order=123")
 				.run((context) -> {
@@ -88,12 +90,12 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void disableDataSourceInitializer() {
+	void disableDataSourceInitializer() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.initialize-schema=never")
 				.run((context) -> {
-					JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-							JdbcOperationsSessionRepository.class);
+					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+							JdbcIndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 					assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
@@ -103,13 +105,13 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void customTableName() {
+	void customTableName() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.table-name=FOO_BAR",
 						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
 				.run((context) -> {
-					JdbcOperationsSessionRepository repository = validateSessionRepository(context,
-							JdbcOperationsSessionRepository.class);
+					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+							JdbcIndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("tableName", "FOO_BAR");
 					assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
@@ -118,7 +120,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 	}
 
 	@Test
-	public void customCleanupCron() {
+	void customCleanupCron() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.cleanup-cron=0 0 12 * * *")
 				.run((context) -> {
@@ -126,6 +128,32 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 					SpringBootJdbcHttpSessionConfiguration configuration = context
 							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
 					assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", "0 0 12 * * *");
+				});
+	}
+
+	@Test
+	void customFlushMode() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.flush-mode=immediate")
+				.run((context) -> {
+					assertThat(context.getBean(JdbcSessionProperties.class).getFlushMode())
+							.isEqualTo(FlushMode.IMMEDIATE);
+					SpringBootJdbcHttpSessionConfiguration configuration = context
+							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+					assertThat(configuration).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
+				});
+	}
+
+	@Test
+	void customSaveMode() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.save-mode=on-get-attribute")
+				.run((context) -> {
+					assertThat(context.getBean(JdbcSessionProperties.class).getSaveMode())
+							.isEqualTo(SaveMode.ON_GET_ATTRIBUTE);
+					SpringBootJdbcHttpSessionConfiguration configuration = context
+							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+					assertThat(configuration).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 				});
 	}
 

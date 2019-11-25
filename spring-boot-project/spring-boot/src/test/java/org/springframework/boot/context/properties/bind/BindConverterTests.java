@@ -22,8 +22,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -48,100 +48,100 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class BindConverterTests {
+class BindConverterTests {
 
 	@Mock
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void createWhenConversionServiceIsNullShouldThrowException() {
+	void createWhenConversionServiceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BindConverter.get(null, null))
 				.withMessageContaining("ConversionService must not be null");
 	}
 
 	@Test
-	public void createWhenPropertyEditorInitializerIsNullShouldCreate() {
+	void createWhenPropertyEditorInitializerIsNullShouldCreate() {
 		BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
 	}
 
 	@Test
-	public void createWhenPropertyEditorInitializerIsNotNullShouldUseToInitialize() {
+	void createWhenPropertyEditorInitializerIsNotNullShouldUseToInitialize() {
 		BindConverter.get(ApplicationConversionService.getSharedInstance(), this.propertyEditorInitializer);
 		verify(this.propertyEditorInitializer).accept(any(PropertyEditorRegistry.class));
 	}
 
 	@Test
-	public void canConvertWhenHasDefaultEditorShouldReturnTrue() {
+	void canConvertWhenHasDefaultEditorShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		assertThat(bindConverter.canConvert("java.lang.RuntimeException", ResolvableType.forClass(Class.class)))
 				.isTrue();
 	}
 
 	@Test
-	public void canConvertWhenHasCustomEditorShouldReturnTrue() {
+	void canConvertWhenHasCustomEditorShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(SampleType.class))).isTrue();
 	}
 
 	@Test
-	public void canConvertWhenHasEditorByConventionShouldReturnTrue() {
+	void canConvertWhenHasEditorByConventionShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(ConventionType.class))).isTrue();
 	}
 
 	@Test
-	public void canConvertWhenHasEditorForCollectionElementShouldReturnTrue() {
+	void canConvertWhenHasEditorForCollectionElementShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClassWithGenerics(List.class, SampleType.class)))
 				.isTrue();
 	}
 
 	@Test
-	public void canConvertWhenHasEditorForArrayElementShouldReturnTrue() {
+	void canConvertWhenHasEditorForArrayElementShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(SampleType[].class))).isTrue();
 	}
 
 	@Test
-	public void canConvertWhenConversionServiceCanConvertShouldReturnTrue() {
+	void canConvertWhenConversionServiceCanConvertShouldReturnTrue() {
 		BindConverter bindConverter = getBindConverter(new SampleTypeConverter());
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(SampleType.class))).isTrue();
 	}
 
 	@Test
-	public void canConvertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldReturnFalse() {
+	void canConvertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldReturnFalse() {
 		BindConverter bindConverter = BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClass(SampleType.class))).isFalse();
 	}
 
 	@Test
-	public void convertWhenHasDefaultEditorShouldConvert() {
+	void convertWhenHasDefaultEditorShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		Class<?> converted = bindConverter.convert("java.lang.RuntimeException", ResolvableType.forClass(Class.class));
 		assertThat(converted).isEqualTo(RuntimeException.class);
 	}
 
 	@Test
-	public void convertWhenHasCustomEditorShouldConvert() {
+	void convertWhenHasCustomEditorShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		SampleType converted = bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
 	@Test
-	public void convertWhenHasEditorByConventionShouldConvert() {
+	void convertWhenHasEditorByConventionShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		ConventionType converted = bindConverter.convert("test", ResolvableType.forClass(ConventionType.class));
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
 	@Test
-	public void convertWhenHasEditorForCollectionElementShouldConvert() {
+	void convertWhenHasEditorForCollectionElementShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		List<SampleType> converted = bindConverter.convert("test",
 				ResolvableType.forClassWithGenerics(List.class, SampleType.class));
@@ -150,7 +150,7 @@ public class BindConverterTests {
 	}
 
 	@Test
-	public void convertWhenHasEditorForArrayElementShouldConvert() {
+	void convertWhenHasEditorForArrayElementShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		SampleType[] converted = bindConverter.convert("test", ResolvableType.forClass(SampleType[].class));
 		assertThat(converted).isNotEmpty();
@@ -158,21 +158,21 @@ public class BindConverterTests {
 	}
 
 	@Test
-	public void convertWhenConversionServiceCanConvertShouldConvert() {
+	void convertWhenConversionServiceCanConvertShouldConvert() {
 		BindConverter bindConverter = getBindConverter(new SampleTypeConverter());
 		SampleType converted = bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
 	@Test
-	public void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
+	void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter.get(ApplicationConversionService.getSharedInstance(), null);
 		assertThatExceptionOfType(ConverterNotFoundException.class)
 				.isThrownBy(() -> bindConverter.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
 
 	@Test
-	public void convertWhenConvertingToFileShouldExcludeFileEditor() {
+	void convertWhenConvertingToFileShouldExcludeFileEditor() {
 		// For back compatibility we want true file conversion and not an accidental
 		// classpath resource reference. See gh-12163
 		BindConverter bindConverter = BindConverter.get(new GenericConversionService(), null);
@@ -181,7 +181,7 @@ public class BindConverterTests {
 	}
 
 	@Test
-	public void fallsBackToApplicationConversionService() {
+	void fallsBackToApplicationConversionService() {
 		BindConverter bindConverter = BindConverter.get(new GenericConversionService(), null);
 		Duration result = bindConverter.convert("10s", ResolvableType.forClass(Duration.class));
 		assertThat(result.getSeconds()).isEqualTo(10);
@@ -206,7 +206,7 @@ public class BindConverterTests {
 
 		private String text;
 
-		public String getText() {
+		String getText() {
 			return this.text;
 		}
 
@@ -238,7 +238,7 @@ public class BindConverterTests {
 
 		private String text;
 
-		public String getText() {
+		String getText() {
 			return this.text;
 		}
 
@@ -258,7 +258,7 @@ public class BindConverterTests {
 	/**
 	 * {@link ConversionService} that always throws an {@link AssertionError}.
 	 */
-	private static class ThrowingConversionService implements ConversionService {
+	static class ThrowingConversionService implements ConversionService {
 
 		@Override
 		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {

@@ -22,7 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
@@ -36,41 +36,41 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ClassLoaderFilesTests {
+class ClassLoaderFilesTests {
 
 	private ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
-	public void addFileNameMustNotBeNull() {
+	void addFileNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void addFileFileMustNotBeNull() {
+	void addFileFileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile("test", null))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
-	public void getFileWithNullName() {
+	void getFileWithNullName() {
 		assertThat(this.files.getFile(null)).isNull();
 	}
 
 	@Test
-	public void addAndGet() {
+	void addAndGet() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		this.files.addFile("myfile", file);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file);
 	}
 
 	@Test
-	public void getMissing() {
+	void getMissing() {
 		assertThat(this.files.getFile("missing")).isNull();
 	}
 
 	@Test
-	public void addTwice() {
+	void addTwice() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
 		this.files.addFile("myfile", file1);
@@ -79,7 +79,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void addTwiceInDifferentSourceFolders() {
+	void addTwiceInDifferentSourceFolders() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
 		this.files.addFile("a", "myfile", file1);
@@ -90,7 +90,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void getSourceFolders() {
+	void getSourceFolders() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
 		ClassLoaderFile file3 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
@@ -110,7 +110,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void serialize() throws Exception {
+	void serialize() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		this.files.addFile("myfile", file);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -123,7 +123,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void addAll() {
+	void addAll() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		this.files.addFile("a", "myfile1", file1);
 		ClassLoaderFiles toAdd = new ClassLoaderFiles();
@@ -142,7 +142,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void getSize() {
+	void getSize() {
 		this.files.addFile("s1", "n1", mock(ClassLoaderFile.class));
 		this.files.addFile("s1", "n2", mock(ClassLoaderFile.class));
 		this.files.addFile("s2", "n3", mock(ClassLoaderFile.class));
@@ -151,13 +151,13 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void classLoaderFilesMustNotBeNull() {
+	void classLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
 				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test
-	public void constructFromExistingSet() {
+	void constructFromExistingSet() {
 		this.files.addFile("s1", "n1", mock(ClassLoaderFile.class));
 		this.files.addFile("s1", "n2", mock(ClassLoaderFile.class));
 		ClassLoaderFiles copy = new ClassLoaderFiles(this.files);

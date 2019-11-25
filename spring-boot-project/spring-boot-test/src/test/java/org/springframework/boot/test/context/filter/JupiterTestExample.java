@@ -18,10 +18,10 @@ package org.springframework.boot.test.context.filter;
 
 import org.junit.jupiter.api.Test;
 
-public class JupiterTestExample {
+class JupiterTestExample {
 
 	@Test
-	public void repeatedTest() {
+	void repeatedTest() {
 
 	}
 

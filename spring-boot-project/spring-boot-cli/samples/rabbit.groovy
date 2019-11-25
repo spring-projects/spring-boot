@@ -3,7 +3,7 @@ package org.test
 import java.util.concurrent.CountDownLatch
 
 @Log
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableRabbit
 class RabbitExample implements CommandLineRunner {
 

@@ -350,11 +350,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 			}
 		}
 
-		public String getMessage() {
+		String getMessage() {
 			return this.message;
 		}
 
-		public boolean hasErrorToSend() {
+		boolean hasErrorToSend() {
 			return this.hasErrorToSend;
 		}
 
@@ -362,7 +362,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		public PrintWriter getWriter() throws IOException {
 			sendErrorIfNecessary();
 			return super.getWriter();
-
 		}
 
 		@Override

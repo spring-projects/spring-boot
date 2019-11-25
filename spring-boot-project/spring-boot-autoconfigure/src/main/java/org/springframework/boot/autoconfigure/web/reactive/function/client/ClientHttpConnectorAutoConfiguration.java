@@ -37,7 +37,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
 @Import({ ClientHttpConnectorConfiguration.ReactorNetty.class, ClientHttpConnectorConfiguration.JettyClient.class })
 public class ClientHttpConnectorAutoConfiguration {

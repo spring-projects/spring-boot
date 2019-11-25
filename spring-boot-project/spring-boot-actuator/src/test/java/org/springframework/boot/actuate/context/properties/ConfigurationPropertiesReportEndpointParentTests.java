@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,10 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointParentTests {
+class ConfigurationPropertiesReportEndpointParentTests {
 
 	@Test
-	public void configurationPropertiesClass() {
+	void configurationPropertiesClass() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class).run((parent) -> {
 			new ApplicationContextRunner().withUserConfiguration(ClassConfigurationProperties.class).withParent(parent)
 					.run((child) -> {
@@ -54,7 +54,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 	}
 
 	@Test
-	public void configurationPropertiesBeanMethod() {
+	void configurationPropertiesBeanMethod() {
 		new ApplicationContextRunner().withUserConfiguration(Parent.class).run((parent) -> {
 			new ApplicationContextRunner().withUserConfiguration(BeanMethodConfigurationProperties.class)
 					.withParent(parent).run((child) -> {
@@ -69,64 +69,64 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Parent {
+	static class Parent {
 
 		@Bean
-		public TestProperties testProperties() {
+		TestProperties testProperties() {
 			return new TestProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class ClassConfigurationProperties {
+	static class ClassConfigurationProperties {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
-		public TestProperties someProperties() {
+		TestProperties someProperties() {
 			return new TestProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class BeanMethodConfigurationProperties {
+	static class BeanMethodConfigurationProperties {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "other")
-		public OtherProperties otherProperties() {
+		OtherProperties otherProperties() {
 			return new OtherProperties();
 		}
 
 	}
 
-	public static class OtherProperties {
+	static class OtherProperties {
 
 	}
 
 	@ConfigurationProperties(prefix = "test")
-	public static class TestProperties {
+	static class TestProperties {
 
 		private String myTestProperty = "654321";
 
-		public String getMyTestProperty() {
+		String getMyTestProperty() {
 			return this.myTestProperty;
 		}
 
-		public void setMyTestProperty(String myTestProperty) {
+		void setMyTestProperty(String myTestProperty) {
 			this.myTestProperty = myTestProperty;
 		}
 

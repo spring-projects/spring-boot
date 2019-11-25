@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import reactor.core.publisher.Flux;
@@ -32,7 +30,9 @@ import reactor.util.function.Tuple2;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of a {@link CompositeReactiveHealthContributor}
  */
+@Deprecated
 public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	private final ReactiveHealthIndicatorRegistry registry;
@@ -46,33 +46,6 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	private final Function<Mono<Health>, Mono<Health>> timeoutCompose;
 
 	/**
-	 * Create a new {@link CompositeReactiveHealthIndicator}.
-	 * @param healthAggregator the health aggregator
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
-	 */
-	@Deprecated
-	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator) {
-		this(healthAggregator, new LinkedHashMap<>());
-	}
-
-	/**
-	 * Create a new {@link CompositeReactiveHealthIndicator} from the specified
-	 * indicators.
-	 * @param healthAggregator the health aggregator
-	 * @param indicators a map of {@link ReactiveHealthIndicator HealthIndicators} with
-	 * the key being used as an indicator name.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link #CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
-	 */
-	@Deprecated
-	public CompositeReactiveHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, ReactiveHealthIndicator> indicators) {
-		this(healthAggregator, new DefaultReactiveHealthIndicatorRegistry(indicators));
-
-	}
-
-	/**
 	 * Create a new {@link CompositeReactiveHealthIndicator} from the indicators in the
 	 * given {@code registry}.
 	 * @param healthAggregator the health aggregator
@@ -84,22 +57,6 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		this.healthAggregator = healthAggregator;
 		this.timeoutCompose = (mono) -> (this.timeout != null)
 				? mono.timeout(Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
-	}
-
-	/**
-	 * Add a {@link ReactiveHealthIndicator} with the specified name.
-	 * @param name the name of the health indicator
-	 * @param indicator the health indicator to add
-	 * @return this instance
-	 * @throws IllegalStateException if an indicator with the given {@code name} is
-	 * already registered.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@link ReactiveHealthIndicatorRegistry#register(String, ReactiveHealthIndicator)}
-	 */
-	@Deprecated
-	public CompositeReactiveHealthIndicator addHealthIndicator(String name, ReactiveHealthIndicator indicator) {
-		this.registry.register(name, indicator);
-		return this;
 	}
 
 	/**
@@ -123,8 +80,9 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 
 	@Override
 	public Mono<Health> health() {
-		return Flux.fromIterable(this.registry.getAll().entrySet()).flatMap(
-				(entry) -> Mono.zip(Mono.just(entry.getKey()), entry.getValue().health().compose(this.timeoutCompose)))
+		return Flux.fromIterable(this.registry.getAll().entrySet())
+				.flatMap((entry) -> Mono.zip(Mono.just(entry.getKey()),
+						entry.getValue().health().transformDeferred(this.timeoutCompose)))
 				.collectMap(Tuple2::getT1, Tuple2::getT2).map(this.healthAggregator::aggregate);
 	}
 

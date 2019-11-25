@@ -26,10 +26,11 @@ import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class MetricsWebClientFilterFunctionTests {
+class MetricsWebClientFilterFunctionTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
@@ -58,17 +59,17 @@ public class MetricsWebClientFilterFunctionTests {
 
 	private ExchangeFunction exchange;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,
-				new DefaultWebClientExchangeTagsProvider(), "http.client.requests");
+				new DefaultWebClientExchangeTagsProvider(), "http.client.requests", AutoTimer.ENABLED);
 		this.response = mock(ClientResponse.class);
 		this.exchange = (r) -> Mono.just(this.response);
 	}
 
 	@Test
-	public void filterShouldRecordTimer() {
+	void filterShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
@@ -78,7 +79,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenUriTemplatePresentShouldRecordTimer() {
+	void filterWhenUriTemplatePresentShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
@@ -89,7 +90,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenIoExceptionThrownShouldRecordTimer() {
+	void filterWhenIoExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction errorExchange = (r) -> Mono.error(new IOException());
@@ -101,7 +102,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenExceptionThrownShouldRecordTimer() {
+	void filterWhenExceptionThrownShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException());
@@ -113,7 +114,7 @@ public class MetricsWebClientFilterFunctionTests {
 	}
 
 	@Test
-	public void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
+	void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
 		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException())

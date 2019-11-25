@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.BootstrapWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,9 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
-public class SpringBootTestContextBootstrapperIntegrationTests {
+class SpringBootTestContextBootstrapperIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -48,30 +48,30 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 	boolean defaultTestExecutionListenersPostProcessorCalled = false;
 
 	@Test
-	public void findConfigAutomatically() {
+	void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
 	}
 
 	@Test
-	public void contextWasCreatedViaSpringApplication() {
+	void contextWasCreatedViaSpringApplication() {
 		assertThat(this.context.getId()).startsWith("application");
 	}
 
 	@Test
-	public void testConfigurationWasApplied() {
+	void testConfigurationWasApplied() {
 		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
 	}
 
 	@Test
-	public void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
+	void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
 		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class TestConfig {
 
 		@Bean
-		public ExampleBean exampleBean() {
+		ExampleBean exampleBean() {
 			return new ExampleBean();
 		}
 

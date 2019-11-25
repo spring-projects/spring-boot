@@ -16,9 +16,9 @@
 
 package org.springframework.boot.loader.util;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,35 +27,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class SystemPropertyUtilsTests {
+class SystemPropertyUtilsTests {
 
-	@BeforeClass
-	public static void init() {
+	@BeforeEach
+	void init() {
 		System.setProperty("foo", "bar");
 	}
 
-	@AfterClass
-	public static void close() {
+	@AfterEach
+	void close() {
 		System.clearProperty("foo");
 	}
 
 	@Test
-	public void testVanillaPlaceholder() {
+	void testVanillaPlaceholder() {
 		assertThat(SystemPropertyUtils.resolvePlaceholders("${foo}")).isEqualTo("bar");
 	}
 
 	@Test
-	public void testDefaultValue() {
+	void testDefaultValue() {
 		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:foo}")).isEqualTo("foo");
 	}
 
 	@Test
-	public void testNestedPlaceholder() {
+	void testNestedPlaceholder() {
 		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}")).isEqualTo("foo");
 	}
 
 	@Test
-	public void testEnvVar() {
+	void testEnvVar() {
 		assertThat(SystemPropertyUtils.getProperty("lang")).isEqualTo(System.getenv("LANG"));
 	}
 

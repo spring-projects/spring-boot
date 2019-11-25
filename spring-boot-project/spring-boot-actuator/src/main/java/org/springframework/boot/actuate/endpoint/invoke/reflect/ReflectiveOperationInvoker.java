@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -48,7 +49,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private final ParameterValueMapper parameterValueMapper;
 
 	/**
-	 * Creates a new {code ReflectiveOperationInvoker} that will invoke the given
+	 * Creates a new {@code ReflectiveOperationInvoker} that will invoke the given
 	 * {@code method} on the given {@code target}. The given {@code parameterMapper} will
 	 * be used to map parameters to the required types and the given
 	 * {@code parameterNameMapper} will be used map parameters by name.
@@ -88,6 +89,9 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 		if (!parameter.isMandatory()) {
 			return false;
 		}
+		if (ApiVersion.class.equals(parameter.getType())) {
+			return false;
+		}
 		if (Principal.class.equals(parameter.getType())) {
 			return context.getSecurityContext().getPrincipal() == null;
 		}
@@ -103,6 +107,9 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	private Object resolveArgument(OperationParameter parameter, InvocationContext context) {
+		if (ApiVersion.class.equals(parameter.getType())) {
+			return context.getApiVersion();
+		}
 		if (Principal.class.equals(parameter.getType())) {
 			return context.getSecurityContext().getPrincipal();
 		}

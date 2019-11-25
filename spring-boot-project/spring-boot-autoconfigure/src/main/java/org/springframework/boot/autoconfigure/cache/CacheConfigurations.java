@@ -50,13 +50,13 @@ final class CacheConfigurations {
 	private CacheConfigurations() {
 	}
 
-	public static String getConfigurationClass(CacheType cacheType) {
+	static String getConfigurationClass(CacheType cacheType) {
 		Class<?> configurationClass = MAPPINGS.get(cacheType);
 		Assert.state(configurationClass != null, () -> "Unknown cache type " + cacheType);
 		return configurationClass.getName();
 	}
 
-	public static CacheType getType(String configurationClassName) {
+	static CacheType getType(String configurationClassName) {
 		for (Map.Entry<CacheType, Class<?>> entry : MAPPINGS.entrySet()) {
 			if (entry.getValue().getName().equals(configurationClassName)) {
 				return entry.getKey();

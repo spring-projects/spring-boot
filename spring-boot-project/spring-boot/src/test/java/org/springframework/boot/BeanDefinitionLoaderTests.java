@@ -16,9 +16,9 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sampleconfig.MyComponentInPackageWithoutDot;
 
 import org.springframework.boot.sampleconfig.MyComponent;
@@ -32,29 +32,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class BeanDefinitionLoaderTests {
+class BeanDefinitionLoaderTests {
 
 	private StaticApplicationContext registry;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.registry = new StaticApplicationContext();
 	}
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		this.registry.close();
 	}
 
 	@Test
-	public void loadClass() {
+	void loadClass() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class);
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
 	}
 
 	@Test
-	public void loadXmlResource() {
+	void loadXmlResource() {
 		ClassPathResource resource = new ClassPathResource("sample-beans.xml", getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(loader.load()).isEqualTo(1);
@@ -63,7 +63,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyResource() {
+	void loadGroovyResource() {
 		ClassPathResource resource = new ClassPathResource("sample-beans.groovy", getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(loader.load()).isEqualTo(1);
@@ -72,7 +72,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyResourceWithNamespace() {
+	void loadGroovyResourceWithNamespace() {
 		ClassPathResource resource = new ClassPathResource("sample-namespace.groovy", getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(loader.load()).isEqualTo(1);
@@ -81,21 +81,21 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackage() {
+	void loadPackage() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage());
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
 	}
 
 	@Test
-	public void loadClassName() {
+	void loadClassName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getName());
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
 	}
 
 	@Test
-	public void loadResourceName() {
+	void loadResourceName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.xml");
 		assertThat(loader.load()).isEqualTo(1);
@@ -103,7 +103,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadGroovyName() {
+	void loadGroovyName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.groovy");
 		assertThat(loader.load()).isEqualTo(1);
@@ -111,14 +111,14 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackageName() {
+	void loadPackageName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage().getName());
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
 	}
 
 	@Test
-	public void loadPackageNameWithoutDot() {
+	void loadPackageNameWithoutDot() {
 		// See gh-6126
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponentInPackageWithoutDot.class.getPackage().getName());
@@ -128,7 +128,7 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	public void loadPackageAndClassDoesNotDoubleAdd() {
+	void loadPackageAndClassDoesNotDoubleAdd() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage(),
 				MyComponent.class);
 		assertThat(loader.load()).isEqualTo(1);

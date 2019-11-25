@@ -23,10 +23,9 @@ import java.util.Set;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -48,7 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link WebServiceTemplateBuilder}.
@@ -56,7 +55,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  * @author Dmytro Nosan
  */
-public class WebServiceTemplateBuilderTests {
+class WebServiceTemplateBuilderTests {
 
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 
@@ -66,20 +65,20 @@ public class WebServiceTemplateBuilderTests {
 	@Mock
 	private ClientInterceptor interceptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void createWithCustomizersShouldApplyCustomizers() {
+	void createWithCustomizersShouldApplyCustomizers() {
 		WebServiceTemplateCustomizer customizer = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = new WebServiceTemplateBuilder(customizer).build();
 		verify(customizer).customize(template);
 	}
 
 	@Test
-	public void buildShouldDetectHttpMessageSender() {
+	void buildShouldDetectHttpMessageSender() {
 		WebServiceTemplate webServiceTemplate = this.builder.build();
 		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
 		WebServiceMessageSender messageSender = webServiceTemplate.getMessageSenders()[0];
@@ -87,55 +86,55 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void detectHttpMessageSenderWhenFalseShouldDisableDetection() {
+	void detectHttpMessageSenderWhenFalseShouldDisableDetection() {
 		WebServiceTemplate webServiceTemplate = this.builder.detectHttpMessageSender(false).build();
 		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
 		assertThat(webServiceTemplate.getMessageSenders()[0]).isInstanceOf(HttpUrlConnectionMessageSender.class);
 	}
 
 	@Test
-	public void messageSendersWhenSendersAreAreNullShouldThrowException() {
+	void messageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
 				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
-	public void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
+	void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null))
 				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
-	public void messageSendersShouldApply() {
+	void messageSendersShouldApply() {
 		WebServiceTemplate template = this.builder.messageSenders(this.messageSender).build();
 		assertThat(template.getMessageSenders()).containsOnly(this.messageSender);
 	}
 
 	@Test
-	public void messageSendersShouldReplaceExisting() {
+	void messageSendersShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.messageSenders(new ClientHttpRequestMessageSender())
 				.messageSenders(this.messageSender).build();
 		assertThat(template.getMessageSenders()).containsOnly(this.messageSender);
 	}
 
 	@Test
-	public void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
+	void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalMessageSenders((WebServiceMessageSender[]) null))
 				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
-	public void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
+	void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> this.builder.additionalMessageSenders((Collection<? extends WebServiceMessageSender>) null))
 				.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
-	public void additionalMessageSendersShouldAddToExisting() {
+	void additionalMessageSendersShouldAddToExisting() {
 		ClientHttpRequestMessageSender httpMessageSender = new ClientHttpRequestMessageSender();
 		WebServiceTemplate template = this.builder.messageSenders(httpMessageSender)
 				.additionalMessageSenders(this.messageSender).build();
@@ -143,54 +142,54 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void additionalMessageSendersShouldKeepDetectedHttpMessageSender() {
+	void additionalMessageSendersShouldKeepDetectedHttpMessageSender() {
 		WebServiceTemplate template = this.builder.additionalMessageSenders(this.messageSender).build();
 		assertThat(template.getMessageSenders()).contains(this.messageSender);
 		assertThat(template.getMessageSenders()).hasSize(2);
 	}
 
 	@Test
-	public void interceptorsWhenInterceptorsAreNullShouldThrowException() {
+	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.interceptors((ClientInterceptor[]) null))
 				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
-	public void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
+	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.interceptors((Collection<? extends ClientInterceptor>) null))
 				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
-	public void interceptorsShouldApply() {
+	void interceptorsShouldApply() {
 		WebServiceTemplate template = this.builder.interceptors(this.interceptor).build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
 	@Test
-	public void interceptorsShouldReplaceExisting() {
+	void interceptorsShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.interceptors(mock(ClientInterceptor.class))
 				.interceptors(Collections.singleton(this.interceptor)).build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
 	@Test
-	public void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
+	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
 				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
-	public void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
+	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
 				.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
-	public void additionalInterceptorsShouldAddToExisting() {
+	void additionalInterceptorsShouldAddToExisting() {
 		ClientInterceptor interceptor = mock(ClientInterceptor.class);
 		WebServiceTemplate template = this.builder.interceptors(interceptor).additionalInterceptors(this.interceptor)
 				.build();
@@ -198,9 +197,9 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void additionalInterceptorsShouldAddToExistingWebServiceTemplate() {
-		ClientInterceptor f1 = Mockito.mock(ClientInterceptor.class);
-		ClientInterceptor f2 = Mockito.mock(ClientInterceptor.class);
+	void additionalInterceptorsShouldAddToExistingWebServiceTemplate() {
+		ClientInterceptor f1 = mock(ClientInterceptor.class);
+		ClientInterceptor f2 = mock(ClientInterceptor.class);
 		WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 		webServiceTemplate.setInterceptors(new ClientInterceptor[] { f1 });
 		this.builder.additionalInterceptors(f2).configure(webServiceTemplate);
@@ -208,28 +207,28 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizersWhenCustomizersAreNullShouldThrowException() {
+	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((Collection<? extends WebServiceTemplateCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersShouldApply() {
+	void customizersShouldApply() {
 		WebServiceTemplateCustomizer customizer = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer).build();
 		verify(customizer).customize(template);
 	}
 
 	@Test
-	public void customizersShouldBeAppliedLast() {
+	void customizersShouldBeAppliedLast() {
 		WebServiceTemplate template = spy(new WebServiceTemplate());
 		this.builder
 				.additionalCustomizers(((webServiceTemplate) -> verify(webServiceTemplate).setMessageSenders(any())));
@@ -237,31 +236,31 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizersShouldReplaceExisting() {
+	void customizersShouldReplaceExisting() {
 		WebServiceTemplateCustomizer customizer1 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyZeroInteractions(customizer1);
+		verifyNoInteractions(customizer1);
 		verify(customizer2).customize(template);
 	}
 
 	@Test
-	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> this.builder.additionalCustomizers((Collection<? extends WebServiceTemplateCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersShouldAddToExisting() {
+	void additionalCustomizersShouldAddToExisting() {
 		WebServiceTemplateCustomizer customizer1 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1).additionalCustomizers(customizer2).build();
@@ -270,14 +269,14 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void setCheckConnectionForFault() {
+	void setCheckConnectionForFault() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setCheckConnectionForFault(false).configure(template);
 		verify(template).setCheckConnectionForFault(false);
 	}
 
 	@Test
-	public void setCheckConnectionForError() {
+	void setCheckConnectionForError() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setCheckConnectionForError(false).configure(template);
 		verify(template).setCheckConnectionForError(false);
@@ -285,49 +284,49 @@ public class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
-	public void setTransformerFactoryClass() {
+	void setTransformerFactoryClass() {
 		WebServiceTemplate template = mock(WebServiceTemplate.class);
 		this.builder.setTransformerFactoryClass(SAXTransformerFactory.class).configure(template);
 		verify(template).setTransformerFactoryClass(SAXTransformerFactory.class);
 	}
 
 	@Test
-	public void setWebServiceMessageFactory() {
+	void setWebServiceMessageFactory() {
 		WebServiceMessageFactory messageFactory = mock(WebServiceMessageFactory.class);
 		WebServiceTemplate template = this.builder.setWebServiceMessageFactory(messageFactory).build();
 		assertThat(template.getMessageFactory()).isEqualTo(messageFactory);
 	}
 
 	@Test
-	public void setMarshaller() {
+	void setMarshaller() {
 		Marshaller marshaller = mock(Marshaller.class);
 		WebServiceTemplate template = this.builder.setMarshaller(marshaller).build();
 		assertThat(template.getMarshaller()).isEqualTo(marshaller);
 	}
 
 	@Test
-	public void setUnmarshaller() {
+	void setUnmarshaller() {
 		Unmarshaller unmarshaller = mock(Unmarshaller.class);
 		WebServiceTemplate webServiceTemplate = this.builder.setUnmarshaller(unmarshaller).build();
 		assertThat(webServiceTemplate.getUnmarshaller()).isEqualTo(unmarshaller);
 	}
 
 	@Test
-	public void setFaultMessageResolver() {
+	void setFaultMessageResolver() {
 		FaultMessageResolver faultMessageResolver = mock(FaultMessageResolver.class);
 		WebServiceTemplate webServiceTemplate = this.builder.setFaultMessageResolver(faultMessageResolver).build();
 		assertThat(webServiceTemplate.getFaultMessageResolver()).isEqualTo(faultMessageResolver);
 	}
 
 	@Test
-	public void setDefaultUri() {
+	void setDefaultUri() {
 		URI uri = URI.create("http://localhost:8080");
 		WebServiceTemplate webServiceTemplate = this.builder.setDefaultUri(uri.toString()).build();
 		assertThat(webServiceTemplate.getDestinationProvider().getDestination()).isEqualTo(uri);
 	}
 
 	@Test
-	public void setDestinationProvider() {
+	void setDestinationProvider() {
 		DestinationProvider destinationProvider = () -> URI.create("http://localhost:8080");
 		WebServiceTemplate webServiceTemplate = this.builder.setDestinationProvider(destinationProvider).build();
 		assertThat(webServiceTemplate.getDestinationProvider()).isEqualTo(destinationProvider);

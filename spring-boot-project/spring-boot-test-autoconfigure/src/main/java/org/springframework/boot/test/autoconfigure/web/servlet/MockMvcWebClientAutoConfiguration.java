@@ -36,23 +36,17 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.test.mockmvc.webclient", name = "enabled", matchIfMissing = true)
 public class MockMvcWebClientAutoConfiguration {
 
-	private final Environment environment;
-
-	MockMvcWebClientAutoConfiguration(Environment environment) {
-		this.environment = environment;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	public MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc) {
-		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc).withDelegate(new LocalHostWebClient(this.environment));
+	public MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc, Environment environment) {
+		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc).withDelegate(new LocalHostWebClient(environment));
 	}
 
 	@Bean

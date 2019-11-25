@@ -42,7 +42,7 @@ public class ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
 	 * that will set up dependencies upon beans with the given names.
 	 * @param dependsOn names of the beans to depend upon
 	 * @deprecated since 2.1.7 in favor of
-	 * {@link #ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor}
+	 * {@link #ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(Class...)}
 	 */
 	@Deprecated
 	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {

@@ -24,7 +24,8 @@ import info.ganglia.gmetric4j.gmetric.GMetric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Ganglia metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Ganglia
+ * metrics export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll

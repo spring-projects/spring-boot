@@ -29,10 +29,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -45,26 +44,23 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ServletComponentScan}
+ * Integration tests for {@link ServletComponentScan @ServletComponentScan}
  *
  * @author Andy Wilkinson
  */
-public class ServletComponentScanIntegrationTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void componentsAreRegistered() {
+	void componentsAreRegistered() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
@@ -75,10 +71,10 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
-	public void indexedComponentsAreRegistered() throws IOException {
-		writeIndex();
+	void indexedComponentsAreRegistered(@TempDir File temp) throws IOException {
+		writeIndex(temp);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { this.temp.getRoot().toURI().toURL() },
+		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { temp.toURI().toURL() },
 				getClass().getClassLoader())) {
 			this.context.setClassLoader(classLoader);
 			this.context.register(TestConfiguration.class);
@@ -91,7 +87,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Test
-	public void multipartConfigIsHonoured() {
+	void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
@@ -108,8 +104,9 @@ public class ServletComponentScanIntegrationTests {
 		assertThat(multipartConfig.getFileSizeThreshold()).isEqualTo(512);
 	}
 
-	private void writeIndex() throws IOException {
-		File metaInf = this.temp.newFolder("META-INF");
+	private void writeIndex(File temp) throws IOException {
+		File metaInf = new File(temp, "META-INF");
+		metaInf.mkdirs();
 		Properties index = new Properties();
 		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestFilter", WebFilter.class.getName());
 		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestListener",
@@ -121,12 +118,12 @@ public class ServletComponentScanIntegrationTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 

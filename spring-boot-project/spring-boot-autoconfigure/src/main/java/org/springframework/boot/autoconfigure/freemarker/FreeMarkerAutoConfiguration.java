@@ -41,7 +41,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
  * @author Kazuki Shimizu
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ freemarker.template.Configuration.class, FreeMarkerConfigurationFactory.class })
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 @Import({ FreeMarkerServletWebConfiguration.class, FreeMarkerReactiveWebConfiguration.class,

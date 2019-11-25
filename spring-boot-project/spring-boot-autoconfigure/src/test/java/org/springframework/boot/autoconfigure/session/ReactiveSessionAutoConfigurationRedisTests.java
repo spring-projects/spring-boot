@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -25,9 +25,9 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisFlushMode;
+import org.springframework.session.SaveMode;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,44 +38,44 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  */
-public class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
+class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:", SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoOperationsSessionRepository.class))
+	void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class))
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:", SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
-	public void redisSessionStoreWithCustomizations() {
+	void redisSessionStoreWithCustomizations() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate")
-				.run(validateSpringSessionUsesRedis("foo:", RedisFlushMode.IMMEDIATE));
+						"spring.session.redis.save-mode=on-get-attribute")
+				.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
-			RedisFlushMode flushMode) {
+			SaveMode saveMode) {
 		return (context) -> {
-			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(context,
-					ReactiveRedisOperationsSessionRepository.class);
+			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
+					ReactiveRedisSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
-			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode", flushMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
 		};
 	}
 

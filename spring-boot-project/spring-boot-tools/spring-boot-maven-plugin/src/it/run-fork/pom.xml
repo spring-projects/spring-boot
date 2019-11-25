@@ -22,9 +22,6 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
-						<configuration>
-							<fork>true</fork>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

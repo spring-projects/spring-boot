@@ -19,13 +19,14 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * {@link RestController} used by {@link WebMvcTestHateoasIntegrationTests}.
+ * {@link RestController @RestClientTest} used by
+ * {@link WebMvcTestHateoasIntegrationTests}.
  *
  * @author Andy Wilkinson
  */
@@ -34,12 +35,12 @@ import org.springframework.web.bind.annotation.RestController;
 class HateoasController {
 
 	@RequestMapping("/resource")
-	public Resource<Map<String, String>> resource() {
-		return new Resource<>(new HashMap<String, String>(), new Link("self", "https://api.example.com"));
+	EntityModel<Map<String, String>> resource() {
+		return new EntityModel<>(new HashMap<>(), new Link("self", "https://api.example.com"));
 	}
 
 	@RequestMapping("/plain")
-	public Map<String, String> plain() {
+	Map<String, String> plain() {
 		return new HashMap<>();
 	}
 

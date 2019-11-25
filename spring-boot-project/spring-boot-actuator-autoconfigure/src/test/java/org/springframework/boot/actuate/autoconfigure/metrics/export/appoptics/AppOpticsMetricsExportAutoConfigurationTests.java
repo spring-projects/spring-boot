@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics;
 import io.micrometer.appoptics.AppOpticsConfig;
 import io.micrometer.appoptics.AppOpticsMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,25 +34,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsMetricsExportAutoConfigurationTests {
+class AppOpticsMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(AppOpticsMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class));
 	}
 
 	@Test
-	public void autoConfiguresItsConfigAndMeterRegistry() {
+	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
 						.hasSingleBean(AppOpticsMeterRegistry.class).hasSingleBean(AppOpticsConfig.class));
 	}
 
 	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.appoptics.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
@@ -60,14 +60,14 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
 						.hasSingleBean(AppOpticsConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
@@ -75,7 +75,7 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
+	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withPropertyValues("management.metrics.export.appoptics.api-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 					AppOpticsMeterRegistry registry = context.getBean(AppOpticsMeterRegistry.class);
@@ -85,33 +85,33 @@ public class AppOpticsMetricsExportAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public AppOpticsConfig customConfig() {
+		AppOpticsConfig customConfig() {
 			return (key) -> "appoptics.apiToken".equals(key) ? "abcde" : null;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public AppOpticsMeterRegistry customRegistry(AppOpticsConfig config, Clock clock) {
+		AppOpticsMeterRegistry customRegistry(AppOpticsConfig config, Clock clock) {
 			return new AppOpticsMeterRegistry(config, clock);
 		}
 

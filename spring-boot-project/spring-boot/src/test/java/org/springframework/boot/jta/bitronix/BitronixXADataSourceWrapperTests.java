@@ -19,7 +19,7 @@ package org.springframework.boot.jta.bitronix;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class BitronixXADataSourceWrapperTests {
+class BitronixXADataSourceWrapperTests {
 
 	@Test
-	public void wrap() throws Exception {
+	void wrap() throws Exception {
 		XADataSource dataSource = mock(XADataSource.class);
 		BitronixXADataSourceWrapper wrapper = new BitronixXADataSourceWrapper();
 		DataSource wrapped = wrapper.wrapDataSource(dataSource);

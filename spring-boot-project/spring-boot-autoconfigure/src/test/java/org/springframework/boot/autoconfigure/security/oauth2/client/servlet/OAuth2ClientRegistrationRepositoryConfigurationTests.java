@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -29,20 +29,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class OAuth2ClientRegistrationRepositoryConfigurationTests {
+class OAuth2ClientRegistrationRepositoryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
+	void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
 		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
+	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
 						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")

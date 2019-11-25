@@ -40,7 +40,7 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * {@link Neo4jRepository}.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling Neo4j repositories
- * using the {@link EnableNeo4jRepositories} annotation.
+ * using the {@link EnableNeo4jRepositories @EnableNeo4jRepositories} annotation.
  *
  * @author Dave Syer
  * @author Oliver Gierke
@@ -48,12 +48,12 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * @since 1.4.0
  * @see EnableNeo4jRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Neo4jSession.class, Neo4jRepository.class })
 @ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
+@Import(Neo4jRepositoriesRegistrar.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {
 

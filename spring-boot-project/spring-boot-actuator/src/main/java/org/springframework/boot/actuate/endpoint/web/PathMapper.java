@@ -42,17 +42,6 @@ public interface PathMapper {
 	String getRootPath(EndpointId endpointId);
 
 	/**
-	 * Returns an {@link PathMapper} that uses the endpoint ID as the path.
-	 * @return an {@link PathMapper} that uses the lowercase endpoint ID as the path
-	 * @deprecated since 2.1.0 in favor of {@link #getRootPath(List, EndpointId)} with a
-	 * {@code null} list
-	 */
-	@Deprecated
-	static PathMapper useEndpointId() {
-		return EndpointId::toString;
-	}
-
-	/**
 	 * Resolve the root path for the specified {@code endpointId} from the given path
 	 * mappers. If no mapper matches then the ID itself is returned.
 	 * @param pathMappers the path mappers (may be {@code null})

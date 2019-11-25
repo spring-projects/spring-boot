@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Phillip Webb
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Import({ ExampleServiceCaller.class, SimpleExampleService.class })
 public class SpyBeanOnTestFieldForExistingBeanConfig {
 

@@ -46,7 +46,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
@@ -103,7 +102,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
-	@SuppressWarnings("unchecked")
 	private BeanDefinition registerBean(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader,
 			String beanName, Class<?> type) {
 		reader.registerBean(type, beanName);
@@ -134,9 +132,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link Configuration} registered to trigger the {@link ImportsSelector}.
+	 * {@link Configuration @Configuration} registered to trigger the
+	 * {@link ImportsSelector}.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ImportsSelector.class)
 	static class ImportsConfiguration {
 
@@ -269,7 +268,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private Set<Object> determineImports(Set<Annotation> annotations, Class<?> testClass) {
 			Set<Object> determinedImports = new LinkedHashSet<>();
-			AnnotationMetadata testClassMetadata = new StandardAnnotationMetadata(testClass);
+			AnnotationMetadata testClassMetadata = AnnotationMetadata.introspect(testClass);
 			for (Annotation annotation : annotations) {
 				for (Class<?> source : getImports(annotation)) {
 					Set<Object> determinedSourceImports = determineImports(source, testClassMetadata);

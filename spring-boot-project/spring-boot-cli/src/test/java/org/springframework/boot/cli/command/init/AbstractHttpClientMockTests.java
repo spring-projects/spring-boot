@@ -153,7 +153,7 @@ public abstract class AbstractHttpClientMockTests {
 		return json.toString();
 	}
 
-	protected static class MockHttpProjectGenerationRequest {
+	static class MockHttpProjectGenerationRequest {
 
 		String contentType;
 
@@ -161,11 +161,11 @@ public abstract class AbstractHttpClientMockTests {
 
 		byte[] content = new byte[] { 0, 0, 0, 0 };
 
-		public MockHttpProjectGenerationRequest(String contentType, String fileName) {
+		MockHttpProjectGenerationRequest(String contentType, String fileName) {
 			this(contentType, fileName, new byte[] { 0, 0, 0, 0 });
 		}
 
-		public MockHttpProjectGenerationRequest(String contentType, String fileName, byte[] content) {
+		MockHttpProjectGenerationRequest(String contentType, String fileName, byte[] content) {
 			this.contentType = contentType;
 			this.fileName = fileName;
 			this.content = content;
@@ -173,7 +173,7 @@ public abstract class AbstractHttpClientMockTests {
 
 	}
 
-	private static class HasAcceptHeader implements ArgumentMatcher<HttpGet> {
+	static class HasAcceptHeader implements ArgumentMatcher<HttpGet> {
 
 		private final String value;
 

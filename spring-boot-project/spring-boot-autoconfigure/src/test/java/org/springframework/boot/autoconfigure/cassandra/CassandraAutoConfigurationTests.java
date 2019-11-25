@@ -17,8 +17,9 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Initializer;
 import com.datastax.driver.core.PoolingOptions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,13 +35,13 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CassandraAutoConfigurationTests {
+class CassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
 	@Test
-	public void createClusterWithDefault() {
+	void createClusterWithDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context.getBean(Cluster.class).getClusterName()).startsWith("cluster");
@@ -48,7 +49,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void createClusterWithOverrides() {
+	void createClusterWithOverrides() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context.getBean(Cluster.class).getClusterName()).isEqualTo("testcluster");
@@ -56,7 +57,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void createCustomizeCluster() {
+	void createCustomizeCluster() {
 		this.contextRunner.withUserConfiguration(MockCustomizerConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
@@ -64,7 +65,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizerOverridesAutoConfig() {
+	void customizerOverridesAutoConfig() {
 		this.contextRunner.withUserConfiguration(SimpleCustomizerConfig.class)
 				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
 					assertThat(context).hasSingleBean(Cluster.class);
@@ -73,7 +74,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPoolOptions() {
+	void defaultPoolOptions() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class);
 			PoolingOptions poolingOptions = context.getBean(Cluster.class).getConfiguration().getPoolingOptions();
@@ -86,7 +87,7 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizePoolOptions() {
+	void customizePoolOptions() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
 				"spring.data.cassandra.pool.pool-timeout=52", "spring.data.cassandra.pool.heartbeat-interval=62",
 				"spring.data.cassandra.pool.max-queue-size=72").run((context) -> {
@@ -100,22 +101,50 @@ public class CassandraAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Test
+	void clusterFactoryIsCalledToCreateCluster() {
+		this.contextRunner.withUserConfiguration(ClusterFactoryConfig.class)
+				.run((context) -> assertThat(context.getBean(TestClusterFactory.class).initializer).isNotNull());
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class MockCustomizerConfig {
 
 		@Bean
-		public ClusterBuilderCustomizer customizer() {
+		ClusterBuilderCustomizer customizer() {
 			return mock(ClusterBuilderCustomizer.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SimpleCustomizerConfig {
 
 		@Bean
-		public ClusterBuilderCustomizer customizer() {
+		ClusterBuilderCustomizer customizer() {
 			return (clusterBuilder) -> clusterBuilder.withClusterName("overridden-name");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ClusterFactoryConfig {
+
+		@Bean
+		TestClusterFactory clusterFactory() {
+			return new TestClusterFactory();
+		}
+
+	}
+
+	static class TestClusterFactory implements ClusterFactory {
+
+		private Initializer initializer = null;
+
+		@Override
+		public Cluster create(Initializer initializer) {
+			this.initializer = initializer;
+			return Cluster.buildFrom(initializer);
 		}
 
 	}

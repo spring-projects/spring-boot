@@ -57,7 +57,11 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Cluster couchbaseCluster() {
-		return CouchbaseCluster.create(couchbaseEnvironment(), determineBootstrapHosts());
+		CouchbaseCluster couchbaseCluster = CouchbaseCluster.create(couchbaseEnvironment(), determineBootstrapHosts());
+		if (isRoleBasedAccessControlEnabled()) {
+			return couchbaseCluster.authenticate(this.properties.getUsername(), this.properties.getPassword());
+		}
+		return couchbaseCluster;
 	}
 
 	/**
@@ -80,8 +84,15 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Bucket couchbaseClient() {
+		if (isRoleBasedAccessControlEnabled()) {
+			return couchbaseCluster().openBucket(this.properties.getBucket().getName());
+		}
 		return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
 				this.properties.getBucket().getPassword());
+	}
+
+	private boolean isRoleBasedAccessControlEnabled() {
+		return this.properties.getUsername() != null && this.properties.getPassword() != null;
 	}
 
 	/**

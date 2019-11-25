@@ -35,7 +35,7 @@ class CentralDirectoryParser {
 
 	private final List<CentralDirectoryVisitor> visitors = new ArrayList<>();
 
-	public <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
+	<T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
 		this.visitors.add(visitor);
 		return visitor;
 	}
@@ -47,7 +47,7 @@ class CentralDirectoryParser {
 	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
-	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
+	RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
 		if (skipPrefixBytes) {
 			data = getArchiveData(endRecord, data);

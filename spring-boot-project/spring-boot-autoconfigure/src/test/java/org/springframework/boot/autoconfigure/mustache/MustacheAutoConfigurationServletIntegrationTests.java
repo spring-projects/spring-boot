@@ -27,9 +27,8 @@ import java.util.Map;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -47,7 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,23 +56,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MustacheAutoConfigurationServletIntegrationTests {
+class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Autowired
 	private ServletWebServerApplicationContext context;
 
 	private int port;
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.port = this.context.getWebServer().getPort();
 	}
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		String source = "Hello {{arg}}!";
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<>();
@@ -83,24 +80,24 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void testHomePage() {
+	void testHomePage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
-	public void testPartialPage() {
+	void testPartialPage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@Controller
-	public static class Application {
+	static class Application {
 
 		@RequestMapping("/")
-		public String home(Map<String, Object> model) {
+		String home(Map<String, Object> model) {
 			model.put("time", new Date());
 			model.put("message", "Hello World");
 			model.put("title", "Hello App");
@@ -108,7 +105,7 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 		}
 
 		@RequestMapping("/partial")
-		public String layout(Map<String, Object> model) {
+		String layout(Map<String, Object> model) {
 			model.put("time", new Date());
 			model.put("message", "Hello World");
 			model.put("title", "Hello App");
@@ -116,7 +113,7 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 		}
 
 		@Bean
-		public MustacheViewResolver viewResolver() {
+		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
 					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
@@ -125,7 +122,7 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 			return resolver;
 		}
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

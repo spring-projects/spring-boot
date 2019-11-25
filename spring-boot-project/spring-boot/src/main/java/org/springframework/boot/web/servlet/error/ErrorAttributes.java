@@ -33,7 +33,8 @@ public interface ErrorAttributes {
 
 	/**
 	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
-	 * an error page {@link ModelAndView}, or returned as a {@link ResponseBody}.
+	 * an error page {@link ModelAndView}, or returned as a
+	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @return a map of error attributes

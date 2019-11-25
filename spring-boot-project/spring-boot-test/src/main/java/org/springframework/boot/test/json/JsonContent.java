@@ -72,8 +72,8 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	/**
 	 * Use AssertJ's {@link org.assertj.core.api.Assertions#assertThat assertThat}
 	 * instead.
-	 * @deprecated in favor of AssertJ's {@link org.assertj.core.api.Assertions#assertThat
-	 * assertThat}
+	 * @deprecated to prevent accidental use. Prefer standard AssertJ
+	 * {@code assertThat(context)...} calls instead.
 	 */
 	@Override
 	@Deprecated

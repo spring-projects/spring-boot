@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -36,24 +36,24 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SpringConfigurationPropertySourceTests {
+class SpringConfigurationPropertySourceTests {
 
 	@Test
-	public void createWhenPropertySourceIsNullShouldThrowException() {
+	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class), null))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
-	public void createWhenMapperIsNullShouldThrowException() {
+	void createWhenMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new SpringConfigurationPropertySource(mock(PropertySource.class), null, null))
 				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
-	public void getValueShouldUseDirectMapping() {
+	void getValueShouldUseDirectMapping() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key1", "value1");
 		source.put("key2", "value2");
@@ -67,7 +67,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueOrigin() {
+	void getValueOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -80,7 +80,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
+	void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
 		PropertySource<?> propertySource = new OriginCapablePropertySource<>(new MapPropertySource("test", source));
@@ -92,7 +92,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfShouldReturnEmpty() {
+	void containsDescendantOfShouldReturnEmpty() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
@@ -103,13 +103,13 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void fromWhenPropertySourceIsNullShouldThrowException() {
+	void fromWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SpringConfigurationPropertySource.from(null))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void fromWhenNonEnumerableShouldReturnNonIterable() {
+	void fromWhenNonEnumerableShouldReturnNonIterable() {
 		PropertySource<?> propertySource = new PropertySource<Object>("test", new Object()) {
 
 			@Override
@@ -124,7 +124,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void fromWhenEnumerableButRestrictedShouldReturnNonIterable() {
+	void fromWhenEnumerableButRestrictedShouldReturnNonIterable() {
 		Map<String, Object> source = new LinkedHashMap<String, Object>() {
 
 			@Override
@@ -139,7 +139,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getWhenEnumerableShouldBeIterable() {
+	void getWhenEnumerableShouldBeIterable() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
 		source.put("barBaz", "Boot");
@@ -150,8 +150,10 @@ public class SpringConfigurationPropertySourceTests {
 
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
+	 *
+	 * @param <T> The source type
 	 */
-	private static class OriginCapablePropertySource<T> extends PropertySource<T> implements OriginLookup<String> {
+	static class OriginCapablePropertySource<T> extends PropertySource<T> implements OriginLookup<String> {
 
 		private final PropertySource<T> propertySource;
 

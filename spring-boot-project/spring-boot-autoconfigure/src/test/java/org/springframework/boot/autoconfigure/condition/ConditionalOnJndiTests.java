@@ -21,9 +21,9 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
@@ -37,13 +37,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ConditionalOnJndi}
+ * Tests for {@link ConditionalOnJndi @ConditionalOnJndi}
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionalOnJndiTests {
+class ConditionalOnJndiTests {
 
 	private ClassLoader threadContextClassLoader;
 
@@ -53,14 +53,14 @@ public class ConditionalOnJndiTests {
 
 	private MockableOnJndi condition = new MockableOnJndi();
 
-	@Before
-	public void setupThreadContextClassLoader() {
+	@BeforeEach
+	void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
@@ -72,27 +72,27 @@ public class ConditionalOnJndiTests {
 	}
 
 	@Test
-	public void jndiNotAvailable() {
+	void jndiNotAvailable() {
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void jndiAvailable() {
+	void jndiAvailable() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
-	public void jndiLocationNotBound() {
+	void jndiLocationNotBound() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void jndiLocationBound() {
+	void jndiLocationBound() {
 		setupJndi();
 		TestableInitialContextFactory.bind("java:/FooManager", new Object());
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
@@ -100,13 +100,13 @@ public class ConditionalOnJndiTests {
 	}
 
 	@Test
-	public void jndiLocationNotFound() {
+	void jndiLocationNotFound() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a"));
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
-	public void jndiLocationFound() {
+	void jndiLocationFound() {
 		this.condition.setFoundLocation("java:/b");
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a", "java:/b"));
 		assertThat(outcome.isMatch()).isTrue();
@@ -125,29 +125,29 @@ public class ConditionalOnJndiTests {
 		return metadata;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi
 	static class JndiAvailableConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi("java:/FooManager")
 	static class JndiConditionConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	private static class MockableOnJndi extends OnJndiCondition {
+	static class MockableOnJndi extends OnJndiCondition {
 
 		private boolean jndiAvailable = true;
 
@@ -168,7 +168,7 @@ public class ConditionalOnJndiTests {
 			};
 		}
 
-		public void setFoundLocation(String foundLocation) {
+		void setFoundLocation(String foundLocation) {
 			this.foundLocation = foundLocation;
 		}
 

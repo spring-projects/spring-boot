@@ -60,7 +60,7 @@ class PropertiesMigrationReporter {
 	 * legacy properties if a replacement exists.
 	 * @return a report of the migration
 	 */
-	public PropertiesMigrationReport getReport() {
+	PropertiesMigrationReport getReport() {
 		PropertiesMigrationReport report = new PropertiesMigrationReport();
 		Map<String, List<PropertyMigration>> properties = getMatchingProperties(deprecatedFilter());
 		if (properties.isEmpty()) {

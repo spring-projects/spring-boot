@@ -22,7 +22,9 @@ package org.springframework.boot.actuate.health;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@code HealthEndpointProperties.ShowDetails}
  */
+@Deprecated
 public enum ShowDetails {
 
 	/**

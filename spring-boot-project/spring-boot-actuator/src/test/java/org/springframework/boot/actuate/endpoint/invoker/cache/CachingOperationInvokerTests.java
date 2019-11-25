@@ -22,12 +22,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
@@ -46,22 +47,22 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Christoph Dreis
  * @author Phillip Webb
  */
-public class CachingOperationInvokerTests {
+class CachingOperationInvokerTests {
 
 	@Test
-	public void createInstanceWithTtlSetToZero() {
+	void createInstanceWithTtlSetToZero() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
 				.withMessageContaining("TimeToLive");
 	}
 
 	@Test
-	public void cacheInTtlRangeWithNoParameter() {
+	void cacheInTtlRangeWithNoParameter() {
 		assertCacheIsUsed(Collections.emptyMap());
 	}
 
 	@Test
-	public void cacheInTtlWithNullParameters() {
+	void cacheInTtlWithNullParameters() {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("first", null);
 		parameters.put("second", null);
@@ -69,7 +70,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void cacheInTtlWithMonoResponse() {
+	void cacheInTtlWithMonoResponse() {
 		MonoOperationInvoker.invocations = 0;
 		MonoOperationInvoker target = new MonoOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
@@ -81,7 +82,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void cacheInTtlWithFluxResponse() {
+	void cacheInTtlWithFluxResponse() {
 		FluxOperationInvoker.invocations = 0;
 		FluxOperationInvoker target = new FluxOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
@@ -107,7 +108,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetAlwaysInvokedWithParameters() {
+	void targetAlwaysInvokedWithParameters() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
@@ -122,7 +123,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetAlwaysInvokedWithPrincipal() {
+	void targetAlwaysInvokedWithPrincipal() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -137,16 +138,39 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetInvokedWhenCacheExpires() throws InterruptedException {
+	void targetInvokedWhenCacheExpires() throws InterruptedException {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
 		invoker.invoke(context);
-		Thread.sleep(55);
+		long expired = System.currentTimeMillis() + 50;
+		while (System.currentTimeMillis() < expired) {
+			Thread.sleep(10);
+		}
 		invoker.invoke(context);
 		verify(target, times(2)).invoke(context);
+	}
+
+	@Test
+	void targetInvokedWithDifferentApiVersion() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Object expectedV2 = new Object();
+		Object expectedV3 = new Object();
+		InvocationContext contextV2 = new InvocationContext(ApiVersion.V2, mock(SecurityContext.class),
+				Collections.emptyMap());
+		InvocationContext contextV3 = new InvocationContext(ApiVersion.V3, mock(SecurityContext.class),
+				Collections.emptyMap());
+		given(target.invoke(contextV2)).willReturn(expectedV2);
+		given(target.invoke(contextV3)).willReturn(expectedV3);
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		Object response = invoker.invoke(contextV2);
+		assertThat(response).isSameAs(expectedV2);
+		verify(target, times(1)).invoke(contextV2);
+		Object cachedResponse = invoker.invoke(contextV3);
+		assertThat(cachedResponse).isNotSameAs(response);
+		verify(target, times(1)).invoke(contextV3);
 	}
 
 	private static class MonoOperationInvoker implements OperationInvoker {

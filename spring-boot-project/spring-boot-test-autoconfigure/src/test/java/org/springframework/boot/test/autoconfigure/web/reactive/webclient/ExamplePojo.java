@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 
 /**
- * Example POJO used with {@link WebFluxTest} tests.
+ * Example POJO used with {@link WebFluxTest @WebFluxTest} tests.
  *
  * @author Andy Wilkinson
  */

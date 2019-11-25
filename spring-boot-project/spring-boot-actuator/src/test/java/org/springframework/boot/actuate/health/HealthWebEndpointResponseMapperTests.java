@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -37,44 +37,45 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link HealthWebEndpointResponseMapper}.
  *
  * @author Stephane Nicoll
  */
-public class HealthWebEndpointResponseMapperTests {
+@Deprecated
+class HealthWebEndpointResponseMapperTests {
 
 	private final HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 
 	private Set<String> authorizedRoles = Collections.singleton("ACTUATOR");
 
 	@Test
-	public void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
+	void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.NEVER);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);
 		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		verifyZeroInteractions(supplier);
-		verifyZeroInteractions(securityContext);
+		verifyNoInteractions(supplier);
+		verifyNoInteractions(securityContext);
 	}
 
 	@Test
-	public void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
+	void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mockSecurityContext("USER");
 		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
-		verifyZeroInteractions(supplier);
+		verifyNoInteractions(supplier);
 		verify(securityContext).isUserInRole("ACTUATOR");
 	}
 
 	@Test
-	public void mapDetailsWithAuthorizedUserInvokesSupplier() {
+	void mapDetailsWithAuthorizedUserInvokesSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
@@ -87,7 +88,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithRightAuthoritiesInvokesSupplier() {
+	void mapDetailsWithRightAuthoritiesInvokesSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
@@ -99,7 +100,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithOtherAuthoritiesShouldNotInvokeSupplier() {
+	void mapDetailsWithOtherAuthoritiesShouldNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
@@ -107,7 +108,7 @@ public class HealthWebEndpointResponseMapperTests {
 		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
-		verifyZeroInteractions(supplier);
+		verifyNoInteractions(supplier);
 	}
 
 	private SecurityContext getSecurityContext(String other) {
@@ -120,7 +121,7 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithUnavailableHealth() {
+	void mapDetailsWithUnavailableHealth() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.ALWAYS);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -128,7 +129,7 @@ public class HealthWebEndpointResponseMapperTests {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
 		verify(supplier).get();
-		verifyZeroInteractions(securityContext);
+		verifyNoInteractions(securityContext);
 	}
 
 	@SuppressWarnings("unchecked")

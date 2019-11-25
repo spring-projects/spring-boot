@@ -21,12 +21,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import org.springframework.util.FileSystemUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,27 +33,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class FileUtilsTests {
+class FileUtilsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File outputDirectory;
 
 	private File originDirectory;
 
-	@Before
-	public void init() {
-		this.outputDirectory = new File("target/test/remove");
-		this.originDirectory = new File("target/test/keep");
-		FileSystemUtils.deleteRecursively(this.outputDirectory);
-		FileSystemUtils.deleteRecursively(this.originDirectory);
+	@BeforeEach
+	void init() throws IOException {
+		this.outputDirectory = new File(this.tempDir, "remove");
+		this.originDirectory = new File(this.tempDir, "keep");
 		this.outputDirectory.mkdirs();
 		this.originDirectory.mkdirs();
 	}
 
 	@Test
-	public void simpleDuplicateFile() throws IOException {
+	void simpleDuplicateFile() throws IOException {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "logback.xml").createNewFile();
@@ -65,7 +60,7 @@ public class FileUtilsTests {
 	}
 
 	@Test
-	public void nestedDuplicateFile() throws IOException {
+	void nestedDuplicateFile() throws IOException {
 		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
 		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
@@ -76,7 +71,7 @@ public class FileUtilsTests {
 	}
 
 	@Test
-	public void nestedNonDuplicateFile() throws IOException {
+	void nestedNonDuplicateFile() throws IOException {
 		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
 		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
@@ -87,7 +82,7 @@ public class FileUtilsTests {
 	}
 
 	@Test
-	public void nonDuplicateFile() throws IOException {
+	void nonDuplicateFile() throws IOException {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "different.xml").createNewFile();
@@ -96,8 +91,8 @@ public class FileUtilsTests {
 	}
 
 	@Test
-	public void hash() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void hash() throws Exception {
+		File file = new File(this.tempDir, "file");
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}

@@ -20,7 +20,7 @@ import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import bitronix.tm.BitronixTransactionManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -36,12 +36,12 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class BitronixDependentBeanFactoryPostProcessorTests {
+class BitronixDependentBeanFactoryPostProcessorTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@Test
-	public void setsDependsOn() {
+	void setsDependsOn() {
 		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
 		this.context = new AnnotationConfigApplicationContext(beanFactory);
 		this.context.register(Config.class);
@@ -52,26 +52,26 @@ public class BitronixDependentBeanFactoryPostProcessorTests {
 		this.context.close();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
 		@Bean
-		public BitronixTransactionManager bitronixTransactionManager() {
+		BitronixTransactionManager bitronixTransactionManager() {
 			return mock(BitronixTransactionManager.class);
 		}
 
 		@Bean
-		public static BitronixDependentBeanFactoryPostProcessor bitronixPostProcessor() {
+		static BitronixDependentBeanFactoryPostProcessor bitronixPostProcessor() {
 			return new BitronixDependentBeanFactoryPostProcessor();
 		}
 

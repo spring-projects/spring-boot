@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -41,10 +41,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Andy Wilkinson
  */
-public class WebFluxEndpointIntegrationTests {
+class WebFluxEndpointIntegrationTests {
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() throws Exception {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
@@ -75,7 +75,7 @@ public class WebFluxEndpointIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EndpointsConfiguration {
 
 		@Bean

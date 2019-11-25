@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +25,10 @@ import org.springframework.boot.test.context.ImportsContextCustomizerFactoryInte
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link ImportsContextCustomizerFactory} and
@@ -35,9 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @Import(ImportedBean.class)
-public class ImportsContextCustomizerFactoryIntegrationTests {
+class ImportsContextCustomizerFactoryIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -46,13 +47,14 @@ public class ImportsContextCustomizerFactoryIntegrationTests {
 	private ImportedBean bean;
 
 	@Test
-	public void beanWasImported() {
+	void beanWasImported() {
 		assertThat(this.bean).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void testItselfIsNotABean() {
-		this.context.getBean(getClass());
+	@Test
+	void testItselfIsNotABean() {
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(getClass()));
 	}
 
 	@Component

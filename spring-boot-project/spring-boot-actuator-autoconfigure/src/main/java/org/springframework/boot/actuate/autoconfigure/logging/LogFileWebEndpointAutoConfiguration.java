@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.logging;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -38,45 +38,50 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link LogFileWebEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Christian Carriere-Tisseur
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnEnabledEndpoint(endpoint = LogFileWebEndpoint.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnAvailableEndpoint(endpoint = LogFileWebEndpoint.class)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
-
-	private final LogFileWebEndpointProperties properties;
-
-	public LogFileWebEndpointAutoConfiguration(LogFileWebEndpointProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
-	public LogFileWebEndpoint logFileWebEndpoint(ObjectProvider<LogFile> logFile) {
-		return new LogFileWebEndpoint(logFile.getIfAvailable(), this.properties.getExternalFile());
+	public LogFileWebEndpoint logFileWebEndpoint(ObjectProvider<LogFile> logFile,
+			LogFileWebEndpointProperties properties) {
+		return new LogFileWebEndpoint(logFile.getIfAvailable(), properties.getExternalFile());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
-			String config = environment.resolvePlaceholders("${logging.file:}");
+			String config = getLogFileConfig(environment, LogFile.FILE_NAME_PROPERTY, LogFile.FILE_PROPERTY);
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.file").items(config));
+				return ConditionOutcome.match(message.found(LogFile.FILE_NAME_PROPERTY).items(config));
 			}
-			config = environment.resolvePlaceholders("${logging.path:}");
+			config = getLogFileConfig(environment, LogFile.FILE_PATH_PROPERTY, LogFile.PATH_PROPERTY);
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.path").items(config));
+				return ConditionOutcome.match(message.found(LogFile.FILE_PATH_PROPERTY).items(config));
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(message.found("management.endpoint.logfile.external-file").items(config));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
+		}
+
+		private String getLogFileConfig(Environment environment, String configName, String deprecatedConfigName) {
+			String config = environment.resolvePlaceholders("${" + configName + ":}");
+			if (StringUtils.hasText(config)) {
+				return config;
+			}
+			return environment.resolvePlaceholders("${" + deprecatedConfigName + ":}");
 		}
 
 	}

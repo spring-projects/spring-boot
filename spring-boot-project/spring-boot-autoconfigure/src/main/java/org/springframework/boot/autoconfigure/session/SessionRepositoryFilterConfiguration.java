@@ -33,13 +33,13 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(SessionRepositoryFilter.class)
 @EnableConfigurationProperties(SessionProperties.class)
 class SessionRepositoryFilterConfiguration {
 
 	@Bean
-	public FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
+	FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
 			SessionProperties sessionProperties, SessionRepositoryFilter<?> filter) {
 		FilterRegistrationBean<SessionRepositoryFilter<?>> registration = new FilterRegistrationBean<>(filter);
 		registration.setDispatcherTypes(getDispatcherTypes(sessionProperties));

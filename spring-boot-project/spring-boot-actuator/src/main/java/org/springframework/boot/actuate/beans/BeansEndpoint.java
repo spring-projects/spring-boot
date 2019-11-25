@@ -29,8 +29,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose details of an application's beans, grouped by application
- * context.
+ * {@link Endpoint @Endpoint} to expose details of an application's beans, grouped by
+ * application context.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

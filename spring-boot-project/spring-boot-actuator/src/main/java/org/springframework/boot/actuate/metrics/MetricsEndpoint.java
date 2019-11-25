@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
 
 /**
- * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
+ * An {@link Endpoint @Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
  *
  * @author Jon Schneider
  * @author Phillip Webb
@@ -272,7 +272,7 @@ public class MetricsEndpoint {
 
 		@Override
 		public String toString() {
-			return "MeasurementSample{" + "statistic=" + this.statistic + ", value=" + this.value + '}';
+			return "MeasurementSample{statistic=" + this.statistic + ", value=" + this.value + '}';
 		}
 
 	}

@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web.format;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
 import org.springframework.format.datetime.DateFormatter;
@@ -38,8 +40,8 @@ import org.springframework.util.StringUtils;
  * applications for formatting and converting values to/from the web.
  * <p>
  * This service replaces the default implementations provided by
- * {@link org.springframework.web.servlet.config.annotation.EnableWebMvc} and
- * {@link org.springframework.web.reactive.config.EnableWebFlux}.
+ * {@link org.springframework.web.servlet.config.annotation.EnableWebMvc @EnableWebMvc}
+ * and {@link org.springframework.web.reactive.config.EnableWebFlux @EnableWebFlux}.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -49,8 +51,11 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	private static final boolean JSR_354_PRESENT = ClassUtils.isPresent("javax.money.MonetaryAmount",
 			WebConversionService.class.getClassLoader());
 
+	@Deprecated
 	private static final boolean JODA_TIME_PRESENT = ClassUtils.isPresent("org.joda.time.LocalDate",
 			WebConversionService.class.getClassLoader());
+
+	private static final Log logger = LogFactory.getLog(WebConversionService.class);
 
 	private final String dateFormat;
 
@@ -93,7 +98,9 @@ public class WebConversionService extends DefaultFormattingConversionService {
 		dateTime.registerFormatters(this);
 	}
 
+	@Deprecated
 	private void registerJodaTime() {
+		logger.warn("Auto-configuration of Joda-Time formatters is deprecated in favor of using java.time (JSR-310).");
 		JodaTimeFormatterRegistrar jodaTime = new JodaTimeFormatterRegistrar();
 		if (this.dateFormat != null) {
 			jodaTime.setDateFormatter(new DateTimeFormatterBuilder().appendPattern(this.dateFormat).toFormatter());

@@ -27,8 +27,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Create a mock {@link TypeDescriptor} with optional {@link DurationUnit} and
- * {@link DurationFormat} annotations.
+ * Create a mock {@link TypeDescriptor} with optional {@link DurationUnit @DurationUnit}
+ * and {@link DurationFormat @DurationFormat} annotations.
  *
  * @author Phillip Webb
  */

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -36,27 +36,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dmytro Nosan
  */
-public class AbstractDependsOnBeanFactoryPostProcessorTests {
+class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test
-	public void fooBeansShouldDependOnBarBeanNames() {
+	void fooBeansShouldDependOnBarBeanNames() {
 		this.contextRunner
 				.withUserConfiguration(FooDependsOnBarNamePostProcessor.class, FooBarFactoryBeanConfiguration.class)
 				.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
-	public void fooBeansShouldDependOnBarBeanTypes() {
+	void fooBeansShouldDependOnBarBeanTypes() {
 		this.contextRunner
 				.withUserConfiguration(FooDependsOnBarTypePostProcessor.class, FooBarFactoryBeanConfiguration.class)
 				.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
-	public void fooBeansShouldDependOnBarBeanNamesParentContext() {
+	void fooBeansShouldDependOnBarBeanNamesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
 			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class).withParent(parentContext)
@@ -65,7 +65,7 @@ public class AbstractDependsOnBeanFactoryPostProcessorTests {
 	}
 
 	@Test
-	public void fooBeansShouldDependOnBarBeanTypesParentContext() {
+	void fooBeansShouldDependOnBarBeanTypesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
 			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class).withParent(parentContext)
@@ -74,7 +74,7 @@ public class AbstractDependsOnBeanFactoryPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessorHasADefaultOrderOfZero() {
+	void postProcessorHasADefaultOrderOfZero() {
 		assertThat(new FooDependsOnBarTypePostProcessor().getOrder()).isEqualTo(0);
 	}
 
@@ -106,31 +106,31 @@ public class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooBarFactoryBeanConfiguration {
 
 		@Bean
-		public FooFactoryBean fooFactoryBean() {
+		FooFactoryBean fooFactoryBean() {
 			return new FooFactoryBean();
 		}
 
 		@Bean
-		public BarFactoryBean barFactoryBean() {
+		BarFactoryBean barFactoryBean() {
 			return new BarFactoryBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooBarConfiguration {
 
 		@Bean
-		public Bar bar() {
+		Bar bar() {
 			return new Bar();
 		}
 
 		@Bean
-		public Foo foo() {
+		Foo foo() {
 			return new Foo();
 		}
 

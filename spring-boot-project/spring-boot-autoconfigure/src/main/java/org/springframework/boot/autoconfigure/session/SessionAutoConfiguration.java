@@ -62,7 +62,6 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -74,7 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
@@ -86,14 +85,14 @@ public class SessionAutoConfiguration {
 
 	private static final String REMEMBER_ME_SERVICES_CLASS = "org.springframework.security.web.authentication.RememberMeServices";
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class, SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
+		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -109,7 +108,7 @@ public class SessionAutoConfiguration {
 			return cookieSerializer;
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
 		@Import({ ServletSessionRepositoryImplementationValidator.class,
 				ServletSessionConfigurationImportSelector.class })
@@ -119,12 +118,12 @@ public class SessionAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Import(ReactiveSessionRepositoryValidator.class)
 	static class ReactiveSessionConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
 				ReactiveSessionConfigurationImportSelector.class })
@@ -135,12 +134,12 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Customization log for {@link SpringSessionRememberMeServices} that is only
-	 * instantiated when Spring Security is on the classpath.
+	 * Customization for {@link SpringSessionRememberMeServices} that is only instantiated
+	 * when Spring Security is on the classpath.
 	 */
 	static class RememberMeServicesCookieSerializerCustomizer {
 
-		public void apply(DefaultCookieSerializer cookieSerializer) {
+		void apply(DefaultCookieSerializer cookieSerializer) {
 			cookieSerializer.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 		}
 
@@ -177,12 +176,9 @@ public class SessionAutoConfiguration {
 	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
 		protected final String[] selectImports(WebApplicationType webApplicationType) {
-			List<String> imports = new ArrayList<>();
-			StoreType[] types = StoreType.values();
-			for (int i = 0; i < types.length; i++) {
-				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType, types[i]));
-			}
-			return StringUtils.toStringArray(imports);
+			return Arrays.stream(StoreType.values())
+					.map((type) -> SessionStoreMappings.getConfigurationClass(webApplicationType, type))
+					.toArray(String[]::new);
 		}
 
 	}
@@ -233,7 +229,7 @@ public class SessionAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void checkAvailableImplementations() {
+		void checkAvailableImplementations() {
 			List<Class<?>> availableCandidates = new ArrayList<>();
 			for (String candidate : this.candidates) {
 				addCandidateIfAvailable(availableCandidates, candidate);
@@ -268,10 +264,10 @@ public class SessionAutoConfiguration {
 		ServletSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.hazelcast.HazelcastSessionRepository",
-							"org.springframework.session.jdbc.JdbcOperationsSessionRepository",
-							"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
-							"org.springframework.session.data.redis.RedisOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.hazelcast.HazelcastIndexedSessionRepository",
+							"org.springframework.session.jdbc.JdbcIndexedSessionRepository",
+							"org.springframework.session.data.mongo.MongoIndexedSessionRepository",
+							"org.springframework.session.data.redis.RedisIndexedSessionRepository"));
 		}
 
 	}
@@ -286,8 +282,8 @@ public class SessionAutoConfiguration {
 		ReactiveSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository",
-							"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisSessionRepository",
+							"org.springframework.session.data.mongo.ReactiveMongoSessionRepository"));
 		}
 
 	}
@@ -308,7 +304,7 @@ public class SessionAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void checkSessionRepository() {
+		void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null
 					&& storeType != null) {

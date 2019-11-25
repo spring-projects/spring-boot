@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to SignalFX.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to SignalFX.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson

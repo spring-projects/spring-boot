@@ -42,7 +42,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Start a spring application. Contrary to the {@code run} goal, this does not block and
- * allows other goal to operate on the application. This goal is typically used in
+ * allows other goals to operate on the application. This goal is typically used in
  * integration test scenario where the application is started before a test suite and
  * stopped after.
  *
@@ -66,8 +66,7 @@ public class StartMojo extends AbstractRunMojo {
 	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
 
 	/**
-	 * The port to use to expose the platform MBeanServer if the application needs to be
-	 * forked.
+	 * The port to use to expose the platform MBeanServer if the application is forked.
 	 */
 	@Parameter
 	private int jmxPort = 9001;
@@ -255,7 +254,7 @@ public class StartMojo extends AbstractRunMojo {
 			}
 		}
 		throw new MojoExecutionException(
-				"Spring application did not start before the configured " + "timeout (" + (wait * maxAttempts) + "ms");
+				"Spring application did not start before the configured timeout (" + (wait * maxAttempts) + "ms");
 	}
 
 	private class CreateJmxConnector implements Callable<JMXConnector> {

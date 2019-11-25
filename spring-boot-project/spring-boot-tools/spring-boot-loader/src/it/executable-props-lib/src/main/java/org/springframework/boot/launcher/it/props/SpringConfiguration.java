@@ -29,7 +29,7 @@ import org.springframework.core.io.ClassPathResource;
  *
  * @author Dave Syer
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ComponentScan
 public class SpringConfiguration implements InitializingBean {
 

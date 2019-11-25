@@ -136,11 +136,7 @@ public class ConfigurationMetadata {
 	}
 
 	private <K, V> void add(Map<K, List<V>> map, K key, V value) {
-		List<V> values = map.get(key);
-		if (values == null) {
-			values = new ArrayList<>();
-			map.put(key, values);
-		}
+		List<V> values = map.computeIfAbsent(key, (k) -> new ArrayList<>());
 		values.add(value);
 	}
 
@@ -169,7 +165,7 @@ public class ConfigurationMetadata {
 		if (o1 == o2) {
 			return true;
 		}
-		return o1 != null && o2 != null && o1.equals(o2);
+		return o1 != null && o1.equals(o2);
 	}
 
 	public static String nestedPrefix(String prefix, String name) {

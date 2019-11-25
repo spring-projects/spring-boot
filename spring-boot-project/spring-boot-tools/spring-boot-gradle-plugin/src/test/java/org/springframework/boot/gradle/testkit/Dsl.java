@@ -31,16 +31,10 @@ public enum Dsl {
 		this.extension = extension;
 	}
 
-	/**
-	 * Gets the user-friendly name of the DSL
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Gets the file extension of build scripts (starting with a dot)
-	 */
 	String getExtension() {
 		return this.extension;
 	}

@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.net.URI;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,11 +40,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "spring.resources.chain.strategy.content.enabled=true",
 				"spring.thymeleaf.prefix=classpath:/templates/thymeleaf/" })
-public class WelcomePageIntegrationTests {
+class WelcomePageIntegrationTests {
 
 	@LocalServerPort
 	private int port;
@@ -54,7 +51,7 @@ public class WelcomePageIntegrationTests {
 	private TestRestTemplate template = new TestRestTemplate();
 
 	@Test
-	public void contentStrategyWithWelcomePage() throws Exception {
+	void contentStrategyWithWelcomePage() throws Exception {
 		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
 				.header("Accept", MediaType.ALL.toString()).build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
@@ -65,9 +62,9 @@ public class WelcomePageIntegrationTests {
 	@Import({ PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			new SpringApplicationBuilder(TestConfiguration.class).run(args);
 		}
 

@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.web.embedded.NettyWebServerFactory
 import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.reactive.TomcatReactiveWebServerFactoryCustomizer;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +36,9 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 /**
- * {@link ManagementContextConfiguration} for reactive web infrastructure when a separate
- * management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for reactive web
+ * infrastructure when a separate management context with a web server running on a
+ * different port is required.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -63,8 +65,8 @@ public class ReactiveManagementChildContextConfiguration {
 
 		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
 			super(beanFactory, ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
-					JettyWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class,
-					NettyWebServerFactoryCustomizer.class);
+					TomcatReactiveWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class, NettyWebServerFactoryCustomizer.class);
 		}
 
 	}

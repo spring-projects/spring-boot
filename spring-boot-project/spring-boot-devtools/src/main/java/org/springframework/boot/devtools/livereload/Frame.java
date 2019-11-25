@@ -56,11 +56,11 @@ class Frame {
 		this.payload = payload;
 	}
 
-	public Type getType() {
+	Type getType() {
 		return this.type;
 	}
 
-	public byte[] getPayload() {
+	byte[] getPayload() {
 		return this.payload;
 	}
 
@@ -69,7 +69,7 @@ class Frame {
 		return new String(this.payload);
 	}
 
-	public void write(OutputStream outputStream) throws IOException {
+	void write(OutputStream outputStream) throws IOException {
 		outputStream.write(0x80 | this.type.code);
 		if (this.payload.length < 126) {
 			outputStream.write(0x00 | (this.payload.length & 0x7F));
@@ -83,7 +83,7 @@ class Frame {
 		outputStream.flush();
 	}
 
-	public static Frame read(ConnectionInputStream inputStream) throws IOException {
+	static Frame read(ConnectionInputStream inputStream) throws IOException {
 		int firstByte = inputStream.checkedRead();
 		Assert.state((firstByte & 0x80) != 0, "Fragmented frames are not supported");
 		int maskAndLength = inputStream.checkedRead();
@@ -110,7 +110,7 @@ class Frame {
 	/**
 	 * Frame types.
 	 */
-	public enum Type {
+	enum Type {
 
 		/**
 		 * Continuation frame.
@@ -148,7 +148,7 @@ class Frame {
 			this.code = code;
 		}
 
-		public static Type forCode(int code) {
+		static Type forCode(int code) {
 			for (Type type : values()) {
 				if (type.code == code) {
 					return type;

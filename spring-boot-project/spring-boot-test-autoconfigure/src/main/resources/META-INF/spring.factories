@@ -106,9 +106,11 @@ org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfig
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration,\
-org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebClientAutoConfiguration,\
-org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration
 
 # AutoConfigureMockRestServiceServer
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\

@@ -24,7 +24,7 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
@@ -40,10 +40,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class DataSourceInitializerTests {
+class DataSourceInitializerTests {
 
 	@Test
-	public void initializeEmbeddedByDefault() {
+	void initializeEmbeddedByDefault() {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -55,7 +55,7 @@ public class DataSourceInitializerTests {
 	}
 
 	@Test
-	public void initializeWithModeAlways() {
+	void initializeWithModeAlways() {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.ALWAYS);
@@ -73,7 +73,7 @@ public class DataSourceInitializerTests {
 	}
 
 	@Test
-	public void initializeWithModeNever() {
+	void initializeWithModeNever() {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.NEVER);
@@ -83,7 +83,7 @@ public class DataSourceInitializerTests {
 	}
 
 	@Test
-	public void initializeOnlyEmbeddedByDefault() throws SQLException {
+	void initializeOnlyEmbeddedByDefault() throws SQLException {
 		DatabaseMetaData metadata = mock(DatabaseMetaData.class);
 		given(metadata.getDatabaseProductName()).willReturn("MySQL");
 		Connection connection = mock(Connection.class);

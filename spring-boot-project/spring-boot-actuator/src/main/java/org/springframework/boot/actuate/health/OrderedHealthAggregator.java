@@ -32,7 +32,9 @@ import org.springframework.util.Assert;
  *
  * @author Christian Dupuis
  * @since 1.1.0
+ * @deprecated since 2.2.0 in favor of {@link SimpleStatusAggregator}
  */
+@Deprecated
 public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
 	private List<String> statusOrder;

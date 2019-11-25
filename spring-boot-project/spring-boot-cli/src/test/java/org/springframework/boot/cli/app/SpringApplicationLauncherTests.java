@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,34 +31,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringApplicationLauncherTests {
+class SpringApplicationLauncherTests {
 
 	private Map<String, String> env = new HashMap<>();
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		System.clearProperty("spring.application.class.name");
 	}
 
 	@Test
-	public void defaultLaunch() {
+	void defaultLaunch() {
 		assertThat(launch()).contains("org.springframework.boot.SpringApplication");
 	}
 
 	@Test
-	public void launchWithClassConfiguredBySystemProperty() {
+	void launchWithClassConfiguredBySystemProperty() {
 		System.setProperty("spring.application.class.name", "system.property.SpringApplication");
 		assertThat(launch()).contains("system.property.SpringApplication");
 	}
 
 	@Test
-	public void launchWithClassConfiguredByEnvironmentVariable() {
+	void launchWithClassConfiguredByEnvironmentVariable() {
 		this.env.put("SPRING_APPLICATION_CLASS_NAME", "environment.variable.SpringApplication");
 		assertThat(launch()).contains("environment.variable.SpringApplication");
 	}
 
 	@Test
-	public void systemPropertyOverridesEnvironmentVariable() {
+	void systemPropertyOverridesEnvironmentVariable() {
 		System.setProperty("spring.application.class.name", "system.property.SpringApplication");
 		this.env.put("SPRING_APPLICATION_CLASS_NAME", "environment.variable.SpringApplication");
 		assertThat(launch()).contains("system.property.SpringApplication");
@@ -66,7 +66,7 @@ public class SpringApplicationLauncherTests {
 	}
 
 	@Test
-	public void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
+	void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
 		System.setProperty("spring.application.class.name", TestSpringApplication.class.getName());
 		Class<?>[] sources = new Class<?>[0];
 		String[] args = new String[0];
@@ -92,7 +92,7 @@ public class SpringApplicationLauncherTests {
 		return classLoader.classes;
 	}
 
-	private static class TestClassLoader extends ClassLoader {
+	static class TestClassLoader extends ClassLoader {
 
 		private Set<String> classes = new HashSet<>();
 
@@ -122,7 +122,7 @@ public class SpringApplicationLauncherTests {
 
 		private static String[] args;
 
-		public TestSpringApplication(Class<?>[] sources) {
+		TestSpringApplication(Class<?>[] sources) {
 			TestSpringApplication.sources = sources;
 		}
 

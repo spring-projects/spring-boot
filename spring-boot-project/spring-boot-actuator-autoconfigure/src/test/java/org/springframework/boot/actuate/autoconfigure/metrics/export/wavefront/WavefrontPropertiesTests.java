@@ -17,8 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import io.micrometer.wavefront.WavefrontConfig;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WavefrontPropertiesTests extends StepRegistryPropertiesTests {
+class WavefrontPropertiesTests extends PushRegistryPropertiesTests {
 
-	@Override
-	public void defaultValuesAreConsistent() {
+	@Test
+	void defaultValuesAreConsistent() {
 		WavefrontProperties properties = new WavefrontProperties();
 		WavefrontConfig config = WavefrontConfig.DEFAULT_DIRECT;
 		assertStepRegistryDefaultValues(properties, config);

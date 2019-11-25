@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * A second example web client used with {@link RestClientTest} tests.
+ * A second example web client used with {@link RestClientTest @RestClientTest} tests.
  *
  * @author Phillip Webb
  */

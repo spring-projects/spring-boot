@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.condition;
 
 /**
- * Simple parameterized container for testing {@link ConditionalOnBean} and
- * {@link ConditionalOnMissingBean}.
+ * Simple parameterized container for testing {@link ConditionalOnBean @ConditionalOnBean}
+ * and {@link ConditionalOnMissingBean @ConditionalOnMissingBean}.
  *
  * @param <T> The bean type
  * @author Phillip Webb

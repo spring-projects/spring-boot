@@ -26,7 +26,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose audit events.
+ * {@link Endpoint @Endpoint} to expose audit events.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

@@ -45,10 +45,10 @@ public abstract class AbstractDataSourcePoolMetadata<T extends DataSource> imple
 			return null;
 		}
 		if (maxSize < 0) {
-			return -1F;
+			return -1f;
 		}
 		if (currentSize == 0) {
-			return 0F;
+			return 0f;
 		}
 		return (float) currentSize / (float) maxSize;
 	}

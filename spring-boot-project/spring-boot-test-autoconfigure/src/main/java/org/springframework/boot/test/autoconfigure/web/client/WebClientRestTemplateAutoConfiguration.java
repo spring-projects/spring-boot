@@ -32,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.test.webclient", name = "register-rest-template")
 @AutoConfigureAfter(RestTemplateAutoConfiguration.class)
 public class WebClientRestTemplateAutoConfiguration {

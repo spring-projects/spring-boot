@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -44,12 +43,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(LogbackLoggingCondition.class)
-@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 public class LogbackMetricsAutoConfiguration {
 
 	@Bean

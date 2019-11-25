@@ -86,7 +86,7 @@ public class Repackager {
 		}
 		if (!source.exists() || !source.isFile()) {
 			throw new IllegalArgumentException(
-					"Source must refer to an existing file, " + "got " + source.getAbsolutePath());
+					"Source must refer to an existing file, got " + source.getAbsolutePath());
 		}
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;
@@ -267,8 +267,8 @@ public class Repackager {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+		for (byte magicByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != magicByte) {
 				return false;
 			}
 		}

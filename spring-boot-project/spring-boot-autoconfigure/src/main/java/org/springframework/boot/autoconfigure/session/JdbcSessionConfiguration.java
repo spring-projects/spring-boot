@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration;
 
 /**
@@ -41,8 +41,8 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
-@ConditionalOnClass({ JdbcTemplate.class, JdbcOperationsSessionRepository.class })
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ JdbcTemplate.class, JdbcIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
 @Conditional(ServletSessionCondition.class)
@@ -51,22 +51,24 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
+	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
+	static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
+		void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setTableName(jdbcSessionProperties.getTableName());
 			setCleanupCron(jdbcSessionProperties.getCleanupCron());
+			setFlushMode(jdbcSessionProperties.getFlushMode());
+			setSaveMode(jdbcSessionProperties.getSaveMode());
 		}
 
 	}

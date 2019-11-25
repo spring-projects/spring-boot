@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
@@ -46,18 +46,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class PropertiesMigrationReporterTests {
+class PropertiesMigrationReporterTests {
 
 	private ConfigurableEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void reportIsNullWithNoMatchingKeys() {
+	void reportIsNullWithNoMatchingKeys() {
 		String report = createWarningReport(new SimpleConfigurationMetadataRepository());
 		assertThat(report).isNull();
 	}
 
 	@Test
-	public void replacementKeysAreRemapped() throws IOException {
+	void replacementKeysAreRemapped() throws IOException {
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		PropertySource<?> one = loadPropertySource("one", "config/config-error.properties");
 		PropertySource<?> two = loadPropertySource("two", "config/config-warnings.properties");
@@ -70,7 +70,7 @@ public class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	public void warningReport() throws IOException {
+	void warningReport() throws IOException {
 		this.environment.getPropertySources().addFirst(loadPropertySource("test", "config/config-warnings.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("ignore", "config/config-error.properties"));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
@@ -81,7 +81,7 @@ public class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	public void errorReport() throws IOException {
+	void errorReport() throws IOException {
 		this.environment.getPropertySources()
 				.addFirst(loadPropertySource("test1", "config/config-warnings.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("test2", "config/config-error.properties"));
@@ -93,7 +93,7 @@ public class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	public void errorReportNoReplacement() throws IOException {
+	void errorReportNoReplacement() throws IOException {
 		this.environment.getPropertySources()
 				.addFirst(loadPropertySource("first", "config/config-error-no-replacement.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("second", "config/config-error.properties"));
@@ -105,7 +105,7 @@ public class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	public void durationTypeIsHandledTransparently() {
+	void durationTypeIsHandledTransparently() {
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		Map<String, Object> content = new LinkedHashMap<>();
 		content.put("test.cache-seconds", 50);
@@ -124,17 +124,17 @@ public class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	public void reasonIsProvidedIfPropertyCouldNotBeRenamed() throws IOException {
+	void reasonIsProvidedIfPropertyCouldNotBeRenamed() throws IOException {
 		this.environment.getPropertySources()
 				.addFirst(loadPropertySource("test", "config/config-error-no-compatible-type.properties"));
 		String report = createErrorReport(loadRepository("metadata/type-conversion-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).containsSubsequence("Property source 'test'", "wrong.inconvertible", "Line: 1",
-				"Reason: Replacement key " + "'test.inconvertible' uses an incompatible target type");
+				"Reason: Replacement key 'test.inconvertible' uses an incompatible target type");
 	}
 
 	@Test
-	public void invalidReplacementHandled() throws IOException {
+	void invalidReplacementHandled() throws IOException {
 		this.environment.getPropertySources()
 				.addFirst(loadPropertySource("first", "config/config-error-invalid-replacement.properties"));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata-invalid-replacement.json"));

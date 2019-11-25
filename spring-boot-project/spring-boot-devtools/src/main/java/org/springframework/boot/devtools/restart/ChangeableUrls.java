@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.settings.DevToolsSettings;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -74,15 +75,15 @@ final class ChangeableUrls implements Iterable<URL> {
 		return this.urls.iterator();
 	}
 
-	public int size() {
+	int size() {
 		return this.urls.size();
 	}
 
-	public URL[] toArray() {
+	URL[] toArray() {
 		return this.urls.toArray(new URL[0]);
 	}
 
-	public List<URL> toList() {
+	List<URL> toList() {
 		return Collections.unmodifiableList(this.urls);
 	}
 
@@ -91,7 +92,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		return this.urls.toString();
 	}
 
-	public static ChangeableUrls fromClassLoader(ClassLoader classLoader) {
+	static ChangeableUrls fromClassLoader(ClassLoader classLoader) {
 		List<URL> urls = new ArrayList<>();
 		for (URL url : urlsFromClassLoader(classLoader)) {
 			urls.add(url);
@@ -171,18 +172,18 @@ final class ChangeableUrls implements Iterable<URL> {
 			}
 		}
 		if (!nonExistentEntries.isEmpty()) {
-			System.out.println("The Class-Path manifest attribute in " + jarFile.getName()
+			logger.info(LogMessage.of(() -> "The Class-Path manifest attribute in " + jarFile.getName()
 					+ " referenced one or more files that do not exist: "
-					+ StringUtils.collectionToCommaDelimitedString(nonExistentEntries));
+					+ StringUtils.collectionToCommaDelimitedString(nonExistentEntries)));
 		}
 		return urls;
 	}
 
-	public static ChangeableUrls fromUrls(Collection<URL> urls) {
+	static ChangeableUrls fromUrls(Collection<URL> urls) {
 		return fromUrls(new ArrayList<>(urls).toArray(new URL[urls.size()]));
 	}
 
-	public static ChangeableUrls fromUrls(URL... urls) {
+	static ChangeableUrls fromUrls(URL... urls) {
 		return new ChangeableUrls(urls);
 	}
 

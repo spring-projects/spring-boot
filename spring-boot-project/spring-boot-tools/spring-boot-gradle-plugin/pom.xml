@@ -15,8 +15,7 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<gradle.executable>./gradlew</gradle.executable>
 		<gradle.task>build</gradle.task>
-		<skip.gradle.build>false</skip.gradle.build>
-		<kotlin.version>1.2.20</kotlin.version>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -45,6 +44,24 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-doc-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>${spring-doc-resources.url}</url>
+							<unpack>true</unpack>
+							<outputDirectory>${refdocs.build.directory}/asciidoc</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -76,6 +93,44 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-asciidoc-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${refdocs.build.directory}/asciidoc</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/asciidoc</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-gradle-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${refdocs.build.directory}/gradle</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/gradle</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<executions>
@@ -91,7 +146,6 @@
 								<argument>-Pdescription=${project.description}</argument>
 								<argument>-S</argument>
 							</arguments>
-							<skip>${skip.gradle.build}</skip>
 						</configuration>
 						<goals>
 							<goal>exec</goal>
@@ -126,20 +180,12 @@
 									<classifier>sources</classifier>
 								</artifact>
 							</artifacts>
-							<skipAttach>${skip.gradle.build}</skipAttach>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>springio</id>
-			<name>Spring IO releases repository</name>
-			<url>https://repo.spring.io/release</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<profiles>
 		<profile>
 			<id>windows</id>
@@ -199,9 +245,6 @@
 								<version>3.2.10</version>
 							</dependency>
 						</dependencies>
-						<configuration>
-							<skip>${skip.gradle.build}</skip>
-						</configuration>
 						<executions>
 							<execution>
 								<id>set-up-maven-properties</id>
@@ -242,10 +285,10 @@
 											<zipfileset
 												src="build/libs/${project.artifactId}-${project.version}-javadoc.jar"
 												prefix="api" />
-											<zipfileset dir="${project.build.directory}/generated-docs"
-												includes="index.html" prefix="reference/html" />
+											<zipfileset dir="${project.build.directory}/generated-docs/reference/html"
+												prefix="reference/html" />
 											<mappedresources>
-												<fileset dir="${project.build.directory}/generated-docs"
+												<fileset dir="${project.build.directory}/generated-docs/reference/pdf"
 													includes="index.pdf" />
 												<globmapper from="index.pdf"
 													to="reference/pdf/spring-boot-gradle-plugin-reference.pdf" />
@@ -267,7 +310,26 @@
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<backend>html</backend>
+									<backend>html5</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>github</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>style.css</stylesheet>
+										<attribute-missing>warn</attribute-missing>
+									</attributes>
+									<logHandler>
+										<outputToConsole>true</outputToConsole>
+										<failIf>
+											<severity>DEBUG</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
@@ -278,10 +340,12 @@
 								</goals>
 								<configuration>
 									<backend>pdf</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
 						<configuration>
+							<sourceDirectory>${refdocs.build.directory}/asciidoc</sourceDirectory>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<github-tag>${github-tag}</github-tag>
@@ -292,14 +356,9 @@
 						</configuration>
 						<dependencies>
 							<dependency>
-								<groupId>org.asciidoctor</groupId>
-								<artifactId>asciidoctorj-pdf</artifactId>
-								<version>1.5.0-alpha.11</version>
-							</dependency>
-							<dependency>
 								<groupId>io.spring.asciidoctor</groupId>
-								<artifactId>spring-asciidoctor-extensions</artifactId>
-								<version>0.1.3.RELEASE</version>
+								<artifactId>spring-asciidoctor-extensions-block-switch</artifactId>
+								<version>${spring-asciidoctor-extensions.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -320,7 +379,6 @@
 											<classifier>docs</classifier>
 										</artifact>
 									</artifacts>
-									<skipAttach>${skip.gradle.build}</skipAttach>
 								</configuration>
 							</execution>
 						</executions>
@@ -329,12 +387,12 @@
 			</build>
 		</profile>
 		<profile>
-			<id>java9</id>
+			<id>java13</id>
 			<activation>
-				<jdk>[9,)</jdk>
+				<jdk>13</jdk>
 			</activation>
 			<properties>
-				<skip.gradle.build>true</skip.gradle.build>
+				<gradle.task>assemble</gradle.task>
 			</properties>
 		</profile>
 	</profiles>

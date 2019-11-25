@@ -23,7 +23,7 @@ package org.springframework.boot.configurationsample.simple;
  */
 public abstract class HierarchicalPropertiesParent extends HierarchicalPropertiesGrandparent {
 
-	private String second;
+	private String second = "two";
 
 	public String getSecond() {
 		return this.second;

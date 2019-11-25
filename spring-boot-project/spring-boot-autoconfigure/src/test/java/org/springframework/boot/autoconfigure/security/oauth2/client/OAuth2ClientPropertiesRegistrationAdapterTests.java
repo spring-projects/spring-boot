@@ -24,8 +24,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
@@ -48,20 +48,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Thiago Hirata
+ * @author HaiTao Zhang
  */
-public class OAuth2ClientPropertiesRegistrationAdapterTests {
+class OAuth2ClientPropertiesRegistrationAdapterTests {
 
 	private MockWebServer server;
 
-	@After
-	public void cleanup() throws Exception {
+	@AfterEach
+	void cleanup() throws Exception {
 		if (this.server != null) {
 			this.server.shutdown();
 		}
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
+	void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = createProvider();
 		provider.setUserInfoAuthenticationMethod("form");
@@ -94,7 +95,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderShouldAdapt() {
+	void getClientRegistrationsWhenUsingCommonProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setProvider("google");
@@ -124,7 +125,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt() {
+	void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.Registration registration = createRegistration("google");
 		registration.setClientName("clientName");
@@ -154,7 +155,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUnknownProviderShouldThrowException() {
+	void getClientRegistrationsWhenUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setProvider("missing");
@@ -165,7 +166,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId() {
+	void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientId("clientId");
@@ -195,7 +196,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException() {
+	void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		properties.getRegistration().put("missing", registration);
@@ -205,24 +206,40 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void oidcProviderConfigurationWhenProviderNotSpecifiedOnRegistration() throws Exception {
+	void oidcProviderConfigurationWhenProviderNotSpecifiedOnRegistration() throws Exception {
 		Registration login = new OAuth2ClientProperties.Registration();
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
-		testOidcConfiguration(login, "okta");
+		testIssuerConfiguration(login, "okta", 0, 1);
 	}
 
 	@Test
-	public void oidcProviderConfigurationWhenProviderSpecifiedOnRegistration() throws Exception {
+	void oidcProviderConfigurationWhenProviderSpecifiedOnRegistration() throws Exception {
 		OAuth2ClientProperties.Registration login = new Registration();
 		login.setProvider("okta-oidc");
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
-		testOidcConfiguration(login, "okta-oidc");
+		testIssuerConfiguration(login, "okta-oidc", 0, 1);
 	}
 
 	@Test
-	public void oidcProviderConfigurationWithCustomConfigurationOverridesProviderDefaults() throws Exception {
+	void issuerUriConfigurationTriesOidcRfc8414UriSecond() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testIssuerConfiguration(login, "okta", 1, 2);
+	}
+
+	@Test
+	void issuerUriConfigurationTriesOAuthMetadataUriThird() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testIssuerConfiguration(login, "okta", 2, 3);
+	}
+
+	@Test
+	void oidcProviderConfigurationWithCustomConfigurationOverridesProviderDefaults() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
@@ -251,31 +268,6 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
-	@Test
-	public void getClientRegistrationsWhenRegistrationProviderPropertyShouldBeTrimmed() {
-		OAuth2ClientProperties properties = new OAuth2ClientProperties();
-		OAuth2ClientProperties.Registration registration = createRegistration("  provider  ");
-		Provider provider = createProvider();
-		properties.getProvider().put("provider", provider);
-		properties.getRegistration().put("registration", registration);
-		assertThat(OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties)).isNotEmpty();
-	}
-
-	@Test
-	public void getClientRegistrationsWhenRegistrationProviderPropertyWithIssuerShouldBeTrimmed() throws Exception {
-		this.server = new MockWebServer();
-		this.server.start();
-		String issuer = this.server.url("").toString();
-		setupMockResponse(issuer);
-		OAuth2ClientProperties properties = new OAuth2ClientProperties();
-		OAuth2ClientProperties.Registration registration = createRegistration("   provider  ");
-		Provider provider = createProvider();
-		provider.setIssuerUri(issuer);
-		properties.getProvider().put("provider", provider);
-		properties.getRegistration().put("registration", registration);
-		assertThat(OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties)).isNotEmpty();
-	}
-
 	private Provider createProvider() {
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("https://example.com/auth");
@@ -298,12 +290,12 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		return registration;
 	}
 
-	private void testOidcConfiguration(OAuth2ClientProperties.Registration registration, String providerId)
-			throws Exception {
+	private void testIssuerConfiguration(OAuth2ClientProperties.Registration registration, String providerId,
+			int errorResponseCount, int numberOfRequests) throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
-		setupMockResponse(issuer);
+		setupMockResponsesWithErrors(issuer, errorResponseCount);
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = new Provider();
 		provider.setIssuerUri(issuer);
@@ -325,6 +317,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/oauth2/v3/userinfo");
 		assertThat(userInfoEndpoint.getAuthenticationMethod())
 				.isEqualTo(org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+		assertThat(this.server.getRequestCount()).isEqualTo(numberOfRequests);
 	}
 
 	private void setupMockResponse(String issuer) throws JsonProcessingException {
@@ -332,6 +325,14 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
+	}
+
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+		for (int i = 0; i < errorResponseCount; i++) {
+			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
+			this.server.enqueue(emptyResponse);
+		}
+		setupMockResponse(issuer);
 	}
 
 	private Map<String, Object> getResponse(String issuer) {

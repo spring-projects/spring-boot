@@ -32,8 +32,7 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.util.FileCopyUtils;
@@ -45,11 +44,11 @@ import org.springframework.util.FileCopyUtils;
  */
 public abstract class AbstractExecutableArchiveLauncherTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
-		File archive = this.temp.newFile(name);
+		File archive = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/classes/"));
@@ -69,7 +68,8 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 	}
 
 	protected File explode(File archive) throws IOException {
-		File exploded = this.temp.newFolder("exploded");
+		File exploded = new File(this.tempDir, "exploded");
+		exploded.mkdirs();
 		JarFile jarFile = new JarFile(archive);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {

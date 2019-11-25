@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.assertj.core.api.Condition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.command.archive.ResourceMatcher.MatchedResource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,10 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ResourceMatcherTests {
+class ResourceMatcherTests {
 
 	@Test
-	public void nonExistentRoot() throws IOException {
+	void nonExistentRoot() throws IOException {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**", "bravo/*", "*"),
 				Arrays.asList(".*", "alpha/**/excluded"));
 		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays.asList(new File("does-not-exist")));
@@ -48,7 +48,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaults() {
+	void defaults() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""), Arrays.asList(""));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
 		Collection<String> excludes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "excludes");
@@ -57,7 +57,7 @@ public class ResourceMatcherTests {
 	}
 
 	@Test
-	public void excludedWins() throws Exception {
+	void excludedWins() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"), Arrays.asList("**/*.jar"));
 		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File("src/test/resources")));
 		assertThat(found).areNot(new Condition<MatchedResource>() {
@@ -72,7 +72,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void includedDeltas() {
+	void includedDeltas() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**"), Arrays.asList(""));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
 		assertThat(includes).contains("templates/**");
@@ -81,7 +81,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void includedDeltasAndNewEntries() {
+	void includedDeltasAndNewEntries() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**", "foo.jar"),
 				Arrays.asList("-**/*.jar"));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
@@ -94,14 +94,14 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void excludedDeltas() {
+	void excludedDeltas() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""), Arrays.asList("-**/*.jar"));
 		Collection<String> excludes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "excludes");
 		assertThat(excludes).doesNotContain("**/*.jar");
 	}
 
 	@Test
-	public void jarFileAlwaysMatches() throws Exception {
+	void jarFileAlwaysMatches() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"), Arrays.asList("**/*.jar"));
 		List<MatchedResource> found = resourceMatcher
 				.find(Arrays.asList(new File("src/test/resources/templates"), new File("src/test/resources/foo.jar")));
@@ -116,7 +116,7 @@ public class ResourceMatcherTests {
 	}
 
 	@Test
-	public void resourceMatching() throws IOException {
+	void resourceMatching() throws IOException {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**", "bravo/*", "*"),
 				Arrays.asList(".*", "alpha/**/excluded"));
 		List<MatchedResource> matchedResources = resourceMatcher

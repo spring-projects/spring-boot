@@ -56,8 +56,7 @@ class CompositeHandlerMapping implements HandlerMapping {
 	}
 
 	private List<HandlerMapping> extractMappings() {
-		List<HandlerMapping> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+		List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		return list;

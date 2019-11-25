@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -31,17 +30,17 @@ import org.springframework.util.StringUtils;
  */
 public class ExplodedRemoteApplicationLauncher extends RemoteApplicationLauncher {
 
+	public ExplodedRemoteApplicationLauncher(Directories directories) {
+		super(directories);
+	}
+
 	@Override
 	protected String createApplicationClassPath() throws Exception {
-		File appDirectory = new File("target/app");
-		FileSystemUtils.deleteRecursively(appDirectory);
-		appDirectory.mkdirs();
-		FileSystemUtils.copyRecursively(new File("target/test-classes/com"), new File("target/app/com"));
+		File appDirectory = getDirectories().getAppDirectory();
+		copyApplicationTo(appDirectory);
 		List<String> entries = new ArrayList<>();
-		entries.add("target/app");
-		for (File jar : new File("target/dependencies").listFiles()) {
-			entries.add(jar.getAbsolutePath());
-		}
+		entries.add(appDirectory.getAbsolutePath());
+		entries.addAll(getDependencyJarPaths());
 		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 

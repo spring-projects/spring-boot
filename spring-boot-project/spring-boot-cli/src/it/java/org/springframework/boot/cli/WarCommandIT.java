@@ -18,7 +18,9 @@ package org.springframework.boot.cli;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
@@ -33,14 +35,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andrey Stolyarov
  * @author Henri Kerola
  */
-public class WarCommandIT {
+class WarCommandIT {
 
-	private final CommandLineInvoker cli = new CommandLineInvoker(
-			new File("src/it/resources/war-command"));
+	private CommandLineInvoker cli;
 
-	@Test
-	public void warCreation() throws Exception {
-		File war = new File("target/test-app.war");
+	private File tempDir;
+
+	@BeforeEach
+	void setup(@TempDir File tempDir) {
+		this.cli = new CommandLineInvoker(new File("src/it/resources/war-command"),
+				tempDir);
+		this.tempDir = tempDir;
+	}
+
+	@Test void warCreation() throws Exception {
+		File war = new File(this.tempDir, "test-app.war");
 		Invocation invocation = this.cli.invoke("war", war.getAbsolutePath(),
 				"war.groovy");
 		invocation.await();

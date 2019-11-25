@@ -24,8 +24,8 @@ import java.nio.channels.ByteChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-public class SocketTargetServerConnectionTests {
+class SocketTargetServerConnectionTests {
 
 	private static final int DEFAULT_TIMEOUT = 1000;
 
@@ -43,14 +43,14 @@ public class SocketTargetServerConnectionTests {
 
 	private SocketTargetServerConnection connection;
 
-	@Before
-	public void setup() throws IOException {
+	@BeforeEach
+	void setup() throws IOException {
 		this.server = new MockServer();
 		this.connection = new SocketTargetServerConnection(() -> this.server.getPort());
 	}
 
 	@Test
-	public void readData() throws Exception {
+	void readData() throws Exception {
 		this.server.willSend("hello".getBytes());
 		this.server.start();
 		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
@@ -60,7 +60,7 @@ public class SocketTargetServerConnectionTests {
 	}
 
 	@Test
-	public void writeData() throws Exception {
+	void writeData() throws Exception {
 		this.server.expect("hello".getBytes());
 		this.server.start();
 		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
@@ -70,7 +70,7 @@ public class SocketTargetServerConnectionTests {
 	}
 
 	@Test
-	public void timeout() throws Exception {
+	void timeout() throws Exception {
 		this.server.delay(1000);
 		this.server.start();
 		ByteChannel channel = this.connection.open(10);
@@ -83,7 +83,7 @@ public class SocketTargetServerConnectionTests {
 				});
 	}
 
-	private static class MockServer {
+	static class MockServer {
 
 		private ServerSocketChannel serverSocket;
 
@@ -106,29 +106,29 @@ public class SocketTargetServerConnectionTests {
 			return this.serverSocket.socket().getLocalPort();
 		}
 
-		public void delay(int delay) {
+		void delay(int delay) {
 			this.delay = delay;
 		}
 
-		public void willSend(byte[] send) {
+		void willSend(byte[] send) {
 			this.send = send;
 		}
 
-		public void expect(byte[] expect) {
+		void expect(byte[] expect) {
 			this.expect = expect;
 		}
 
-		public void start() {
+		void start() {
 			this.thread = new ServerThread();
 			this.thread.start();
 		}
 
-		public void closeAndVerify() throws InterruptedException {
+		void closeAndVerify() throws InterruptedException {
 			close();
 			assertThat(this.actualRead.array()).isEqualTo(this.expect);
 		}
 
-		public void close() throws InterruptedException {
+		void close() throws InterruptedException {
 			while (this.thread.isAlive()) {
 				Thread.sleep(10);
 			}

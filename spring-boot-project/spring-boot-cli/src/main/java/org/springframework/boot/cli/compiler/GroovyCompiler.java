@@ -294,11 +294,11 @@ public class GroovyCompiler {
 
 	private static class MainClass {
 
-		public static ClassNode get(CompilationUnit source) {
+		static ClassNode get(CompilationUnit source) {
 			return get(source.getAST().getClasses());
 		}
 
-		public static ClassNode get(List<ClassNode> classes) {
+		static ClassNode get(List<ClassNode> classes) {
 			for (ClassNode node : classes) {
 				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
 					return null; // No need to enhance this

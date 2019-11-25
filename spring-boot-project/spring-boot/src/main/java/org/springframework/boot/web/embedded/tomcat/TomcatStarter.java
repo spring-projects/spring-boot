@@ -64,7 +64,7 @@ class TomcatStarter implements ServletContainerInitializer {
 		}
 	}
 
-	public Exception getStartUpException() {
+	Exception getStartUpException() {
 		return this.startUpException;
 	}
 

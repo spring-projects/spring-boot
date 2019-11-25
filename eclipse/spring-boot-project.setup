@@ -11,8 +11,8 @@
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
     xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot.2.1.x"
-    label="Spring Boot 2.1.x">
+    name="spring.boot.2.2.x"
+    label="Spring Boot 2.2.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -131,16 +131,22 @@
           pattern="spring-boot-starter(s|-.*)"/>
     </workingSet>
     <workingSet
-        name="spring-boot-samples">
+        name="spring-boot-smoke-tests">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-sample(s|-.*)"/>
+          pattern="spring-boot-smoke-test(s|-.*)"/>
     </workingSet>
     <workingSet
         name="spring-boot-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-(.*-test|tests).*"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+      </predicate>
     </workingSet>
   </setupTask>
   <setupTask

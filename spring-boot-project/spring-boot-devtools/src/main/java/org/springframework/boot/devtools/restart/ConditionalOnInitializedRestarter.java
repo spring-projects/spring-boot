@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the {@link RestartInitializer} has been
- * applied with non {@code null} URLs.
+ * {@link Conditional @Conditional} that only matches when the {@link RestartInitializer}
+ * has been applied with non {@code null} URLs.
  *
  * @author Phillip Webb
  * @since 1.3.0

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
-public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final Session sessionOne = createSession(Instant.now().minusSeconds(60 * 60 * 12),
 			Instant.now().minusSeconds(45));
@@ -70,15 +70,15 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 			fieldWithPath("attributeNames").description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime").description("Timestamp of when the session was last accessed."),
-			fieldWithPath("maxInactiveInterval").description(
-					"Maximum permitted period of inactivity, in seconds, " + "before the session will expire."),
+			fieldWithPath("maxInactiveInterval")
+					.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
 	@MockBean
 	private FindByIndexNameSessionRepository<Session> sessionRepository;
 
 	@Test
-	public void sessionsForUsername() throws Exception {
+	void sessionsForUsername() throws Exception {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
@@ -92,7 +92,7 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 	}
 
 	@Test
-	public void sessionWithId() throws Exception {
+	void sessionWithId() throws Exception {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
@@ -103,7 +103,7 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 	}
 
 	@Test
-	public void deleteASession() throws Exception {
+	void deleteASession() throws Exception {
 		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isNoContent())
 				.andDo(document("sessions/delete"));
 		verify(this.sessionRepository).deleteById(sessionTwo.getId());
@@ -120,12 +120,12 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 		return session;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
+		SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
 			return new SessionsEndpoint(sessionRepository);
 		}
 

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CompositeHandlerExceptionResolverTests {
+class CompositeHandlerExceptionResolverTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -48,7 +48,7 @@ public class CompositeHandlerExceptionResolverTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void resolverShouldDelegateToOtherResolversInContext() {
+	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
@@ -58,7 +58,7 @@ public class CompositeHandlerExceptionResolverTests {
 	}
 
 	@Test
-	public void resolverShouldAddDefaultResolverIfNonePresent() {
+	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
@@ -74,22 +74,22 @@ public class CompositeHandlerExceptionResolverTests {
 		this.context = context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-		public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+		CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 			return new CompositeHandlerExceptionResolver();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public HandlerExceptionResolver testResolver() {
+		HandlerExceptionResolver testResolver() {
 			return new TestHandlerExceptionResolver();
 		}
 

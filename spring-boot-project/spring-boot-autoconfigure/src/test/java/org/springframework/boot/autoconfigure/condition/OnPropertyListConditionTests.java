@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -30,46 +30,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class OnPropertyListConditionTests {
+class OnPropertyListConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void propertyNotDefined() {
+	void propertyNotDefined() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void propertyDefinedAsCommaSeparated() {
+	void propertyDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.test.my-list=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void propertyDefinedAsList() {
+	void propertyDefinedAsList() {
 		this.contextRunner.withPropertyValues("spring.test.my-list[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void propertyDefinedAsCommaSeparatedRelaxed() {
+	void propertyDefinedAsCommaSeparatedRelaxed() {
 		this.contextRunner.withPropertyValues("spring.test.myList=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void propertyDefinedAsListRelaxed() {
+	void propertyDefinedAsListRelaxed() {
 		this.contextRunner.withPropertyValues("spring.test.myList[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(TestPropertyListCondition.class)
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

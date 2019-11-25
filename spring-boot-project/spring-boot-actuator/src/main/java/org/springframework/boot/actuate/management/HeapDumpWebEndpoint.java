@@ -47,7 +47,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Web {@link Endpoint} to expose heap dumps.
+ * Web {@link Endpoint @Endpoint} to expose heap dumps.
  *
  * @author Lari Hotari
  * @author Phillip Webb

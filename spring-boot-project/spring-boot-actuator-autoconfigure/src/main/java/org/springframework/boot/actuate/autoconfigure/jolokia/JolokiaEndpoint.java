@@ -26,7 +26,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 
 /**
- * {@link Endpoint} to expose a Jolokia {@link AgentServlet}.
+ * {@link Endpoint @Endpoint} to expose a Jolokia {@link AgentServlet}.
  *
  * @author Phillip Webb
  * @since 2.0.0

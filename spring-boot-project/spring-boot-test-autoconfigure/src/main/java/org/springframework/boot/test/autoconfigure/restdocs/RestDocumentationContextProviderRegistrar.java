@@ -26,7 +26,8 @@ import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used by {@link AutoConfigureRestDocs}.
+ * {@link ImportBeanDefinitionRegistrar} used by
+ * {@link AutoConfigureRestDocs @AutoConfigureRestDocs}.
  *
  * @author Andy Wilkinson
  * @see AutoConfigureRestDocs

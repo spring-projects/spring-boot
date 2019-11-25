@@ -148,7 +148,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			this.valueType = this.mapType.getGeneric(1);
 		}
 
-		public void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
+		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
 			if (source instanceof IterableConfigurationPropertySource) {
 				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
 					Bindable<?> valueBindable = getValueBindable(name);

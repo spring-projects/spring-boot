@@ -38,7 +38,8 @@ import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -257,9 +258,9 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
-			Assert.state(annotation != null, () -> "Class " + source + " is not annotated with @Endpoint");
-			return EndpointId.of(annotation.id());
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
+			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
+			return EndpointId.of(annotation.getString("id"));
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
@@ -294,7 +295,7 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		public RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
+		RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);

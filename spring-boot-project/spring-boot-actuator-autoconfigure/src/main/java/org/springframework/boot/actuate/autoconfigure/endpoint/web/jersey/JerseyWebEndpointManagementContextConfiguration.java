@@ -29,6 +29,7 @@ import org.glassfish.jersey.server.model.Resource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -46,16 +47,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
- * {@link ManagementContextConfiguration} for Jersey {@link Endpoint} concerns.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jersey
+ * {@link Endpoint @Endpoint} concerns.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Michael Simons
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
 @ConditionalOnBean(WebEndpointsSupplier.class)
@@ -63,12 +68,20 @@ import org.springframework.context.annotation.Bean;
 class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
-	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(
+	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(Environment environment,
 			ObjectProvider<ResourceConfig> resourceConfig, WebEndpointsSupplier webEndpointsSupplier,
 			ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
+		String basePath = webEndpointProperties.getBasePath();
+		boolean shouldRegisterLinks = shouldRegisterLinksMapping(environment, basePath);
+		shouldRegisterLinksMapping(environment, basePath);
 		return new JerseyWebEndpointsResourcesRegistrar(resourceConfig.getIfAvailable(), webEndpointsSupplier,
-				servletEndpointsSupplier, endpointMediaTypes, webEndpointProperties.getBasePath());
+				servletEndpointsSupplier, endpointMediaTypes, basePath, shouldRegisterLinks);
+	}
+
+	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
+		return StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 	}
 
 	/**
@@ -87,15 +100,18 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		private final String basePath;
 
+		private final boolean shouldRegisterLinks;
+
 		JerseyWebEndpointsResourcesRegistrar(ResourceConfig resourceConfig, WebEndpointsSupplier webEndpointsSupplier,
 				ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-				String basePath) {
+				String basePath, boolean shouldRegisterLinks) {
 			super();
 			this.resourceConfig = resourceConfig;
 			this.webEndpointsSupplier = webEndpointsSupplier;
 			this.servletEndpointsSupplier = servletEndpointsSupplier;
 			this.mediaTypes = endpointMediaTypes;
 			this.basePath = basePath;
+			this.shouldRegisterLinks = shouldRegisterLinks;
 		}
 
 		@PostConstruct
@@ -111,7 +127,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 			EndpointLinksResolver linksResolver = getLinksResolver(webEndpoints, servletEndpoints);
 			EndpointMapping mapping = new EndpointMapping(this.basePath);
 			JerseyEndpointResourceFactory resourceFactory = new JerseyEndpointResourceFactory();
-			register(resourceFactory.createEndpointResources(mapping, webEndpoints, this.mediaTypes, linksResolver));
+			register(resourceFactory.createEndpointResources(mapping, webEndpoints, this.mediaTypes, linksResolver,
+					this.shouldRegisterLinks));
 		}
 
 		private EndpointLinksResolver getLinksResolver(Collection<ExposableWebEndpoint> webEndpoints,

@@ -18,7 +18,7 @@ package org.springframework.boot.security.reactive;
 
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -44,17 +44,17 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ApplicationContextServerWebExchangeMatcherTests {
+class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Test
-	public void createWhenContextClassIsNullShouldThrowException() {
+	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new TestApplicationContextServerWebExchangeMatcher<>(null))
 				.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
-	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
+	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ApplicationContext.class)
@@ -62,7 +62,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
+	void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
@@ -71,7 +71,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextClassIsMissingBeanShouldProvideException() {
+	void matchesWhenContextClassIsMissingBeanShouldProvideException() {
 		ServerWebExchange exchange = createExchange();
 		Supplier<ExistingBean> supplier = new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
 				.callMatchesAndReturnProvidedContext(exchange);
@@ -79,7 +79,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextIsNull() {
+	void matchesWhenContextIsNull() {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/path").build());
 		assertThatIllegalStateException()
 				.isThrownBy(() -> new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
@@ -119,7 +119,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 			this.bean = bean;
 		}
 
-		public ExistingBean getBean() {
+		ExistingBean getBean() {
 			return this.bean;
 		}
 

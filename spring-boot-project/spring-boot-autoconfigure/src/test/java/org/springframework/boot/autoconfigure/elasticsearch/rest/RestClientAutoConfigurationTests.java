@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,15 +26,17 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchNodeTemplate;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,13 +46,18 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class RestClientAutoConfigurationTests {
+@Testcontainers(disabledWithoutDocker = true)
+class RestClientAutoConfigurationTests {
+
+	@Container
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(2));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
 
 	@Test
-	public void configureShouldCreateBothRestClientVariants() {
+	void configureShouldCreateBothRestClientVariants() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
 			assertThat(context.getBean(RestClient.class))
@@ -59,13 +66,13 @@ public class RestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void configureWhenCustomClientShouldBackOff() {
+	void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
 				.run((context) -> assertThat(context).getBeanNames(RestClient.class).containsOnly("customRestClient"));
 	}
 
 	@Test
-	public void configureWhenCustomRestHighLevelClientShouldBackOff() {
+	void configureWhenCustomRestHighLevelClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
 			assertThat(context.getBean(RestClient.class))
@@ -74,7 +81,7 @@ public class RestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestHighLevelClient() {
+	void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestHighLevelClient() {
 		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class);
 			RestClient restClient = context.getBean(RestClient.class);
@@ -87,27 +94,52 @@ public class RestClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void configureWhenHighLevelClientIsNotAvailableShouldCreateRestClientOnly() {
+	void configureWhenHighLevelClientIsNotAvailableShouldCreateRestClientOnly() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(RestHighLevelClient.class))
 				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
 						.doesNotHaveBean(RestHighLevelClient.class));
 	}
 
 	@Test
-	public void configureWhenBuilderCustomizerShouldApply() {
+	void configureWhenBuilderCustomizerShouldApply() {
 		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class);
 			RestClient restClient = context.getBean(RestClient.class);
-			Field field = ReflectionUtils.findField(RestClient.class, "maxRetryTimeoutMillis");
-			ReflectionUtils.makeAccessible(field);
-			assertThat(ReflectionUtils.getField(field, restClient)).isEqualTo(42L);
+			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
 		});
 	}
 
 	@Test
-	public void restClientCanQueryElasticsearchNode() {
-		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:" + node.getHttpPort())
+	void configureWithNoTimeoutsApplyDefaults() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertTimeouts(restClient, Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
+					Duration.ofMillis(RestClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
+		});
+	}
+
+	@Test
+	void configureWithCustomTimeouts() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
+				"spring.elasticsearch.rest.read-timeout=1m").run((context) -> {
+					assertThat(context).hasSingleBean(RestClient.class);
+					RestClient restClient = context.getBean(RestClient.class);
+					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
+				});
+	}
+
+	private static void assertTimeouts(RestClient restClient, Duration connectTimeout, Duration readTimeout) {
+		Object client = ReflectionTestUtils.getField(restClient, "client");
+		Object config = ReflectionTestUtils.getField(client, "defaultConfig");
+		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout", Math.toIntExact(readTimeout.toMillis()));
+		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout", Math.toIntExact(connectTimeout.toMillis()));
+	}
+
+	@Test
+	void restClientCanQueryElasticsearchNode() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.rest.uris=http://" + elasticsearch.getHttpHostAddress())
 				.run((context) -> {
 					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
@@ -117,30 +149,30 @@ public class RestClientAutoConfigurationTests {
 					client.index(index, RequestOptions.DEFAULT);
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
 					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
-				}));
+				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestClientConfiguration {
 
 		@Bean
-		public RestClient customRestClient() {
+		RestClient customRestClient() {
 			return mock(RestClient.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BuilderCustomizerConfiguration {
 
 		@Bean
-		public RestClientBuilderCustomizer myCustomizer() {
-			return (builder) -> builder.setMaxRetryTimeoutMillis(42);
+		RestClientBuilderCustomizer myCustomizer() {
+			return (builder) -> builder.setPathPrefix("/test");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestHighLevelClientConfiguration {
 
 		@Bean
@@ -150,7 +182,7 @@ public class RestClientAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TwoCustomRestHighLevelClientConfiguration {
 
 		@Bean

@@ -24,7 +24,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
- * Example {@link SpringBootApplication} used with {@link JooqTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link JooqTest @JooqTest} tests.
  *
  * @author Michael Simons
  */

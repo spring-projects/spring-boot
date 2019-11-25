@@ -36,7 +36,7 @@ public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailab
 		super("groovy.text.TemplateEngine", GroovyTemplateAvailabilityProperties.class, "spring.groovy.template");
 	}
 
-	static final class GroovyTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
+	protected static final class GroovyTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> resourceLoaderPath = new ArrayList<>(
 				Arrays.asList(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH));

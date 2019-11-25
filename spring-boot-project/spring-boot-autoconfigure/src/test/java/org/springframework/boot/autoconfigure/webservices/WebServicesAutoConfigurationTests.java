@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.webservices;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -39,37 +39,37 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Eneias Silva
  */
-public class WebServicesAutoConfigurationTests {
+class WebServicesAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Test
-	public void defaultConfiguration() {
+	void defaultConfiguration() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServletRegistrationBean.class));
 	}
 
 	@Test
-	public void customPathMustBeginWithASlash() {
+	void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
 				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("Failed to bind properties under 'spring.webservices'"));
 	}
 
 	@Test
-	public void customPath() {
+	void customPath() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid")
 				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
-	public void customPathWithTrailingSlash() {
+	void customPathWithTrailingSlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid/")
 				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
-	public void customLoadOnStartup() {
+	void customLoadOnStartup() {
 		this.contextRunner.withPropertyValues("spring.webservices.servlet.load-on-startup=1").run((context) -> {
 			ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
 			assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup")).isEqualTo(1);
@@ -77,7 +77,7 @@ public class WebServicesAutoConfigurationTests {
 	}
 
 	@Test
-	public void customInitParameters() {
+	void customInitParameters() {
 		this.contextRunner
 				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
 						"spring.webservices.servlet.init.key2=value2")
@@ -86,7 +86,7 @@ public class WebServicesAutoConfigurationTests {
 	}
 
 	@Test
-	public void withWsdlBeans() {
+	void withWsdlBeans() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl").run((context) -> {
 			assertThat(context.getBeansOfType(SimpleWsdl11Definition.class)).containsOnlyKeys("service");
 			assertThat(context.getBeansOfType(SimpleXsdSchema.class)).containsOnlyKeys("types");
@@ -94,7 +94,7 @@ public class WebServicesAutoConfigurationTests {
 	}
 
 	@Test
-	public void withWsdlBeansAsList() {
+	void withWsdlBeansAsList() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations[0]=classpath:/wsdl").run((context) -> {
 			assertThat(context.getBeansOfType(SimpleWsdl11Definition.class)).containsOnlyKeys("service");
 			assertThat(context.getBeansOfType(SimpleXsdSchema.class)).containsOnlyKeys("types");

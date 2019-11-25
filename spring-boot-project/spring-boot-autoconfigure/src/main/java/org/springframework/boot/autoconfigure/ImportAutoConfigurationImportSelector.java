@@ -39,7 +39,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Variant of {@link AutoConfigurationImportSelector} for {@link ImportAutoConfiguration}.
+ * Variant of {@link AutoConfigurationImportSelector} for
+ * {@link ImportAutoConfiguration @ImportAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -57,8 +58,8 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	@Override
 	public Set<Object> determineImports(AnnotationMetadata metadata) {
-		Set<String> result = new LinkedHashSet<>();
-		result.addAll(getCandidateConfigurations(metadata, null));
+		List<String> candidateConfigurations = getCandidateConfigurations(metadata, null);
+		Set<String> result = new LinkedHashSet<>(candidateConfigurations);
 		result.removeAll(getExclusions(metadata, null));
 		return Collections.unmodifiableSet(result);
 	}

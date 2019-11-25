@@ -1,22 +1,20 @@
 [[build-tool-plugins]]
-= Build tool plugins
+= Build Tool Plugins
+include::attributes.adoc[]
 
-[partintro]
---
 Spring Boot provides build tool plugins for Maven and Gradle.
 The plugins offer a variety of features, including the packaging of executable jars.
 This section provides more details on both plugins as well as some help should you need to extend an unsupported build system.
 If you are just getting started, you might want to read "`<<using-spring-boot.adoc#using-boot-build-systems>>`" from the "`<<using-spring-boot.adoc#using-boot>>`" section first.
---
 
 
 
 [[build-tool-plugins-maven-plugin]]
 == Spring Boot Maven Plugin
-The {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin] provides Spring Boot support in Maven, letting you package executable jar or war archives and run an application "`in-place`".
+The Spring Boot Maven Plugin provides Spring Boot support in Maven, letting you package executable jar or war archives and run an application "`in-place`".
 To use it, you must use Maven 3.2 (or later).
 
-NOTE: See the {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin Site] for complete plugin documentation.
+NOTE: See the {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin Documentation] for complete plugin documentation.
 
 
 
@@ -153,7 +151,7 @@ To build a war file that is both executable and deployable into an external cont
 	</project>
 ----
 
-TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on how to create a deployable war file.
+TIP: See the "`<<howto.adoc#howto-create-a-deployable-war-file>>`" section for more details on how to create a deployable war file.
 
 Advanced configuration options and examples are available in the {spring-boot-maven-plugin-docs}[plugin info page].
 
@@ -162,7 +160,7 @@ Advanced configuration options and examples are available in the {spring-boot-ma
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle Plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
-It requires Gradle 4.4 or later.
+It requires Gradle 5.x (4.10 is also supported but this support is deprecated and will be removed in a future release).
 Please refer to the plugin's documentation to learn more:
 
 * Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
@@ -352,7 +350,7 @@ If your archive already includes libraries, you can use `Libraries.NONE`.
 
 [[build-tool-plugins-find-a-main-class]]
 === Finding a Main Class
-If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.org/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
+If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.io/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
 An exception is thrown if more than one candidate is found.
 
 
@@ -379,6 +377,6 @@ The following example shows a typical repackage implementation:
 [[build-tool-plugins-whats-next]]
 == What to Read Next
 If you are interested in how the build tool plugins work, you can look at the {spring-boot-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`] module on GitHub.
-More technical details of the executable jar format are covered in <<appendix-executable-jar-format.adoc#executable-jar,the appendix>>.
+More technical details of the executable jar format are covered in <<appendix-executable-jar-format#executable-jar,the appendix>>.
 
 If you have specific build-related questions, you can check out the "`<<howto.adoc#howto, how-to>>`" guides.

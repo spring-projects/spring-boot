@@ -33,7 +33,7 @@ import org.springframework.data.ldap.repository.support.LdapRepositoryFactoryBea
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ LdapContext.class, LdapRepository.class })
 @ConditionalOnProperty(prefix = "spring.data.ldap.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)

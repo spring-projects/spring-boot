@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -38,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class SharedMetadataReaderFactoryContextInitializerTests {
+class SharedMetadataReaderFactoryContextInitializerTests {
 
 	@Test
-	public void checkOrderOfInitializer() {
+	void checkOrderOfInitializer() {
 		SpringApplication application = new SpringApplication(TestConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		@SuppressWarnings("unchecked")
@@ -55,7 +55,7 @@ public class SharedMetadataReaderFactoryContextInitializerTests {
 		assertThat(definition.getAttribute("seen")).isEqualTo(true);
 	}
 
-	protected static class TestConfig {
+	static class TestConfig {
 
 	}
 

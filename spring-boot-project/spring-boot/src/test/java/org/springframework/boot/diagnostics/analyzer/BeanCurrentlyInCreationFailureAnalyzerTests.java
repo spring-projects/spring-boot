@@ -22,7 +22,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +38,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class BeanCurrentlyInCreationFailureAnalyzerTests {
+class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private final FailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer();
 
 	@Test
-	public void cyclicBeanMethods() throws IOException {
+	void cyclicBeanMethods() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(9);
@@ -67,7 +67,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAutowiredFields() throws IOException {
+	void cycleWithAutowiredFields() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleWithAutowiredFields.class);
 		assertThat(analysis.getDescription())
 				.startsWith("The dependencies of some of the beans in the application context form a cycle:");
@@ -87,16 +87,16 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleReferencedViaOtherBeans() throws IOException {
+	void cycleReferencedViaOtherBeans() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleReferencedViaOtherBeansConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(12);
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(lines.get(1)).isEqualTo("");
-		assertThat(lines.get(2)).contains("refererOne " + "(field " + RefererTwo.class.getName());
+		assertThat(lines.get(2)).contains("refererOne (field " + RefererTwo.class.getName());
 		assertThat(lines.get(3)).isEqualTo("      ↓");
-		assertThat(lines.get(4)).contains("refererTwo " + "(field " + BeanOne.class.getName());
+		assertThat(lines.get(4)).contains("refererTwo (field " + BeanOne.class.getName());
 		assertThat(lines.get(5)).isEqualTo("┌─────┐");
 		assertThat(lines.get(6))
 				.startsWith("|  one defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());
@@ -110,7 +110,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAnUnknownStartIsNotAnalyzed() {
+	void cycleWithAnUnknownStartIsNotAnalyzed() {
 		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test"))).isNull();
 	}
 
@@ -136,27 +136,27 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		}
 	}
 
-	@org.springframework.context.annotation.Configuration
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	static class CyclicBeanMethodsConfiguration {
 
 		@Bean
-		public BeanThree three(BeanOne one) {
+		BeanThree three(BeanOne one) {
 			return new BeanThree();
 		}
 
-		@org.springframework.context.annotation.Configuration
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		static class InnerConfiguration {
 
 			@Bean
-			public BeanTwo two(BeanThree three) {
+			BeanTwo two(BeanThree three) {
 				return new BeanTwo();
 			}
 
-			@Configuration
+			@Configuration(proxyBeanMethods = false)
 			static class InnerInnerConfiguration {
 
 				@Bean
-				public BeanOne one(BeanTwo two) {
+				BeanOne one(BeanTwo two) {
 					return new BeanOne();
 				}
 
@@ -166,37 +166,37 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
-		public BeanOne one(BeanTwo two) {
+		BeanOne one(BeanTwo two) {
 			return new BeanOne();
 		}
 
 		@Bean
-		public BeanTwo two(BeanThree three) {
+		BeanTwo two(BeanThree three) {
 			return new BeanTwo();
 		}
 
 		@Bean
-		public BeanThree three(BeanOne beanOne) {
+		BeanThree three(BeanOne beanOne) {
 			return new BeanThree();
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		static class InnerConfiguration {
 
 			@Bean
-			public RefererTwo refererTwo() {
+			RefererTwo refererTwo() {
 				return new RefererTwo();
 			}
 
-			@Configuration
+			@Configuration(proxyBeanMethods = false)
 			static class InnerInnerConfiguration {
 
 				@Bean
-				public RefererOne refererOne() {
+				RefererOne refererOne() {
 					return new RefererOne();
 				}
 
@@ -206,33 +206,33 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	}
 
-	@org.springframework.context.annotation.Configuration
-	public static class CycleWithAutowiredFields {
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
+	static class CycleWithAutowiredFields {
 
 		@Bean
-		public BeanOne one(BeanTwo two) {
+		BeanOne one(BeanTwo two) {
 			return new BeanOne();
 		}
 
-		@org.springframework.context.annotation.Configuration
-		public static class BeanTwoConfiguration {
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
+		static class BeanTwoConfiguration {
 
 			@SuppressWarnings("unused")
 			@Autowired
 			private BeanThree three;
 
 			@Bean
-			public BeanTwo two() {
+			BeanTwo two() {
 				return new BeanTwo();
 			}
 
 		}
 
-		@org.springframework.context.annotation.Configuration
-		public static class BeanThreeConfiguration {
+		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
+		static class BeanThreeConfiguration {
 
 			@Bean
-			public BeanThree three(BeanOne one) {
+			BeanThree three(BeanOne one) {
 				return new BeanThree();
 			}
 

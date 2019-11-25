@@ -176,7 +176,7 @@ public class SpringApplicationRunner {
 		/**
 		 * Shutdown the thread, closing any previously opened application context.
 		 */
-		public void shutdown() {
+		void shutdown() {
 			synchronized (this.monitor) {
 				if (this.applicationContext != null) {
 					try {

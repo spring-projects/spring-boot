@@ -32,7 +32,10 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HealthEndpointWebExtension} or
+ * {@link ReactiveHealthEndpointWebExtension}
  */
+@Deprecated
 public class HealthWebEndpointResponseMapper {
 
 	private final HealthStatusHttpMapper statusHttpMapper;
@@ -101,11 +104,8 @@ public class HealthWebEndpointResponseMapper {
 	}
 
 	private boolean canSeeDetails(SecurityContext securityContext, ShowDetails showDetails) {
-		if (showDetails == ShowDetails.NEVER || (showDetails == ShowDetails.WHEN_AUTHORIZED
-				&& (securityContext.getPrincipal() == null || !isUserInRole(securityContext)))) {
-			return false;
-		}
-		return true;
+		return showDetails != ShowDetails.NEVER && (showDetails != ShowDetails.WHEN_AUTHORIZED
+				|| (securityContext.getPrincipal() != null && isUserInRole(securityContext)));
 	}
 
 	private boolean isUserInRole(SecurityContext securityContext) {

@@ -23,30 +23,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.StringUtils;
 
 /**
- * JUnit {@link TestRule} that launched a JVM and redirects its output to a test
+ * {@link Extension} that launches a JVM and redirects its output to a test
  * method-specific location.
  *
  * @author Andy Wilkinson
  */
-class JvmLauncher implements TestRule {
+class JvmLauncher implements BeforeTestExecutionCallback {
 
 	private static final Pattern NON_ALPHABET_PATTERN = Pattern.compile("[^A-Za-z]+");
+
+	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private File outputDirectory;
 
 	@Override
-	public Statement apply(Statement base, Description description) {
-		this.outputDirectory = new File(
-				"target/output/" + NON_ALPHABET_PATTERN.matcher(description.getMethodName()).replaceAll(""));
+	public void beforeTestExecution(ExtensionContext context) throws Exception {
+		this.outputDirectory = new File(this.buildOutput.getRootLocation(),
+				"output/" + NON_ALPHABET_PATTERN.matcher(context.getRequiredTestMethod().getName()).replaceAll(""));
 		this.outputDirectory.mkdirs();
-		return base;
 	}
 
 	LaunchedJvm launch(String name, String classpath, String... args) throws IOException {

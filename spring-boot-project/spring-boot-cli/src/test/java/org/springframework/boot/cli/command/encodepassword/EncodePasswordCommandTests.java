@@ -16,9 +16,9 @@
 
 package org.springframework.boot.cli.command.encodepassword;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
@@ -37,26 +37,26 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class EncodePasswordCommandTests {
+class EncodePasswordCommandTests {
 
 	private MockLog log;
 
 	@Captor
 	private ArgumentCaptor<String> message;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.log = MockLog.attach();
 	}
 
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		MockLog.clear();
 	}
 
 	@Test
-	public void encodeWithNoAlgorithmShouldUseBcrypt() throws Exception {
+	void encodeWithNoAlgorithmShouldUseBcrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("boot");
 		verify(this.log).info(this.message.capture());
@@ -67,7 +67,7 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
-	public void encodeWithBCryptShouldUseBCrypt() throws Exception {
+	void encodeWithBCryptShouldUseBCrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "bcrypt", "boot");
 		verify(this.log).info(this.message.capture());
@@ -77,7 +77,7 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
-	public void encodeWithPbkdf2ShouldUsePbkdf2() throws Exception {
+	void encodeWithPbkdf2ShouldUsePbkdf2() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
 		verify(this.log).info(this.message.capture());
@@ -87,7 +87,7 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
-	public void encodeWithUnknownAlgorithmShouldExitWithError() throws Exception {
+	void encodeWithUnknownAlgorithmShouldExitWithError() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("--algorithm", "bad", "boot");
 		verify(this.log).error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");

@@ -9,6 +9,10 @@ case "$JDK_VERSION" in
 		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk11"
 		 ISSUE_TITLE="Upgrade Java 11 version in CI image"
 	;;
+	java13)
+		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk13"
+		 ISSUE_TITLE="Upgrade Java 13 version in CI image"
+	;;
 	*)
 		echo $"Unknown java version"
 		exit 1;

@@ -38,6 +38,11 @@ public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	@Override
+	public Integer getIdle() {
+		return getDataSource().getNumIdle();
+	}
+
+	@Override
 	public Integer getMax() {
 		return getDataSource().getMaxActive();
 	}

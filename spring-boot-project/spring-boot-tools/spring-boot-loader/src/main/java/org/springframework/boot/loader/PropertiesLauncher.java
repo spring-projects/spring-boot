@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -42,6 +43,7 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class via a
@@ -73,6 +75,14 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * @since 1.0.0
  */
 public class PropertiesLauncher extends Launcher {
+
+	private static final Class<?>[] PARENT_ONLY_PARAMS = new Class<?>[] { ClassLoader.class };
+
+	private static final Class<?>[] URLS_AND_PARENT_PARAMS = new Class<?>[] { URL[].class, ClassLoader.class };
+
+	private static final Class<?>[] NO_PARAMS = new Class<?>[] {};
+
+	private static final URL[] NO_URLS = new URL[0];
 
 	private static final String DEBUG = "loader.debug";
 
@@ -340,7 +350,7 @@ public class PropertiesLauncher extends Launcher {
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}
-		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(NO_URLS), getClass().getClassLoader());
 		debug("Classpath: " + urls);
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
@@ -351,22 +361,29 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent, String loaderClassName) throws Exception {
-		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(loaderClassName, true, parent);
+	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent, String className) throws Exception {
+		Class<ClassLoader> type = (Class<ClassLoader>) Class.forName(className, true, parent);
+		ClassLoader classLoader = newClassLoader(type, PARENT_ONLY_PARAMS, parent);
+		if (classLoader == null) {
+			classLoader = newClassLoader(type, URLS_AND_PARENT_PARAMS, NO_URLS, parent);
+		}
+		if (classLoader == null) {
+			classLoader = newClassLoader(type, NO_PARAMS);
+		}
+		Assert.notNull(classLoader, "Unable to create class loader for " + className);
+		return classLoader;
+	}
 
+	private ClassLoader newClassLoader(Class<ClassLoader> loaderClass, Class<?>[] parameterTypes, Object... initargs)
+			throws Exception {
 		try {
-			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
+			Constructor<ClassLoader> constructor = loaderClass.getDeclaredConstructor(parameterTypes);
+			constructor.setAccessible(true);
+			return constructor.newInstance(initargs);
 		}
 		catch (NoSuchMethodException ex) {
-			// Ignore and try with URLs
+			return null;
 		}
-		try {
-			return loaderClass.getConstructor(URL[].class, ClassLoader.class).newInstance(new URL[0], parent);
-		}
-		catch (NoSuchMethodException ex) {
-			// Ignore and try without any arguments
-		}
-		return loaderClass.newInstance();
 	}
 
 	private String getProperty(String propertyKey) throws Exception {
@@ -401,12 +418,14 @@ public class PropertiesLauncher extends Launcher {
 		try {
 			if (this.home != null) {
 				// Prefer home dir for MANIFEST if there is one
-				Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
-				if (manifest != null) {
-					String value = manifest.getMainAttributes().getValue(manifestKey);
-					if (value != null) {
-						debug("Property '" + manifestKey + "' from home directory manifest: " + value);
-						return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+				try (ExplodedArchive archive = new ExplodedArchive(this.home, false)) {
+					Manifest manifest = archive.getManifest();
+					if (manifest != null) {
+						String value = manifest.getMainAttributes().getValue(manifestKey);
+						if (value != null) {
+							debug("Property '" + manifestKey + "' from home directory manifest: " + value);
+							return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+						}
 					}
 				}
 			}

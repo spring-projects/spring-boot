@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -36,18 +36,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-public class TestDatabaseAutoConfigurationTests {
+class TestDatabaseAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
-	public void replaceWithNoDataSourceAvailable() {
+	void replaceWithNoDataSourceAvailable() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test
-	public void replaceWithUniqueDatabase() {
+	void replaceWithUniqueDatabase() {
 		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class).run((context) -> {
 			DataSource datasource = context.getBean(DataSource.class);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
@@ -60,11 +60,11 @@ public class TestDatabaseAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ExistingDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 

@@ -152,7 +152,7 @@ class BootZipCopyAction implements CopyAction {
 			this.outputStream = outputStream;
 		}
 
-		public void process(FileCopyDetails details) {
+		void process(FileCopyDetails details) {
 			if (BootZipCopyAction.this.exclusions.isSatisfiedBy(details)
 					|| (this.writtenLoaderEntries != null && this.writtenLoaderEntries.isSatisfiedBy(details))) {
 				return;
@@ -171,7 +171,7 @@ class BootZipCopyAction implements CopyAction {
 			}
 		}
 
-		public void finish() throws IOException {
+		void finish() throws IOException {
 			writeLoaderEntriesIfNecessary(null);
 		}
 

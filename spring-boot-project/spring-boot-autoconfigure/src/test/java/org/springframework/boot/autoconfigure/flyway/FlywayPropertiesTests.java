@@ -29,7 +29,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -41,10 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class FlywayPropertiesTests {
+class FlywayPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
@@ -87,7 +87,7 @@ public class FlywayPropertiesTests {
 	}
 
 	@Test
-	public void expectedPropertiesAreManaged() {
+	void expectedPropertiesAreManaged() {
 		Map<String, PropertyDescriptor> properties = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new FlywayProperties()));
 		Map<String, PropertyDescriptor> configuration = indexProperties(
@@ -96,7 +96,7 @@ public class FlywayPropertiesTests {
 		ignoreProperties(properties, "url", "user", "password", "enabled", "checkLocation", "createDataSource");
 
 		// High level object we can't set with properties
-		ignoreProperties(configuration, "classLoader", "dataSource", "resolvers", "callbacks");
+		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames");
 		// Handled by the conversion service
@@ -105,10 +105,8 @@ public class FlywayPropertiesTests {
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
-		// Pro version only
-		ignoreProperties(configuration, "batch", "dryRunOutput", "dryRunOutputAsFile", "dryRunOutputAsFileName",
-				"errorHandlers", "errorHandlersAsClassNames", "errorOverrides", "licenseKey", "oracleSqlplus", "stream",
-				"undoSqlMigrationPrefix");
+		// Handled as dryRunOutput
+		ignoreProperties(configuration, "dryRunOutputAsFile", "dryRunOutputAsFileName");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());

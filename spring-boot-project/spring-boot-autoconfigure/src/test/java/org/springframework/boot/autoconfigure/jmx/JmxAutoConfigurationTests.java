@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jmx;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
@@ -36,6 +36,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JmxAutoConfiguration}.
@@ -43,12 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Artsiom Yudovin
  */
-public class JmxAutoConfigurationTests {
+class JmxAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void tearDown() {
+	@AfterEach
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 			if (this.context.getParent() != null) {
@@ -58,15 +59,16 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultMBeanExport() {
+	void testDefaultMBeanExport() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MBeanExporter.class));
 	}
 
 	@Test
-	public void testEnabledMBeanExport() {
+	void testEnabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		this.context = new AnnotationConfigApplicationContext();
@@ -76,19 +78,20 @@ public class JmxAutoConfigurationTests {
 		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void testDisabledMBeanExport() {
+	@Test
+	void testDisabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "false");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(MBeanExporter.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(MBeanExporter.class));
 	}
 
 	@Test
-	public void testDefaultDomainConfiguredOnMBeanExport() {
+	void testDefaultDomainConfiguredOnMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		env.setProperty("spring.jmx.default-domain", "my-test-domain");
@@ -106,7 +109,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testBasicParentContext() {
+	void testBasicParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -118,7 +121,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testParentContext() {
+	void testParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -130,7 +133,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void customJmxDomain() {
+	void customJmxDomain() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomJmxDomainConfiguration.class, JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
@@ -139,35 +142,35 @@ public class JmxAutoConfigurationTests {
 		assertThat(mbeanExporter).hasFieldOrPropertyWithValue("domain", "foo.my");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
-	public static class CustomJmxDomainConfiguration {
+	static class CustomJmxDomainConfiguration {
 
 	}
 
-	@Configuration
-	public static class TestConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration {
 
 		@Bean
-		public Counter counter() {
+		Counter counter() {
 			return new Counter();
 		}
 
-		@ManagedResource
-		public static class Counter {
+	}
 
-			private int counter = 0;
+	@ManagedResource
+	public static class Counter {
 
-			@ManagedAttribute
-			public int get() {
-				return this.counter;
-			}
+		private int counter = 0;
 
-			@ManagedOperation
-			public void increment() {
-				this.counter++;
-			}
+		@ManagedAttribute
+		public int get() {
+			return this.counter;
+		}
 
+		@ManagedOperation
+		public void increment() {
+			this.counter++;
 		}
 
 	}

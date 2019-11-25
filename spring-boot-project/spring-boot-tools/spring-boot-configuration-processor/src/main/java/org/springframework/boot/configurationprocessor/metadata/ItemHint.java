@@ -81,7 +81,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	@Override
 	public String toString() {
-		return "ItemHint{" + "name='" + this.name + "', values=" + this.values + ", providers=" + this.providers + '}';
+		return "ItemHint{name='" + this.name + "', values=" + this.values + ", providers=" + this.providers + '}';
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueHint{" + "value=" + this.value + ", description='" + this.description + '\'' + '}';
+			return "ValueHint{value=" + this.value + ", description='" + this.description + '\'' + '}';
 		}
 
 	}
@@ -137,7 +137,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueProvider{" + "name='" + this.name + "', parameters=" + this.parameters + '}';
+			return "ValueProvider{name='" + this.name + "', parameters=" + this.parameters + '}';
 		}
 
 	}

@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.session.ReactiveSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.server.RedisWebSessionConfiguration;
 
 /**
@@ -35,8 +35,8 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
  *
  * @author Andy Wilkinson
  */
-@Configuration
-@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisOperationsSessionRepository.class })
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisSessionRepository.class })
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @Conditional(ReactiveSessionCondition.class)
@@ -47,13 +47,13 @@ class RedisReactiveSessionConfiguration {
 	static class SpringBootRedisWebSessionConfiguration extends RedisWebSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
+		void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
-			setRedisFlushMode(redisSessionProperties.getFlushMode());
+			setSaveMode(redisSessionProperties.getSaveMode());
 		}
 
 	}

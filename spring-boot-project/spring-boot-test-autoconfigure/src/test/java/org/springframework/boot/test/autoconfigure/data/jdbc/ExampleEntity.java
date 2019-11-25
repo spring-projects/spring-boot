@@ -20,7 +20,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 /**
- * Example entity used with {@link DataJdbcTest} tests.
+ * Example entity used with {@link DataJdbcTest @DataJdbcTest} tests.
  *
  * @author Andy Wilkinson
  */

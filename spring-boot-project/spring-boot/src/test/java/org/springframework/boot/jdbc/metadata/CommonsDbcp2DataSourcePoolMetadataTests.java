@@ -17,8 +17,7 @@
 package org.springframework.boot.jdbc.metadata;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,15 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CommonsDbcp2DataSourcePoolMetadataTests
+class CommonsDbcp2DataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<CommonsDbcp2DataSourcePoolMetadata> {
 
-	private CommonsDbcp2DataSourcePoolMetadata dataSourceMetadata;
-
-	@Before
-	public void setup() {
-		this.dataSourceMetadata = createDataSourceMetadata(0, 2);
-	}
+	private final CommonsDbcp2DataSourcePoolMetadata dataSourceMetadata = createDataSourceMetadata(0, 2);
 
 	@Override
 	protected CommonsDbcp2DataSourcePoolMetadata getDataSourceMetadata() {
@@ -43,7 +37,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	}
 
 	@Test
-	public void getPoolUsageWithNoCurrent() {
+	void getPoolUsageWithNoCurrent() {
 		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getActive() {
@@ -54,7 +48,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	}
 
 	@Test
-	public void getPoolUsageWithNoMax() {
+	void getPoolUsageWithNoMax() {
 		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getMax() {
@@ -65,9 +59,9 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	}
 
 	@Test
-	public void getPoolUsageWithUnlimitedPool() {
+	void getPoolUsageWithUnlimitedPool() {
 		DataSourcePoolMetadata unlimitedDataSource = createDataSourceMetadata(0, -1);
-		assertThat(unlimitedDataSource.getUsage()).isEqualTo(Float.valueOf(-1F));
+		assertThat(unlimitedDataSource.getUsage()).isEqualTo(-1f);
 	}
 
 	@Override
@@ -89,6 +83,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxTotal(maxSize);
+		dataSource.setMinEvictableIdleTimeMillis(5000);
 		return new CommonsDbcp2DataSourcePoolMetadata(dataSource);
 	}
 

@@ -30,7 +30,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.stereotype.Component;
 
 /**
- * Example filter used with {@link WebMvcTest} tests.
+ * Example filter used with {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  */

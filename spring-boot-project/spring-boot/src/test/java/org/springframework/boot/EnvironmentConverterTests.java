@@ -19,7 +19,7 @@ package org.springframework.boot;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.AbstractEnvironment;
@@ -38,12 +38,12 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class EnvironmentConverterTests {
+class EnvironmentConverterTests {
 
 	private final EnvironmentConverter environmentConverter = new EnvironmentConverter(getClass().getClassLoader());
 
 	@Test
-	public void convertedEnvironmentHasSameActiveProfiles() {
+	void convertedEnvironmentHasSameActiveProfiles() {
 		AbstractEnvironment originalEnvironment = new MockEnvironment();
 		originalEnvironment.setActiveProfiles("activeProfile1", "activeProfile2");
 		StandardEnvironment convertedEnvironment = this.environmentConverter
@@ -52,7 +52,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void convertedEnvironmentHasSameConversionService() {
+	void convertedEnvironmentHasSameConversionService() {
 		AbstractEnvironment originalEnvironment = new MockEnvironment();
 		ConfigurableConversionService conversionService = mock(ConfigurableConversionService.class);
 		originalEnvironment.setConversionService(conversionService);
@@ -62,7 +62,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void envClassSameShouldReturnEnvironmentUnconverted() {
+	void envClassSameShouldReturnEnvironmentUnconverted() {
 		StandardEnvironment standardEnvironment = new StandardEnvironment();
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardEnvironment, StandardEnvironment.class);
@@ -70,7 +70,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void standardServletEnvironmentIsConverted() {
+	void standardServletEnvironmentIsConverted() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardEnvironment.class);
@@ -78,7 +78,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void servletPropertySourcesAreNotCopiedOverIfNotWebEnvironment() {
+	void servletPropertySourcesAreNotCopiedOverIfNotWebEnvironment() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardEnvironment.class);
@@ -93,7 +93,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void envClassSameShouldReturnEnvironmentUnconvertedEvenForWeb() {
+	void envClassSameShouldReturnEnvironmentUnconvertedEvenForWeb() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardServletEnvironment.class);
@@ -101,7 +101,7 @@ public class EnvironmentConverterTests {
 	}
 
 	@Test
-	public void servletPropertySourcesArePresentWhenTypeToConvertIsWeb() {
+	void servletPropertySourcesArePresentWhenTypeToConvertIsWeb() {
 		StandardEnvironment standardEnvironment = new StandardEnvironment();
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardEnvironment, StandardServletEnvironment.class);

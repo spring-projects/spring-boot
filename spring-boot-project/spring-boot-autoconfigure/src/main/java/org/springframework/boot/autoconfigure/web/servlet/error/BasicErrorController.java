@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Basic global error {@link Controller}, rendering {@link ErrorAttributes}. More specific
- * errors can be handled either using Spring MVC abstractions (e.g.
+ * Basic global error {@link Controller @Controller}, rendering {@link ErrorAttributes}.
+ * More specific errors can be handled either using Spring MVC abstractions (e.g.
  * {@code @ExceptionHandler}) or by adding servlet
  * {@link AbstractServletWebServerFactory#setErrorPages server error pages}.
  *
@@ -96,7 +96,7 @@ public class BasicErrorController extends AbstractErrorController {
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		if (status == HttpStatus.NO_CONTENT) {
-			return new ResponseEntity<Map<String, Object>>(status);
+			return new ResponseEntity<>(status);
 		}
 		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -25,26 +25,26 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class WebServicesPropertiesTests {
+class WebServicesPropertiesTests {
 
 	private WebServicesProperties properties;
 
 	@Test
-	public void pathMustNotBeEmpty() {
+	void pathMustNotBeEmpty() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath(""))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
-	public void pathMustHaveLengthGreaterThanOne() {
+	void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("/"))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
-	public void customPathMustBeginWithASlash() {
+	void customPathMustBeginWithASlash() {
 		this.properties = new WebServicesProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("custom"))
 				.withMessageContaining("Path must start with '/'");

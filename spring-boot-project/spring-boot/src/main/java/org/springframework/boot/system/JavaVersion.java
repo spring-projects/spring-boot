@@ -38,9 +38,9 @@ public enum JavaVersion {
 	EIGHT("1.8", Optional.class, "empty"),
 
 	/**
-	 * Java 1.9.
+	 * Java 9.
 	 */
-	NINE("1.9", Optional.class, "stream"),
+	NINE("9", Optional.class, "stream"),
 
 	/**
 	 * Java 10.

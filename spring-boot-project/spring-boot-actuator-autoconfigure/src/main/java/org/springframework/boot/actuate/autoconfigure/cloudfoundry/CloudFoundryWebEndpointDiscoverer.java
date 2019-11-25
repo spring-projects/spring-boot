@@ -29,8 +29,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotations;
 
 /**
  * {@link WebEndpointDiscoverer} for Cloud Foundry that uses Cloud Foundry specific
@@ -68,14 +67,12 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	}
 
 	private boolean isHealthEndpointExtension(Object extensionBean) {
-		AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(extensionBean.getClass(),
-				EndpointWebExtension.class);
-		Class<?> endpoint = (attributes != null) ? attributes.getClass("endpoint") : null;
-		return (endpoint != null && HealthEndpoint.class.isAssignableFrom(endpoint));
+		return MergedAnnotations.from(extensionBean.getClass()).get(EndpointWebExtension.class)
+				.getValue("endpoint", Class.class).map(HealthEndpoint.class::isAssignableFrom).orElse(false);
 	}
 
 	private boolean isCloudFoundryHealthEndpointExtension(Object extensionBean) {
-		return AnnotatedElementUtils.hasAnnotation(extensionBean.getClass(), HealthEndpointCloudFoundryExtension.class);
+		return MergedAnnotations.from(extensionBean.getClass()).isPresent(EndpointCloudFoundryExtension.class);
 	}
 
 }

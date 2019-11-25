@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.beans;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnEnabledEndpoint(endpoint = BeansEndpoint.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnAvailableEndpoint(endpoint = BeansEndpoint.class)
 public class BeansEndpointAutoConfiguration {
 
 	@Bean

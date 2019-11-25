@@ -19,7 +19,7 @@ import java.util.Base64;
 import java.util.function.Supplier;
 
 import org.jolokia.http.AgentServlet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -48,10 +48,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Madhura Bhave
  */
-public abstract class AbstractEndpointRequestIntegrationTests {
+abstract class AbstractEndpointRequestIntegrationTests {
 
 	@Test
-	public void toEndpointShouldMatch() {
+	void toEndpointShouldMatch() {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator/e1").exchange().expectStatus().isOk();
@@ -59,7 +59,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@Test
-	public void toAllEndpointsShouldMatch() {
+	void toAllEndpointsShouldMatch() {
 		getContextRunner().withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.withPropertyValues("spring.security.user.password=password").run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
@@ -70,7 +70,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@Test
-	public void toLinksShouldMatch() {
+	void toLinksShouldMatch() {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
@@ -99,26 +99,26 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public TestEndpoint1 endpoint1() {
+		TestEndpoint1 endpoint1() {
 			return new TestEndpoint1();
 		}
 
 		@Bean
-		public TestEndpoint2 endpoint2() {
+		TestEndpoint2 endpoint2() {
 			return new TestEndpoint2();
 		}
 
 		@Bean
-		public TestEndpoint3 endpoint3() {
+		TestEndpoint3 endpoint3() {
 			return new TestEndpoint3();
 		}
 
 		@Bean
-		public TestServletEndpoint servletEndpoint() {
+		TestServletEndpoint servletEndpoint() {
 			return new TestServletEndpoint();
 		}
 
@@ -128,7 +128,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint1 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return "endpoint 1";
 		}
 
@@ -138,7 +138,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint2 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return "endpoint 2";
 		}
 
@@ -148,7 +148,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint3 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -164,19 +164,24 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityConfiguration {
 
 		@Bean
-		public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
+		WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
+
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests().requestMatchers(EndpointRequest.toLinks()).permitAll()
-							.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll()
-							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest()
-							.hasRole("ADMIN").and().httpBasic();
+					http.authorizeRequests((requests) -> {
+						requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
+						requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll();
+						requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();
+						requests.anyRequest().hasRole("ADMIN");
+					});
+					http.httpBasic();
 				}
+
 			};
 		}
 

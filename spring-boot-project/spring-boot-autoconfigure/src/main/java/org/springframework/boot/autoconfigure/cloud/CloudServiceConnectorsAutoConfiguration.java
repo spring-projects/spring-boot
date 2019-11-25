@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cloud;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,14 +39,14 @@ import org.springframework.core.Ordered;
  * active.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of adding the
- * {@link CloudScan} annotation in one of the configuration file. Specifically, it adds a
- * bean for each service bound to the application and one for
+ * {@link CloudScan @CloudScan} annotation in one of the configuration file. Specifically,
+ * it adds a bean for each service bound to the application and one for
  * {@link ApplicationInstanceInfo}.
  *
  * @author Ramnivas Laddad
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Profile("cloud")
 @AutoConfigureOrder(CloudServiceConnectorsAutoConfiguration.ORDER)
 @ConditionalOnClass(CloudScanConfiguration.class)
@@ -53,5 +56,11 @@ public class CloudServiceConnectorsAutoConfiguration {
 
 	// Cloud configuration needs to happen early (before data, mongo etc.)
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
+
+	private static final Log logger = LogFactory.getLog(CloudServiceConnectorsAutoConfiguration.class);
+
+	public CloudServiceConnectorsAutoConfiguration() {
+		logger.warn("Support for Spring Cloud Connectors has been deprecated in favor of Java CFEnv");
+	}
 
 }

@@ -30,6 +30,55 @@
       }
     },
     {
+      "name": "server.jetty.accesslog.date-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.extended-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.locale",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-cookies",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-latency",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-server",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.time-zone",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
       "name": "server.compression.enabled",
       "description": "Whether response compression is enabled.",
       "defaultValue": false
@@ -250,12 +299,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.datasource.jmx-enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable JMX support (if provided by the underlying pool).",
-      "defaultValue": false
-    },
-    {
       "name": "spring.datasource.initialization-mode",
       "defaultValue": "embedded"
     },
@@ -303,6 +346,30 @@
       "deprecation": {
         "replacement": "spring.data.couchbase.repositories.type",
         "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-name",
+      "type": "java.lang.String",
+      "description": "Elasticsearch cluster name.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-nodes",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of cluster node addresses.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.properties",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional properties used to configure the client.",
+      "deprecation": {
+        "reason": "The transport client support is deprecated. Use other supported clients instead."
       }
     },
     {
@@ -389,7 +456,10 @@
       "name": "spring.elasticsearch.jest.uris",
       "defaultValue": [
         "http://localhost:9200"
-      ]
+      ],
+      "deprecation": {
+        "reason": "The Jest client support is deprecated. Use other supported clients instead."
+      }
     },
     {
       "name": "spring.elasticsearch.rest.uris",
@@ -425,7 +495,7 @@
     },
     {
       "name": "spring.freemarker.suffix",
-      "defaultValue": ".ftl"
+      "defaultValue": ".ftlh"
     },
     {
       "name": "spring.groovy.template.prefix",
@@ -463,7 +533,7 @@
       "name": "spring.jmx.enabled",
       "type": "java.lang.Boolean",
       "description": "Expose management beans to the JMX domain.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name": "spring.jmx.server",
@@ -630,12 +700,6 @@
       "defaultValue": ".mustache"
     },
     {
-      "name": "spring.mvc.favicon.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable resolution of favicon.ico.",
-      "defaultValue": true
-    },
-    {
       "name": "spring.mvc.formcontent.putfilter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HttpPutFormContentFilter.",
@@ -655,7 +719,7 @@
       "name": "spring.mvc.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name" : "spring.mvc.media-types",
@@ -678,6 +742,13 @@
         "replacement" : "spring.resources.chain.compressed",
         "level" : "error"
       }
+    },
+    {
+      "name": "spring.quartz.jdbc.comment-prefix",
+      "defaultValue": [
+        "#",
+        "--"
+      ]
     },
     {
       "name": "spring.quartz.jdbc.initialize-schema",
@@ -704,6 +775,14 @@
     {
       "name": "spring.rabbitmq.listener.type",
       "defaultValue": "simple"
+    },
+    {
+      "name": "spring.reactor.stacktrace-mode.enabled",
+      "description": "Whether Reactor should collect stacktrace information at runtime.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.reactor.debug-agent.enabled"
+      }
     },
     {
       "name": "spring.security.filter.dispatcher-types",
@@ -1497,6 +1576,16 @@
       }
     },
     {
+      "name": "spring.datasource.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX support (if provided by the underlying pool).",
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.datasource.tomcat.jmx-enabled"
+      }
+    },
+    {
       "name": "spring.datasource.initialize",
       "defaultValue": true,
       "deprecation": {
@@ -2007,10 +2096,102 @@
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": true
+      "defaultValue": false
     }
   ],
   "hints": [
+    {
+      "name": "server.tomcat.relaxed-query-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.relaxed-path-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.encoding",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.nio.charset.Charset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.locale",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.Locale"
+          }
+        }
+      ]
+    },
     {
       "name": "spring.liquibase.change-log",
       "providers": [

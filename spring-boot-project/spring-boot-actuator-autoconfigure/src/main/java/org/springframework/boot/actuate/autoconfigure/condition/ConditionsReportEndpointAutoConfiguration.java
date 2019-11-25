@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.condition;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnEnabledEndpoint(endpoint = ConditionsReportEndpoint.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnAvailableEndpoint(endpoint = ConditionsReportEndpoint.class)
 public class ConditionsReportEndpointAutoConfiguration {
 
 	@Bean

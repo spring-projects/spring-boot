@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
@@ -41,7 +41,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Madhura Bhave
  */
-public class ReactiveCloudFoundrySecurityInterceptorTests {
+class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Mock
 	private ReactiveTokenValidator tokenValidator;
@@ -51,14 +51,14 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	private CloudFoundrySecurityInterceptor interceptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 	}
 
 	@Test
-	public void preHandleWhenRequestIsPreFlightShouldBeOk() {
+	void preHandleWhenRequestIsPreFlightShouldBeOk() {
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.options("/a").header(HttpHeaders.ORIGIN, "https://example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").build());
@@ -68,7 +68,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenTokenIsMissingShouldReturnMissingAuthorization() {
+	void preHandleWhenTokenIsMissingShouldReturnMissingAuthorization() {
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a").build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeNextWith(
 				(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
@@ -76,7 +76,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenTokenIsNotBearerShouldReturnMissingAuthorization() {
+	void preHandleWhenTokenIsNotBearerShouldReturnMissingAuthorization() {
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeNextWith(
@@ -85,7 +85,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenApplicationIdIsNullShouldReturnError() {
+	void preHandleWhenApplicationIdIsNullShouldReturnError() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a")
 				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken()).build());
@@ -96,7 +96,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnError() {
+	void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnError() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
@@ -107,7 +107,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenAccessIsNotAllowedShouldReturnAccessDenied() {
+	void preHandleWhenAccessIsNotAllowedShouldReturnAccessDenied() {
 		given(this.securityService.getAccessLevel(mockAccessToken(), "my-app-id"))
 				.willReturn(Mono.just(AccessLevel.RESTRICTED));
 		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
@@ -120,7 +120,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithFullAccess() {
+	void preHandleSuccessfulWithFullAccess() {
 		String accessToken = mockAccessToken();
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(Mono.just(AccessLevel.FULL));
 		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
@@ -133,7 +133,7 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithRestrictedAccess() {
+	void preHandleSuccessfulWithRestrictedAccess() {
 		String accessToken = mockAccessToken();
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(Mono.just(AccessLevel.RESTRICTED));

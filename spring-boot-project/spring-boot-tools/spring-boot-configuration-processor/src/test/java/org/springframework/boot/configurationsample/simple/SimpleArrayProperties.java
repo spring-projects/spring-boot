@@ -68,7 +68,7 @@ public class SimpleArrayProperties {
 		this.nameToInteger = nameToInteger;
 	}
 
-	public static class Holder {
+	static class Holder {
 
 	}
 

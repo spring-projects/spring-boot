@@ -18,8 +18,8 @@ package org.springframework.boot.web.reactive.result.view;
 
 import java.time.Duration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -30,14 +30,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MustacheViewResolverTests {
+class MustacheViewResolverTests {
 
 	private final String prefix = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/";
 
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		GenericApplicationContext applicationContext = new GenericApplicationContext();
 		applicationContext.refresh();
 		this.resolver.setApplicationContext(applicationContext);
@@ -46,12 +46,12 @@ public class MustacheViewResolverTests {
 	}
 
 	@Test
-	public void resolveNonExistent() {
+	void resolveNonExistent() {
 		assertThat(this.resolver.resolveViewName("bar", null).block(Duration.ofSeconds(30))).isNull();
 	}
 
 	@Test
-	public void resolveExisting() {
+	void resolveExisting() {
 		assertThat(this.resolver.resolveViewName("template", null).block(Duration.ofSeconds(30))).isNotNull();
 	}
 

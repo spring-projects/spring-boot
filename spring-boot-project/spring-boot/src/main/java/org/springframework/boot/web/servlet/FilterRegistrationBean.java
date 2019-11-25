@@ -42,14 +42,6 @@ import org.springframework.util.Assert;
  */
 public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegistrationBean<T> {
 
-	/**
-	 * Filters that wrap the servlet request should be ordered less than or equal to this.
-	 * @deprecated since 2.1.0 in favor of
-	 * {@code OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER}
-	 */
-	@Deprecated
-	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = AbstractFilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER;
-
 	private T filter;
 
 	/**

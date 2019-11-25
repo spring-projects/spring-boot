@@ -104,7 +104,6 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return new LoggingLinesWriter();
 		}
 		return new SystemLinesWriter(this.print);
-
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
@@ -174,7 +173,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				super(new Printer());
 			}
 
-			public void write(LinesWriter writer) {
+			void write(LinesWriter writer) {
 				writer.write(((Printer) getPrinter()).getLines());
 			}
 
@@ -196,7 +195,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 					this.lines.add(String.format("%17s = %s", label, value));
 				}
 
-				public List<String> getLines() {
+				List<String> getLines() {
 					return this.lines;
 				}
 
@@ -226,7 +225,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		private final LinesWriter delegate;
 
-		private final List<String> lines = new ArrayList<>();
+		private final ThreadLocal<List<String>> lines = ThreadLocal.withInitial(ArrayList::new);
 
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,
@@ -237,14 +236,14 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		@Override
 		public void write(List<String> lines) {
-			this.lines.addAll(lines);
+			this.lines.get().addAll(lines);
 		}
 
-		public void writeDeferredResult() {
-			this.delegate.write(this.lines);
+		void writeDeferredResult() {
+			this.delegate.write(this.lines.get());
 		}
 
-		public static DeferredLinesWriter get(ApplicationContext applicationContext) {
+		static DeferredLinesWriter get(ApplicationContext applicationContext) {
 			try {
 				return applicationContext.getBean(BEAN_NAME, DeferredLinesWriter.class);
 			}
@@ -254,7 +253,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 
 		void clear() {
-			this.lines.clear();
+			this.lines.get().clear();
 		}
 
 	}

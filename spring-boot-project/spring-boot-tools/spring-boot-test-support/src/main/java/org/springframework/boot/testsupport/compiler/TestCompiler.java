@@ -29,8 +29,6 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.junit.rules.TemporaryFolder;
-
 /**
  * Wrapper to make the {@link JavaCompiler} easier to use in tests.
  *
@@ -52,14 +50,15 @@ public class TestCompiler {
 
 	private final File outputLocation;
 
-	public TestCompiler(TemporaryFolder temporaryFolder) throws IOException {
-		this(ToolProvider.getSystemJavaCompiler(), temporaryFolder);
+	public TestCompiler(File outputLocation) throws IOException {
+		this(ToolProvider.getSystemJavaCompiler(), outputLocation);
 	}
 
-	public TestCompiler(JavaCompiler compiler, TemporaryFolder temporaryFolder) throws IOException {
+	public TestCompiler(JavaCompiler compiler, File outputLocation) throws IOException {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
-		this.outputLocation = temporaryFolder.newFolder();
+		this.outputLocation = outputLocation;
+		this.outputLocation.mkdirs();
 		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);

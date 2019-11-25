@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -47,18 +49,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class NoSuchBeanDefinitionFailureAnalyzerTests {
+class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer();
 
 	@Test
-	public void failureAnalysisForMultipleBeans() {
+	void failureAnalysisForMultipleBeans() {
 		FailureAnalysis analysis = analyzeFailure(new NoUniqueBeanDefinitionException(String.class, 2, "Test"));
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchType() {
+	void failureAnalysisForNoMatchType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertThat(analysis.getDescription())
@@ -68,7 +70,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertyExactType() {
+	void failureAnalysisForMissingPropertyExactType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringPropertyTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
@@ -77,7 +79,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertySubType() {
+	void failureAnalysisForMissingPropertySubType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(IntegerPropertyTypeConfiguration.class));
 		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, NumberHandler.class, 0, Number.class);
@@ -87,7 +89,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingClassOnAutoConfigurationType() {
+	void failureAnalysisForMissingClassOnAutoConfigurationType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(MissingClassOnAutoConfigurationConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'", "string",
@@ -96,7 +98,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForExcludedAutoConfigurationType() {
+	void failureAnalysisForExcludedAutoConfigurationType() {
 		FatalBeanException failure = createFailure(StringHandler.class);
 		addExclusions(this.analyzer, TestPropertyAutoConfiguration.class);
 		FailureAnalysis analysis = analyzeFailure(failure);
@@ -108,7 +110,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForSeveralConditionsType() {
+	void failureAnalysisForSeveralConditionsType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(SeveralAutoConfigurationTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
@@ -119,7 +121,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchName() {
+	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
 		assertThat(analysis.getDescription())
 				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
@@ -129,7 +131,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingBeanName() {
+	void failureAnalysisForMissingBeanName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
 		assertThat(analysis.getDescription())
 				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
@@ -141,7 +143,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForNullBeanByType() {
+	void failureAnalysisForNullBeanByType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNullBeanConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertUserDefinedBean(analysis, "as the bean value is null", TestNullBeanConfiguration.class, "string");
@@ -149,30 +151,40 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForUnmatchedQualifier() {
+	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
 		assertThat(analysis.getDescription())
 				.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
 	}
 
+	@Test
+	void failureAnalysisForConfigurationPropertiesThatMaybeShouldHaveBeenConstructorBound() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(ConstructorBoundConfigurationPropertiesConfiguration.class));
+		assertThat(analysis.getAction()).startsWith(
+				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
+		assertThat(analysis.getAction()).contains(
+				"Consider adding @ConstructorBinding to " + NeedsConstructorBindingProperties.class.getName());
+	}
+
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,
 			Class<?> type) {
 		String expected = String.format(
-				"Parameter %s of constructor in %s required a bean of " + "type '%s' that could not be found.", index,
+				"Parameter %s of constructor in %s required a bean of type '%s' that could not be found.", index,
 				component.getName(), type.getName());
 		assertThat(analysis.getDescription()).startsWith(expected);
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean of type '%s' " + "in your configuration.",
+				"Consider revisiting the entries above or defining a bean of type '%s' in your configuration.",
 				type.getName()));
+		assertThat(analysis.getAction()).doesNotContain("@ConstructorBinding");
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean named '%s' " + "in your configuration.",
-				name));
+				"Consider revisiting the entries above or defining a bean named '%s' in your configuration.", name));
 	}
 
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description, Class<?> target,
@@ -228,107 +240,107 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		return analysis;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class StringPropertyTypeConfiguration {
+	static class StringPropertyTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(NumberHandler.class)
-	protected static class IntegerPropertyTypeConfiguration {
+	static class IntegerPropertyTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestTypeClassAutoConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class MissingClassOnAutoConfigurationConfiguration {
+	static class MissingClassOnAutoConfigurationConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ TestPropertyAutoConfiguration.class, TestTypeClassAutoConfiguration.class })
 	@Import(StringHandler.class)
-	protected static class SeveralAutoConfigurationTypeConfiguration {
+	static class SeveralAutoConfigurationTypeConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestMissingBeanAutoConfiguration.class)
 	@Import(StringNameHandler.class)
-	protected static class StringMissingBeanNameConfiguration {
+	static class StringMissingBeanNameConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestNullBeanConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class StringNullBeanConfiguration {
+	static class StringNullBeanConfiguration {
 
 	}
 
-	@Configuration
-	public static class TestPropertyAutoConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestPropertyAutoConfiguration {
 
 		@ConditionalOnProperty("spring.string.enabled")
 		@Bean
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 		@ConditionalOnProperty("spring.integer.enabled")
 		@Bean
-		public Integer integer() {
+		Integer integer() {
 			return 42;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.example.FooBar")
-	public static class TestTypeClassAutoConfiguration {
+	static class TestTypeClassAutoConfiguration {
 
 		@Bean
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 	}
 
-	@Configuration
-	public static class TestMissingBeanAutoConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestMissingBeanAutoConfiguration {
 
 		@ConditionalOnBean(Integer.class)
 		@Bean(name = "test-string")
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 	}
 
-	@Configuration
-	public static class TestNullBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestNullBeanConfiguration {
 
 		@Bean
-		public String string() {
+		String string() {
 			return null;
 		}
 
 	}
 
-	@Configuration
-	public static class QualifiedBeanConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class QualifiedBeanConfiguration {
 
 		@Bean
-		public String consumer(@Qualifier("alpha") Thing thing) {
+		String consumer(@Qualifier("alpha") Thing thing) {
 			return "consumer";
 		}
 
 		@Bean
-		public Thing producer() {
+		Thing producer() {
 			return new Thing();
 		}
 
@@ -338,24 +350,45 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	protected static class StringHandler {
+	static class StringHandler {
 
-		public StringHandler(String foo) {
+		StringHandler(String foo) {
 		}
 
 	}
 
-	protected static class NumberHandler {
+	static class NumberHandler {
 
-		public NumberHandler(Number foo) {
+		NumberHandler(Number foo) {
 		}
 
 	}
 
-	protected static class StringNameHandler {
+	static class StringNameHandler {
 
-		public StringNameHandler(BeanFactory beanFactory) {
+		StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NeedsConstructorBindingProperties.class)
+	static class ConstructorBoundConfigurationPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class NeedsConstructorBindingProperties {
+
+		private final String name;
+
+		NeedsConstructorBindingProperties(String name) {
+			this.name = name;
+		}
+
+		String getName() {
+			return this.name;
 		}
 
 	}

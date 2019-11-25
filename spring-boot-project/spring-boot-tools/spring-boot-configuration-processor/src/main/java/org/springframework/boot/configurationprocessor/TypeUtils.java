@@ -38,7 +38,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
 
 /**
  * Type Utilities.
@@ -106,13 +105,21 @@ class TypeUtils {
 		}
 	}
 
+	boolean isSameType(TypeMirror t1, TypeMirror t2) {
+		return this.types.isSameType(t1, t2);
+	}
+
+	Element asElement(TypeMirror type) {
+		return this.types.asElement(type);
+	}
+
 	/**
 	 * Return the qualified name of the specified element.
 	 * @param element the element to handle
 	 * @return the fully qualified name of the element, suitable for a call to
 	 * {@link Class#forName(String)}
 	 */
-	public String getQualifiedName(Element element) {
+	String getQualifiedName(Element element) {
 		return this.typeExtractor.getQualifiedName(element);
 	}
 
@@ -123,19 +130,52 @@ class TypeUtils {
 	 * @param type the type to handle
 	 * @return a representation of the type including all its generic information
 	 */
-	public String getType(TypeElement element, TypeMirror type) {
+	String getType(TypeElement element, TypeMirror type) {
 		if (type == null) {
 			return null;
 		}
 		return type.accept(this.typeExtractor, createTypeDescriptor(element));
 	}
 
-	public boolean isCollectionOrMap(TypeMirror type) {
+	/**
+	 * Extract the target element type from the specified container type or {@code null}
+	 * if no element type was found.
+	 * @param type a type, potentially wrapping an element type
+	 * @return the element type or {@code null} if no specific type was found
+	 */
+	TypeMirror extractElementType(TypeMirror type) {
+		if (!this.env.getTypeUtils().isAssignable(type, this.collectionType)) {
+			return null;
+		}
+		return getCollectionElementType(type);
+	}
+
+	private TypeMirror getCollectionElementType(TypeMirror type) {
+		if (((TypeElement) this.types.asElement(type)).getQualifiedName().contentEquals(Collection.class.getName())) {
+			DeclaredType declaredType = (DeclaredType) type;
+			// raw type, just "Collection"
+			if (declaredType.getTypeArguments().size() == 0) {
+				return this.types.getDeclaredType(this.env.getElementUtils().getTypeElement(Object.class.getName()));
+			}
+			// return type argument to Collection<...>
+			return declaredType.getTypeArguments().get(0);
+		}
+
+		// recursively walk the supertypes, looking for Collection<...>
+		for (TypeMirror superType : this.env.getTypeUtils().directSupertypes(type)) {
+			if (this.types.isAssignable(superType, this.collectionType)) {
+				return getCollectionElementType(superType);
+			}
+		}
+		return null;
+	}
+
+	boolean isCollectionOrMap(TypeMirror type) {
 		return this.env.getTypeUtils().isAssignable(type, this.collectionType)
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
-	public String getJavaDoc(Element element) {
+	String getJavaDoc(Element element) {
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
@@ -143,7 +183,20 @@ class TypeUtils {
 		return "".equals(javadoc) ? null : javadoc;
 	}
 
-	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
+	/**
+	 * Return the {@link PrimitiveType} of the specified type or {@code null} if the type
+	 * does not represent a valid wrapper type.
+	 * @param typeMirror a type
+	 * @return the primitive type or {@code null} if the type is not a wrapper type
+	 */
+	PrimitiveType getPrimitiveType(TypeMirror typeMirror) {
+		if (getPrimitiveFor(typeMirror) != null) {
+			return this.types.unboxedType(typeMirror);
+		}
+		return null;
+	}
+
+	TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
 			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
@@ -178,25 +231,18 @@ class TypeUtils {
 	}
 
 	private void process(TypeDescriptor descriptor, TypeMirror type) {
-		try {
-			if (type.getKind() == TypeKind.DECLARED) {
-				DeclaredType declaredType = (DeclaredType) type;
-				DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
-						.getTypeElement(this.types.asElement(type).toString()).asType();
-				List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
-				for (int i = 0; i < arguments.size(); i++) {
-					TypeMirror specificType = arguments.get(i);
-					TypeMirror signatureType = freshType.getTypeArguments().get(i);
-					descriptor.registerIfNecessary(signatureType, specificType);
-				}
-				TypeElement element = (TypeElement) this.types.asElement(type);
-				process(descriptor, element.getSuperclass());
+		if (type.getKind() == TypeKind.DECLARED) {
+			DeclaredType declaredType = (DeclaredType) type;
+			DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
+					.getTypeElement(this.types.asElement(type).toString()).asType();
+			List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
+			for (int i = 0; i < arguments.size(); i++) {
+				TypeMirror specificType = arguments.get(i);
+				TypeMirror signatureType = freshType.getTypeArguments().get(i);
+				descriptor.registerIfNecessary(signatureType, specificType);
 			}
-		}
-		catch (Exception ex) {
-			this.env.getMessager().printMessage(Kind.WARNING,
-					"Failed to generated type descriptor for " + type + ": " + ex.getMessage(),
-					this.types.asElement(type));
+			TypeElement element = (TypeElement) this.types.asElement(type);
+			process(descriptor, element.getSuperclass());
 		}
 	}
 
@@ -278,7 +324,7 @@ class TypeUtils {
 			return t.toString();
 		}
 
-		public String getQualifiedName(Element element) {
+		String getQualifiedName(Element element) {
 			if (element == null) {
 				return null;
 			}
@@ -297,7 +343,7 @@ class TypeUtils {
 			if (type instanceof DeclaredType) {
 				DeclaredType declaredType = (DeclaredType) type;
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
-				if (enclosingElement != null && enclosingElement instanceof TypeElement) {
+				if (enclosingElement instanceof TypeElement) {
 					return (TypeElement) enclosingElement;
 				}
 			}
@@ -313,15 +359,15 @@ class TypeUtils {
 
 		private final Map<TypeVariable, TypeMirror> generics = new HashMap<>();
 
-		public Map<TypeVariable, TypeMirror> getGenerics() {
+		Map<TypeVariable, TypeMirror> getGenerics() {
 			return Collections.unmodifiableMap(this.generics);
 		}
 
-		public TypeMirror resolveGeneric(TypeVariable typeVariable) {
+		TypeMirror resolveGeneric(TypeVariable typeVariable) {
 			return resolveGeneric(getParameterName(typeVariable));
 		}
 
-		public TypeMirror resolveGeneric(String parameterName) {
+		TypeMirror resolveGeneric(String parameterName) {
 			return this.generics.entrySet().stream().filter((e) -> getParameterName(e.getKey()).equals(parameterName))
 					.findFirst().map(Entry::getValue).orElse(null);
 		}

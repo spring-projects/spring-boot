@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Import;
  * <p>
  * This configuration class is active only when the RabbitMQ and Spring AMQP client
  * libraries are on the classpath.
- * <P>
+ * <p>
  * Registers the following beans:
  * <ul>
  * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there
@@ -83,13 +83,13 @@ import org.springframework.context.annotation.Import;
  * @author Artsiom Yudovin
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
@@ -100,8 +100,8 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory factory = new CachingConnectionFactory(
 					getRabbitConnectionFactoryBean(properties).getObject());
 			map.from(properties::determineAddresses).to(factory::setAddresses);
-			map.from(properties::isPublisherConfirms).to(factory::setPublisherConfirms);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
+			map.from(properties::getPublisherConfirmType).whenNonNull().to(factory::setPublisherConfirmType);
 			RabbitProperties.Cache.Channel channel = properties.getCache().getChannel();
 			map.from(channel::getSize).whenNonNull().to(factory::setChannelCacheSize);
 			map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)
@@ -146,53 +146,41 @@ public class RabbitAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
-
-		private final RabbitProperties properties;
-
-		private final ObjectProvider<MessageConverter> messageConverter;
-
-		private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
-
-		public RabbitTemplateConfiguration(RabbitProperties properties,
-				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
-			this.properties = properties;
-			this.messageConverter = messageConverter;
-			this.retryTemplateCustomizers = retryTemplateCustomizers;
-		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
-		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		public RabbitTemplate rabbitTemplate(RabbitProperties properties,
+				ObjectProvider<MessageConverter> messageConverter,
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
+				ConnectionFactory connectionFactory) {
 			PropertyMapper map = PropertyMapper.get();
 			RabbitTemplate template = new RabbitTemplate(connectionFactory);
-			MessageConverter messageConverter = this.messageConverter.getIfUnique();
-			if (messageConverter != null) {
-				template.setMessageConverter(messageConverter);
+			messageConverter.ifUnique(template::setMessageConverter);
+			template.setMandatory(determineMandatoryFlag(properties));
+			RabbitProperties.Template templateProperties = properties.getTemplate();
+			if (templateProperties.getRetry().isEnabled()) {
+				template.setRetryTemplate(
+						new RetryTemplateFactory(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()))
+								.createRetryTemplate(templateProperties.getRetry(),
+										RabbitRetryTemplateCustomizer.Target.SENDER));
 			}
-			template.setMandatory(determineMandatoryFlag());
-			RabbitProperties.Template properties = this.properties.getTemplate();
-			if (properties.getRetry().isEnabled()) {
-				template.setRetryTemplate(new RetryTemplateFactory(
-						this.retryTemplateCustomizers.orderedStream().collect(Collectors.toList())).createRetryTemplate(
-								properties.getRetry(), RabbitRetryTemplateCustomizer.Target.SENDER));
-			}
-			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
+			map.from(templateProperties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
-			map.from(properties::getReplyTimeout).whenNonNull().as(Duration::toMillis).to(template::setReplyTimeout);
-			map.from(properties::getExchange).to(template::setExchange);
-			map.from(properties::getRoutingKey).to(template::setRoutingKey);
-			map.from(properties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
+			map.from(templateProperties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
+					.to(template::setReplyTimeout);
+			map.from(templateProperties::getExchange).to(template::setExchange);
+			map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
+			map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
 			return template;
 		}
 
-		private boolean determineMandatoryFlag() {
-			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
+		private boolean determineMandatoryFlag(RabbitProperties properties) {
+			Boolean mandatory = properties.getTemplate().getMandatory();
+			return (mandatory != null) ? mandatory : properties.isPublisherReturns();
 		}
 
 		@Bean
@@ -205,7 +193,7 @@ public class RabbitAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
 	@Import(RabbitTemplateConfiguration.class)

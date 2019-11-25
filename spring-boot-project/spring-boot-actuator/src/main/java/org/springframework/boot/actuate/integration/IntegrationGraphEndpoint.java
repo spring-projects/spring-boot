@@ -23,7 +23,7 @@ import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
 
 /**
- * {@link Endpoint} to expose the Spring Integration graph.
+ * {@link Endpoint @Endpoint} to expose the Spring Integration graph.
  *
  * @author Tim Ysewyn
  * @since 2.1.0

@@ -18,15 +18,12 @@ package org.springframework.boot.autoconfigure.jmx;
 
 import javax.management.MBeanServer;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
@@ -43,44 +40,37 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
- * {@link EnableMBeanExport} mechanism based on configuration properties.
+ * {@link EnableMBeanExport @EnableMBeanExport} mechanism based on configuration
+ * properties.
  * <p>
- * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
+ * To enable auto export of annotation beans set {@code spring.jmx.enabled: true}.
  *
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MBeanExporter.class })
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
-public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
+public class JmxAutoConfiguration {
 
-	private Environment environment;
+	private final Environment environment;
 
-	private BeanFactory beanFactory;
-
-	@Override
-	public void setEnvironment(Environment environment) {
+	public JmxAutoConfiguration(Environment environment) {
 		this.environment = environment;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
 	}
 
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
-	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
+	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy, BeanFactory beanFactory) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
 		String serverBean = this.environment.getProperty("spring.jmx.server", "mbeanServer");
 		if (StringUtils.hasLength(serverBean)) {
-			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
+			exporter.setServer(beanFactory.getBean(serverBean, MBeanServer.class));
 		}
 		return exporter;
 	}

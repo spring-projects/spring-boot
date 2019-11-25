@@ -26,8 +26,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ArtifactsLibrariesTests {
+class ArtifactsLibrariesTests {
 
 	@Mock
 	private Artifact artifact;
@@ -68,8 +68,8 @@ public class ArtifactsLibrariesTests {
 	@Captor
 	private ArgumentCaptor<Library> libraryCaptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.artifacts = Collections.singleton(this.artifact);
 		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
@@ -79,7 +79,7 @@ public class ArtifactsLibrariesTests {
 	}
 
 	@Test
-	public void callbackForJars() throws Exception {
+	void callbackForJars() throws Exception {
 		given(this.artifact.getType()).willReturn("jar");
 		given(this.artifact.getScope()).willReturn("compile");
 		this.libs.doWithLibraries(this.callback);
@@ -91,7 +91,7 @@ public class ArtifactsLibrariesTests {
 	}
 
 	@Test
-	public void callbackWithUnpack() throws Exception {
+	void callbackWithUnpack() throws Exception {
 		given(this.artifact.getGroupId()).willReturn("gid");
 		given(this.artifact.getArtifactId()).willReturn("aid");
 		given(this.artifact.getType()).willReturn("jar");
@@ -106,7 +106,7 @@ public class ArtifactsLibrariesTests {
 	}
 
 	@Test
-	public void renamesDuplicates() throws Exception {
+	void renamesDuplicates() throws Exception {
 		Artifact artifact1 = mock(Artifact.class);
 		Artifact artifact2 = mock(Artifact.class);
 		given(artifact1.getType()).willReturn("jar");

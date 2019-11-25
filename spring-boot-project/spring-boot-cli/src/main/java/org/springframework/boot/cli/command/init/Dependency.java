@@ -35,15 +35,15 @@ final class Dependency {
 		this.description = description;
 	}
 
-	public String getId() {
+	String getId() {
 		return this.id;
 	}
 
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public String getDescription() {
+	String getDescription() {
 		return this.description;
 	}
 

@@ -214,8 +214,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				}
 			}
 		}
-		List<Entry<String, T>> beans = new ArrayList<>();
-		beans.addAll(map.entrySet());
+		List<Entry<String, T>> beans = new ArrayList<>(map.entrySet());
 		beans.sort((o1, o2) -> AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(), o2.getValue()));
 		return beans;
 	}

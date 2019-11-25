@@ -38,12 +38,12 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
+			<groupId>jakarta.json</groupId>
+			<artifactId>jakarta.json-api</artifactId>
 		</dependency>
 	</dependencies>
 </project>

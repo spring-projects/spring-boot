@@ -55,8 +55,8 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
-		List<HandlerExceptionResolver> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+		List<HandlerExceptionResolver> list = new ArrayList<>(
+				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {

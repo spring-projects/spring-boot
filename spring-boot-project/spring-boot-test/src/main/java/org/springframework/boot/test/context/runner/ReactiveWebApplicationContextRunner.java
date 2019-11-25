@@ -61,9 +61,10 @@ public final class ReactiveWebApplicationContextRunner extends
 	private ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+				beanRegistrations, configurations);
 	}
 
 	@Override
@@ -71,9 +72,10 @@ public final class ReactiveWebApplicationContextRunner extends
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		return new ReactiveWebApplicationContextRunner(contextFactory, initializers, environmentProperties,
-				systemProperties, classLoader, parent, configurations);
+				systemProperties, classLoader, parent, beanRegistrations, configurations);
 	}
 
 }

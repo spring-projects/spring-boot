@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,6 +34,7 @@ import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -44,17 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vince Bickers
  * @author Stephane Nicoll
  */
-public class Neo4jRepositoriesAutoConfigurationTests {
+class Neo4jRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		this.context.close();
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		prepareApplicationContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
@@ -62,21 +63,22 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		prepareApplicationContext(EmptyConfiguration.class);
 		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+	@Test
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-		this.context.getBean(CityRepository.class);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.context.getBean(CityRepository.class));
 	}
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
@@ -88,30 +90,30 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
 	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
-	protected static class CustomizedConfiguration {
+	static class CustomizedConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
 	@EnableNeo4jRepositories("foo.bar")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
-	protected static class SortOfInvalidCustomConfiguration {
+	static class SortOfInvalidCustomConfiguration {
 
 	}
 

@@ -52,10 +52,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public boolean canTransformResource(String resource) {
-		if (this.resource != null && this.resource.equalsIgnoreCase(resource)) {
-			return true;
-		}
-		return false;
+		return this.resource != null && this.resource.equalsIgnoreCase(resource);
 	}
 
 	@Override

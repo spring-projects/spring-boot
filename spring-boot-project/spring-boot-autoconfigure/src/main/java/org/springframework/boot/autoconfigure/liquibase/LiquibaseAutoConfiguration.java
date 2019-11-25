@@ -27,6 +27,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,10 +37,15 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseEntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseJdbcOperationsDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -60,11 +66,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author András Deák
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
-@ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@Conditional(LiquibaseDataSourceCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@Import({ LiquibaseEntityManagerFactoryDependsOnPostProcessor.class,
+		LiquibaseJdbcOperationsDependsOnPostProcessor.class,
+		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor.class })
 public class LiquibaseAutoConfiguration {
 
 	@Bean
@@ -73,32 +82,23 @@ public class LiquibaseAutoConfiguration {
 		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, LiquibaseProperties.class })
-	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		private final DataSourceProperties dataSourceProperties;
-
-		private final DataSource dataSource;
-
-		private final DataSource liquibaseDataSource;
-
-		public LiquibaseConfiguration(LiquibaseProperties properties, DataSourceProperties dataSourceProperties,
-				ObjectProvider<DataSource> dataSource,
-				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
+		public LiquibaseConfiguration(LiquibaseProperties properties) {
 			this.properties = properties;
-			this.dataSourceProperties = dataSourceProperties;
-			this.dataSource = dataSource.getIfUnique();
-			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
 		}
 
 		@Bean
-		public SpringLiquibase liquibase() {
-			SpringLiquibase liquibase = createSpringLiquibase();
+		public SpringLiquibase liquibase(DataSourceProperties dataSourceProperties,
+				ObjectProvider<DataSource> dataSource,
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
+			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
+					dataSource.getIfUnique(), dataSourceProperties);
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
@@ -115,32 +115,33 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
-		private SpringLiquibase createSpringLiquibase() {
-			DataSource liquibaseDataSource = getDataSource();
+		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDatasource, DataSource dataSource,
+				DataSourceProperties dataSourceProperties) {
+			DataSource liquibaseDataSource = getDataSource(liquibaseDatasource, dataSource);
 			if (liquibaseDataSource != null) {
 				SpringLiquibase liquibase = new SpringLiquibase();
 				liquibase.setDataSource(liquibaseDataSource);
 				return liquibase;
 			}
 			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
-			liquibase.setDataSource(createNewDataSource());
+			liquibase.setDataSource(createNewDataSource(dataSourceProperties));
 			return liquibase;
 		}
 
-		private DataSource getDataSource() {
-			if (this.liquibaseDataSource != null) {
-				return this.liquibaseDataSource;
+		private DataSource getDataSource(DataSource liquibaseDataSource, DataSource dataSource) {
+			if (liquibaseDataSource != null) {
+				return liquibaseDataSource;
 			}
 			if (this.properties.getUrl() == null && this.properties.getUser() == null) {
-				return this.dataSource;
+				return dataSource;
 			}
 			return null;
 		}
 
-		private DataSource createNewDataSource() {
-			String url = getProperty(this.properties::getUrl, this.dataSourceProperties::determineUrl);
-			String user = getProperty(this.properties::getUser, this.dataSourceProperties::determineUsername);
-			String password = getProperty(this.properties::getPassword, this.dataSourceProperties::determinePassword);
+		private DataSource createNewDataSource(DataSourceProperties dataSourceProperties) {
+			String url = getProperty(this.properties::getUrl, dataSourceProperties::determineUrl);
+			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
+			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
 			return DataSourceBuilder.create().url(url).username(user).password(password).build();
 		}
 
@@ -152,15 +153,15 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link EntityManagerFactory} beans depend
-	 * on the liquibase bean.
+	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on the
+	 * liquibase bean.
 	 */
-	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
+	static class LiquibaseEntityManagerFactoryDependsOnPostProcessor
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		public LiquibaseJpaDependencyConfiguration() {
+		LiquibaseEntityManagerFactoryDependsOnPostProcessor() {
 			super(SpringLiquibase.class);
 		}
 
@@ -170,29 +171,45 @@ public class LiquibaseAutoConfiguration {
 	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on the
 	 * liquibase bean.
 	 */
-	@Configuration
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
-	protected static class LiquibaseJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
+	static class LiquibaseJdbcOperationsDependsOnPostProcessor extends JdbcOperationsDependsOnPostProcessor {
 
-		public LiquibaseJdbcOperationsDependencyConfiguration() {
+		LiquibaseJdbcOperationsDependsOnPostProcessor() {
 			super(SpringLiquibase.class);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link NamedParameterJdbcOperations} beans
-	 * depend on the liquibase bean.
+	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
+	 * the liquibase bean.
 	 */
-	@Configuration
 	@ConditionalOnClass(NamedParameterJdbcOperations.class)
 	@ConditionalOnBean(NamedParameterJdbcOperations.class)
-	protected static class LiquibaseNamedParameterJdbcOperationsDependencyConfiguration
+	static class LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor
 			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
 
-		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
+		LiquibaseNamedParameterJdbcOperationsDependsOnPostProcessor() {
 			super(SpringLiquibase.class);
+		}
+
+	}
+
+	static final class LiquibaseDataSourceCondition extends AnyNestedCondition {
+
+		LiquibaseDataSourceCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(DataSource.class)
+		private static final class DataSourceBeanCondition {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.liquibase", name = "url", matchIfMissing = false)
+		private static final class LiquibaseUrlCondition {
+
 		}
 
 	}

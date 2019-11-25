@@ -15,7 +15,17 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 
 /**
  * OAuth 2.0 resource server properties.
@@ -33,6 +43,32 @@ public class OAuth2ResourceServerProperties {
 		return this.jwt;
 	}
 
+	private final Opaquetoken opaqueToken = new Opaquetoken();
+
+	public Opaquetoken getOpaquetoken() {
+		return this.opaqueToken;
+	}
+
+	@PostConstruct
+	public void validate() {
+		if (this.getOpaquetoken().getIntrospectionUri() != null) {
+			if (this.getJwt().getJwkSetUri() != null) {
+				handleError("jwt.jwk-set-uri");
+			}
+			if (this.getJwt().getIssuerUri() != null) {
+				handleError("jwt.issuer-uri");
+			}
+			if (this.getJwt().getPublicKeyLocation() != null) {
+				handleError("jwt.public-key-location");
+			}
+		}
+	}
+
+	private void handleError(String property) {
+		throw new IllegalStateException(
+				"Only one of " + property + " and opaquetoken.introspection-uri should be configured.");
+	}
+
 	public static class Jwt {
 
 		/**
@@ -41,9 +77,20 @@ public class OAuth2ResourceServerProperties {
 		private String jwkSetUri;
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+		 * JSON Web Algorithm used for verifying the digital signatures.
+		 */
+		private String jwsAlgorithm = "RS256";
+
+		/**
+		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
+
+		/**
+		 * Location of the file containing the public key used to verify a JWT.
+		 */
+		private Resource publicKeyLocation;
 
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
@@ -53,12 +100,83 @@ public class OAuth2ResourceServerProperties {
 			this.jwkSetUri = jwkSetUri;
 		}
 
+		public String getJwsAlgorithm() {
+			return this.jwsAlgorithm;
+		}
+
+		public void setJwsAlgorithm(String jwsAlgorithm) {
+			this.jwsAlgorithm = jwsAlgorithm;
+		}
+
 		public String getIssuerUri() {
 			return this.issuerUri;
 		}
 
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
+		}
+
+		public Resource getPublicKeyLocation() {
+			return this.publicKeyLocation;
+		}
+
+		public void setPublicKeyLocation(Resource publicKeyLocation) {
+			this.publicKeyLocation = publicKeyLocation;
+		}
+
+		public String readPublicKey() throws IOException {
+			String key = "spring.security.oauth2.resourceserver.public-key-location";
+			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
+			if (!this.publicKeyLocation.exists()) {
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"Public key location does not exist");
+			}
+			try (InputStream inputStream = this.publicKeyLocation.getInputStream()) {
+				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+			}
+		}
+
+	}
+
+	public static class Opaquetoken {
+
+		/**
+		 * Client id used to authenticate with the token introspection endpoint.
+		 */
+		private String clientId;
+
+		/**
+		 * Client secret used to authenticate with the token introspection endpoint.
+		 */
+		private String clientSecret;
+
+		/**
+		 * OAuth 2.0 endpoint through which token introspection is accomplished.
+		 */
+		private String introspectionUri;
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public String getClientSecret() {
+			return this.clientSecret;
+		}
+
+		public void setClientSecret(String clientSecret) {
+			this.clientSecret = clientSecret;
+		}
+
+		public String getIntrospectionUri() {
+			return this.introspectionUri;
+		}
+
+		public void setIntrospectionUri(String introspectionUri) {
+			this.introspectionUri = introspectionUri;
 		}
 
 	}

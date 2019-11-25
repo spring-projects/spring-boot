@@ -55,7 +55,8 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	/**
 	 * Return an assert for AspectJ.
 	 * @return an AspectJ assert
-	 * @deprecated use standard AssertJ {@code assertThat(context)...} calls instead.
+	 * @deprecated to prevent accidental use. Prefer standard AssertJ
+	 * {@code assertThat(context)...} calls instead.
 	 */
 	@Deprecated
 	@Override

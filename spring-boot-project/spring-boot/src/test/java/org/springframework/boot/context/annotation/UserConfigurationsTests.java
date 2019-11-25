@@ -19,7 +19,7 @@ package org.springframework.boot.context.annotation;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class UserConfigurationsTests {
+class UserConfigurationsTests {
 
 	@Test
-	public void ofShouldCreateUnorderedConfigurations() {
+	void ofShouldCreateUnorderedConfigurations() {
 		UserConfigurations configurations = UserConfigurations.of(OutputStream.class, InputStream.class);
 		assertThat(Configurations.getClasses(configurations)).containsExactly(OutputStream.class, InputStream.class);
 	}

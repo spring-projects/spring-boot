@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -109,9 +110,7 @@ public class LiveReloadServer {
 	public int start() throws IOException {
 		synchronized (this.monitor) {
 			Assert.state(!isStarted(), "Server already started");
-			if (logger.isDebugEnabled()) {
-				logger.debug("Starting live reload server on port " + this.port);
-			}
+			logger.debug(LogMessage.format("Starting live reload server on port %s", this.port));
 			this.serverSocket = new ServerSocket(this.port);
 			int localPort = this.serverSocket.getLocalPort();
 			this.listenThread = this.threadFactory.newThread(this::acceptConnections);

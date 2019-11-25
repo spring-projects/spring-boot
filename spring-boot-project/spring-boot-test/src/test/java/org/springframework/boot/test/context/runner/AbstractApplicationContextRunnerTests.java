@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -49,10 +49,10 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	@Test
-	public void runWithInitializerShouldInitialize() {
+	void runWithInitializerShouldInitialize() {
 		AtomicBoolean called = new AtomicBoolean();
 		get().withInitializer((context) -> called.set(true)).run((context) -> {
 		});
@@ -60,7 +60,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
+	void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value")
@@ -69,7 +69,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
+	void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		get().withSystemProperties(key + "=value").withUserConfiguration(FailingConfig.class)
@@ -78,7 +78,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesShouldRestoreOriginalProperties() {
+	void runWithSystemPropertiesShouldRestoreOriginalProperties() {
 		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
@@ -93,7 +93,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
+	void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty() {
 		String key = "test." + UUID.randomUUID();
 		System.setProperty(key, "value");
 		try {
@@ -108,7 +108,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithMultiplePropertyValuesShouldAllAllValues() {
+	void runWithMultiplePropertyValuesShouldAllAllValues() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2").run((context) -> {
 			Environment environment = context.getEnvironment();
 			assertThat(environment.getProperty("test.foo")).isEqualTo("1");
@@ -117,7 +117,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue() {
+	void runWithPropertyValuesWhenHasExistingShouldReplaceValue() {
 		get().withPropertyValues("test.foo=1").withPropertyValues("test.foo=2").run((context) -> {
 			Environment environment = context.getEnvironment();
 			assertThat(environment.getProperty("test.foo")).isEqualTo("2");
@@ -125,37 +125,65 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithConfigurationsShouldRegisterConfigurations() {
+	void runWithConfigurationsShouldRegisterConfigurations() {
 		get().withUserConfiguration(FooConfig.class).run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
+	void runWithUserNamedBeanShouldRegisterBean() {
+		get().withBean("foo", String.class, () -> "foo").run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	void runWithUserBeanShouldRegisterBeanWithDefaultName() {
+		get().withBean(String.class, () -> "foo").run((context) -> assertThat(context).hasBean("string"));
+	}
+
+	@Test
+	void runWithUserBeanShouldBeRegisteredInOrder() {
+		get().withBean(String.class, () -> "one").withBean(String.class, () -> "two")
+				.withBean(String.class, () -> "three").run((context) -> {
+					assertThat(context).hasBean("string");
+					assertThat(context.getBean("string")).isEqualTo("three");
+				});
+	}
+
+	@Test
+	void runWithConfigurationsAndUserBeanShouldRegisterUserBeanLast() {
+		get().withUserConfiguration(FooConfig.class).withBean("foo", String.class, () -> "overridden")
+				.run((context) -> {
+					assertThat(context).hasBean("foo");
+					assertThat(context.getBean("foo")).isEqualTo("overridden");
+				});
+	}
+
+	@Test
+	void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
 		get().withUserConfiguration(FooConfig.class).withConfiguration(UserConfigurations.of(BarConfig.class))
 				.run((context) -> assertThat(context).hasBean("foo").hasBean("bar"));
 	}
 
 	@Test
-	public void runWithFailedContextShouldReturnFailedAssertableContext() {
+	void runWithFailedContextShouldReturnFailedAssertableContext() {
 		get().withUserConfiguration(FailingConfig.class).run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
+	void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> assertThatExceptionOfType(ClassNotFoundException.class)
 						.isThrownBy(() -> ClassUtils.forName(Gson.class.getName(), context.getClassLoader())));
 	}
 
 	@Test
-	public void runWithClassLoaderShouldSetClassLoaderOnConditionContext() {
+	void runWithClassLoaderShouldSetClassLoaderOnConditionContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.withUserConfiguration(ConditionalConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(ConditionalConfig.class));
 	}
 
 	@Test
-	public void thrownRuleWorksWithCheckedException() {
+	void thrownRuleWorksWithCheckedException() {
 		get().run((context) -> assertThatIOException().isThrownBy(() -> throwCheckedException("Expected message"))
 				.withMessageContaining("Expected message"));
 	}
@@ -166,37 +194,37 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		throw new IOException(message);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FailingConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			throw new IllegalStateException("Failed");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FooConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BarConfig {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(FilteredClassLoaderCondition.class)
 	static class ConditionalConfig {
 

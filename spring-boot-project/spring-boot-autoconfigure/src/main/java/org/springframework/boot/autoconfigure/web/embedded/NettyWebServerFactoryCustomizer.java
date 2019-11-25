@@ -56,7 +56,7 @@ public class NettyWebServerFactoryCustomizer
 
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
-		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders(this.serverProperties, this.environment));
+		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpRequestHeaderSize));
@@ -67,12 +67,12 @@ public class NettyWebServerFactoryCustomizer
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 	}
 
-	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties, Environment environment) {
-		if (serverProperties.isUseForwardHeaders() != null) {
-			return serverProperties.isUseForwardHeaders();
+	private boolean getOrDeduceUseForwardHeaders() {
+		if (this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NONE)) {
+			CloudPlatform platform = CloudPlatform.getActive(this.environment);
+			return platform != null && platform.isUsingForwardHeaders();
 		}
-		CloudPlatform platform = CloudPlatform.getActive(environment);
-		return platform != null && platform.isUsingForwardHeaders();
+		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
 	private void customizeMaxHttpHeaderSize(NettyReactiveWebServerFactory factory, DataSize maxHttpHeaderSize) {

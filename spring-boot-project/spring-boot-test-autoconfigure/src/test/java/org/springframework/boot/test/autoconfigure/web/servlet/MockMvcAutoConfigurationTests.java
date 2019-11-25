@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -29,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class MockMvcAutoConfigurationTests {
+class MockMvcAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MockMvcAutoConfiguration.class));
 
 	@Test
-	public void registersDispatcherServletFromMockMvc() {
+	void registersDispatcherServletFromMockMvc() {
 		this.contextRunner.run((context) -> {
 			MockMvc mockMvc = context.getBean(MockMvc.class);
 			assertThat(context).hasSingleBean(DispatcherServlet.class);

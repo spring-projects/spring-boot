@@ -22,7 +22,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
- * Base class for {@link ConfigurationProperties} of a
+ * Base class for {@link ConfigurationProperties @ConfigurationProperties} of a
  * {@link AbstractTemplateViewResolver}.
  *
  * @author Andy Wilkinson

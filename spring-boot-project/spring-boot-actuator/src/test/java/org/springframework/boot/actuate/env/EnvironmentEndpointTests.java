@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
@@ -49,16 +49,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author HaiTao Zhang
  */
-public class EnvironmentEndpointTests {
+class EnvironmentEndpointTests {
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		System.clearProperty("VCAP_SERVICES");
 	}
 
 	@Test
-	public void basicResponse() {
+	void basicResponse() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addLast(singleKeyPropertySource("one", "my.key", "first"));
 		environment.getPropertySources().addLast(singleKeyPropertySource("two", "my.key", "second"));
@@ -71,7 +72,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void compositeSourceIsHandledCorrectly() {
+	void compositeSourceIsHandledCorrectly() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		CompositePropertySource source = new CompositePropertySource("composite");
 		source.addPropertySource(new MapPropertySource("one", Collections.singletonMap("foo", "bar")));
@@ -85,7 +86,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysHaveTheirValuesSanitized() {
+	void sensitiveKeysHaveTheirValuesSanitized() {
 		TestPropertyValues.of("dbPassword=123456", "apiKey=123456", "mySecret=123456", "myCredentials=123456",
 				"VCAP_SERVICES=123456").applyToSystemProperties(() -> {
 					EnvironmentDescriptor descriptor = new EnvironmentEndpoint(new StandardEnvironment())
@@ -106,7 +107,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCredentialsPatternHaveTheirValuesSanitized() {
+	void sensitiveKeysMatchingCredentialsPatternHaveTheirValuesSanitized() {
 		TestPropertyValues
 				.of("my.services.amqp-free.credentials.uri=123456", "credentials.http_api_uri=123456",
 						"my.services.cleardb-free.credentials=123456", "foo.mycredentials.uri=123456")
@@ -126,7 +127,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCustomNameHaveTheirValuesSanitized() {
+	void sensitiveKeysMatchingCustomNameHaveTheirValuesSanitized() {
 		TestPropertyValues.of("dbPassword=123456", "apiKey=123456").applyToSystemProperties(() -> {
 			EnvironmentEndpoint endpoint = new EnvironmentEndpoint(new StandardEnvironment());
 			endpoint.setKeysToSanitize("key");
@@ -140,7 +141,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void sensitiveKeysMatchingCustomPatternHaveTheirValuesSanitized() {
+	void sensitiveKeysMatchingCustomPatternHaveTheirValuesSanitized() {
 		TestPropertyValues.of("dbPassword=123456", "apiKey=123456").applyToSystemProperties(() -> {
 			EnvironmentEndpoint endpoint = new EnvironmentEndpoint(new StandardEnvironment());
 			endpoint.setKeysToSanitize(".*pass.*");
@@ -154,7 +155,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyWithPlaceholderResolved() {
+	void propertyWithPlaceholderResolved() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		TestPropertyValues.of("my.foo: ${bar.blah}", "bar.blah: hello").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
@@ -162,7 +163,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyWithPlaceholderNotResolved() {
+	void propertyWithPlaceholderNotResolved() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		TestPropertyValues.of("my.foo: ${bar.blah}").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
@@ -171,7 +172,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyWithSensitivePlaceholderResolved() {
+	void propertyWithSensitivePlaceholderResolved() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		TestPropertyValues.of("my.foo: http://${bar.password}://hello", "bar.password: hello").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
@@ -180,7 +181,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyWithSensitivePlaceholderNotResolved() {
+	void propertyWithSensitivePlaceholderNotResolved() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		TestPropertyValues.of("my.foo: http://${bar.password}://hello").applyTo(environment);
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
@@ -190,7 +191,7 @@ public class EnvironmentEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void propertyWithTypeOtherThanStringShouldNotFail() {
+	void propertyWithTypeOtherThanStringShouldNotFail() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources()
 				.addFirst(singleKeyPropertySource("test", "foo", Collections.singletonMap("bar", "baz")));
@@ -201,7 +202,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyEntry() {
+	void propertyEntry() {
 		TestPropertyValues.of("my.foo=another").applyToSystemProperties(() -> {
 			StandardEnvironment environment = new StandardEnvironment();
 			TestPropertyValues.of("my.foo=bar", "my.foo2=bar2").applyTo(environment, TestPropertyValues.Type.MAP,
@@ -221,7 +222,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void propertyEntryNotFound() {
+	void propertyEntryNotFound() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addFirst(singleKeyPropertySource("test", "foo", "bar"));
 		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("does.not.exist");
@@ -233,7 +234,7 @@ public class EnvironmentEndpointTests {
 	}
 
 	@Test
-	public void multipleSourcesWithSameProperty() {
+	void multipleSourcesWithSameProperty() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addFirst(singleKeyPropertySource("one", "a", "alpha"));
 		environment.getPropertySources().addFirst(singleKeyPropertySource("two", "a", "apple"));
@@ -242,6 +243,14 @@ public class EnvironmentEndpointTests {
 		assertThat(sources.keySet()).containsExactly("two", "one");
 		assertThat(sources.get("one").getProperties().get("a").getValue()).isEqualTo("alpha");
 		assertThat(sources.get("two").getProperties().get("a").getValue()).isEqualTo("apple");
+	}
+
+	@Test
+	void uriPropertryWithSensitiveInfo() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestPropertyValues.of("sensitive.uri=http://user:password@localhost:8080").applyTo(environment);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("sensitive.uri");
+		assertThat(descriptor.getProperty().getValue()).isEqualTo("http://user:******@localhost:8080");
 	}
 
 	private static ConfigurableEnvironment emptyEnvironment() {
@@ -280,12 +289,12 @@ public class EnvironmentEndpointTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class Config {
 
 		@Bean
-		public EnvironmentEndpoint environmentEndpoint(Environment environment) {
+		EnvironmentEndpoint environmentEndpoint(Environment environment) {
 			return new EnvironmentEndpoint(environment);
 		}
 

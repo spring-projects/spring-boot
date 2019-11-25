@@ -18,17 +18,18 @@ package org.springframework.boot.devtools.restart;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -43,29 +44,27 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class RestartApplicationListenerTests {
+@ExtendWith(OutputCaptureExtension.class)
+class RestartApplicationListenerTests {
 
 	private static final String ENABLED_PROPERTY = "spring.devtools.restart.enabled";
 
 	private static final String[] ARGS = new String[] { "a", "b", "c" };
 
-	@Rule
-	public final OutputCapture output = new OutputCapture();
-
-	@Before
-	@After
-	public void cleanup() {
+	@BeforeEach
+	@AfterEach
+	void cleanup() {
 		Restarter.clearInstance();
 		System.clearProperty(ENABLED_PROPERTY);
 	}
 
 	@Test
-	public void isHighestPriority() {
+	void isHighestPriority() {
 		assertThat(new RestartApplicationListener().getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 	@Test
-	public void initializeWithReady() {
+	void initializeWithReady() {
 		testInitialize(false);
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
@@ -73,7 +72,7 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void initializeWithFail() {
+	void initializeWithFail() {
 		testInitialize(true);
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("args", ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
@@ -81,12 +80,11 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void disableWithSystemProperty() {
+	void disableWithSystemProperty(CapturedOutput output) {
 		System.setProperty(ENABLED_PROPERTY, "false");
-		this.output.reset();
 		testInitialize(false);
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
-		assertThat(this.output.toString()).contains("Restart disabled due to System property");
+		assertThat(output).contains("Restart disabled due to System property");
 	}
 
 	private void testInitialize(boolean failed) {

@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when a particular type of Spring Data repository
- * has been enabled.
+ * {@link Conditional @Conditional} that only matches when a particular type of Spring
+ * Data repository has been enabled.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

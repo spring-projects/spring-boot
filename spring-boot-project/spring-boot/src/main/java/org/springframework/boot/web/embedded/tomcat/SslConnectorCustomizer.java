@@ -53,7 +53,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	public void customize(Connector connector) {
 		ProtocolHandler handler = connector.getProtocolHandler();
 		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
-				"To use SSL, the connector's protocol handler must be an " + "AbstractHttp11JsseProtocol subclass");
+				"To use SSL, the connector's protocol handler must be an AbstractHttp11JsseProtocol subclass");
 		configureSsl((AbstractHttp11JsseProtocol<?>) handler, this.ssl, this.sslStoreProvider);
 		connector.setScheme("https");
 		connector.setSecure(true);

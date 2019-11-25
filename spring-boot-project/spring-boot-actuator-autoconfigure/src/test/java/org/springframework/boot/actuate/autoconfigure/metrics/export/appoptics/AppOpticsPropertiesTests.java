@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics;
 
 import io.micrometer.appoptics.AppOpticsConfig;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
 
@@ -27,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsPropertiesTests extends StepRegistryPropertiesTests {
+class AppOpticsPropertiesTests extends StepRegistryPropertiesTests {
 
-	@Override
-	public void defaultValuesAreConsistent() {
+	@Test
+	void defaultValuesAreConsistent() {
 		AppOpticsProperties properties = new AppOpticsProperties();
 		AppOpticsConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

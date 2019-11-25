@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,8 +32,10 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
@@ -84,7 +85,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";
 
-	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework." + "web.servlet.DispatcherServlet";
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework.web.servlet.DispatcherServlet";
 
 	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
 
@@ -131,8 +132,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
-		List<Class<?>> combined = new ArrayList<>();
-		combined.addAll(Arrays.asList(classes));
+		List<Class<?>> combined = new ArrayList<>(Arrays.asList(classes));
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
 		}
@@ -190,14 +190,14 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * Determines the resource base path for web applications using the value of
 	 * {@link WebAppConfiguration @WebAppConfiguration}, if any, on the test class of the
 	 * given {@code configuration}. Defaults to {@code src/main/webapp} in its absence.
-	 * @param configuration the configure to examine
+	 * @param configuration the configuration to examine
 	 * @return the resource base path
 	 * @since 2.1.6
 	 */
 	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
-		WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
-				.findMergedAnnotation(configuration.getTestClass(), WebAppConfiguration.class);
-		return (webAppConfiguration != null) ? webAppConfiguration.value() : "src/main/webapp";
+		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
+				.get(WebAppConfiguration.class).getValue(MergedAnnotation.VALUE, String.class)
+				.orElse("src/main/webapp");
 	}
 
 	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
@@ -231,14 +231,15 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class)
 				.findFromClass(mergedConfig.getTestClass());
 		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) " + "with your test");
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
 		logger.info("Found @SpringBootConfiguration " + found.getName() + " for test " + mergedConfig.getTestClass());
 		return merge(found, classes);
 	}
 
 	private boolean containsNonTestComponent(Class<?>[] classes) {
 		for (Class<?> candidate : classes) {
-			if (!AnnotatedElementUtils.isAnnotated(candidate, TestConfiguration.class)) {
+			if (!MergedAnnotations.from(candidate, SearchStrategy.INHERITED_ANNOTATIONS)
+					.isPresent(TestConfiguration.class)) {
 				return true;
 			}
 		}
@@ -315,23 +316,22 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, SpringBootTest.class);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(SpringBootTest.class)
+				.synthesize(MergedAnnotation::isPresent).orElse(null);
 	}
 
 	protected void verifyConfiguration(Class<?> testClass) {
 		SpringBootTest springBootTest = getAnnotation(testClass);
-		if (springBootTest != null
-				&& (springBootTest.webEnvironment() == WebEnvironment.DEFINED_PORT
-						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_PORT)
-				&& getAnnotation(WebAppConfiguration.class, testClass) != null) {
+		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment()) && MergedAnnotations
+				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
-					+ "mock web environment. Please remove @WebAppConfiguration or " + "reconfigure @SpringBootTest.");
+					+ "mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 		}
 	}
 
-	private <T extends Annotation> T getAnnotation(Class<T> annotationType, Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, annotationType);
+	private boolean isListeningOnPort(WebEnvironment webEnvironment) {
+		return webEnvironment == WebEnvironment.DEFINED_PORT || webEnvironment == WebEnvironment.RANDOM_PORT;
 	}
 
 	/**

@@ -60,7 +60,6 @@ public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 		@Override
 		public long getLastModified() {
 			return ClassLoaderFileURLStreamHandler.this.file.getLastModified();
-
 		}
 
 	}

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.config;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -36,21 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class DelegatingApplicationListenerTests {
+class DelegatingApplicationListenerTests {
 
 	private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void orderedInitialize() {
+	void orderedInitialize() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
@@ -62,20 +62,20 @@ public class DelegatingApplicationListenerTests {
 	}
 
 	@Test
-	public void noInitializers() {
+	void noInitializers() {
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
 				this.context.getEnvironment()));
 	}
 
 	@Test
-	public void emptyInitializers() {
+	void emptyInitializers() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "context.listener.classes:");
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
 				this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
+	static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -87,7 +87,7 @@ public class DelegatingApplicationListenerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
+	static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {

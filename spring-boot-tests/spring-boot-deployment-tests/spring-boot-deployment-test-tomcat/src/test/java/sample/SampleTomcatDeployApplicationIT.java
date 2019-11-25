@@ -18,7 +18,7 @@ package sample;
 
 import java.net.URI;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class SampleTomcatDeployApplicationIT {
 	private int port = Integer.valueOf(System.getProperty("port"));
 
 	@Test
-	public void testHome() throws Exception {
+	void testHome() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/";
 		ResponseEntity<String> entity = this.rest.getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -46,7 +46,7 @@ public class SampleTomcatDeployApplicationIT {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	void testHealth() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/actuator/health";
 		System.out.println(url);
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
@@ -55,34 +55,34 @@ public class SampleTomcatDeployApplicationIT {
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
+	void errorFromExceptionForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/exception", MediaType.ALL, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
+	void errorFromExceptionForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/exception", MediaType.APPLICATION_JSON,
 				MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
+	void errorFromExceptionForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/exception", MediaType.TEXT_HTML, MediaType.TEXT_HTML);
 	}
 
 	@Test
-	public void sendErrorForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
+	void sendErrorForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/send-error", MediaType.ALL, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void sendErrorForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
+	void sendErrorForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/send-error", MediaType.APPLICATION_JSON,
 				MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void sendErrorForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
+	void sendErrorForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
 		assertThatPathProducesExpectedResponse("/bootapp/send-error", MediaType.TEXT_HTML, MediaType.TEXT_HTML);
 	}
 

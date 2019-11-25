@@ -18,10 +18,9 @@ please ask on https://stackoverflow.com[Stack Overflow]. The Spring Boot team an
 broader community monitor the https://stackoverflow.com/tags/spring-boot[`spring-boot`]
 tag.
 
-If you are reporting a bug, please help to speed up problem diagnosis by providing as much
-information as possible. Ideally, that would include a small
-https://github.com/spring-projects/spring-boot-issues[sample project] that reproduces the
-problem.
+If you are reporting a bug, please help to speed up problem diagnosis by providing as
+much information as possible. Ideally, that would include a small sample project that
+reproduces the problem.
 
 
 
@@ -125,7 +124,7 @@ find the process a little slower than the standard build.
 
 [TIP]
 ====
-If you want to run a build without the samples and integration tests, building the
+If you want to run a build without the smoke tests and integration tests, building the
 `spring-boot-project` module is enough. You can cd there and run the same command, or you
 can run this from the top-level directory:
 
@@ -196,7 +195,42 @@ changes just won't be automatically formatted.
 
 With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
-need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
+need to import the root `spring-boot` pom and the `spring-boot-smoke-tests` pom separately.
+
+
+
+=== Importing into IntelliJ IDEA
+**Please, do this first!**
+Go to `Preferences | Build, Execution, Deployment | Build Tools | Maven | Importing`
+and set `VM options for importer` to `-Xmx2g` to allocate sufficient memory for IDEA's
+Maven import process to parse the Spring Boot project structure. _Not doing so could
+mean the import fails silently, leaving the project setup incomplete._
+
+For the actual import use "`File`" -> "`Open`" and select the root `pom.xml`, or the
+`spring-boot-project/pom.xml` if you only want the Spring Boot project sources.
+
+
+
+==== Install the Spring Formatter plugin
+If you haven't done so, install the formatter plugin so that proper formatting rules are
+applied automatically when you reformat code in the IDE.
+
+* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[IntelliJ IDEA plugin].
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Plugins`".
+* Select the wheel and "`Install Plugin from Disk...`".
+* Select the jar file you've downloaded.
+
+
+
+==== Import additional code style
+The formatter does not cover all rules (such as order of imports) and an additional file
+needs to be added.
+
+* Select "`IntelliJ IDEA`" -> "`Preferences`".
+* Select "`Editor`" -> "`Code Style`".
+* Select the wheel and "`Import Scheme`" -> "`IntelliJ IDEA code style XML`".
+* Select `idea/codeStyleConfig.xml` from this repository.
 
 
 
@@ -206,11 +240,11 @@ Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 
 
 == Integration Tests
-The sample applications are used as integration tests during the build (when you
-`./mvnw install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
+The smoke tests run as part of the build when you `./mvnw install`.
+Due to the fact that they make use of the `spring-boot-maven-plugin`
 they cannot be called directly, and so instead are launched via the
 `maven-invoker-plugin`. If you encounter build failures running the integration tests,
-check the `build.log` file in the appropriate sample directory.
+check the `build.log` file in the appropriate smoke test directory.
 
 
 == Cloning the git repository on Windows

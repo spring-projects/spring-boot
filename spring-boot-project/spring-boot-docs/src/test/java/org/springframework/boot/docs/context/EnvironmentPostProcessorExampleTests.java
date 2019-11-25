@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.StandardEnvironment;
@@ -28,12 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EnvironmentPostProcessorExampleTests {
+class EnvironmentPostProcessorExampleTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyEnvironmentPostProcessor() {
+	void applyEnvironmentPostProcessor() {
 		assertThat(this.environment.containsProperty("test.foo.bar")).isFalse();
 		new EnvironmentPostProcessorExample().postProcessEnvironment(this.environment, new SpringApplication());
 		assertThat(this.environment.containsProperty("test.foo.bar")).isTrue();

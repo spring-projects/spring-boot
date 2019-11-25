@@ -93,8 +93,8 @@ public class DelegatingApplicationContextInitializer
 				ApplicationContextInitializer.class);
 		Assert.isAssignable(requireContextClass, contextClass,
 				String.format(
-						"Could not add context initializer [%s]" + " as its generic parameter [%s] is not assignable "
-								+ "from the type of application context used by this " + "context loader [%s]: ",
+						"Could not add context initializer [%s] as its generic parameter [%s] is not assignable "
+								+ "from the type of application context used by this context loader [%s]: ",
 						initializerClass.getName(), requireContextClass.getName(), contextClass.getName()));
 		return (ApplicationContextInitializer<?>) BeanUtils.instantiateClass(initializerClass);
 	}

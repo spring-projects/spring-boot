@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
-public class DefaultErrorAttributesTests {
+class DefaultErrorAttributesTests {
 
 	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(HttpStatus.NOT_FOUND);
 
@@ -57,7 +57,7 @@ public class DefaultErrorAttributesTests {
 	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
 
 	@Test
-	public void missingExceptionAttribute() {
+	void missingExceptionAttribute() {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
 		assertThatIllegalStateException().isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
@@ -65,7 +65,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeTimeStamp() {
+	void includeTimeStamp() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
 				false);
@@ -73,7 +73,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void defaultStatusCode() {
+	void defaultStatusCode() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
@@ -83,7 +83,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void annotatedResponseStatusCode() {
+	void annotatedResponseStatusCode() {
 		Exception error = new CustomException();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
@@ -93,7 +93,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void annotatedResponseStatusCodeWithCustomReasonPhrase() {
+	void annotatedResponseStatusCodeWithCustomReasonPhrase() {
 		Exception error = new Custom2Exception();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
@@ -104,7 +104,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeStatusCode() {
+	void includeStatusCode() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
 				false);
@@ -113,7 +113,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void getError() {
+	void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
@@ -124,7 +124,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeException() {
+	void includeException() {
 		RuntimeException error = new RuntimeException("Test");
 		this.errorAttributes = new DefaultErrorAttributes(true);
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
@@ -136,7 +136,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void processResponseStatusException() {
+	void processResponseStatusException() {
 		RuntimeException nested = new RuntimeException("Test");
 		ResponseStatusException error = new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid request", nested);
 		this.errorAttributes = new DefaultErrorAttributes(true);
@@ -150,7 +150,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void processResponseStatusExceptionWithNoNestedCause() {
+	void processResponseStatusExceptionWithNoNestedCause() {
 		ResponseStatusException error = new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
 				"could not process request");
 		this.errorAttributes = new DefaultErrorAttributes(true);
@@ -164,7 +164,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void notIncludeTrace() {
+	void notIncludeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
@@ -173,7 +173,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includeTrace() {
+	void includeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex), true);
@@ -181,7 +181,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void includePath() {
+	void includePath() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
 				false);
@@ -189,8 +189,16 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void extractBindingResultErrors() throws Exception {
-		Method method = getClass().getMethod("method", String.class);
+	void includeLogPrefix() {
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, NOT_FOUND);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest, false);
+		assertThat(attributes.get("requestId")).isEqualTo(serverRequest.exchange().getRequest().getId());
+	}
+
+	@Test
+	void extractBindingResultErrors() throws Exception {
+		Method method = getClass().getDeclaredMethod("method", String.class);
 		MethodParameter stringParam = new MethodParameter(method, 0);
 		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
@@ -200,7 +208,7 @@ public class DefaultErrorAttributesTests {
 				false);
 		assertThat(attributes.get("message")).asString()
 				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "public int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
+						+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
 						+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
@@ -211,17 +219,17 @@ public class DefaultErrorAttributesTests {
 		return ServerRequest.create(exchange, this.readers);
 	}
 
-	public int method(String firstParam) {
+	int method(String firstParam) {
 		return 42;
 	}
 
 	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-	private static class CustomException extends RuntimeException {
+	static class CustomException extends RuntimeException {
 
 	}
 
 	@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT, reason = "Nope!")
-	private static class Custom2Exception extends RuntimeException {
+	static class Custom2Exception extends RuntimeException {
 
 	}
 

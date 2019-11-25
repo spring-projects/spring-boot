@@ -73,7 +73,7 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 		Class<?> factoryClass = parent.getBean(ServletWebServerFactory.class).getClass();
 		if (cannotBeInstantiated(factoryClass)) {
 			throw new FatalBeanException("ServletWebServerFactory implementation " + factoryClass.getName()
-					+ " cannot be instantiated. " + "To allow a separate management port to be used, a top-level class "
+					+ " cannot be instantiated. To allow a separate management port to be used, a top-level class "
 					+ "or static inner class should be used instead");
 		}
 		return factoryClass;

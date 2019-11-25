@@ -19,7 +19,8 @@ package org.springframework.boot.test.autoconfigure.data.ldap;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Example {@link SpringBootApplication} used with {@link DataLdapTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link DataLdapTest @DataLdapTest} tests.
  *
  * @author Eddú Meléndez
  */

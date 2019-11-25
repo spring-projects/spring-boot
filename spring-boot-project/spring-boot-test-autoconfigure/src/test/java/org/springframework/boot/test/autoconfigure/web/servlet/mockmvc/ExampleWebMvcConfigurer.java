@@ -28,7 +28,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Example {@link WebMvcConfigurer} used in {@link WebMvcTest} tests.
+ * Example {@link WebMvcConfigurer} used in {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  */

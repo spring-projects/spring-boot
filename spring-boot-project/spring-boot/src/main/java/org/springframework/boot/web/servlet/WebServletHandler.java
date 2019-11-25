@@ -29,7 +29,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.util.StringUtils;
 
 /**
- * Handler for {@link WebServlet}-annotated classes.
+ * Handler for {@link WebServlet @WebServlet}-annotated classes.
  *
  * @author Andy Wilkinson
  */

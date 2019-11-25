@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,14 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CacheMetricsAutoConfigurationTests {
+class CacheMetricsAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withUserConfiguration(CachingConfiguration.class).withConfiguration(
 					AutoConfigurations.of(CacheAutoConfiguration.class, CacheMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguredCacheManagerIsInstrumented() {
+	void autoConfiguredCacheManagerIsInstrumented() {
 		this.contextRunner.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -50,7 +50,7 @@ public class CacheMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguredNonSupportedCacheManagerIsIgnored() {
+	void autoConfiguredNonSupportedCacheManagerIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -62,7 +62,7 @@ public class CacheMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheInstrumentationCanBeDisabled() {
+	void cacheInstrumentationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.cache=false", "spring.cache.type=caffeine",
 				"spring.cache.cache-names=cache1").run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -71,7 +71,7 @@ public class CacheMetricsAutoConfigurationTests {
 				});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
 	static class CachingConfiguration {
 

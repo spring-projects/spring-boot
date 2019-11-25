@@ -38,6 +38,16 @@ public class CouchbaseProperties {
 	 */
 	private List<String> bootstrapHosts;
 
+	/**
+	 * Cluster username when using role based access.
+	 */
+	private String username;
+
+	/**
+	 * Cluster password when using role based access.
+	 */
+	private String password;
+
 	private final Bucket bucket = new Bucket();
 
 	private final Env env = new Env();
@@ -48,6 +58,22 @@ public class CouchbaseProperties {
 
 	public void setBootstrapHosts(List<String> bootstrapHosts) {
 		this.bootstrapHosts = bootstrapHosts;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Bucket getBucket() {

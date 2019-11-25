@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Identifies a type as being a JMX-specific extension of an {@link Endpoint}.
+ * Identifies a type as being a JMX-specific extension of an {@link Endpoint @Endpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0

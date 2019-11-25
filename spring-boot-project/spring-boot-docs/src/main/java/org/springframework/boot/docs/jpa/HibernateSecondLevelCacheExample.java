@@ -29,13 +29,12 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  */
 // tag::configuration[]
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class HibernateSecondLevelCacheExample {
 
 	@Bean
 	public HibernatePropertiesCustomizer hibernateSecondLevelCacheCustomizer(JCacheCacheManager cacheManager) {
 		return (properties) -> properties.put(ConfigSettings.CACHE_MANAGER, cacheManager.getCacheManager());
-
 	}
 
 }

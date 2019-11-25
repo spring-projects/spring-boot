@@ -2,7 +2,7 @@ package org.test
 
 @Grab("hsqldb")
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
 class Example implements CommandLineRunner {
 

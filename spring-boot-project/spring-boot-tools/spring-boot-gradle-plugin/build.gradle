@@ -36,6 +36,7 @@ jar {
 }
 
 test {
+	useJUnitPlatform()
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
@@ -49,6 +50,7 @@ javadoc {
 			'https://docs.oracle.com/javase/8/docs/api/',
 			'https://docs.gradle.org/current/javadoc/'
 		]
+		source = '8'
 	}
 	title = "${project.description} $version API"
 }

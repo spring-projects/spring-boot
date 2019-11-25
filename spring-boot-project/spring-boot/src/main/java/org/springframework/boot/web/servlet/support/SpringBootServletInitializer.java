@@ -37,7 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
@@ -98,7 +99,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			});
 		}
 		else {
-			this.logger.debug("No ContextLoaderListener registered, as " + "createRootApplicationContext() did not "
+			this.logger.debug("No ContextLoaderListener registered, as createRootApplicationContext() did not "
 					+ "return an application context");
 		}
 	}
@@ -118,7 +119,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
 		if (application.getAllSources().isEmpty()
-				&& AnnotationUtils.findAnnotation(getClass(), Configuration.class) != null) {
+				&& MergedAnnotations.from(getClass(), SearchStrategy.TYPE_HIERARCHY).isPresent(Configuration.class)) {
 			application.addPrimarySources(Collections.singleton(getClass()));
 		}
 		Assert.state(!application.getAllSources().isEmpty(),

@@ -25,7 +25,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 /**
- * Handler for {@link WebListener}-annotated classes.
+ * Handler for {@link WebListener @WebListener}-annotated classes.
  *
  * @author Andy Wilkinson
  */

@@ -25,12 +25,14 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -71,20 +73,22 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.mvc.log-resolved-exception", "true");
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
-		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
+		properties.put("spring.reactor.debug", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		if (isLocalApplication(environment)) {
+		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread()) && isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
-				logger.info("Devtools property defaults active! Set '" + ENABLED + "' to 'false' to disable");
+				logger.info(LogMessage.format("Devtools property defaults active! Set '%s' to 'false' to disable",
+						ENABLED));
 				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
 			}
 			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
-				logger.info("For additional web related logging consider " + "setting the '" + WEB_LOGGING
-						+ "' property to 'DEBUG'");
+				logger.info(LogMessage.format(
+						"For additional web related logging consider setting the '%s' property to 'DEBUG'",
+						WEB_LOGGING));
 			}
 		}
 	}

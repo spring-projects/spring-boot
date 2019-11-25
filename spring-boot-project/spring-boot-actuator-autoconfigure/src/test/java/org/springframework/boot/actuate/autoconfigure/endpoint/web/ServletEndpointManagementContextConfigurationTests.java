@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 import java.util.Collections;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
@@ -42,13 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ServletEndpointManagementContextConfigurationTests {
+class ServletEndpointManagementContextConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void contextShouldContainServletEndpointRegistrar() {
+	void contextShouldContainServletEndpointRegistrar() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(ResourceConfig.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
@@ -58,7 +58,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void contextWhenJerseyShouldContainServletEndpointRegistrar() {
+	void contextWhenJerseyShouldContainServletEndpointRegistrar() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(DispatcherServlet.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
@@ -68,28 +68,28 @@ public class ServletEndpointManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void contextWhenNoServletBasedShouldNotContainServletEndpointRegistrar() {
+	void contextWhenNoServletBasedShouldNotContainServletEndpointRegistrar() {
 		new ApplicationContextRunner().withUserConfiguration(TestConfig.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointRegistrar.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ServletEndpointManagementContextConfiguration.class)
 	@EnableConfigurationProperties(WebEndpointProperties.class)
 	static class TestConfig {
 
 		@Bean
-		public ServletEndpointsSupplier servletEndpointsSupplier() {
-			return () -> Collections.emptyList();
+		ServletEndpointsSupplier servletEndpointsSupplier() {
+			return Collections::emptyList;
 		}
 
 		@Bean
-		public DispatcherServletPath dispatcherServletPath() {
+		DispatcherServletPath dispatcherServletPath() {
 			return () -> "/test";
 		}
 
 		@Bean
-		public JerseyApplicationPath jerseyApplicationPath() {
+		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/jersey";
 		}
 

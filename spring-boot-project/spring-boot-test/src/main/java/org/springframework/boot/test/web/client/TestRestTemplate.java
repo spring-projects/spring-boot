@@ -17,16 +17,11 @@
 package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -39,9 +34,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
-import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -51,13 +43,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
@@ -86,13 +74,16 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Dmytro Nosan
  * @since 1.4.0
  */
 public class TestRestTemplate {
 
-	private final RestTemplate restTemplate;
+	private final RestTemplateBuilder builder;
 
 	private final HttpClientOption[] httpClientOptions;
+
+	private final RestTemplate restTemplate;
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
@@ -124,52 +115,29 @@ public class TestRestTemplate {
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
-	 * @param restTemplateBuilder builder used to configure underlying
-	 * {@link RestTemplate}
+	 * @param builder builder used to configure underlying {@link RestTemplate}
 	 * @param username the username to use (or {@code null})
 	 * @param password the password (or {@code null})
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 * @since 2.0.0
 	 */
-	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username, String password,
+	public TestRestTemplate(RestTemplateBuilder builder, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this((restTemplateBuilder != null) ? restTemplateBuilder.build() : null, username, password, httpClientOptions);
-	}
-
-	private TestRestTemplate(RestTemplate restTemplate, String username, String password,
-			HttpClientOption... httpClientOptions) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
+		Assert.notNull(builder, "Builder must not be null");
+		this.builder = builder;
 		this.httpClientOptions = httpClientOptions;
-		if (getRequestFactoryClass(restTemplate).isAssignableFrom(HttpComponentsClientHttpRequestFactory.class)) {
-			restTemplate.setRequestFactory(new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+		if (httpClientOptions != null) {
+			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
+			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
+				builder = builder
+						.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+			}
 		}
-		addAuthentication(restTemplate, username, password);
-		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
-		this.restTemplate = restTemplate;
-	}
-
-	private Class<? extends ClientHttpRequestFactory> getRequestFactoryClass(RestTemplate restTemplate) {
-		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
-		if (InterceptingClientHttpRequestFactory.class.isAssignableFrom(requestFactory.getClass())) {
-			Field requestFactoryField = ReflectionUtils.findField(RestTemplate.class, "requestFactory");
-			ReflectionUtils.makeAccessible(requestFactoryField);
-			requestFactory = (ClientHttpRequestFactory) ReflectionUtils.getField(requestFactoryField, restTemplate);
+		if (username != null || password != null) {
+			builder = builder.basicAuthentication(username, password);
 		}
-		return requestFactory.getClass();
-	}
-
-	private void addAuthentication(RestTemplate restTemplate, String username, String password) {
-		if (username == null) {
-			return;
-		}
-		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-		if (interceptors == null) {
-			interceptors = Collections.emptyList();
-		}
-		interceptors = new ArrayList<>(interceptors);
-		interceptors.removeIf(BasicAuthenticationInterceptor.class::isInstance);
-		interceptors.add(new BasicAuthenticationInterceptor(username, password));
-		restTemplate.setInterceptors(interceptors);
+		this.restTemplate = builder.build();
+		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 	}
 
 	/**
@@ -647,7 +615,6 @@ public class TestRestTemplate {
 	 */
 	public <T> T patchForObject(URI url, Object request, Class<T> responseType) throws RestClientException {
 		return this.restTemplate.patchForObject(applyRootUriIfNecessary(url), request, responseType);
-
 	}
 
 	/**
@@ -990,25 +957,9 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
-		RestTemplate restTemplate = new RestTemplateBuilder().requestFactory(getRequestFactorySupplier())
-				.messageConverters(getRestTemplate().getMessageConverters())
-				.interceptors(getRestTemplate().getInterceptors())
-				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
-		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username, password,
-				this.httpClientOptions);
-		testRestTemplate.getRestTemplate().setErrorHandler(getRestTemplate().getErrorHandler());
-		return testRestTemplate;
-	}
-
-	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier() {
-		return () -> {
-			try {
-				return BeanUtils.instantiateClass(getRequestFactoryClass(getRestTemplate()));
-			}
-			catch (BeanInstantiationException ex) {
-				return new ClientHttpRequestFactorySupplier().get();
-			}
-		};
+		TestRestTemplate template = new TestRestTemplate(this.builder, username, password, this.httpClientOptions);
+		template.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
+		return template;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1026,7 +977,7 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Options used to customize the Apache Http Client if it is used.
+	 * Options used to customize the Apache HTTP Client.
 	 */
 	public enum HttpClientOption {
 

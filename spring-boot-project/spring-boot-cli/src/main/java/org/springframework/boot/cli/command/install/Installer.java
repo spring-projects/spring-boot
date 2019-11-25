@@ -83,7 +83,7 @@ class Installer {
 		}
 	}
 
-	public void install(List<String> artifactIdentifiers) throws Exception {
+	void install(List<String> artifactIdentifiers) throws Exception {
 		File extDirectory = getDefaultExtDirectory();
 		extDirectory.mkdirs();
 		Log.info("Installing into: " + extDirectory);
@@ -103,7 +103,7 @@ class Installer {
 		if (countString == null) {
 			return 0;
 		}
-		return Integer.valueOf(countString);
+		return Integer.parseInt(countString);
 	}
 
 	private void setInstallCount(File file, int count) {
@@ -115,7 +115,7 @@ class Installer {
 		}
 	}
 
-	public void uninstall(List<String> artifactIdentifiers) throws Exception {
+	void uninstall(List<String> artifactIdentifiers) throws Exception {
 		File extDirectory = getDefaultExtDirectory();
 		Log.info("Uninstalling from: " + extDirectory);
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
@@ -129,7 +129,7 @@ class Installer {
 		saveInstallCounts();
 	}
 
-	public void uninstallAll() throws Exception {
+	void uninstallAll() throws Exception {
 		File extDirectory = getDefaultExtDirectory();
 		Log.info("Uninstalling from: " + extDirectory);
 		for (String name : this.installCounts.stringPropertyNames()) {

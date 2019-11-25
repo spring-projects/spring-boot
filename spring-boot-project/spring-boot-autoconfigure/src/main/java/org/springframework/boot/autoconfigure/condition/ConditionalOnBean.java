@@ -27,9 +27,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when beans meeting all the specified requirements
- * are already contained in the {@link BeanFactory}. All the requirements must be met for
- * the condition to match, but they do not have to be met by the same bean.
+ * {@link Conditional @Conditional} that only matches when beans meeting all the specified
+ * requirements are already contained in the {@link BeanFactory}. All the requirements
+ * must be met for the condition to match, but they do not have to be met by the same
+ * bean.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
  * the factory method:

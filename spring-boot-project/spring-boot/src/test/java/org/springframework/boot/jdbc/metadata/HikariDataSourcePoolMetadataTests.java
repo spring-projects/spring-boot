@@ -17,7 +17,6 @@
 package org.springframework.boot.jdbc.metadata;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Before;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,12 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HikariDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {
 
-	private HikariDataSourcePoolMetadata dataSourceMetadata;
-
-	@Before
-	public void setup() {
-		this.dataSourceMetadata = new HikariDataSourcePoolMetadata(createDataSource(0, 2));
-	}
+	private final HikariDataSourcePoolMetadata dataSourceMetadata = new HikariDataSourcePoolMetadata(
+			createDataSource(0, 2));
 
 	@Override
 	protected HikariDataSourcePoolMetadata getDataSourceMetadata() {
@@ -59,6 +54,7 @@ public class HikariDataSourcePoolMetadataTests
 		HikariDataSource dataSource = initializeBuilder().type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
+		dataSource.setIdleTimeout(5000);
 		return dataSource;
 	}
 

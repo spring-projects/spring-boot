@@ -54,6 +54,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
@@ -78,7 +79,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
 
@@ -95,57 +96,54 @@ public class JacksonAutoConfiguration {
 		return new JsonComponentModule();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperConfiguration {
 
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
-		public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+		ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
 			return builder.createXmlMapper(false).build();
 		}
 
 	}
 
-	@Configuration
+	@Deprecated
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class, DateTimeSerializer.class,
 			JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
 		private static final Log logger = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
 
-		private final JacksonProperties jacksonProperties;
-
-		JodaDateTimeJacksonConfiguration(JacksonProperties jacksonProperties) {
-			this.jacksonProperties = jacksonProperties;
-		}
-
 		@Bean
-		public SimpleModule jodaDateTimeSerializationModule() {
+		SimpleModule jodaDateTimeSerializationModule(JacksonProperties jacksonProperties) {
+			logger.warn("Auto-configuration of Jackson's Joda-Time integration is deprecated in favor of using "
+					+ "java.time (JSR-310).");
 			SimpleModule module = new SimpleModule();
-			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
+			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(jacksonProperties);
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class, new DateTimeSerializer(jacksonJodaFormat, 0));
 			}
 			return module;
 		}
 
-		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
-			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
+		private JacksonJodaDateFormat getJacksonJodaDateFormat(JacksonProperties jacksonProperties) {
+			if (jacksonProperties.getJodaDateTimeFormat() != null) {
 				return new JacksonJodaDateFormat(
-						DateTimeFormat.forPattern(this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
+						DateTimeFormat.forPattern(jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
 			}
-			if (this.jacksonProperties.getDateFormat() != null) {
+			if (jacksonProperties.getDateFormat() != null) {
 				try {
 					return new JacksonJodaDateFormat(
-							DateTimeFormat.forPattern(this.jacksonProperties.getDateFormat()).withZoneUTC());
+							DateTimeFormat.forPattern(jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
 					if (logger.isWarnEnabled()) {
 						logger.warn("spring.jackson.date-format could not be used to "
 								+ "configure formatting of Joda's DateTime. You may want "
-								+ "to configure spring.jackson.joda-date-time-format as " + "well.");
+								+ "to configure spring.jackson.joda-date-time-format as well.");
 					}
 				}
 			}
@@ -154,34 +152,29 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ParameterNamesModule.class)
 	static class ParameterNamesModuleConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ParameterNamesModule parameterNamesModule() {
+		ParameterNamesModule parameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.DEFAULT);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperBuilderConfiguration {
 
-		private final ApplicationContext applicationContext;
-
-		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
 		@Bean
+		@Scope("prototype")
 		@ConditionalOnMissingBean
-		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(
+		Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(ApplicationContext applicationContext,
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-			builder.applicationContext(this.applicationContext);
+			builder.applicationContext(applicationContext);
 			customize(builder, customizers);
 			return builder;
 		}
@@ -195,13 +188,13 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {
 
 		@Bean
-		public StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
+		StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
 				ApplicationContext applicationContext, JacksonProperties jacksonProperties) {
 			return new StandardJackson2ObjectMapperBuilderCustomizer(applicationContext, jacksonProperties);
 		}

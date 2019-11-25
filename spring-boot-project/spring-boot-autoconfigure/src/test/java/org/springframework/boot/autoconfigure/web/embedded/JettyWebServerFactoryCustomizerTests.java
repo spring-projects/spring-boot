@@ -21,18 +21,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConfiguration.ConnectionFactory;
-import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.RequestLog;
-import org.junit.Before;
-import org.junit.Test;
+import org.eclipse.jetty.server.RequestLogWriter;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -53,8 +53,9 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author HaiTao Zhang
  */
-public class JettyWebServerFactoryCustomizerTests {
+class JettyWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
 
@@ -62,8 +63,8 @@ public class JettyWebServerFactoryCustomizerTests {
 
 	private JettyWebServerFactoryCustomizer customizer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
@@ -71,7 +72,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeaders() {
+	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -79,59 +80,81 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeaders() {
+	void defaultUseForwardHeaders() {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void accessLogCanBeCustomized() throws IOException {
+	void accessLogCanBeCustomized() throws IOException {
 		File logFile = File.createTempFile("jetty_log", ".log");
-		String timezone = TimeZone.getDefault().getID();
-		bind("server.jetty.accesslog.enabled=true",
+		bind("server.jetty.accesslog.enabled=true", "server.jetty.accesslog.format=extended_ncsa",
 				"server.jetty.accesslog.filename=" + logFile.getAbsolutePath().replace("\\", "\\\\"),
 				"server.jetty.accesslog.file-date-format=yyyy-MM-dd", "server.jetty.accesslog.retention-period=42",
-				"server.jetty.accesslog.append=true", "server.jetty.accesslog.extended-format=true",
-				"server.jetty.accesslog.date-format=HH:mm:ss", "server.jetty.accesslog.locale=en_BE",
-				"server.jetty.accesslog.time-zone=" + timezone, "server.jetty.accesslog.log-cookies=true",
-				"server.jetty.accesslog.log-server=true", "server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.append=true", "server.jetty.accesslog.ignore-paths=/a/path,/b/path");
 		JettyWebServer server = customizeAndGetServer();
-		NCSARequestLog requestLog = getNCSARequestLog(server);
-		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
-		assertThat(requestLog.getFilenameDateFormat()).isEqualTo("yyyy-MM-dd");
-		assertThat(requestLog.getRetainDays()).isEqualTo(42);
-		assertThat(requestLog.isAppend()).isTrue();
-		assertThat(requestLog.isExtended()).isTrue();
-		assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
-		assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
-		assertThat(requestLog.getLogTimeZone()).isEqualTo(timezone);
-		assertThat(requestLog.getLogCookies()).isTrue();
-		assertThat(requestLog.getLogServer()).isTrue();
-		assertThat(requestLog.getLogLatency()).isTrue();
+		CustomRequestLog requestLog = getRequestLog(server);
+		assertThat(requestLog.getFormatString()).isEqualTo(CustomRequestLog.EXTENDED_NCSA_FORMAT);
+		assertThat(requestLog.getIgnorePaths()).hasSize(2);
+		assertThat(requestLog.getIgnorePaths()).containsExactly("/a/path", "/b/path");
+		RequestLogWriter logWriter = getLogWriter(requestLog);
+		assertThat(logWriter.getFileName()).isEqualTo(logFile.getAbsolutePath());
+		assertThat(logWriter.getFilenameDateFormat()).isEqualTo("yyyy-MM-dd");
+		assertThat(logWriter.getRetainDays()).isEqualTo(42);
+		assertThat(logWriter.isAppend()).isTrue();
 	}
 
 	@Test
-	public void accessLogCanBeEnabled() {
+	void accessLogCanBeEnabled() {
 		bind("server.jetty.accesslog.enabled=true");
 		JettyWebServer server = customizeAndGetServer();
-		NCSARequestLog requestLog = getNCSARequestLog(server);
-		assertThat(requestLog.getFilename()).isNull();
-		assertThat(requestLog.isAppend()).isFalse();
-		assertThat(requestLog.isExtended()).isFalse();
-		assertThat(requestLog.getLogCookies()).isFalse();
-		assertThat(requestLog.getLogServer()).isFalse();
-		assertThat(requestLog.getLogLatency()).isFalse();
-	}
-
-	private NCSARequestLog getNCSARequestLog(JettyWebServer server) {
-		RequestLog requestLog = server.getServer().getRequestLog();
-		assertThat(requestLog).isInstanceOf(NCSARequestLog.class);
-		return (NCSARequestLog) requestLog;
+		CustomRequestLog requestLog = getRequestLog(server);
+		assertThat(requestLog.getFormatString()).isEqualTo(CustomRequestLog.NCSA_FORMAT);
+		assertThat(requestLog.getIgnorePaths()).isNull();
+		RequestLogWriter logWriter = getLogWriter(requestLog);
+		assertThat(logWriter.getFileName()).isNull();
+		assertThat(logWriter.isAppend()).isFalse();
 	}
 
 	@Test
-	public void setUseForwardHeaders() {
+	void maxThreadsCanBeCustomized() {
+		bind("server.jetty.max-threads=100");
+		JettyWebServer server = customizeAndGetServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
+		assertThat(threadPool.getMaxThreads()).isEqualTo(100);
+	}
+
+	@Test
+	void minThreadsCanBeCustomized() {
+		bind("server.jetty.min-threads=100");
+		JettyWebServer server = customizeAndGetServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
+		assertThat(threadPool.getMinThreads()).isEqualTo(100);
+	}
+
+	@Test
+	void threadIdleTimeoutCanBeCustomized() {
+		bind("server.jetty.thread-idle-timeout=100s");
+		JettyWebServer server = customizeAndGetServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
+		assertThat(threadPool.getIdleTimeout()).isEqualTo(100000);
+	}
+
+	private CustomRequestLog getRequestLog(JettyWebServer server) {
+		RequestLog requestLog = server.getServer().getRequestLog();
+		assertThat(requestLog).isInstanceOf(CustomRequestLog.class);
+		return (CustomRequestLog) requestLog;
+	}
+
+	private RequestLogWriter getLogWriter(CustomRequestLog requestLog) {
+		RequestLog.Writer writer = requestLog.getWriter();
+		assertThat(writer).isInstanceOf(RequestLogWriter.class);
+		return (RequestLogWriter) requestLog.getWriter();
+	}
+
+	@Test
+	void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -139,7 +162,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customizeMaxHttpHeaderSize() {
+	void customizeMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=2048");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
@@ -147,7 +170,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+	void customMaxHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-header-size=-1");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
@@ -155,7 +178,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+	void customMaxHttpHeaderSizeIgnoredIfZero() {
 		bind("server.max-http-header-size=0");
 		JettyWebServer server = customizeAndGetServer();
 		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
@@ -163,7 +186,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customIdleTimeout() {
+	void customIdleTimeout() {
 		bind("server.jetty.connection-idle-timeout=60s");
 		JettyWebServer server = customizeAndGetServer();
 		List<Long> timeouts = connectorsIdleTimeouts(server);

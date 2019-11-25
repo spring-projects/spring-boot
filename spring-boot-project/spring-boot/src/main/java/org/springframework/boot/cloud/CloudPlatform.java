@@ -16,7 +16,11 @@
 
 package org.springframework.boot.cloud;
 
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 
 /**
  * Simple detection for well known cloud platforms. For more advanced cloud provider
@@ -60,6 +64,47 @@ public enum CloudPlatform {
 		@Override
 		public boolean isActive(Environment environment) {
 			return environment.containsProperty("HC_LANDSCAPE");
+		}
+
+	},
+
+	/**
+	 * Kubernetes platform.
+	 */
+	KUBERNETES {
+
+		private static final String SERVICE_HOST_SUFFIX = "_SERVICE_HOST";
+
+		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
+
+		@Override
+		public boolean isActive(Environment environment) {
+			if (environment instanceof ConfigurableEnvironment) {
+				return isActive((ConfigurableEnvironment) environment);
+			}
+			return false;
+		}
+
+		private boolean isActive(ConfigurableEnvironment environment) {
+			PropertySource<?> environmentPropertySource = environment.getPropertySources()
+					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+			if (environmentPropertySource instanceof EnumerablePropertySource) {
+				return isActive((EnumerablePropertySource<?>) environmentPropertySource);
+			}
+			return false;
+		}
+
+		private boolean isActive(EnumerablePropertySource<?> environmentPropertySource) {
+			for (String propertyName : environmentPropertySource.getPropertyNames()) {
+				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
+					String serviceName = propertyName.substring(0,
+							propertyName.length() - SERVICE_HOST_SUFFIX.length());
+					if (environmentPropertySource.getProperty(serviceName + SERVICE_PORT_SUFFIX) != null) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 	};

@@ -18,16 +18,17 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -46,59 +47,57 @@ import static org.mockito.Mockito.verify;
  * @author Michael Stummvoll
  * @author Michael Simons
  */
-public class BannerTests {
+@ExtendWith(OutputCaptureExtension.class)
+class BannerTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
-	@Rule
-	public OutputCapture out = new OutputCapture();
-
 	@Captor
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void testDefaultBanner() {
+	void testDefaultBanner(CapturedOutput output) {
 		SpringApplication application = createSpringApplication();
 		this.context = application.run();
-		assertThat(this.out.toString()).contains(":: Spring Boot ::");
+		assertThat(output).contains(":: Spring Boot ::");
 	}
 
 	@Test
-	public void testDefaultBannerInLog() {
+	void testDefaultBannerInLog(CapturedOutput output) {
 		SpringApplication application = createSpringApplication();
 		this.context = application.run();
-		assertThat(this.out.toString()).contains(":: Spring Boot ::");
+		assertThat(output).contains(":: Spring Boot ::");
 	}
 
 	@Test
-	public void testCustomBanner() {
+	void testCustomBanner(CapturedOutput output) {
 		SpringApplication application = createSpringApplication();
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
-		assertThat(this.out.toString()).contains("My Banner");
+		assertThat(output).contains("My Banner");
 	}
 
 	@Test
-	public void testBannerInContext() {
+	void testBannerInContext() {
 		SpringApplication application = createSpringApplication();
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isTrue();
 	}
 
 	@Test
-	public void testCustomBannerInContext() {
+	void testCustomBannerInContext() {
 		SpringApplication application = createSpringApplication();
 		Banner banner = mock(Banner.class);
 		application.setBanner(banner);
@@ -113,7 +112,7 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testDisableBannerInContext() {
+	void testDisableBannerInContext() {
 		SpringApplication application = createSpringApplication();
 		application.setBannerMode(Mode.OFF);
 		this.context = application.run();
@@ -135,8 +134,8 @@ public class BannerTests {
 
 	}
 
-	@Configuration
-	public static class Config {
+	@Configuration(proxyBeanMethods = false)
+	static class Config {
 
 	}
 

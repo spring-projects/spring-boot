@@ -40,7 +40,7 @@ public abstract class LogbackInitializer {
 
 	private static class Initializer {
 
-		public void setRootLogLevel() {
+		void setRootLogLevel() {
 			ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 			Logger logger = factory.getLogger(Logger.ROOT_LOGGER_NAME);
 			((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);

@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
  */
 public class MetricsFilterBeanExample {
 
-	@Configuration
-	static class MetricsFilterExampleConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	public static class MetricsFilterExampleConfiguration {
 
 		// tag::configuration[]
 		@Bean

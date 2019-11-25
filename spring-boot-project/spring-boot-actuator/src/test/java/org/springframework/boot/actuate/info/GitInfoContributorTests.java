@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode;
 import org.springframework.boot.info.GitProperties;
@@ -32,11 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class GitInfoContributorTests {
+class GitInfoContributorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void coerceDate() {
+	void coerceDate() {
 		Properties properties = new Properties();
 		properties.put("branch", "master");
 		properties.put("commit.time", "2016-03-04T14:36:33+0100");
@@ -51,7 +51,7 @@ public class GitInfoContributorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shortenCommitId() {
+	void shortenCommitId() {
 		Properties properties = new Properties();
 		properties.put("branch", "master");
 		properties.put("commit.id", "8e29a0b0d423d2665c6ee5171947c101a5c15681");
@@ -64,7 +64,7 @@ public class GitInfoContributorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void withGitIdAndAbbrev() {
+	void withGitIdAndAbbrev() {
 		// gh-11892
 		Properties properties = new Properties();
 		properties.put("branch", "master");

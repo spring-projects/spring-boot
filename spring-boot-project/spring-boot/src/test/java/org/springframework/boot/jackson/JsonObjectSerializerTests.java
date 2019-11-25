@@ -18,7 +18,7 @@ package org.springframework.boot.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Serializer;
 
@@ -29,10 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class JsonObjectSerializerTests {
+class JsonObjectSerializerTests {
 
 	@Test
-	public void serializeObjectShouldWriteJson() throws Exception {
+	void serializeObjectShouldWriteJson() throws Exception {
 		Serializer serializer = new NameAndAgeJsonComponent.Serializer();
 		SimpleModule module = new SimpleModule();
 		module.addSerializer(NameAndAge.class, serializer);

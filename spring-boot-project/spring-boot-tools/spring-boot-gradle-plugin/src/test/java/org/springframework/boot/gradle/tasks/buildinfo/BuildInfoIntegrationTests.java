@@ -22,13 +22,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
+import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.loader.tools.FileUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,13 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
+@ExtendWith(GradleCompatibilityExtension.class)
 public class BuildInfoIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
+	@TestTemplate
 	public void defaultValues() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
@@ -54,7 +55,7 @@ public class BuildInfoIntegrationTests {
 		assertThat(buildInfoProperties).containsEntry("build.version", "unspecified");
 	}
 
-	@Test
+	@TestTemplate
 	public void basicExecution() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
@@ -66,13 +67,13 @@ public class BuildInfoIntegrationTests {
 		assertThat(buildInfoProperties).containsEntry("build.version", "1.0");
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenExecutedTwiceAsTimeChanges() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
-	@Test
+	@TestTemplate
 	public void upToDateWhenExecutedTwiceWithFixedTime() {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -80,12 +81,27 @@ public class BuildInfoIntegrationTests {
 				.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
-	@Test
+	@TestTemplate
 	public void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		BuildResult result = this.gradleBuild.build("buildInfo", "-PnullTime", "-PprojectVersion=0.2.0");
 		assertThat(result.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	public void reproducibleOutputWithFixedTime()
+			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException, InterruptedException {
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/build-info.properties");
+		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
+		assertThat(buildInfoProperties.delete()).isTrue();
+		Thread.sleep(1500);
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		String secondHash = FileUtils.sha1Hash(buildInfoProperties);
+		assertThat(firstHash).isEqualTo(secondHash);
 	}
 
 	private Properties buildInfoProperties() {

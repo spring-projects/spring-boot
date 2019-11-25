@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
 /**
@@ -36,8 +36,8 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
-@ConditionalOnClass({ MongoOperations.class, MongoOperationsSessionRepository.class })
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ MongoOperations.class, MongoIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
 @Conditional(ServletSessionCondition.class)

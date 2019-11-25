@@ -6,24 +6,12 @@ bomr:
       repository: spring-boot
       issue-labels:
         - 'type: dependency-upgrade'
-    policy: same-minor-version
+    policy: same-major-version
     prohibited:
-      - project: dom4j
+      - project: derby
         versions:
-          # Old versions that use yyyymmdd format
-          - '[20040101,)'
-      - project: glassfish-jaxb
-        versions:
-          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
-          - '[2.3.2,2.4)'
-      - project: saaj-impl
-        versions:
-          # Switches to Jarkarta EE API dependencies resulting in duplicate classes
-          - '[1.5.1,1.6)'
-      - project: selenium-htmlunit
-        versions:
-          # Requires a new minor of Selenium which contains breaking API changes
-          - '[2.33.1,2.34)'
+          # 10.15 requires Java 9
+          - '[10.15,)'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for
@@ -34,7 +22,7 @@ bomr:
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
     repositories:
-      # Solr's Restlet dependencies
-      - 'https://maven.restlet.com'
       # Caffeine Simulator's dependencies
       - 'https://maven.imagej.net/content/repositories/public/'
+      # Spring Data GemFire's GemFire dependencies
+      - 'https://repo.spring.io/gemstone-release-pivotal-cache'

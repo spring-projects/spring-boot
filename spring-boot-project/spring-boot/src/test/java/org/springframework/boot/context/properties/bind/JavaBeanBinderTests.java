@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.Bean;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
@@ -51,19 +50,14 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
-public class JavaBeanBinderTests {
+class JavaBeanBinderTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private final Binder binder = new Binder(this.sources);
 
 	@Test
-	public void bindToClassShouldCreateBoundBean() {
+	void bindToClassShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "34");
@@ -78,7 +72,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoPrefixShouldCreateBoundBean() {
+	void bindToClassWhenHasNoPrefixShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("int-value", "12");
 		source.put("long-value", "34");
@@ -94,7 +88,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceShouldBindToInstance() {
+	void bindToInstanceShouldBindToInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "34");
@@ -112,7 +106,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWithNoPropertiesShouldReturnUnbound() {
+	void bindToInstanceWithNoPropertiesShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
@@ -124,7 +118,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldLeaveDefaults() {
+	void bindToClassShouldLeaveDefaults() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
@@ -134,7 +128,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToExistingInstanceShouldLeaveDefaults() {
+	void bindToExistingInstanceShouldLeaveDefaults() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
@@ -148,7 +142,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToMap() {
+	void bindToClassShouldBindToMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.map.foo-bar", "1");
 		source.put("foo.map.bar-baz", "2");
@@ -158,7 +152,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToList() {
+	void bindToClassShouldBindToList() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[1]", "bar-baz");
@@ -168,7 +162,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToListIfUnboundElementsPresentShouldThrowException() {
+	void bindToListIfUnboundElementsPresentShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[2]", "bar-baz");
@@ -179,7 +173,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToSet() {
+	void bindToClassShouldBindToSet() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.set[0]", "foo-bar");
 		source.put("foo.set[1]", "bar-baz");
@@ -189,7 +183,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToCollection() {
+	void bindToClassShouldBindToCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection[0]", "foo-bar");
 		source.put("foo.collection[1]", "bar-baz");
@@ -199,7 +193,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToCollectionWithDelimiter() {
+	void bindToClassShouldBindToCollectionWithDelimiter() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection", "foo-bar|bar-baz");
 		this.sources.add(source);
@@ -209,7 +203,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToMap() {
+	void bindToClassWhenHasNoSetterShouldBindToMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.map.foo-bar", "1");
 		source.put("foo.map.bar-baz", "2");
@@ -220,7 +214,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToList() {
+	void bindToClassWhenHasNoSetterShouldBindToList() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[1]", "bar-baz");
@@ -231,7 +225,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToSet() {
+	void bindToClassWhenHasNoSetterShouldBindToSet() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.set[0]", "foo-bar");
 		source.put("foo.set[1]", "bar-baz");
@@ -242,7 +236,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToCollection() {
+	void bindToClassWhenHasNoSetterShouldBindToCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection[0]", "foo-bar");
 		source.put("foo.collection[1]", "bar-baz");
@@ -253,7 +247,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindNested() {
+	void bindToClassShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -264,7 +258,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenIterableShouldBindNestedBasedOnInstance() {
+	void bindToClassWhenIterableShouldBindNestedBasedOnInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -277,7 +271,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenNotIterableShouldNotBindNestedBasedOnInstance() {
+	void bindToClassWhenNotIterableShouldNotBindNestedBasedOnInstance() {
 		// If we can't tell that binding will happen, we don't want to randomly invoke
 		// getters on the class and cause side effects
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -290,7 +284,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindNested() {
+	void bindToClassWhenHasNoSetterShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -302,7 +296,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterAndImmutableShouldThrowException() {
+	void bindToClassWhenHasNoSetterAndImmutableShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.foo", "bar");
 		this.sources.add(source);
@@ -311,7 +305,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWhenNoNestedShouldLeaveNestedAsNull() {
+	void bindToInstanceWhenNoNestedShouldLeaveNestedAsNull() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.value-bean.int-value", "123");
 		this.sources.add(source);
@@ -323,7 +317,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenPropertiesMissingShouldReturnUnbound() {
+	void bindToClassWhenPropertiesMissingShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.int-value", "12");
 		this.sources.add(source);
@@ -332,29 +326,33 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenNoDefaultConstructorShouldReturnUnbound() {
+	void bindToClassWhenNoDefaultConstructorShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
 		BindResult<ExampleWithNonDefaultConstructor> bean = this.binder.bind("foo",
 				Bindable.of(ExampleWithNonDefaultConstructor.class));
-		assertThat(bean.isBound()).isFalse();
+		assertThat(bean.isBound()).isTrue();
+		ExampleWithNonDefaultConstructor boundBean = bean.get();
+		assertThat(boundBean.getValue()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindToInstanceWhenNoDefaultConstructorShouldBind() {
+	void bindToInstanceWhenNoDefaultConstructorShouldBind() {
+		Binder binder = new Binder(this.sources, null, null, null, null,
+				(bindable, isNestedConstructorBinding) -> null);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
 		ExampleWithNonDefaultConstructor bean = new ExampleWithNonDefaultConstructor("faf");
-		ExampleWithNonDefaultConstructor boundBean = this.binder
+		ExampleWithNonDefaultConstructor boundBean = binder
 				.bind("foo", Bindable.of(ExampleWithNonDefaultConstructor.class).withExistingValue(bean)).get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getValue()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindToClassShouldBindHierarchy() {
+	void bindToClassShouldBindHierarchy() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "123");
 		source.put("foo.long-value", "456");
@@ -365,14 +363,14 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
+	void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo.int-value", "foo"));
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bind("foo", Bindable.of(ExampleValueBean.class)));
 	}
 
 	@Test
-	public void bindToClassWhenPropertyCannotBeConvertedAndIgnoreErrorsShouldNotSetValue() {
+	void bindToClassWhenPropertyCannotBeConvertedAndIgnoreErrorsShouldNotSetValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "bang");
@@ -388,7 +386,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenMismatchedGetSetShouldBind() {
+	void bindToClassWhenMismatchedGetSetShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "123");
 		this.sources.add(source);
@@ -397,7 +395,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldNotInvokeExtraMethods() {
+	void bindToClassShouldNotInvokeExtraMethods() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource("foo.value", "123");
 		this.sources.add(source.nonIterable());
 		ExampleWithThrowingGetters bean = this.binder.bind("foo", Bindable.of(ExampleWithThrowingGetters.class)).get();
@@ -405,7 +403,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithSelfReferenceShouldBind() {
+	void bindToClassWithSelfReferenceShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "123");
 		this.sources.add(source);
@@ -414,7 +412,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWithExistingValueShouldReturnUnbound() {
+	void bindToInstanceWithExistingValueShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleNestedBean existingValue = new ExampleNestedBean();
@@ -426,7 +424,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindWithAnnotations() {
+	void bindWithAnnotations() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.date", "2014-04-01");
 		this.sources.add(source);
@@ -436,7 +434,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindWhenValueIsConvertedWithPropertyEditorShouldBind() {
+	void bindWhenValueIsConvertedWithPropertyEditorShouldBind() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "java.lang.RuntimeException");
@@ -447,7 +445,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldIgnoreInvalidAccessors() {
+	void bindToClassShouldIgnoreInvalidAccessors() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.name", "something");
 		this.sources.add(source);
@@ -457,7 +455,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldIgnoreStaticAccessors() {
+	void bindToClassShouldIgnoreStaticAccessors() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.name", "invalid");
 		source.put("foo.counter", "42");
@@ -468,7 +466,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldCacheWithGenerics() {
+	void bindToClassShouldCacheWithGenerics() {
 		// gh-16821
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.integers[a].value", "1");
@@ -480,7 +478,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithOverloadedSetterShouldUseSetterThatMatchesField() {
+	void bindToClassWithOverloadedSetterShouldUseSetterThatMatchesField() {
 		// gh-16206
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.property", "some string");
@@ -491,7 +489,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void beanPropertiesPreferMatchingType() {
+	void beanPropertiesPreferMatchingType() {
 		// gh-16206
 		ResolvableType type = ResolvableType.forClass(PropertyWithOverloadedSetter.class);
 		Bean<PropertyWithOverloadedSetter> bean = new Bean<PropertyWithOverloadedSetter>(type, type.resolve()) {
@@ -527,7 +525,22 @@ public class JavaBeanBinderTests {
 		property.setValue(() -> target, "some string");
 	}
 
-	public static class ExampleValueBean {
+	@Test
+	void bindOrCreateWithNestedShouldReturnCreatedValue() {
+		NestedJavaBean result = this.binder.bindOrCreate("foo", Bindable.of(NestedJavaBean.class));
+		assertThat(result.getNested().getBar()).isEqualTo(456);
+	}
+
+	@Test
+	void bindWhenHasPackagePrivateSetterShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "test");
+		this.sources.add(source);
+		PackagePrivateSetterBean bean = this.binder.bind("foo", Bindable.of(PackagePrivateSetterBean.class)).get();
+		assertThat(bean.getProperty()).isEqualTo("test");
+	}
+
+	static class ExampleValueBean {
 
 		private int intValue;
 
@@ -537,220 +550,220 @@ public class JavaBeanBinderTests {
 
 		private ExampleEnum enumValue;
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public void setIntValue(int intValue) {
+		void setIntValue(int intValue) {
 			this.intValue = intValue;
 		}
 
-		public long getLongValue() {
+		long getLongValue() {
 			return this.longValue;
 		}
 
-		public void setLongValue(long longValue) {
+		void setLongValue(long longValue) {
 			this.longValue = longValue;
 		}
 
-		public String getStringValue() {
+		String getStringValue() {
 			return this.stringValue;
 		}
 
-		public void setStringValue(String stringValue) {
+		void setStringValue(String stringValue) {
 			this.stringValue = stringValue;
 		}
 
-		public ExampleEnum getEnumValue() {
+		ExampleEnum getEnumValue() {
 			return this.enumValue;
 		}
 
-		public void setEnumValue(ExampleEnum enumValue) {
+		void setEnumValue(ExampleEnum enumValue) {
 			this.enumValue = enumValue;
 		}
 
 	}
 
-	public static class ExampleDefaultsBean {
+	static class ExampleDefaultsBean {
 
 		private int foo = 123;
 
 		private int bar = 456;
 
-		public int getFoo() {
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			this.foo = foo;
 		}
 
-		public int getBar() {
+		int getBar() {
 			return this.bar;
 		}
 
-		public void setBar(int bar) {
+		void setBar(int bar) {
 			this.bar = bar;
 		}
 
 	}
 
-	public static class ExampleMapBean {
+	static class ExampleMapBean {
 
 		private Map<ExampleEnum, Integer> map;
 
-		public Map<ExampleEnum, Integer> getMap() {
+		Map<ExampleEnum, Integer> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<ExampleEnum, Integer> map) {
+		void setMap(Map<ExampleEnum, Integer> map) {
 			this.map = map;
 		}
 
 	}
 
-	public static class ExampleListBean {
+	static class ExampleListBean {
 
 		private List<ExampleEnum> list;
 
-		public List<ExampleEnum> getList() {
+		List<ExampleEnum> getList() {
 			return this.list;
 		}
 
-		public void setList(List<ExampleEnum> list) {
+		void setList(List<ExampleEnum> list) {
 			this.list = list;
 		}
 
 	}
 
-	public static class ExampleSetBean {
+	static class ExampleSetBean {
 
 		private Set<ExampleEnum> set;
 
-		public Set<ExampleEnum> getSet() {
+		Set<ExampleEnum> getSet() {
 			return this.set;
 		}
 
-		public void setSet(Set<ExampleEnum> set) {
+		void setSet(Set<ExampleEnum> set) {
 			this.set = set;
 		}
 
 	}
 
-	public static class ExampleCollectionBean {
+	static class ExampleCollectionBean {
 
 		private Collection<ExampleEnum> collection;
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		public void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
 	}
 
-	public static class ExampleMapBeanWithoutSetter {
+	static class ExampleMapBeanWithoutSetter {
 
 		private Map<ExampleEnum, Integer> map = new LinkedHashMap<>();
 
-		public Map<ExampleEnum, Integer> getMap() {
+		Map<ExampleEnum, Integer> getMap() {
 			return this.map;
 		}
 
 	}
 
-	public static class ExampleListBeanWithoutSetter {
+	static class ExampleListBeanWithoutSetter {
 
 		private List<ExampleEnum> list = new ArrayList<>();
 
-		public List<ExampleEnum> getList() {
+		List<ExampleEnum> getList() {
 			return this.list;
 		}
 
 	}
 
-	public static class ExampleSetBeanWithoutSetter {
+	static class ExampleSetBeanWithoutSetter {
 
 		private Set<ExampleEnum> set = new LinkedHashSet<>();
 
-		public Set<ExampleEnum> getSet() {
+		Set<ExampleEnum> getSet() {
 			return this.set;
 		}
 
 	}
 
-	public static class ExampleCollectionBeanWithoutSetter {
+	static class ExampleCollectionBeanWithoutSetter {
 
 		private Collection<ExampleEnum> collection = new ArrayList<>();
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
 	}
 
-	public static class ExampleCollectionBeanWithDelimiter {
+	static class ExampleCollectionBeanWithDelimiter {
 
 		@Delimiter("|")
 		private Collection<ExampleEnum> collection;
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		public void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
 	}
 
-	public static class ExampleNestedBean {
+	static class ExampleNestedBean {
 
 		private ExampleValueBean valueBean;
 
-		public ExampleValueBean getValueBean() {
+		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
-		public void setValueBean(ExampleValueBean valueBean) {
+		void setValueBean(ExampleValueBean valueBean) {
 			this.valueBean = valueBean;
 		}
 
 	}
 
-	public static class ExampleNestedBeanWithoutSetter {
+	static class ExampleNestedBeanWithoutSetter {
 
 		private ExampleValueBean valueBean = new ExampleValueBean();
 
-		public ExampleValueBean getValueBean() {
+		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
 	}
 
-	public static class ExampleNestedBeanWithoutSetterOrType {
+	static class ExampleNestedBeanWithoutSetterOrType {
 
 		private ExampleValueBean valueBean = new ExampleValueBean();
 
-		public Object getValueBean() {
+		Object getValueBean() {
 			return this.valueBean;
 		}
 
 	}
 
-	public static class ExampleImmutableNestedBeanWithoutSetter {
+	static class ExampleImmutableNestedBeanWithoutSetter {
 
 		private NestedImmutable nested = new NestedImmutable();
 
-		public NestedImmutable getNested() {
+		NestedImmutable getNested() {
 			return this.nested;
 		}
 
-		public static class NestedImmutable {
+		static class NestedImmutable {
 
-			public String getFoo() {
+			String getFoo() {
 				return "foo";
 			}
 
@@ -758,153 +771,153 @@ public class JavaBeanBinderTests {
 
 	}
 
-	public static class ExampleWithNonDefaultConstructor {
+	static class ExampleWithNonDefaultConstructor {
 
 		private String value;
 
-		public ExampleWithNonDefaultConstructor(String value) {
+		ExampleWithNonDefaultConstructor(String value) {
 			this.value = value;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
 	}
 
-	public abstract static class ExampleSuperClassBean {
+	static class ExampleSuperClassBean {
 
 		private int intValue;
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public void setIntValue(int intValue) {
+		void setIntValue(int intValue) {
 			this.intValue = intValue;
 		}
 
 	}
 
-	public static class ExampleSubclassBean extends ExampleSuperClassBean {
+	static class ExampleSubclassBean extends ExampleSuperClassBean {
 
 		private long longValue;
 
-		public long getLongValue() {
+		long getLongValue() {
 			return this.longValue;
 		}
 
-		public void setLongValue(long longValue) {
+		void setLongValue(long longValue) {
 			this.longValue = longValue;
 		}
 
 	}
 
-	public static class ExampleMismatchBean {
+	static class ExampleMismatchBean {
 
 		private int value;
 
-		public String getValue() {
+		String getValue() {
 			return String.valueOf(this.value);
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ExampleWithThrowingGetters {
+	static class ExampleWithThrowingGetters {
 
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
-		public List<String> getNames() {
+		List<String> getNames() {
 			throw new RuntimeException();
 		}
 
-		public ExampleValueBean getNested() {
+		ExampleValueBean getNested() {
 			throw new RuntimeException();
 		}
 
 	}
 
-	public static class ExampleWithSelfReference {
+	static class ExampleWithSelfReference {
 
 		private int value;
 
 		private ExampleWithSelfReference self;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
-		public ExampleWithSelfReference getSelf() {
+		ExampleWithSelfReference getSelf() {
 			return this.self;
 		}
 
-		public void setSelf(ExampleWithSelfReference self) {
+		void setSelf(ExampleWithSelfReference self) {
 			this.self = self;
 		}
 
 	}
 
-	public static class ExampleWithInvalidAccessors {
+	static class ExampleWithInvalidAccessors {
 
 		private String name;
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public String get() {
+		String get() {
 			throw new IllegalArgumentException("should not be invoked");
 		}
 
-		public boolean is() {
+		boolean is() {
 			throw new IllegalArgumentException("should not be invoked");
 		}
 
 	}
 
-	public static class ExampleWithStaticAccessors {
+	static class ExampleWithStaticAccessors {
 
 		private static String name;
 
 		private int counter;
 
-		public static String getName() {
+		static String getName() {
 			return name;
 		}
 
-		public static void setName(String name) {
+		static void setName(String name) {
 			ExampleWithStaticAccessors.name = name;
 		}
 
-		public int getCounter() {
+		int getCounter() {
 			return this.counter;
 		}
 
-		public void setCounter(int counter) {
+		void setCounter(int counter) {
 			this.counter = counter;
 		}
 
@@ -918,79 +931,107 @@ public class JavaBeanBinderTests {
 
 	}
 
-	public static class ConverterAnnotatedExampleBean {
+	static class ConverterAnnotatedExampleBean {
 
 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 		private LocalDate date;
 
-		public LocalDate getDate() {
+		LocalDate getDate() {
 			return this.date;
 		}
 
-		public void setDate(LocalDate date) {
+		void setDate(LocalDate date) {
 			this.date = date;
 		}
 
 	}
 
-	public static class ExampleWithPropertyEditorType {
+	static class ExampleWithPropertyEditorType {
 
 		private Class<? extends Throwable> value;
 
-		public Class<? extends Throwable> getValue() {
+		Class<? extends Throwable> getValue() {
 			return this.value;
 		}
 
-		public void setValue(Class<? extends Throwable> value) {
+		void setValue(Class<? extends Throwable> value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ExampleWithGenericMap {
+	static class ExampleWithGenericMap {
 
 		private final Map<String, GenericValue<Integer>> integers = new LinkedHashMap<>();
 
 		private final Map<String, GenericValue<Boolean>> booleans = new LinkedHashMap<>();
 
-		public Map<String, GenericValue<Integer>> getIntegers() {
+		Map<String, GenericValue<Integer>> getIntegers() {
 			return this.integers;
 		}
 
-		public Map<String, GenericValue<Boolean>> getBooleans() {
+		Map<String, GenericValue<Boolean>> getBooleans() {
 			return this.booleans;
 		}
 
 	}
 
-	public static class GenericValue<T> {
+	static class GenericValue<T> {
 
 		private T value;
 
-		public T getValue() {
+		T getValue() {
 			return this.value;
 		}
 
-		public void setValue(T value) {
+		void setValue(T value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class PropertyWithOverloadedSetter {
+	static class PropertyWithOverloadedSetter {
 
 		private String property;
 
-		public void setProperty(int property) {
+		void setProperty(int property) {
 			this.property = String.valueOf(property);
 		}
 
-		public void setProperty(String property) {
+		void setProperty(String property) {
 			this.property = property;
 		}
 
-		public String getProperty() {
+		String getProperty() {
 			return this.property;
+		}
+
+	}
+
+	static class NestedJavaBean {
+
+		private ExampleDefaultsBean nested = new ExampleDefaultsBean();
+
+		ExampleDefaultsBean getNested() {
+			return this.nested;
+		}
+
+		void setNested(ExampleDefaultsBean nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	static class PackagePrivateSetterBean {
+
+		private String property;
+
+		String getProperty() {
+			return this.property;
+		}
+
+		void setProperty(String property) {
+			this.property = property;
 		}
 
 	}

@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.session;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -45,7 +45,7 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void severalCandidatesWithNoSessionStore() {
+	void severalCandidatesWithNoSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
@@ -57,7 +57,7 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 	}
 
 	@Test
-	public void severalCandidatesWithWrongSessionStore() {
+	void severalCandidatesWithWrongSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
 					assertThat(context).hasFailed();
@@ -69,18 +69,18 @@ public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAut
 	}
 
 	@Test
-	public void severalCandidatesWithValidSessionStore() {
+	void severalCandidatesWithValidSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=jdbc")
-				.run((context) -> validateSessionRepository(context, JdbcOperationsSessionRepository.class));
+				.run((context) -> validateSessionRepository(context, JdbcIndexedSessionRepository.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfiguration {
 
 		@Bean
 		@SuppressWarnings("unchecked")
-		public HazelcastInstance hazelcastInstance() {
+		HazelcastInstance hazelcastInstance() {
 			IMap<Object, Object> map = mock(IMap.class);
 			HazelcastInstance mock = mock(HazelcastInstance.class);
 			given(mock.getMap("spring:session:sessions")).willReturn(map);

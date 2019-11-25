@@ -21,7 +21,7 @@ import java.security.NoSuchProviderException;
 
 import javax.net.ssl.KeyManager;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
@@ -36,22 +36,22 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Brian Clozel
  * @author Raheela Aslam
  */
-public class SslBuilderCustomizerTests {
+class SslBuilderCustomizerTests {
 
 	@Test
-	public void getKeyManagersWhenAliasIsNullShouldNotDecorate() throws Exception {
+	void getKeyManagersWhenAliasIsNullShouldNotDecorate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
 		Class<?> name = Class.forName(
-				"org.springframework.boot.web.embedded.undertow" + ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
+				"org.springframework.boot.web.embedded.undertow.SslBuilderCustomizer$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
 	@Test
-	public void keyStoreProviderIsUsedWhenCreatingKeyStore() throws Exception {
+	void keyStoreProviderIsUsedWhenCreatingKeyStore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
@@ -64,7 +64,7 @@ public class SslBuilderCustomizerTests {
 	}
 
 	@Test
-	public void trustStoreProviderIsUsedWhenCreatingTrustStore() throws Exception {
+	void trustStoreProviderIsUsedWhenCreatingTrustStore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setTrustStorePassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
@@ -77,7 +77,7 @@ public class SslBuilderCustomizerTests {
 	}
 
 	@Test
-	public void getKeyManagersWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
+	void getKeyManagersWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()

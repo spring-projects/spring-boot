@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
+abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
 	protected JettyServletWebServerFactory getFactory() {
@@ -78,9 +78,14 @@ public abstract class AbstractJettyServletWebServerFactoryTests extends Abstract
 	}
 
 	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
+	protected void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
+		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
 }

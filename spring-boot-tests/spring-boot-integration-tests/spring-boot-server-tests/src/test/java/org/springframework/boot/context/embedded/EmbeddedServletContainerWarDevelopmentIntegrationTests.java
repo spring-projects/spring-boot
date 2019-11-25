@@ -19,19 +19,17 @@ package org.springframework.boot.context.embedded;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,52 +39,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
-public class EmbeddedServletContainerWarDevelopmentIntegrationTests
-		extends AbstractEmbeddedServletContainerIntegrationTests {
+@EmbeddedServletContainerTest(packaging = "war",
+		launchers = { BootRunApplicationLauncher.class, IdeApplicationLauncher.class })
+public class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 
-	@Parameters(name = "{0}")
-	public static Object[] parameters() {
-		return AbstractEmbeddedServletContainerIntegrationTests.parameters("war",
-				Arrays.asList(BootRunApplicationLauncher.class, IdeApplicationLauncher.class));
-	}
-
-	public EmbeddedServletContainerWarDevelopmentIntegrationTests(String name, AbstractApplicationLauncher launcher) {
-		super(name, launcher);
-	}
-
-	@Test
-	public void metaInfResourceFromDependencyIsAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
+	@TestTemplate
+	public void metaInfResourceFromDependencyIsAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	@Test
-	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp() {
-		Assume.assumeFalse(isWindows());
-		ResponseEntity<String> entity = this.rest.getForEntity(
+	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
+	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(
+			RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity(
 				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("encoded-name");
 	}
 
-	@Test
-	public void metaInfResourceFromDependencyIsAvailableViaServletContext() {
-		ResponseEntity<String> entity = this.rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
+	@TestTemplate
+	public void metaInfResourceFromDependencyIsAvailableViaServletContext(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	@Test
-	public void webappResourcesAreAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity("/webapp-resource.txt", String.class);
+	@TestTemplate
+	public void webappResourcesAreAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/webapp-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	@Test
-	public void loaderClassesAreNotAvailableViaResourcePaths() {
-		ResponseEntity<String> entity = this.rest.getForEntity("/resourcePaths", String.class);
+	@TestTemplate
+	public void loaderClassesAreNotAvailableViaResourcePaths(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
 				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));

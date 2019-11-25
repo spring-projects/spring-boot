@@ -37,9 +37,9 @@ class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<C
 			return null;
 		}
 		return new FailureAnalysis(
-				"Configuration of the Hikari connection pool failed: " + "'dataSourceClassName' is not supported.",
+				"Configuration of the Hikari connection pool failed: 'dataSourceClassName' is not supported.",
 				"Spring Boot auto-configures only a driver and can't specify a custom "
-						+ "DataSource. Consider configuring the Hikari DataSource in " + "your own configuration.",
+						+ "DataSource. Consider configuring the Hikari DataSource in your own configuration.",
 				cause);
 	}
 

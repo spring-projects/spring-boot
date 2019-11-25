@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,11 +51,32 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
 		Project project = archiveTask.getProject();
-		putIfMissing(this.properties, "initInfoProvides", archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()),
-				archiveTask.getBaseName());
-		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()),
-				archiveTask.getBaseName());
+		String baseName = getArchiveBaseName(archiveTask);
+		putIfMissing(this.properties, "initInfoProvides", baseName);
+		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()), baseName);
+		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()), baseName);
+	}
+
+	private static String getArchiveBaseName(AbstractArchiveTask task) {
+		try {
+			Method method = findMethod(task.getClass(), "getArchiveBaseName");
+			if (method != null) {
+				return (String) method.invoke(task);
+			}
+		}
+		catch (Exception ex) {
+			// Continue
+		}
+		return task.getBaseName();
+	}
+
+	private static Method findMethod(Class<?> type, String name) {
+		for (Method candidate : type.getMethods()) {
+			if (candidate.getName().equals(name)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -106,17 +128,14 @@ public class LaunchScriptConfiguration implements Serializable {
 			return false;
 		}
 		if (this.script == null) {
-			if (other.script != null) {
-				return false;
-			}
+			return other.script == null;
 		}
 		else if (!this.script.equals(other.script)) {
 			return false;
 		}
-		else if (!equalContents(this.script, other.script)) {
-			return false;
+		else {
+			return equalContents(this.script, other.script);
 		}
-		return true;
 	}
 
 	private boolean equalContents(File one, File two) {
@@ -132,7 +151,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
+		result = prime * result + this.properties.hashCode();
 		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
 		return result;
 	}

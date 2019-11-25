@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -59,8 +59,8 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	@Override
 	protected boolean isEndpointExposed(Object endpointBean) {
 		Class<?> type = ClassUtils.getUserClass(endpointBean.getClass());
-		return AnnotatedElementUtils.isAnnotated(type, ControllerEndpoint.class)
-				|| AnnotatedElementUtils.isAnnotated(type, RestControllerEndpoint.class);
+		MergedAnnotations annotations = MergedAnnotations.from(type);
+		return annotations.isPresent(ControllerEndpoint.class) || annotations.isPresent(RestControllerEndpoint.class);
 	}
 
 	@Override

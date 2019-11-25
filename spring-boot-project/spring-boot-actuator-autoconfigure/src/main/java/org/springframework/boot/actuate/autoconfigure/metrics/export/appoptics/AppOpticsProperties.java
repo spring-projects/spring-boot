@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring AppOptics metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring AppOptics
+ * metrics export.
  *
  * @author Stephane Nicoll
  * @since 2.1.0

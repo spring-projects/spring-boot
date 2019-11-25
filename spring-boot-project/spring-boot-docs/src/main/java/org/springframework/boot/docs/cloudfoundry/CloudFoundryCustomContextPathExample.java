@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Johnny Lim
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class CloudFoundryCustomContextPathExample {
 
 	// tag::configuration[]

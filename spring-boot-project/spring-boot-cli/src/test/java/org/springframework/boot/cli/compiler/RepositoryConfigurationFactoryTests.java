@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class RepositoryConfigurationFactoryTests {
+class RepositoryConfigurationFactoryTests {
 
 	@Test
-	public void defaultRepositories() {
+	void defaultRepositories() {
 		TestPropertyValues.of("user.home:src/test/resources/maven-settings/basic").applyToSystemProperties(() -> {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
@@ -46,7 +46,7 @@ public class RepositoryConfigurationFactoryTests {
 	}
 
 	@Test
-	public void snapshotRepositoriesDisabled() {
+	void snapshotRepositoriesDisabled() {
 		TestPropertyValues.of("user.home:src/test/resources/maven-settings/basic", "disableSpringSnapshotRepos:true")
 				.applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
@@ -57,7 +57,7 @@ public class RepositoryConfigurationFactoryTests {
 	}
 
 	@Test
-	public void activeByDefaultProfileRepositories() {
+	void activeByDefaultProfileRepositories() {
 		TestPropertyValues.of("user.home:src/test/resources/maven-settings/active-profile-repositories")
 				.applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
@@ -69,7 +69,7 @@ public class RepositoryConfigurationFactoryTests {
 	}
 
 	@Test
-	public void activeByPropertyProfileRepositories() {
+	void activeByPropertyProfileRepositories() {
 		TestPropertyValues.of("user.home:src/test/resources/maven-settings/active-profile-repositories", "foo:bar")
 				.applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
@@ -81,7 +81,7 @@ public class RepositoryConfigurationFactoryTests {
 	}
 
 	@Test
-	public void interpolationProfileRepositories() {
+	void interpolationProfileRepositories() {
 		TestPropertyValues
 				.of("user.home:src/test/resources/maven-settings/active-profile-repositories", "interpolate:true")
 				.applyToSystemProperties(() -> {

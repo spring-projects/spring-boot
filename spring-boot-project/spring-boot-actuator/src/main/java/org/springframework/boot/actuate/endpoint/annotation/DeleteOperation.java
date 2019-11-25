@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies a method on an {@link Endpoint} as being a delete operation.
+ * Identifies a method on an {@link Endpoint @Endpoint} as being a delete operation.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

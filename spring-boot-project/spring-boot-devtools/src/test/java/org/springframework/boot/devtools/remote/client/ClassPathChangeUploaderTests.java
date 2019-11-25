@@ -26,10 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
@@ -53,50 +52,46 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ClassPathChangeUploaderTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class ClassPathChangeUploaderTests {
 
 	private MockClientHttpRequestFactory requestFactory;
 
 	private ClassPathChangeUploader uploader;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.requestFactory = new MockClientHttpRequestFactory();
 		this.uploader = new ClassPathChangeUploader("http://localhost/upload", this.requestFactory);
 	}
 
 	@Test
-	public void urlMustNotBeNull() {
+	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void urlMustNotBeEmpty() {
+	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void requestFactoryMustNotBeNull() {
+	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
-	public void urlMustNotBeMalformed() {
+	void urlMustNotBeMalformed() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
-	public void sendsClassLoaderFiles() throws Exception {
-		File sourceFolder = this.temp.newFolder();
+	void sendsClassLoaderFiles(@TempDir File sourceFolder) throws Exception {
 		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
@@ -106,8 +101,7 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	public void retriesOnSocketException() throws Exception {
-		File sourceFolder = this.temp.newFolder();
+	void retriesOnSocketException(@TempDir File sourceFolder) throws Exception {
 		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
 		this.requestFactory.willRespond(new SocketException());
 		this.requestFactory.willRespond(HttpStatus.OK);
@@ -145,8 +139,7 @@ public class ClassPathChangeUploaderTests {
 		files.add(new ChangedFile(sourceFolder, file3, Type.DELETE));
 		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		changeSet.add(new ChangedFiles(sourceFolder, files));
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
-		return event;
+		return new ClassPathChangedEvent(this, changeSet, false);
 	}
 
 	private File createFile(File sourceFolder, String name) throws IOException {

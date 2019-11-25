@@ -24,7 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public abstract class AbstractJupiterTestWithConfigAndExtendWith {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 	}

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.example.ExampleGenericService;
@@ -27,19 +27,20 @@ import org.springframework.boot.test.mock.mockito.example.SimpleExampleStringGen
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to replace existing beans.
+ * Test {@link SpyBean @SpyBean} on a test class field can be used to replace existing
+ * beans.
  *
  * @author Phillip Webb
  * @see SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests
  */
-@RunWith(SpringRunner.class)
-public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
+@ExtendWith(SpringExtension.class)
+class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 
 	// gh-7625
 
@@ -50,17 +51,17 @@ public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 	private ExampleGenericServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say 123 simple");
 		verify(this.exampleService).greeting();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ ExampleGenericServiceCaller.class, SimpleExampleIntegerGenericService.class })
 	static class SpyBeanOnTestFieldForExistingBeanConfig {
 
 		@Bean
-		public ExampleGenericService<String> simpleExampleStringGenericService() {
+		ExampleGenericService<String> simpleExampleStringGenericService() {
 			// In order to trigger issue we need a method signature that returns the
 			// generic type not the actual implementation class
 			return new SimpleExampleStringGenericService();

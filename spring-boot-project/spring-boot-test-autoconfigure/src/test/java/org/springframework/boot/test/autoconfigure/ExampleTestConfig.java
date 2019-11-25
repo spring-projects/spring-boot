@@ -21,11 +21,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 
 /**
  * Example {@link TestConfiguration @TestConfiguration} for
- * {@link OverrideAutoConfiguration} tests.
+ * {@link OverrideAutoConfiguration @OverrideAutoConfiguration} tests.
  *
  * @author Phillip Webb
  */
-@TestConfiguration
+@TestConfiguration(proxyBeanMethods = false)
 @EntityScan("some.other.package")
 public class ExampleTestConfig {
 

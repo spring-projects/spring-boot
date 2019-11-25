@@ -40,7 +40,7 @@ public class SimpleTwoDataSourcesExample {
 	 * A simple configuration that exposes two data sources.
 	 */
 	@Configuration
-	static class SimpleDataSourcesConfiguration {
+	public static class SimpleDataSourcesConfiguration {
 
 		// tag::configuration[]
 		@Bean

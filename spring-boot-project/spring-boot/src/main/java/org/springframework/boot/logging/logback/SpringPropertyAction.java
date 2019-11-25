@@ -63,16 +63,7 @@ class SpringPropertyAction extends Action {
 			addWarn("No Spring Environment available to resolve " + source);
 			return defaultValue;
 		}
-		String value = this.environment.getProperty(source);
-		if (value != null) {
-			return value;
-		}
-		int lastDot = source.lastIndexOf('.');
-		if (lastDot > 0) {
-			String prefix = source.substring(0, lastDot + 1);
-			return this.environment.getProperty(prefix + source.substring(lastDot + 1), defaultValue);
-		}
-		return defaultValue;
+		return this.environment.getProperty(source, defaultValue);
 	}
 
 	@Override

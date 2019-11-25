@@ -21,12 +21,10 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,16 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Lorenzo Dee
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @WebAppConfiguration("src/test/webapp")
-public class WebMvcTestWithWebAppConfigurationTests {
+class WebMvcTestWithWebAppConfigurationTests {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	@Test
-	public void whenBasePathIsCustomizedResourcesCanBeLoadedFromThatLocation() throws Exception {
+	void whenBasePathIsCustomizedResourcesCanBeLoadedFromThatLocation() throws Exception {
 		testResource("/inwebapp", "src/test/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");

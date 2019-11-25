@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
 
 /**
- * {@link EndpointWebExtension} for the {@link EnvironmentEndpoint}.
+ * {@link EndpointWebExtension @EndpointWebExtension} for the {@link EnvironmentEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0

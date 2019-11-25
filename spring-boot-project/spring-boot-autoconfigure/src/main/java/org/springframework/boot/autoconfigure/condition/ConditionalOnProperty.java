@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link Conditional} that checks if the specified properties have a specific value. By
- * default the properties must be present in the {@link Environment} and
- * <strong>not</strong> equal to {@code false}. The {@link #havingValue()} and
+ * {@link Conditional @Conditional} that checks if the specified properties have a
+ * specific value. By default the properties must be present in the {@link Environment}
+ * and <strong>not</strong> equal to {@code false}. The {@link #havingValue()} and
  * {@link #matchIfMissing()} attributes allow further customizations.
  * <p>
  * The {@link #havingValue} attribute can be used to specify the value that the property

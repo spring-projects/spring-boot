@@ -37,7 +37,7 @@ public class CompleteTwoDataSourcesExample {
 	 * A complete configuration that exposes two data sources.
 	 */
 	@Configuration
-	static class CompleteDataSourcesConfiguration {
+	public static class CompleteDataSourcesConfiguration {
 
 		// tag::configuration[]
 		@Bean

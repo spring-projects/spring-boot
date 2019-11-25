@@ -69,7 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Raja Kolli
  * @since 1.5.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
 @AutoConfigureBefore(LdapAutoConfiguration.class)
 @ConditionalOnClass(InMemoryDirectoryServer.class)
@@ -80,37 +80,27 @@ public class EmbeddedLdapAutoConfiguration {
 
 	private final EmbeddedLdapProperties embeddedProperties;
 
-	private final LdapProperties properties;
-
-	private final ConfigurableApplicationContext applicationContext;
-
-	private final Environment environment;
-
 	private InMemoryDirectoryServer server;
 
-	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties, LdapProperties properties,
-			ConfigurableApplicationContext applicationContext, Environment environment) {
+	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
 		this.embeddedProperties = embeddedProperties;
-		this.properties = properties;
-		this.applicationContext = applicationContext;
-		this.environment = environment;
 	}
 
 	@Bean
 	@DependsOn("directoryServer")
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties) {
 		LdapContextSource source = new LdapContextSource();
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
 			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
 			source.setPassword(this.embeddedProperties.getCredential().getPassword());
 		}
-		source.setUrls(this.properties.determineUrls(this.environment));
+		source.setUrls(properties.determineUrls(environment));
 		return source;
 	}
 
 	@Bean
-	public InMemoryDirectoryServer directoryServer() throws LDAPException {
+	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
@@ -122,9 +112,9 @@ public class EmbeddedLdapAutoConfiguration {
 				this.embeddedProperties.getPort());
 		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
-		importLdif();
+		importLdif(applicationContext);
 		this.server.startListening();
-		setPortProperty(this.applicationContext, this.server.getListenPort());
+		setPortProperty(applicationContext, this.server.getListenPort());
 		return this.server;
 	}
 
@@ -154,11 +144,11 @@ public class EmbeddedLdapAutoConfiguration {
 		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
 	}
 
-	private void importLdif() throws LDAPException {
+	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
 		String location = this.embeddedProperties.getLdif();
 		if (StringUtils.hasText(location)) {
 			try {
-				Resource resource = this.applicationContext.getResource(location);
+				Resource resource = applicationContext.getResource(location);
 				if (resource.exists()) {
 					try (InputStream inputStream = resource.getInputStream()) {
 						this.server.importFromLDIF(true, new LDIFReader(inputStream));

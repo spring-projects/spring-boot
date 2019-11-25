@@ -21,11 +21,11 @@ package org.springframework.boot.docs.autoconfigure;
  *
  * @author Stephane Nicoll
  */
-class UserService {
+public class UserService {
 
 	private final String name;
 
-	UserService(String name) {
+	public UserService(String name) {
 		this.name = name;
 	}
 

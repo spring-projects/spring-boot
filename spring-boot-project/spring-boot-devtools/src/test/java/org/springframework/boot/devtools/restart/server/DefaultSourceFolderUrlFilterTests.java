@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class DefaultSourceFolderUrlFilterTests {
+class DefaultSourceFolderUrlFilterTests {
 
 	private static final String SOURCE_ROOT = "/Users/me/code/some-root/";
 
@@ -55,29 +55,29 @@ public class DefaultSourceFolderUrlFilterTests {
 	private DefaultSourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
 
 	@Test
-	public void mavenSourceFolder() throws Exception {
+	void mavenSourceFolder() throws Exception {
 		doTest("my-module/target/classes/");
 	}
 
 	@Test
-	public void gradleEclipseSourceFolder() throws Exception {
+	void gradleEclipseSourceFolder() throws Exception {
 		doTest("my-module/bin/");
 	}
 
 	@Test
-	public void unusualSourceFolder() throws Exception {
+	void unusualSourceFolder() throws Exception {
 		doTest("my-module/something/quite/quite/mad/");
 	}
 
 	@Test
-	public void skippedProjects() throws Exception {
-		String sourceFolder = "/Users/me/code/spring-boot-samples/" + "spring-boot-sample-devtools";
-		URL jarUrl = new URL("jar:file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
+	void skippedProjects() throws Exception {
+		String sourceFolder = "/Users/me/code/spring-boot-samples/spring-boot-sample-devtools";
+		URL jarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
 		assertThat(this.filter.isMatch(sourceFolder, jarUrl)).isTrue();
-		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
+		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
 				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
 		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl)).isFalse();
-		URL fileUrl = new URL("file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
+		URL fileUrl = new URL("file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
 		assertThat(this.filter.isMatch(sourceFolder, fileUrl)).isTrue();
 	}
 

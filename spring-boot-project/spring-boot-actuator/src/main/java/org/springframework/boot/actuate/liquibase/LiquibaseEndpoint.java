@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Endpoint} to expose liquibase info.
+ * {@link Endpoint @Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
  * @since 2.0.0

@@ -60,7 +60,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.linksResolver = linksResolver;
 		this.securityInterceptor = securityInterceptor;
 	}

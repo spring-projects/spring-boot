@@ -16,7 +16,7 @@
 
 package org.springframework.boot.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.maven.AbstractRunMojo.SystemPropertyFormatter;
 
@@ -25,30 +25,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link AbstractRunMojo.SystemPropertyFormatter}.
  */
-public class SystemPropertyFormatterTests {
+class SystemPropertyFormatterTests {
 
 	@Test
-	public void parseEmpty() {
+	void parseEmpty() {
 		assertThat(SystemPropertyFormatter.format(null, null)).isEqualTo("");
 	}
 
 	@Test
-	public void parseOnlyKey() {
+	void parseOnlyKey() {
 		assertThat(SystemPropertyFormatter.format("key1", null)).isEqualTo("-Dkey1");
 	}
 
 	@Test
-	public void parseKeyWithValue() {
+	void parseKeyWithValue() {
 		assertThat(SystemPropertyFormatter.format("key1", "value1")).isEqualTo("-Dkey1=\"value1\"");
 	}
 
 	@Test
-	public void parseKeyWithEmptyValue() {
+	void parseKeyWithEmptyValue() {
 		assertThat(SystemPropertyFormatter.format("key1", "")).isEqualTo("-Dkey1");
 	}
 
 	@Test
-	public void parseKeyWithOnlySpaces() {
+	void parseKeyWithOnlySpaces() {
 		assertThat(SystemPropertyFormatter.format("key1", "   ")).isEqualTo("-Dkey1=\"   \"");
 	}
 

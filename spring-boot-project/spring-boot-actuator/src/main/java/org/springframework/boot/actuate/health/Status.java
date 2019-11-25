@@ -107,7 +107,7 @@ public final class Status {
 		if (obj == this) {
 			return true;
 		}
-		if (obj != null && obj instanceof Status) {
+		if (obj instanceof Status) {
 			return ObjectUtils.nullSafeEquals(this.code, ((Status) obj).code);
 		}
 		return false;

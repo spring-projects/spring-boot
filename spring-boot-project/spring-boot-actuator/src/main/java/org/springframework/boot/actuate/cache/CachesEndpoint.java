@@ -32,7 +32,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.lang.Nullable;
 
 /**
- * {@link Endpoint} to expose available {@link Cache caches}.
+ * {@link Endpoint @Endpoint} to expose available {@link Cache caches}.
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll

@@ -17,13 +17,16 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
- * Example {@link SpringBootApplication} used with {@link RestClientTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link RestClientTest @RestClientTest} tests.
  *
  * @author Phillip Webb
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class ExampleWebClientApplication {
 
 }

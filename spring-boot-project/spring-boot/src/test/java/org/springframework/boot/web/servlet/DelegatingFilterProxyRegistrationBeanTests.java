@@ -21,7 +21,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.mock.web.MockFilterChain;
@@ -43,7 +43,7 @@ import static org.mockito.ArgumentMatchers.isA;
  *
  * @author Phillip Webb
  */
-public class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
+class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 
 	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
 
@@ -51,24 +51,24 @@ public class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRe
 			new MockServletContext());
 
 	@Test
-	public void targetBeanNameMustNotBeNull() {
+	void targetBeanNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
 				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
-	public void targetBeanNameMustNotBeEmpty() {
+	void targetBeanNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
 				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
-	public void nameDefaultsToTargetBeanName() {
+	void nameDefaultsToTargetBeanName() {
 		assertThat(new DelegatingFilterProxyRegistrationBean("myFilter").getOrDeduceName(null)).isEqualTo("myFilter");
 	}
 
 	@Test
-	public void getFilterUsesDelegatingFilterProxy() {
+	void getFilterUsesDelegatingFilterProxy() {
 		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		assertThat(filter).isInstanceOf(DelegatingFilterProxy.class);
@@ -77,7 +77,7 @@ public class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRe
 	}
 
 	@Test
-	public void initShouldNotCauseEarlyInitialization() throws Exception {
+	void initShouldNotCauseEarlyInitialization() throws Exception {
 		this.applicationContext.registerBeanDefinition("mockFilter", new RootBeanDefinition(MockFilter.class));
 		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
@@ -88,7 +88,7 @@ public class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRe
 	}
 
 	@Test
-	public void createServletRegistrationBeanMustNotBeNull() {
+	void createServletRegistrationBeanMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
 						() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean[]) null))

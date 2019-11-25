@@ -26,7 +26,7 @@ import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.exception.CouldNotConnectException;
 import io.searchbox.core.SearchResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Julian Devia Serna
  * @author Brian Clozel
  */
-public class ElasticsearchJestHealthIndicatorTests {
+class ElasticsearchJestHealthIndicatorTests {
 
 	private final JestClient jestClient = mock(JestClient.class);
 
@@ -53,7 +53,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsUp() throws IOException {
+	void elasticsearchIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willReturn(createJestResult(200, true, "green"));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -62,7 +62,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void elasticsearchWithYellowStatusIsUp() throws IOException {
+	void elasticsearchWithYellowStatusIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willReturn(createJestResult(200, true, "yellow"));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -71,7 +71,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsDown() throws IOException {
+	void elasticsearchIsDown() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willThrow(new CouldNotConnectException("http://localhost:9200", new IOException()));
 		Health health = this.healthIndicator.health();
@@ -80,7 +80,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsDownWhenQueryDidNotSucceed() throws IOException {
+	void elasticsearchIsDownWhenQueryDidNotSucceed() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willReturn(createJestResult(200, false, ""));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -88,7 +88,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsDownByResponseCode() throws IOException {
+	void elasticsearchIsDownByResponseCode() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willReturn(createJestResult(500, false, ""));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -97,7 +97,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticsearchIsOutOfServiceByStatus() throws IOException {
+	void elasticsearchIsOutOfServiceByStatus() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willReturn(createJestResult(200, true, "red"));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
@@ -129,10 +129,10 @@ public class ElasticsearchJestHealthIndicatorTests {
 					status);
 		}
 		else {
-			json = "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": " + responseCode + "\n" + "}";
+			json = "{\n  \"error\": \"Server Error\",\n  \"status\": \"" + status + "\"\n}";
 		}
 		searchResult.setJsonString(json);
-		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());
+		searchResult.setJsonObject(JsonParser.parseString(json).getAsJsonObject());
 		searchResult.setResponseCode(responseCode);
 		searchResult.setSucceeded(succeeded);
 		return searchResult;

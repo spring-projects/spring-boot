@@ -22,7 +22,7 @@ import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.annotation.WebListener;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
@@ -36,14 +36,14 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class WebListenerHandlerTests {
+class WebListenerHandlerTests {
 
 	private final WebListenerHandler handler = new WebListenerHandler();
 
 	private final SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
 
 	@Test
-	public void listener() throws IOException {
+	void listener() throws IOException {
 		AnnotatedBeanDefinition definition = mock(AnnotatedBeanDefinition.class);
 		given(definition.getBeanClassName()).willReturn(TestListener.class.getName());
 		given(definition.getMetadata()).willReturn(new SimpleMetadataReaderFactory()

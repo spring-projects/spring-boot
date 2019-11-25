@@ -20,7 +20,7 @@ import java.util.Collections;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HibernateDefaultDdlAutoProviderTests {
+class HibernateDefaultDdlAutoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
@@ -45,23 +45,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 			.withPropertyValues("spring.datasource.initialization-mode:never");
 
 	@Test
-	public void defaultDdlAutoForMysql() {
-		// Set up environment so we get a MySQL database but don't require server to be
-		// running...
-		this.contextRunner
-				.withPropertyValues("spring.datasource.type:" + org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
-						"spring.datasource.database:mysql", "spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-						"spring.jpa.database:MYSQL")
-				.run((context) -> {
-					HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
-							Collections.emptyList());
-					assertThat(ddlAutoProvider.getDefaultDdlAuto(context.getBean(DataSource.class))).isEqualTo("none");
-
-				});
-	}
-
-	@Test
-	public void defaultDDlAutoForEmbedded() {
+	void defaultDDlAutoForEmbedded() {
 		this.contextRunner.run((context) -> {
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.emptyList());
@@ -70,7 +54,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithPositiveContributor() {
+	void defaultDDlAutoForEmbeddedWithPositiveContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);
@@ -82,7 +66,7 @@ public class HibernateDefaultDdlAutoProviderTests {
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithNegativeContributor() {
+	void defaultDDlAutoForEmbeddedWithNegativeContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);

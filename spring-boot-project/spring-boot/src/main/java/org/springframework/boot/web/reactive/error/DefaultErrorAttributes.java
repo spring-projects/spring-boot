@@ -22,7 +22,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -44,6 +46,7 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
+ * <li>requestId - Unique ID associated with the current request</li>
  * </ul>
  *
  * @author Brian Clozel
@@ -80,39 +83,32 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
-		HttpStatus errorStatus = determineHttpStatus(error);
+		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
+				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
+		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error));
+		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation));
+		errorAttributes.put("requestId", request.exchange().getRequest().getId());
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}
 
-	private HttpStatus determineHttpStatus(Throwable error) {
+	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
-				ResponseStatus.class);
-		if (responseStatus != null) {
-			return responseStatus.code();
-		}
-		return HttpStatus.INTERNAL_SERVER_ERROR;
+		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private String determineMessage(Throwable error) {
+	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof WebExchangeBindException) {
 			return error.getMessage();
 		}
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
-				ResponseStatus.class);
-		if (responseStatus != null) {
-			return responseStatus.reason();
-		}
-		return error.getMessage();
+		return responseStatusAnnotation.getValue("reason", String.class).orElseGet(error::getMessage);
 	}
 
 	private Throwable determineException(Throwable error) {

@@ -27,7 +27,7 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
@@ -41,11 +41,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-public class SslServerCustomizerTests {
+class SslServerCustomizerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void whenHttp2IsNotEnabledServerConnectorHasSslAndHttpConnectionFactories() {
+	void whenHttp2IsNotEnabledServerConnectorHasSslAndHttpConnectionFactories() {
 		Server server = createCustomizedServer();
 		assertThat(server.getConnectors()).hasSize(1);
 		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
@@ -55,7 +55,7 @@ public class SslServerCustomizerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void whenHttp2IsEnabledServerConnectorsHasSslAlpnH2AndHttpConnectionFactories() {
+	void whenHttp2IsEnabledServerConnectorsHasSslAlpnH2AndHttpConnectionFactories() {
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
 		Server server = createCustomizedServer(http2);
@@ -67,7 +67,7 @@ public class SslServerCustomizerTests {
 	}
 
 	@Test
-	public void alpnConnectionFactoryHasNullDefaultProtocolToAllowNegotiationToHttp11() {
+	void alpnConnectionFactoryHasNullDefaultProtocolToAllowNegotiationToHttp11() {
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
 		Server server = createCustomizedServer(http2);
@@ -77,7 +77,7 @@ public class SslServerCustomizerTests {
 	}
 
 	@Test
-	public void configureSslWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
+	void configureSslWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatExceptionOfType(Exception.class)

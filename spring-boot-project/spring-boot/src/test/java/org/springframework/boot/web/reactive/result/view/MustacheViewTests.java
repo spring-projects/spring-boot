@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MustacheViewTests {
+class MustacheViewTests {
 
 	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
 			+ "/template.html";
@@ -45,13 +45,13 @@ public class MustacheViewTests {
 
 	private MockServerWebExchange exchange;
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.context.refresh();
 	}
 
 	@Test
-	public void viewResolvesHandlebars() {
+	void viewResolvesHandlebars() {
 		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());

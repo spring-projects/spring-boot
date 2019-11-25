@@ -44,7 +44,7 @@ class LoaderZipEntries {
 		this.entryTime = entryTime;
 	}
 
-	public Spec<FileTreeElement> writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException {
+	Spec<FileTreeElement> writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException {
 		WrittenDirectoriesSpec writtenDirectoriesSpec = new WrittenDirectoriesSpec();
 		try (ZipInputStream loaderJar = new ZipInputStream(
 				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
@@ -107,7 +107,7 @@ class LoaderZipEntries {
 			return this.entries.contains(path);
 		}
 
-		public void add(ZipEntry entry) {
+		void add(ZipEntry entry) {
 			this.entries.add(entry.getName());
 		}
 

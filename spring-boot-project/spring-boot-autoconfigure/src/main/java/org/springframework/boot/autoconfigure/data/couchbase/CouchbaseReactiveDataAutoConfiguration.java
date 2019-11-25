@@ -33,7 +33,7 @@ import org.springframework.data.couchbase.repository.ReactiveCouchbaseRepository
  * @author Alex Derkach
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class, Flux.class })
 @AutoConfigureAfter(CouchbaseDataAutoConfiguration.class)
 @Import(SpringBootCouchbaseReactiveDataConfiguration.class)

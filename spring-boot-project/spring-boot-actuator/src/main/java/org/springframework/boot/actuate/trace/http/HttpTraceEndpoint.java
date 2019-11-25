@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose {@link HttpTrace} information.
+ * {@link Endpoint @Endpoint} to expose {@link HttpTrace} information.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Flux.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementContextAutoConfiguration {

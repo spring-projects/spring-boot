@@ -1,13 +1,11 @@
 [[getting-started]]
 = Getting Started
+include::attributes.adoc[]
 
-[partintro]
---
 If you are getting started with Spring Boot, or "`Spring`" in general, start by reading this section.
 It answers the basic "`what?`", "`how?`" and "`why?`" questions.
 It includes an introduction to Spring Boot, along with installation instructions.
 We then walk you through building your first Spring Boot application, discussing some core principles as we go.
---
 
 
 
@@ -31,7 +29,7 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 12 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 13 (included).
 {spring-framework-docs}[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -43,7 +41,7 @@ Explicit build support is provided for the following build tools:
 | 3.3+
 
 | Gradle
-| 4.4+
+| 5.x and 6.x (4.10 is also supported but in a deprecated form)
 |===
 
 
@@ -191,13 +189,14 @@ endif::[]
 
 TIP: The `spring-boot-starter-parent` is a great way to use Spring Boot, but it might not be suitable all of the time.
 Sometimes you may need to inherit from a different parent POM, or you might not like our default settings.
-In those cases, see <<using-boot-maven-without-a-parent>> for an alternative solution that uses an `import` scope.
+In those cases, see <<using-spring-boot.adoc#using-boot-maven-without-a-parent>> for an alternative solution that uses an `import` scope.
 
 
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4.4 and later.
+Spring Boot is compatible with 5.x and 6.x.
+4.10 is also supported but this support is deprecated and will be removed in a future release.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -527,7 +526,7 @@ For simplicity, we continue to use a plain text editor for this example.
 [[getting-started-first-application-dependencies]]
 === Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
-Our sample application has already used `spring-boot-starter-parent` in the `parent` section of the POM.
+Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
 It also provides a <<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
 
@@ -767,9 +766,6 @@ As before, to exit the application, press `ctrl-c`.
 Hopefully, this section provided some of the Spring Boot basics and got you on your way to writing your own applications.
 If you are a task-oriented type of developer, you might want to jump over to https://spring.io and check out some of the https://spring.io/guides/[getting started] guides that solve specific "`How do I do that with Spring?`" problems.
 We also have Spring Boot-specific "`<<howto.adoc#howto, How-to>>`" reference documentation.
-
-The https://github.com/{github-repo}[Spring Boot repository] also has a {spring-boot-code}/spring-boot-samples[bunch of samples] you can run.
-The samples are independent of the rest of the code (that is, you do not need to build the rest to run or use the samples).
 
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_.
 If you are really impatient, you could also jump ahead and read about _<<spring-boot-features.adoc#boot-features, Spring Boot features>>_.

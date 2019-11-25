@@ -17,7 +17,8 @@
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -29,8 +30,8 @@ class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		DataNeo4jTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, DataNeo4jTest.class);
-		return (annotation != null) ? annotation.properties() : null;
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataNeo4jTest.class)
+				.getValue("properties", String[].class).orElse(null);
 	}
 
 }

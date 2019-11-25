@@ -48,14 +48,14 @@ import org.springframework.jms.support.destination.DestinationResolver;
  * @author Stephane Nicoll
  * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;
@@ -100,7 +100,7 @@ public class JmsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
@@ -108,8 +108,15 @@ public class JmsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(JmsMessageOperations.class)
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
-			return new JmsMessagingTemplate(jmsTemplate);
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
+			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);
+			mapTemplateProperties(properties.getTemplate(), messagingTemplate);
+			return messagingTemplate;
+		}
+
+		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 
 	}

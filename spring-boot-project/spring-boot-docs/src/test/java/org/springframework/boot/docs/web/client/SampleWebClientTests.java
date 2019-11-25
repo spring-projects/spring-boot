@@ -18,8 +18,7 @@ package org.springframework.boot.docs.web.client;
 
 import java.time.Duration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +28,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,24 +37,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 // tag::test[]
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleWebClientTests {
+class SampleWebClientTests {
 
 	@Autowired
 	private TestRestTemplate template;
 
 	@Test
-	public void testRequest() {
+	void testRequest() {
 		HttpHeaders headers = this.template.getForEntity("/example", String.class).getHeaders();
 		assertThat(headers.getLocation()).hasHost("other.example.com");
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
+		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
 					.setReadTimeout(Duration.ofSeconds(1));
 		}

@@ -61,18 +61,20 @@ public class ApplicationContextRunner extends
 	private ApplicationContextRunner(Supplier<ConfigurableApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+				beanRegistrations, configurations);
 	}
 
 	@Override
 	protected ApplicationContextRunner newInstance(Supplier<ConfigurableApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
-			ApplicationContext parent, List<Configurations> configurations) {
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
+			List<Configurations> configurations) {
 		return new ApplicationContextRunner(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, configurations);
+				classLoader, parent, beanRegistrations, configurations);
 	}
 
 }

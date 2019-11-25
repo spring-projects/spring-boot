@@ -25,7 +25,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -38,24 +38,24 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class TunnelClientTests {
+class TunnelClientTests {
 
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
-	public void listenPortMustNotBeNegative() {
+	void listenPortMustNotBeNegative() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
 				.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
-	public void tunnelConnectionMustNotBeNull() {
+	void tunnelConnectionMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(1, null))
 				.withMessageContaining("TunnelConnection must not be null");
 	}
 
 	@Test
-	public void typicalTraffic() throws Exception {
+	void typicalTraffic() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
@@ -68,7 +68,7 @@ public class TunnelClientTests {
 	}
 
 	@Test
-	public void socketChannelClosedTriggersTunnelClose() throws Exception {
+	void socketChannelClosedTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
@@ -81,7 +81,7 @@ public class TunnelClientTests {
 	}
 
 	@Test
-	public void stopTriggersTunnelClose() throws Exception {
+	void stopTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
@@ -93,7 +93,7 @@ public class TunnelClientTests {
 	}
 
 	@Test
-	public void addListener() throws Exception {
+	void addListener() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		TunnelClientListener listener = mock(TunnelClientListener.class);
 		client.addListener(listener);
@@ -107,7 +107,7 @@ public class TunnelClientTests {
 		verify(listener).onClose(any(SocketChannel.class));
 	}
 
-	private static class MockTunnelConnection implements TunnelConnection {
+	static class MockTunnelConnection implements TunnelConnection {
 
 		private final ByteArrayOutputStream written = new ByteArrayOutputStream();
 
@@ -122,22 +122,22 @@ public class TunnelClientTests {
 			return new TunnelChannel(incomingChannel, closeable);
 		}
 
-		public void verifyWritten(String expected) {
+		void verifyWritten(String expected) {
 			verifyWritten(expected.getBytes());
 		}
 
-		public void verifyWritten(byte[] expected) {
+		void verifyWritten(byte[] expected) {
 			synchronized (this.written) {
 				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}
 
-		public boolean isOpen() {
+		boolean isOpen() {
 			return this.open;
 		}
 
-		public int getOpenedTimes() {
+		int getOpenedTimes() {
 			return this.openedTimes;
 		}
 

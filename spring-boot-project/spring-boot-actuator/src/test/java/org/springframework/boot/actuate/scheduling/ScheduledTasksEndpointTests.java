@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTaskDescription;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescription;
@@ -47,13 +47,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ScheduledTasksEndpointTests {
+class ScheduledTasksEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
-	public void cronScheduledMethodIsReported() {
+	void cronScheduledMethodIsReported() {
 		run(CronScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -66,7 +66,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void cronTriggerIsReported() {
+	void cronTriggerIsReported() {
 		run(CronTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -79,7 +79,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedDelayScheduledMethodIsReported() {
+	void fixedDelayScheduledMethodIsReported() {
 		run(FixedDelayScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -94,7 +94,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedDelayTriggerIsReported() {
+	void fixedDelayTriggerIsReported() {
 		run(FixedDelayTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
@@ -108,7 +108,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedRateScheduledMethodIsReported() {
+	void fixedRateScheduledMethodIsReported() {
 		run(FixedRateScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -123,7 +123,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void fixedRateTriggerIsReported() {
+	void fixedRateTriggerIsReported() {
 		run(FixedRateTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -137,7 +137,7 @@ public class ScheduledTasksEndpointTests {
 	}
 
 	@Test
-	public void taskWithCustomTriggerIsReported() {
+	void taskWithCustomTriggerIsReported() {
 		run(CustomTriggerTask.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
 			assertThat(tasks.getFixedDelay()).isEmpty();
@@ -154,45 +154,45 @@ public class ScheduledTasksEndpointTests {
 				.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class BaseConfiguration {
 
 		@Bean
-		public ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> scheduledTaskHolders) {
+		ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> scheduledTaskHolders) {
 			return new ScheduledTasksEndpoint(scheduledTaskHolders);
 		}
 
 	}
 
-	private static class FixedDelayScheduledMethod {
+	static class FixedDelayScheduledMethod {
 
 		@Scheduled(fixedDelay = 1, initialDelay = 2)
-		public void fixedDelay() {
+		void fixedDelay() {
 
 		}
 
 	}
 
-	private static class FixedRateScheduledMethod {
+	static class FixedRateScheduledMethod {
 
 		@Scheduled(fixedRate = 3, initialDelay = 4)
-		public void fixedRate() {
+		void fixedRate() {
 
 		}
 
 	}
 
-	private static class CronScheduledMethod {
+	static class CronScheduledMethod {
 
 		@Scheduled(cron = "0 0 0/3 1/1 * ?")
-		public void cron() {
+		void cron() {
 
 		}
 
 	}
 
-	private static class FixedDelayTriggerTask implements SchedulingConfigurer {
+	static class FixedDelayTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -203,7 +203,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedRateTriggerTask implements SchedulingConfigurer {
+	static class FixedRateTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -215,7 +215,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CronTriggerTask implements SchedulingConfigurer {
+	static class CronTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -224,7 +224,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CustomTriggerTask implements SchedulingConfigurer {
+	static class CustomTriggerTask implements SchedulingConfigurer {
 
 		private static final Trigger trigger = (context) -> new Date();
 
@@ -235,7 +235,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CronTriggerRunnable implements Runnable {
+	static class CronTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -244,7 +244,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedDelayTriggerRunnable implements Runnable {
+	static class FixedDelayTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -253,7 +253,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedRateTriggerRunnable implements Runnable {
+	static class FixedRateTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -262,7 +262,7 @@ public class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CustomTriggerRunnable implements Runnable {
+	static class CustomTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {

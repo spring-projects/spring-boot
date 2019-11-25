@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -39,16 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void metricNames() throws Exception {
+	void metricNames() throws Exception {
 		this.mockMvc.perform(get("/actuator/metrics")).andExpect(status().isOk()).andDo(document("metrics/names",
 				responseFields(fieldWithPath("names").description("Names of the known metrics."))));
 	}
 
 	@Test
-	public void metric() throws Exception {
+	void metric() throws Exception {
 		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max")).andExpect(status().isOk())
 				.andDo(document("metrics/metric",
 						responseFields(fieldWithPath("name").description("Name of the metric"),
@@ -64,7 +64,7 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	@Test
-	public void metricWithTags() throws Exception {
+	void metricWithTags() throws Exception {
 		this.mockMvc
 				.perform(get("/actuator/metrics/jvm.memory.max").param("tag", "area:nonheap").param("tag",
 						"id:Compressed Class Space"))
@@ -73,12 +73,12 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 						.description("A tag to use for drill-down in the form `name:value`."))));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public MetricsEndpoint endpoint() {
+		MetricsEndpoint endpoint() {
 			SimpleMeterRegistry registry = new SimpleMeterRegistry();
 			new JvmMemoryMetrics().bindTo(registry);
 			return new MetricsEndpoint(registry);

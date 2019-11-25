@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -40,7 +40,7 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ImportAutoConfigurationImportSelector}.
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ImportAutoConfigurationImportSelectorTests {
+class ImportAutoConfigurationImportSelectorTests {
 
 	private final ImportAutoConfigurationImportSelector importSelector = new TestImportAutoConfigurationImportSelector();
 
@@ -57,8 +57,8 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Mock
 	private Environment environment;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
@@ -66,28 +66,28 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void importsAreSelected() throws Exception {
+	void importsAreSelected() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarker.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void importsAreSelectedUsingClassesAttribute() throws Exception {
+	void importsAreSelectedUsingClassesAttribute() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarkerUsingClassesAttribute.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void propertyExclusionsAreNotApplied() throws Exception {
+	void propertyExclusionsAreNotApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarker.class);
 		this.importSelector.selectImports(annotationMetadata);
-		verifyZeroInteractions(this.environment);
+		verifyNoInteractions(this.environment);
 	}
 
 	@Test
-	public void multipleImportsAreFound() throws Exception {
+	void multipleImportsAreFound() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName(),
@@ -95,35 +95,35 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() throws IOException {
+	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() throws IOException {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportWithSelfAnnotatingAnnotation.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsOnly(ThymeleafAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void exclusionsAreApplied() throws Exception {
+	void exclusionsAreApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImportsWithExclusion.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void exclusionsWithoutImport() throws Exception {
+	void exclusionsWithoutImport() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ExclusionWithoutImport.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void exclusionsAliasesAreApplied() throws Exception {
+	void exclusionsAliasesAreApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportWithSelfAnnotatingAnnotationExclude.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).isEmpty();
 	}
 
 	@Test
-	public void determineImportsWhenUsingMetaWithoutClassesShouldBeEqual() throws Exception {
+	void determineImportsWhenUsingMetaWithoutClassesShouldBeEqual() throws Exception {
 		Set<Object> set1 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
@@ -133,7 +133,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void determineImportsWhenUsingNonMetaWithoutClassesShouldBeSame() throws Exception {
+	void determineImportsWhenUsingNonMetaWithoutClassesShouldBeSame() throws Exception {
 		Set<Object> set1 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
@@ -142,7 +142,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void determineImportsWhenUsingNonMetaWithClassesShouldBeSame() throws Exception {
+	void determineImportsWhenUsingNonMetaWithClassesShouldBeSame() throws Exception {
 		Set<Object> set1 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
 		Set<Object> set2 = this.importSelector
@@ -151,7 +151,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void determineImportsWhenUsingMetaExcludeWithoutClassesShouldBeEqual() throws Exception {
+	void determineImportsWhenUsingMetaExcludeWithoutClassesShouldBeEqual() throws Exception {
 		Set<Object> set1 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
@@ -161,7 +161,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void determineImportsWhenUsingMetaDifferentExcludeWithoutClassesShouldBeDifferent() throws Exception {
+	void determineImportsWhenUsingMetaDifferentExcludeWithoutClassesShouldBeDifferent() throws Exception {
 		Set<Object> set1 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
@@ -170,7 +170,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void determineImportsShouldNotSetPackageImport() throws Exception {
+	void determineImportsShouldNotSetPackageImport() throws Exception {
 		Class<?> packageImportClass = ClassUtils.resolveClassName(
 				"org.springframework.boot.autoconfigure.AutoConfigurationPackages.PackageImport", null);
 		Set<Object> selectedImports = this.importSelector
@@ -312,7 +312,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	}
 
-	private static class TestImportAutoConfigurationImportSelector extends ImportAutoConfigurationImportSelector {
+	static class TestImportAutoConfigurationImportSelector extends ImportAutoConfigurationImportSelector {
 
 		@Override
 		protected Collection<String> loadFactoryNames(Class<?> source) {

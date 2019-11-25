@@ -96,8 +96,12 @@ public final class LambdaSafe {
 
 	/**
 	 * Abstract base class for lambda safe callbacks.
+	 *
+	 * @param <C> the callback type
+	 * @param <A> the primary argument type
+	 * @param <SELF> the self class reference
 	 */
-	private abstract static class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
+	protected abstract static class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
 
 		private final Class<C> callbackType;
 
@@ -109,7 +113,7 @@ public final class LambdaSafe {
 
 		private Filter<C, A> filter = new GenericTypeFilter<>();
 
-		protected LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
+		LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
 			this.callbackType = callbackType;
 			this.argument = argument;
 			this.additionalArguments = additionalArguments;
@@ -143,7 +147,7 @@ public final class LambdaSafe {
 		 * @param filter the filter to use
 		 * @return this instance
 		 */
-		public SELF withFilter(Filter<C, A> filter) {
+		SELF withFilter(Filter<C, A> filter) {
 			Assert.notNull(filter, "Filter must not be null");
 			this.filter = filter;
 			return self();

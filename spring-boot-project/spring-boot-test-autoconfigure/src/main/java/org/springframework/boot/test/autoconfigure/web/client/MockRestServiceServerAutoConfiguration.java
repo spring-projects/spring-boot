@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
 public class MockRestServiceServerAutoConfiguration {
 
@@ -108,9 +108,9 @@ public class MockRestServiceServerAutoConfiguration {
 		private RequestExpectationManager getDelegate() {
 			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
 			Assert.state(!expectationManagers.isEmpty(), "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has not been bound to " + "a RestTemplate");
+					+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 			Assert.state(expectationManagers.size() == 1, "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has been bound to " + "more than one RestTemplate");
+					+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 			return expectationManagers.values().iterator().next();
 		}
 

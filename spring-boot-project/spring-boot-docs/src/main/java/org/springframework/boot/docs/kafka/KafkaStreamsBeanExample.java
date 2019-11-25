@@ -35,9 +35,9 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 public class KafkaStreamsBeanExample {
 
 	// tag::configuration[]
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
-	static class KafkaStreamsExampleConfiguration {
+	public static class KafkaStreamsExampleConfiguration {
 
 		@Bean
 		public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {

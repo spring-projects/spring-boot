@@ -26,9 +26,8 @@ import org.apache.catalina.Wrapper;
 import org.apache.tomcat.util.buf.UDecoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -37,13 +36,13 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,30 +52,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class JerseyAutoConfigurationServletContainerTests {
-
-	@ClassRule
-	public static OutputCapture output = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class JerseyAutoConfigurationServletContainerTests {
 
 	@Test
-	public void existingJerseyServletIsAmended() {
-		assertThat(output.toString()).contains("Configuring existing registration for Jersey servlet");
-		assertThat(output.toString()).contains("Servlet " + Application.class.getName() + " was not registered");
+	void existingJerseyServletIsAmended(CapturedOutput output) {
+		assertThat(output).contains("Configuring existing registration for Jersey servlet");
+		assertThat(output).contains("Servlet " + Application.class.getName() + " was not registered");
 	}
 
 	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	@Import(ContainerConfiguration.class)
 	@Path("/hello")
+	@Configuration(proxyBeanMethods = false)
 	public static class Application extends ResourceConfig {
 
 		@Value("${message:World}")
 		private String msg;
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 
@@ -87,11 +84,11 @@ public class JerseyAutoConfigurationServletContainerTests {
 
 	}
 
-	@Configuration
-	public static class ContainerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class ContainerConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory() {
 
 				@Override

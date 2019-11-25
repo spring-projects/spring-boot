@@ -23,8 +23,8 @@ import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationCon
  * {@code RestDocsRestAssuredConfigurationCustomizer} bean is found in the application
  * context it will be {@link #customize called} to customize the
  * {@code RestAssuredRestDocumentationConfigurer} before it is applied. Intended for use
- * only when the attributes on {@link AutoConfigureRestDocs} do not provide sufficient
- * customization.
+ * only when the attributes on {@link AutoConfigureRestDocs @AutoConfigureRestDocs} do not
+ * provide sufficient customization.
  *
  * @author Eddú Meléndez
  * @since 2.0.0

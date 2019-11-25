@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -47,26 +47,26 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Yunkun Huang
  */
-public class ServletWebServerFactoryCustomizerTests {
+class ServletWebServerFactoryCustomizerTests {
 
 	private final ServerProperties properties = new ServerProperties();
 
 	private ServletWebServerFactoryCustomizer customizer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}
 
 	@Test
-	public void testDefaultDisplayName() {
+	void testDefaultDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
-	public void testCustomizeDisplayName() {
+	void testCustomizeDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
@@ -74,7 +74,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeSsl() {
+	void testCustomizeSsl() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
@@ -83,14 +83,14 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeJsp() {
+	void testCustomizeJsp() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setJsp(any(Jsp.class));
 	}
 
 	@Test
-	public void customizeSessionProperties() throws Exception {
+	void customizeSessionProperties() throws Exception {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.timeout", "123");
 		map.put("server.servlet.session.tracking-modes", "cookie,url");
@@ -118,7 +118,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatPort() {
+	void testCustomizeTomcatPort() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.setPort(8080);
 		this.customizer.customize(factory);
@@ -126,7 +126,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customizeServletDisplayName() {
+	void customizeServletDisplayName() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.application-display-name", "MyBootApp");
 		bindProperties(map);
@@ -136,7 +136,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatMinSpareThreads() {
+	void testCustomizeTomcatMinSpareThreads() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.min-spare-threads", "10");
 		bindProperties(map);
@@ -144,7 +144,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void sessionStoreDir() {
+	void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.store-dir", "myfolder");
 		bindProperties(map);

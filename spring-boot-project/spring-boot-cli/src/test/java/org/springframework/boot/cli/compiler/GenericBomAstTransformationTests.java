@@ -31,7 +31,7 @@ import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.groovy.DependencyManagementBom;
 
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Dave Syer
  */
-public final class GenericBomAstTransformationTests {
+final class GenericBomAstTransformationTests {
 
 	private final SourceUnit sourceUnit = new SourceUnit((String) null, (ReaderSource) null, null, null, null);
 
@@ -64,21 +64,21 @@ public final class GenericBomAstTransformationTests {
 	};
 
 	@Test
-	public void transformationOfEmptyPackage() {
+	void transformationOfEmptyPackage() {
 		this.moduleNode.setPackage(new PackageNode("foo"));
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
 		assertThat(getValue().toString()).isEqualTo("[test:child:1.0.0]");
 	}
 
 	@Test
-	public void transformationOfClass() {
+	void transformationOfClass() {
 		this.moduleNode.addClass(ClassHelper.make("MyClass"));
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
 		assertThat(getValue().toString()).isEqualTo("[test:child:1.0.0]");
 	}
 
 	@Test
-	public void transformationOfClassWithExistingManagedDependencies() {
+	void transformationOfClassWithExistingManagedDependencies() {
 		this.moduleNode.setPackage(new PackageNode("foo"));
 		ClassNode cls = ClassHelper.make("MyClass");
 		this.moduleNode.addClass(cls);

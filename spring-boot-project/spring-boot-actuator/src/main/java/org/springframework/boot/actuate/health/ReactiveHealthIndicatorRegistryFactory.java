@@ -28,7 +28,9 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 in favor of {@link DefaultReactiveHealthIndicatorRegistry}
  */
+@Deprecated
 public class ReactiveHealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;

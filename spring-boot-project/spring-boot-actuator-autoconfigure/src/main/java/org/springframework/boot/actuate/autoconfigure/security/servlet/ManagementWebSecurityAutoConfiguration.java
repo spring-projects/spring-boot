@@ -41,7 +41,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

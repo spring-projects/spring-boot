@@ -30,7 +30,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -43,7 +43,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class HypermediaHttpMessageConverterConfiguration {
 
 	@Bean
@@ -65,7 +65,7 @@ public class HypermediaHttpMessageConverterConfiguration {
 		private volatile BeanFactory beanFactory;
 
 		@PostConstruct
-		public void configureHttpMessageConverters() {
+		void configureHttpMessageConverters() {
 			if (this.beanFactory instanceof ListableBeanFactory) {
 				configureHttpMessageConverters(((ListableBeanFactory) this.beanFactory)
 						.getBeansOfType(RequestMappingHandlerAdapter.class).values());

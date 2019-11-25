@@ -31,13 +31,15 @@ import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * A {@link HandlerInterceptor} that supports Micrometer's long task timers configured on
- * a handler using {@link Timed} with {@link Timed#longTask()} set to {@code true}.
+ * a handler using {@link Timed @Timed} with {@link Timed#longTask() longTask} set to
+ * {@code true}.
  *
  * @author Andy Wilkinson
  * @since 2.0.7
@@ -113,7 +115,8 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
-		return AnnotationUtils.getDeclaredRepeatableAnnotations(element, Timed.class);
+		return MergedAnnotations.from(element).stream(Timed.class)
+				.collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 	private void stopLongTaskTimers(LongTaskTimingContext timingContext) {

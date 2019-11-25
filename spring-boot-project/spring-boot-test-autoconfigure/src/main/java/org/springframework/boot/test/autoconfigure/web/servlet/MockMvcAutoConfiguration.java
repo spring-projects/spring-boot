@@ -47,7 +47,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @see AutoConfigureWebMvc
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })

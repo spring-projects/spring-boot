@@ -25,10 +25,11 @@ import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfiguration.HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -39,21 +40,17 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Stephane Nicoll
  * @since 1.3.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ HazelcastInstance.class, LocalContainerEntityManagerFactoryBean.class })
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@Import(HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor.class)
 public class HazelcastJpaDependencyAutoConfiguration {
 
-	@Bean
 	@Conditional(OnHazelcastAndJpaCondition.class)
-	public static HazelcastInstanceJpaDependencyPostProcessor hazelcastInstanceJpaDependencyPostProcessor() {
-		return new HazelcastInstanceJpaDependencyPostProcessor();
-	}
-
-	private static class HazelcastInstanceJpaDependencyPostProcessor
+	static class HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		HazelcastInstanceJpaDependencyPostProcessor() {
+		HazelcastInstanceEntityManagerFactoryDependsOnPostProcessor() {
 			super("hazelcastInstance");
 		}
 

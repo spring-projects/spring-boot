@@ -19,7 +19,7 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory
@@ -70,7 +70,7 @@ class SpringApplicationExtensionsTests {
 		assertEquals(environment, context.environment)
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	internal open class ExampleWebConfig {
 
 		@Bean

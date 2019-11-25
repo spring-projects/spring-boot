@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ChildConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ParentConfiguration;
@@ -25,25 +24,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Tests for {@link SpringBootTest} and {@link ContextHierarchy}.
+ * Tests for {@link SpringBootTest @SpringBootTest} and
+ * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Andy Wilkinson
  */
 @SpringBootTest
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
-@RunWith(SpringRunner.class)
-public class SpringBootTestContextHierarchyTests {
+class SpringBootTestContextHierarchyTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParentConfiguration {
 
 		@Bean
@@ -53,7 +51,7 @@ public class SpringBootTestContextHierarchyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ChildConfiguration {
 
 		ChildConfiguration(MyBean myBean) {

@@ -21,7 +21,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 
 /**
- * A sample {@link SpringBootConfiguration} that only enables JMX auto-configuration.
+ * A sample {@link SpringBootConfiguration @ConfigurationProperties} that only enables JMX
+ * auto-configuration.
  *
  * @author Stephane Nicoll
  */

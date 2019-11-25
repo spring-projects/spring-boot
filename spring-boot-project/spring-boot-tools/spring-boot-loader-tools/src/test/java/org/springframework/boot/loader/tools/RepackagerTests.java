@@ -37,10 +37,9 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.zeroturnaround.zip.ZipUtil;
 
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
@@ -61,7 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class RepackagerTests {
+class RepackagerTests {
 
 	private static final Libraries NO_LIBRARIES = (callback) -> {
 	};
@@ -79,33 +78,33 @@ public class RepackagerTests {
 		JAN_1_1985 = calendar.getTime().getTime();
 	}
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private TestJarFile testJarFile;
 
-	@Before
-	public void setup() throws IOException {
-		this.testJarFile = new TestJarFile(this.temporaryFolder);
+	@BeforeEach
+	void setup() throws IOException {
+		this.testJarFile = new TestJarFile(this.tempDir);
 	}
 
 	@Test
-	public void nullSource() {
+	void nullSource() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Repackager(null));
 	}
 
 	@Test
-	public void missingSource() {
+	void missingSource() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Repackager(new File("missing")));
 	}
 
 	@Test
-	public void directorySource() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Repackager(this.temporaryFolder.getRoot()));
+	void directorySource() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Repackager(this.tempDir));
 	}
 
 	@Test
-	public void specificMainClass() throws Exception {
+	void specificMainClass() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -119,7 +118,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void mainClassFromManifest() throws Exception {
+	void mainClassFromManifest() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
@@ -136,7 +135,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void mainClassFound() throws Exception {
+	void mainClassFound() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -149,7 +148,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void jarIsOnlyRepackagedOnce() throws Exception {
+	void jarIsOnlyRepackagedOnce() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -163,17 +162,17 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void multipleMainClassFound() throws Exception {
+	void multipleMainClassFound() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/D.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		assertThatIllegalStateException().isThrownBy(() -> repackager.repackage(NO_LIBRARIES)).withMessageContaining(
-				"Unable to find a single main class " + "from the following candidates [a.b.C, a.b.D]");
+				"Unable to find a single main class from the following candidates [a.b.C, a.b.D]");
 	}
 
 	@Test
-	public void noMainClass() throws Exception {
+	void noMainClass() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> new Repackager(this.testJarFile.getFile()).repackage(NO_LIBRARIES))
@@ -181,7 +180,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void noMainClassAndLayoutIsNone() throws Exception {
+	void noMainClassAndLayoutIsNone() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -193,7 +192,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void noMainClassAndLayoutIsNoneWithNoMain() throws Exception {
+	void noMainClassAndLayoutIsNoneWithNoMain() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -205,7 +204,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void sameSourceAndDestinationWithBackup() throws Exception {
+	void sameSourceAndDestinationWithBackup() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -215,7 +214,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void sameSourceAndDestinationWithoutBackup() throws Exception {
+	void sameSourceAndDestinationWithoutBackup() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -226,10 +225,10 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void differentDestination() throws Exception {
+	void differentDestination() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("different.jar");
+		File dest = new File(this.tempDir, "different.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		assertThat(new File(source.getParent(), source.getName() + ".original")).doesNotExist();
@@ -238,7 +237,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void nullDestination() throws Exception {
+	void nullDestination() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(null, NO_LIBRARIES))
@@ -246,26 +245,25 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void destinationIsDirectory() throws Exception {
+	void destinationIsDirectory() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> repackager.repackage(this.temporaryFolder.getRoot(), NO_LIBRARIES))
+		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(this.tempDir, NO_LIBRARIES))
 				.withMessageContaining("Invalid destination");
 	}
 
 	@Test
-	public void overwriteDestination() throws Exception {
+	void overwriteDestination() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		dest.createNewFile();
 		repackager.repackage(dest, NO_LIBRARIES);
 		assertThat(hasLauncherClasses(dest)).isTrue();
 	}
 
 	@Test
-	public void nullLibraries() throws Exception {
+	void nullLibraries() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -274,12 +272,12 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void libraries() throws Exception {
-		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+	void libraries() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.tempDir);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
 		File libJarFile = libJar.getFile();
 		File libJarFileToUnpack = libJar.getFile();
-		File libNonJarFile = this.temporaryFolder.newFile();
+		File libNonJarFile = new File(this.tempDir, "non-lib.jar");
 		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("BOOT-INF/lib/" + libJarFileToUnpack.getName(), libJarFileToUnpack);
@@ -298,12 +296,12 @@ public class RepackagerTests {
 		assertThat(entry.getTime()).isEqualTo(JAN_1_1985);
 		entry = getEntry(file, "BOOT-INF/lib/" + libJarFileToUnpack.getName());
 		assertThat(entry.getComment()).startsWith("UNPACK:");
-		assertThat(entry.getComment().length()).isEqualTo(47);
+		assertThat(entry.getComment()).hasSize(47);
 	}
 
 	@Test
-	public void duplicateLibraries() throws Exception {
-		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+	void duplicateLibraries() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.tempDir);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -316,8 +314,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void customLayout() throws Exception {
-		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+	void customLayout() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.tempDir);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -336,8 +334,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void customLayoutNoBootLib() throws Exception {
-		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+	void customLayoutNoBootLib() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.tempDir);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -353,7 +351,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void springBootVersion() throws Exception {
+	void springBootVersion() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -363,7 +361,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void executableJarLayoutAttributes() throws Exception {
+	void executableJarLayoutAttributes() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -376,7 +374,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void executableWarLayoutAttributes() throws Exception {
+	void executableWarLayoutAttributes() throws Exception {
 		this.testJarFile.addClass("WEB-INF/classes/a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile("war");
 		Repackager repackager = new Repackager(file);
@@ -389,7 +387,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void nullCustomLayout() throws Exception {
+	void nullCustomLayout() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.setLayout(null))
@@ -397,8 +395,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void dontRecompressZips() throws Exception {
-		TestJarFile nested = new TestJarFile(this.temporaryFolder);
+	void dontRecompressZips() throws Exception {
+		TestJarFile nested = new TestJarFile(this.tempDir);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File nestedFile = nested.getFile();
 		this.testJarFile.addFile("test/nested.jar", nestedFile);
@@ -414,10 +412,10 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void addLauncherScript() throws Exception {
+	void addLauncherScript() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		LaunchScript script = new MockLauncherScript("ABC");
 		repackager.repackage(dest, NO_LIBRARIES, script);
@@ -434,8 +432,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
-		TestJarFile nested = new TestJarFile(this.temporaryFolder);
+	void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
+		TestJarFile nested = new TestJarFile(this.tempDir);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File nestedFile = nested.getFile();
 		String name = "BOOT-INF/lib/" + nestedFile.getName();
@@ -450,8 +448,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void existingSourceEntriesTakePrecedenceOverStandardLibraries() throws Exception {
-		TestJarFile nested = new TestJarFile(this.temporaryFolder);
+	void existingSourceEntriesTakePrecedenceOverStandardLibraries() throws Exception {
+		TestJarFile nested = new TestJarFile(this.tempDir);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File nestedFile = nested.getFile();
 		this.testJarFile.addFile("BOOT-INF/lib/" + nestedFile.getName(), nested.getFile());
@@ -461,7 +459,8 @@ public class RepackagerTests {
 		long sourceLength = nestedFile.length();
 		repackager.repackage((callback) -> {
 			nestedFile.delete();
-			File toZip = RepackagerTests.this.temporaryFolder.newFile();
+			File toZip = new File(this.tempDir, "to-zip");
+			toZip.createNewFile();
 			ZipUtil.packEntry(toZip, nestedFile);
 			callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 		});
@@ -471,11 +470,13 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void metaInfIndexListIsRemovedFromRepackagedJar() throws Exception {
+	void metaInfIndexListIsRemovedFromRepackagedJar() throws Exception {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("META-INF/INDEX.LIST", this.temporaryFolder.newFile("INDEX.LIST"));
+		File indexList = new File(this.tempDir, "INDEX.LIST");
+		indexList.createNewFile();
+		this.testJarFile.addFile("META-INF/INDEX.LIST", indexList);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (JarFile jarFile = new JarFile(dest)) {
@@ -484,7 +485,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void customLayoutFactoryWithoutLayout() throws Exception {
+	void customLayoutFactoryWithoutLayout() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(source, new TestLayoutFactory());
@@ -495,7 +496,7 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void customLayoutFactoryWithLayout() throws Exception {
+	void customLayoutFactoryWithLayout() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(source, new TestLayoutFactory());
@@ -507,11 +508,13 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void metaInfAopXmlIsMovedBeneathBootInfClassesWhenRepackaged() throws Exception {
+	void metaInfAopXmlIsMovedBeneathBootInfClassesWhenRepackaged() throws Exception {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("META-INF/aop.xml", this.temporaryFolder.newFile("aop.xml"));
+		File aopXml = new File(this.tempDir, "aop.xml");
+		aopXml.createNewFile();
+		this.testJarFile.addFile("META-INF/aop.xml", aopXml);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (JarFile jarFile = new JarFile(dest)) {
@@ -521,10 +524,10 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void allEntriesUseUnixPlatformAndUtf8NameEncoding() throws IOException {
+	void allEntriesUseUnixPlatformAndUtf8NameEncoding() throws IOException {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (ZipFile zip = new ZipFile(dest)) {
@@ -538,10 +541,10 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void loaderIsWrittenFirstThenApplicationClassesThenLibraries() throws IOException {
+	void loaderIsWrittenFirstThenApplicationClassesThenLibraries() throws IOException {
 		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		File libraryOne = createLibrary();
 		File libraryTwo = createLibrary();
 		File libraryThree = createLibrary();
@@ -557,12 +560,12 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void existingEntryThatMatchesUnpackLibraryIsMarkedForUnpack() throws IOException {
+	void existingEntryThatMatchesUnpackLibraryIsMarkedForUnpack() throws IOException {
 		File library = createLibrary();
 		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("WEB-INF/lib/" + library.getName(), library);
 		File source = this.testJarFile.getFile("war");
-		File dest = this.temporaryFolder.newFile("dest.war");
+		File dest = new File(this.tempDir, "dest.war");
 		Repackager repackager = new Repackager(source);
 		repackager.setLayout(new Layouts.War());
 		repackager.repackage(dest, (callback) -> callback.library(new Library(library, LibraryScope.COMPILE, true)));
@@ -573,8 +576,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void layoutCanOmitLibraries() throws IOException {
-		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+	void layoutCanOmitLibraries() throws IOException {
+		TestJarFile libJar = new TestJarFile(this.tempDir);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -589,8 +592,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void jarThatUsesCustomCompressionConfigurationCanBeRepackaged() throws IOException {
-		File source = this.temporaryFolder.newFile("source.jar");
+	void jarThatUsesCustomCompressionConfigurationCanBeRepackaged() throws IOException {
+		File source = new File(this.tempDir, "source.jar");
 		ZipOutputStream output = new ZipOutputStream(new FileOutputStream(source)) {
 			{
 				this.def = new Deflater(Deflater.NO_COMPRESSION, true);
@@ -603,18 +606,18 @@ public class RepackagerTests {
 		output.write(data);
 		output.closeEntry();
 		output.close();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.setMainClass("com.example.Main");
 		repackager.repackage(dest, NO_LIBRARIES);
 	}
 
 	@Test
-	public void moduleInfoClassRemainsInRootOfJarWhenRepackaged() throws Exception {
+	void moduleInfoClassRemainsInRootOfJarWhenRepackaged() throws Exception {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("module-info.class", ClassWithoutMainMethod.class);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (JarFile jarFile = new JarFile(dest)) {
@@ -624,11 +627,13 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void kotlinModuleMetadataMovesBeneathBootInfClassesWhenRepackaged() throws Exception {
+	void kotlinModuleMetadataMovesBeneathBootInfClassesWhenRepackaged() throws Exception {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
-		this.testJarFile.addFile("META-INF/test.kotlin_module", this.temporaryFolder.newFile("test.kotlin_module"));
+		File kotlinModule = new File(this.tempDir, "test.kotlin_module");
+		kotlinModule.createNewFile();
+		this.testJarFile.addFile("META-INF/test.kotlin_module", kotlinModule);
 		File source = this.testJarFile.getFile();
-		File dest = this.temporaryFolder.newFile("dest.jar");
+		File dest = new File(this.tempDir, "dest.jar");
 		Repackager repackager = new Repackager(source);
 		repackager.repackage(dest, NO_LIBRARIES);
 		try (JarFile jarFile = new JarFile(dest)) {
@@ -638,7 +643,7 @@ public class RepackagerTests {
 	}
 
 	private File createLibrary() throws IOException {
-		TestJarFile library = new TestJarFile(this.temporaryFolder);
+		TestJarFile library = new TestJarFile(this.tempDir);
 		library.addClass("com/example/library/Library.class", ClassWithoutMainMethod.class);
 		return library.getFile();
 	}
@@ -675,7 +680,7 @@ public class RepackagerTests {
 		return entryNames;
 	}
 
-	private static class MockLauncherScript implements LaunchScript {
+	static class MockLauncherScript implements LaunchScript {
 
 		private final byte[] bytes;
 
@@ -690,7 +695,7 @@ public class RepackagerTests {
 
 	}
 
-	public static class TestLayoutFactory implements LayoutFactory {
+	static class TestLayoutFactory implements LayoutFactory {
 
 		@Override
 		public Layout getLayout(File source) {
@@ -699,7 +704,7 @@ public class RepackagerTests {
 
 	}
 
-	private static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
+	static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
 
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {

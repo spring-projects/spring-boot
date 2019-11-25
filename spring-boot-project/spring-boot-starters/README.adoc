@@ -37,11 +37,17 @@ do as they were designed before this was clarified.
 | https://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
 
+| https://line.github.io/armeria/[Armeria]
+| https://github.com/line/armeria/
+
 | https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
 | https://azure.microsoft.com/[Azure]
 | https://github.com/Microsoft/azure-spring-boot-starters
+
+| https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview[Azure Application Insights]
+| https://github.com/Microsoft/ApplicationInsights-Java/tree/master/azure-application-insights-spring-boot-starter
 
 | https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
 | https://github.com/MarcGiffing/bucket4j-spring-boot-starter
@@ -81,6 +87,9 @@ do as they were designed before this was clarified.
 
 | https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
+
+| https://javaee.github.io/grizzly/[Grizzly]
+| https://github.com/dabla/grizzly-spring-boot-starter
 
 | https://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
@@ -142,8 +151,17 @@ do as they were designed before this was clarified.
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
+| https://pebbletemplates.io/[Pebble Templates]
+| https://github.com/PebbleTemplates/pebble
+
+| https://picocli.info/[picocli]
+| https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
+
 | https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
+| https://www.rabbitmq.com/[RabbitMQ] (Declarative configuration)
+| https://github.com/EugeneMsv/amqp-rabbit-spring-boot-autoconfigure
 
 | https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
@@ -187,7 +205,7 @@ do as they were designed before this was clarified.
 | https://github.com/tomakehurst/wiremock[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
-| https://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| https://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 |===

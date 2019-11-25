@@ -83,8 +83,7 @@ class ReactiveCloudFoundrySecurityService {
 	 * @return a Mono of the access level that should be granted
 	 * @throws CloudFoundryAuthorizationException if the token is not authorized
 	 */
-	public Mono<AccessLevel> getAccessLevel(String token, String applicationId)
-			throws CloudFoundryAuthorizationException {
+	Mono<AccessLevel> getAccessLevel(String token, String applicationId) throws CloudFoundryAuthorizationException {
 		String uri = getPermissionsUri(applicationId);
 		return this.webClient.get().uri(uri).header("Authorization", "bearer " + token).retrieve().bodyToMono(Map.class)
 				.map(this::getAccessLevel).onErrorMap(this::mapError);
@@ -118,7 +117,7 @@ class ReactiveCloudFoundrySecurityService {
 	 * Return a Mono of all token keys known by the UAA.
 	 * @return a Mono of token keys
 	 */
-	public Mono<Map<String, String>> fetchTokenKeys() {
+	Mono<Map<String, String>> fetchTokenKeys() {
 		return getUaaUrl().flatMap(this::fetchTokenKeys);
 	}
 
@@ -141,7 +140,7 @@ class ReactiveCloudFoundrySecurityService {
 	 * Return a Mono of URL of the UAA.
 	 * @return the UAA url Mono
 	 */
-	public Mono<String> getUaaUrl() {
+	Mono<String> getUaaUrl() {
 		this.uaaUrl = this.webClient.get().uri(this.cloudControllerUrl + "/info").retrieve().bodyToMono(Map.class)
 				.map((response) -> (String) response.get("token_endpoint")).cache()
 				.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,

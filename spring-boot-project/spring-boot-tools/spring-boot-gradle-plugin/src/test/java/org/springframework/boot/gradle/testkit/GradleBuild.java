@@ -21,47 +21,35 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+import java.util.jar.JarFile;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.cli.common.PropertiesKt;
-import org.jetbrains.kotlin.compilerRunner.KotlinCompilerRunner;
+import org.jetbrains.kotlin.compilerRunner.KotlinLogger;
+import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
+import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
 /**
- * A {@link TestRule} for running a Gradle build using {@link GradleRunner}.
+ * A {@code GradleBuild} is used to run a Gradle build using {@link GradleRunner}.
  *
  * @author Andy Wilkinson
  */
-public class GradleBuild implements TestRule {
-
-	private static final Pattern GRADLE_VERSION_PATTERN = Pattern.compile("\\[Gradle .+\\]");
-
-	private final TemporaryFolder temp = new TemporaryFolder();
+public class GradleBuild {
 
 	private final Dsl dsl;
 
@@ -83,65 +71,22 @@ public class GradleBuild implements TestRule {
 		return this.dsl;
 	}
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		URL scriptUrl = findDefaultScript(description);
-		if (scriptUrl != null) {
-			script(scriptUrl.getFile());
-		}
-		return this.temp.apply(new Statement() {
-
-			@Override
-			public void evaluate() throws Throwable {
-				before();
-				try {
-					base.evaluate();
-				}
-				finally {
-					after();
-				}
-			}
-
-		}, description);
+	void before() throws IOException {
+		this.projectDir = Files.createTempDirectory("gradle-").toFile();
 	}
 
-	private URL findDefaultScript(Description description) {
-		URL scriptUrl = getScriptForTestMethod(description);
-		if (scriptUrl != null) {
-			return scriptUrl;
-		}
-		return getScriptForTestClass(description.getTestClass());
-	}
-
-	private URL getScriptForTestMethod(Description description) {
-		String name = description.getTestClass().getSimpleName() + "-"
-				+ removeGradleVersion(description.getMethodName()) + this.dsl.getExtension();
-		return description.getTestClass().getResource(name);
-	}
-
-	private String removeGradleVersion(String methodName) {
-		return GRADLE_VERSION_PATTERN.matcher(methodName).replaceAll("").trim();
-	}
-
-	private URL getScriptForTestClass(Class<?> testClass) {
-		return testClass.getResource(testClass.getSimpleName() + this.dsl.getExtension());
-	}
-
-	private void before() throws IOException {
-		this.projectDir = this.temp.newFolder();
-	}
-
-	private void after() {
+	void after() {
 		GradleBuild.this.script = null;
+		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
 	private List<File> pluginClasspath() {
 		return Arrays.asList(new File("bin"), new File("build/classes/java/main"), new File("build/resources/main"),
 				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining(PropertiesKt.class)),
-				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
-				new File(pathOfJarContaining(KotlinPlugin.class)),
+				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
+				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinCompilerClient.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
@@ -178,6 +123,8 @@ public class GradleBuild implements TestRule {
 				.replace("{version}", getBootVersion())
 				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
 		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
+		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
+				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN) {
@@ -215,38 +162,18 @@ public class GradleBuild implements TestRule {
 	}
 
 	private static String getBootVersion() {
-		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']" + "/text()");
+		return "TEST-SNAPSHOT";
 	}
 
 	private static String getDependencyManagementPluginVersion() {
-		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
-			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(pomReader));
-			NodeList dependencyElements = pom.getElementsByTagName("dependency");
-			for (int i = 0; i < dependencyElements.getLength(); i++) {
-				Element dependency = (Element) dependencyElements.item(i);
-				if (dependency.getElementsByTagName("artifactId").item(0).getTextContent()
-						.equals("dependency-management-plugin")) {
-					return dependency.getElementsByTagName("version").item(0).getTextContent();
-				}
+		try {
+			URL location = DependencyManagementExtension.class.getProtectionDomain().getCodeSource().getLocation();
+			try (JarFile jar = new JarFile(new File(location.toURI()))) {
+				return jar.getManifest().getMainAttributes().getValue("Implementation-Version");
 			}
-			throw new IllegalStateException("dependency management plugin version not found");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to find dependency management plugin version", ex);
-		}
-	}
-
-	private static String evaluateExpression(String expression) {
-		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xpath = xPathFactory.newXPath();
-			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(new InputSource(pomReader));
-			return version;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to evaluate expression", ex);
 		}
 	}
 

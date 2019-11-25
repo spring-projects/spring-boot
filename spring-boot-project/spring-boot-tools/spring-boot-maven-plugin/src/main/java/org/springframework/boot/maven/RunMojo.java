@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -26,13 +27,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
 /**
- * Run an executable archive application.
+ * Run an application in place.
  *
  * @author Phillip Webb
  * @author Dmytro Nosan
@@ -54,7 +56,15 @@ public class RunMojo extends AbstractRunMojo {
 	 */
 	private Boolean hasDevtools;
 
+	/**
+	 * Whether the JVM's launch should be optimized.
+	 * @since 2.2.0
+	 */
+	@Parameter(property = "spring-boot.run.optimizedLaunch", defaultValue = "true")
+	private boolean optimizedLaunch;
+
 	@Override
+	@Deprecated
 	protected boolean enableForkByDefault() {
 		return super.enableForkByDefault() || hasDevtools();
 	}
@@ -68,16 +78,42 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
+	protected RunArguments resolveJvmArguments() {
+		RunArguments jvmArguments = super.resolveJvmArguments();
+		if (isFork() && this.optimizedLaunch) {
+			jvmArguments.getArgs().addFirst("-XX:TieredStopAtLevel=1");
+			if (!isJava13OrLater()) {
+				jvmArguments.getArgs().addFirst("-Xverify:none");
+			}
+		}
+		return jvmArguments;
+	}
+
+	private boolean isJava13OrLater() {
+		for (Method method : String.class.getMethods()) {
+			if (method.getName().equals("stripIndent")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	protected void runWithForkedJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+			throws MojoExecutionException {
+		int exitCode = forkJvm(workingDirectory, args, environmentVariables);
+		if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
+			return;
+		}
+		throw new MojoExecutionException("Application finished with exit code: " + exitCode);
+	}
+
+	private int forkJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
 			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			int exitCode = runProcess.run(true, args, environmentVariables);
-			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
-				return;
-			}
-			throw new MojoExecutionException("Application finished with exit code: " + exitCode);
+			return runProcess.run(true, args, environmentVariables);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);

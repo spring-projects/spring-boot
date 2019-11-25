@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -40,34 +40,34 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Andreas Neiser
  */
-public class MockitoPostProcessorTests {
+class MockitoPostProcessorTests {
 
 	@Test
-	public void cannotMockMultipleBeans() {
+	void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace " + "but found [example1, example2]");
+						+ " expected a single matching bean to replace but found [example1, example2]");
 	}
 
 	@Test
-	public void cannotMockMultipleQualifiedBeans() {
+	void cannotMockMultipleQualifiedBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace " + "but found [example1, example3]");
+						+ " expected a single matching bean to replace but found [example1, example3]");
 	}
 
 	@Test
-	public void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
-		factoryBeanDefinition.setAttribute("factoryBeanObjectType", SomeInterface.class.getName());
+		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, SomeInterface.class.getName());
 		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
 		context.register(MockedFactoryBean.class);
 		context.refresh();
@@ -75,7 +75,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canMockPrimaryBean() {
+	void canMockPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockPrimaryBean.class);
@@ -88,7 +88,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canMockQualifiedBeanWithPrimaryBeanPresent() {
+	void canMockQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockQualifiedBean.class);
@@ -100,7 +100,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canSpyPrimaryBean() {
+	void canSpyPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyPrimaryBean.class);
@@ -112,7 +112,7 @@ public class MockitoPostProcessorTests {
 	}
 
 	@Test
-	public void canSpyQualifiedBeanWithPrimaryBeanPresent() {
+	void canSpyQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyQualifiedBean.class);
@@ -123,34 +123,34 @@ public class MockitoPostProcessorTests {
 		assertThat(Mockito.mockingDetails(context.getBean("exampleQualified", ExampleService.class)).isSpy()).isTrue();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(SomeInterface.class)
 	static class MockedFactoryBean {
 
 		@Bean
-		public TestFactoryBean testFactoryBean() {
+		TestFactoryBean testFactoryBean() {
 			return new TestFactoryBean();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MockBean(ExampleService.class)
 	static class MultipleBeans {
 
 		@Bean
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleQualifiedBeans {
 
 		@MockBean
@@ -159,24 +159,24 @@ public class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example3() {
+		ExampleService example3() {
 			return new FailingExampleService();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockPrimaryBean {
 
 		@MockBean
@@ -184,19 +184,19 @@ public class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockQualifiedBean {
 
 		@MockBean
@@ -205,19 +205,19 @@ public class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SpyPrimaryBean {
 
 		@SpyBean
@@ -225,19 +225,19 @@ public class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SpyQualifiedBean {
 
 		@SpyBean
@@ -246,13 +246,13 @@ public class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 

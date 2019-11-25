@@ -207,7 +207,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			message.append("\t- ").append(exclude).append(String.format("%n"));
 		}
 		throw new IllegalStateException(String.format(
-				"The following classes could not be excluded because they are" + " not auto-configuration classes:%n%s",
+				"The following classes could not be excluded because they are not auto-configuration classes:%n%s",
 				message));
 	}
 
@@ -279,7 +279,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
-		return Arrays.asList((value != null) ? value : new String[0]);
+		return Arrays.asList(value);
 	}
 
 	private void fireAutoConfigurationImportEvents(List<String> configurations, Set<String> exclusions) {

@@ -17,22 +17,20 @@
 package org.springframework.boot.web.context;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -43,63 +41,63 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class WebServerPortFileWriterTests {
+class WebServerPortFileWriterTests {
 
-	@Rule
-	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	@After
-	public void reset() {
+	@BeforeEach
+	@AfterEach
+	void reset() {
 		System.clearProperty("PORTFILE");
 	}
 
 	@Test
-	public void createPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
+		assertThat(contentOf(file)).isEqualTo("8080");
 	}
 
 	@Test
-	public void overridePortFileWithDefault() throws Exception {
-		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+	void overridePortFileWithDefault() throws Exception {
+		System.setProperty("PORTFILE", new File(this.tempDir, "port.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter();
 		listener.onApplicationEvent(mockEvent("", 8080));
-		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
+		String content = contentOf(new File(System.getProperty("PORTFILE")));
+		assertThat(content).isEqualTo("8080");
 	}
 
 	@Test
-	public void overridePortFileWithExplicitFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+	void overridePortFileWithExplicitFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
+		System.setProperty("PORTFILE", new File(this.tempDir, "override.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
+		String content = contentOf(new File(System.getProperty("PORTFILE")));
+		assertThat(content).isEqualTo("8080");
 	}
 
 	@Test
-	public void createManagementPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createManagementPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
+		assertThat(contentOf(file)).isEqualTo("8080");
 		String managementFile = file.getName();
 		managementFile = managementFile.substring(0,
 				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-management." + StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(new File(file.getParentFile(), managementFile));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		String content = contentOf(new File(file.getParentFile(), managementFile));
+		assertThat(content).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
 	@Test
-	public void createUpperCaseManagementPortFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createUpperCaseManagementPortFile() throws Exception {
+		File file = new File(this.tempDir, "port.file");
 		file = new File(file.getParentFile(), file.getName().toUpperCase(Locale.ENGLISH));
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));
@@ -107,8 +105,8 @@ public class WebServerPortFileWriterTests {
 		managementFile = managementFile.substring(0,
 				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-MANAGEMENT." + StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(new File(file.getParentFile(), managementFile));
-		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		String content = contentOf(new File(file.getParentFile(), managementFile));
+		assertThat(content).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 

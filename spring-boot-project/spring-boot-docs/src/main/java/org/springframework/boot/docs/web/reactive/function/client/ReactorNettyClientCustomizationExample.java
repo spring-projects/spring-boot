@@ -33,7 +33,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class ReactorNettyClientCustomizationExample {
 
 	// tag::custom-http-connector[]

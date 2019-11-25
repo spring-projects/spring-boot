@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
@@ -54,22 +54,18 @@ public class HibernateMetricsAutoConfiguration {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
-	private final MeterRegistry registry;
-
-	public HibernateMetricsAutoConfiguration(MeterRegistry registry) {
-		this.registry = registry;
-	}
-
 	@Autowired
-	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories) {
-		entityManagerFactories.forEach(this::bindEntityManagerFactoryToRegistry);
+	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
+			MeterRegistry registry) {
+		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
 	}
 
-	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory) {
+	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
+			MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {
 			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class), entityManagerFactoryName,
-					Collections.emptyList()).bindTo(this.registry);
+					Collections.emptyList()).bindTo(registry);
 		}
 		catch (PersistenceException ex) {
 			// Continue

@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.codec.CodecProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,8 @@ import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.util.MimeType;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -42,21 +46,22 @@ import org.springframework.util.MimeType;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnClass(CodecConfigurer.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
+@EnableConfigurationProperties({ HttpProperties.class, CodecProperties.class })
 public class CodecsAutoConfiguration {
 
 	private static final MimeType[] EMPTY_MIME_TYPES = {};
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonCodecConfiguration {
 
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(ObjectMapper.class)
-		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
+		CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
 				defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
@@ -66,15 +71,19 @@ public class CodecsAutoConfiguration {
 
 	}
 
-	@Configuration
-	@EnableConfigurationProperties(HttpProperties.class)
-	static class LoggingCodecConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class DefaultCodecsConfiguration {
 
 		@Bean
 		@Order(0)
-		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
-			return (configurer) -> configurer.defaultCodecs()
-					.enableLoggingRequestDetails(properties.isLogRequestDetails());
+		CodecCustomizer defaultCodecCustomizer(HttpProperties httpProperties, CodecProperties codecProperties) {
+			return (configurer) -> {
+				PropertyMapper map = PropertyMapper.get();
+				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();
+				defaultCodecs.enableLoggingRequestDetails(httpProperties.isLogRequestDetails());
+				map.from(codecProperties.getMaxInMemorySize()).whenNonNull().asInt(DataSize::toBytes)
+						.to(defaultCodecs::maxInMemorySize);
+			};
 		}
 
 	}

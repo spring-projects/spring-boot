@@ -600,13 +600,13 @@ public class Restarter {
 			setDaemon(false);
 		}
 
-		public void call(Callable<?> callable) {
+		void call(Callable<?> callable) {
 			this.callable = callable;
 			start();
 		}
 
 		@SuppressWarnings("unchecked")
-		public <V> V callAndWait(Callable<V> callable) {
+		<V> V callAndWait(Callable<V> callable) {
 			this.callable = callable;
 			start();
 			try {

@@ -22,7 +22,7 @@ import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
 /**
- * Example entry used with {@link DataLdapTest} tests.
+ * Example entry used with {@link DataLdapTest @DataLdapTest} tests.
  *
  * @author Eddú Meléndez
  */

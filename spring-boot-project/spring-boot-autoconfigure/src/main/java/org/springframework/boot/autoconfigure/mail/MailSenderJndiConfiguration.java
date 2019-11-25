@@ -35,7 +35,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 @ConditionalOnJndi
@@ -48,7 +48,7 @@ class MailSenderJndiConfiguration {
 	}
 
 	@Bean
-	public JavaMailSenderImpl mailSender(Session session) {
+	JavaMailSenderImpl mailSender(Session session) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
 		sender.setSession(session);
@@ -57,7 +57,7 @@ class MailSenderJndiConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Session session() {
+	Session session() {
 		String jndiName = this.properties.getJndiName();
 		try {
 			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName, Session.class);

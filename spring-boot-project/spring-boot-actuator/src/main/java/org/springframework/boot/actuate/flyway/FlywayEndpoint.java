@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
 
 /**
- * {@link Endpoint} to expose flyway info.
+ * {@link Endpoint @Endpoint} to expose flyway info.
  *
  * @author Eddú Meléndez
  * @author Phillip Webb

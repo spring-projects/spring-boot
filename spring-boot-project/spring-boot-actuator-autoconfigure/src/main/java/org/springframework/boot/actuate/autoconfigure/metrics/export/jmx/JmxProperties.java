@@ -21,7 +21,8 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring JMX metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring JMX metrics
+ * export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll

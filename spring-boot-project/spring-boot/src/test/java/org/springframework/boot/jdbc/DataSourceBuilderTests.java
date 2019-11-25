@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,32 +36,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DataSourceBuilderTests {
+class DataSourceBuilderTests {
 
 	private DataSource dataSource;
 
-	@After
-	public void shutdownDataSource() throws IOException {
+	@AfterEach
+	void shutdownDataSource() throws IOException {
 		if (this.dataSource instanceof Closeable) {
 			((Closeable) this.dataSource).close();
 		}
 	}
 
 	@Test
-	public void defaultToHikari() {
+	void defaultToHikari() {
 		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(HikariDataSource.class);
 	}
 
 	@Test
-	public void defaultToTomcatIfHikariIsNotAvailable() {
+	void defaultToTomcatIfHikariIsNotAvailable() {
 		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
 				.build();
 		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
 	@Test
-	public void defaultToCommonsDbcp2AsLastResort() {
+	void defaultToCommonsDbcp2AsLastResort() {
 		this.dataSource = DataSourceBuilder
 				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
@@ -69,7 +69,7 @@ public class DataSourceBuilderTests {
 	}
 
 	@Test
-	public void specificTypeOfDataSource() {
+	void specificTypeOfDataSource() {
 		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
 		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
 	}

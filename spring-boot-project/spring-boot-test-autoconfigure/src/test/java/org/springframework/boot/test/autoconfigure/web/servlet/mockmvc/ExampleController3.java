@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Example {@link Controller} used with {@link WebMvcTest} tests.
+ * Example {@link Controller @Controller} used with {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Stephane Nicoll
  */

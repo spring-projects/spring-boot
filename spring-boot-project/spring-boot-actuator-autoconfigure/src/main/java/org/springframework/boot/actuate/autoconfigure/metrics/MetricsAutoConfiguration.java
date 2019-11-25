@@ -39,7 +39,7 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
 @AutoConfigureBefore(CompositeMeterRegistryAutoConfiguration.class)

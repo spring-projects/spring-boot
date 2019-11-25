@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +26,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigurationPropertiesSourceTests {
+class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigurationPropertiesSourceTests {
 
 	@Test
-	public void iteratorShouldFilterNames() {
+	void iteratorShouldFilterNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
-		assertThat(filtered.iterator()).extracting(ConfigurationPropertyName::toString).containsExactly("a", "b", "c");
+		assertThat(filtered.iterator()).toIterable().extracting(ConfigurationPropertyName::toString)
+				.containsExactly("a", "b", "c");
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class FilteredIterableConfigurationPropertiesSourceTests extends Filtered
 	}
 
 	@Test
-	public void containsDescendantOfShouldUseContents() {
+	void containsDescendantOfShouldUseContents() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar.baz", "1");
 		source.put("foo.bar[0]", "1");
@@ -54,7 +55,7 @@ public class FilteredIterableConfigurationPropertiesSourceTests extends Filtered
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
-		return name.toString().indexOf("[") == -1;
+		return !name.toString().contains("[");
 	}
 
 }

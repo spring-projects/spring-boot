@@ -51,12 +51,12 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 
 		private Map<String, HttpHandler> httpHandlerMap;
 
-		public MockReactiveWebServer(HttpHandler httpHandler, int port) {
+		MockReactiveWebServer(HttpHandler httpHandler, int port) {
 			this.httpHandler = httpHandler;
 			this.port = port;
 		}
 
-		public MockReactiveWebServer(Map<String, HttpHandler> httpHandlerMap, int port) {
+		MockReactiveWebServer(Map<String, HttpHandler> httpHandlerMap, int port) {
 			this.httpHandlerMap = httpHandlerMap;
 			this.port = port;
 		}

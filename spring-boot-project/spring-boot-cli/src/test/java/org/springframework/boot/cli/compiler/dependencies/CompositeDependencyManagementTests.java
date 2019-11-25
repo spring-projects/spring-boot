@@ -18,8 +18,8 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -31,7 +31,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
-public class CompositeDependencyManagementTests {
+class CompositeDependencyManagementTests {
 
 	@Mock
 	private DependencyManagement dependencyManagement1;
@@ -39,13 +39,13 @@ public class CompositeDependencyManagementTests {
 	@Mock
 	private DependencyManagement dependencyManagement2;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void unknownSpringBootVersion() {
+	void unknownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn(null);
 		given(this.dependencyManagement2.getSpringBootVersion()).willReturn(null);
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
@@ -53,7 +53,7 @@ public class CompositeDependencyManagementTests {
 	}
 
 	@Test
-	public void knownSpringBootVersion() {
+	void knownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn("1.2.3");
 		given(this.dependencyManagement2.getSpringBootVersion()).willReturn("1.2.4");
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
@@ -61,7 +61,7 @@ public class CompositeDependencyManagementTests {
 	}
 
 	@Test
-	public void unknownDependency() {
+	void unknownDependency() {
 		given(this.dependencyManagement1.find("artifact")).willReturn(null);
 		given(this.dependencyManagement2.find("artifact")).willReturn(null);
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
@@ -69,7 +69,7 @@ public class CompositeDependencyManagementTests {
 	}
 
 	@Test
-	public void knownDependency() {
+	void knownDependency() {
 		given(this.dependencyManagement1.find("artifact")).willReturn(new Dependency("test", "artifact", "1.2.3"));
 		given(this.dependencyManagement2.find("artifact")).willReturn(new Dependency("test", "artifact", "1.2.4"));
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
@@ -77,7 +77,7 @@ public class CompositeDependencyManagementTests {
 	}
 
 	@Test
-	public void getDependencies() {
+	void getDependencies() {
 		given(this.dependencyManagement1.getDependencies())
 				.willReturn(Arrays.asList(new Dependency("test", "artifact", "1.2.3")));
 		given(this.dependencyManagement2.getDependencies())

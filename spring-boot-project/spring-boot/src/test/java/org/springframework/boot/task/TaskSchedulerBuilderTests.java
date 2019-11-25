@@ -16,10 +16,11 @@
 
 package org.springframework.boot.task;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -28,52 +29,64 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TaskSchedulerBuilder}.
  *
  * @author Stephane Nicoll
  */
-public class TaskSchedulerBuilderTests {
+class TaskSchedulerBuilderTests {
 
 	private TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
 
 	@Test
-	public void poolSettingsShouldApply() {
+	void poolSettingsShouldApply() {
 		ThreadPoolTaskScheduler scheduler = this.builder.poolSize(4).build();
 		assertThat(scheduler.getPoolSize()).isEqualTo(4);
 	}
 
 	@Test
-	public void threadNamePrefixShouldApply() {
+	void awaitTerminationShouldApply() {
+		ThreadPoolTaskScheduler executor = this.builder.awaitTermination(true).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
+	}
+
+	@Test
+	void awaitTerminationPeriodShouldApply() {
+		ThreadPoolTaskScheduler executor = this.builder.awaitTerminationPeriod(Duration.ofMinutes(1)).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
+	}
+
+	@Test
+	void threadNamePrefixShouldApply() {
 		ThreadPoolTaskScheduler scheduler = this.builder.threadNamePrefix("test-").build();
 		assertThat(scheduler.getThreadNamePrefix()).isEqualTo("test-");
 	}
 
 	@Test
-	public void customizersWhenCustomizersAreNullShouldThrowException() {
+	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((TaskSchedulerCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((Set<TaskSchedulerCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void customizersShouldApply() {
+	void customizersShouldApply() {
 		TaskSchedulerCustomizer customizer = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer).build();
 		verify(customizer).customize(scheduler);
 	}
 
 	@Test
-	public void customizersShouldBeAppliedLast() {
+	void customizersShouldBeAppliedLast() {
 		ThreadPoolTaskScheduler scheduler = spy(new ThreadPoolTaskScheduler());
 		this.builder.poolSize(4).threadNamePrefix("test-").additionalCustomizers((taskScheduler) -> {
 			verify(taskScheduler).setPoolSize(4);
@@ -83,31 +96,31 @@ public class TaskSchedulerBuilderTests {
 	}
 
 	@Test
-	public void customizersShouldReplaceExisting() {
+	void customizersShouldReplaceExisting() {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyZeroInteractions(customizer1);
+		verifyNoInteractions(customizer1);
 		verify(customizer2).customize(scheduler);
 	}
 
 	@Test
-	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((TaskSchedulerCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
+	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskSchedulerCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void additionalCustomizersShouldAddToExisting() {
+	void additionalCustomizersShouldAddToExisting() {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1).additionalCustomizers(customizer2)

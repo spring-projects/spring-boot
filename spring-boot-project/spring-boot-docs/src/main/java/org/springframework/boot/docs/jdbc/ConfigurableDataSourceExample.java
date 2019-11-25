@@ -37,8 +37,8 @@ public class ConfigurableDataSourceExample {
 	 * A configuration that defines dedicated settings and reuses
 	 * {@link DataSourceProperties}.
 	 */
-	@Configuration
-	static class ConfigurableDataSourceConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	public static class ConfigurableDataSourceConfiguration {
 
 		// tag::configuration[]
 		@Bean

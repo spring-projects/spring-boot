@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 /**
- * Test application used with {@link AutoConfigureRestDocs} tests.
+ * Test application used with {@link AutoConfigureRestDocs @AutoConfigureRestDocs} tests.
  *
  * @author Andy Wilkinson
  */

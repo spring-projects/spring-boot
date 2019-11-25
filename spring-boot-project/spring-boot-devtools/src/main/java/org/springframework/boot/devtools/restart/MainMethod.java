@@ -69,7 +69,7 @@ class MainMethod {
 	 * Returns the actual main method.
 	 * @return the main method
 	 */
-	public Method getMethod() {
+	Method getMethod() {
 		return this.method;
 	}
 
@@ -77,7 +77,7 @@ class MainMethod {
 	 * Return the name of the declaring class.
 	 * @return the declaring class name
 	 */
-	public String getDeclaringClassName() {
+	String getDeclaringClassName() {
 		return this.method.getDeclaringClass().getName();
 	}
 

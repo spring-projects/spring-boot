@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.trace.http.reactive;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
@@ -49,13 +49,13 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  */
-public class HttpTraceWebFilterIntegrationTests {
+class HttpTraceWebFilterIntegrationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withUserConfiguration(Config.class);
 
 	@Test
-	public void traceForNotFoundResponseHas404Status() {
+	void traceForNotFoundResponseHas404Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
 					.isNotFound();
@@ -66,7 +66,7 @@ public class HttpTraceWebFilterIntegrationTests {
 	}
 
 	@Test
-	public void traceForMonoErrorWithRuntimeExceptionHas500Status() {
+	void traceForMonoErrorWithRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,7 +77,7 @@ public class HttpTraceWebFilterIntegrationTests {
 	}
 
 	@Test
-	public void traceForThrownRuntimeExceptionHas500Status() {
+	void traceForThrownRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -87,28 +87,28 @@ public class HttpTraceWebFilterIntegrationTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebFlux
 	static class Config {
 
 		@Bean
-		public HttpTraceWebFilter httpTraceWebFilter(HttpTraceRepository repository) {
+		HttpTraceWebFilter httpTraceWebFilter(HttpTraceRepository repository) {
 			Set<Include> includes = EnumSet.allOf(Include.class);
 			return new HttpTraceWebFilter(repository, new HttpExchangeTracer(includes), includes);
 		}
 
 		@Bean
-		public HttpTraceRepository httpTraceRepository() {
+		HttpTraceRepository httpTraceRepository() {
 			return new InMemoryHttpTraceRepository();
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		}
 
 		@Bean
-		public RouterFunction<ServerResponse> router() {
+		RouterFunction<ServerResponse> router() {
 			return route(GET("/mono-error"), (request) -> Mono.error(new RuntimeException())).andRoute(GET("/thrown"),
 					(HandlerFunction<ServerResponse>) (request) -> {
 						throw new RuntimeException();

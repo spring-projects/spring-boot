@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor.fieldvalues;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +30,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
@@ -46,15 +46,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractFieldValuesProcessorTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	protected abstract FieldValuesParser createProcessor(ProcessingEnvironment env);
 
 	@Test
-	public void getFieldValues() throws Exception {
+	void getFieldValues() throws Exception {
 		TestProcessor processor = new TestProcessor();
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		compiler.getTask(FieldValues.class).call(processor);
 		Map<String, Object> values = processor.getValues();
 		assertThat(values.get("string")).isEqualTo("1");
@@ -132,7 +132,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 			return false;
 		}
 
-		public Map<String, Object> getValues() {
+		Map<String, Object> getValues() {
 			return this.values;
 		}
 

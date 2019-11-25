@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
@@ -39,8 +39,8 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
-@ConditionalOnClass(HazelcastSessionRepository.class)
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(HazelcastIndexedSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(ServletSessionCondition.class)
@@ -58,7 +58,8 @@ class HazelcastSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setSessionMapName(hazelcastSessionProperties.getMapName());
-			setHazelcastFlushMode(hazelcastSessionProperties.getFlushMode());
+			setFlushMode(hazelcastSessionProperties.getFlushMode());
+			setSaveMode(hazelcastSessionProperties.getSaveMode());
 		}
 
 	}

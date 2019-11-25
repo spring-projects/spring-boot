@@ -87,7 +87,7 @@ class WebDriverScope implements Scope {
 	 * Reset all instances in the scope.
 	 * @return {@code true} if items were reset
 	 */
-	public boolean reset() {
+	boolean reset() {
 		boolean reset = false;
 		synchronized (this.instances) {
 			for (Object instance : this.instances.values()) {
@@ -106,7 +106,7 @@ class WebDriverScope implements Scope {
 	 * definitions to used it.
 	 * @param context the application context
 	 */
-	public static void registerWith(ConfigurableApplicationContext context) {
+	static void registerWith(ConfigurableApplicationContext context) {
 		if (!ClassUtils.isPresent(WEB_DRIVER_CLASS, null)) {
 			return;
 		}
@@ -133,7 +133,7 @@ class WebDriverScope implements Scope {
 	 * @param context the application context
 	 * @return the web driver scope or {@code null}
 	 */
-	public static WebDriverScope getFrom(ApplicationContext context) {
+	static WebDriverScope getFrom(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext) {
 			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory().getRegisteredScope(NAME);
 			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;

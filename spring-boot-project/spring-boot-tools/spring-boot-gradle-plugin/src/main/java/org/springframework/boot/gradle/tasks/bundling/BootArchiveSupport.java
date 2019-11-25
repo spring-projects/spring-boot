@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
+import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
@@ -93,13 +95,35 @@ class BootArchiveSupport {
 	}
 
 	CopyAction createCopyAction(Jar jar) {
-		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(), jar.isPreserveFileTimestamps(),
+		CopyAction copyAction = new BootZipCopyAction(getOutputLocation(jar), jar.isPreserveFileTimestamps(),
 				isUsingDefaultLoader(jar), this.requiresUnpack.getAsSpec(), this.exclusions.getAsExcludeSpec(),
 				this.launchScript, this.compressionResolver, jar.getMetadataCharset());
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}
 		return new ReproducibleOrderingCopyAction(copyAction);
+	}
+
+	private static File getOutputLocation(AbstractArchiveTask task) {
+		try {
+			Method method = findMethod(task.getClass(), "getArchiveFile");
+			if (method != null) {
+				return (File) method.invoke(task);
+			}
+		}
+		catch (Exception ex) {
+			// Continue
+		}
+		return task.getArchivePath();
+	}
+
+	private static Method findMethod(Class<?> type, String name) {
+		for (Method candidate : type.getMethods()) {
+			if (candidate.getName().equals(name)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
@@ -143,8 +167,8 @@ class BootArchiveSupport {
 	}
 
 	private boolean isZip(InputStream inputStream) throws IOException {
-		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+		for (byte headerByte : ZIP_FILE_HEADER) {
+			if (inputStream.read() != headerByte) {
 				return false;
 			}
 		}

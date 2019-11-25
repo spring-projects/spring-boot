@@ -35,17 +35,19 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 
 /**
- * {@link BeanBinder} for mutable Java Beans.
+ * {@link DataObjectBinder} for mutable Java Beans.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class JavaBeanBinder implements BeanBinder {
+class JavaBeanBinder implements DataObjectBinder {
+
+	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
 
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
-			BeanPropertyBinder propertyBinder) {
-		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
+			DataObjectPropertyBinder propertyBinder) {
+		boolean hasKnownBindableProperties = target.getValue() != null && hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
@@ -53,6 +55,13 @@ class JavaBeanBinder implements BeanBinder {
 		BeanSupplier<T> beanSupplier = bean.getSupplier(target);
 		boolean bound = bind(propertyBinder, bean, beanSupplier);
 		return (bound ? beanSupplier.get() : null);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T create(Bindable<T> target, Context context) {
+		Class<T> type = (Class<T>) target.getType().resolve();
+		return (type != null) ? BeanUtils.instantiateClass(type) : null;
 	}
 
 	private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
@@ -64,7 +73,7 @@ class JavaBeanBinder implements BeanBinder {
 		return false;
 	}
 
-	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
+	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
 		for (BeanProperty beanProperty : bean.getProperties().values()) {
 			bound |= bind(beanSupplier, propertyBinder, beanProperty);
@@ -72,7 +81,8 @@ class JavaBeanBinder implements BeanBinder {
 		return bound;
 	}
 
-	private <T> boolean bind(BeanSupplier<T> beanSupplier, BeanPropertyBinder propertyBinder, BeanProperty property) {
+	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
+			BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
 		Supplier<Object> value = property.getValue(beanSupplier);
@@ -141,9 +151,9 @@ class JavaBeanBinder implements BeanBinder {
 
 		private boolean isCandidate(Method method) {
 			int modifiers = method.getModifiers();
-			return Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers) && !Modifier.isStatic(modifiers)
-					&& !Object.class.equals(method.getDeclaringClass())
-					&& !Class.class.equals(method.getDeclaringClass());
+			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && !Modifier.isAbstract(modifiers)
+					&& !Modifier.isStatic(modifiers) && !Object.class.equals(method.getDeclaringClass())
+					&& !Class.class.equals(method.getDeclaringClass()) && method.getName().indexOf('$') == -1;
 		}
 
 		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
@@ -166,12 +176,12 @@ class JavaBeanBinder implements BeanBinder {
 			}
 		}
 
-		public Map<String, BeanProperty> getProperties() {
+		Map<String, BeanProperty> getProperties() {
 			return this.properties;
 		}
 
 		@SuppressWarnings("unchecked")
-		public BeanSupplier<T> getSupplier(Bindable<T> target) {
+		BeanSupplier<T> getSupplier(Bindable<T> target) {
 			return new BeanSupplier<>(() -> {
 				T instance = null;
 				if (target.getValue() != null) {
@@ -185,7 +195,7 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
+		static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
 			ResolvableType type = bindable.getType();
 			Class<?> resolvedType = type.resolve(Object.class);
 			Supplier<T> value = bindable.getValue();
@@ -263,17 +273,17 @@ class JavaBeanBinder implements BeanBinder {
 		private Field field;
 
 		BeanProperty(String name, ResolvableType declaringClassType) {
-			this.name = BeanPropertyName.toDashedForm(name);
+			this.name = DataObjectPropertyName.toDashedForm(name);
 			this.declaringClassType = declaringClassType;
 		}
 
-		public void addGetter(Method getter) {
+		void addGetter(Method getter) {
 			if (this.getter == null) {
 				this.getter = getter;
 			}
 		}
 
-		public void addSetter(Method setter) {
+		void addSetter(Method setter) {
 			if (this.setter == null || isBetterSetter(setter)) {
 				this.setter = setter;
 			}
@@ -283,17 +293,17 @@ class JavaBeanBinder implements BeanBinder {
 			return this.getter != null && this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
 		}
 
-		public void addField(Field field) {
+		void addField(Field field) {
 			if (this.field == null) {
 				this.field = field;
 			}
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public ResolvableType getType() {
+		ResolvableType getType() {
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
 				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
@@ -302,7 +312,7 @@ class JavaBeanBinder implements BeanBinder {
 			return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 		}
 
-		public Annotation[] getAnnotations() {
+		Annotation[] getAnnotations() {
 			try {
 				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
@@ -311,7 +321,7 @@ class JavaBeanBinder implements BeanBinder {
 			}
 		}
 
-		public Supplier<Object> getValue(Supplier<?> instance) {
+		Supplier<Object> getValue(Supplier<?> instance) {
 			if (this.getter == null) {
 				return null;
 			}
@@ -326,11 +336,11 @@ class JavaBeanBinder implements BeanBinder {
 			};
 		}
 
-		public boolean isSettable() {
+		boolean isSettable() {
 			return this.setter != null;
 		}
 
-		public void setValue(Supplier<?> instance, Object value) {
+		void setValue(Supplier<?> instance, Object value) {
 			try {
 				this.setter.setAccessible(true);
 				this.setter.invoke(instance.get(), value);

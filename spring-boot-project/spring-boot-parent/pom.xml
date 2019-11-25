@@ -28,8 +28,12 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.5.4</maven.version>
 		<maven-resolver.version>1.1.1</maven-resolver.version>
-		<spock.version>1.0-groovy-2.4</spock.version>
-		<testcontainers.version>1.10.6</testcontainers.version>
+		<spock.version>1.3-groovy-2.5</spock.version>
+		<spring-asciidoctor-extensions.version>0.3.0.RELEASE</spring-asciidoctor-extensions.version>
+		<spring-doc-resources.version>0.1.4.BUILD-20191119.185717-2</spring-doc-resources.version>
+		<spring-doc-resources.url>https://repo.spring.io/snapshot/io/spring/docresources/spring-doc-resources/0.1.4.BUILD-SNAPSHOT/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
+		<testcontainers.version>1.12.2</testcontainers.version>
+		<testng.version>6.14.3</testng.version>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -58,26 +62,12 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.3.3</version>
+				<version>1.4</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhaarman</groupId>
-				<artifactId>mockito-kotlin</artifactId>
-				<version>1.6.0</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-stdlib</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-reflect</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>io.mockk</groupId>
+				<artifactId>mockk</artifactId>
+				<version>1.9.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sonatype.plexus</groupId>
@@ -88,16 +78,6 @@
 				<groupId>org.sonatype.sisu</groupId>
 				<artifactId>sisu-inject-plexus</artifactId>
 				<version>2.6.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.squareup.okhttp3</groupId>
-				<artifactId>okhttp</artifactId>
-				<version>3.11.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.squareup.okhttp3</groupId>
-				<artifactId>mockwebserver</artifactId>
-				<version>3.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin.external.google</groupId>
@@ -117,7 +97,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.18</version>
+				<version>1.19</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
@@ -127,7 +107,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-archiver</artifactId>
-				<version>3.2.0</version>
+				<version>3.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
@@ -192,7 +172,7 @@
 			<dependency>
 				<groupId>org.apache.maven.shared</groupId>
 				<artifactId>maven-common-artifact-filters</artifactId>
-				<version>3.0.1</version>
+				<version>3.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -202,12 +182,12 @@
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
 				<artifactId>maven-plugin-annotations</artifactId>
-				<version>3.5.2</version>
+				<version>3.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-archiver</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
@@ -223,12 +203,6 @@
 				<groupId>org.spockframework</groupId>
 				<artifactId>spock-core</artifactId>
 				<version>${spock.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.spockframework</groupId>
@@ -243,6 +217,11 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.13</version>
@@ -252,8 +231,24 @@
 	<dependencies>
 		<!-- Generally Useful Test Dependencies -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -268,7 +263,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
+			<artifactId>hamcrest</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -281,20 +276,30 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>1.4.2</version>
+				</plugin>
+				<plugin>
 					<groupId>org.jetbrains.kotlin</groupId>
 					<artifactId>kotlin-maven-plugin</artifactId>
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
-						<apiVersion>1.1</apiVersion>
-						<languageVersion>1.1</languageVersion>
 						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.asciidoctor</groupId>
 					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>1.5.5</version>
+					<version>1.6.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj-pdf</artifactId>
+							<version>1.5.0-alpha.18</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -311,7 +316,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.5</version>
+					<version>3.6.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -325,183 +330,12 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.6.7</version>
+					<version>1.7.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
 					<artifactId>gmavenplus-plugin</artifactId>
-					<version>1.6.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.3.0.603</version>
-				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.basepom.maven</groupId>
-										<artifactId>duplicate-finder-maven-plugin</artifactId>
-										<versionRange>[1,2)</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-enforcer-plugin
-										</artifactId>
-										<versionRange>
-											[1.3.1,)
-										</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.8,)
-										</versionRange>
-										<goals>
-											<goal>copy</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-plugin-plugin
-										</artifactId>
-										<versionRange>
-											[3.2,)
-										</versionRange>
-										<goals>
-											<goal>descriptor</goal>
-											<goal>helpmojo</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											build-helper-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.9.1,)
-										</versionRange>
-										<goals>
-											<goal>
-												reserve-network-port
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-checkstyle-plugin
-										</artifactId>
-										<versionRange>
-											[2.16,)
-										</versionRange>
-										<goals>
-											<goal>
-												check
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-invoker-plugin
-										</artifactId>
-										<versionRange>
-											[1.0.0,)
-										</versionRange>
-										<goals>
-											<goal>
-												install
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											flatten-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.0.0,)
-										</versionRange>
-										<goals>
-											<goal>flatten</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
+					<version>1.8.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -572,7 +406,15 @@
 								<bannedDependencies>
 									<excludes>
 										<exclude>com.zaxxer:HikariCP-*</exclude>
+										<exclude>org.hamcrest:hamcrest-*</exclude>
+										<exclude>javax.*:*:*</exclude>
 									</excludes>
+									<includes>
+										<include>javax.batch:*:*</include>
+										<include>javax.cache:*:*</include>
+										<include>javax.inject:*:*</include>
+										<include>javax.money:*:*</include>
+									</includes>
 									<searchTransitive>true</searchTransitive>
 								</bannedDependencies>
 								<requireJavaVersion>

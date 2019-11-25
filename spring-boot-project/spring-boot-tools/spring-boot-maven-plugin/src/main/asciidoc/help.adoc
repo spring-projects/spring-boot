@@ -1,0 +1,5 @@
+[[help]]
+== Help information
+The `help` goal is a standard goal that  displays information on the capabilities of the plugin.
+
+include::{generated-resources-root}/goals/help.adoc[leveloffset=+1]

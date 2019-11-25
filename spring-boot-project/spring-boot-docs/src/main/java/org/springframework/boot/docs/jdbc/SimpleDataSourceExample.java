@@ -35,8 +35,8 @@ public class SimpleDataSourceExample {
 	/**
 	 * A simple configuration that exposes dedicated settings.
 	 */
-	@Configuration
-	static class SimpleDataSourceConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	public static class SimpleDataSourceConfiguration {
 
 		// tag::configuration[]
 		@Bean

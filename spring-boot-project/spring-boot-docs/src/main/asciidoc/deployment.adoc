@@ -1,13 +1,65 @@
 [[deployment]]
 = Deploying Spring Boot Applications
+include::attributes.adoc[]
 
-[partintro]
---
 Spring Boot's flexible packaging options provide a great deal of choice when it comes to deploying your application.
 You can deploy Spring Boot applications to a variety of cloud platforms, to container images (such as Docker), or to virtual/real machines.
 
 This section covers some of the more common deployment scenarios.
---
+
+
+
+[[containers-deployment]]
+== Deploying to Containers
+If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
+Certain PaaS implementations may also choose to unpack archives before they run.
+For example, Cloud Foundry operates this way.
+The simplest way to run an unpacked archive is by starting the appropriate launcher, as follows:
+
+[indent=0]
+----
+	$ jar -xf myapp.jar
+	$ java org.springframework.boot.loader.JarLauncher
+----
+
+This is actually slightly faster on startup (depending on the size of the jar) than running from an unexploded archive.
+At runtime you shouldn't expect any differences.
+
+Once you have unpacked the jar file, you can also get an extra boost to startup time by running the app with its "natural" main method instead of the `JarLauncher`. For example:
+
+[indent=0]
+----
+	$ jar -xf myapp.jar
+	$ java -cp BOOT-INF/classes:BOOT-INF/lib/* com.example.MyApplication
+----
+
+More efficient container images can also be created by copying the dependencies to the image as a separate layer from the application classes and resources (which normally change more frequently).
+There is more than one way to achieve this layer separation.
+For example, using a `Dockerfile` you could express it in this form:
+
+[indent=0]
+----
+	FROM openjdk:8-jdk-alpine AS builder
+	WORKDIR target/dependency
+	ARG APPJAR=target/*.jar
+	COPY ${APPJAR} app.jar
+	RUN jar -xf ./app.jar
+
+	FROM openjdk:8-jre-alpine
+	VOLUME /tmp
+	ARG DEPENDENCY=target/dependency
+	COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
+	COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
+	COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
+	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
+----
+
+Assuming the above `Dockerfile` is the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as show in the following example:
+
+[indent=0]
+----
+	docker build --build-arg APPJAR=path/to/myapp.jar .
+----
 
 
 
@@ -127,8 +179,7 @@ All Cloud Foundry properties are prefixed with `vcap`.
 You can use `vcap` properties to access application information (such as the public URL of the application) and service information (such as database credentials).
 See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`'] Javadoc for complete details.
 
-TIP: The https://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project is a better fit for tasks such as configuring a DataSource.
-Spring Boot includes auto-configuration support and a `spring-boot-starter-cloud-connectors` starter.
+TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
 
 
@@ -345,7 +396,7 @@ Google Cloud has several options that can be used to launch Spring Boot applicat
 The easiest to get started with is probably App Engine, but you could also find ways to run Spring Boot in a container with Container Engine or on a virtual machine with Compute Engine.
 
 To run in App Engine, you can create a project in the UI first, which sets up a unique identifier for you and also sets up HTTP routes.
-Add a Java app to the project and leave it empty and then use the https://cloud.google.com/sdk/downloads[Google Cloud SDK] to push your Spring Boot app into that slot from the command line or CI build.
+Add a Java app to the project and leave it empty and then use the https://cloud.google.com/sdk/install[Google Cloud SDK] to push your Spring Boot app into that slot from the command line or CI build.
 
 App Engine Standard requires you to use WAR packaging.
 Follow https://github.com/GoogleCloudPlatform/getting-started-java/blob/master/appengine-standard-java8/springboot-appengine-standard/README.md[these steps] to deploy App Engine Standard application to Google Cloud.
@@ -405,6 +456,10 @@ CAUTION: Fully executable jars work by embedding an extra script at the front of
 Currently, some tools do not accept this format, so you may not always be able to use this technique.
 For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
 It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar`or deploying it to a servlet container.
+
+CAUTION: A zip64-format jar file cannot be made fully executable.
+Attempting to do so will result in a jar file that is reported as corrupt when executed directly or with `java -jar`.
+A standard-format jar file that contains one or more zip64-format nested jars can be fully executable.
 
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
 
@@ -489,9 +544,10 @@ For example, on Debian, you could use the following command:
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
-When executed as root, as is the case when root is being used to start an init.d service, the default executable script runs the application as the user who owns the jar file.
-You should never run a Spring Boot application as `root`, so your application's jar file should never be owned by root.
-Instead, create a specific user to run your application and use `chown` to make it the owner of the jar file, as shown in the following example:
+When executed as root, as is the case when root is being used to start an init.d service, the default executable script runs the application as the user specified in the `RUN_AS_USER` environment variable.
+When the environment variable is not set, the user who owns the jar file is used instead.
+You should never run a Spring Boot application as `root`, so `RUN_AS_USER` should never be root and your application's jar file should never be owned by root.
+Instead, create a specific user to run your application and set the `RUN_AS_USER` environment variable or use `chown` to make it the owner of the jar file, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -705,6 +761,10 @@ The following environment properties are supported with the default script:
 | The "`mode`" of operation.
   The default depends on the way the jar was built but is usually `auto` (meaning it tries to guess if it is an init script by checking if it is a symlink in a directory called `init.d`).
   You can explicitly set it to `service` so that the `stop\|start\|status\|restart` commands work or to `run` if you want to run the script in the foreground.
+
+| `RUN_AS_USER`
+| The user that will be used to run the application.
+  When not set, the user that owns the jar file will be used.
 
 | `USE_START_STOP_DAEMON`
 | Whether the `start-stop-daemon` command, when it's available, should be used to control the process.

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
@@ -36,12 +36,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DelegatingApplicationContextInitializerTests {
+class DelegatingApplicationContextInitializerTests {
 
 	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
 
 	@Test
-	public void orderedInitialize() {
+	void orderedInitialize() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
@@ -51,20 +51,20 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void noInitializers() {
+	void noInitializers() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		this.initializer.initialize(context);
 	}
 
 	@Test
-	public void emptyInitializers() {
+	void emptyInitializers() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, "context.initializer.classes:");
 		this.initializer.initialize(context);
 	}
 
 	@Test
-	public void noSuchInitializerClass() {
+	void noSuchInitializerClass() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
@@ -73,7 +73,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void notAnInitializerClass() {
+	void notAnInitializerClass() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
@@ -81,7 +81,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void genericNotSuitable() {
+	void genericNotSuitable() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
@@ -90,7 +90,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class MockInitA implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -100,7 +100,7 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class MockInitB implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -110,7 +110,7 @@ public class DelegatingApplicationContextInitializerTests {
 
 	}
 
-	private static class NotSuitableInit implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+	static class NotSuitableInit implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableWebApplicationContext applicationContext) {

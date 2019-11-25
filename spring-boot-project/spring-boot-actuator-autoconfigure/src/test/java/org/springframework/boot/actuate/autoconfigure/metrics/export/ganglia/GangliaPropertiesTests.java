@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia;
 
 import io.micrometer.ganglia.GangliaConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class GangliaPropertiesTests {
+class GangliaPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		GangliaProperties properties = new GangliaProperties();
 		GangliaConfig config = GangliaConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());

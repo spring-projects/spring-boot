@@ -26,7 +26,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class DependencyFilterMojoTests {
+class DependencyFilterMojoTests {
 
 	@Test
-	public void filterDependencies() throws MojoExecutionException {
+	void filterDependencies() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.bar", "one");
@@ -51,7 +51,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterGroupIdExactMatch() throws MojoExecutionException {
+	void filterGroupIdExactMatch() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
@@ -62,7 +62,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterScopeKeepOrder() throws MojoExecutionException {
+	void filterScopeKeepOrder() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "",
 				new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		Artifact one = createArtifact("com.foo", "one");
@@ -73,7 +73,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterGroupIdKeepOrder() throws MojoExecutionException {
+	void filterGroupIdKeepOrder() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 		Artifact one = createArtifact("com.foo", "one");
 		Artifact two = createArtifact("com.bar", "two");
@@ -84,7 +84,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterExcludeKeepOrder() throws MojoExecutionException {
+	void filterExcludeKeepOrder() throws MojoExecutionException {
 		Exclude exclude = new Exclude();
 		exclude.setGroupId("com.bar");
 		exclude.setArtifactId("two");
@@ -122,7 +122,7 @@ public class DependencyFilterMojoTests {
 			this.additionalFilters = additionalFilters;
 		}
 
-		public Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
+		Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
 			Set<Artifact> input = new LinkedHashSet<>(Arrays.asList(artifacts));
 			return filterDependencies(input, getFilters(this.additionalFilters));
 		}

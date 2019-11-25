@@ -44,7 +44,23 @@ include::../gradle/running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-
 ----
 
 
-If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` project property must be configured and can be used for the same purpose:
+By default, `bootRun` will configure the JVM to optimize its launch for faster startup during development.
+This behavior can be disabled by using the `optimizedLaunch` property, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle[tags=launch]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
+----
+
+
+If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

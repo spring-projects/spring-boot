@@ -20,7 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.stereotype.Service;
 
 /**
- * Example {@link Service} used with {@link WebMvcTest} tests.
+ * Example {@link Service @Service} used with {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  */

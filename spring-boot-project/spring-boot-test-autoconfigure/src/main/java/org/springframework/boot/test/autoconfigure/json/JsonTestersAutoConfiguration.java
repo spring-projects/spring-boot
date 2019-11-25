@@ -56,7 +56,7 @@ import org.springframework.util.ReflectionUtils;
  * @see AutoConfigureJsonTesters
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
 @AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class, JsonbAutoConfiguration.class })
@@ -73,40 +73,40 @@ public class JsonTestersAutoConfiguration {
 		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class, null);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonJsonTestersConfiguration {
 
 		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(ObjectMapper.class)
-		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
+		FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
 			return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Gson.class)
 	static class GsonJsonTestersConfiguration {
 
 		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(Gson.class)
-		public FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
+		FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
 			return new JsonTesterFactoryBean<>(GsonTester.class, gson);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Jsonb.class)
 	static class JsonbJsonTesterConfiguration {
 
 		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(Jsonb.class)
-		public FactoryBean<JsonbTester<?>> jsonbTesterFactoryBean(Jsonb jsonb) {
+		FactoryBean<JsonbTester<?>> jsonbTesterFactoryBean(Jsonb jsonb) {
 			return new JsonTesterFactoryBean<>(JsonbTester.class, jsonb);
 		}
 
@@ -114,8 +114,11 @@ public class JsonTestersAutoConfiguration {
 
 	/**
 	 * {@link FactoryBean} used to create JSON Tester instances.
+	 *
+	 * @param <T> the object type
+	 * @param <M> the marshaller type
 	 */
-	private static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
+	static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
 
 		private final Class<?> objectType;
 
@@ -160,7 +163,7 @@ public class JsonTestersAutoConfiguration {
 	/**
 	 * {@link BeanPostProcessor} used to initialize JSON testers.
 	 */
-	private static class JsonMarshalTestersBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
+	static class JsonMarshalTestersBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

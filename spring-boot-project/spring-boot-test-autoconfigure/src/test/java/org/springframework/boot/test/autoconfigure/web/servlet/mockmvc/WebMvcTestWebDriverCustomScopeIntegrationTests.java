@@ -16,10 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
@@ -29,21 +28,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest} with {@link WebDriver} in a custom scope.
+ * Tests for {@link WebMvcTest @WebMvcTest} with {@link WebDriver} in a custom scope.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WebMvcTestWebDriverCustomScopeIntegrationTests {
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+class WebMvcTestWebDriverCustomScopeIntegrationTests {
 
 	// gh-7454
 
@@ -53,21 +50,21 @@ public class WebMvcTestWebDriverCustomScopeIntegrationTests {
 	private WebDriver webDriver;
 
 	@Test
-	public void shouldAutoConfigureWebClient() {
+	void shouldAutoConfigureWebClient() {
 		WebMvcTestWebDriverCustomScopeIntegrationTests.previousWebDriver = this.webDriver;
 	}
 
 	@Test
-	public void shouldBeTheSameWebClient() {
+	void shouldBeTheSameWebClient() {
 		assertThat(previousWebDriver).isNotNull().isSameAs(this.webDriver);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
 		@Scope("singleton")
-		public WebDriverFactory webDriver(MockMvc mockMvc) {
+		WebDriverFactory webDriver(MockMvc mockMvc) {
 			return new WebDriverFactory(mockMvc);
 		}
 

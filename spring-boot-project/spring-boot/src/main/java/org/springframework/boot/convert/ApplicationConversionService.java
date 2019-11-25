@@ -16,11 +16,20 @@
 
 package org.springframework.boot.convert;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.StringValueResolver;
@@ -106,7 +115,9 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new DurationToNumberConverter());
 		registry.addConverter(new StringToDataSizeConverter());
 		registry.addConverter(new NumberToDataSizeConverter());
-		registry.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
+		registry.addConverter(new StringToFileConverter());
+		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
+		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
 	}
 
 	/**
@@ -132,6 +143,38 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addFormatter(new CharArrayFormatter());
 		registry.addFormatter(new InetAddressFormatter());
 		registry.addFormatter(new IsoOffsetFormatter());
+	}
+
+	/**
+	 * Add {@link GenericConverter}, {@link Converter}, {@link Printer}, {@link Parser}
+	 * and {@link Formatter} beans from the specified context.
+	 * @param registry the service to register beans with
+	 * @param beanFactory the bean factory to get the beans from
+	 * @since 2.2.0
+	 */
+	public static void addBeans(FormatterRegistry registry, ListableBeanFactory beanFactory) {
+		Set<Object> beans = new LinkedHashSet<>();
+		beans.addAll(beanFactory.getBeansOfType(GenericConverter.class).values());
+		beans.addAll(beanFactory.getBeansOfType(Converter.class).values());
+		beans.addAll(beanFactory.getBeansOfType(Printer.class).values());
+		beans.addAll(beanFactory.getBeansOfType(Parser.class).values());
+		for (Object bean : beans) {
+			if (bean instanceof GenericConverter) {
+				registry.addConverter((GenericConverter) bean);
+			}
+			else if (bean instanceof Converter) {
+				registry.addConverter((Converter<?, ?>) bean);
+			}
+			else if (bean instanceof Formatter) {
+				registry.addFormatter((Formatter<?>) bean);
+			}
+			else if (bean instanceof Printer) {
+				registry.addPrinter((Printer<?>) bean);
+			}
+			else if (bean instanceof Parser) {
+				registry.addParser((Parser<?>) bean);
+			}
+		}
 	}
 
 }

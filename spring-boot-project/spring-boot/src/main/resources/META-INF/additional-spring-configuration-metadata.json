@@ -48,6 +48,18 @@
       "defaultValue": false
     },
     {
+      "name": "spring.banner.image.bitdepth",
+      "type": "java.lang.Integer",
+      "description": "The bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
+      "defaultValue": 4
+    },
+    {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
       "name": "debug",
       "type": "java.lang.Boolean",
       "description": "Enable debug logs.",
@@ -71,11 +83,33 @@
       "name": "logging.file",
       "type": "java.lang.String",
       "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.name"
+      }
+    },
+    {
+      "name": "logging.file.clean-history-on-start",
+      "type": "java.lang.Boolean",
+      "description": "Whether to clean the archive log files on startup. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
+    },
+    {
+      "name": "logging.file.name",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.file.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.file.max-size",
-      "type": "java.lang.String",
+      "type": "org.springframework.util.unit.DataSize",
       "description": "Maximum log file size. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "10MB"
@@ -85,7 +119,14 @@
       "type": "java.lang.Integer",
       "description": "Maximum number of days archive log files are kept. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 0
+      "defaultValue": 7
+    },
+    {
+      "name": "logging.file.total-size-cap",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "0B"
     },
     {
       "name": "logging.group",
@@ -103,7 +144,10 @@
       "name": "logging.path",
       "type": "java.lang.String",
       "description": "Location of the log file. For instance, `/var/log`.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "deprecation": {
+        "replacement": "logging.file.path"
+      }
     },
     {
       "name": "logging.pattern.console",
@@ -132,6 +176,13 @@
       "description": "Appender pattern for log level. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "%5p"
+    },
+    {
+      "name": "logging.pattern.rolling-file-name",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
     },
     {
       "name": "logging.register-shutdown-hook",
@@ -608,6 +659,13 @@
       "defaultValue": "console"
     },
     {
+      "name": "spring.main.lazy-initialization",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether initialization should be performed lazily.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.main.register-shutdown-hook",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
@@ -670,6 +728,12 @@
       "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
     },
     {
+      "name": "spring.profiles",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included."
+    },
+    {
       "name": "spring.profiles.active",
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
@@ -680,6 +744,13 @@
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
+    },
+    {
+      "name": "spring.reactor.debug-agent.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
+      "defaultValue": true
     },
     {
       "name": "trace",

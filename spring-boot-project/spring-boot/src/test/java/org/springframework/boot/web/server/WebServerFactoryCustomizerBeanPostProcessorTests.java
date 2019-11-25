@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -40,28 +40,28 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class WebServerFactoryCustomizerBeanPostProcessorTests {
+class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	private WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
 	private ListableBeanFactory beanFactory;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.processor.setBeanFactory(this.beanFactory);
 	}
 
 	@Test
-	public void setBeanFactoryWhenNotListableShouldThrowException() {
+	void setBeanFactoryWhenNotListableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
 				.withMessageContaining(
-						"WebServerCustomizerBeanPostProcessor can only " + "be used with a ListableBeanFactory");
+						"WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
 	}
 
 	@Test
-	public void postProcessBeforeShouldReturnBean() {
+	void postProcessBeforeShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessBeforeInitialization(bean, "foo");
@@ -69,7 +69,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldReturnBean() {
+	void postProcessAfterShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessAfterInitialization(bean, "foo");
@@ -77,7 +77,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallInterfaceCustomizers() {
+	void postProcessAfterShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -87,7 +87,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers() {
+	void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -97,7 +97,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers() {
+	void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);
@@ -118,7 +118,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallLambdaCustomizers() {
+	void postProcessAfterShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -126,7 +126,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers() {
+	void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -134,7 +134,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers() {
+	void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);
@@ -166,16 +166,15 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 		return ((MockWebServerFactoryCustomizer<?>) beans.get(name)).wasCalled();
 	}
 
-	private interface WebServerFactoryOne extends WebServerFactory {
+	interface WebServerFactoryOne extends WebServerFactory {
 
 	}
 
-	private interface WebServerFactoryTwo extends WebServerFactory {
+	interface WebServerFactoryTwo extends WebServerFactory {
 
 	}
 
-	private static class MockWebServerFactoryCustomizer<T extends WebServerFactory>
-			implements WebServerFactoryCustomizer<T> {
+	static class MockWebServerFactoryCustomizer<T extends WebServerFactory> implements WebServerFactoryCustomizer<T> {
 
 		private boolean called;
 
@@ -184,21 +183,21 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 			this.called = true;
 		}
 
-		public boolean wasCalled() {
+		boolean wasCalled() {
 			return this.called;
 		}
 
 	}
 
-	private static class WebServerFactoryOneCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
+	static class WebServerFactoryOneCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
 
 	}
 
-	private static class WebServerFactoryTwoCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
+	static class WebServerFactoryTwoCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
 
 	}
 
-	private static class WebServerFactoryAllCustomizer extends MockWebServerFactoryCustomizer<WebServerFactory> {
+	static class WebServerFactoryAllCustomizer extends MockWebServerFactoryCustomizer<WebServerFactory> {
 
 	}
 

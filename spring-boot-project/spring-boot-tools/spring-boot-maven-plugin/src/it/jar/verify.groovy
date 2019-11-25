@@ -15,4 +15,5 @@ assertTrue 'main artifact should have been installed',
 		file.text.contains ("Installing " + main + " to")
 assertFalse 'backup artifact should not have been installed',
 		file.text.contains ("Installing " + backup + "to")
+assertFalse file.text.contains("Layout:")
 

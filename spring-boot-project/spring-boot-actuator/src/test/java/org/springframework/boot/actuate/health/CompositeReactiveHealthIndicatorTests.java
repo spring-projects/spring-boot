@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -32,7 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CompositeReactiveHealthIndicatorTests {
+@Deprecated
+class CompositeReactiveHealthIndicatorTests {
 
 	private static final Health UNKNOWN_HEALTH = Health.unknown().withDetail("detail", "value").build();
 
@@ -41,7 +42,7 @@ public class CompositeReactiveHealthIndicatorTests {
 	private OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Test
-	public void singleIndicator() {
+	void singleIndicator() {
 		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
 				new DefaultReactiveHealthIndicatorRegistry(Collections.singletonMap("test", () -> Mono.just(HEALTHY))));
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
@@ -52,7 +53,7 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void longHealth() {
+	void longHealth() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		for (int i = 0; i < 50; i++) {
 			indicators.put("test" + i, new TimeoutHealth(10000, Status.UP));
@@ -68,7 +69,7 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void timeoutReachedUsesFallback() {
+	void timeoutReachedUsesFallback() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
 		indicators.put("fast", new TimeoutHealth(10, Status.UP));
@@ -83,7 +84,7 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void timeoutNotReached() {
+	void timeoutNotReached() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
 		indicators.put("fast", new TimeoutHealth(10, Status.UP));

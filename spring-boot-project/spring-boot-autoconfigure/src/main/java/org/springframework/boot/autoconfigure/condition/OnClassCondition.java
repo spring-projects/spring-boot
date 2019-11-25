@@ -46,9 +46,21 @@ class OnClassCondition extends FilteringSpringBootCondition {
 	@Override
 	protected final ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
-		// Split the work and perform half in a background thread. Using a single
-		// additional thread seems to offer the best performance. More threads make
-		// things worse
+		// Split the work and perform half in a background thread if more than one
+		// processor is available. Using a single additional thread seems to offer the
+		// best performance. More threads make things worse.
+		if (Runtime.getRuntime().availableProcessors() > 1) {
+			return resolveOutcomesThreaded(autoConfigurationClasses, autoConfigurationMetadata);
+		}
+		else {
+			OutcomesResolver outcomesResolver = new StandardOutcomesResolver(autoConfigurationClasses, 0,
+					autoConfigurationClasses.length, autoConfigurationMetadata, getBeanClassLoader());
+			return outcomesResolver.resolveOutcomes();
+		}
+	}
+
+	private ConditionOutcome[] resolveOutcomesThreaded(String[] autoConfigurationClasses,
+			AutoConfigurationMetadata autoConfigurationMetadata) {
 		int split = autoConfigurationClasses.length / 2;
 		OutcomesResolver firstHalfResolver = createOutcomesResolver(autoConfigurationClasses, 0, split,
 				autoConfigurationMetadata);

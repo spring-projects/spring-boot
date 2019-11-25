@@ -22,42 +22,42 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.util.LambdaSafe.Filter;
 import org.springframework.boot.util.LambdaSafe.InvocationResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link LambdaSafe}.
  *
  * @author Phillip Webb
  */
-public class LambdaSafeTests {
+class LambdaSafeTests {
 
 	@Test
-	public void callbackWhenCallbackTypeIsNullShouldThrowException() {
+	void callbackWhenCallbackTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))
 				.withMessageContaining("CallbackType must not be null");
 	}
 
 	@Test
-	public void callbackWhenCallbackInstanceIsNullShouldThrowException() {
+	void callbackWhenCallbackInstanceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(Object.class, null, null))
 				.withMessageContaining("CallbackInstance must not be null");
 	}
 
 	@Test
-	public void callbackInvokeWhenNoGenericShouldInvokeCallback() {
+	void callbackInvokeWhenNoGenericShouldInvokeCallback() {
 		NonGenericCallback callbackInstance = mock(NonGenericCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(NonGenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
@@ -66,7 +66,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeWhenHasGenericShouldInvokeCallback() {
+	void callbackInvokeWhenHasGenericShouldInvokeCallback() {
 		StringCallback callbackInstance = mock(StringCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
@@ -75,7 +75,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeWhenHasResolvableGenericMatchShouldInvokeCallback() {
+	void callbackInvokeWhenHasResolvableGenericMatchShouldInvokeCallback() {
 		StringBuilderCallback callbackInstance = mock(StringBuilderCallback.class);
 		StringBuilder argument = new StringBuilder("foo");
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
@@ -84,16 +84,16 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeWhenHasResolvableGenericNonMatchShouldNotInvokeCallback() {
+	void callbackInvokeWhenHasResolvableGenericNonMatchShouldNotInvokeCallback() {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeWhenLambdaMismatchShouldSwallowException() {
+	void callbackInvokeWhenLambdaMismatchShouldSwallowException() {
 		GenericCallback<StringBuilder> callbackInstance = (s) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).invoke((c) -> c.handle(argument));
@@ -101,7 +101,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
+	void callbackInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s, b) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericMultiArgCallback.class, callbackInstance, argument)
@@ -109,7 +109,7 @@ public class LambdaSafeTests {
 	}
 
 	@Test
-	public void callbackInvokeAndWhenNoGenericShouldReturnResult() {
+	void callbackInvokeAndWhenNoGenericShouldReturnResult() {
 		NonGenericFactory callbackInstance = mock(NonGenericFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
@@ -121,7 +121,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenHasGenericShouldReturnResult() {
+	void callbackInvokeAndWhenHasGenericShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
@@ -133,7 +133,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenReturnNullShouldReturnResult() {
+	void callbackInvokeAndWhenReturnNullShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(null);
@@ -145,7 +145,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
+	void callbackInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
 		StringBuilderFactory callbackInstance = mock(StringBuilderFactory.class);
 		StringBuilder argument = new StringBuilder("foo");
 		given(callbackInstance.handle(any(StringBuilder.class))).willReturn(123);
@@ -158,18 +158,18 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
+	void callbackInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
 		GenericFactory<?> callbackInstance = mock(StringBuilderFactory.class);
 		String argument = "foo";
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
 				.invokeAnd((c) -> c.handle(argument));
 		assertThat(result.hasResult()).isFalse();
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenLambdaMismatchShouldSwallowException() {
+	void callbackInvokeAndWhenLambdaMismatchShouldSwallowException() {
 		GenericFactory<StringBuilder> callbackInstance = (s) -> {
 			fail("Should not get here");
 			return 123;
@@ -182,7 +182,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
+	void callbackInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgFactory<StringBuilder> callbackInstance = (n, s, b) -> {
 			fail("Should not get here");
 			return 123;
@@ -194,7 +194,7 @@ public class LambdaSafeTests {
 	}
 
 	@Test
-	public void callbacksInvokeWhenNoGenericShouldInvokeCallbacks() {
+	void callbacksInvokeWhenNoGenericShouldInvokeCallbacks() {
 		NonGenericCallback callbackInstance = mock(NonGenericCallback.class);
 		String argument = "foo";
 		LambdaSafe.callbacks(NonGenericCallback.class, Collections.singleton(callbackInstance), argument)
@@ -204,7 +204,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenHasGenericShouldInvokeCallback() {
+	void callbacksInvokeWhenHasGenericShouldInvokeCallback() {
 		StringCallback callbackInstance = mock(StringCallback.class);
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
@@ -214,7 +214,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenHasResolvableGenericMatchShouldInvokeCallback() {
+	void callbacksInvokeWhenHasResolvableGenericMatchShouldInvokeCallback() {
 		StringBuilderCallback callbackInstance = mock(StringBuilderCallback.class);
 		StringBuilder argument = new StringBuilder("foo");
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
@@ -224,17 +224,17 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenHasResolvableGenericNonMatchShouldNotInvokeCallback() {
+	void callbacksInvokeWhenHasResolvableGenericNonMatchShouldNotInvokeCallback() {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
 				.invoke((c) -> c.handle(null));
-		verifyZeroInteractions(callbackInstance);
+		verifyNoInteractions(callbackInstance);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenLambdaMismatchShouldSwallowException() {
+	void callbacksInvokeWhenLambdaMismatchShouldSwallowException() {
 		GenericCallback<StringBuilder> callbackInstance = (s) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
@@ -243,7 +243,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
+	void callbacksInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s, b) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericMultiArgCallback.class, Collections.singleton(callbackInstance), argument)
@@ -251,7 +251,7 @@ public class LambdaSafeTests {
 	}
 
 	@Test
-	public void callbacksInvokeAndWhenNoGenericShouldReturnResult() {
+	void callbacksInvokeAndWhenNoGenericShouldReturnResult() {
 		NonGenericFactory callbackInstance = mock(NonGenericFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
@@ -263,7 +263,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenHasGenericShouldReturnResult() {
+	void callbacksInvokeAndWhenHasGenericShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
@@ -275,7 +275,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenReturnNullShouldReturnResult() {
+	void callbacksInvokeAndWhenReturnNullShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(null);
@@ -287,7 +287,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
+	void callbacksInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
 		StringBuilderFactory callbackInstance = mock(StringBuilderFactory.class);
 		StringBuilder argument = new StringBuilder("foo");
 		given(callbackInstance.handle(any(StringBuilder.class))).willReturn(123);
@@ -299,7 +299,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
+	void callbacksInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
 		GenericFactory<?> callbackInstance = mock(StringBuilderFactory.class);
 		String argument = "foo";
 		Stream<Integer> result = LambdaSafe
@@ -310,7 +310,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenLambdaMismatchShouldSwallowException() {
+	void callbacksInvokeAndWhenLambdaMismatchShouldSwallowException() {
 		GenericFactory<StringBuilder> callbackInstance = (s) -> {
 			fail("Should not get here");
 			return 123;
@@ -324,7 +324,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
+	void callbacksInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgFactory<StringBuilder> callbackInstance = (n, s, b) -> {
 			fail("Should not get here");
 			return 123;
@@ -338,7 +338,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbacksInvokeWhenMultipleShouldInvokeSuitable() {
+	void callbacksInvokeWhenMultipleShouldInvokeSuitable() {
 		List<GenericFactory<?>> callbackInstances = new ArrayList<>();
 		GenericFactory<String> callback1 = (s) -> 1;
 		GenericFactory<CharSequence> callback2 = (s) -> 2;
@@ -360,7 +360,7 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackWithFilterShouldUseFilter() {
+	void callbackWithFilterShouldUseFilter() {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withFilter(Filter.allowAll())
@@ -370,15 +370,14 @@ public class LambdaSafeTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void callbackWithLoggerShouldUseLogger() {
+	void callbackWithLoggerShouldUseLogger() {
 		Log logger = mock(Log.class);
 		given(logger.isDebugEnabled()).willReturn(true);
 		GenericCallback<StringBuilder> callbackInstance = (s) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withLogger(logger)
 				.invoke((c) -> c.handle(argument));
-		verify(logger).debug(
-				contains("Non-matching CharSequence type for callback " + "LambdaSafeTests.GenericCallback"),
+		verify(logger).debug(contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
 				any(Throwable.class));
 	}
 

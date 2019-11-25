@@ -21,12 +21,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive OAuth2 resource server
@@ -35,13 +37,27 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
-@AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({ ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
-@ConditionalOnClass({ EnableWebFluxSecurity.class, BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
+@ConditionalOnClass({ EnableWebFluxSecurity.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@Import({ ReactiveOAuth2ResourceServerJwkConfiguration.class,
-		ReactiveOAuth2ResourceServerWebSecurityConfiguration.class })
 public class ReactiveOAuth2ResourceServerAutoConfiguration {
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
+	@Import({ ReactiveOAuth2ResourceServerJwkConfiguration.JwtConfiguration.class,
+			ReactiveOAuth2ResourceServerJwkConfiguration.WebSecurityConfiguration.class })
+	static class JwtConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveOpaqueTokenIntrospector.class })
+	@Import({ ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
+			ReactiveOAuth2ResourceServerOpaqueTokenConfiguration.WebSecurityConfiguration.class })
+	static class OpaqueTokenConfiguration {
+
+	}
 
 }

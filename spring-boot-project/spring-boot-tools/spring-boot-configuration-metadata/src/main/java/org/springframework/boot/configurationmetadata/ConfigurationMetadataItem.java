@@ -34,11 +34,11 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	 * attribute would contain the fully qualified name of that class.
 	 * @return the source type
 	 */
-	public String getSourceType() {
+	String getSourceType() {
 		return this.sourceType;
 	}
 
-	public void setSourceType(String sourceType) {
+	void setSourceType(String sourceType) {
 		this.sourceType = sourceType;
 	}
 
@@ -48,11 +48,11 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	 * {@code @ConfigurationProperties} annotated class.
 	 * @return the source method
 	 */
-	public String getSourceMethod() {
+	String getSourceMethod() {
 		return this.sourceMethod;
 	}
 
-	public void setSourceMethod(String sourceMethod) {
+	void setSourceMethod(String sourceMethod) {
 		this.sourceMethod = sourceMethod;
 	}
 

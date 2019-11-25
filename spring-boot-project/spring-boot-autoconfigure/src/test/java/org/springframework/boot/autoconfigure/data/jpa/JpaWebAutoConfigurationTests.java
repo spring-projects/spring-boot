@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.jpa;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -26,11 +26,11 @@ import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,18 +41,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class JpaWebAutoConfigurationTests {
+class JpaWebAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		this.context.close();
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
-		this.context = new AnnotationConfigWebApplicationContext();
+	void testDefaultRepositoryConfiguration() {
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
@@ -63,10 +63,10 @@ public class JpaWebAutoConfigurationTests {
 		assertThat(this.context.getBean(FormattingConversionService.class).canConvert(Long.class, City.class)).isTrue();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 

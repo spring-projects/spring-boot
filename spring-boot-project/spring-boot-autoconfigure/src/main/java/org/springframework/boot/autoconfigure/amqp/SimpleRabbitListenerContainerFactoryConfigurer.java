@@ -38,7 +38,7 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		configure(factory, connectionFactory, config);
 		map.from(config::getConcurrency).whenNonNull().to(factory::setConcurrentConsumers);
 		map.from(config::getMaxConcurrency).whenNonNull().to(factory::setMaxConcurrentConsumers);
-		map.from(config::getTransactionSize).whenNonNull().to(factory::setTxSize);
+		map.from(config::getBatchSize).whenNonNull().to(factory::setBatchSize);
 	}
 
 }
