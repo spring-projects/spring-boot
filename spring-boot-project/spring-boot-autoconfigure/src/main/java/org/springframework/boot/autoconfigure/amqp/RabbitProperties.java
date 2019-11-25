@@ -188,7 +188,7 @@ public class RabbitProperties {
 	private List<Address> parseAddresses(String addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
 		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
-			parsedAddresses.add(new Address(address));
+			parsedAddresses.add(new Address(address, getSsl().isEnabled()));
 		}
 		return parsedAddresses;
 	}
@@ -968,21 +968,24 @@ public class RabbitProperties {
 
 		private boolean secureConnection;
 
-		private Address(String input) {
+		private Address(String input, boolean sslEnabled) {
 			input = input.trim();
-			input = trimPrefix(input);
+			input = trimPrefix(input, sslEnabled);
 			input = parseUsernameAndPassword(input);
 			input = parseVirtualHost(input);
 			parseHostAndPort(input);
 		}
 
-		private String trimPrefix(String input) {
+		private String trimPrefix(String input, boolean sslEnabled) {
 			if (input.startsWith(PREFIX_AMQP_SECURE)) {
 				this.secureConnection = true;
 				return input.substring(PREFIX_AMQP_SECURE.length());
 			}
 			if (input.startsWith(PREFIX_AMQP)) {
-				input = input.substring(PREFIX_AMQP.length());
+				return input.substring(PREFIX_AMQP.length());
+			}
+			if (sslEnabled) {
+				this.secureConnection = true;
 			}
 			return input;
 		}
