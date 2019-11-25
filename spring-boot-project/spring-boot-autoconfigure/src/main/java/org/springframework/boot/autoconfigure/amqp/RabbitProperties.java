@@ -104,8 +104,9 @@ public class RabbitProperties {
 	private Duration connectionTimeout;
 
 	/**
-	 * Requested Channel Max. Set it to zero for unlimited. Default is 2047 from RabbitMQ
-	 * java client versions 4.7.0 and 5.3.0.
+	 * Requested Channel Max; zero for unlimited. Number of channels per connection client
+	 * will request from server, actual maximum will be negotiated between client and
+	 * server for lowest value (excluding zero as it represents unlimited).
 	 */
 	private int requestedChannelMax = 2047;
 
@@ -305,10 +306,6 @@ public class RabbitProperties {
 		return this.connectionTimeout;
 	}
 
-	public int getRequestedChannelMax() {
-		return this.requestedChannelMax;
-	}
-
 	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
 		this.publisherConfirmType = publisherConfirmType;
 	}
@@ -321,7 +318,11 @@ public class RabbitProperties {
 		this.connectionTimeout = connectionTimeout;
 	}
 
-	public void setConnectionTimeout(int requestedChannelMax) {
+	public int getRequestedChannelMax() {
+		return this.requestedChannelMax;
+	}
+
+	public void setRequestedChannelMax(int requestedChannelMax) {
 		this.requestedChannelMax = requestedChannelMax;
 	}
 
