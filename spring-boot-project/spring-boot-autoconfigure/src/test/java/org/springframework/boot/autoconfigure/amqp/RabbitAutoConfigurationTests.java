@@ -725,6 +725,15 @@ class RabbitAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void testKeepDefaultRequestedChannelMax() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+			assertThat(rabbitConnectionFactory.getRequestedChannelMax())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
+		});
+	}
+
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
 		CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 		return connectionFactory.getRabbitConnectionFactory();

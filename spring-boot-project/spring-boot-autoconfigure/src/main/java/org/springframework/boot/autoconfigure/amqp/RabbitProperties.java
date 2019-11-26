@@ -108,7 +108,7 @@ public class RabbitProperties {
 	 * will request from server, actual maximum will be negotiated between client and
 	 * server for lowest value (excluding zero as it represents unlimited).
 	 */
-	private int requestedChannelMax = 2047;
+	private Integer requestedChannelMax;
 
 	/**
 	 * Cache configuration.
@@ -318,11 +318,11 @@ public class RabbitProperties {
 		this.connectionTimeout = connectionTimeout;
 	}
 
-	public int getRequestedChannelMax() {
+	public Integer getRequestedChannelMax() {
 		return this.requestedChannelMax;
 	}
 
-	public void setRequestedChannelMax(int requestedChannelMax) {
+	public void setRequestedChannelMax(Integer requestedChannelMax) {
 		this.requestedChannelMax = requestedChannelMax;
 	}
 
