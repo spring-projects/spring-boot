@@ -54,7 +54,7 @@ For example, using a `Dockerfile` you could express it in this form:
 	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
 ----
 
-Assuming the above `Dockerfile` is the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as show in the following example:
+Assuming the above `Dockerfile` is the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
 
 [indent=0]
 ----
