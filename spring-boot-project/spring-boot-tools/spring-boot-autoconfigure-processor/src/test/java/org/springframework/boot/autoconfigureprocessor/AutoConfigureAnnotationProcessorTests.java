@@ -49,14 +49,14 @@ class AutoConfigureAnnotationProcessorTests {
 	@Test
 	void annotatedClass() throws Exception {
 		Properties properties = compile(TestClassConfiguration.class);
-		assertThat(properties).hasSize(5);
+		assertThat(properties).hasSize(7);
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration$Nested,org.springframework.foo");
 		assertThat(properties).containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
 		assertThat(properties)
-				.doesNotContainKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
+				.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnBean",
 				"java.io.OutputStream");

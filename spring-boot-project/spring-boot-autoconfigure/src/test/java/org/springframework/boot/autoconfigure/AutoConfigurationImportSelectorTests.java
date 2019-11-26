@@ -200,6 +200,16 @@ class AutoConfigurationImportSelectorTests {
 		assertThat(filter.getBeanFactory()).isEqualTo(this.beanFactory);
 	}
 
+	@Test
+	void getExclusionFilterReuseFilters() {
+		String[] allImports = new String[] { "com.example.A", "com.example.B", "com.example.C" };
+		this.filters.add(new TestAutoConfigurationImportFilter(allImports, 0));
+		this.filters.add(new TestAutoConfigurationImportFilter(allImports, 2));
+		assertThat(this.importSelector.getExclusionFilter().test("com.example.A")).isTrue();
+		assertThat(this.importSelector.getExclusionFilter().test("com.example.B")).isFalse();
+		assertThat(this.importSelector.getExclusionFilter().test("com.example.C")).isTrue();
+	}
+
 	private String[] selectImports(Class<?> source) {
 		return this.importSelector.selectImports(AnnotationMetadata.introspect(source));
 	}
