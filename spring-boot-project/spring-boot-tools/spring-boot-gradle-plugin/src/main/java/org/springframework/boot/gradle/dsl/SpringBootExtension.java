@@ -24,6 +24,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.jvm.tasks.Jar;
@@ -128,11 +129,12 @@ public class SpringBootExtension {
 		return (Jar) this.project.getTasks().findByName("bootJar");
 	}
 
+	@SuppressWarnings("unchecked")
 	private static String getArchiveBaseName(AbstractArchiveTask task) {
 		try {
 			Method method = findMethod(task.getClass(), "getArchiveBaseName");
 			if (method != null) {
-				return (String) method.invoke(task);
+				return ((Property<String>) method.invoke(task)).get();
 			}
 		}
 		catch (Exception ex) {

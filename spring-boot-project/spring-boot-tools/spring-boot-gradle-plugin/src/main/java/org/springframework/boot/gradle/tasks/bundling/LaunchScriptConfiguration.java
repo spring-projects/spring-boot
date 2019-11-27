@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -57,11 +58,12 @@ public class LaunchScriptConfiguration implements Serializable {
 		putIfMissing(this.properties, "initInfoDescription", augmentLineBreaks(project.getDescription()), baseName);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static String getArchiveBaseName(AbstractArchiveTask task) {
 		try {
 			Method method = findMethod(task.getClass(), "getArchiveBaseName");
 			if (method != null) {
-				return (String) method.invoke(task);
+				return ((Property<String>) method.invoke(task)).get();
 			}
 		}
 		catch (Exception ex) {

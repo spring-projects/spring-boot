@@ -1,3 +1,5 @@
+import org.gradle.util.GradleVersion
+
 plugins {
 	id 'war'
 	id 'org.springframework.boot' version '{version}'
@@ -7,7 +9,12 @@ group = 'com.example'
 version = '1.0'
 
 bootWar {
-	baseName = 'foo'
+	if (GradleVersion.current().compareTo(GradleVersion.version('6.0.0')) < 0) {
+		baseName = 'foo'
+	}
+	else {
+		archiveBaseName = 'foo'	
+	}
 }
 
 springBoot {
