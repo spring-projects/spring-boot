@@ -89,6 +89,11 @@ public class RabbitProperties {
 	private Duration requestedHeartbeat;
 
 	/**
+	 * Number of channels per connection requested by the client. Use 0 for unlimited.
+	 */
+	private int requestedChannelMax = 2047;
+
+	/**
 	 * Whether to enable publisher returns.
 	 */
 	private boolean publisherReturns;
@@ -102,13 +107,6 @@ public class RabbitProperties {
 	 * Connection timeout. Set it to zero to wait forever.
 	 */
 	private Duration connectionTimeout;
-
-	/**
-	 * Requested Channel Max; zero for unlimited. Number of channels per connection client
-	 * will request from server, actual maximum will be negotiated between client and
-	 * server for lowest value (excluding zero as it represents unlimited).
-	 */
-	private Integer requestedChannelMax;
 
 	/**
 	 * Cache configuration.
@@ -283,6 +281,14 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
+	public int getRequestedChannelMax() {
+		return this.requestedChannelMax;
+	}
+
+	public void setRequestedChannelMax(int requestedChannelMax) {
+		this.requestedChannelMax = requestedChannelMax;
+	}
+
 	@DeprecatedConfigurationProperty(reason = "replaced to support additional confirm types",
 			replacement = "spring.rabbitmq.publisher-confirm-type")
 	public boolean isPublisherConfirms() {
@@ -316,14 +322,6 @@ public class RabbitProperties {
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
-	}
-
-	public Integer getRequestedChannelMax() {
-		return this.requestedChannelMax;
-	}
-
-	public void setRequestedChannelMax(Integer requestedChannelMax) {
-		this.requestedChannelMax = requestedChannelMax;
 	}
 
 	public Cache getCache() {

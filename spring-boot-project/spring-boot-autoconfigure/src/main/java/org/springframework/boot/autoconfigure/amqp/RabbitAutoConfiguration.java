@@ -124,6 +124,7 @@ public class RabbitAutoConfiguration {
 			map.from(properties::determineVirtualHost).whenNonNull().to(factory::setVirtualHost);
 			map.from(properties::getRequestedHeartbeat).whenNonNull().asInt(Duration::getSeconds)
 					.to(factory::setRequestedHeartbeat);
+			map.from(properties::getRequestedChannelMax).to(factory::setRequestedChannelMax);
 			RabbitProperties.Ssl ssl = properties.getSsl();
 			if (ssl.determineEnabled()) {
 				factory.setUseSSL(true);
@@ -140,7 +141,6 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(factory::setConnectionTimeout);
-			map.from(properties::getRequestedChannelMax).whenNonNull().to(factory::setRequestedChannelMax);
 			factory.afterPropertiesSet();
 			return factory;
 		}

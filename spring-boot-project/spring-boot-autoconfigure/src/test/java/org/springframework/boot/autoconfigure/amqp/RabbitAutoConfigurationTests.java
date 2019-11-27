@@ -100,6 +100,8 @@ class RabbitAutoConfigurationTests {
 			assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
 			assertThat(amqpAdmin).isNotNull();
 			assertThat(connectionFactory.getHost()).isEqualTo("localhost");
+			assertThat(getTargetConnectionFactory(context).getRequestedChannelMax())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
 			assertThat(connectionFactory.isPublisherConfirms()).isFalse();
 			assertThat(connectionFactory.isPublisherReturns()).isFalse();
 			assertThat(context.containsBean("rabbitListenerContainerFactory"))
@@ -602,6 +604,15 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void customizeRequestedChannelMax() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.requestedChannelMax:12").run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+					assertThat(rabbitConnectionFactory.getRequestedChannelMax()).isEqualTo(12);
+				});
+	}
+
+	@Test
 	void noSslByDefault() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
@@ -714,24 +725,6 @@ class RabbitAutoConfigurationTests {
 			trustManager = ReflectionTestUtils.getField(trustManager, "tm");
 		}
 		return (TrustManager) trustManager;
-	}
-
-	@Test
-	void testChangeDefaultRequestedChannelMax() throws Exception {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.requestedChannelMax:12").run((context) -> {
-					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-					assertThat(rabbitConnectionFactory.getRequestedChannelMax()).isEqualTo(12);
-				});
-	}
-
-	@Test
-	void testKeepDefaultRequestedChannelMax() throws Exception {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
-			assertThat(rabbitConnectionFactory.getRequestedChannelMax())
-					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
-		});
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(AssertableApplicationContext context) {
