@@ -125,9 +125,9 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
 		map.put("server.tomcat.accesslog.ipv6Canonical", "true");
 		map.put("server.tomcat.accesslog.request-attributes-enabled", "true");
-		map.put("server.tomcat.protocol-header", "X-Forwarded-Protocol");
-		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
-		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		map.put("server.tomcat.remoteip.protocol-header", "X-Forwarded-Protocol");
+		map.put("server.tomcat.remoteip.remote-ip-header", "Remote-Ip");
+		map.put("server.tomcat.remoteip.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		map.put("server.tomcat.background-processor-delay", "10");
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
 		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
