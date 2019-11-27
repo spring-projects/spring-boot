@@ -678,11 +678,17 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
 
+| {spring-boot-actuator-module-code}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
+| Checks that an LDAP server is up.
+
 | {spring-boot-actuator-module-code}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
 | Checks that a mail server is up.
 
 | {spring-boot-actuator-module-code}/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
 | Checks that a Mongo database is up.
+
+| {spring-boot-actuator-module-code}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
+| Checks that a Neo4j database is up.
 
 | {spring-boot-actuator-module-code}/health/PingHealthIndicator.java[`PingHealthIndicator`]
 | Always responds with `UP`.
