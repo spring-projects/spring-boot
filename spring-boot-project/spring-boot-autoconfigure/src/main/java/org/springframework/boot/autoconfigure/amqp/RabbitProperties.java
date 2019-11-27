@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Josh Thornhill
  * @author Gary Russell
  * @author Artsiom Yudovin
+ * @author Franjo Zilic
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -86,6 +87,11 @@ public class RabbitProperties {
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration requestedHeartbeat;
+
+	/**
+	 * Number of channels per connection requested by the client. Use 0 for unlimited.
+	 */
+	private int requestedChannelMax = 2047;
 
 	/**
 	 * Whether to enable publisher returns.
@@ -273,6 +279,14 @@ public class RabbitProperties {
 
 	public void setRequestedHeartbeat(Duration requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public int getRequestedChannelMax() {
+		return this.requestedChannelMax;
+	}
+
+	public void setRequestedChannelMax(int requestedChannelMax) {
+		this.requestedChannelMax = requestedChannelMax;
 	}
 
 	@DeprecatedConfigurationProperty(reason = "replaced to support additional confirm types",
