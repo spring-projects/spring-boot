@@ -30,10 +30,8 @@ import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -60,13 +58,12 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	@Test
 	void toAllEndpointsShouldMatch() {
-		getContextRunner().withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
-				.withPropertyValues("spring.security.user.password=password").run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/actuator/e2").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/actuator/e2").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-				});
+		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/actuator/e2").exchange().expectStatus().isUnauthorized();
+			webTestClient.get().uri("/actuator/e2").header("Authorization", getBasicAuth()).exchange().expectStatus()
+					.isOk();
+		});
 	}
 
 	@Test
