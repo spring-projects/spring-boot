@@ -31,8 +31,8 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Remoteip;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
@@ -55,6 +55,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andrew McGhie
  * @author Dirk Deyne
  * @author Rafiullah Hamedy
+ * @author Victor Mandujano
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
@@ -172,9 +173,9 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
-		Tomcat tomcatProperties = this.serverProperties.getTomcat();
-		String protocolHeader = tomcatProperties.getProtocolHeader();
-		String remoteIpHeader = tomcatProperties.getRemoteIpHeader();
+		Remoteip remoteIpProperties = this.serverProperties.getTomcat().getRemoteip();
+		String protocolHeader = remoteIpProperties.getProtocolHeader();
+		String remoteIpHeader = remoteIpProperties.getRemoteIpHeader();
 		// For back compatibility the valve is also enabled if protocol-header is set
 		if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
 				|| getOrDeduceUseForwardHeaders()) {
@@ -185,10 +186,10 @@ public class TomcatWebServerFactoryCustomizer
 			}
 			// The internal proxies default to a white list of "safe" internal IP
 			// addresses
-			valve.setInternalProxies(tomcatProperties.getInternalProxies());
-			valve.setHostHeader(tomcatProperties.getHostHeader());
-			valve.setPortHeader(tomcatProperties.getPortHeader());
-			valve.setProtocolHeaderHttpsValue(tomcatProperties.getProtocolHeaderHttpsValue());
+			valve.setInternalProxies(remoteIpProperties.getInternalProxies());
+			valve.setHostHeader(remoteIpProperties.getHostHeader());
+			valve.setPortHeader(remoteIpProperties.getPortHeader());
+			valve.setProtocolHeaderHttpsValue(remoteIpProperties.getProtocolHeaderHttpsValue());
 			// ... so it's safe to add this valve by default.
 			factory.addEngineValves(valve);
 		}
