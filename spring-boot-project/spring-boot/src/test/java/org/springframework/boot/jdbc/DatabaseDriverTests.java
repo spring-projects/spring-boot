@@ -82,7 +82,6 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("DB3 XDB for AS/400")).isEqualTo(DatabaseDriver.DB2_AS400);
 		assertThat(DatabaseDriver.fromProductName("Teradata")).isEqualTo(DatabaseDriver.TERADATA);
 		assertThat(DatabaseDriver.fromProductName("Informix Dynamic Server")).isEqualTo(DatabaseDriver.INFORMIX);
-		assertThat(DatabaseDriver.fromProductName("Testcontainers")).isEqualTo(DatabaseDriver.TESTCONTAINERS);
 	}
 
 	@Test

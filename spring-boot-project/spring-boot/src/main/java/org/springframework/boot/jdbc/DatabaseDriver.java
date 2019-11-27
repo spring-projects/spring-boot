@@ -201,7 +201,7 @@ public enum DatabaseDriver {
 	/**
 	 * Testcontainers.
 	 */
-	TESTCONTAINERS("Testcontainers", "org.testcontainers.jdbc.ContainerDatabaseDriver") {
+	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
