@@ -28,9 +28,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
- * An identifier for an actuator endpoint. Endpoint IDs may contain only letters, numbers
- * {@code '.'} and {@code '-'}. They must begin with a lower-case letter. Case and syntax
- * characters are ignored when comparing endpoint IDs.
+ * An identifier for an actuator endpoint. Endpoint IDs may contain only letters and
+ * numbers. They must begin with a lower-case letter. Case and syntax characters are
+ * ignored when comparing endpoint IDs.
  *
  * @author Phillip Webb
  * @since 2.0.6
