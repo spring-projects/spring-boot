@@ -2,15 +2,15 @@
 
 case "$JDK_VERSION" in
 	java8)
-		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk8"
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/8"
 		 ISSUE_TITLE="Upgrade Java 8 version in CI image"
 	;;
 	java11)
-		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk11"
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/11"
 		 ISSUE_TITLE="Upgrade Java 11 version in CI image"
 	;;
 	java13)
-		 BASE_URL="https://api.adoptopenjdk.net/v2/info/releases/openjdk13"
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/13"
 		 ISSUE_TITLE="Upgrade Java 13 version in CI image"
 	;;
 	*)
@@ -18,8 +18,8 @@ case "$JDK_VERSION" in
 		exit 1;
 esac
 
-response=$( curl -s ${BASE_URL}\?openjdk_impl\=hotspot\&os\=linux\&arch\=x64\&release\=latest\&type\=jdk )
-latest=$( jq -r '.binaries[0].binary_link' <<< "$response" )
+response=$( curl -s ${BASE_URL}\/ga\?architecture\=x64\&heap_size\=normal\&image_type\=jdk\&jvm_impl\=hotspot\&os\=linux\&sort_order\=DESC\&vendor\=adoptopenjdk )
+latest=$( jq -r '.[0].binaries[0].package.link' <<< "$response" )
 
 current=$( git-repo/ci/images/get-jdk-url.sh ${JDK_VERSION} )
 
