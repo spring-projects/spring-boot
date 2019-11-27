@@ -112,7 +112,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-sqli://localhost:1533/sample"))
 				.isEqualTo(DatabaseDriver.INFORMIX);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-direct://sample")).isEqualTo(DatabaseDriver.INFORMIX);
-		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:tc:sample://localhost:3306/sample"))
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:tc:mysql://localhost:3306/sample"))
 				.isEqualTo(DatabaseDriver.TESTCONTAINERS);
 	}
 
