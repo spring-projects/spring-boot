@@ -63,9 +63,10 @@ public class LiquibaseEndpoint {
 		while (target != null) {
 			Map<String, LiquibaseBean> liquibaseBeans = new HashMap<>();
 			DatabaseFactory factory = DatabaseFactory.getInstance();
-			StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
-			this.context.getBeansOfType(SpringLiquibase.class)
-					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, service, factory)));
+			this.context.getBeansOfType(SpringLiquibase.class).forEach((name, liquibase) -> {
+				StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
+				liquibaseBeans.put(name, createReport(liquibase, service, factory));
+			});
 			ApplicationContext parent = target.getParent();
 			contextBeans.put(target.getId(),
 					new ContextLiquibaseBeans(liquibaseBeans, (parent != null) ? parent.getId() : null));
