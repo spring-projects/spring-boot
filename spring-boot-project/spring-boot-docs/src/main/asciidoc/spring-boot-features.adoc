@@ -40,7 +40,11 @@ When your application starts, you should see something similar to the following 
 
 By default, `INFO` logging messages are shown, including some relevant startup details, such as the user that launched the application.
 If you need a log level other than `INFO`, you can set it, as described in <<boot-features-custom-log-levels>>.
+The application version is determined using the implementation version from the main application class's package.
+Startup information logging can be turned off by setting `spring.main.log-startup-info` to `false`.
+This will also turn off logging of the application's active profiles.
 
+TIP: To add additional logging during startup, you can override `logStartupInfo(boolean)` in a subclass of `SpringApplication`.
 
 
 [[boot-features-startup-failure]]
@@ -365,7 +369,7 @@ Properties are considered in the following order:
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML variants).
 . Application properties packaged inside your jar (`application.properties` and YAML variants).
-. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
+. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes (these are added late to the `Environment` and will not have any effect on anything that reads properties from the `Environment` before the `ApplicationContext` is refreshed, such as logging configuration and auto-configuration).
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:

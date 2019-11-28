@@ -257,11 +257,6 @@ The actual application _now_ shows the banner (as overridden by configuration) a
 === Change the Location of External Properties of an Application
 By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`<<spring-boot-features.adoc#boot-features-external-config>>`" in the '`Spring Boot features`' section for the exact order).
 
-A nice way to augment and modify this ordering is to add `@PropertySource` annotations to your application sources.
-Classes passed to the `SpringApplication` static convenience methods and those added using `setSources()` are inspected to see if they have `@PropertySources`.
-If they do, those properties are added to the `Environment` early enough to be used in all phases of the `ApplicationContext` lifecycle.
-Properties added in this way have lower priority than any added by using the default locations (such as `application.properties`), system properties, environment variables, or the command line.
-
 You can also provide the following System properties (or environment variables) to change the behavior:
 
 * configprop:spring.config.name[] (configprop:spring.config.name[format=envvar]): Defaults to `application` as the root of the file name.
@@ -809,8 +804,8 @@ If you use Tomcat, you can additionally configure the names of the headers used 
 
 [indent=0]
 ----
-	server.tomcat.remote-ip-header=x-your-remote-ip-header
-	server.tomcat.protocol-header=x-your-protocol-header
+	server.tomcat.remoteip.remote-ip-header=x-your-remote-ip-header
+	server.tomcat.remoteip.protocol-header=x-your-protocol-header
 ----
 
 Tomcat is also configured with a default regular expression that matches internal proxies that are to be trusted.
@@ -819,7 +814,7 @@ You can customize the valve's configuration by adding an entry to `application.p
 
 [indent=0]
 ----
-	server.tomcat.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+	server.tomcat.remoteip.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
 ----
 
 NOTE: The double backslashes are required only when you use a properties file for configuration.
@@ -2208,8 +2203,8 @@ You can switch on the valve by adding some entries to `application.properties`, 
 
 [source,properties,indent=0,configprops]
 ----
-	server.tomcat.remote-ip-header=x-forwarded-for
-	server.tomcat.protocol-header=x-forwarded-proto
+	server.tomcat.remoteip.remote-ip-header=x-forwarded-for
+	server.tomcat.remoteip.protocol-header=x-forwarded-proto
 ----
 
 (The presence of either of those properties switches on the valve.
@@ -2338,7 +2333,7 @@ To generate build information with Maven, add an execution for the `build-info` 
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin documentation] for more details.
+TIP: See the {spring-boot-maven-plugin-docs}/#build-info[Spring Boot Maven Plugin documentation] for more details.
 
 The following example does the same with Gradle:
 

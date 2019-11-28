@@ -42,7 +42,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Start a spring application. Contrary to the {@code run} goal, this does not block and
- * allows other goal to operate on the application. This goal is typically used in
+ * allows other goals to operate on the application. This goal is typically used in
  * integration test scenario where the application is started before a test suite and
  * stopped after.
  *

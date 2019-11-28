@@ -81,6 +81,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author HaiTao Zhang
+ * @author Franjo Zilic
  */
 class RabbitAutoConfigurationTests {
 
@@ -99,6 +100,8 @@ class RabbitAutoConfigurationTests {
 			assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
 			assertThat(amqpAdmin).isNotNull();
 			assertThat(connectionFactory.getHost()).isEqualTo("localhost");
+			assertThat(getTargetConnectionFactory(context).getRequestedChannelMax())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
 			assertThat(connectionFactory.isPublisherConfirms()).isFalse();
 			assertThat(connectionFactory.isPublisherReturns()).isFalse();
 			assertThat(context.containsBean("rabbitListenerContainerFactory"))
@@ -597,6 +600,15 @@ class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.requestedHeartbeat:20").run((context) -> {
 					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 					assertThat(rabbitConnectionFactory.getRequestedHeartbeat()).isEqualTo(20);
+				});
+	}
+
+	@Test
+	void customizeRequestedChannelMax() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.requestedChannelMax:12").run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+					assertThat(rabbitConnectionFactory.getRequestedChannelMax()).isEqualTo(12);
 				});
 	}
 

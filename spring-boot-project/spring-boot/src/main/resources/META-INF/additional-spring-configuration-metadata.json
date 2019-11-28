@@ -666,6 +666,13 @@
       "defaultValue": false
     },
     {
+      "name": "spring.main.log-startup-info",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether to log information about the application when it starts.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.main.register-shutdown-hook",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",

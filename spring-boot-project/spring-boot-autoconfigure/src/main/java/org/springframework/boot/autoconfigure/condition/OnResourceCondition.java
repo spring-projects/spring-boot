@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
@@ -39,14 +38,11 @@ import org.springframework.util.MultiValueMap;
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnResourceCondition extends SpringBootCondition {
 
-	private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
-
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
-		ResourceLoader loader = (context.getResourceLoader() != null) ? context.getResourceLoader()
-				: this.defaultResourceLoader;
+		ResourceLoader loader = context.getResourceLoader();
 		List<String> locations = new ArrayList<>();
 		collectValues(locations, attributes.get("resources"));
 		Assert.isTrue(!locations.isEmpty(),

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,42 +76,41 @@ class DevToolsHomePropertiesPostProcessorTests {
 
 	@Test
 	void loadsPropertiesFromConfigFolderUsingYml() throws Exception {
-		Properties properties = new Properties();
-		properties.put("abc", "def");
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
-		properties.store(out, null);
+		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
+		byte[] content = Files.readAllBytes(file.toPath());
+		out.write(content);
 		out.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
-		assertThat(environment.getProperty("abc")).isEqualTo("def");
+		assertThat(environment.getProperty("abc.xyz")).isEqualTo("def");
 	}
 
 	@Test
 	void loadsPropertiesFromConfigFolderUsingYaml() throws Exception {
-		Properties properties = new Properties();
-		properties.put("abc", "def");
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
-		properties.store(out, null);
+		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
+		byte[] content = Files.readAllBytes(file.toPath());
+		out.write(content);
 		out.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
-		assertThat(environment.getProperty("abc")).isEqualTo("def");
+		assertThat(environment.getProperty("abc.xyz")).isEqualTo("def");
 	}
 
 	@Test
 	void loadFromConfigFolderWithPropertiesTakingPrecedence() throws Exception {
-		Properties properties = new Properties();
-		properties.put("abc", "def");
-		properties.put("bar", "baz");
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
-		properties.store(out, null);
+		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
+		byte[] content = Files.readAllBytes(file.toPath());
+		out.write(content);
 		out.close();
 		Properties properties2 = new Properties();
-		properties2.put("abc", "jkl");
+		properties2.put("abc.xyz", "jkl");
 		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
 		properties2.store(out2, null);
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
-		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
-		assertThat(environment.getProperty("bar")).isEqualTo("baz");
+		assertThat(environment.getProperty("abc.xyz")).isEqualTo("jkl");
+		assertThat(environment.getProperty("bing")).isEqualTo("blip");
 	}
 
 	@Test
@@ -131,16 +132,16 @@ class DevToolsHomePropertiesPostProcessorTests {
 	@Test
 	void loadFromConfigFolderWithYamlTakesPrecedenceOverHomeFolder() throws Exception {
 		Properties properties = new Properties();
-		properties.put("abc", "def");
+		properties.put("abc.xyz", "jkl");
 		properties.put("bar", "baz");
 		writeFile(properties, ".spring-boot-devtools.properties");
-		Properties properties2 = new Properties();
-		properties2.put("abc", "jkl");
 		OutputStream out2 = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
-		properties2.store(out2, null);
+		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
+		byte[] content = Files.readAllBytes(file.toPath());
+		out2.write(content);
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
-		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
+		assertThat(environment.getProperty("abc.xyz")).isEqualTo("def");
 		assertThat(environment.getProperty("bar")).isEqualTo(null);
 	}
 

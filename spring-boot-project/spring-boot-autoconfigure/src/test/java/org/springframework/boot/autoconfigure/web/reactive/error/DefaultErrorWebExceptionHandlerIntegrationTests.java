@@ -218,7 +218,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
 					.isThrownBy(() -> client.get().uri("/commit").exchange().expectStatus())
-					.withCauseInstanceOf(IllegalStateException.class).withMessageContaining("already committed!");
+					.withCauseInstanceOf(IllegalStateException.class)
+					.withMessageContaining("Error occurred after response was completed");
 		});
 	}
 

@@ -63,6 +63,7 @@ import org.springframework.util.unit.DataSize;
  * @author Rafiullah Hamedy
  * @author Dirk Deyne
  * @author HaiTao Zhang
+ * @author Victor Mandujano
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -300,43 +301,6 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Regular expression that matches proxies that are to be trusted.
-		 */
-		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
-				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
-				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
-				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
-				+ "0:0:0:0:0:0:0:1|::1";
-
-		/**
-		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
-		 */
-		private String protocolHeader;
-
-		/**
-		 * Value of the protocol header indicating whether the incoming request uses SSL.
-		 */
-		private String protocolHeaderHttpsValue = "https";
-
-		/**
-		 * Name of the HTTP header used to override the original port value.
-		 */
-		private String portHeader = "X-Forwarded-Port";
-
-		/**
-		 * Name of the HTTP header from which the remote IP is extracted. For instance,
-		 * `X-FORWARDED-FOR`.
-		 */
-		private String remoteIpHeader;
-
-		/**
-		 * Name of the HTTP header from which the remote host is extracted.
-		 */
-		private String hostHeader = "X-Forwarded-Host";
-
-		/**
 		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
@@ -440,6 +404,11 @@ public class ServerProperties {
 		 */
 		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
 
+		/**
+		 * Remote Ip Valve configuration.
+		 */
+		private final Remoteip remoteip = new Remoteip();
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -495,36 +464,58 @@ public class ServerProperties {
 			this.basedir = basedir;
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.internal-proxies")
 		public String getInternalProxies() {
-			return this.internalProxies;
+			return this.remoteip.getInternalProxies();
 		}
 
 		public void setInternalProxies(String internalProxies) {
-			this.internalProxies = internalProxies;
+			this.remoteip.setInternalProxies(internalProxies);
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.protocol-header")
 		public String getProtocolHeader() {
-			return this.protocolHeader;
+			return this.remoteip.getProtocolHeader();
 		}
 
 		public void setProtocolHeader(String protocolHeader) {
-			this.protocolHeader = protocolHeader;
+			this.remoteip.setProtocolHeader(protocolHeader);
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.protocol-header-https-value")
 		public String getProtocolHeaderHttpsValue() {
-			return this.protocolHeaderHttpsValue;
+			return this.remoteip.getProtocolHeaderHttpsValue();
 		}
 
 		public void setProtocolHeaderHttpsValue(String protocolHeaderHttpsValue) {
-			this.protocolHeaderHttpsValue = protocolHeaderHttpsValue;
+			this.remoteip.setProtocolHeaderHttpsValue(protocolHeaderHttpsValue);
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.host-header")
+		public String getHostHeader() {
+			return this.remoteip.getHostHeader();
+		}
+
+		public void setHostHeader(String hostHeader) {
+			this.remoteip.setHostHeader(hostHeader);
+		}
+
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remote.port-header")
 		public String getPortHeader() {
-			return this.portHeader;
+			return this.remoteip.getPortHeader();
 		}
 
 		public void setPortHeader(String portHeader) {
-			this.portHeader = portHeader;
+			this.remoteip.setPortHeader(portHeader);
+		}
+
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.remote-ip-header")
+		public String getRemoteIpHeader() {
+			return this.remoteip.getRemoteIpHeader();
+		}
+
+		public void setRemoteIpHeader(String remoteIpHeader) {
+			this.remoteip.setRemoteIpHeader(remoteIpHeader);
 		}
 
 		public Boolean getRedirectContextRoot() {
@@ -541,22 +532,6 @@ public class ServerProperties {
 
 		public void setUseRelativeRedirects(Boolean useRelativeRedirects) {
 			this.useRelativeRedirects = useRelativeRedirects;
-		}
-
-		public String getRemoteIpHeader() {
-			return this.remoteIpHeader;
-		}
-
-		public void setRemoteIpHeader(String remoteIpHeader) {
-			this.remoteIpHeader = remoteIpHeader;
-		}
-
-		public String getHostHeader() {
-			return this.hostHeader;
-		}
-
-		public void setHostHeader(String hostHeader) {
-			this.hostHeader = hostHeader;
 		}
 
 		public Charset getUriEncoding() {
@@ -637,6 +612,10 @@ public class ServerProperties {
 
 		public Mbeanregistry getMbeanregistry() {
 			return this.mbeanregistry;
+		}
+
+		public Remoteip getRemoteip() {
+			return this.remoteip;
 		}
 
 		/**
@@ -921,6 +900,96 @@ public class ServerProperties {
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
+			}
+
+		}
+
+		public static class Remoteip {
+
+			/**
+			 * Regular expression that matches proxies that are to be trusted.
+			 */
+			private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
+					+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
+					+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
+					+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
+					+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
+					+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+					+ "0:0:0:0:0:0:0:1|::1";
+
+			/**
+			 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
+			 */
+			private String protocolHeader;
+
+			/**
+			 * Value of the protocol header indicating whether the incoming request uses
+			 * SSL.
+			 */
+			private String protocolHeaderHttpsValue = "https";
+
+			/**
+			 * Name of the HTTP header from which the remote host is extracted.
+			 */
+			private String hostHeader = "X-Forwarded-Host";
+
+			/**
+			 * Name of the HTTP header used to override the original port value.
+			 */
+			private String portHeader = "X-Forwarded-Port";
+
+			/**
+			 * Name of the HTTP header from which the remote IP is extracted. For
+			 * instance, `X-FORWARDED-FOR`.
+			 */
+			private String remoteIpHeader;
+
+			public String getInternalProxies() {
+				return this.internalProxies;
+			}
+
+			public void setInternalProxies(String internalProxies) {
+				this.internalProxies = internalProxies;
+			}
+
+			public String getProtocolHeader() {
+				return this.protocolHeader;
+			}
+
+			public void setProtocolHeader(String protocolHeader) {
+				this.protocolHeader = protocolHeader;
+			}
+
+			public String getProtocolHeaderHttpsValue() {
+				return this.protocolHeaderHttpsValue;
+			}
+
+			public String getHostHeader() {
+				return this.hostHeader;
+			}
+
+			public void setHostHeader(String hostHeader) {
+				this.hostHeader = hostHeader;
+			}
+
+			public void setProtocolHeaderHttpsValue(String protocolHeaderHttpsValue) {
+				this.protocolHeaderHttpsValue = protocolHeaderHttpsValue;
+			}
+
+			public String getPortHeader() {
+				return this.portHeader;
+			}
+
+			public void setPortHeader(String portHeader) {
+				this.portHeader = portHeader;
+			}
+
+			public String getRemoteIpHeader() {
+				return this.remoteIpHeader;
+			}
+
+			public void setRemoteIpHeader(String remoteIpHeader) {
+				this.remoteIpHeader = remoteIpHeader;
 			}
 
 		}

@@ -29,6 +29,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -73,7 +75,7 @@ class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	void mapDetailsWithAuthorizedUserInvokeSupplier() {
+	void mapDetailsWithAuthorizedUserInvokesSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
@@ -83,6 +85,39 @@ class HealthWebEndpointResponseMapperTests {
 		assertThat(response.getBody().getStatus()).isEqualTo(Status.DOWN);
 		verify(supplier).get();
 		verify(securityContext).isUserInRole("ACTUATOR");
+	}
+
+	@Test
+	void mapDetailsWithRightAuthoritiesInvokesSupplier() {
+		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
+		Supplier<Health> supplier = mockSupplier();
+		given(supplier.get()).willReturn(Health.down().build());
+		SecurityContext securityContext = getSecurityContext("ACTUATOR");
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
+		assertThat(response.getBody().getStatus()).isEqualTo(Status.DOWN);
+		verify(supplier).get();
+	}
+
+	@Test
+	void mapDetailsWithOtherAuthoritiesShouldNotInvokeSupplier() {
+		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
+		Supplier<Health> supplier = mockSupplier();
+		given(supplier.get()).willReturn(Health.down().build());
+		SecurityContext securityContext = getSecurityContext("OTHER");
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getBody()).isNull();
+		verifyNoInteractions(supplier);
+	}
+
+	private SecurityContext getSecurityContext(String other) {
+		SecurityContext securityContext = mock(SecurityContext.class);
+		Authentication principal = mock(Authentication.class);
+		given(securityContext.getPrincipal()).willReturn(principal);
+		given(principal.getAuthorities())
+				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority(other)));
+		return securityContext;
 	}
 
 	@Test

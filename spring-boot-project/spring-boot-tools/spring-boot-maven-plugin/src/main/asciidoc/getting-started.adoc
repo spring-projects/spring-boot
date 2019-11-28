@@ -1,0 +1,7 @@
+[[getting-started]]
+== Getting started
+
+The Spring Boot Plugin has the following goals:
+
+include::{generated-resources-root}/goals/overview.adoc[]
+

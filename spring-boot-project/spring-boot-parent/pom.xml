@@ -30,8 +30,8 @@
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.3-groovy-2.5</spock.version>
 		<spring-asciidoctor-extensions.version>0.3.0.RELEASE</spring-asciidoctor-extensions.version>
-		<spring-doc-resources.version>0.1.3.RELEASE</spring-doc-resources.version>
-		<spring-doc-resources.url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
+		<spring-doc-resources.version>0.1.4.BUILD-20191119.185717-2</spring-doc-resources.version>
+		<spring-doc-resources.url>https://repo.spring.io/snapshot/io/spring/docresources/spring-doc-resources/0.1.4.BUILD-SNAPSHOT/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
 		<testcontainers.version>1.12.2</testcontainers.version>
 		<testng.version>6.14.3</testng.version>
 	</properties>

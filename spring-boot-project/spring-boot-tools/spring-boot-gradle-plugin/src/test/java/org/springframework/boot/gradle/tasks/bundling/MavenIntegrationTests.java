@@ -42,7 +42,8 @@ public class MavenIntegrationTests {
 
 	@TestTemplate
 	public void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
-		BuildResult result = this.gradleBuild.build("uploadBootArchives");
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
+				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
 		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
@@ -51,7 +52,8 @@ public class MavenIntegrationTests {
 
 	@TestTemplate
 	public void bootWarCanBeUploaded() throws IOException {
-		BuildResult result = this.gradleBuild.build("uploadBootArchives");
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
+				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();
 		assertThat(artifactWithSuffix("pom"))
