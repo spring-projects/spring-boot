@@ -133,13 +133,13 @@ The following listing shows a typical `pom.xml` file:
 		<!-- Override inherited settings -->
 		<description/>
 		<developers>
-    		<developer/>
+			<developer/>
 		</developers>
 		<licenses>
-    		<license/>
+			<license/>
 		</licenses>
 		<scm>
-    		<url/>
+			<url/>
 		</scm>
 		<url/>
 
