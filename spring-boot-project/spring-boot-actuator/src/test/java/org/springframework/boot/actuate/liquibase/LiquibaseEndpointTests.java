@@ -22,6 +22,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBean;
@@ -41,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Leo Li
  */
 public class LiquibaseEndpointTests {
 
@@ -92,6 +96,20 @@ public class LiquibaseEndpointTests {
 		});
 	}
 
+	@Test
+	public void multipleLiquibaseReportIsReturned() {
+		this.contextRunner.withUserConfiguration(Config.class, LiquibaseConfiguration.class).run((context) -> {
+			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
+					.getContexts().get(context.getId()).getLiquibaseBeans();
+			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
+					.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
+			assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
+			assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
+					.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
+		});
+	}
+
 	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
 		try (Connection connection = dataSource.getConnection()) {
 			return connection.getAutoCommit();
@@ -104,6 +122,45 @@ public class LiquibaseEndpointTests {
 		@Bean
 		public LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
+		}
+
+	}
+
+	@Configuration
+	static class LiquibaseConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			HikariConfig config = new HikariConfig();
+			config.setJdbcUrl("jdbc:hsqldb:mem:test");
+			config.setUsername("sa");
+			return new HikariDataSource(config);
+		}
+
+		@Bean
+		DataSource dataSourceBackup() {
+			HikariConfig config = new HikariConfig();
+			config.setJdbcUrl("jdbc:hsqldb:mem:testBackup");
+			config.setUsername("sa");
+			return new HikariDataSource(config);
+		}
+
+		@Bean
+		SpringLiquibase liquibase(DataSource dataSource) {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			liquibase.setShouldRun(true);
+			liquibase.setDataSource(dataSource);
+			return liquibase;
+		}
+
+		@Bean
+		SpringLiquibase liquibaseBackup(DataSource dataSourceBackup) {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master-backup.yaml");
+			liquibase.setShouldRun(true);
+			liquibase.setDataSource(dataSourceBackup);
+			return liquibase;
 		}
 
 	}
