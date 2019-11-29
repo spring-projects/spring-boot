@@ -16,15 +16,25 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.time.Duration;
 import java.util.Arrays;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -81,6 +91,40 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 		NettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	public void testSslWithValidAlias() {
+		Mono<String> result = testSslWithAlias("test-alias");
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
+		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+	}
+
+	@Test
+	public void testSslWithInvalidAlias() {
+		Mono<String> result = testSslWithAlias("test-alias-bad");
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
+		StepVerifier.create(result).expectErrorMatches((throwable) -> throwable instanceof SSLHandshakeException
+				&& throwable.getMessage().contains("HANDSHAKE_FAILURE")).verify();
+	}
+
+	protected Mono<String> testSslWithAlias(String alias) {
+		String keyStore = "classpath:test.jks";
+		String keyPassword = "password";
+		NettyReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyAlias(alias);
+		factory.setSsl(ssl);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
+		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(connector).build();
+		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
 	}
 
 }
