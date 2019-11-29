@@ -22,8 +22,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
@@ -31,10 +29,12 @@ import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBea
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,17 +97,18 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void multipleLiquibaseReportIsReturned() {
-		this.contextRunner.withUserConfiguration(Config.class, LiquibaseConfiguration.class).run((context) -> {
-			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-					.getContexts().get(context.getId()).getLiquibaseBeans();
-			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
-			assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
-					.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
-			assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
-			assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
-					.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
-		});
+	public void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
+		this.contextRunner.withUserConfiguration(Config.class, MultipleDataSourceLiquibaseConfiguration.class)
+				.run((context) -> {
+					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
+					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+					assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
+							.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
+					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
+					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
+							.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
+				});
 	}
 
 	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
@@ -127,39 +128,38 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Configuration
-	static class LiquibaseConfiguration {
+	static class MultipleDataSourceLiquibaseConfiguration {
 
 		@Bean
 		DataSource dataSource() {
-			HikariConfig config = new HikariConfig();
-			config.setJdbcUrl("jdbc:hsqldb:mem:test");
-			config.setUsername("sa");
-			return new HikariDataSource(config);
+			return createEmbeddedDatabase();
 		}
 
 		@Bean
 		DataSource dataSourceBackup() {
-			HikariConfig config = new HikariConfig();
-			config.setJdbcUrl("jdbc:hsqldb:mem:testBackup");
-			config.setUsername("sa");
-			return new HikariDataSource(config);
+			return createEmbeddedDatabase();
 		}
 
 		@Bean
 		SpringLiquibase liquibase(DataSource dataSource) {
-			SpringLiquibase liquibase = new SpringLiquibase();
-			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
-			liquibase.setShouldRun(true);
-			liquibase.setDataSource(dataSource);
-			return liquibase;
+			return createSpringLiquibase("db.changelog-master.yaml", dataSource);
 		}
 
 		@Bean
 		SpringLiquibase liquibaseBackup(DataSource dataSourceBackup) {
+			return createSpringLiquibase("db.changelog-master-backup.yaml", dataSourceBackup);
+		}
+
+		private DataSource createEmbeddedDatabase() {
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseConnection.HSQL.getType()).build();
+		}
+
+		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {
 			SpringLiquibase liquibase = new SpringLiquibase();
-			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master-backup.yaml");
+			liquibase.setChangeLog("classpath:/db/changelog/" + changeLog);
 			liquibase.setShouldRun(true);
-			liquibase.setDataSource(dataSourceBackup);
+			liquibase.setDataSource(dataSource);
 			return liquibase;
 		}
 

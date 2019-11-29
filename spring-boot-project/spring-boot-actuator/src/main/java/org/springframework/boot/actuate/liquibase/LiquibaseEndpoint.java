@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import liquibase.changelog.ChangeLogHistoryService;
 import liquibase.changelog.ChangeSet.ExecType;
 import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.StandardChangeLogHistoryService;
@@ -63,10 +62,8 @@ public class LiquibaseEndpoint {
 		while (target != null) {
 			Map<String, LiquibaseBean> liquibaseBeans = new HashMap<>();
 			DatabaseFactory factory = DatabaseFactory.getInstance();
-			this.context.getBeansOfType(SpringLiquibase.class).forEach((name, liquibase) -> {
-				StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
-				liquibaseBeans.put(name, createReport(liquibase, service, factory));
-			});
+			this.context.getBeansOfType(SpringLiquibase.class)
+					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, factory)));
 			ApplicationContext parent = target.getParent();
 			contextBeans.put(target.getId(),
 					new ContextLiquibaseBeans(liquibaseBeans, (parent != null) ? parent.getId() : null));
@@ -75,8 +72,7 @@ public class LiquibaseEndpoint {
 		return new ApplicationLiquibaseBeans(contextBeans);
 	}
 
-	private LiquibaseBean createReport(SpringLiquibase liquibase, ChangeLogHistoryService service,
-			DatabaseFactory factory) {
+	private LiquibaseBean createReport(SpringLiquibase liquibase, DatabaseFactory factory) {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
@@ -89,6 +85,7 @@ public class LiquibaseEndpoint {
 				}
 				database.setDatabaseChangeLogTableName(liquibase.getDatabaseChangeLogTable());
 				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
+				StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 				service.setDatabase(database);
 				return new LiquibaseBean(
 						service.getRanChangeSets().stream().map(ChangeSet::new).collect(Collectors.toList()));
