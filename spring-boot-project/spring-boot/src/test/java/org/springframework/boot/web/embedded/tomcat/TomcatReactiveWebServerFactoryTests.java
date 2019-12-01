@@ -30,11 +30,14 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -153,6 +156,21 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
 		assertThat(context.getClearReferencesRmiTargets()).isFalse();
 		assertThat(context.getClearReferencesThreadLocals()).isFalse();
+	}
+
+	@Test
+	@Override
+	public void sslWithInvalidAliasFailsDuringStartup() {
+		String keyStore = "classpath:test.jks";
+		String keyPassword = "password";
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyAlias("test-alias-404");
+		factory.setSsl(ssl);
+		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
+				.isInstanceOf(ConnectorStartFailedException.class);
 	}
 
 }
