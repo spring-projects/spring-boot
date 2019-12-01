@@ -44,6 +44,7 @@ import reactor.netty.tcp.SslProvider;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.SslUtils;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
 
@@ -106,6 +107,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
+			SslUtils.assertStoreContainsAlias(keyStore, ssl.getKeyAlias());
+
 			KeyManagerFactory keyManagerFactory = (ssl.getKeyAlias() == null)
 					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
 					: new ConfigurableAliasKeyManagerFactory(ssl.getKeyAlias(),
