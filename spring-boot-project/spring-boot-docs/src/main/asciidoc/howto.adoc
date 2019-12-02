@@ -2098,9 +2098,17 @@ The preceding example overrides the default factory, and it should be applied to
 
 [[howto-batch-applications]]
 == Batch Applications
-This section answers questions that arise from using Spring Batch with Spring Boot.
+A number of questions often arise when people use Spring Batch from within a Spring Boot application. This section addresses the following concerns:
 
-NOTE: By default, batch applications require a `DataSource` to store job details.
+* <<howto-spring-batch-specifying-a-data-source>>
+* <<howto-run-spring-batch-jobs-on-startup>>
+* <<howto-spring-batch-running-command-line>>
+* <<howto-spring-batch-storing-job-repository>>
+
+[[howto-spring-batch-specifying-a-data-source]]
+=== Specifying a Batch Data Source
+
+By default, batch applications require a `DataSource` to store job details.
 Batch autowires a single `DataSource` in your context and uses that for processing.
 To have Batch use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
 If you do so and want two data sources, remember to create another one and mark it as `@Primary`.
@@ -2109,25 +2117,68 @@ See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[
 
 For more about Spring Batch, see the {spring-batch}[Spring Batch project page].
 
-
-
-[[howto-execute-spring-batch-jobs-on-startup]]
-=== Execute Spring Batch Jobs on Startup
+[[howto-run-spring-batch-jobs-on-startup]]
+=== Running Spring Batch Jobs on Startup
 Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` (from Spring Batch) somewhere in your context.
 
 By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherCommandLineRunner.java[JobLauncherCommandLineRunner] for details).
 You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
 
-[TIP]
-.Specifying job parameters on the command line
-====
-Unlike command line option arguments that <<spring-boot-features.adoc#boot-features-external-config-command-line-args,set properties in the `Environment`>> (i.e. by starting with `--`, such as `--my-property=value`), job parameters have to be specified on the command line without dashes (e.g. `jobParam=value`).
-====
-
-If the application context includes a `JobRegistry`, the jobs in `spring.batch.job.names` are looked up in the registry instead of being autowired from the context.
-This is a common pattern with more complex systems, where multiple jobs are defined in child contexts and registered centrally.
-
 See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java[@EnableBatchProcessing] for more details.
+
+[[howto-spring-batch-running-command-line]]
+=== Running from the Command Line
+
+Running Spring Batch with Spring Boot from the command line differs from running Spring
+Batch by itself from the command line. Spring Boot uses a class called
+`JobLaunchingCommandLineRunner`. Spring Batch uses a class called `CommandLineJobRunner`.
+They work a bit differently. However, for the most part, the differences do not cause
+trouble. However, they parse command line arguments differently, which can cause trouble,
+as described in the next section.
+// TODO What are the other differences between the two?
+
+==== Passing Command-line Arguments
+
+If you run Spring Batch with Spring Boot, Spring Boot strips the first `-` character (a
+hyphen) from each command line argument. For example, `--exampleArgument` becomes
+`-exampleArgument`. Whether a command-line option has one hyphen or two often makes no
+difference in Spring Boot. However, in Spring Batch, putting a single `-` character
+before the `jobParameters` parameter indicates that Spring Batch should not use the
+`jobParameters` value as the identifier for the `Job`. Best practice is to use the
+`jobParameters` value as the identifier for the `Job`, so this issue may cause problems.
+To avoid the issue, you should generally use no `-` characters for the command-line
+options that you pass to Spring Boot on behalf of Spring Batch, as shown in the following
+example:
+
+[source]
+jobParameters="someParameter"
+
+However, if you mean to not use the `jobParameters` value as the identifier for the
+`Job`, use two hyphens, as shown in the following example:
+
+[source]
+--jobParameters="someParameter"
+
+In the second example, Spring Boot passes the parameter to Spring Batch as
+`-jobParameters="someParameter"`, and "someParameter" does not become the name of the
+`Job`.
+// TODO In that case, what is the name of the job?
+
+[[howto-spring-batch-storing-job-repository]]
+=== Storing the Job Repository
+
+Spring Batch requires a memory store for the `Job` repository. If you use Spring Boot,
+you must use an actual database. Note that it can be an in-memory database. Using Spring
+Batch without Spring Boot does not require a database. If you use Spring Batch without
+Spring Boot, you may provide a database (including an in-memory database), but it is not
+required. If you do not provide a database, Spring Batch uses a `Map` object as the `Job`
+repository.
+
+See also
+https://docs.spring.io/spring-batch/trunk/reference/html/configureJob.html#configuringJobRepository[Configuring
+a Job Repository]
+// TODO Is it best practice to use a database (rather than the default Map object) for
+// the Job Repository, even when Spring Boot isn't present?
 
 
 
