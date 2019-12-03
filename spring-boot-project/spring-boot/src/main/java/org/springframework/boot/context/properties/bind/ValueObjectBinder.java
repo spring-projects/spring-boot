@@ -31,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.KotlinDetector;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
@@ -118,9 +119,9 @@ class ValueObjectBinder implements DataObjectBinder {
 				return null;
 			}
 			if (KotlinDetector.isKotlinType(type)) {
-				return KotlinValueObject.get((Constructor<T>) bindConstructor);
+				return KotlinValueObject.get((Constructor<T>) bindConstructor, bindable.getType());
 			}
-			return DefaultValueObject.get(bindConstructor);
+			return DefaultValueObject.get(bindConstructor, bindable.getType());
 		}
 
 	}
@@ -132,19 +133,22 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		private final List<ConstructorParameter> constructorParameters;
 
-		private KotlinValueObject(Constructor<T> primaryConstructor, KFunction<T> kotlinConstructor) {
+		private KotlinValueObject(Constructor<T> primaryConstructor, KFunction<T> kotlinConstructor,
+				ResolvableType type) {
 			super(primaryConstructor);
-			this.constructorParameters = parseConstructorParameters(kotlinConstructor);
+			this.constructorParameters = parseConstructorParameters(kotlinConstructor, type);
 		}
 
-		private List<ConstructorParameter> parseConstructorParameters(KFunction<T> kotlinConstructor) {
+		private List<ConstructorParameter> parseConstructorParameters(KFunction<T> kotlinConstructor,
+				ResolvableType type) {
 			List<KParameter> parameters = kotlinConstructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.size());
 			for (KParameter parameter : parameters) {
 				String name = parameter.getName();
-				ResolvableType type = ResolvableType.forType(ReflectJvmMapping.getJavaType(parameter.getType()));
+				ResolvableType parameterType = ResolvableType
+						.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
 				Annotation[] annotations = parameter.getAnnotations().toArray(new Annotation[0]);
-				result.add(new ConstructorParameter(name, type, annotations));
+				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
 		}
@@ -154,12 +158,12 @@ class ValueObjectBinder implements DataObjectBinder {
 			return this.constructorParameters;
 		}
 
-		static <T> ValueObject<T> get(Constructor<T> bindConstructor) {
+		static <T> ValueObject<T> get(Constructor<T> bindConstructor, ResolvableType type) {
 			KFunction<T> kotlinConstructor = ReflectJvmMapping.getKotlinFunction(bindConstructor);
 			if (kotlinConstructor != null) {
-				return new KotlinValueObject<>(bindConstructor, kotlinConstructor);
+				return new KotlinValueObject<>(bindConstructor, kotlinConstructor, type);
 			}
-			return DefaultValueObject.get(bindConstructor);
+			return DefaultValueObject.get(bindConstructor, type);
 		}
 
 	}
@@ -174,21 +178,23 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		private final List<ConstructorParameter> constructorParameters;
 
-		private DefaultValueObject(Constructor<T> constructor) {
+		private DefaultValueObject(Constructor<T> constructor, ResolvableType type) {
 			super(constructor);
-			this.constructorParameters = parseConstructorParameters(constructor);
+			this.constructorParameters = parseConstructorParameters(constructor, type);
 		}
 
-		private static List<ConstructorParameter> parseConstructorParameters(Constructor<?> constructor) {
+		private static List<ConstructorParameter> parseConstructorParameters(Constructor<?> constructor,
+				ResolvableType type) {
 			String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
 			Assert.state(names != null, () -> "Failed to extract parameter names for " + constructor);
 			Parameter[] parameters = constructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.length);
 			for (int i = 0; i < parameters.length; i++) {
 				String name = names[i];
-				ResolvableType type = ResolvableType.forConstructorParameter(constructor, i);
+				ResolvableType parameterType = ResolvableType.forMethodParameter(new MethodParameter(constructor, i),
+						type);
 				Annotation[] annotations = parameters[i].getDeclaredAnnotations();
-				result.add(new ConstructorParameter(name, type, annotations));
+				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
 		}
@@ -199,8 +205,8 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Constructor<?> bindConstructor) {
-			return new DefaultValueObject<>((Constructor<T>) bindConstructor);
+		static <T> ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type) {
+			return new DefaultValueObject<>((Constructor<T>) bindConstructor, type);
 		}
 
 	}
