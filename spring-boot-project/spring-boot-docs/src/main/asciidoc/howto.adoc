@@ -1794,6 +1794,11 @@ Alternatively, you can just the `LocalContainerEntityManagerFactoryBean` directl
 	}
 ----
 
+NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
+For example, in case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
+If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the `LocalContainerEntityManagerFactoryBean` bean.
+On the other hand, properties that get applied to the auto-configured `EntityManagerFactoryBuilder`, which are specified via `spring.jpa.properties`, will automatically be applied, provided you use the auto-configured `EntityManagerFactoryBuilder` to build the `LocalContainerEntityManagerFactoryBean` bean.
+
 The configuration above almost works on its own.
 To complete the picture, you need to configure `TransactionManagers` for the two `EntityManagers` as well.
 If you mark one of them as `@Primary`, it could be picked up by the default `JpaTransactionManager` in Spring Boot.
