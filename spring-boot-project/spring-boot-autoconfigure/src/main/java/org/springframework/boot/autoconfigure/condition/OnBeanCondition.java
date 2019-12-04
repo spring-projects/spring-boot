@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Jakub Kubrynski
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Jorge Cordoba
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
  * @see ConditionalOnSingleCandidate
@@ -117,7 +118,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (!matchResult.isAllMatched()) {
 				String reason = createOnBeanNoMatchReason(matchResult);
-				return ConditionOutcome.noMatch(spec.message().because(reason));
+				return ConditionOutcome.noMatch(spec.message(ConditionalOnBean.class).because(reason));
 			}
 			matchMessage = spec.message(matchMessage).found("bean", "beans").items(Style.QUOTE,
 					matchResult.getNamesOfAllMatches());
@@ -126,11 +127,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			Spec<ConditionalOnSingleCandidate> spec = new SingleCandidateSpec(context, metadata, annotations);
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (!matchResult.isAllMatched()) {
-				return ConditionOutcome.noMatch(spec.message().didNotFind("any beans").atAll());
+				return ConditionOutcome.noMatch(spec.message(ConditionalOnSingleCandidate.class).didNotFind("any beans").atAll());
 			}
 			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matchResult.getNamesOfAllMatches(),
 					spec.getStrategy() == SearchStrategy.ALL)) {
-				return ConditionOutcome.noMatch(spec.message().didNotFind("a primary bean from beans")
+				return ConditionOutcome.noMatch(spec.message(ConditionalOnSingleCandidate.class).didNotFind("a primary bean from beans")
 						.items(Style.QUOTE, matchResult.getNamesOfAllMatches()));
 			}
 			matchMessage = spec.message(matchMessage).found("a primary bean from beans").items(Style.QUOTE,
@@ -142,7 +143,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (matchResult.isAnyMatched()) {
 				String reason = createOnMissingBeanNoMatchReason(matchResult);
-				return ConditionOutcome.noMatch(spec.message().because(reason));
+				return ConditionOutcome.noMatch(spec.message(ConditionalOnMissingBean.class).because(reason));
 			}
 			matchMessage = spec.message(matchMessage).didNotFind("any beans").atAll();
 		}
@@ -580,8 +581,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return this.parameterizedContainers;
 		}
 
-		ConditionMessage.Builder message() {
-			return ConditionMessage.forCondition(ConditionalOnBean.class, this);
+		ConditionMessage.Builder message(Class<? extends Annotation> annotation) {
+			return ConditionMessage.forCondition(annotation, this);
 		}
 
 		ConditionMessage.Builder message(ConditionMessage message) {
