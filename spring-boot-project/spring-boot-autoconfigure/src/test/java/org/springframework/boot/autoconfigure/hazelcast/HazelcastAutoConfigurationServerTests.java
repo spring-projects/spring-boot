@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HazelcastAutoConfiguration} when the client library is not present.
  *
  * @author Stephane Nicoll
+ * @author Neil Stevenson
  */
 @ClassPathExclusions("hazelcast-client-*.jar")
 class HazelcastAutoConfigurationServerTests {
@@ -79,6 +80,17 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	void systemPropertyWithYml() {
+		this.contextRunner
+				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml")
+				.run((context) -> {
+					Config config = context.getBean(HazelcastInstance.class).getConfig();
+					assertThat(config.getMapConfigs().keySet()).containsOnly("foobar");
+				});
+	}
+
+	@Test
 	void explicitConfigFileWithXml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
@@ -97,6 +109,15 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	void explicitConfigFileWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-specific.yml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml"));
+	}
+
+	@Test
 	void explicitConfigUrlWithXml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
@@ -112,6 +133,15 @@ class HazelcastAutoConfigurationServerTests {
 						+ "boot/autoconfigure/hazelcast/hazelcast-specific.yaml")
 				.run(assertSpecificHazelcastServer(
 						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yaml"));
+	}
+
+	@Test
+	void explicitConfigUrlWithYml() {
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-specific.yml")
+				.run(assertSpecificHazelcastServer(
+						"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.yml"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastServer(String location) {
