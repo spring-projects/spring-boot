@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.core.ResolvableType;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -231,6 +233,19 @@ class ValueObjectBinderTests {
 		Bindable<ValidatingConstructorBean> target = Bindable.of(ValidatingConstructorBean.class);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
 				.satisfies(this::noConfigurationProperty);
+	}
+
+	@Test
+	void bindToClassShouldBindWithGenerics() {
+		// gh-19156
+		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class, String.class, String.class);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value.bar", "baz");
+		this.sources.add(source);
+		GenericValue<Map<String, String>> bean = this.binder.bind("foo", Bindable
+				.<GenericValue<Map<String, String>>>of(ResolvableType.forClassWithGenerics(GenericValue.class, type)))
+				.get();
+		assertThat(bean.getValue().get("bar")).isEqualTo("baz");
 	}
 
 	private void noConfigurationProperty(BindException ex) {
@@ -448,6 +463,20 @@ class ValueObjectBinderTests {
 
 		String getBar() {
 			return this.bar;
+		}
+
+	}
+
+	static class GenericValue<T> {
+
+		private final T value;
+
+		GenericValue(T value) {
+			this.value = value;
+		}
+
+		T getValue() {
+			return this.value;
 		}
 
 	}
