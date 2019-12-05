@@ -351,7 +351,9 @@ Properties are considered in the following order:
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML variants).
 . Application properties packaged inside your jar (`application.properties` and YAML variants).
-. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes (these are added late to the `Environment` and will not have any effect on anything that reads properties from the `Environment` before the `ApplicationContext` is refreshed, such as logging configuration and auto-configuration).
+. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
+  Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
+  This is too late to configure certain properties such as `logging.*` and `spring.main.*` which are read before refresh begins.
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
