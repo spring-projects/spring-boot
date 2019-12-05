@@ -34,17 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @EmbeddedServletContainerTest(packaging = "jar",
 		launchers = { PackagedApplicationLauncher.class, ExplodedApplicationLauncher.class })
-public class EmbeddedServletContainerJarPackagingIntegrationTests {
+class EmbeddedServletContainerJarPackagingIntegrationTests {
 
 	@TestTemplate
-	public void nestedMetaInfResourceIsAvailableViaHttp(RestTemplate rest) {
+	void nestedMetaInfResourceIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
 	@DisabledOnOs(OS.WINDOWS)
-	public void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
+	void nestedMetaInfResourceWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity(
 				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
 				String.class);
@@ -53,27 +53,27 @@ public class EmbeddedServletContainerJarPackagingIntegrationTests {
 	}
 
 	@TestTemplate
-	public void nestedMetaInfResourceIsAvailableViaServletContext(RestTemplate rest) {
+	void nestedMetaInfResourceIsAvailableViaServletContext(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	public void nestedJarIsNotAvailableViaHttp(RestTemplate rest) {
+	void nestedJarIsNotAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/BOOT-INF/lib/resources-1.0.jar", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@TestTemplate
-	public void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
+	void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest
 				.getForEntity("/BOOT-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@TestTemplate
-	public void launcherIsNotAvailableViaHttp(RestTemplate rest) {
+	void launcherIsNotAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/org/springframework/boot/loader/Launcher.class",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

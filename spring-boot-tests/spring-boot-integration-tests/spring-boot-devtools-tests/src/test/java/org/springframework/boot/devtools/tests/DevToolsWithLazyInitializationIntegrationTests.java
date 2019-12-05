@@ -31,11 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsIntegrationTests {
+class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void addARequestMappingToAnExistingControllerWhenLazyInit(ApplicationLauncher applicationLauncher)
+	void addARequestMappingToAnExistingControllerWhenLazyInit(ApplicationLauncher applicationLauncher)
 			throws Exception {
 		launchApplication(applicationLauncher, "--spring.main.lazy-initialization=true");
 		TestRestTemplate template = new TestRestTemplate();
