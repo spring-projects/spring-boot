@@ -34,36 +34,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jean-Baptiste Nizet
  */
 @ExtendWith(GradleMultiDslExtension.class)
-public class RunningDocumentationTests {
+class RunningDocumentationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void bootRunMain() throws IOException {
+	void bootRunMain() throws IOException {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main").build("configuredMainClass")
 				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
-	public void applicationPluginMainClassName() {
+	void applicationPluginMainClassName() {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/application-plugin-main-class-name")
 				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
-	public void springBootDslMainClassName() throws IOException {
+	void springBootDslMainClassName() throws IOException {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/spring-boot-dsl-main-class-name")
 				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
-	public void bootRunSourceResources() throws IOException {
+	void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-source-resources")
 				.build("configuredClasspath").getOutput()).contains(new File("src/main/resources").getPath());
 	}
 
 	@TestTemplate
-	public void bootRunDisableOptimizedLaunch() throws IOException {
+	void bootRunDisableOptimizedLaunch() throws IOException {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-disable-optimized-launch")
 				.build("optimizedLaunch").getOutput()).contains("false");
 	}

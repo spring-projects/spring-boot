@@ -36,12 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class MavenIntegrationTests {
+class MavenIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
+	void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
 				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -51,7 +51,7 @@ public class MavenIntegrationTests {
 	}
 
 	@TestTemplate
-	public void bootWarCanBeUploaded() throws IOException {
+	void bootWarCanBeUploaded() throws IOException {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
 				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

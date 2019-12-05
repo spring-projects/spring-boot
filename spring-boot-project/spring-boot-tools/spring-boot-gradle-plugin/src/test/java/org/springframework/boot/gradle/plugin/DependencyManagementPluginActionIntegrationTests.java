@@ -37,24 +37,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class DependencyManagementPluginActionIntegrationTests {
+class DependencyManagementPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void noDependencyManagementIsAppliedByDefault() {
+	void noDependencyManagementIsAppliedByDefault() {
 		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement").task(":doesNotHaveDependencyManagement")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
-	public void bomIsImportedWhenDependencyManagementPluginIsApplied() {
+	void bomIsImportedWhenDependencyManagementPluginIsApplied() {
 		assertThat(this.gradleBuild.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
 				.task(":hasDependencyManagement").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
-	public void helpfulErrorWhenVersionlessDependencyFailsToResolve() throws IOException {
+	void helpfulErrorWhenVersionlessDependencyFailsToResolve() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();
 		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), examplePackage);
