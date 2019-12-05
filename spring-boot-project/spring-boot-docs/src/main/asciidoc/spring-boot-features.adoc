@@ -6185,6 +6185,11 @@ We recommend using a `@Bean` method to create and configure the mock in this sit
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
 See the {spring-boot-test-module-api}/mock/mockito/SpyBean.html[Javadoc] for full details.
 
+NOTE: CGLib proxies, such as those created for scoped beans, declare the proxied methods as `final`.
+This stops Mockito from functioning correctly as it cannot mock or spy on `final` methods in its default configuration.
+If you want to mock or spy on such a bean, configure Mockito to use its inline mock maker by adding `org.mockito:mockito-inline` to your application's test dependencies.
+This allows Mockito to mock and spy on `final` methods.
+
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
 TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
@@ -358,9 +357,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			Assert.state(ReflectionUtils.getField(field, target) == null,
 					() -> "The field " + field + " cannot have an existing value");
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
-			if (bean instanceof ScopedObject) {
-				bean = ((ScopedObject) bean).getTargetObject();
-			}
 			ReflectionUtils.setField(field, target, bean);
 		}
 		catch (Throwable ex) {
@@ -425,9 +421,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to handle {@link SpyBean @SpyBean} definitions.
-	 * Registered as a separate processor so that it can be ordered above AOP post
-	 * processors.
+	 * {@link BeanPostProcessor} to handle {@link SpyBean} definitions. Registered as a
+	 * separate processor so that it can be ordered above AOP post processors.
 	 */
 	static class SpyPostProcessor extends InstantiationAwareBeanPostProcessorAdapter implements PriorityOrdered {
 
@@ -446,22 +441,15 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 		@Override
 		public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
-			return this.mockitoPostProcessor.createSpyIfNecessary(bean, getOriginalBeanNameIfScopedTarget(beanName));
+			return this.mockitoPostProcessor.createSpyIfNecessary(bean, beanName);
 		}
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof FactoryBean || bean instanceof ScopedObject) {
+			if (bean instanceof FactoryBean) {
 				return bean;
 			}
-			return this.mockitoPostProcessor.createSpyIfNecessary(bean, getOriginalBeanNameIfScopedTarget(beanName));
-		}
-
-		private String getOriginalBeanNameIfScopedTarget(String beanName) {
-			if (ScopedProxyUtils.isScopedTarget(beanName)) {
-				return beanName.substring("scopedTarget.".length());
-			}
-			return beanName;
+			return this.mockitoPostProcessor.createSpyIfNecessary(bean, beanName);
 		}
 
 		static void register(BeanDefinitionRegistry registry) {
