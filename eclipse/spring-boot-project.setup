@@ -69,7 +69,7 @@
     <requirement
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.feature.feature.group"/>
+        name="org.eclipse.m2e.feature.feature.group" versionRange="[1.14.0,2.0.0)"/>
     <requirement
         name="org.eclipse.oomph.setup.maven.feature.group"/>
      <requirement
@@ -86,6 +86,8 @@
           name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
     <requirement
           name="org.springframework.tooling.boot.ls.feature.feature.group"/>
+    <repository
+          url="http://download.eclipse.org/technology/m2e/milestones/1.14/"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
