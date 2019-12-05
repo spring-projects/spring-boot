@@ -223,7 +223,7 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.m2e.core/eclipse.m2.hideFoldersOfNestedProjects"
-        value="true"/>
+        value="false"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.m2e.core/eclipse.m2.updateIndexes"
