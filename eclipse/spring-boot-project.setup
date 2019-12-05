@@ -59,7 +59,7 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.15,0.0.16)"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
@@ -69,9 +69,11 @@
     <requirement
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.feature.feature.group" versionRange="[1.11.0, 1.12.0)"/>
+        name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group" versionRange="[1.12.0, 1.13.0)"/>
+        name="org.eclipse.oomph.setup.maven.feature.group"/>
+     <requirement
+        name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <requirement
         name="org.eclipse.wst.server_adapters.feature.feature.group"/>
     <requirement
@@ -89,7 +91,7 @@
     <repository
         url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="https://download.springsource.com/release/TOOLS/sts4/update/e4.11/"/>
+        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
