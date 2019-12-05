@@ -5902,7 +5902,7 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 === Test Scope Dependencies
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
-* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4: The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
 * {spring-framework-docs}testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
