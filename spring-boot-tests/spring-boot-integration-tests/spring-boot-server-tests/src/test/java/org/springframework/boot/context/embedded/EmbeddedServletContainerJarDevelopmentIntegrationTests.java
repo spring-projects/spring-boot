@@ -34,18 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @EmbeddedServletContainerTest(packaging = "jar",
 		launchers = { BootRunApplicationLauncher.class, IdeApplicationLauncher.class })
-public class EmbeddedServletContainerJarDevelopmentIntegrationTests {
+class EmbeddedServletContainerJarDevelopmentIntegrationTests {
 
 	@TestTemplate
-	public void metaInfResourceFromDependencyIsAvailableViaHttp(RestTemplate rest) {
+	void metaInfResourceFromDependencyIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
 	@DisabledOnOs(OS.WINDOWS)
-	public void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(
-			RestTemplate rest) {
+	void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity(
 				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
 				String.class);
@@ -54,7 +53,7 @@ public class EmbeddedServletContainerJarDevelopmentIntegrationTests {
 	}
 
 	@TestTemplate
-	public void metaInfResourceFromDependencyIsAvailableViaServletContext(RestTemplate rest) {
+	void metaInfResourceFromDependencyIsAvailableViaServletContext(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
