@@ -143,7 +143,7 @@ easiest way to setup a new environment is to use the Eclipse Installer with the 
 `spring-boot-project.setup` file (in the `/eclipse` folder).
 
 NOTE: Due to m2e issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=548652[#548652] you need to be running m2e 1.14.0 or higher.
-An early milestone is available from http://download.eclipse.org/technology/m2e/milestones/1.14/.
+An early milestone is available from https://download.eclipse.org/technology/m2e/milestones/1.14/.
 
 
 
