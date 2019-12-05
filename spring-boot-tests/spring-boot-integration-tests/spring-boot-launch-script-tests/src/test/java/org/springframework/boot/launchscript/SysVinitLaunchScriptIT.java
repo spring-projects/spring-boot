@@ -61,7 +61,7 @@ import static org.hamcrest.Matchers.containsString;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  */
-public class SysVinitLaunchScriptIT {
+class SysVinitLaunchScriptIT {
 
 	private final SpringBootDockerCmdExecFactory commandExecFactory = new SpringBootDockerCmdExecFactory();
 
@@ -69,7 +69,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenStopped(String os, String version) throws Exception {
+	void statusWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-stopped.sh");
 		assertThat(output).contains("Status: 3");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
@@ -77,7 +77,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenStarted(String os, String version) throws Exception {
+	void statusWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
@@ -85,7 +85,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenKilled(String os, String version) throws Exception {
+	void statusWhenKilled(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-killed.sh");
 		assertThat(output).contains("Status: 1");
 		assertThat(output)
@@ -94,7 +94,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void stopWhenStopped(String os, String version) throws Exception {
+	void stopWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -102,7 +102,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void forceStopWhenStopped(String os, String version) throws Exception {
+	void forceStopWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -110,7 +110,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void startWhenStarted(String os, String version) throws Exception {
+	void startWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "start-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Already running [" + extractPid(output) + "]"));
@@ -118,7 +118,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void restartWhenStopped(String os, String version) throws Exception {
+	void restartWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "restart-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -127,7 +127,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void restartWhenStarted(String os, String version) throws Exception {
+	void restartWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "restart-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID1", output) + "]"));
@@ -137,7 +137,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void startWhenStopped(String os, String version) throws Exception {
+	void startWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "start-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
@@ -145,14 +145,14 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void basicLaunch(String os, String version) throws Exception {
+	void basicLaunch(String os, String version) throws Exception {
 		String output = doTest(os, version, "basic-launch.sh");
 		assertThat(output).doesNotContain("PID_FOLDER");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMissingLogFolderGeneratesAWarning(String os, String version) throws Exception {
+	void launchWithMissingLogFolderGeneratesAWarning(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-missing-log-folder.sh");
 		assertThat(output).has(
 				coloredString(AnsiColor.YELLOW, "LOG_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
@@ -160,7 +160,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMissingPidFolderGeneratesAWarning(String os, String version) throws Exception {
+	void launchWithMissingPidFolderGeneratesAWarning(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-missing-pid-folder.sh");
 		assertThat(output).has(
 				coloredString(AnsiColor.YELLOW, "PID_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
@@ -168,49 +168,49 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
+	void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-command-line-argument.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
+	void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-command-line-arguments.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleRunArg(String os, String version) throws Exception {
+	void launchWithSingleRunArg(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-run-arg.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleRunArgs(String os, String version) throws Exception {
+	void launchWithMultipleRunArgs(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-run-args.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleJavaOpt(String os, String version) throws Exception {
+	void launchWithSingleJavaOpt(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-java-opt.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithDoubleLinkSingleJavaOpt(String os, String version) throws Exception {
+	void launchWithDoubleLinkSingleJavaOpt(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-double-link-single-java-opt.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleJavaOpts(String os, String version) throws Exception {
+	void launchWithMultipleJavaOpts(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-java-opts.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
+	void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
 		// CentOS doesn't have start-stop-daemon
 		Assumptions.assumeFalse(os.equals("CentOS"));
 		doLaunch(os, version, "launch-with-use-of-start-stop-daemon-disabled.sh");
@@ -218,7 +218,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRelativePidFolder(String os, String version) throws Exception {
+	void launchWithRelativePidFolder(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-relative-pid-folder.sh");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
@@ -227,56 +227,56 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void pidFolderOwnership(String os, String version) throws Exception {
+	void pidFolderOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "pid-folder-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void pidFileOwnership(String os, String version) throws Exception {
+	void pidFileOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "pid-file-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnership(String os, String version) throws Exception {
+	void logFileOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnershipIsChangedWhenCreated(String os, String version) throws Exception {
+	void logFileOwnershipIsChangedWhenCreated(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership-is-changed-when-created.sh");
 		assertThat(output).contains("andy root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnershipIsUnchangedWhenExists(String os, String version) throws Exception {
+	void logFileOwnershipIsUnchangedWhenExists(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership-is-unchanged-when-exists.sh");
 		assertThat(output).contains("root root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRelativeLogFolder(String os, String version) throws Exception {
+	void launchWithRelativeLogFolder(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-relative-log-folder.sh");
 		assertThat(output).contains("Log written");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAsUser(String os, String version) throws Exception {
+	void launchWithRunAsUser(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
+	void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
 		assertThat(output).contains("Status: 2");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
@@ -284,15 +284,14 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version)
-			throws Exception {
+	void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user-preferred-to-jar-owner.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
+	void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
 			String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user-root-required.sh");
 		assertThat(output).contains("Status: 4");
