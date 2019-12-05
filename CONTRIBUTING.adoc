@@ -137,9 +137,13 @@ can run this from the top-level directory:
 
 
 === Importing into Eclipse
-You can import the Spring Boot code into any Eclipse 2019-03-based distribution. The
+You can import the Spring Boot code into any Eclipse 2019-09-based distribution. The
 easiest way to setup a new environment is to use the Eclipse Installer with the provided
 `spring-boot-project.setup` file (in the `/eclipse` folder).
+
+NOTE: Due to m2e issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=548652[#548652] you need to be running m2e 1.14.0 or higher.
+An early milestone is available from http://download.eclipse.org/technology/m2e/milestones/1.14/.
+
 
 
 ==== Using the Eclipse Installer
@@ -150,7 +154,7 @@ provision a new environment. To use the installer:
   https://www.eclipse.org/downloads/packages/installer[Eclipse Installer].
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
-  install, `2019-03` as the product version, and click "`next`".
+  install, `2019-09` as the product version, and click "`next`".
 * For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
   and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
   copy of the source code. Click "`OK`" to add the setup file to the list.
