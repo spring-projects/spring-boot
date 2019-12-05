@@ -371,7 +371,7 @@ Properties are considered in the following order:
 . Application properties packaged inside your jar (`application.properties` and YAML variants).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
-  This is too late to configure certain properties such as `logging.*` and `spring.main.*` which are read before refresh begins.
+  This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
