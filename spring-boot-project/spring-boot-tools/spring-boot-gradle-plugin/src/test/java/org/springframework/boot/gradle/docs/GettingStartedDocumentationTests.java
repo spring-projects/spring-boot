@@ -29,7 +29,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
  * @author Jean-Baptiste Nizet
  */
 @ExtendWith(GradleMultiDslExtension.class)
-public class GettingStartedDocumentationTests {
+class GettingStartedDocumentationTests {
 
 	GradleBuild gradleBuild;
 
@@ -37,7 +37,7 @@ public class GettingStartedDocumentationTests {
 	// jar won't be there
 
 	@TestTemplate
-	public void typicalPluginsAppliesExceptedPlugins() {
+	void typicalPluginsAppliesExceptedPlugins() {
 		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins").build("verify");
 	}
 

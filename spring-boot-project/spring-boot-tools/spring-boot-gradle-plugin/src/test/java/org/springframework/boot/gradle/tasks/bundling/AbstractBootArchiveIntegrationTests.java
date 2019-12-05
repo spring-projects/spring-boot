@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public abstract class AbstractBootArchiveIntegrationTests {
+abstract class AbstractBootArchiveIntegrationTests {
 
 	GradleBuild gradleBuild;
 
@@ -49,13 +49,13 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void basicBuild() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+	void basicBuild() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
-	public void reproducibleArchive()
+	void reproducibleArchive()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException, InterruptedException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
@@ -69,8 +69,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void upToDateWhenBuiltTwice()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+	void upToDateWhenBuiltTwice() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
@@ -78,7 +77,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void upToDateWhenBuiltTwiceWithLaunchScriptIncluded()
+	void upToDateWhenBuiltTwiceWithLaunchScriptIncluded()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -87,7 +86,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void notUpToDateWhenLaunchScriptWasNotIncludedAndThenIsIncluded() {
+	void notUpToDateWhenLaunchScriptWasNotIncludedAndThenIsIncluded() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
@@ -95,7 +94,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void notUpToDateWhenLaunchScriptWasIncludedAndThenIsNotIncluded() {
+	void notUpToDateWhenLaunchScriptWasIncludedAndThenIsNotIncluded() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
@@ -103,7 +102,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void notUpToDateWhenLaunchScriptPropertyChanges() {
+	void notUpToDateWhenLaunchScriptPropertyChanges() {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", "-PlaunchScriptProperty=foo", this.taskName)
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", "-PlaunchScriptProperty=bar", this.taskName)
@@ -111,7 +110,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void applicationPluginMainClassNameIsUsed() throws IOException {
+	void applicationPluginMainClassNameIsUsed() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
@@ -121,7 +120,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void springBootExtensionMainClassNameIsUsed() throws IOException {
+	void springBootExtensionMainClassNameIsUsed() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
@@ -131,7 +130,7 @@ public abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	public void duplicatesAreHandledGracefully() throws IOException {
+	void duplicatesAreHandledGracefully() throws IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
