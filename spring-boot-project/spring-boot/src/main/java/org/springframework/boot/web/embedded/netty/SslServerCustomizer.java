@@ -55,6 +55,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Brian Clozel
  * @author Raheela Aslam
+ * @author Chris Bono
  * @since 2.0.0
  */
 public class SslServerCustomizer implements NettyServerCustomizer {
@@ -185,9 +186,9 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	 * {@link ConfigurableAliasKeyManager}. The actual SPI has to be wrapped as well due
 	 * to the fact that {@link KeyManagerFactory#getKeyManagers()} is final.
 	 */
-	private static class ConfigurableAliasKeyManagerFactory extends KeyManagerFactory {
+	private static final class ConfigurableAliasKeyManagerFactory extends KeyManagerFactory {
 
-		static final ConfigurableAliasKeyManagerFactory instance(String alias, String algorithm)
+		private static ConfigurableAliasKeyManagerFactory instance(String alias, String algorithm)
 				throws NoSuchAlgorithmException {
 			KeyManagerFactory originalFactory = KeyManagerFactory.getInstance(algorithm);
 			ConfigurableAliasKeyManagerFactorySpi spi = new ConfigurableAliasKeyManagerFactorySpi(originalFactory,
@@ -195,20 +196,20 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			return new ConfigurableAliasKeyManagerFactory(spi, originalFactory.getProvider(), algorithm);
 		}
 
-		ConfigurableAliasKeyManagerFactory(ConfigurableAliasKeyManagerFactorySpi spi, Provider provider,
+		private ConfigurableAliasKeyManagerFactory(ConfigurableAliasKeyManagerFactorySpi spi, Provider provider,
 				String algorithm) {
 			super(spi, provider, algorithm);
 		}
 
 	}
 
-	private static class ConfigurableAliasKeyManagerFactorySpi extends KeyManagerFactorySpi {
+	private static final class ConfigurableAliasKeyManagerFactorySpi extends KeyManagerFactorySpi {
 
 		private KeyManagerFactory originalFactory;
 
 		private String alias;
 
-		ConfigurableAliasKeyManagerFactorySpi(KeyManagerFactory originalFactory, String alias) {
+		private ConfigurableAliasKeyManagerFactorySpi(KeyManagerFactory originalFactory, String alias) {
 			this.originalFactory = originalFactory;
 			this.alias = alias;
 		}
@@ -238,13 +239,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	}
 
-	private static class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
+	private static final class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
 
 		private final X509ExtendedKeyManager keyManager;
 
 		private final String alias;
 
-		ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
+		private ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
 			this.keyManager = keyManager;
 			this.alias = alias;
 		}

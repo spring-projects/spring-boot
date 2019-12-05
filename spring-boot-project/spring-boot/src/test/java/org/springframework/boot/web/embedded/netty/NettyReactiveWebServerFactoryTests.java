@@ -47,6 +47,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link NettyReactiveWebServerFactory}.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  */
 public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -94,14 +95,14 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void testSslWithValidAlias() {
+	public void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
 		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
 	}
 
 	@Test
-	public void testSslWithInvalidAlias() {
+	public void whenSslIsConfiguredWithAnInvalidAliasTheSslHandshakeFails() {
 		Mono<String> result = testSslWithAlias("test-alias-bad");
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
 		StepVerifier.create(result).expectErrorMatches((throwable) -> throwable instanceof SSLHandshakeException
