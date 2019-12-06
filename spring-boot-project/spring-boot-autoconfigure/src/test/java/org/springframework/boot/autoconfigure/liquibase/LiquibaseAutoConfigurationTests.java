@@ -343,6 +343,13 @@ class LiquibaseAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void overrideTag() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.tag:1.0.0")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getTag()).isEqualTo("1.0.0")));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(SpringLiquibase.class);
