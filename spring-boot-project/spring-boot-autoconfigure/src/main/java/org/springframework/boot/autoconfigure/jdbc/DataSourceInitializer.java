@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -35,6 +36,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.config.SortedResourcesFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -193,13 +196,28 @@ class DataSourceInitializer {
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
-		DataSource dataSource = this.dataSource;
-		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
-					.driverClassName(this.properties.determineDriverClassName()).url(this.properties.determineUrl())
-					.username(username).password(password).build();
-		}
+		DataSource dataSource = resolveDataSource(username, password);
 		DatabasePopulatorUtils.execute(populator, dataSource);
+	}
+
+	private DataSource resolveDataSource(String username, String password) {
+		DataSource dataSource = this.dataSource;
+		if (StringUtils.hasText(username)) {
+			try {
+				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, "getURL");
+				String driverClassName = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
+				DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create(this.properties.getClassLoader())
+						.driverClassName(driverClassName).url(url).username(username);
+				if (StringUtils.hasText(password)) {
+					dataSourceBuilder.password(password);
+				}
+				dataSource = dataSourceBuilder.build();
+			}
+			catch (MetaDataAccessException ex) {
+				logger.warn("Unable to determine jdbc url from datasource", ex);
+			}
+		}
+		return dataSource;
 	}
 
 }

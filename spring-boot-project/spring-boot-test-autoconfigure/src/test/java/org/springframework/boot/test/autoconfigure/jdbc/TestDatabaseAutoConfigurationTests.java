@@ -21,12 +21,14 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 class TestDatabaseAutoConfigurationTests {
 
@@ -58,6 +61,41 @@ class TestDatabaseAutoConfigurationTests {
 				anotherJdbcTemplate.execute("create table example (id int, name varchar);");
 			});
 		});
+	}
+
+	@Test
+	void testRunningSchemaSqlScriptEvenWhenSchemaCredentialsAreSet() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.schema-username=sa",
+						"spring.datasource.schema=" + getRelativeLocationFor("schema.sql"),
+						"spring.datasource.data=" + getRelativeLocationFor("data.sql"))
+				.run((context) -> {
+					DataSource dataSource = context.getBean(DataSource.class);
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+					assertNumberOfRows(jdbcTemplate, 1);
+				});
+	}
+
+	@Test
+	void testRunningSchemaSqlScriptEvenWithWrongCredentials() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.schema-username=sa", "spring.datasource.schema-password=sa",
+						"spring.datasource.schema=" + getRelativeLocationFor("schema.sql"),
+						"spring.datasource.data=" + getRelativeLocationFor("data.sql"))
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.hasMessageContaining("Failed to obtain JDBC Connection; nested exception is")
+							.hasMessageContaining("Wrong user name or password");
+				});
+	}
+
+	private String getRelativeLocationFor(String resource) {
+		return ClassUtils.addResourcePathToPackagePath(getClass(), resource);
+	}
+
+	private void assertNumberOfRows(JdbcTemplate jdbcTemplate, int count) {
+		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from example", Integer.class)).isEqualTo(count);
 	}
 
 	@Configuration(proxyBeanMethods = false)
