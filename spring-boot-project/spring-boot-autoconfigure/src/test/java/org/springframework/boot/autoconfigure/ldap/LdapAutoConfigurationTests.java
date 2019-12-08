@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.ldap;
 
+import java.util.Hashtable;
+
+import javax.naming.directory.DirContext;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -24,9 +28,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.core.support.SimpleDirContextAuthenticationStrategy;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,11 +97,14 @@ class LdapAutoConfigurationTests {
 	@Test
 	void contextSourceWithNoCustomization() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(DirContextAuthenticationStrategy.class);
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUserDn()).isEqualTo("");
 			assertThat(contextSource.getPassword()).isEqualTo("");
 			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
 			assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("");
+			assertThat(ReflectionTestUtils.getField(contextSource, "authenticationStrategy"))
+					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
 		});
 	}
 
@@ -113,6 +123,35 @@ class LdapAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void contextSourceWithCustomUniqueDirContextAuthenticationStrategy() {
+		this.contextRunner.withUserConfiguration(CustomDirContextAuthenticationStrategy.class).run((context) -> {
+			assertThat(context).hasSingleBean(DirContextAuthenticationStrategy.class);
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(ReflectionTestUtils.getField(contextSource, "authenticationStrategy"))
+					.isEqualTo(context.getBean(DirContextAuthenticationStrategy.class));
+		});
+	}
+
+	@Test
+	void contextSourceWithCustomNonUniqueDirContextAuthenticationStrategy() {
+		this.contextRunner.withUserConfiguration(CustomDirContextAuthenticationStrategy.class,
+				AnotherCustomDirContextAuthenticationStrategy.class).run((context) -> {
+					assertThat(context).hasBean("customDirContextAuthenticationStrategy")
+							.hasBean("anotherCustomDirContextAuthenticationStrategy");
+					TestDirContextAuthenticationStrategy customDirContextAuthenticationStrategy = context.getBean(
+							"customDirContextAuthenticationStrategy", TestDirContextAuthenticationStrategy.class);
+					TestDirContextAuthenticationStrategy anotherCustomDirContextAuthenticationStrategy = context
+							.getBean("anotherCustomDirContextAuthenticationStrategy",
+									TestDirContextAuthenticationStrategy.class);
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+					assertThat(ReflectionTestUtils.getField(contextSource, "authenticationStrategy"))
+							.isNotEqualTo(customDirContextAuthenticationStrategy)
+							.isNotEqualTo(anotherCustomDirContextAuthenticationStrategy)
+							.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class PooledContextSourceConfig {
 
@@ -122,6 +161,40 @@ class LdapAutoConfigurationTests {
 			PooledContextSource pooledContextSource = new PooledContextSource(new PoolConfig());
 			pooledContextSource.setContextSource(ldapContextSource);
 			return pooledContextSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDirContextAuthenticationStrategy {
+
+		@Bean
+		DirContextAuthenticationStrategy customDirContextAuthenticationStrategy() {
+			return new TestDirContextAuthenticationStrategy();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnotherCustomDirContextAuthenticationStrategy {
+
+		@Bean
+		DirContextAuthenticationStrategy anotherCustomDirContextAuthenticationStrategy() {
+			return new TestDirContextAuthenticationStrategy();
+		}
+
+	}
+
+	static class TestDirContextAuthenticationStrategy implements DirContextAuthenticationStrategy {
+
+		@Override
+		public void setupEnvironment(Hashtable<String, Object> env, String userDn, String password) {
+
+		}
+
+		@Override
+		public DirContext processContextAfterCreation(DirContext ctx, String userDn, String password) {
+			return ctx;
 		}
 
 	}
