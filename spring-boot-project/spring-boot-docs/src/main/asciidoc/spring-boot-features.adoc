@@ -4445,6 +4445,7 @@ To connect to an LDAP server, make sure you declare a dependency on the `spring-
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
 
 An `LdapContextSource` is auto-configured based on these settings.
+If a `DirContextAuthenticationStrategy` bean is available, it is associated to the auto-configured `LdapContextSource`.
 If you need to customize it, for instance to use a `PooledContextSource`, you can still inject the auto-configured `LdapContextSource`.
 Make sure to flag your customized `ContextSource` as `@Primary` so that the auto-configured `LdapTemplate` uses it.
 

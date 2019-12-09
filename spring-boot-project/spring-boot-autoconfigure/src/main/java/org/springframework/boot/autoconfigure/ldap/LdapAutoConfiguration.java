@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.ldap;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +30,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
@@ -45,8 +47,10 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment) {
+	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment,
+			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
+		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
 		propertyMapper.from(properties.getPassword()).to(source::setPassword);
