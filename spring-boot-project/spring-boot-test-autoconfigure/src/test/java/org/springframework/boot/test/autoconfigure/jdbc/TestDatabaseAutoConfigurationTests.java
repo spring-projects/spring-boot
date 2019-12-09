@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -58,6 +59,50 @@ class TestDatabaseAutoConfigurationTests {
 				anotherJdbcTemplate.execute("create table example (id int, name varchar);");
 			});
 		});
+	}
+
+	@Test
+	void replaceUserConfiguredHsqlWithH2UsingDefaultUrlOptions() {
+		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
+				.withPropertyValues("spring.test.database.connection=H2").run((context) -> {
+					DataSource datasource = context.getBean(DataSource.class);
+					SimpleDriverDataSource actualDatasource = datasource.unwrap(SimpleDriverDataSource.class);
+					String url = actualDatasource.getUrl();
+					assertThat(url).matches("jdbc:h2:mem:[a-zA-Z0-9-]*;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false");
+				});
+	}
+
+	@Test
+	void replaceUserConfiguredHsqlWithH2UsingCustomUrlOptions() {
+		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
+				.withPropertyValues("spring.test.database.connection=H2", "spring.test.database.urlOptions=MODE=MySQL").run((context) -> {
+			DataSource datasource = context.getBean(DataSource.class);
+			SimpleDriverDataSource actualDatasource = datasource.unwrap(SimpleDriverDataSource.class);
+			String url = actualDatasource.getUrl();
+			assertThat(url).matches("jdbc:h2:mem:[a-zA-Z0-9-]*;MODE=MySQL");
+		});
+	}
+
+	@Test
+	void replaceAutoConfiguredH2WithHsqlUsingDefaultUrlOptions() {
+		this.contextRunner.withPropertyValues("spring.test.database.connection=HSQL",
+				"spring.test.database.replace=AUTO_CONFIGURED")
+				.run((context) -> {
+					DataSource datasource = context.getBean(DataSource.class);
+					String url = datasource.getConnection().getMetaData().getURL();
+					assertThat(url).matches("jdbc:hsqldb:mem:[a-zA-Z0-9-]*");
+				});
+	}
+
+	@Test
+	void replaceAutoConfiguredH2WithHsqlUsingCustomUrlOptions() {
+		this.contextRunner.withPropertyValues("spring.test.database.connection=HSQL",
+				"spring.test.database.replace=AUTO_CONFIGURED", "spring.test.database.urlOptions=MODE=MySQL")
+				.run((context) -> {
+					DataSource datasource = context.getBean(DataSource.class);
+					String url = datasource.getConnection().getMetaData().getURL();
+					assertThat(url).matches("jdbc:hsqldb:mem:[a-zA-Z0-9-]*;MODE=MySQL");
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)

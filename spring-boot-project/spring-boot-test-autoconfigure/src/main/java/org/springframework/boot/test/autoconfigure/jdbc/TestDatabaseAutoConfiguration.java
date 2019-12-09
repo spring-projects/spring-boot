@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -41,10 +43,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
+import org.springframework.jdbc.datasource.embedded.DataSourceFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Auto-configuration for a test database.
@@ -180,7 +186,61 @@ public class TestDatabaseAutoConfiguration {
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
 							+ "on the classpath or tune the replace attribute of @AutoConfigureTestDatabase.");
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(connection.getType()).build();
+
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(connection.getType())
+					.setDataSourceFactory(new CustomUrlEmbdeddedDataSourceFactory(this.environment)).build();
+		}
+
+	}
+
+	/**
+	 * A {@link DataSourceFactory} that allows custom url options to be set on the datasource
+	 * it creates. This is currently required as {@link EmbeddedDatabaseBuilder} does not
+	 * expose a way to set a custom database configurer on the database factory it uses
+	 * internally.
+	 */
+	static class CustomUrlEmbdeddedDataSourceFactory implements DataSourceFactory {
+
+		private final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+
+		private String urlOptions;
+
+		CustomUrlEmbdeddedDataSourceFactory(Environment environment) {
+			this.urlOptions = environment.getProperty("spring.test.database.url-options", "");
+		}
+
+		@Override
+		public ConnectionProperties getConnectionProperties() {
+			return new ConnectionProperties() {
+				@Override
+				public void setDriverClass(Class<? extends Driver> driverClass) {
+					CustomUrlEmbdeddedDataSourceFactory.this.dataSource.setDriverClass(driverClass);
+				}
+
+				@Override
+				public void setUrl(String url) {
+					String customUrlOptions = CustomUrlEmbdeddedDataSourceFactory.this.urlOptions;
+					if (StringUtils.hasText(customUrlOptions)) {
+						url = url.split(";", 2)[0] + ";" + customUrlOptions;
+					}
+					CustomUrlEmbdeddedDataSourceFactory.this.dataSource.setUrl(url);
+				}
+
+				@Override
+				public void setUsername(String username) {
+					CustomUrlEmbdeddedDataSourceFactory.this.dataSource.setUsername(username);
+				}
+
+				@Override
+				public void setPassword(String password) {
+					CustomUrlEmbdeddedDataSourceFactory.this.dataSource.setPassword(password);
+				}
+			};
+		}
+
+		@Override
+		public DataSource getDataSource() {
+			return this.dataSource;
 		}
 
 	}

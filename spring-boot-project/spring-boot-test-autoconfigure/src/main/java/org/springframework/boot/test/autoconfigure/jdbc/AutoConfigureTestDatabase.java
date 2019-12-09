@@ -61,6 +61,13 @@ public @interface AutoConfigureTestDatabase {
 	EmbeddedDatabaseConnection connection() default EmbeddedDatabaseConnection.NONE;
 
 	/**
+	 * The custom connection URL options to use. If specified it will replace the options
+	 * on the default URL string in the embedded datasource.
+	 */
+	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
+	String urlOptions() default "";
+
+	/**
 	 * What the test database can replace.
 	 */
 	enum Replace {
