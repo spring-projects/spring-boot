@@ -17,6 +17,7 @@
 package org.springframework.boot.loader;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
@@ -29,9 +30,12 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	static final String BOOT_INF_CLASSES = "BOOT-INF/classes/";
-
-	static final String BOOT_INF_LIB = "BOOT-INF/lib/";
+	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
+		if (entry.isDirectory()) {
+			return entry.getName().equals("BOOT-INF/classes/");
+		}
+		return entry.getName().startsWith("BOOT-INF/lib/");
+	};
 
 	public JarLauncher() {
 	}
@@ -41,11 +45,18 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
+	protected boolean isPostProcessingClassPathArchives() {
+		return false;
+	}
+
+	@Override
+	protected boolean isSearchCandidate(Archive.Entry entry) {
+		return entry.getName().startsWith("BOOT-INF/");
+	}
+
+	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
-		if (entry.isDirectory()) {
-			return entry.getName().equals(BOOT_INF_CLASSES);
-		}
-		return entry.getName().startsWith(BOOT_INF_LIB);
+		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
 	}
 
 	public static void main(String[] args) throws Exception {

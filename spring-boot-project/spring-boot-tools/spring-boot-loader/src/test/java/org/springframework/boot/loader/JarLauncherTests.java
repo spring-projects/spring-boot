@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import org.codehaus.plexus.util.CollectionUtils;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.archive.Archive;
@@ -39,7 +40,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF"));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = CollectionUtils.iteratorToList(launcher.getClassPathArchivesIterator());
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
 				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL());
@@ -53,7 +54,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		File jarRoot = createJarArchive("archive.jar", "BOOT-INF");
 		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
 			JarLauncher launcher = new JarLauncher(archive);
-			List<Archive> classPathArchives = launcher.getClassPathArchives();
+			List<Archive> classPathArchives = CollectionUtils.iteratorToList(launcher.getClassPathArchivesIterator());
 			assertThat(classPathArchives).hasSize(2);
 			assertThat(getUrls(classPathArchives)).containsOnly(
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
