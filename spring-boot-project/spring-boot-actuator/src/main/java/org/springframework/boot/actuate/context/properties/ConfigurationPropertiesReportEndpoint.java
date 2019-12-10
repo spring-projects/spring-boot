@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,7 +56,10 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBoundPropertiesHolder;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -77,6 +81,8 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Madhura Bhave
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Endpoint(id = "configprops")
@@ -120,8 +126,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = new HashMap<>();
 		beans.forEach((beanName, bean) -> {
 			String prefix = bean.getAnnotation().prefix();
-			descriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
-					sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix))));
+			descriptors.put(beanName,
+					new ConfigurationPropertiesBeanDescriptor(prefix,
+							sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix)),
+							getInputs(prefix, safeSerialize(mapper, bean.getInstance(), prefix))));
 		});
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
@@ -227,6 +235,67 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			}
 		}
 		return sanitized;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> getInputs(String prefix, Map<String, Object> map) {
+		map.forEach((key, value) -> {
+			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
+			if (value instanceof Map) {
+				map.put(key, getInputs(qualifiedKey, (Map<String, Object>) value));
+			}
+			else if (value instanceof List) {
+				map.put(key, getInputs(qualifiedKey, (List<Object>) value));
+			}
+			else {
+				map.put(key, applyInput(qualifiedKey));
+			}
+		});
+		return map;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> getInputs(String prefix, List<Object> list) {
+		List<Object> augmented = new ArrayList<>();
+		int index = 0;
+		for (Object item : list) {
+			String name = prefix + "[" + index++ + "]";
+			if (item instanceof Map) {
+				augmented.add(getInputs(name, (Map<String, Object>) item));
+			}
+			else if (item instanceof List) {
+				augmented.add(getInputs(name, (List<Object>) item));
+			}
+			else {
+				augmented.add(applyInput(name));
+			}
+		}
+		return augmented;
+	}
+
+	private Map<String, Object> applyInput(String qualifiedKey) {
+		if (!this.context.containsBean(ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME)) {
+			return Collections.emptyMap();
+		}
+		ConfigurationPropertiesBoundPropertiesHolder bean = this.context.getBean(
+				ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME,
+				ConfigurationPropertiesBoundPropertiesHolder.class);
+		Map<ConfigurationPropertyName, ConfigurationProperty> boundProperties = bean.getProperties();
+		ConfigurationPropertyName currentName = ConfigurationPropertyName.adapt(qualifiedKey, '.');
+		ConfigurationProperty candidate = boundProperties.get(currentName);
+		if (candidate == null && currentName.isLastElementIndexed()) {
+			candidate = boundProperties.get(currentName.chop(currentName.getNumberOfElements() - 1));
+		}
+		return (candidate != null) ? getInput(currentName.toString(), candidate) : Collections.emptyMap();
+	}
+
+	private Map<String, Object> getInput(String property, ConfigurationProperty candidate) {
+		Map<String, Object> input = new LinkedHashMap<>();
+		String origin = (candidate.getOrigin() != null) ? candidate.getOrigin().toString() : "none";
+		Object value = candidate.getValue();
+		input.put("origin", origin);
+		input.put("value", this.sanitizer.sanitize(property, value));
+		return input;
 	}
 
 	/**
@@ -457,9 +526,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, Object> properties;
 
-		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties) {
+		private final Map<String, Object> inputs;
+
+		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties,
+				Map<String, Object> inputs) {
 			this.prefix = prefix;
 			this.properties = properties;
+			this.inputs = inputs;
 		}
 
 		public String getPrefix() {
@@ -468,6 +541,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		public Map<String, Object> getProperties() {
 			return this.properties;
+		}
+
+		public Map<String, Object> getInputs() {
+			return this.inputs;
 		}
 
 	}

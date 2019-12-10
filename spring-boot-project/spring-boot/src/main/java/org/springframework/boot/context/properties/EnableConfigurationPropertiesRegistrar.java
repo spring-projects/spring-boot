@@ -49,6 +49,7 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	@SuppressWarnings("deprecation")
 	static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
 		ConfigurationPropertiesBindingPostProcessor.register(registry);
+		ConfigurationPropertiesBoundPropertiesHolder.register(registry);
 		ConfigurationPropertiesBeanDefinitionValidator.register(registry);
 		ConfigurationBeanFactoryMetadata.register(registry);
 	}

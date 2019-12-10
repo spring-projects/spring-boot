@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BoundPropertiesTrackingBindHandler;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.IgnoreTopLevelConverterNotFoundBindHandler;
@@ -103,9 +104,18 @@ class ConfigurationPropertiesBinder {
 		return null;
 	}
 
+	private ConfigurationPropertiesBoundPropertiesHolder getBoundPropertiesHolder() {
+		if (this.applicationContext.containsBean(ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME)) {
+			return this.applicationContext.getBean(ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME,
+					ConfigurationPropertiesBoundPropertiesHolder.class);
+		}
+		return null;
+	}
+
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		ConfigurationPropertiesBoundPropertiesHolder holder = getBoundPropertiesHolder();
+		BindHandler handler = getHandler(holder);
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -120,6 +130,12 @@ class ConfigurationPropertiesBinder {
 			handler = advisor.apply(handler);
 		}
 		return handler;
+	}
+
+	private IgnoreTopLevelConverterNotFoundBindHandler getHandler(ConfigurationPropertiesBoundPropertiesHolder holder) {
+		return (holder != null)
+				? new IgnoreTopLevelConverterNotFoundBindHandler(new BoundPropertiesTrackingBindHandler(holder))
+				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 
 	private List<Validator> getValidators(Bindable<?> target) {

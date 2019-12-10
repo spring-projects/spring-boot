@@ -60,20 +60,26 @@ class ConfigurationPropertiesReportEndpointTests {
 	@Test
 	void descriptorWithJavaBeanBindMethodDetectsRelevantProperties() {
 		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
-				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration"),
+				(inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithValueObjectBindMethodDetectsRelevantProperties() {
 		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class).run(assertProperties(
 				"immutable",
-				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration"),
+				(inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithValueObjectBindMethodUseDedicatedConstructor() {
-		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class).run(assertProperties(
-				"multiconstructor", (properties) -> assertThat(properties).containsOnly(entry("name", "test"))));
+		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class)
+				.run(assertProperties("multiconstructor",
+						(properties) -> assertThat(properties).containsOnly(entry("name", "test")), (inputs) -> {
+						}));
 	}
 
 	@Test
@@ -84,49 +90,89 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(properties).containsOnlyKeys("name", "nested");
 					Map<String, Object> nested = (Map<String, Object>) properties.get("nested");
 					assertThat(nested).containsOnly(entry("name", "nested"), entry("counter", 42));
+				}, (inputs) -> {
+					Map<String, Object> nested = (Map<String, Object>) inputs.get("nested");
+					Map<String, Object> name = (Map<String, Object>) nested.get("name");
+					Map<String, Object> counter = (Map<String, Object>) nested.get("counter");
+					assertThat(name.get("value")).isEqualTo("nested");
+					assertThat(name.get("origin"))
+							.isEqualTo("\"immutablenested.nested.name\" from property source \"test\"");
+					assertThat(counter.get("origin"))
+							.isEqualTo("\"immutablenested.nested.counter\" from property source \"test\"");
+					assertThat(counter.get("value")).isEqualTo("42");
+				}));
+	}
+
+	@Test
+	void descriptorWithSimpleList() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.simpleList=a,b").run(assertProperties("sensible", (properties) -> {
+					assertThat(properties.get("simpleList")).isInstanceOf(List.class);
+					List<String> list = (List<String>) properties.get("simpleList");
+					assertThat(list).hasSize(2);
+					assertThat(list.get(0)).isEqualTo("a");
+					assertThat(list.get(1)).isEqualTo("b");
+				}, (inputs) -> {
+					List<Object> list = (List<Object>) inputs.get("simpleList");
+					assertThat(list).hasSize(2);
+					Map<String, String> item = (Map<String, String>) list.get(0);
+					String origin = item.get("origin");
+					String value = item.get("value");
+					assertThat(value).isEqualTo("a,b");
+					assertThat(origin).isEqualTo("\"sensible.simpleList\" from property source \"test\"");
 				}));
 	}
 
 	@Test
 	void descriptorDoesNotIncludePropertyWithNullValue() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
-				.run(assertProperties("test", (properties) -> assertThat(properties).doesNotContainKey("nullValue")));
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
+				(properties) -> assertThat(properties).doesNotContainKey("nullValue"), (inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithDurationProperty() {
 		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
-				(properties) -> assertThat(properties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString())));
+				(properties) -> assertThat(properties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString()),
+				(inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithNonCamelCaseProperty() {
-		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
-				"mixedcase", (properties) -> assertThat(properties.get("myURL")).isEqualTo("https://example.com")));
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
+				.run(assertProperties("mixedcase",
+						(properties) -> assertThat(properties.get("myURL")).isEqualTo("https://example.com"),
+						(inputs) -> {
+						}));
 	}
 
 	@Test
 	void descriptorWithMixedCaseProperty() {
 		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
-				"mixedcase", (properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
+				"mixedcase", (properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed"), (inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithSingleLetterProperty() {
-		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
-				.run(assertProperties("mixedcase", (properties) -> assertThat(properties.get("z")).isEqualTo("zzz")));
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
+				"mixedcase", (properties) -> assertThat(properties.get("z")).isEqualTo("zzz"), (inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithSimpleBooleanProperty() {
 		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
-				(properties) -> assertThat(properties.get("simpleBoolean")).isEqualTo(true)));
+				(properties) -> assertThat(properties.get("simpleBoolean")).isEqualTo(true), (inputs) -> {
+				}));
 	}
 
 	@Test
 	void descriptorWithMixedBooleanProperty() {
 		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
-				(properties) -> assertThat(properties.get("mixedBoolean")).isEqualTo(true)));
+				(properties) -> assertThat(properties.get("mixedBoolean")).isEqualTo(true), (inputs) -> {
+				}));
 	}
 
 	@Test
@@ -135,6 +181,7 @@ class ConfigurationPropertiesReportEndpointTests {
 				.run(assertProperties("test", (properties) -> {
 					assertThat(properties.get("dbPassword")).isEqualTo("******");
 					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+				}, (inputs) -> {
 				}));
 	}
 
@@ -144,6 +191,7 @@ class ConfigurationPropertiesReportEndpointTests {
 				.withPropertyValues("test.keys-to-sanitize=property").run(assertProperties("test", (properties) -> {
 					assertThat(properties.get("dbPassword")).isEqualTo("123456");
 					assertThat(properties.get("myTestProperty")).isEqualTo("******");
+				}, (inputs) -> {
 				}));
 	}
 
@@ -153,6 +201,7 @@ class ConfigurationPropertiesReportEndpointTests {
 				.withPropertyValues("test.keys-to-sanitize=.*pass.*").run(assertProperties("test", (properties) -> {
 					assertThat(properties.get("dbPassword")).isEqualTo("******");
 					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+				}, (inputs) -> {
 				}));
 	}
 
@@ -166,38 +215,61 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(secrets.get("mine")).isEqualTo("******");
 					assertThat(secrets.get("yours")).isEqualTo("******");
 					assertThat(hidden.get("mine")).isEqualTo("******");
+				}, (inputs) -> {
 				}));
 	}
 
 	@Test
 	void sanitizedUriWithSensitiveInfo() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.sensitiveUri=http://user:password@localhost:8080")
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("sensitiveUri"))
-						.isEqualTo("http://user:******@localhost:8080")));
+						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
+							Map<String, Object> sensitiveUri = (Map<String, Object>) inputs.get("sensitiveUri");
+							assertThat(sensitiveUri.get("value")).isEqualTo("http://user:******@localhost:8080");
+							assertThat(sensitiveUri.get("origin"))
+									.isEqualTo("\"sensible.sensitiveUri\" from property source \"test\"");
+						}));
 	}
 
 	@Test
 	void sanitizedUriWithNoPassword() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.noPasswordUri=http://user:@localhost:8080")
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("noPasswordUri"))
-						.isEqualTo("http://user:******@localhost:8080")));
+						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
+							Map<String, Object> noPasswordUri = (Map<String, Object>) inputs.get("noPasswordUri");
+							assertThat(noPasswordUri.get("value")).isEqualTo("http://user:******@localhost:8080");
+							assertThat(noPasswordUri.get("origin"))
+									.isEqualTo("\"sensible.noPasswordUri\" from property source \"test\"");
+						}));
 	}
 
 	@Test
 	void sanitizeLists() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.listItems[0].some-password=password")
 				.run(assertProperties("sensible", (properties) -> {
 					assertThat(properties.get("listItems")).isInstanceOf(List.class);
 					List<Object> list = (List<Object>) properties.get("listItems");
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
 					assertThat(item.get("somePassword")).isEqualTo("******");
+				}, (inputs) -> {
+					List<Object> list = (List<Object>) inputs.get("listItems");
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
+					assertThat(somePassword.get("value")).isEqualTo("******");
+					assertThat(somePassword.get("origin"))
+							.isEqualTo("\"sensible.listItems[0].some-password\" from property source \"test\"");
 				}));
 	}
 
 	@Test
 	void listsOfListsAreSanitized() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.listOfListItems[0][0].some-password=password")
 				.run(assertProperties("sensible", (properties) -> {
 					assertThat(properties.get("listOfListItems")).isInstanceOf(List.class);
 					List<List<Object>> listOfLists = (List<List<Object>>) properties.get("listOfListItems");
@@ -206,11 +278,22 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
 					assertThat(item.get("somePassword")).isEqualTo("******");
+				}, (inputs) -> {
+					assertThat(inputs.get("listOfListItems")).isInstanceOf(List.class);
+					List<List<Object>> listOfLists = (List<List<Object>>) inputs.get("listOfListItems");
+					assertThat(listOfLists).hasSize(1);
+					List<Object> list = listOfLists.get(0);
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
+					assertThat(somePassword.get("value")).isEqualTo("******");
+					assertThat(somePassword.get("origin")).isEqualTo(
+							"\"sensible.listOfListItems[0][0].some-password\" from property source \"test\"");
 				}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertProperties(String prefix,
-			Consumer<Map<String, Object>> properties) {
+			Consumer<Map<String, Object>> properties, Consumer<Map<String, Object>> inputs) {
 		return (context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
@@ -222,6 +305,7 @@ class ConfigurationPropertiesReportEndpointTests {
 			ConfigurationPropertiesBeanDescriptor descriptor = allProperties.getBeans().get(key.get());
 			assertThat(descriptor.getPrefix()).isEqualTo(prefix);
 			properties.accept(descriptor.getProperties());
+			inputs.accept(descriptor.getInputs());
 		};
 	}
 
@@ -574,6 +658,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
 
+		private List<String> simpleList = new ArrayList<>();
+
 		private List<ListItem> listItems = new ArrayList<>();
 
 		private List<List<ListItem>> listOfListItems = new ArrayList<>();
@@ -613,6 +699,10 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public void setListOfListItems(List<List<ListItem>> listOfListItems) {
 			this.listOfListItems = listOfListItems;
+		}
+
+		public List<String> getSimpleList() {
+			return this.simpleList;
 		}
 
 		public static class ListItem {
