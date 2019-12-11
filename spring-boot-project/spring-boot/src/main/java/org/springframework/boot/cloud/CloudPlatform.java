@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cloud;
 
+import java.io.File;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -77,8 +79,18 @@ public enum CloudPlatform {
 
 		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
 
+		private static final String SECRET_LOCATION = "/var/run/secrets/kubernetes.io";
+
+		private static final String KUBERNETES_SERVICE_HOST = "KUBERNETES_SERVICE_HOST";
+
+		private static final String KUBERNETES_SERVICE_PORT = "KUBERNETES_SERVICE_PORT";
+
 		@Override
 		public boolean isActive(Environment environment) {
+			if (environment.containsProperty(KUBERNETES_SERVICE_HOST)
+					|| environment.containsProperty(KUBERNETES_SERVICE_PORT) || isSecretLocationExists()) {
+				return true;
+			}
 			if (environment instanceof ConfigurableEnvironment) {
 				return isActive((ConfigurableEnvironment) environment);
 			}
@@ -105,6 +117,11 @@ public enum CloudPlatform {
 				}
 			}
 			return false;
+		}
+
+		private boolean isSecretLocationExists() {
+			File file = new File(SECRET_LOCATION);
+			return file.exists() && file.isDirectory();
 		}
 
 	};

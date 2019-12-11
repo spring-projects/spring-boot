@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cloud;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,6 +99,20 @@ class CloudPlatformTests {
 	}
 
 	@Test
+	void getActiveWhenHasKubernetesHostAndPortShouldReturnKubernetes() {
+		MockEnvironment environment = new MockEnvironment();
+		Map<String, Object> source = new HashMap<>();
+		source.put("KUBERNETES_SERVICE_HOST", "---");
+		source.put("KUBERNETES_SERVICE_PORT", "8080");
+		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
+		environment.getPropertySources().addFirst(propertySource);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
 	void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
 		MockEnvironment environment = new MockEnvironment();
 		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
@@ -105,7 +120,10 @@ class CloudPlatformTests {
 				Collections.singletonMap("EXAMPLE_SERVICE_HOST", "---"));
 		environment.getPropertySources().addFirst(propertySource);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform).isNull();
+		File path = new File("/var/run/secrets/kubernetes.io");
+		if (!path.exists() && !path.isDirectory()) {
+			assertThat(platform).isNull();
+		}
 	}
 
 }
