@@ -88,6 +88,7 @@ public class JacksonAutoConfiguration {
 	static {
 		Map<Object, Boolean> featureDefaults = new HashMap<>();
 		featureDefaults.put(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		featureDefaults.put(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
 		FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
 	}
 
