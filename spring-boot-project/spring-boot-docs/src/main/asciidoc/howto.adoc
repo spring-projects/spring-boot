@@ -103,8 +103,9 @@ It is therefore possible to get the location of the file from the environment.
 The preceding example adds the `custom-resource` property source at the end of the list so that a key defined in any of the usual other locations takes precedence.
 A custom implementation may define another order.
 
-CAUTION: While using `@PropertySource` on your `@SpringBootApplication` may seem to be a convenient and easy way to load a custom resource in the `Environment`, we do not recommend it, because Spring Boot prepares the `Environment` before the `ApplicationContext` is refreshed.
-Any key defined with `@PropertySource` is loaded too late to have any effect on auto-configuration.
+CAUTION: While using `@PropertySource` on your `@SpringBootApplication` may seem to be a convenient way to load a custom resource in the `Environment`, we do not recommend it.
+Such property sources are not added to the `Environment` until the application context is being refreshed.
+This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 
 
 

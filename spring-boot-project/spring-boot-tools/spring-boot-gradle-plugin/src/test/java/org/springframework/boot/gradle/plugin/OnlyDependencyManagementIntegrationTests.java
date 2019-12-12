@@ -31,12 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class OnlyDependencyManagementIntegrationTests {
+class OnlyDependencyManagementIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void dependencyManagementCanBeConfiguredUsingCoordinatesConstant() {
+	void dependencyManagementCanBeConfiguredUsingCoordinatesConstant() {
 		assertThat(this.gradleBuild.build("dependencyManagement").getOutput())
 				.contains("org.springframework.boot:spring-boot-starter ");
 	}

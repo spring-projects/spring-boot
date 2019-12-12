@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.tasks.bundling;
+package smoketest.xml.service;
 
-/**
- * Integration tests for {@link BootJar}.
- *
- * @author Andy Wilkinson
- */
-class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
+public class OtherService {
 
-	BootJarIntegrationTests() {
-		super("bootJar");
+	public String getMessage() {
+		return "Hello Other World";
 	}
 
 }

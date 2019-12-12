@@ -11,8 +11,8 @@
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
     xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot.2.2.x"
-    label="Spring Boot 2.2.x">
+    name="spring.boot.2.3.x"
+    label="Spring Boot 2.3.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -59,7 +59,7 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.15,0.0.16)"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
@@ -69,9 +69,11 @@
     <requirement
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.feature.feature.group" versionRange="[1.11.0, 1.12.0)"/>
+        name="org.eclipse.m2e.feature.feature.group" versionRange="[1.14.0,2.0.0)"/>
     <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group" versionRange="[1.12.0, 1.13.0)"/>
+        name="org.eclipse.oomph.setup.maven.feature.group"/>
+     <requirement
+        name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <requirement
         name="org.eclipse.wst.server_adapters.feature.feature.group"/>
     <requirement
@@ -85,11 +87,13 @@
     <requirement
           name="org.springframework.tooling.boot.ls.feature.feature.group"/>
     <repository
+          url="http://download.eclipse.org/technology/m2e/milestones/1.14/"/>
+    <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
         url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="https://download.springsource.com/release/TOOLS/sts4/update/e4.11/"/>
+        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
@@ -227,7 +231,7 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.m2e.core/eclipse.m2.hideFoldersOfNestedProjects"
-        value="true"/>
+        value="false"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.m2e.core/eclipse.m2.updateIndexes"

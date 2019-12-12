@@ -369,7 +369,9 @@ Properties are considered in the following order:
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML variants).
 . Application properties packaged inside your jar (`application.properties` and YAML variants).
-. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes (these are added late to the `Environment` and will not have any effect on anything that reads properties from the `Environment` before the `ApplicationContext` is refreshed, such as logging configuration and auto-configuration).
+. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
+  Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
+  This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
@@ -4443,6 +4445,7 @@ To connect to an LDAP server, make sure you declare a dependency on the `spring-
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
 
 An `LdapContextSource` is auto-configured based on these settings.
+If a `DirContextAuthenticationStrategy` bean is available, it is associated to the auto-configured `LdapContextSource`.
 If you need to customize it, for instance to use a `PooledContextSource`, you can still inject the auto-configured `LdapContextSource`.
 Make sure to flag your customized `ContextSource` as `@Primary` so that the auto-configured `LdapTemplate` uses it.
 
@@ -5900,7 +5903,7 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 === Test Scope Dependencies
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
-* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4: The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
 * {spring-framework-docs}testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
@@ -6182,6 +6185,11 @@ We recommend using a `@Bean` method to create and configure the mock in this sit
 
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
 See the {spring-boot-test-module-api}/mock/mockito/SpyBean.html[Javadoc] for full details.
+
+NOTE: CGLib proxies, such as those created for scoped beans, declare the proxied methods as `final`.
+This stops Mockito from functioning correctly as it cannot mock or spy on `final` methods in its default configuration.
+If you want to mock or spy on such a bean, configure Mockito to use its inline mock maker by adding `org.mockito:mockito-inline` to your application's test dependencies.
+This allows Mockito to mock and spy on `final` methods.
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 

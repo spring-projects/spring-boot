@@ -310,7 +310,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
-			Constructor<?> bindConstructor = findBindConstructor(beanDesc.getType().getRawClass());
+			Class<?> beanClass = beanDesc.getType().getRawClass();
+			Constructor<?> bindConstructor = findBindConstructor(ClassUtils.getUserClass(beanClass));
 			for (BeanPropertyWriter writer : beanProperties) {
 				if (isCandidate(beanDesc, writer, bindConstructor)) {
 					result.add(writer);

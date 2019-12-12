@@ -30,30 +30,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class KotlinPluginActionIntegrationTests {
+class KotlinPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void noKotlinVersionPropertyWithoutKotlinPlugin() {
+	void noKotlinVersionPropertyWithoutKotlinPlugin() {
 		assertThat(this.gradleBuild.build("kotlinVersion").getOutput()).contains("Kotlin version: none");
 	}
 
 	@TestTemplate
-	public void kotlinVersionPropertyIsSet() {
+	void kotlinVersionPropertyIsSet() {
 		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
 				.getOutput();
 		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
 	}
 
 	@TestTemplate
-	public void kotlinCompileTasksUseJavaParametersFlagByDefault() {
+	void kotlinCompileTasksUseJavaParametersFlagByDefault() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
 				.contains("compileKotlin java parameters: true").contains("compileTestKotlin java parameters: true");
 	}
 
 	@TestTemplate
-	public void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
+	void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
 				.contains("compileKotlin java parameters: false").contains("compileTestKotlin java parameters: false");
 	}
