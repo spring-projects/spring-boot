@@ -101,7 +101,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	/**
 	 * Return if post processing needs to be applied to the archives. For back
-	 * compatibility this method returns {@true}, but subclasses that don't override
+	 * compatibility this method returns {@code true}, but subclasses that don't override
 	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
 	 * returns {@code false}.
 	 * @return if the {@link #postProcessClassPathArchives(List)} method is implemented
