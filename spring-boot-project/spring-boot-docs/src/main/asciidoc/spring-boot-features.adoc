@@ -3407,7 +3407,7 @@ These are the standard options that work regardless of the actual implementation
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`).
 Refer to the documentation of the connection pool implementation you are using for more details.
 
-For instance, if you use the https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
+For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
