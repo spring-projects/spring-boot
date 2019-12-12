@@ -290,7 +290,7 @@ public final class ConditionMessage {
 		}
 
 		/**
-		 * Indicates the reason. For example {@code reason("running Linux")} results in
+		 * Indicates the reason. For example {@code because("running Linux")} results in
 		 * the message "running Linux".
 		 * @param reason the reason for the message
 		 * @return a built {@link ConditionMessage}
