@@ -51,6 +51,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 	 */
 	private String uri;
 
+	/**
+	 * Group for exported metrics. Used to specify custom device group name in the
+	 * Dynatrace UI.
+	 */
+	private String group;
+
 	public String getApiToken() {
 		return this.apiToken;
 	}
@@ -81,6 +87,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getGroup() {
+		return this.group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 }
