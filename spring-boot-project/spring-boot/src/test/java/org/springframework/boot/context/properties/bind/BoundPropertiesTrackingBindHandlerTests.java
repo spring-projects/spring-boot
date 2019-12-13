@@ -18,16 +18,18 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,21 +47,22 @@ public class BoundPropertiesTrackingBindHandlerTests {
 
 	private Binder binder;
 
-	private BoundPropertiesHolder recorder;
+	@Mock
+	private Consumer<ConfigurationProperty> consumer;
 
 	@BeforeEach
 	void setup() {
+		MockitoAnnotations.initMocks(this);
 		this.binder = new Binder(this.sources);
-		this.recorder = mock(BoundPropertiesHolder.class);
-		this.handler = new BoundPropertiesTrackingBindHandler(this.recorder);
+		this.handler = new BoundPropertiesTrackingBindHandler(this.consumer);
 	}
 
 	@Test
 	void handlerShouldCallRecordBindingIfConfigurationPropertyIsNotNull() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		this.binder.bind("foo", Bindable.of(ExampleBean.class), this.handler);
-		verify(this.recorder, times(1)).recordBinding(any(ConfigurationProperty.class));
-		verify(this.recorder, never()).recordBinding(null);
+		verify(this.consumer, times(1)).accept(any(ConfigurationProperty.class));
+		verify(this.consumer, never()).accept(null);
 	}
 
 	static class ExampleBean {

@@ -104,18 +104,9 @@ class ConfigurationPropertiesBinder {
 		return null;
 	}
 
-	private ConfigurationPropertiesBoundPropertiesHolder getBoundPropertiesHolder() {
-		if (this.applicationContext.containsBean(ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME)) {
-			return this.applicationContext.getBean(ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME,
-					ConfigurationPropertiesBoundPropertiesHolder.class);
-		}
-		return null;
-	}
-
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
-		ConfigurationPropertiesBoundPropertiesHolder holder = getBoundPropertiesHolder();
-		BindHandler handler = getHandler(holder);
+		BindHandler handler = getHandler();
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -132,9 +123,10 @@ class ConfigurationPropertiesBinder {
 		return handler;
 	}
 
-	private IgnoreTopLevelConverterNotFoundBindHandler getHandler(ConfigurationPropertiesBoundPropertiesHolder holder) {
-		return (holder != null)
-				? new IgnoreTopLevelConverterNotFoundBindHandler(new BoundPropertiesTrackingBindHandler(holder))
+	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
+		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
+		return (bound != null)
+				? new IgnoreTopLevelConverterNotFoundBindHandler(new BoundPropertiesTrackingBindHandler(bound::add))
 				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 

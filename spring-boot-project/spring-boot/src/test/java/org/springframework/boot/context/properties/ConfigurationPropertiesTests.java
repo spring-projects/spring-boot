@@ -923,11 +923,9 @@ class ConfigurationPropertiesTests {
 	@Test
 	void boundPropertiesShouldBeRecorded() {
 		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
-		ConfigurationPropertiesBoundPropertiesHolder recorder = this.context.getBean(
-				ConfigurationPropertiesBoundPropertiesHolder.BEAN_NAME,
-				ConfigurationPropertiesBoundPropertiesHolder.class);
-		assertThat(recorder.getProperties().keySet().stream().map(ConfigurationPropertyName::toString)).contains("name",
-				"nested.name");
+		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
+		Set<ConfigurationPropertyName> keys = bound.getAll().keySet();
+		assertThat(keys.stream().map(ConfigurationPropertyName::toString)).contains("name", "nested.name");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {

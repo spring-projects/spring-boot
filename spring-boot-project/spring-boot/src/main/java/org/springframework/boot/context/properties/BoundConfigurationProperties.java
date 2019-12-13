@@ -16,48 +16,73 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.context.properties.bind.BoundPropertiesHolder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * {@link BoundPropertiesHolder} for
+ * Bean to record and provide bound
  * {@link ConfigurationProperties @ConfigurationProperties}.
  *
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public class ConfigurationPropertiesBoundPropertiesHolder implements BoundPropertiesHolder {
+public class BoundConfigurationProperties {
 
 	private Map<ConfigurationPropertyName, ConfigurationProperty> properties = new LinkedHashMap<>();
 
 	/**
 	 * The bean name that this class is registered with.
 	 */
-	public static final String BEAN_NAME = ConfigurationPropertiesBoundPropertiesHolder.class.getName();
+	private static final String BEAN_NAME = BoundConfigurationProperties.class.getName();
 
-	@Override
-	public void recordBinding(ConfigurationProperty configurationProperty) {
-		Assert.notNull(configurationProperty, "ConfigurationProperty should not be null");
+	void add(ConfigurationProperty configurationProperty) {
 		this.properties.put(configurationProperty.getName(), configurationProperty);
 	}
 
-	public Map<ConfigurationPropertyName, ConfigurationProperty> getProperties() {
-		return this.properties;
+	/**
+	 * Get the configuration property bound to the given name.
+	 * @param name the property name
+	 * @return the bound property or {@code null}
+	 */
+	public ConfigurationProperty get(ConfigurationPropertyName name) {
+		return this.properties.get(name);
+	}
+
+	/**
+	 * Get all bound properties.
+	 * @return a map of all bound properties
+	 */
+	public Map<ConfigurationPropertyName, ConfigurationProperty> getAll() {
+		return Collections.unmodifiableMap(this.properties);
+	}
+
+	/**
+	 * Return the {@link BoundConfigurationProperties} from the given
+	 * {@link ApplicationContext} if it is available.
+	 * @param context the context to search
+	 * @return a {@link BoundConfigurationProperties} or {@code null}
+	 */
+	public static BoundConfigurationProperties get(ApplicationContext context) {
+		if (!context.containsBeanDefinition(BEAN_NAME)) {
+			return null;
+		}
+		return context.getBean(BEAN_NAME, BoundConfigurationProperties.class);
 	}
 
 	static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(ConfigurationPropertiesBoundPropertiesHolder.class);
+			definition.setBeanClass(BoundConfigurationProperties.class);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
