@@ -190,7 +190,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
 		}
 
-		public ConfigurableAliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
+		private ConfigurableAliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
 			super(new ConfigurableAliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
 		}
 
