@@ -92,10 +92,12 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
 		if (rootAppContext != null) {
 			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
+
 				@Override
 				public void contextInitialized(ServletContextEvent event) {
 					// no-op because the application context is already initialized
 				}
+
 			});
 		}
 		else {
