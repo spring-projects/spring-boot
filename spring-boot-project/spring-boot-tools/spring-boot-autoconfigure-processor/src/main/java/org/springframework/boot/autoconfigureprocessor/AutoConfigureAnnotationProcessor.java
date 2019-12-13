@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigureprocessor;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +28,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -66,7 +69,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private final Map<String, ValueExtractor> valueExtractors;
 
-	private final Properties properties = new Properties();
+	private final Map<String, String> properties = new TreeMap<>();
 
 	public AutoConfigureAnnotationProcessor() {
 		Map<String, String> annotations = new LinkedHashMap<>();
@@ -177,10 +180,15 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private void writeProperties() throws IOException {
 		if (!this.properties.isEmpty()) {
-			FileObject file = this.processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "",
-					PROPERTIES_PATH);
-			try (OutputStream outputStream = file.openOutputStream()) {
-				this.properties.store(outputStream, null);
+			Filer filer = this.processingEnv.getFiler();
+			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+			try (Writer writer = new OutputStreamWriter(file.openOutputStream(), StandardCharsets.UTF_8)) {
+				for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+					writer.append(entry.getKey());
+					writer.append("=");
+					writer.append(entry.getValue());
+					writer.append(System.lineSeparator());
+				}
 			}
 		}
 	}

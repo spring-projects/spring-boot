@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,11 +97,24 @@ class AutoConfigureAnnotationProcessorTests {
 				"123");
 	}
 
+	@Test // gh-19370
+	void propertiesAreFullRepeatable() throws Exception {
+		String first = new String(
+				FileCopyUtils.copyToByteArray(process(TestOrderedClassConfiguration.class).getWrittenFile()));
+		String second = new String(
+				FileCopyUtils.copyToByteArray(process(TestOrderedClassConfiguration.class).getWrittenFile()));
+		assertThat(first).isEqualTo(second).doesNotContain("#");
+	}
+
 	private Properties compile(Class<?>... types) throws IOException {
+		return process(types).getWrittenProperties();
+	}
+
+	private TestAutoConfigureAnnotationProcessor process(Class<?>... types) {
 		TestAutoConfigureAnnotationProcessor processor = new TestAutoConfigureAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
-		return processor.getWrittenProperties();
+		return processor;
 	}
 
 }
