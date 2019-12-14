@@ -543,7 +543,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @param separator the separator used to split the name
 	 * @return a {@link ConfigurationPropertyName}
 	 */
-	static ConfigurationPropertyName adapt(CharSequence name, char separator) {
+	public static ConfigurationPropertyName adapt(CharSequence name, char separator) {
 		return adapt(name, separator, null);
 	}
 

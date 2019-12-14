@@ -28,6 +28,7 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -447,12 +448,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
-	protected List<Archive> getClassPathArchives() throws Exception {
+	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
 		List<Archive> lib = new ArrayList<>();
 		for (String path : this.paths) {
 			for (Archive archive : getClassPathArchives(path)) {
 				if (archive instanceof ExplodedArchive) {
-					List<Archive> nested = new ArrayList<>(archive.getNestedArchives(new ArchiveEntryFilter()));
+					List<Archive> nested = asList(archive.getNestedArchives(null, new ArchiveEntryFilter()));
 					nested.add(0, archive);
 					lib.addAll(nested);
 				}
@@ -462,7 +463,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		addNestedEntries(lib);
-		return lib;
+		return lib.iterator();
 	}
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
@@ -543,7 +544,7 @@ public class PropertiesLauncher extends Launcher {
 			root = "";
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		List<Archive> archives = new ArrayList<>(parent.getNestedArchives(filter));
+		List<Archive> archives = asList(parent.getNestedArchives(null, filter));
 		if (("".equals(root) || ".".equals(root)) && !path.endsWith(".jar") && parent != this.parent) {
 			// You can't find the root with an entry filter so it has to be added
 			// explicitly. But don't add the root of the parent archive.
@@ -557,12 +558,10 @@ public class PropertiesLauncher extends Launcher {
 		// directories, meaning we are running from an executable JAR. We add nested
 		// entries from there with low priority (i.e. at end).
 		try {
-			lib.addAll(this.parent.getNestedArchives((entry) -> {
-				if (entry.isDirectory()) {
-					return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
-				}
-				return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
-			}));
+			Iterator<Archive> archives = this.parent.getNestedArchives(null, JarLauncher.NESTED_ARCHIVE_ENTRY_FILTER);
+			while (archives.hasNext()) {
+				lib.add(archives.next());
+			}
 		}
 		catch (IOException ex) {
 			// Ignore
@@ -589,6 +588,14 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		return path;
+	}
+
+	private List<Archive> asList(Iterator<Archive> iterator) {
+		List<Archive> list = new ArrayList<Archive>();
+		while (iterator.hasNext()) {
+			list.add(iterator.next());
+		}
+		return list;
 	}
 
 	public static void main(String[] args) throws Exception {

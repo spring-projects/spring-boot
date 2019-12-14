@@ -242,22 +242,6 @@ class BinderTests {
 	}
 
 	@Test
-	void bindExceptionWhenBeanBindingFailsShouldHaveNullConfigurationProperty() {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		source.put("foo.value", "hello");
-		source.put("foo.items", "bar,baz");
-		this.sources.add(source);
-		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
-		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
-				.satisfies(this::noItemsSetterRequirements);
-	}
-
-	private void noItemsSetterRequirements(BindException ex) {
-		assertThat(ex.getCause().getMessage()).isEqualTo("No setter found for property: items");
-		assertThat(ex.getProperty()).isNull();
-	}
-
-	@Test
 	void bindToValidatedBeanWithResourceAndNonEnumerablePropertySource() {
 		ConfigurationPropertySources.from(new PropertySource<String>("test") {
 

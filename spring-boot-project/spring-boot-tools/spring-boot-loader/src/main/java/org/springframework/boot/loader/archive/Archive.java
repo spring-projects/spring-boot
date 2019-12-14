@@ -19,6 +19,7 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -48,12 +49,43 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	Manifest getManifest() throws IOException;
 
 	/**
+	 * Returns nested {@link Archive}s for entries that match the specified filters.
+	 * @param searchFilter filter used to limit when additional sub-entry searching is
+	 * required or {@code null} if all entries should be considered.
+	 * @param includeFilter filter used to determine which entries should be included in
+	 * the result or {@code null} if all entries should be included
+	 * @return the nested archives
+	 * @throws IOException on IO error
+	 * @since 2.3.0
+	 */
+	default Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
+			throws IOException {
+		EntryFilter combinedFilter = (entry) -> (searchFilter == null || searchFilter.matches(entry))
+				&& (includeFilter == null || includeFilter.matches(entry));
+		List<Archive> nestedArchives = getNestedArchives(combinedFilter);
+		return nestedArchives.iterator();
+	}
+
+	/**
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
 	 * @param filter the filter used to limit entries
 	 * @return nested archives
 	 * @throws IOException if nested archives cannot be read
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)}
 	 */
-	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
+	@Deprecated
+	default List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
+		throw new IllegalStateException("Unexpected call to getNestedArchives(filter)");
+	}
+
+	@Deprecated
+	@Override
+	Iterator<Entry> iterator();
+
+	default boolean supportsNestedJars() {
+		return true;
+	}
 
 	/**
 	 * Closes the {@code Archive}, releasing any open resources.
@@ -87,6 +119,7 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
+	@FunctionalInterface
 	interface EntryFilter {
 
 		/**

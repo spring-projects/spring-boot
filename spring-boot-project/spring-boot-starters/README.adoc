@@ -200,7 +200,7 @@ do as they were designed before this was clarified.
 | https://github.com/Catalysts/structurizr-extensions
 
 | https://vaadin.com/[Vaadin]
-| https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
+| https://github.com/vaadin/platform/tree/master/vaadin-spring-boot-starter
 
 | https://github.com/valiktor/valiktor[Valiktor]
 | https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter

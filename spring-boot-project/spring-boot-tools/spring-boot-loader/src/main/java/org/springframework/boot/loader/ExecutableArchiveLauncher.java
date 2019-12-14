@@ -17,8 +17,8 @@
 package org.springframework.boot.loader;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
@@ -65,27 +65,64 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> archives = new ArrayList<>(this.archive.getNestedArchives(this::isNestedArchive));
-		postProcessClassPathArchives(archives);
+	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
+		Iterator<Archive> archives = this.archive.getNestedArchives(this::isSearchCandidate, this::isNestedArchive);
+		if (isPostProcessingClassPathArchives()) {
+			archives = applyClassPathArchivePostProcessing(archives);
+		}
 		return archives;
 	}
 
+	private Iterator<Archive> applyClassPathArchivePostProcessing(Iterator<Archive> archives) throws Exception {
+		List<Archive> list = new ArrayList<Archive>();
+		while (archives.hasNext()) {
+			list.add(archives.next());
+		}
+		postProcessClassPathArchives(list);
+		return list.iterator();
+	}
+
 	/**
-	 * Determine if the specified {@link JarEntry} is a nested item that should be added
-	 * to the classpath. The method is called once for each entry.
-	 * @param entry the jar entry
+	 * Determine if the specified entry is a a candidate for further searching.
+	 * @param entry the entry to check
+	 * @return {@code true} if the entry is a candidate for further searching
+	 */
+	protected boolean isSearchCandidate(Archive.Entry entry) {
+		return true;
+	}
+
+	/**
+	 * Determine if the specified entry is a nested item that should be added to the
+	 * classpath.
+	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a nested item (jar or folder)
 	 */
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
+
+	/**
+	 * Return if post processing needs to be applied to the archives. For back
+	 * compatibility this method returns {@code true}, but subclasses that don't override
+	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
+	 * returns {@code false}.
+	 * @return if the {@link #postProcessClassPathArchives(List)} method is implemented
+	 */
+	protected boolean isPostProcessingClassPathArchives() {
+		return true;
+	}
 
 	/**
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
 	 * @throws Exception if the post processing fails
+	 * @see #isPostProcessingClassPathArchives()
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+	}
+
+	@Override
+	protected boolean supportsNestedJars() {
+		return this.archive.supportsNestedJars();
 	}
 
 }

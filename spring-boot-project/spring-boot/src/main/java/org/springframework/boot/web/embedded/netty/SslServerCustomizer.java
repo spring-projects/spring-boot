@@ -24,11 +24,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
-import java.security.Provider;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -110,7 +108,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = (ssl.getKeyAlias() == null)
 					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
-					: ConfigurableAliasKeyManagerFactory.instance(ssl.getKeyAlias(),
+					: new ConfigurableAliasKeyManagerFactory(ssl.getKeyAlias(),
 							KeyManagerFactory.getDefaultAlgorithm());
 			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
@@ -188,36 +186,31 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	 */
 	private static final class ConfigurableAliasKeyManagerFactory extends KeyManagerFactory {
 
-		private static ConfigurableAliasKeyManagerFactory instance(String alias, String algorithm)
-				throws NoSuchAlgorithmException {
-			KeyManagerFactory originalFactory = KeyManagerFactory.getInstance(algorithm);
-			ConfigurableAliasKeyManagerFactorySpi spi = new ConfigurableAliasKeyManagerFactorySpi(originalFactory,
-					alias);
-			return new ConfigurableAliasKeyManagerFactory(spi, originalFactory.getProvider(), algorithm);
+		private ConfigurableAliasKeyManagerFactory(String alias, String algorithm) throws NoSuchAlgorithmException {
+			this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
 		}
 
-		private ConfigurableAliasKeyManagerFactory(ConfigurableAliasKeyManagerFactorySpi spi, Provider provider,
-				String algorithm) {
-			super(spi, provider, algorithm);
+		private ConfigurableAliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
+			super(new ConfigurableAliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
 		}
 
 	}
 
 	private static final class ConfigurableAliasKeyManagerFactorySpi extends KeyManagerFactorySpi {
 
-		private KeyManagerFactory originalFactory;
+		private final KeyManagerFactory delegate;
 
-		private String alias;
+		private final String alias;
 
-		private ConfigurableAliasKeyManagerFactorySpi(KeyManagerFactory originalFactory, String alias) {
-			this.originalFactory = originalFactory;
+		private ConfigurableAliasKeyManagerFactorySpi(KeyManagerFactory delegate, String alias) {
+			this.delegate = delegate;
 			this.alias = alias;
 		}
 
 		@Override
 		protected void engineInit(KeyStore keyStore, char[] chars)
 				throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-			this.originalFactory.init(keyStore, chars);
+			this.delegate.init(keyStore, chars);
 		}
 
 		@Override
@@ -228,69 +221,65 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 		@Override
 		protected KeyManager[] engineGetKeyManagers() {
-			return Arrays.stream(this.originalFactory.getKeyManagers()).filter(X509ExtendedKeyManager.class::isInstance)
-					.map(X509ExtendedKeyManager.class::cast).map(this::wrapKeyManager).collect(Collectors.toList())
-					.toArray(new KeyManager[0]);
+			return Arrays.stream(this.delegate.getKeyManagers()).filter(X509ExtendedKeyManager.class::isInstance)
+					.map(X509ExtendedKeyManager.class::cast).map(this::wrap).toArray(KeyManager[]::new);
 		}
 
-		private ConfigurableAliasKeyManager wrapKeyManager(X509ExtendedKeyManager km) {
-			return new ConfigurableAliasKeyManager(km, this.alias);
+		private ConfigurableAliasKeyManager wrap(X509ExtendedKeyManager keyManager) {
+			return new ConfigurableAliasKeyManager(keyManager, this.alias);
 		}
 
 	}
 
 	private static final class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
 
-		private final X509ExtendedKeyManager keyManager;
+		private final X509ExtendedKeyManager delegate;
 
 		private final String alias;
 
 		private ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
-			this.keyManager = keyManager;
+			this.delegate = keyManager;
 			this.alias = alias;
 		}
 
 		@Override
 		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
-			return this.keyManager.chooseEngineClientAlias(strings, principals, sslEngine);
+			return this.delegate.chooseEngineClientAlias(strings, principals, sslEngine);
 		}
 
 		@Override
 		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
-			if (this.alias == null) {
-				return this.keyManager.chooseEngineServerAlias(s, principals, sslEngine);
-			}
-			return this.alias;
+			return (this.alias != null) ? this.alias : this.delegate.chooseEngineServerAlias(s, principals, sslEngine);
 		}
 
 		@Override
 		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-			return this.keyManager.chooseClientAlias(keyType, issuers, socket);
+			return this.delegate.chooseClientAlias(keyType, issuers, socket);
 		}
 
 		@Override
 		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
-			return this.keyManager.chooseServerAlias(keyType, issuers, socket);
+			return this.delegate.chooseServerAlias(keyType, issuers, socket);
 		}
 
 		@Override
 		public X509Certificate[] getCertificateChain(String alias) {
-			return this.keyManager.getCertificateChain(alias);
+			return this.delegate.getCertificateChain(alias);
 		}
 
 		@Override
 		public String[] getClientAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getClientAliases(keyType, issuers);
+			return this.delegate.getClientAliases(keyType, issuers);
 		}
 
 		@Override
 		public PrivateKey getPrivateKey(String alias) {
-			return this.keyManager.getPrivateKey(alias);
+			return this.delegate.getPrivateKey(alias);
 		}
 
 		@Override
 		public String[] getServerAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getServerAliases(keyType, issuers);
+			return this.delegate.getServerAliases(keyType, issuers);
 		}
 
 	}

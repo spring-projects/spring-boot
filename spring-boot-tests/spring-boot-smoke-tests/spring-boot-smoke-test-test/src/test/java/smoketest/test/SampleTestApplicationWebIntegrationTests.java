@@ -28,13 +28,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * {@code @SpringBootTest} with a random port for {@link SampleTestApplication}.
  *
  * @author Phillip Webb
+ * @author Jorge Cordoba
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -55,7 +58,8 @@ class SampleTestApplicationWebIntegrationTests {
 
 	@Test
 	void test() {
-		this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework");
+		assertThat(this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework").getStatusCode())
+				.isEqualTo(HttpStatus.OK);
 	}
 
 }

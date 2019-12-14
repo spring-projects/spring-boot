@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import org.codehaus.plexus.util.CollectionUtils;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.archive.Archive;
@@ -39,7 +40,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void explodedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF"));
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = CollectionUtils.iteratorToList(launcher.getClassPathArchivesIterator());
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
 				new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL());
@@ -53,7 +54,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		File jarRoot = createJarArchive("archive.war", "WEB-INF");
 		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
 			WarLauncher launcher = new WarLauncher(archive);
-			List<Archive> classPathArchives = launcher.getClassPathArchives();
+			List<Archive> classPathArchives = CollectionUtils.iteratorToList(launcher.getClassPathArchivesIterator());
 			assertThat(classPathArchives).hasSize(2);
 			assertThat(getUrls(classPathArchives)).containsOnly(
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),

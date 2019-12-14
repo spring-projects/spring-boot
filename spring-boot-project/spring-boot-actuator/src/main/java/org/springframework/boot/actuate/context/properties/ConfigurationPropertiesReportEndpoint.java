@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,9 +54,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -77,6 +81,8 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Madhura Bhave
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Endpoint(id = "configprops")
@@ -105,26 +111,71 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private ApplicationConfigurationProperties extract(ApplicationContext context) {
-		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
+		ObjectMapper mapper = getObjectMapper();
+		Map<String, ContextConfigurationProperties> contexts = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
-			contextProperties.put(target.getId(), describeConfigurationProperties(target, getObjectMapper()));
+			contexts.put(target.getId(), describeBeans(mapper, target));
 			target = target.getParent();
 		}
-		return new ApplicationConfigurationProperties(contextProperties);
+		return new ApplicationConfigurationProperties(contexts);
 	}
 
-	private ContextConfigurationProperties describeConfigurationProperties(ApplicationContext context,
-			ObjectMapper mapper) {
+	private ObjectMapper getObjectMapper() {
+		if (this.objectMapper == null) {
+			this.objectMapper = new ObjectMapper();
+			configureObjectMapper(this.objectMapper);
+		}
+		return this.objectMapper;
+	}
+
+	/**
+	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
+	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
+	 * structure.
+	 * @param mapper the object mapper
+	 */
+	protected void configureObjectMapper(ObjectMapper mapper) {
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
+		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		applyConfigurationPropertiesFilter(mapper);
+		applySerializationModifier(mapper);
+		mapper.registerModule(new JavaTimeModule());
+	}
+
+	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
+		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
+		mapper.setFilterProvider(
+				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
+	}
+
+	/**
+	 * Ensure only bindable and non-cyclic bean properties are reported.
+	 * @param mapper the object mapper
+	 */
+	private void applySerializationModifier(ObjectMapper mapper) {
+		SerializerFactory factory = BeanSerializerFactory.instance
+				.withSerializerModifier(new GenericSerializerModifier());
+		mapper.setSerializerFactory(factory);
+	}
+
+	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = new HashMap<>();
-		beans.forEach((beanName, bean) -> {
-			String prefix = bean.getAnnotation().prefix();
-			descriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
-					sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix))));
-		});
+		beans.forEach((beanName, bean) -> descriptors.put(beanName, describeBean(mapper, bean)));
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
+	}
+
+	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean) {
+		String prefix = bean.getAnnotation().prefix();
+		Map<String, Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
+		Map<String, Object> properties = sanitize(prefix, serialized);
+		Map<String, Object> inputs = getInputs(prefix, serialized);
+		return new ConfigurationPropertiesBeanDescriptor(prefix, properties, inputs);
 	}
 
 	/**
@@ -146,47 +197,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
-	 * {@link ConfigurationProperties @ConfigurationProperties} objects into a {@link Map}
-	 * structure.
-	 * @param mapper the object mapper
-	 */
-	protected void configureObjectMapper(ObjectMapper mapper) {
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-		mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-		mapper.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		applyConfigurationPropertiesFilter(mapper);
-		applySerializationModifier(mapper);
-		mapper.registerModule(new JavaTimeModule());
-	}
-
-	private ObjectMapper getObjectMapper() {
-		if (this.objectMapper == null) {
-			this.objectMapper = new ObjectMapper();
-			configureObjectMapper(this.objectMapper);
-		}
-		return this.objectMapper;
-	}
-
-	/**
-	 * Ensure only bindable and non-cyclic bean properties are reported.
-	 * @param mapper the object mapper
-	 */
-	private void applySerializationModifier(ObjectMapper mapper) {
-		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier());
-		mapper.setSerializerFactory(factory);
-	}
-
-	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
-		mapper.setFilterProvider(
-				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
-	}
-
-	/**
 	 * Sanitize all unwanted configuration properties to avoid leaking of sensitive
 	 * information.
 	 * @param prefix the property prefix
@@ -196,7 +206,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
 		map.forEach((key, value) -> {
-			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
+			String qualifiedKey = getQualifiedKey(prefix, key);
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
@@ -229,11 +239,73 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return sanitized;
 	}
 
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> getInputs(String prefix, Map<String, Object> map) {
+		Map<String, Object> augmented = new LinkedHashMap<>(map);
+		map.forEach((key, value) -> {
+			String qualifiedKey = getQualifiedKey(prefix, key);
+			if (value instanceof Map) {
+				augmented.put(key, getInputs(qualifiedKey, (Map<String, Object>) value));
+			}
+			else if (value instanceof List) {
+				augmented.put(key, getInputs(qualifiedKey, (List<Object>) value));
+			}
+			else {
+				augmented.put(key, applyInput(qualifiedKey));
+			}
+		});
+		return augmented;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> getInputs(String prefix, List<Object> list) {
+		List<Object> augmented = new ArrayList<>();
+		int index = 0;
+		for (Object item : list) {
+			String name = prefix + "[" + index++ + "]";
+			if (item instanceof Map) {
+				augmented.add(getInputs(name, (Map<String, Object>) item));
+			}
+			else if (item instanceof List) {
+				augmented.add(getInputs(name, (List<Object>) item));
+			}
+			else {
+				augmented.add(applyInput(name));
+			}
+		}
+		return augmented;
+	}
+
+	private Map<String, Object> applyInput(String qualifiedKey) {
+		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
+		if (bound == null) {
+			return Collections.emptyMap();
+		}
+		ConfigurationPropertyName currentName = ConfigurationPropertyName.adapt(qualifiedKey, '.');
+		ConfigurationProperty candidate = bound.get(currentName);
+		if (candidate == null && currentName.isLastElementIndexed()) {
+			candidate = bound.get(currentName.chop(currentName.getNumberOfElements() - 1));
+		}
+		return (candidate != null) ? getInput(currentName.toString(), candidate) : Collections.emptyMap();
+	}
+
+	private Map<String, Object> getInput(String property, ConfigurationProperty candidate) {
+		Map<String, Object> input = new LinkedHashMap<>();
+		String origin = (candidate.getOrigin() != null) ? candidate.getOrigin().toString() : "none";
+		Object value = candidate.getValue();
+		input.put("origin", origin);
+		input.put("value", this.sanitizer.sanitize(property, value));
+		return input;
+	}
+
+	private String getQualifiedKey(String prefix, String key) {
+		return (prefix.isEmpty() ? prefix : prefix + ".") + key;
+	}
+
 	/**
 	 * Extension to {@link JacksonAnnotationIntrospector} to suppress CGLIB generated bean
 	 * properties.
 	 */
-	@SuppressWarnings("serial")
 	private static class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
 		@Override
@@ -457,9 +529,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, Object> properties;
 
-		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties) {
+		private final Map<String, Object> inputs;
+
+		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties,
+				Map<String, Object> inputs) {
 			this.prefix = prefix;
 			this.properties = properties;
+			this.inputs = inputs;
 		}
 
 		public String getPrefix() {
@@ -468,6 +544,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		public Map<String, Object> getProperties() {
 			return this.properties;
+		}
+
+		public Map<String, Object> getInputs() {
+			return this.inputs;
 		}
 
 	}
