@@ -1,8 +1,0 @@
-plugins {
-	id 'java'
-	id 'org.springframework.boot' version '{version}'
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-}

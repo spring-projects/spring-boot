@@ -12,6 +12,7 @@
 	<properties>
 		<revision>2.3.0.BUILD-SNAPSHOT</revision>
 		<main.basedir>${basedir}</main.basedir>
+		<disable.checks>true</disable.checks>
 	</properties>
 	<!-- Most elements are in profiles so they are stripped out during maven-flatten -->
 	<profiles>
