@@ -359,19 +359,15 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		return this.signed;
 	}
 
-	void setupEntryCertificates(JarEntry entry) {
+	void setupEntryCertificates() {
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			try (JarInputStream inputStream = new JarInputStream(getData().getInputStream())) {
-				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
-				while (certEntry != null) {
-					inputStream.closeEntry();
-					if (entry.getName().equals(certEntry.getName())) {
-						setCertificates(entry, certEntry);
-					}
+			try (JarInputStream jarStream = new JarInputStream(getData().getInputStream())) {
+				java.util.jar.JarEntry certEntry = null;
+				while ((certEntry = jarStream.getNextJarEntry()) != null) {
+					jarStream.closeEntry();
 					setCertificates(getJarEntry(certEntry.getName()), certEntry);
-					certEntry = inputStream.getNextJarEntry();
 				}
 			}
 		}
