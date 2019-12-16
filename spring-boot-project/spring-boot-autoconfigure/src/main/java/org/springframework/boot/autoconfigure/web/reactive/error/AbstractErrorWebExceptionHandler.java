@@ -34,6 +34,7 @@ import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
@@ -69,6 +70,20 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		exceptions.add("EOFException");
 		exceptions.add("EofException");
 		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
+	}
+
+	private static final Set<String> RESPONSE_CONTENT_HEADERS;
+
+	static {
+		Set<String> headers = new HashSet<>();
+		headers.add(HttpHeaders.CONTENT_ENCODING);
+		headers.add(HttpHeaders.CONTENT_DISPOSITION);
+		headers.add(HttpHeaders.CONTENT_LANGUAGE);
+		headers.add(HttpHeaders.CONTENT_LENGTH);
+		headers.add(HttpHeaders.CONTENT_LOCATION);
+		headers.add(HttpHeaders.CONTENT_RANGE);
+		headers.add(HttpHeaders.CONTENT_TYPE);
+		RESPONSE_CONTENT_HEADERS = Collections.unmodifiableSet(headers);
 	}
 
 	private static final Log logger = HttpLogging.forLogName(AbstractErrorWebExceptionHandler.class);
@@ -293,9 +308,14 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private Mono<? extends Void> write(ServerWebExchange exchange, ServerResponse response) {
-		// force content-type since writeTo won't overwrite response header values
-		exchange.getResponse().getHeaders().setContentType(response.headers().getContentType());
+		clearResponseContentHeaders(exchange.getResponse().getHeaders());
 		return response.writeTo(exchange, new ResponseContext());
+	}
+
+	private void clearResponseContentHeaders(HttpHeaders headers) {
+		for (String contentHeader : RESPONSE_CONTENT_HEADERS) {
+			headers.remove(contentHeader);
+		}
 	}
 
 	private class ResponseContext implements ServerResponse.Context {

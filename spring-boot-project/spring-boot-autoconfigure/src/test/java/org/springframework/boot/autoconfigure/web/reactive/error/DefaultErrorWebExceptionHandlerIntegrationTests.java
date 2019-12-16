@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.validation.Valid;
 
 import org.hamcrest.Matchers;
@@ -32,8 +36,10 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.HeaderAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +59,20 @@ import static org.hamcrest.Matchers.containsString;
  * @author Brian Clozel
  */
 public class DefaultErrorWebExceptionHandlerIntegrationTests {
+
+	private static final Set<String> RESPONSE_CONTENT_HEADERS;
+
+	static {
+		Set<String> headers = new HashSet<>();
+		headers.add(HttpHeaders.CONTENT_ENCODING);
+		headers.add(HttpHeaders.CONTENT_DISPOSITION);
+		headers.add(HttpHeaders.CONTENT_LANGUAGE);
+		headers.add(HttpHeaders.CONTENT_LENGTH);
+		headers.add(HttpHeaders.CONTENT_LOCATION);
+		headers.add(HttpHeaders.CONTENT_RANGE);
+		headers.add(HttpHeaders.CONTENT_TYPE);
+		RESPONSE_CONTENT_HEADERS = Collections.unmodifiableSet(headers);
+	}
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -256,6 +276,18 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
+	@Test
+	public void contentHeadersWasCleared() {
+		this.contextRunner.run((context) -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			HeaderAssertions headerAssertions = client.get().uri("/contentHeader").exchange().expectStatus()
+					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader();
+			RESPONSE_CONTENT_HEADERS.stream()
+					.filter((h) -> !h.equals(HttpHeaders.CONTENT_TYPE) && !h.equals(HttpHeaders.CONTENT_LENGTH))
+					.forEach(headerAssertions::doesNotExist);
+		});
+	}
+
 	@Configuration
 	public static class Application {
 
@@ -276,6 +308,15 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			public Mono<Void> commit(ServerWebExchange exchange) {
 				return exchange.getResponse().setComplete()
 						.then(Mono.error(new IllegalStateException("already committed!")));
+			}
+
+			@GetMapping("/contentHeader")
+			public Mono<Void> contentHeader(ServerWebExchange exchange) {
+				HttpHeaders headers = exchange.getResponse().getHeaders();
+				for (String contentHeader : RESPONSE_CONTENT_HEADERS) {
+					headers.set(contentHeader, "value");
+				}
+				throw new IllegalStateException("Expected!");
 			}
 
 			@GetMapping("/html")
