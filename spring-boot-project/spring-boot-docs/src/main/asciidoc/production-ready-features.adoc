@@ -701,9 +701,6 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
 | Checks that a Neo4j database is up.
 
-| {spring-boot-actuator-module-code}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
-| Checks that a Neo4j server is up.
-
 | {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
 
