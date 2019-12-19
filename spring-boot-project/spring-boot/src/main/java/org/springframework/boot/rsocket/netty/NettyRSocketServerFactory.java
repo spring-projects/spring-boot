@@ -151,41 +151,27 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private ServerTransport<CloseableChannel> createWebSocketTransport() {
-		HttpServer httpServer;
+		HttpServer httpServer = HttpServer.create();
 		if (this.resourceFactory != null) {
-			httpServer = HttpServer.create().runOn(this.resourceFactory.getLoopResources())
-					.bindAddress(this::getListenAddress);
+			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		else {
-			InetSocketAddress listenAddress = this.getListenAddress();
-			httpServer = HttpServer.create().host(listenAddress.getHostName()).port(listenAddress.getPort());
-		}
-
 		if (this.ssl != null && this.ssl.isEnabled()) {
 			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(this.ssl, null, this.sslStoreProvider);
 			httpServer = sslServerCustomizer.apply(httpServer);
 		}
-
-		return WebsocketServerTransport.create(httpServer);
+		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
-		TcpServer tcpServer;
+		TcpServer tcpServer = TcpServer.create();
 		if (this.resourceFactory != null) {
-			tcpServer = TcpServer.create().runOn(this.resourceFactory.getLoopResources())
-					.bindAddress(this::getListenAddress);
+			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		else {
-			InetSocketAddress listenAddress = this.getListenAddress();
-			tcpServer = TcpServer.create().host(listenAddress.getHostName()).port(listenAddress.getPort());
-		}
-
 		if (this.ssl != null && this.ssl.isEnabled()) {
 			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl, this.sslStoreProvider);
 			tcpServer = sslServerCustomizer.apply(tcpServer);
 		}
-
-		return TcpServerTransport.create(tcpServer);
+		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
 	}
 
 	private InetSocketAddress getListenAddress() {
@@ -201,9 +187,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			super(ssl, null, sslStoreProvider);
 		}
 
-		// This does not override the apply in parent - currently just leveraging the
-		// parent for its "getContextBuilder()" method. This should be refactored when
-		// we add the concept of http/tcp customizers for RSocket.
 		private TcpServer apply(TcpServer server) {
 			try {
 				return server.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder()));
