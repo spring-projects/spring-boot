@@ -76,6 +76,9 @@ do as they were designed before this was clarified.
 | Elegant Error Handling for Spring Boot
 | https://github.com/alimate/errors-spring-boot-starter
 
+| https://elide.io/[Elide]
+| https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
