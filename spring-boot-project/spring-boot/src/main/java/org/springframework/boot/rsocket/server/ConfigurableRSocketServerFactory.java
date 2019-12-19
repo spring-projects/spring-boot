@@ -18,6 +18,9 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetAddress;
 
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslStoreProvider;
+
 /**
  * A configurable {@link RSocketServerFactory}.
  *
@@ -44,5 +47,17 @@ public interface ConfigurableRSocketServerFactory {
 	 * @param transport the transport protocol to use
 	 */
 	void setTransport(RSocketServer.Transport transport);
+
+	/**
+	 * Sets the SSL configuration that will be applied to the server's default connector.
+	 * @param ssl the SSL configuration
+	 */
+	void setSsl(Ssl ssl);
+
+	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 }
