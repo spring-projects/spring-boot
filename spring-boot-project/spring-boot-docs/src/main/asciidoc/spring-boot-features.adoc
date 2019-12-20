@@ -3027,16 +3027,16 @@ The following code shows a typical example:
 	@Service
 	public class MyService {
 
-		private final RSocketRequester rsocketRequester;
+		private final Mono<RSocketRequester> rsocketRequester;
 
 		public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 			this.rsocketRequester = rsocketRequesterBuilder
-					.connectTcp("example.org", 9898).block();
+					.connectTcp("example.org", 9898).cache();
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.rsocketRequester.route("user").data(name)
-					.retrieveMono(User.class);
+			return this.rsocketRequester.flatMap(req ->
+			            req.route("user").data(name).retrieveMono(User.class));
 		}
 
 	}
