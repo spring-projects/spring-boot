@@ -17,38 +17,19 @@
 package org.springframework.boot.launchscript;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.DockerCmd;
-import com.github.dockerjava.api.exception.DockerClientException;
-import com.github.dockerjava.api.model.BuildResponseItem;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.command.AttachContainerResultCallback;
-import com.github.dockerjava.core.command.BuildImageResultCallback;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
-import com.github.dockerjava.core.util.CompressArchiveUtil;
-import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
-import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.ToStringConsumer;
+import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
 
@@ -62,8 +43,6 @@ import static org.hamcrest.Matchers.containsString;
  * @author Ali Shahbour
  */
 class SysVinitLaunchScriptIT {
-
-	private final SpringBootDockerCmdExecFactory commandExecFactory = new SpringBootDockerCmdExecFactory();
 
 	private static final char ESC = 27;
 
@@ -313,126 +292,15 @@ class SysVinitLaunchScriptIT {
 	}
 
 	private String doTest(String os, String version, String script) throws Exception {
-		DockerClient docker = createClient();
-		String imageId = buildImage(os, version, docker);
-		String container = createContainer(docker, imageId, script);
-		try {
-			copyFilesToContainer(docker, container, script);
-			docker.startContainerCmd(container).exec();
-			StringBuilder output = new StringBuilder();
-			AttachContainerResultCallback resultCallback = docker.attachContainerCmd(container).withStdOut(true)
-					.withStdErr(true).withFollowStream(true).withLogs(true).exec(new AttachContainerResultCallback() {
-
-						@Override
-						public void onNext(Frame item) {
-							output.append(new String(item.getPayload()));
-							super.onNext(item);
-						}
-
-					});
-			resultCallback.awaitCompletion(60, TimeUnit.SECONDS);
-			WaitContainerResultCallback waitContainerCallback = new WaitContainerResultCallback();
-			docker.waitContainerCmd(container).exec(waitContainerCallback);
-			waitContainerCallback.awaitCompletion(60, TimeUnit.SECONDS);
-			return output.toString();
-		}
-		finally {
-			try {
-				docker.removeContainerCmd(container).exec();
-			}
-			catch (Exception ex) {
-				// Continue
+		ToStringConsumer consumer = new ToStringConsumer().withRemoveAnsiCodes(false);
+		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, script)) {
+			container.withLogConsumer(consumer);
+			container.start();
+			while (container.isRunning()) {
+				Thread.sleep(100);
 			}
 		}
-	}
-
-	private DockerClient createClient() {
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withApiVersion("1.19")
-				.build();
-		return DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(this.commandExecFactory).build();
-	}
-
-	private String buildImage(String os, String version, DockerClient docker) {
-		String dockerfile = "src/test/resources/conf/" + os + "/" + version + "/Dockerfile";
-		String tag = "spring-boot-it/" + os.toLowerCase(Locale.ENGLISH) + ":" + version;
-		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
-
-			private List<BuildResponseItem> items = new ArrayList<>();
-
-			@Override
-			public void onNext(BuildResponseItem item) {
-				super.onNext(item);
-				this.items.add(item);
-			}
-
-			@Override
-			public String awaitImageId() {
-				try {
-					awaitCompletion();
-				}
-				catch (InterruptedException ex) {
-					throw new DockerClientException("Interrupted while waiting for image id", ex);
-				}
-				return getImageId();
-			}
-
-			@SuppressWarnings("deprecation")
-			private String getImageId() {
-				if (this.items.isEmpty()) {
-					throw new DockerClientException("Could not build image");
-				}
-				String imageId = extractImageId();
-				if (imageId == null) {
-					throw new DockerClientException(
-							"Could not build image: " + this.items.get(this.items.size() - 1).getError());
-				}
-				return imageId;
-			}
-
-			private String extractImageId() {
-				Collections.reverse(this.items);
-				for (BuildResponseItem item : this.items) {
-					if (item.isErrorIndicated() || item.getStream() == null) {
-						return null;
-					}
-					if (item.getStream().contains("Successfully built")) {
-						return item.getStream().replace("Successfully built", "").trim();
-					}
-				}
-				return null;
-			}
-
-		};
-		docker.buildImageCmd(new File(dockerfile)).withTags(new HashSet<>(Arrays.asList(tag))).exec(resultCallback);
-		String imageId = resultCallback.awaitImageId();
-		return imageId;
-	}
-
-	private String createContainer(DockerClient docker, String imageId, String testScript) {
-		return docker.createContainerCmd(imageId).withTty(false)
-				.withCmd("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
-	}
-
-	private void copyFilesToContainer(DockerClient docker, final String container, String script) {
-		copyToContainer(docker, container, findApplication());
-		copyToContainer(docker, container, new File("src/test/resources/scripts/test-functions.sh"));
-		copyToContainer(docker, container, new File("src/test/resources/scripts/" + script));
-	}
-
-	private void copyToContainer(DockerClient docker, final String container, final File file) {
-		this.commandExecFactory.createCopyToContainerCmdExec().exec(new CopyToContainerCmd(container, file));
-	}
-
-	private File findApplication() {
-		File targetDir = new File("target");
-		for (File file : targetDir.listFiles()) {
-			if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
-					&& !file.getName().endsWith("-sources.jar")) {
-				return file;
-			}
-		}
-		throw new IllegalStateException(
-				"Could not find test application in target directory. Have you built it (mvn package)?");
+		return consumer.toUtf8String();
 	}
 
 	private Condition<String> coloredString(AnsiColor color, String string) {
@@ -460,59 +328,30 @@ class SysVinitLaunchScriptIT {
 		throw new IllegalArgumentException("Failed to extract " + label + " from output: " + output);
 	}
 
-	private static final class CopyToContainerCmdExec extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
+	private static final class LaunchScriptTestContainer extends GenericContainer<LaunchScriptTestContainer> {
 
-		private CopyToContainerCmdExec(WebTarget baseResource, DockerClientConfig dockerClientConfig) {
-			super(baseResource, dockerClientConfig);
+		private LaunchScriptTestContainer(String os, String version, String testScript) {
+			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
+					.withFileFromFile("Dockerfile",
+							new File("src/test/resources/conf/" + os + "/" + version + "/Dockerfile"))
+					.withFileFromFile("spring-boot-launch-script-tests.jar", findApplication())
+					.withFileFromFile("test-functions.sh", new File("src/test/resources/scripts/test-functions.sh")));
+			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + testScript),
+					"/" + testScript);
+			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
+			withStartupTimeout(Duration.ofMinutes(5));
 		}
 
-		@Override
-		protected Void execute(CopyToContainerCmd command) {
-			try (InputStream streamToUpload = new FileInputStream(
-					CompressArchiveUtil.archiveTARFiles(command.getFile().getParentFile(),
-							Arrays.asList(command.getFile()), command.getFile().getName()))) {
-				WebTarget webResource = getBaseResource().path("/containers/{id}/archive").resolveTemplate("id",
-						command.getContainer());
-				webResource.queryParam("path", ".").queryParam("noOverwriteDirNonDir", false).request()
-						.put(Entity.entity(streamToUpload, "application/x-tar")).close();
-				return null;
+		private static File findApplication() {
+			File targetDir = new File("target");
+			for (File file : targetDir.listFiles()) {
+				if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
+						&& !file.getName().endsWith("-sources.jar")) {
+					return file;
+				}
 			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-	}
-
-	private static final class CopyToContainerCmd implements DockerCmd<Void> {
-
-		private final String container;
-
-		private final File file;
-
-		private CopyToContainerCmd(String container, File file) {
-			this.container = container;
-			this.file = file;
-		}
-
-		String getContainer() {
-			return this.container;
-		}
-
-		File getFile() {
-			return this.file;
-		}
-
-		@Override
-		public void close() {
-		}
-
-	}
-
-	private static final class SpringBootDockerCmdExecFactory extends JerseyDockerCmdExecFactory {
-
-		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
-			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());
+			throw new IllegalStateException(
+					"Could not find test application in target directory. Have you built it (mvn package)?");
 		}
 
 	}
