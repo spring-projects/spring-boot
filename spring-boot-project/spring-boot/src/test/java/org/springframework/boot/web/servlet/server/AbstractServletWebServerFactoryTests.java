@@ -44,6 +44,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -246,10 +247,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	void specificPort() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		int specificPort = SocketUtils.findAvailableTcpPort(41000);
-		factory.setPort(specificPort);
-		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.start();
+		int specificPort = doWithRetry(() -> {
+			int port = SocketUtils.findAvailableTcpPort(41000);
+			factory.setPort(port);
+			this.webServer = factory.getWebServer(exampleServletRegistration());
+			this.webServer.start();
+			return port;
+		});
 		assertThat(getResponse("http://localhost:" + specificPort + "/hello")).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
 	}
@@ -823,7 +827,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	protected void portClashOfPrimaryConnectorResultsInPortInUseException() throws IOException {
+	protected void portClashOfPrimaryConnectorResultsInPortInUseException() throws Exception {
 		doWithBlockedPort((port) -> {
 			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 				AbstractServletWebServerFactory factory = getFactory();
@@ -835,7 +839,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void portClashOfSecondaryConnectorResultsInPortInUseException() throws IOException {
+	void portClashOfSecondaryConnectorResultsInPortInUseException() throws Exception {
 		doWithBlockedPort((port) -> {
 			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 				AbstractServletWebServerFactory factory = getFactory();
@@ -1131,19 +1135,28 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return bean;
 	}
 
-	protected final void doWithBlockedPort(BlockedPortAction action) throws IOException {
-		int port = SocketUtils.findAvailableTcpPort(40000);
-		ServerSocket serverSocket = new ServerSocket();
+	private <T> T doWithRetry(Callable<T> action) throws Exception {
+		Exception lastFailure = null;
 		for (int i = 0; i < 10; i++) {
 			try {
-				serverSocket.bind(new InetSocketAddress(port));
-				break;
+				return action.call();
 			}
 			catch (Exception ex) {
+				lastFailure = ex;
 			}
 		}
+		throw new IllegalStateException("Action was not successful in 10 attempts", lastFailure);
+	}
+
+	protected final void doWithBlockedPort(BlockedPortAction action) throws Exception {
+		ServerSocket serverSocket = new ServerSocket();
+		int blockedPort = doWithRetry(() -> {
+			int port = SocketUtils.findAvailableTcpPort(40000);
+			serverSocket.bind(new InetSocketAddress(port));
+			return port;
+		});
 		try {
-			action.run(port);
+			action.run(blockedPort);
 		}
 		finally {
 			serverSocket.close();
