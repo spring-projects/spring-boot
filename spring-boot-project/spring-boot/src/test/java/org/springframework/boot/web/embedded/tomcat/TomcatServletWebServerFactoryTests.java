@@ -288,7 +288,7 @@ public class TomcatServletWebServerFactoryTests extends AbstractServletWebServer
 	}
 
 	@Test
-	public void primaryConnectorPortClashThrowsWebServerException() throws IOException {
+	public void primaryConnectorPortClashThrowsWebServerException() throws Exception {
 		doWithBlockedPort((port) -> {
 			TomcatServletWebServerFactory factory = getFactory();
 			factory.setPort(port);
@@ -300,7 +300,7 @@ public class TomcatServletWebServerFactoryTests extends AbstractServletWebServer
 	}
 
 	@Test
-	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported() throws IOException {
+	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported() throws Exception {
 		super.portClashOfPrimaryConnectorResultsInPortInUseException();
 		String string = this.outputCapture.toString();
 		assertThat(string).doesNotContain("appears to have started a thread named [main]");
