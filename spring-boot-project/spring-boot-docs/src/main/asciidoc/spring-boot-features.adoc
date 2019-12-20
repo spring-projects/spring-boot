@@ -3035,7 +3035,7 @@ The following code shows a typical example:
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.requester.route("user").data(name)
+			return this.rsocketRequester.route("user").data(name)
 					.retrieveMono(User.class);
 		}
 
