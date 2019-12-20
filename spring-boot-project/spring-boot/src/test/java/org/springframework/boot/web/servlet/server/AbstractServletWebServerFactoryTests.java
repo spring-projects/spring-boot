@@ -67,6 +67,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -112,6 +113,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
@@ -156,6 +158,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 			catch (Exception ex) {
 				// Ignore
 			}
+		}
+	}
+
+	@AfterEach
+	void clearUrlStreamHandlerFactory() {
+		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+				getClass().getClassLoader())) {
+			ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
+			ReflectionTestUtils.setField(URL.class, "factory", null);
 		}
 	}
 
