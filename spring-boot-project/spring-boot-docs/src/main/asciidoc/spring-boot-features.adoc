@@ -2626,7 +2626,7 @@ For browser clients, there is a "`whitelabel`" error handler that renders the sa
 You can also provide your own HTML templates to display errors (see the <<boot-features-webflux-error-handling-custom-error-pages,next section>>).
 
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
-For that, you can add a bean of type`ErrorAttributes`.
+For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
@@ -5074,7 +5074,7 @@ For example, you might declare the following section in `application.properties`
 	spring.rabbitmq.password=secret
 ----
 
-Alternatively, you could configure the same connection using the `addresses` attributes:
+Alternatively, you could configure the same connection using the `addresses` attribute:
 
 [source,properties,indent=0]
 ----
