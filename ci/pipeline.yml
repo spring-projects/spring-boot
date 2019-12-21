@@ -140,6 +140,7 @@ resources:
     days: [Wednesday]
 - name: daily
   type: time
+  icon: clock-outline
   source: { interval: "24h" }
 jobs:
 - name: build-spring-boot-ci-images
