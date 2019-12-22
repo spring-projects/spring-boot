@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jackson;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -375,6 +376,15 @@ class JacksonAutoConfigurationTests {
 			String expected = FormatConfig.DEFAULT_DATETIME_PRINTER.rawFormatter().withZone(DateTimeZone.UTC)
 					.print(dateTime);
 			assertThat(mapper.writeValueAsString(dateTime)).isEqualTo("\"" + expected + "\"");
+		});
+	}
+
+	@Test
+	void writeDurationAsTimestampsDefault() {
+		this.contextRunner.run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			Duration duration = Duration.ofHours(2);
+			assertThat(mapper.writeValueAsString(duration)).isEqualTo("\"PT2H\"");
 		});
 	}
 
