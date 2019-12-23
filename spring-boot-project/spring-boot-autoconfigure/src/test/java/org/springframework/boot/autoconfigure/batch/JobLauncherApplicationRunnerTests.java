@@ -50,17 +50,18 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
- * Tests for {@link JobLauncherCommandLineRunner}.
+ * Tests for {@link JobLauncherApplicationRunner}.
  *
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
+ * @author Stephane Nicoll
  */
-class JobLauncherCommandLineRunnerTests {
+class JobLauncherApplicationRunnerTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	private JobLauncherCommandLineRunner runner;
+	private JobLauncherApplicationRunner runner;
 
 	private JobExplorer jobExplorer;
 
@@ -85,7 +86,7 @@ class JobLauncherCommandLineRunnerTests {
 		this.step = this.steps.get("step").tasklet(tasklet).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(jobLauncher, this.jobExplorer, jobRepository);
+		this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 

@@ -28,6 +28,7 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
@@ -43,6 +44,7 @@ import org.springframework.batch.core.repository.support.MapJobRepositoryFactory
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -126,8 +128,25 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
-					context.getBean(JobLauncherCommandLineRunner.class).run();
-					assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", new JobParameters()))
+					context.getBean(JobLauncherApplicationRunner.class)
+							.run(new DefaultApplicationArguments("jobParam=test"));
+					JobParameters jobParameters = new JobParametersBuilder().addString("jobParam", "test")
+							.toJobParameters();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", jobParameters))
+							.isNotNull();
+				});
+	}
+
+	@Test
+	void testDefinesAndLaunchesJobIgnoreOptionArguments() {
+		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					context.getBean(JobLauncherApplicationRunner.class)
+							.run(new DefaultApplicationArguments("--spring.property=value", "jobParam=test"));
+					JobParameters jobParameters = new JobParametersBuilder().addString("jobParam", "test")
+							.toJobParameters();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", jobParameters))
 							.isNotNull();
 				});
 	}
@@ -139,7 +158,7 @@ class BatchAutoConfigurationTests {
 						EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.names:discreteRegisteredJob").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
-					context.getBean(JobLauncherCommandLineRunner.class).run();
+					context.getBean(JobLauncherApplicationRunner.class).run();
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteRegisteredJob",
 							new JobParameters())).isNotNull();
 				});
@@ -151,7 +170,7 @@ class BatchAutoConfigurationTests {
 				.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.batch.job.names:discreteLocalJob").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
-					context.getBean(JobLauncherCommandLineRunner.class).run();
+					context.getBean(JobLauncherApplicationRunner.class).run();
 					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteLocalJob",
 							new JobParameters())).isNotNull();
 				});

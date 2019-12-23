@@ -2126,7 +2126,7 @@ For more info about Spring Batch, see the {spring-batch}[Spring Batch project pa
 === Running Spring Batch Jobs on Startup
 Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` to one of your `@Configuration` classes.
 
-By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherCommandLineRunner.java[`JobLauncherCommandLineRunner`] for details).
+By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
 You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
 
 See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[@EnableBatchProcessing] for more details.
@@ -2135,12 +2135,6 @@ See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[Ba
 
 [[howto-spring-batch-running-command-line]]
 === Running from the Command Line
-Running Spring Batch with Spring Boot from the command line differs from running Spring Batch by itself from the command line.
-The most important difference is that they parse command line arguments differently, which can cause trouble, as described in the next section.
-
-
-
-==== Passing Command-line Arguments
 Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<spring-boot-features.adoc#boot-features-external-config-command-line-args,accessing command line properties>>.
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (i.e. without `--`), as shown in the following example:
@@ -2150,7 +2144,7 @@ To specify batch arguments on the command line, use the regular format (i.e. wit
 	$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
 ----
 
-If you specify a property of the `Environment` on the command line, it impacts the arguments that your job uses as well.
+If you specify a property of the `Environment` on the command line, it is ignored by the job.
 Consider the following command:
 
 [indent=0,subs="attributes"]
@@ -2158,8 +2152,7 @@ Consider the following command:
 	$ java -jar myapp.jar --server.port=7070 someParameter=someValue
 ----
 
-This provides two arguments to the batch job: `someParameter=someValue` and `-server.port=7070`.
-Note that the second argument is missing one hyphen as Spring Batch will remove the first `-` character of a property if it is present.
+This provides only one argument to the batch job: `someParameter=someValue`.
 
 
 
