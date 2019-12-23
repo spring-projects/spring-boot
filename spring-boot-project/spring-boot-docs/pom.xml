@@ -1525,6 +1525,7 @@
 								<jooq-version>${jooq.version}</jooq-version>
 								<spring-boot-version>${revision}</spring-boot-version>
 								<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
+								<spring-batch-version>${spring-batch.version}</spring-batch-version>
 								<spring-data-couchbase-version>${flattenedpom.version.org.springframework.data.spring-data-couchbase}</spring-data-couchbase-version>
 								<spring-data-commons-version>${flattenedpom.version.org.springframework.data.spring-data-commons}</spring-data-commons-version>
 								<spring-data-jpa-version>${flattenedpom.version.org.springframework.data.spring-data-jpa}</spring-data-jpa-version>
