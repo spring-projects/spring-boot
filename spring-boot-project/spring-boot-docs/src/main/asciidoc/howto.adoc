@@ -2141,30 +2141,25 @@ The most important difference is that they parse command line arguments differen
 
 
 ==== Passing Command-line Arguments
-Spring Boot uses `--` (two hyphens) to signal application arguments.
-Spring Batch uses a single hyphen as a special marker on the `jobParameters` argument.
-This section explains how to reconcile that difference when you use the `jobParameters` argument for Spring Batch within a Spring Boot application.
+Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<spring-boot-features.adoc#boot-features-external-config-command-line-args,accessing command line properties>>.
+This should not be used to pass arguments to batch jobs.
+To specify batch arguments on the command line, use the regular format (i.e. without `--`), as shown in the following example:
 
-If you run Spring Batch with Spring Boot, Spring Boot strips the first `-` character from each command line argument.
-For example, `--exampleArgument` becomes `-exampleArgument`.
-Whether a command-line option has one hyphen or two often makes no difference in Spring Boot.
-However, in Spring Batch, putting a single `-` character before the `jobParameters` parameter indicates that Spring Batch should not use the `jobParameters` value as the identifier for the `Job`.
-Best practice is to use the `jobParameters` value as the identifier for the `Job`, so this issue may cause problems.
-To avoid the issue, you should generally use no `-` characters for the command-line options that you pass to Spring Boot on behalf of Spring Batch, as shown in the following example:
-
-[source,properties,indent=0]
+[indent=0,subs="attributes"]
 ----
-	someParameter=someValue
+	$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
 ----
 
-However, if you mean to not use `someValue` value as the identifier for the `Job`, use two hyphens, as shown in the following example:
+If you specify a property of the `Environment` on the command line, it impacts the arguments that your job uses as well.
+Consider the following command:
 
-[source,properties,indent=0]
+[indent=0,subs="attributes"]
 ----
-	--jobParameters=someValue
+	$ java -jar myapp.jar --server.port=7070 someParameter=someValue
 ----
 
-In the second example, Spring Boot passes the parameter to Spring Batch as `-jobParameters="someValue"`, and `someValue` is used as a non-identifying job parameter.
+This provides two arguments to the batch job: `someParameter=someValue` and `-server.port=7070`.
+Note that the second argument is missing one hyphen as Spring Batch will remove the first `-` character of a property if it is present.
 
 
 
