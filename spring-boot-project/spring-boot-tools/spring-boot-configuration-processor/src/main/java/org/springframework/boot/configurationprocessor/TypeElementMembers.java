@@ -28,10 +28,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
 
 /**
@@ -46,15 +44,18 @@ class TypeElementMembers {
 
 	private final MetadataGenerationEnvironment env;
 
+	private final TypeElement targetType;
+
 	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
 
 	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<>();
 
 	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<>();
 
-	TypeElementMembers(MetadataGenerationEnvironment env, TypeElement element) {
+	TypeElementMembers(MetadataGenerationEnvironment env, TypeElement targetType) {
 		this.env = env;
-		process(element);
+		this.targetType = targetType;
+		process(targetType);
 	}
 
 	private void process(TypeElement element) {
@@ -118,26 +119,19 @@ class TypeElementMembers {
 
 	private boolean isSetterReturnType(ExecutableElement method) {
 		TypeMirror returnType = method.getReturnType();
-		// void
 		if (TypeKind.VOID == returnType.getKind()) {
 			return true;
 		}
-
-		TypeMirror classType = method.getEnclosingElement().asType();
-		TypeUtils typeUtils = this.env.getTypeUtils();
-		// Chain
-		if (typeUtils.isSameType(classType, returnType)) {
+		if (TypeKind.DECLARED == returnType.getKind()
+				&& this.env.getTypeUtils().isSameType(method.getEnclosingElement().asType(), returnType)) {
 			return true;
 		}
-
-		// Chain generic type, <T extends classType>
-		List<? extends TypeMirror> genericTypes = ((DeclaredType) classType).getTypeArguments();
-		return genericTypes.stream().anyMatch((genericType) -> {
-			TypeMirror upperBound = ((TypeVariable) genericType).getUpperBound();
-			String classTypeName = typeUtils.getQualifiedName(((DeclaredType) classType).asElement());
-			String genericTypeName = typeUtils.getQualifiedName(((DeclaredType) upperBound).asElement());
-			return classTypeName.equals(genericTypeName);
-		});
+		if (TypeKind.TYPEVAR == returnType.getKind()) {
+			String resolvedType = this.env.getTypeUtils().getType(this.targetType, returnType);
+			return (resolvedType != null
+					&& resolvedType.equals(this.env.getTypeUtils().getQualifiedName(this.targetType)));
+		}
+		return false;
 	}
 
 	private String getAccessorName(String methodName) {

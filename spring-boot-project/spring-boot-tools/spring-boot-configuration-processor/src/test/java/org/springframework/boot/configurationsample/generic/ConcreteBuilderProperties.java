@@ -17,28 +17,24 @@
 package org.springframework.boot.configurationsample.generic;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 
 /**
- * Chain Generic Properties
+ * Builder pattern with a resolved generic
  *
- * @author L.cm
+ * @author Stephane Nicoll
  */
-@ConfigurationProperties("generic")
-public class ChainGenericProperties {
+@ConfigurationProperties("builder")
+public class ConcreteBuilderProperties extends GenericBuilderProperties<ConcreteBuilderProperties> {
 
-	/**
-	 * Generic config.
-	 */
-	@NestedConfigurationProperty
-	private ChainGenericConfig config;
+	private String description;
 
-	public ChainGenericConfig getConfig() {
-		return this.config;
+	public String getDescription() {
+		return this.description;
 	}
 
-	public void setConfig(ChainGenericConfig config) {
-		this.config = config;
+	public ConcreteBuilderProperties setDescription(String description) {
+		this.description = description;
+		return this;
 	}
 
 }

@@ -21,9 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
-import org.springframework.boot.configurationsample.generic.ChainGenericConfig;
-import org.springframework.boot.configurationsample.generic.ChainGenericProperties;
 import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
+import org.springframework.boot.configurationsample.generic.ConcreteBuilderProperties;
 import org.springframework.boot.configurationsample.generic.GenericConfig;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
 import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
@@ -113,13 +112,13 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void chainGenericProperties() {
-		ConfigurationMetadata metadata = compile(ChainGenericProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ChainGenericProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("generic.config", ChainGenericConfig.class)
-				.fromSource(ChainGenericProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("generic.config.ping-timeout", Integer.class)
-				.fromSource(ChainGenericConfig.class).withDefaultValue(null));
+	void builderPatternWithGenericReturnType() {
+		ConfigurationMetadata metadata = compile(ConcreteBuilderProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("builder").fromSource(ConcreteBuilderProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("builder.number", Integer.class).fromSource(ConcreteBuilderProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("builder.description", String.class).fromSource(ConcreteBuilderProperties.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 

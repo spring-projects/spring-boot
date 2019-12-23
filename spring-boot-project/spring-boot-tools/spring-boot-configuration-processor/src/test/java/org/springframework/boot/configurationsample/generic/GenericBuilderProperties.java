@@ -17,24 +17,21 @@
 package org.springframework.boot.configurationsample.generic;
 
 /**
- * Chain Generic
+ * A configuration properties that uses the builder pattern with a generic.
  *
- * @param <T> name type
- * @author L.cm
+ * @param <T> the type of the return type
+ * @author Stephane Nicoll
  */
-public class ChainGenericConfig<T extends ChainGenericConfig> {
+public class GenericBuilderProperties<T extends GenericBuilderProperties<T>> {
 
-	/**
-	 * Generic config pingTimeout.
-	 */
-	private Integer pingTimeout = 1000;
+	private int number;
 
-	public int getPingTimeout() {
-		return this.pingTimeout;
+	public int getNumber() {
+		return this.number;
 	}
 
-	public T setPingTimeout(int pingTimeout) {
-		this.pingTimeout = pingTimeout;
+	public T setNumber(int number) {
+		this.number = number;
 		return (T) this;
 	}
 
