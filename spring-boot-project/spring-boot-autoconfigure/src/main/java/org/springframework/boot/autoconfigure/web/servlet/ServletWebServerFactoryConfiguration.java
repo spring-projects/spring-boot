@@ -54,7 +54,7 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedTomcat {
+	static class EmbeddedTomcat {
 
 		@Bean
 		public TomcatServletWebServerFactory tomcatServletWebServerFactory() {
@@ -69,7 +69,7 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class, WebAppContext.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedJetty {
+	static class EmbeddedJetty {
 
 		@Bean
 		public JettyServletWebServerFactory JettyServletWebServerFactory() {
@@ -84,7 +84,7 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedUndertow {
+	static class EmbeddedUndertow {
 
 		@Bean
 		public UndertowServletWebServerFactory undertowServletWebServerFactory() {
