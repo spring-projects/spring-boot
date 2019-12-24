@@ -119,7 +119,12 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private String classifier;
 
 	/**
-	 * Attach the repackaged archive to be installed and deployed.
+	 * Attach the repackaged archive to be installed into your local Maven repository or
+	 * deployed to a remote repository. If no classifier has been configured, it will
+	 * replace the normal jar. If a {@code classifier} has been configured such that the
+	 * normal jar and the repackaged jar are different, it will be attached alongside the
+	 * normal jar. When the property is set to {@code false}, the repackaged archive will
+	 * not be installed or deployed.
 	 * @since 1.4.0
 	 */
 	@Parameter(defaultValue = "true")
