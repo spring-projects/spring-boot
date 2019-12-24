@@ -819,9 +819,7 @@ The preceding POJO defines the following properties:
 * `acme.security.password`.
 * `acme.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily configuring auto-configured beans.
-Similar to auto-configuration classes, `@ConfigurationProperties` classes available in Spring Boot are for internal use only.
-The properties that map to the class, which are configured via properties files, YAML files, environment variables etc., are public API but the content of the class itself is not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
