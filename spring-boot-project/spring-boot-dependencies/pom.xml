@@ -233,7 +233,6 @@
 		<maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
 		<maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-		<maven-site-plugin.version>3.8.2</maven-site-plugin.version>
 		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.2.3</maven-war-plugin.version>
@@ -3322,11 +3321,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>${maven-shade-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>${maven-site-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

@@ -29,7 +29,6 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.core.support.SimpleDirContextAuthenticationStrategy;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -122,7 +121,7 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDirContextAuthenticationStrategy.class).run((context) -> {
 			assertThat(context).hasSingleBean(DirContextAuthenticationStrategy.class);
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			assertThat(ReflectionTestUtils.getField(contextSource, "authenticationStrategy"))
+			assertThat(contextSource).extracting("authenticationStrategy")
 					.isSameAs(context.getBean("customDirContextAuthenticationStrategy"));
 		});
 	}
@@ -134,7 +133,7 @@ class LdapAutoConfigurationTests {
 					assertThat(context).hasBean("customDirContextAuthenticationStrategy")
 							.hasBean("anotherCustomDirContextAuthenticationStrategy");
 					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-					assertThat(ReflectionTestUtils.getField(contextSource, "authenticationStrategy"))
+					assertThat(contextSource).extracting("authenticationStrategy")
 							.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
 							.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
 							.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);

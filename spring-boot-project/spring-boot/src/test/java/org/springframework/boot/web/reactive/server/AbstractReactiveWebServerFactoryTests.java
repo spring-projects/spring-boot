@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
@@ -87,12 +88,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected abstract AbstractReactiveWebServerFactory getFactory();
 
 	@Test
-	void specificPort() {
+	void specificPort() throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
-		int specificPort = SocketUtils.findAvailableTcpPort(41000);
-		factory.setPort(specificPort);
-		this.webServer = factory.getWebServer(new EchoHandler());
-		this.webServer.start();
+		int specificPort = doWithRetry(() -> {
+			int port = SocketUtils.findAvailableTcpPort(41000);
+			factory.setPort(port);
+			this.webServer = factory.getWebServer(new EchoHandler());
+			this.webServer.start();
+			return port;
+		});
 		Mono<String> result = getWebClient().build().post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
@@ -108,6 +112,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	void basicSslFromFileSystem() {
 		testBasicSslWithKeyStore("src/test/resources/test.jks", "password");
+
 	}
 
 	protected final void testBasicSslWithKeyStore(String keyStore, String keyPassword) {
@@ -327,6 +332,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		String body = getWebClient().build().get().header("X-Forwarded-Proto", "https").retrieve()
 				.bodyToMono(String.class).block(Duration.ofSeconds(30));
 		assertThat(body).isEqualTo("https");
+	}
+
+	private <T> T doWithRetry(Callable<T> action) throws Exception {
+		Exception lastFailure = null;
+		for (int i = 0; i < 10; i++) {
+			try {
+				return action.call();
+			}
+			catch (Exception ex) {
+				lastFailure = ex;
+			}
+		}
+		throw new IllegalStateException("Action was not successful in 10 attempts", lastFailure);
 	}
 
 	protected static class EchoHandler implements HttpHandler {

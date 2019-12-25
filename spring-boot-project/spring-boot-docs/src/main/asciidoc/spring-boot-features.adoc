@@ -819,9 +819,7 @@ The preceding POJO defines the following properties:
 * `acme.security.password`.
 * `acme.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily configuring auto-configured beans.
-Similar to auto-configuration classes, `@ConfigurationProperties` classes available in Spring Boot are for internal use only.
-The properties that map to the class, which are configured via properties files, YAML files, environment variables etc., are public API but the content of the class itself is not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -2626,7 +2624,7 @@ For browser clients, there is a "`whitelabel`" error handler that renders the sa
 You can also provide your own HTML templates to display errors (see the <<boot-features-webflux-error-handling-custom-error-pages,next section>>).
 
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
-For that, you can add a bean of type`ErrorAttributes`.
+For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
@@ -3027,16 +3025,16 @@ The following code shows a typical example:
 	@Service
 	public class MyService {
 
-		private final RSocketRequester rsocketRequester;
+		private final Mono<RSocketRequester> rsocketRequester;
 
 		public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 			this.rsocketRequester = rsocketRequesterBuilder
-					.connectTcp("example.org", 9898).block();
+					.connectTcp("example.org", 9898).cache();
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.requester.route("user").data(name)
-					.retrieveMono(User.class);
+			return this.rsocketRequester.flatMap(req ->
+			            req.route("user").data(name).retrieveMono(User.class));
 		}
 
 	}
@@ -5075,7 +5073,7 @@ For example, you might declare the following section in `application.properties`
 	spring.rabbitmq.password=secret
 ----
 
-Alternatively, you could configure the same connection using the `addresses` attributes:
+Alternatively, you could configure the same connection using the `addresses` attribute:
 
 [source,properties,indent=0]
 ----

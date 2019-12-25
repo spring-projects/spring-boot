@@ -68,7 +68,7 @@ public class HttpEncodingAutoConfiguration {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}
 
-	private static class LocaleCharsetMappingsCustomizer
+	static class LocaleCharsetMappingsCustomizer
 			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
 		private final HttpProperties.Encoding properties;

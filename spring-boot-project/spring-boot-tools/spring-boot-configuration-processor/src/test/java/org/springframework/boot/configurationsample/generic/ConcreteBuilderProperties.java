@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launchscript;
+package org.springframework.boot.configurationsample.generic;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
-@RestController
-public class LaunchVerificationController {
+/**
+ * Builder pattern with a resolved generic
+ *
+ * @author Stephane Nicoll
+ */
+@ConfigurationProperties("builder")
+public class ConcreteBuilderProperties extends GenericBuilderProperties<ConcreteBuilderProperties> {
 
-	@RequestMapping("/")
-	public String verifyLaunch() {
-		return "Launched\n";
+	private String description;
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public ConcreteBuilderProperties setDescription(String description) {
+		this.description = description;
+		return this;
 	}
 
 }

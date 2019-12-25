@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launchscript;
+package org.springframework.boot.configurationsample.generic;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+/**
+ * A configuration properties that uses the builder pattern with a generic.
+ *
+ * @param <T> the type of the return type
+ * @author Stephane Nicoll
+ */
+public class GenericBuilderProperties<T extends GenericBuilderProperties<T>> {
 
-@RestController
-public class LaunchVerificationController {
+	private int number;
 
-	@RequestMapping("/")
-	public String verifyLaunch() {
-		return "Launched\n";
+	public int getNumber() {
+		return this.number;
+	}
+
+	public T setNumber(int number) {
+		this.number = number;
+		return (T) this;
 	}
 
 }

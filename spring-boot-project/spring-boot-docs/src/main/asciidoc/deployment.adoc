@@ -54,7 +54,7 @@ For example, using a `Dockerfile` you could express it in this form:
 	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
 ----
 
-Assuming the above `Dockerfile` is the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
+Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
 
 [indent=0]
 ----
@@ -455,7 +455,7 @@ This makes it very easy to install and manage Spring Boot applications in common
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
 Currently, some tools do not accept this format, so you may not always be able to use this technique.
 For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
-It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar`or deploying it to a servlet container.
+It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
 
 CAUTION: A zip64-format jar file cannot be made fully executable.
 Attempting to do so will result in a jar file that is reported as corrupt when executed directly or with `java -jar`.
