@@ -1634,7 +1634,7 @@ The following table shows how the `logging.*` properties can be used together:
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
 Size limits can be changed using the configprop:logging.file.max-size[] property.
-Previously rotated files are archived indefinitely unless the configprop:logging.file.max-history[] property has been set.
+Rotated log files of the last 7 days are kept by default unless the configprop:logging.file.max-history[] property has been set.
 The total size of log archives can be capped using configprop:logging.file.total-size-cap[].
 When the total size of log archives exceeds that threshold, backups will be deleted.
 To force log archive cleanup on application startup, use the configprop:logging.file.clean-history-on-start[] property.
