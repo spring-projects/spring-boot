@@ -133,19 +133,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private Map<String, String> environmentVariables;
 
 	/**
-	 * Arguments that should be passed to the application. On command line use spaces to
-	 * separate multiple arguments and make sure to wrap multiple values between quotes.
+	 * Arguments that should be passed to the application.
 	 * @since 1.0.0
 	 */
 	@Parameter
 	private String[] arguments;
 
 	/**
-	 * Arguments from command line that should be passed to the application.
-	 * @since 2.2.1
+	 * Arguments from the command line that should be passed to the application. Use
+	 * spaces to separate multiple arguments and make sure to wrap multiple values between
+	 * quotes. When specified, takes precedence over {@link #arguments}.
+	 * @since 2.2.3
 	 */
 	@Parameter(property = "spring-boot.run.arguments", readonly = true)
-	private String args;
+	private String commandlineArguments;
 
 	/**
 	 * The spring profiles to activate. Convenience shortcut of specifying the
@@ -318,7 +319,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the application arguments
 	 */
 	protected RunArguments resolveApplicationArguments() {
-		RunArguments runArguments = (this.args != null) ? new RunArguments(this.args)
+		RunArguments runArguments = (this.commandlineArguments != null) ? new RunArguments(this.commandlineArguments)
 				: new RunArguments(this.arguments);
 		addActiveProfileArgument(runArguments);
 		return runArguments;
