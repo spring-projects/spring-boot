@@ -25,7 +25,10 @@
 				</executions>
 				<configuration>
 					<toolchains>
-						<jdk/>
+						<jdk>
+							<version>42</version>
+							<vendor>test</vendor>
+						</jdk>
 					</toolchains>
 				</configuration>
 			</plugin>

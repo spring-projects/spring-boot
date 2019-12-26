@@ -70,6 +70,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private MavenProject project;
 
 	/**
+	 * The current Maven session. This is used for toolchain manager API calls.
+	 * @since 2.3.0
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true)
+	private MavenSession session;
+
+	/**
+	 * The toolchain manager to use to locate a custom JDK.
+	 * @since 2.3.0
+	 */
+	@Component
+	private ToolchainManager toolchainManager;
+
+	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing of
 	 * resources. Duplicate resources are removed from {@code target/classes} to prevent
 	 * them to appear twice if {@code ClassLoader.getResources()} is called. Please
@@ -208,20 +222,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
-
-	/**
-	 * The Maven Session Object.
-	 * @since 2.2.1
-	 */
-	@Parameter(defaultValue = "${session}", readonly = true)
-	private MavenSession session;
-
-	/**
-	 * The toolchain manager to use.
-	 * @since 2.2.1
-	 */
-	@Component
-	private ToolchainManager toolchainManager;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
