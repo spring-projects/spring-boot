@@ -74,7 +74,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	private Iterator<Archive> applyClassPathArchivePostProcessing(Iterator<Archive> archives) throws Exception {
-		List<Archive> list = new ArrayList<Archive>();
+		List<Archive> list = new ArrayList<>();
 		while (archives.hasNext()) {
 			list.add(archives.next());
 		}

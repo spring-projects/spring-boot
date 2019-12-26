@@ -1059,7 +1059,7 @@ public class RabbitProperties {
 			}
 			else {
 				this.host = input.substring(0, portIndex);
-				this.port = Integer.valueOf(input.substring(portIndex + 1));
+				this.port = Integer.parseInt(input.substring(portIndex + 1));
 			}
 		}
 

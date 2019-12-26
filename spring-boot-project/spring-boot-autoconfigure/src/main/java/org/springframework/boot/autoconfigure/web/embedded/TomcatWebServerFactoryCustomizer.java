@@ -282,17 +282,15 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat().getResource();
-		factory.addContextCustomizers((context) -> {
-			context.addLifecycleListener((event) -> {
-				if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-					context.getResources().setCachingAllowed(resource.isAllowCaching());
-					if (resource.getCacheTtl() != null) {
-						long ttl = resource.getCacheTtl().toMillis();
-						context.getResources().setCacheTtl(ttl);
-					}
+		factory.addContextCustomizers((context) -> context.addLifecycleListener((event) -> {
+			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+				context.getResources().setCachingAllowed(resource.isAllowCaching());
+				if (resource.getCacheTtl() != null) {
+					long ttl = resource.getCacheTtl().toMillis();
+					context.getResources().setCacheTtl(ttl);
 				}
-			});
-		});
+			}
+		}));
 	}
 
 	private void customizeErrorReportValve(ErrorProperties error, ConfigurableTomcatWebServerFactory factory) {

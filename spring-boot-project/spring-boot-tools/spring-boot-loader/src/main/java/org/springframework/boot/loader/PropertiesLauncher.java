@@ -167,7 +167,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private void initializeProperties() throws Exception, IOException {
+	private void initializeProperties() throws Exception {
 		List<String> configs = new ArrayList<>();
 		if (getProperty(CONFIG_LOCATION) != null) {
 			configs.add(getProperty(CONFIG_LOCATION));
@@ -195,7 +195,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private void loadResource(InputStream resource) throws IOException, Exception {
+	private void loadResource(InputStream resource) throws Exception {
 		this.properties.load(resource);
 		for (Object key : Collections.list(this.properties.propertyNames())) {
 			String text = this.properties.getProperty((String) key);
@@ -591,7 +591,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<Archive> asList(Iterator<Archive> iterator) {
-		List<Archive> list = new ArrayList<Archive>();
+		List<Archive> list = new ArrayList<>();
 		while (iterator.hasNext()) {
 			list.add(iterator.next());
 		}

@@ -181,10 +181,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (annotation != null) {
 				String prefix = getPrefix(annotation);
 				if (element instanceof TypeElement) {
-					processAnnotatedTypeElement(prefix, (TypeElement) element, new Stack<TypeElement>());
+					processAnnotatedTypeElement(prefix, (TypeElement) element, new Stack<>());
 				}
 				else if (element instanceof ExecutableElement) {
-					processExecutableElement(prefix, (ExecutableElement) element, new Stack<TypeElement>());
+					processExecutableElement(prefix, (ExecutableElement) element, new Stack<>());
 				}
 			}
 		}

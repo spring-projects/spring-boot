@@ -521,7 +521,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 
 		@Override
-		public Resource addPath(String path) throws IOException, MalformedURLException {
+		public Resource addPath(String path) throws IOException {
 			if (path.startsWith("/org/springframework/boot")) {
 				return null;
 			}

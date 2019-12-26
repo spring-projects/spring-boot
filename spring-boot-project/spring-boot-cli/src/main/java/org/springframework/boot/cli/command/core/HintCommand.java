@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,9 +49,7 @@ public class HintCommand extends AbstractCommand {
 		try {
 			int index = (args.length != 0) ? Integer.parseInt(args[0]) - 1 : 0;
 			List<String> arguments = new ArrayList<>(args.length);
-			for (int i = 2; i < args.length; i++) {
-				arguments.add(args[i]);
-			}
+			arguments.addAll(Arrays.asList(args).subList(2, args.length));
 			String starting = "";
 			if (index < arguments.size()) {
 				starting = arguments.remove(index);
