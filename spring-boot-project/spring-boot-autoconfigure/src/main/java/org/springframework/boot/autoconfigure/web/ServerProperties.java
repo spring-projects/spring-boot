@@ -354,7 +354,7 @@ public class ServerProperties {
 		 * given time. Once the limit has been reached, the operating system may still
 		 * accept connections based on the "acceptCount" property.
 		 */
-		private int maxConnections = 10000;
+		private int maxConnections = 8192;
 
 		/**
 		 * Maximum queue length for incoming connection requests when all possible request
