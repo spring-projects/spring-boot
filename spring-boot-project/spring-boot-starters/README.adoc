@@ -61,6 +61,9 @@ do as they were designed before this was clarified.
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
+| Codnect Validator for Spring Boot
+| https://github.com/Codnect/codnect-validator
+
 | https://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
