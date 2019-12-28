@@ -5131,6 +5131,8 @@ To retry operations, you can enable retries on the `AmqpTemplate` (for example, 
 Retries are disabled by default.
 You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
 
+If you need to create more `RabbitTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitTemplateConfigurer` bean that you can use to initialize a `RabbitTemplate` with the same settings as the factories used by the auto-configuration.
+
 
 
 [[boot-features-using-amqp-receiving]]
