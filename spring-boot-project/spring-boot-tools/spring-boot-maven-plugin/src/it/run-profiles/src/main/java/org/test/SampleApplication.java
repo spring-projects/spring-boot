@@ -22,7 +22,7 @@ public class SampleApplication {
 
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			throw new IllegalArgumentException("Missing active profile argument " + Arrays.toString(args) + "");
+			throw new IllegalArgumentException("Missing active profile argument " + Arrays.toString(args));
 		}
 		String argument = args[0];
 		if (!argument.startsWith("--spring.profiles.active=")) {
