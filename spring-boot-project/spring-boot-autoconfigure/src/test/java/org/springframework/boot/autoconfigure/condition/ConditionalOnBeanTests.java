@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,8 +136,8 @@ class ConditionalOnBeanTests {
 
 	@Test
 	void conditionEvaluationConsidersChangeInTypeWhenBeanIsOverridden() {
-		this.contextRunner.withUserConfiguration(OriginalDefinition.class, OverridingDefinition.class,
-				ConsumingConfiguration.class).run((context) -> {
+		this.contextRunner.withAllowBeanDefinitionOverriding(true).withUserConfiguration(OriginalDefinition.class,
+				OverridingDefinition.class, ConsumingConfiguration.class).run((context) -> {
 					assertThat(context).hasBean("testBean");
 					assertThat(context).hasSingleBean(Integer.class);
 					assertThat(context).doesNotHaveBean(ConsumingConfiguration.class);
