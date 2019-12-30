@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * Factory that can be used to create a client {@link HazelcastInstance}.
  *
  * @author Vedran Pavic
+ * @author Neil Stevenson
  * @since 2.0.0
  */
 public class HazelcastClientFactory {
@@ -60,7 +61,7 @@ public class HazelcastClientFactory {
 	private ClientConfig getClientConfig(Resource clientConfigLocation) throws IOException {
 		URL configUrl = clientConfigLocation.getURL();
 		String configFileName = configUrl.getPath();
-		if (configFileName.endsWith(".yaml")) {
+		if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 			return new YamlClientConfigBuilder(configUrl).build();
 		}
 		return new XmlClientConfigBuilder(configUrl).build();

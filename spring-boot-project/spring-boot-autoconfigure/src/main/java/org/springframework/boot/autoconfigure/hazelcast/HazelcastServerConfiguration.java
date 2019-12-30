@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
  *
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Neil Stevenson
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(HazelcastInstance.class)
@@ -76,7 +77,7 @@ class HazelcastServerConfiguration {
 
 		ConfigAvailableCondition() {
 			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
-					"classpath:/hazelcast.yaml");
+					"classpath:/hazelcast.yaml", "file:./hazelcast.yml", "classpath:/hazelcast.yml");
 		}
 
 	}

@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Neil Stevenson
  * @since 1.3.0
  */
 public class HazelcastInstanceFactory {
@@ -74,7 +75,7 @@ public class HazelcastInstanceFactory {
 
 	private static Config createConfig(URL configUrl) throws IOException {
 		String configFileName = configUrl.getPath();
-		if (configFileName.endsWith(".yaml")) {
+		if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 			return new YamlConfigBuilder(configUrl).build();
 		}
 		return new XmlConfigBuilder(configUrl).build();
