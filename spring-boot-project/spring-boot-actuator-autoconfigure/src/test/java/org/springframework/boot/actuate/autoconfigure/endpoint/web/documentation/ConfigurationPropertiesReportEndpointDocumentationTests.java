@@ -51,6 +51,8 @@ class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEnd
 										.description("Prefix applied to the names of the bean's properties."),
 								subsectionWithPath("contexts.*.beans.*.properties")
 										.description("Properties of the bean as name-value pairs."),
+								subsectionWithPath("contexts.*.beans.*.inputs").description(
+										"Origin and value of the configuration property used when binding to this bean."),
 								parentIdField())));
 	}
 

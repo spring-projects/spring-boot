@@ -17,38 +17,19 @@
 package org.springframework.boot.launchscript;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.DockerCmd;
-import com.github.dockerjava.api.exception.DockerClientException;
-import com.github.dockerjava.api.model.BuildResponseItem;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.command.AttachContainerResultCallback;
-import com.github.dockerjava.core.command.BuildImageResultCallback;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
-import com.github.dockerjava.core.util.CompressArchiveUtil;
-import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
-import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.ToStringConsumer;
+import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
 
@@ -61,15 +42,13 @@ import static org.hamcrest.Matchers.containsString;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  */
-public class SysVinitLaunchScriptIT {
-
-	private final SpringBootDockerCmdExecFactory commandExecFactory = new SpringBootDockerCmdExecFactory();
+class SysVinitLaunchScriptIT {
 
 	private static final char ESC = 27;
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenStopped(String os, String version) throws Exception {
+	void statusWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-stopped.sh");
 		assertThat(output).contains("Status: 3");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
@@ -77,7 +56,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenStarted(String os, String version) throws Exception {
+	void statusWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
@@ -85,7 +64,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void statusWhenKilled(String os, String version) throws Exception {
+	void statusWhenKilled(String os, String version) throws Exception {
 		String output = doTest(os, version, "status-when-killed.sh");
 		assertThat(output).contains("Status: 1");
 		assertThat(output)
@@ -94,7 +73,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void stopWhenStopped(String os, String version) throws Exception {
+	void stopWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -102,7 +81,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void forceStopWhenStopped(String os, String version) throws Exception {
+	void forceStopWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -110,7 +89,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void startWhenStarted(String os, String version) throws Exception {
+	void startWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "start-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Already running [" + extractPid(output) + "]"));
@@ -118,7 +97,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void restartWhenStopped(String os, String version) throws Exception {
+	void restartWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "restart-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -127,7 +106,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void restartWhenStarted(String os, String version) throws Exception {
+	void restartWhenStarted(String os, String version) throws Exception {
 		String output = doTest(os, version, "restart-when-started.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID1", output) + "]"));
@@ -137,7 +116,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void startWhenStopped(String os, String version) throws Exception {
+	void startWhenStopped(String os, String version) throws Exception {
 		String output = doTest(os, version, "start-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
@@ -145,14 +124,14 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void basicLaunch(String os, String version) throws Exception {
+	void basicLaunch(String os, String version) throws Exception {
 		String output = doTest(os, version, "basic-launch.sh");
 		assertThat(output).doesNotContain("PID_FOLDER");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMissingLogFolderGeneratesAWarning(String os, String version) throws Exception {
+	void launchWithMissingLogFolderGeneratesAWarning(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-missing-log-folder.sh");
 		assertThat(output).has(
 				coloredString(AnsiColor.YELLOW, "LOG_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
@@ -160,7 +139,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMissingPidFolderGeneratesAWarning(String os, String version) throws Exception {
+	void launchWithMissingPidFolderGeneratesAWarning(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-missing-pid-folder.sh");
 		assertThat(output).has(
 				coloredString(AnsiColor.YELLOW, "PID_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
@@ -168,49 +147,49 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
+	void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-command-line-argument.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
+	void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-command-line-arguments.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleRunArg(String os, String version) throws Exception {
+	void launchWithSingleRunArg(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-run-arg.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleRunArgs(String os, String version) throws Exception {
+	void launchWithMultipleRunArgs(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-run-args.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithSingleJavaOpt(String os, String version) throws Exception {
+	void launchWithSingleJavaOpt(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-single-java-opt.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithDoubleLinkSingleJavaOpt(String os, String version) throws Exception {
+	void launchWithDoubleLinkSingleJavaOpt(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-double-link-single-java-opt.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithMultipleJavaOpts(String os, String version) throws Exception {
+	void launchWithMultipleJavaOpts(String os, String version) throws Exception {
 		doLaunch(os, version, "launch-with-multiple-java-opts.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
+	void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
 		// CentOS doesn't have start-stop-daemon
 		Assumptions.assumeFalse(os.equals("CentOS"));
 		doLaunch(os, version, "launch-with-use-of-start-stop-daemon-disabled.sh");
@@ -218,7 +197,7 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRelativePidFolder(String os, String version) throws Exception {
+	void launchWithRelativePidFolder(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-relative-pid-folder.sh");
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 		assertThat(output).has(coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
@@ -227,56 +206,56 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void pidFolderOwnership(String os, String version) throws Exception {
+	void pidFolderOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "pid-folder-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void pidFileOwnership(String os, String version) throws Exception {
+	void pidFileOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "pid-file-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnership(String os, String version) throws Exception {
+	void logFileOwnership(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership.sh");
 		assertThat(output).contains("phil root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnershipIsChangedWhenCreated(String os, String version) throws Exception {
+	void logFileOwnershipIsChangedWhenCreated(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership-is-changed-when-created.sh");
 		assertThat(output).contains("andy root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void logFileOwnershipIsUnchangedWhenExists(String os, String version) throws Exception {
+	void logFileOwnershipIsUnchangedWhenExists(String os, String version) throws Exception {
 		String output = doTest(os, version, "log-file-ownership-is-unchanged-when-exists.sh");
 		assertThat(output).contains("root root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRelativeLogFolder(String os, String version) throws Exception {
+	void launchWithRelativeLogFolder(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-relative-log-folder.sh");
 		assertThat(output).contains("Log written");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void launchWithRunAsUser(String os, String version) throws Exception {
+	void launchWithRunAsUser(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
+	void whenRunAsUserDoesNotExistLaunchFailsWithInvalidArgument(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-invalid-user.sh");
 		assertThat(output).contains("Status: 2");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'johndoe': no such user"));
@@ -284,15 +263,14 @@ public class SysVinitLaunchScriptIT {
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version)
-			throws Exception {
+	void whenJarOwnerAndRunAsUserAreBothSpecifiedRunAsUserTakesPrecedence(String os, String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user-preferred-to-jar-owner.sh");
 		assertThat(output).contains("wagner root");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	public void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
+	void whenLaunchedUsingNonRootUserWithRunAsUserSpecifiedLaunchFailsWithInsufficientPrivilege(String os,
 			String version) throws Exception {
 		String output = doTest(os, version, "launch-with-run-as-user-root-required.sh");
 		assertThat(output).contains("Status: 4");
@@ -314,126 +292,15 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private String doTest(String os, String version, String script) throws Exception {
-		DockerClient docker = createClient();
-		String imageId = buildImage(os, version, docker);
-		String container = createContainer(docker, imageId, script);
-		try {
-			copyFilesToContainer(docker, container, script);
-			docker.startContainerCmd(container).exec();
-			StringBuilder output = new StringBuilder();
-			AttachContainerResultCallback resultCallback = docker.attachContainerCmd(container).withStdOut(true)
-					.withStdErr(true).withFollowStream(true).withLogs(true).exec(new AttachContainerResultCallback() {
-
-						@Override
-						public void onNext(Frame item) {
-							output.append(new String(item.getPayload()));
-							super.onNext(item);
-						}
-
-					});
-			resultCallback.awaitCompletion(60, TimeUnit.SECONDS);
-			WaitContainerResultCallback waitContainerCallback = new WaitContainerResultCallback();
-			docker.waitContainerCmd(container).exec(waitContainerCallback);
-			waitContainerCallback.awaitCompletion(60, TimeUnit.SECONDS);
-			return output.toString();
-		}
-		finally {
-			try {
-				docker.removeContainerCmd(container).exec();
-			}
-			catch (Exception ex) {
-				// Continue
+		ToStringConsumer consumer = new ToStringConsumer().withRemoveAnsiCodes(false);
+		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, script)) {
+			container.withLogConsumer(consumer);
+			container.start();
+			while (container.isRunning()) {
+				Thread.sleep(100);
 			}
 		}
-	}
-
-	private DockerClient createClient() {
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withApiVersion("1.19")
-				.build();
-		return DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(this.commandExecFactory).build();
-	}
-
-	private String buildImage(String os, String version, DockerClient docker) {
-		String dockerfile = "src/test/resources/conf/" + os + "/" + version + "/Dockerfile";
-		String tag = "spring-boot-it/" + os.toLowerCase(Locale.ENGLISH) + ":" + version;
-		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
-
-			private List<BuildResponseItem> items = new ArrayList<>();
-
-			@Override
-			public void onNext(BuildResponseItem item) {
-				super.onNext(item);
-				this.items.add(item);
-			}
-
-			@Override
-			public String awaitImageId() {
-				try {
-					awaitCompletion();
-				}
-				catch (InterruptedException ex) {
-					throw new DockerClientException("Interrupted while waiting for image id", ex);
-				}
-				return getImageId();
-			}
-
-			@SuppressWarnings("deprecation")
-			private String getImageId() {
-				if (this.items.isEmpty()) {
-					throw new DockerClientException("Could not build image");
-				}
-				String imageId = extractImageId();
-				if (imageId == null) {
-					throw new DockerClientException(
-							"Could not build image: " + this.items.get(this.items.size() - 1).getError());
-				}
-				return imageId;
-			}
-
-			private String extractImageId() {
-				Collections.reverse(this.items);
-				for (BuildResponseItem item : this.items) {
-					if (item.isErrorIndicated() || item.getStream() == null) {
-						return null;
-					}
-					if (item.getStream().contains("Successfully built")) {
-						return item.getStream().replace("Successfully built", "").trim();
-					}
-				}
-				return null;
-			}
-
-		};
-		docker.buildImageCmd(new File(dockerfile)).withTags(new HashSet<>(Arrays.asList(tag))).exec(resultCallback);
-		String imageId = resultCallback.awaitImageId();
-		return imageId;
-	}
-
-	private String createContainer(DockerClient docker, String imageId, String testScript) {
-		return docker.createContainerCmd(imageId).withTty(false)
-				.withCmd("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
-	}
-
-	private void copyFilesToContainer(DockerClient docker, final String container, String script) {
-		copyToContainer(docker, container, findApplication());
-		copyToContainer(docker, container, new File("src/test/resources/scripts/test-functions.sh"));
-		copyToContainer(docker, container, new File("src/test/resources/scripts/" + script));
-	}
-
-	private void copyToContainer(DockerClient docker, final String container, final File file) {
-		this.commandExecFactory.createCopyToContainerCmdExec().exec(new CopyToContainerCmd(container, file));
-	}
-
-	private File findApplication() {
-		File targetDir = new File("target");
-		for (File file : targetDir.listFiles()) {
-			if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
-					&& !file.getName().endsWith("-sources.jar")) {
-				return file;
-			}
-		}
-		throw new IllegalStateException(
-				"Could not find test application in target directory. Have you built it (mvn package)?");
+		return consumer.toUtf8String();
 	}
 
 	private Condition<String> coloredString(AnsiColor color, String string) {
@@ -461,59 +328,30 @@ public class SysVinitLaunchScriptIT {
 		throw new IllegalArgumentException("Failed to extract " + label + " from output: " + output);
 	}
 
-	private static final class CopyToContainerCmdExec extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
+	private static final class LaunchScriptTestContainer extends GenericContainer<LaunchScriptTestContainer> {
 
-		private CopyToContainerCmdExec(WebTarget baseResource, DockerClientConfig dockerClientConfig) {
-			super(baseResource, dockerClientConfig);
+		private LaunchScriptTestContainer(String os, String version, String testScript) {
+			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
+					.withFileFromFile("Dockerfile",
+							new File("src/test/resources/conf/" + os + "/" + version + "/Dockerfile"))
+					.withFileFromFile("spring-boot-launch-script-tests.jar", findApplication())
+					.withFileFromFile("test-functions.sh", new File("src/test/resources/scripts/test-functions.sh")));
+			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + testScript),
+					"/" + testScript);
+			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
+			withStartupTimeout(Duration.ofMinutes(5));
 		}
 
-		@Override
-		protected Void execute(CopyToContainerCmd command) {
-			try (InputStream streamToUpload = new FileInputStream(
-					CompressArchiveUtil.archiveTARFiles(command.getFile().getParentFile(),
-							Arrays.asList(command.getFile()), command.getFile().getName()))) {
-				WebTarget webResource = getBaseResource().path("/containers/{id}/archive").resolveTemplate("id",
-						command.getContainer());
-				webResource.queryParam("path", ".").queryParam("noOverwriteDirNonDir", false).request()
-						.put(Entity.entity(streamToUpload, "application/x-tar")).close();
-				return null;
+		private static File findApplication() {
+			File targetDir = new File("target");
+			for (File file : targetDir.listFiles()) {
+				if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
+						&& !file.getName().endsWith("-sources.jar")) {
+					return file;
+				}
 			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-	}
-
-	private static final class CopyToContainerCmd implements DockerCmd<Void> {
-
-		private final String container;
-
-		private final File file;
-
-		private CopyToContainerCmd(String container, File file) {
-			this.container = container;
-			this.file = file;
-		}
-
-		String getContainer() {
-			return this.container;
-		}
-
-		File getFile() {
-			return this.file;
-		}
-
-		@Override
-		public void close() {
-		}
-
-	}
-
-	private static final class SpringBootDockerCmdExecFactory extends JerseyDockerCmdExecFactory {
-
-		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
-			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());
+			throw new IllegalStateException(
+					"Could not find test application in target directory. Have you built it (mvn package)?");
 		}
 
 	}

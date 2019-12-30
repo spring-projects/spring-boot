@@ -69,7 +69,7 @@ public class SimpleStatusAggregator implements StatusAggregator {
 
 	@Override
 	public Status getAggregateStatus(Set<Status> statuses) {
-		return statuses.stream().filter(this::contains).sorted(this.comparator).findFirst().orElse(Status.UNKNOWN);
+		return statuses.stream().filter(this::contains).min(this.comparator).orElse(Status.UNKNOWN);
 	}
 
 	private boolean contains(Status status) {

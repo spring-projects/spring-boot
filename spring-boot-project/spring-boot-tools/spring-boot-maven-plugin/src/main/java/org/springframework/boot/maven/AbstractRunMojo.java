@@ -30,15 +30,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -63,6 +68,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
+
+	/**
+	 * The current Maven session. This is used for toolchain manager API calls.
+	 * @since 2.3.0
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true)
+	private MavenSession session;
+
+	/**
+	 * The toolchain manager to use to locate a custom JDK.
+	 * @since 2.3.0
+	 */
+	@Component
+	private ToolchainManager toolchainManager;
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing of
@@ -133,12 +152,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private Map<String, String> environmentVariables;
 
 	/**
-	 * Arguments that should be passed to the application. On command line use commas to
-	 * separate multiple arguments.
+	 * Arguments that should be passed to the application.
 	 * @since 1.0.0
 	 */
-	@Parameter(property = "spring-boot.run.arguments")
+	@Parameter
 	private String[] arguments;
+
+	/**
+	 * Arguments from the command line that should be passed to the application. Use
+	 * spaces to separate multiple arguments and make sure to wrap multiple values between
+	 * quotes. When specified, takes precedence over {@link #arguments}.
+	 * @since 2.2.3
+	 */
+	@Parameter(property = "spring-boot.run.arguments", readonly = true)
+	private String commandlineArguments;
 
 	/**
 	 * The spring profiles to activate. Convenience shortcut of specifying the
@@ -311,9 +338,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the application arguments
 	 */
 	protected RunArguments resolveApplicationArguments() {
-		RunArguments runArguments = new RunArguments(this.arguments);
+		RunArguments runArguments = (this.commandlineArguments != null) ? new RunArguments(this.commandlineArguments)
+				: new RunArguments(this.arguments);
 		addActiveProfileArgument(runArguments);
 		return runArguments;
+	}
+
+	/**
+	 * Provides access to the java binary executable, regardless of OS.
+	 * @return the java executable
+	 **/
+	protected String getJavaExecutable() {
+		Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
+		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
+		return (javaExecutable != null) ? javaExecutable : new JavaExecutable().toString();
 	}
 
 	/**
@@ -327,7 +365,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
-		logArguments("Application argument(s): ", this.arguments);
+		logArguments("Application argument(s): ", applicationArguments.asArray());
 	}
 
 	private Map<String, String> determineEnvironmentVariables() {

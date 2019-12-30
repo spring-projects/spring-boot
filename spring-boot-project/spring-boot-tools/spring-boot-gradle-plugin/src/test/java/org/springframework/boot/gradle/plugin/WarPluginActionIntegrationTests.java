@@ -34,31 +34,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class WarPluginActionIntegrationTests {
+class WarPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void noBootWarTaskWithoutWarPluginApplied() {
+	void noBootWarTaskWithoutWarPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar").getOutput())
 				.contains("bootWar exists = false");
 	}
 
 	@TestTemplate
-	public void applyingWarPluginCreatesBootWarTask() {
+	void applyingWarPluginCreatesBootWarTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin").getOutput())
 				.contains("bootWar exists = true");
 	}
 
 	@TestTemplate
-	public void assembleRunsBootWarAndWarIsSkipped() {
+	void assembleRunsBootWarAndWarIsSkipped() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
 	}
 
 	@TestTemplate
-	public void warAndBootWarCanBothBeBuilt() {
+	void warAndBootWarCanBothBeBuilt() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -69,7 +69,7 @@ public class WarPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
+	void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");

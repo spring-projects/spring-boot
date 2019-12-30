@@ -23,11 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -80,19 +76,13 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		List<Archive> nestedArchives = new ArrayList<>();
-		for (Entry entry : this) {
-			if (filter.matches(entry)) {
-				nestedArchives.add(getNestedArchive(entry));
-			}
-		}
-		return Collections.unmodifiableList(nestedArchives);
+	public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException {
+		return new NestedArchiveIterator(this.jarFile.iterator(), searchFilter, includeFilter);
 	}
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return new EntryIterator(this.jarFile.entries());
+		return new EntryIterator(this.jarFile.iterator(), null, null);
 	}
 
 	@Override
@@ -169,29 +159,85 @@ public class JarFileArchive implements Archive {
 	}
 
 	/**
-	 * {@link Archive.Entry} iterator implementation backed by {@link JarEntry}.
+	 * Abstract base class for iterator implementations.
 	 */
-	private static class EntryIterator implements Iterator<Entry> {
+	private abstract static class AbstractIterator<T> implements Iterator<T> {
 
-		private final Enumeration<JarEntry> enumeration;
+		private final Iterator<JarEntry> iterator;
 
-		EntryIterator(Enumeration<JarEntry> enumeration) {
-			this.enumeration = enumeration;
+		private final EntryFilter searchFilter;
+
+		private final EntryFilter includeFilter;
+
+		private Entry current;
+
+		AbstractIterator(Iterator<JarEntry> iterator, EntryFilter searchFilter, EntryFilter includeFilter) {
+			this.iterator = iterator;
+			this.searchFilter = searchFilter;
+			this.includeFilter = includeFilter;
+			this.current = poll();
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.enumeration.hasMoreElements();
+			return this.current != null;
 		}
 
 		@Override
-		public Entry next() {
-			return new JarFileEntry(this.enumeration.nextElement());
+		public T next() {
+			T result = adapt(this.current);
+			this.current = poll();
+			return result;
+		}
+
+		private Entry poll() {
+			while (this.iterator.hasNext()) {
+				JarFileEntry candidate = new JarFileEntry(this.iterator.next());
+				if ((this.searchFilter == null || this.searchFilter.matches(candidate))
+						&& (this.includeFilter == null || this.includeFilter.matches(candidate))) {
+					return candidate;
+				}
+			}
+			return null;
+		}
+
+		protected abstract T adapt(Entry entry);
+
+	}
+
+	/**
+	 * {@link Archive.Entry} iterator implementation backed by {@link JarEntry}.
+	 */
+	private static class EntryIterator extends AbstractIterator<Entry> {
+
+		EntryIterator(Iterator<JarEntry> iterator, EntryFilter searchFilter, EntryFilter includeFilter) {
+			super(iterator, searchFilter, includeFilter);
 		}
 
 		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("remove");
+		protected Entry adapt(Entry entry) {
+			return entry;
+		}
+
+	}
+
+	/**
+	 * Nested {@link Archive} iterator implementation backed by {@link JarEntry}.
+	 */
+	private class NestedArchiveIterator extends AbstractIterator<Archive> {
+
+		NestedArchiveIterator(Iterator<JarEntry> iterator, EntryFilter searchFilter, EntryFilter includeFilter) {
+			super(iterator, searchFilter, includeFilter);
+		}
+
+		@Override
+		protected Archive adapt(Entry entry) {
+			try {
+				return getNestedArchive(entry);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}

@@ -24,8 +24,8 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.15</spring-javaformat.version>
-				<nohttp-checkstyle.version>0.0.3.RELEASE</nohttp-checkstyle.version>
+				<spring-javaformat.version>0.0.17</spring-javaformat.version>
+				<nohttp-checkstyle.version>0.0.4.RELEASE</nohttp-checkstyle.version>
 			</properties>
 			<build>
 				<plugins>

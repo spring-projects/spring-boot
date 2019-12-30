@@ -24,7 +24,7 @@ public class LaunchVerificationController {
 
 	@RequestMapping("/")
 	public String verifyLaunch() {
-		return "Launched";
+		return "Launched\n";
 	}
 
 }

@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class MavenPluginActionIntegrationTests {
+class MavenPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void clearsConf2ScopeMappingsOfUploadBootArchivesTask() {
+	void clearsConf2ScopeMappingsOfUploadBootArchivesTask() {
 		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0").build("conf2ScopeMappings")
 				.getOutput()).contains("Conf2ScopeMappings = 0");
 	}

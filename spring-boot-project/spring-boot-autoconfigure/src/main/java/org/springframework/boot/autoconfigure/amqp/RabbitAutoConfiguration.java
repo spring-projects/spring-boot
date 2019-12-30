@@ -152,36 +152,25 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitTemplateConfiguration {
 
 		@Bean
-		@ConditionalOnSingleCandidate(ConnectionFactory.class)
-		@ConditionalOnMissingBean(RabbitOperations.class)
-		public RabbitTemplate rabbitTemplate(RabbitProperties properties,
+		@ConditionalOnMissingBean
+		public RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
-				ConnectionFactory connectionFactory) {
-			PropertyMapper map = PropertyMapper.get();
-			RabbitTemplate template = new RabbitTemplate(connectionFactory);
-			messageConverter.ifUnique(template::setMessageConverter);
-			template.setMandatory(determineMandatoryFlag(properties));
-			RabbitProperties.Template templateProperties = properties.getTemplate();
-			if (templateProperties.getRetry().isEnabled()) {
-				template.setRetryTemplate(
-						new RetryTemplateFactory(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()))
-								.createRetryTemplate(templateProperties.getRetry(),
-										RabbitRetryTemplateCustomizer.Target.SENDER));
-			}
-			map.from(templateProperties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReceiveTimeout);
-			map.from(templateProperties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReplyTimeout);
-			map.from(templateProperties::getExchange).to(template::setExchange);
-			map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
-			map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
-			return template;
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer();
+			configurer.setMessageConverter(messageConverter.getIfUnique());
+			configurer
+					.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
+			configurer.setRabbitProperties(properties);
+			return configurer;
 		}
 
-		private boolean determineMandatoryFlag(RabbitProperties properties) {
-			Boolean mandatory = properties.getTemplate().getMandatory();
-			return (mandatory != null) ? mandatory : properties.isPublisherReturns();
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(RabbitOperations.class)
+		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory) {
+			RabbitTemplate template = new RabbitTemplate();
+			configurer.configure(template, connectionFactory);
+			return template;
 		}
 
 		@Bean

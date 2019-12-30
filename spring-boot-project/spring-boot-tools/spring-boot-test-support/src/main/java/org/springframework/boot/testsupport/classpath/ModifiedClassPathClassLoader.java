@@ -172,9 +172,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		MergedAnnotations annotations = MergedAnnotations.from(testClass,
 				MergedAnnotations.SearchStrategy.TYPE_HIERARCHY);
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(annotations.get(ClassPathExclusions.class));
-		List<URL> processedUrls = new ArrayList<>();
 		List<URL> additionalUrls = getAdditionalUrls(annotations.get(ClassPathOverrides.class));
-		processedUrls.addAll(additionalUrls);
+		List<URL> processedUrls = new ArrayList<>(additionalUrls);
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
 				processedUrls.add(url);

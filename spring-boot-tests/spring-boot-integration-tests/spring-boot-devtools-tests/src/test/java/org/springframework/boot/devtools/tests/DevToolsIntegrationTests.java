@@ -32,11 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
+class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void addARequestMappingToAnExistingController(ApplicationLauncher applicationLauncher) throws Exception {
+	void addARequestMappingToAnExistingController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -51,8 +51,7 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void removeARequestMappingFromAnExistingController(ApplicationLauncher applicationLauncher)
-			throws Exception {
+	void removeARequestMappingFromAnExistingController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -65,7 +64,7 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void createAController(ApplicationLauncher applicationLauncher) throws Exception {
+	void createAController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -81,7 +80,7 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void createAControllerAndThenAddARequestMapping(ApplicationLauncher applicationLauncher) throws Exception {
+	void createAControllerAndThenAddARequestMapping(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -99,8 +98,8 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void createAControllerAndThenAddARequestMappingToAnExistingController(
-			ApplicationLauncher applicationLauncher) throws Exception {
+	void createAControllerAndThenAddARequestMappingToAnExistingController(ApplicationLauncher applicationLauncher)
+			throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -120,7 +119,7 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void deleteAController(ApplicationLauncher applicationLauncher) throws Exception {
+	void deleteAController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
@@ -135,7 +134,7 @@ public class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
-	public void createAControllerAndThenDeleteIt(ApplicationLauncher applicationLauncher) throws Exception {
+	void createAControllerAndThenDeleteIt(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();

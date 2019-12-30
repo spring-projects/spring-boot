@@ -369,7 +369,9 @@ Properties are considered in the following order:
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML variants).
 . Application properties packaged inside your jar (`application.properties` and YAML variants).
-. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes (these are added late to the `Environment` and will not have any effect on anything that reads properties from the `Environment` before the `ApplicationContext` is refreshed, such as logging configuration and auto-configuration).
+. {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
+  Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
+  This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
@@ -817,9 +819,7 @@ The preceding POJO defines the following properties:
 * `acme.security.password`.
 * `acme.security.roles`, with a collection of `String` that defaults to `USER`.
 
-NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily configuring auto-configured beans.
-Similar to auto-configuration classes, `@ConfigurationProperties` classes available in Spring Boot are for internal use only.
-The properties that map to the class, which are configured via properties files, YAML files, environment variables etc., are public API but the content of the class itself is not meant to be used directly.
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
 ====
@@ -1634,7 +1634,7 @@ The following table shows how the `logging.*` properties can be used together:
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
 Size limits can be changed using the configprop:logging.file.max-size[] property.
-Previously rotated files are archived indefinitely unless the configprop:logging.file.max-history[] property has been set.
+Rotated log files of the last 7 days are kept by default unless the configprop:logging.file.max-history[] property has been set.
 The total size of log archives can be capped using configprop:logging.file.total-size-cap[].
 When the total size of log archives exceeds that threshold, backups will be deleted.
 To force log archive cleanup on application startup, use the configprop:logging.file.clean-history-on-start[] property.
@@ -2624,7 +2624,7 @@ For browser clients, there is a "`whitelabel`" error handler that renders the sa
 You can also provide your own HTML templates to display errors (see the <<boot-features-webflux-error-handling-custom-error-pages,next section>>).
 
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
-For that, you can add a bean of type`ErrorAttributes`.
+For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
@@ -3025,16 +3025,16 @@ The following code shows a typical example:
 	@Service
 	public class MyService {
 
-		private final RSocketRequester rsocketRequester;
+		private final Mono<RSocketRequester> rsocketRequester;
 
 		public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 			this.rsocketRequester = rsocketRequesterBuilder
-					.connectTcp("example.org", 9898).block();
+					.connectTcp("example.org", 9898).cache();
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.requester.route("user").data(name)
-					.retrieveMono(User.class);
+			return this.rsocketRequester.flatMap(req ->
+			            req.route("user").data(name).retrieveMono(User.class));
 		}
 
 	}
@@ -3405,7 +3405,7 @@ These are the standard options that work regardless of the actual implementation
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`).
 Refer to the documentation of the connection pool implementation you are using for more details.
 
-For instance, if you use the https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
+For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
@@ -4443,6 +4443,7 @@ To connect to an LDAP server, make sure you declare a dependency on the `spring-
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
 
 An `LdapContextSource` is auto-configured based on these settings.
+If a `DirContextAuthenticationStrategy` bean is available, it is associated to the auto-configured `LdapContextSource`.
 If you need to customize it, for instance to use a `PooledContextSource`, you can still inject the auto-configured `LdapContextSource`.
 Make sure to flag your customized `ContextSource` as `@Primary` so that the auto-configured `LdapTemplate` uses it.
 
@@ -5072,7 +5073,7 @@ For example, you might declare the following section in `application.properties`
 	spring.rabbitmq.password=secret
 ----
 
-Alternatively, you could configure the same connection using the `addresses` attributes:
+Alternatively, you could configure the same connection using the `addresses` attribute:
 
 [source,properties,indent=0]
 ----
@@ -5129,6 +5130,8 @@ To retry operations, you can enable retries on the `AmqpTemplate` (for example, 
 
 Retries are disabled by default.
 You can also customize the `RetryTemplate` programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
+
+If you need to create more `RabbitTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitTemplateConfigurer` bean that you can use to initialize a `RabbitTemplate` with the same settings as the factories used by the auto-configuration.
 
 
 
@@ -5900,7 +5903,7 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 === Test Scope Dependencies
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
-* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4: The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
 * {spring-framework-docs}testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
@@ -6182,6 +6185,11 @@ We recommend using a `@Bean` method to create and configure the mock in this sit
 
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
 See the {spring-boot-test-module-api}/mock/mockito/SpyBean.html[Javadoc] for full details.
+
+NOTE: CGLib proxies, such as those created for scoped beans, declare the proxied methods as `final`.
+This stops Mockito from functioning correctly as it cannot mock or spy on `final` methods in its default configuration.
+If you want to mock or spy on such a bean, configure Mockito to use its inline mock maker by adding `org.mockito:mockito-inline` to your application's test dependencies.
+This allows Mockito to mock and spy on `final` methods.
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 

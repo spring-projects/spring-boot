@@ -32,7 +32,7 @@
 		<spring-asciidoctor-extensions.version>0.3.0.RELEASE</spring-asciidoctor-extensions.version>
 		<spring-doc-resources.version>0.1.4.BUILD-20191119.185717-2</spring-doc-resources.version>
 		<spring-doc-resources.url>https://repo.spring.io/snapshot/io/spring/docresources/spring-doc-resources/0.1.4.BUILD-SNAPSHOT/spring-doc-resources-${spring-doc-resources.version}.zip</spring-doc-resources.url>
-		<testcontainers.version>1.12.2</testcontainers.version>
+		<testcontainers.version>1.12.4</testcontainers.version>
 		<testng.version>6.14.3</testng.version>
 	</properties>
 	<scm>
@@ -317,10 +317,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.6.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
 				</plugin>
 				<plugin>
 					<groupId>org.basepom.maven</groupId>

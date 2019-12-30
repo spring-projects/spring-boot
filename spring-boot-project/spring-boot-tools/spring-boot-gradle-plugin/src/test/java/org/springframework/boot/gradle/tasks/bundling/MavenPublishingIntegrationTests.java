@@ -37,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class MavenPublishingIntegrationTests {
+class MavenPublishingIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void bootJarCanBePublished() throws FileNotFoundException, IOException {
+	void bootJarCanBePublished() throws FileNotFoundException, IOException {
 		BuildResult result = this.gradleBuild.build("publish");
 		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
@@ -51,7 +51,7 @@ public class MavenPublishingIntegrationTests {
 	}
 
 	@TestTemplate
-	public void bootWarCanBePublished() throws IOException {
+	void bootWarCanBePublished() throws IOException {
 		BuildResult result = this.gradleBuild.build("publish");
 		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();

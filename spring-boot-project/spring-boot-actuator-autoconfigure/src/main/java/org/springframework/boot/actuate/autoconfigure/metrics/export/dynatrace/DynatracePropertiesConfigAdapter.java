@@ -52,4 +52,9 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 		return get(DynatraceProperties::getUri, DynatraceConfig.super::uri);
 	}
 
+	@Override
+	public String group() {
+		return get(DynatraceProperties::getGroup, DynatraceConfig.super::group);
+	}
+
 }

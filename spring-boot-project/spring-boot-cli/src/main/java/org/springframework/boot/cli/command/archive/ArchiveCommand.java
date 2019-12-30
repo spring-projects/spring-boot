@@ -18,7 +18,6 @@ package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -175,7 +174,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		}
 
 		private void writeJar(File file, Class<?>[] compiledClasses, List<MatchedResource> classpathEntries,
-				List<URL> dependencies) throws FileNotFoundException, IOException, URISyntaxException {
+				List<URL> dependencies) throws IOException, URISyntaxException {
 			final List<Library> libraries;
 			try (JarWriter writer = new JarWriter(file)) {
 				addManifest(writer, compiledClasses);

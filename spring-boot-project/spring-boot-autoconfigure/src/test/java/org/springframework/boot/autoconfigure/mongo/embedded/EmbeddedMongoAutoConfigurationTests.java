@@ -96,7 +96,7 @@ class EmbeddedMongoAutoConfigurationTests {
 			features.add(Feature.ONLY_WINDOWS_2008_SERVER);
 		}
 		load("spring.mongodb.embedded.features="
-				+ String.join(", ", features.stream().map(Feature::name).collect(Collectors.toList())));
+				+ features.stream().map(Feature::name).collect(Collectors.joining(", ")));
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
 				.containsExactlyElementsOf(features);
 	}

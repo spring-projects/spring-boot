@@ -48,7 +48,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-public class JarFile extends java.util.jar.JarFile {
+public class JarFile extends java.util.jar.JarFile implements Iterable<java.util.jar.JarEntry> {
 
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
@@ -191,7 +191,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
-		final Iterator<JarEntry> iterator = this.entries.iterator();
+		Iterator<java.util.jar.JarEntry> iterator = iterator();
 		return new Enumeration<java.util.jar.JarEntry>() {
 
 			@Override
@@ -205,6 +205,17 @@ public class JarFile extends java.util.jar.JarFile {
 			}
 
 		};
+	}
+
+	/**
+	 * Return an iterator for the contained entries.
+	 * @see java.lang.Iterable#iterator()
+	 * @since 2.3.0
+	 */
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Iterator<java.util.jar.JarEntry> iterator() {
+		return (Iterator) this.entries.iterator();
 	}
 
 	public JarEntry getJarEntry(CharSequence name) {

@@ -81,7 +81,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 	}
 
 	private void runTestWithModifiedClassPath(ReflectiveInvocationContext<Method> invocationContext,
-			ExtensionContext extensionContext) throws ClassNotFoundException, Throwable {
+			ExtensionContext extensionContext) throws Throwable {
 		Class<?> testClass = extensionContext.getRequiredTestClass();
 		Method testMethod = invocationContext.getExecutable();
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
@@ -95,8 +95,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		}
 	}
 
-	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName)
-			throws ClassNotFoundException, Throwable {
+	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName) throws Throwable {
 		Class<?> testClass = classLoader.loadClass(testClassName);
 		Method testMethod = findMethod(testClass, testMethodName);
 		LauncherDiscoveryRequest request = new LauncherDiscoveryRequestBuilder(classLoader)

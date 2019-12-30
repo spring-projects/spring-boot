@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -57,12 +58,18 @@ class ConfigurationPropertiesBeanDefinitionValidator implements BeanFactoryPostP
 	}
 
 	private void validate(ConfigurableListableBeanFactory beanFactory, String beanName) {
-		Class<?> beanClass = beanFactory.getType(beanName, false);
-		if (beanClass != null && BindMethod.forType(beanClass) == BindMethod.VALUE_OBJECT) {
-			throw new BeanCreationException(beanName,
-					"@EnableConfigurationProperties or @ConfigurationPropertiesScan must be used to add "
-							+ "@ConstructorBinding type " + beanClass.getName());
+		try {
+			Class<?> beanClass = beanFactory.getType(beanName, false);
+			if (beanClass != null && BindMethod.forType(beanClass) == BindMethod.VALUE_OBJECT) {
+				throw new BeanCreationException(beanName,
+						"@EnableConfigurationProperties or @ConfigurationPropertiesScan must be used to add "
+								+ "@ConstructorBinding type " + beanClass.getName());
+			}
 		}
+		catch (CannotLoadBeanClassException ex) {
+			// Ignore
+		}
+
 	}
 
 	/**

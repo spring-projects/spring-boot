@@ -99,7 +99,7 @@ public class HealthWebEndpointResponseMapper {
 	}
 
 	private WebEndpointResponse<Health> createWebEndpointResponse(Health health) {
-		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
+		int status = this.statusHttpMapper.mapStatus(health.getStatus());
 		return new WebEndpointResponse<>(health, status);
 	}
 

@@ -36,12 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleCompatibilityExtension.class)
-public class BootRunIntegrationTests {
+class BootRunIntegrationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void basicExecution() throws IOException {
+	void basicExecution() throws IOException {
 		copyClasspathApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
@@ -52,7 +52,7 @@ public class BootRunIntegrationTests {
 	}
 
 	@TestTemplate
-	public void sourceResourcesCanBeUsed() throws IOException {
+	void sourceResourcesCanBeUsed() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -62,21 +62,21 @@ public class BootRunIntegrationTests {
 	}
 
 	@TestTemplate
-	public void springBootExtensionMainClassNameIsUsed() throws IOException {
+	void springBootExtensionMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@TestTemplate
-	public void applicationPluginMainClassNameIsUsed() throws IOException {
+	void applicationPluginMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@TestTemplate
-	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
+	void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -84,7 +84,7 @@ public class BootRunIntegrationTests {
 	}
 
 	@TestTemplate
-	public void defaultJvmArgs() throws IOException {
+	void defaultJvmArgs() throws IOException {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -92,7 +92,7 @@ public class BootRunIntegrationTests {
 	}
 
 	@TestTemplate
-	public void optimizedLaunchDisabledJvmArgs() throws IOException {
+	void optimizedLaunchDisabledJvmArgs() throws IOException {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -100,7 +100,7 @@ public class BootRunIntegrationTests {
 	}
 
 	@TestTemplate
-	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
+	void applicationPluginJvmArgumentsAreUsed() throws IOException {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

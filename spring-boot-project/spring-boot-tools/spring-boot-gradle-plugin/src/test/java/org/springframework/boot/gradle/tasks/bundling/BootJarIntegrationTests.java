@@ -21,9 +21,9 @@ package org.springframework.boot.gradle.tasks.bundling;
  *
  * @author Andy Wilkinson
  */
-public class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
+class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
-	public BootJarIntegrationTests() {
+	BootJarIntegrationTests() {
 		super("bootJar");
 	}
 

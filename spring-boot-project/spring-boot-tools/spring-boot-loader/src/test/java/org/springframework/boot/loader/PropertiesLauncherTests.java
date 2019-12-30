@@ -139,7 +139,8 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.path", "jars/");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString()).isEqualTo("[jars/]");
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
 
@@ -169,7 +170,8 @@ class PropertiesLauncherTests {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
 				.isEqualTo("[jar:file:./src/test/resources/nested-jars/app.jar!/]");
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
@@ -178,7 +180,8 @@ class PropertiesLauncherTests {
 	void testUserSpecifiedRootOfJarPathWithDot() throws Exception {
 		System.setProperty("loader.path", "nested-jars/app.jar!/./");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
@@ -187,7 +190,8 @@ class PropertiesLauncherTests {
 	void testUserSpecifiedRootOfJarPathWithDotAndJarPrefix() throws Exception {
 		System.setProperty("loader.path", "jar:file:./src/test/resources/nested-jars/app.jar!/./");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 	}
 
@@ -196,7 +200,8 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.path", "nested-jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(archives).areExactly(1, endingWith("app.jar"));
 	}
@@ -206,7 +211,8 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.path", "nested-jars/app.jar!/foo.jar");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).hasSize(1).areExactly(1, endingWith("foo.jar!/"));
 	}
 
@@ -335,7 +341,8 @@ class PropertiesLauncherTests {
 		loaderPath.mkdir();
 		System.setProperty("loader.path", loaderPath.toURI().toURL().toString());
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		List<Archive> archives = launcher.getClassPathArchives();
+		List<Archive> archives = new ArrayList<>();
+		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives.size()).isEqualTo(1);
 		File archiveRoot = (File) ReflectionTestUtils.getField(archives.get(0), "root");
 		assertThat(archiveRoot).isEqualTo(loaderPath);

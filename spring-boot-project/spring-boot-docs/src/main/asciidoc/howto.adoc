@@ -103,8 +103,9 @@ It is therefore possible to get the location of the file from the environment.
 The preceding example adds the `custom-resource` property source at the end of the list so that a key defined in any of the usual other locations takes precedence.
 A custom implementation may define another order.
 
-CAUTION: While using `@PropertySource` on your `@SpringBootApplication` may seem to be a convenient and easy way to load a custom resource in the `Environment`, we do not recommend it, because Spring Boot prepares the `Environment` before the `ApplicationContext` is refreshed.
-Any key defined with `@PropertySource` is loaded too late to have any effect on auto-configuration.
+CAUTION: While using `@PropertySource` on your `@SpringBootApplication` may seem to be a convenient way to load a custom resource in the `Environment`, we do not recommend it.
+Such property sources are not added to the `Environment` until the application context is being refreshed.
+This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 
 
 
@@ -785,13 +786,19 @@ For more details, see {jetty-docs}/configuring-jetty-request-logs.html[the Jetty
 
 
 [[howto-use-behind-a-proxy-server]]
-[[howto-use-tomcat-behind-a-proxy-server]]
 === Running Behind a Front-end Proxy Server
-Your application might need to send `302` redirects or render content with absolute links back to itself.
-When running behind a proxy, the caller wants a link to the proxy and not to the physical address of the machine hosting your app.
-Typically, such situations are handled through a contract with the proxy, which adds headers to tell the back end how to construct links to itself.
+If your application is running behind a proxy, a load-balancer or in the cloud, the request information (like the host, port, scheme...) might change along the way.
+Your application may be running on `10.10.10.10:8080`, but HTTP clients should only see `example.org`.
 
-If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most proxy servers do so), the absolute links should be rendered correctly, provided `server.forward-headers-strategy` is set to `NATIVE` or `FRAMEWORK` in your `application.properties`.
+https://tools.ietf.org/html/rfc7239[RFC7239 "Forwarded Headers"] defines the `Forwarded` HTTP header; proxies can use this header to provide information about the original request.
+You can configure your application to read those headers and automatically use that information when creating links and sending them to clients in HTTP 302 responses, JSON documents or HTML pages.
+There are also non-standard headers, like `X-Forwarded-Host`, `X-Forwarded-Port`, `X-Forwarded-Proto`, `X-Forwarded-Ssl`, and `X-Forwarded-Prefix`.
+
+If the proxy adds the commonly used `X-Forwarded-For` and `X-Forwarded-Proto` headers, setting `server.forward-headers-strategy` to `NATIVE` is enough to support those.
+With this option, the Web servers themselves natively support this feature; you can check their specific documentation to learn about specific behavior.
+
+If this is not enough, Spring Framework provides a {spring-framework-docs}web.html#filters-forwarded-headers[ForwardedHeaderFilter].
+You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
@@ -1629,7 +1636,7 @@ Spring Data can create implementations of `@Repository` interfaces of various fl
 Spring Boot handles all of that for you, as long as those `@Repositories` are included in the same package (or a sub-package) of your `@EnableAutoConfiguration` class.
 
 For many applications, all you need is to put the right Spring Data dependencies on your classpath.
-There is a `spring-boot-starter-data-jpa` for JPA, spring-boot-starter-data-mongodb` for Mongodb, etc.
+There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, etc.
 To get started, create some repository interfaces to handle your `@Entity` objects.
 
 Spring Boot tries to guess the location of your `@Repository` definitions, based on the `@EnableAutoConfiguration` it finds.
@@ -2097,36 +2104,63 @@ The preceding example overrides the default factory, and it should be applied to
 
 [[howto-batch-applications]]
 == Batch Applications
-This section answers questions that arise from using Spring Batch with Spring Boot.
+A number of questions often arise when people use Spring Batch from within a Spring Boot application.
+This section addresses those questions.
 
-NOTE: By default, batch applications require a `DataSource` to store job details.
-Batch autowires a single `DataSource` in your context and uses that for processing.
-To have Batch use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
-If you do so and want two data sources, remember to create another one and mark it as `@Primary`.
+
+
+[[howto-spring-batch-specifying-a-data-source]]
+=== Specifying a Batch Data Source
+By default, batch applications require a `DataSource` to store job details.
+Spring Batch expects a single `DataSource` by default.
+To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
+If you do so and want two data sources, remember to mark the other one `@Primary`.
 To take greater control, implement `BatchConfigurer`.
 See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[The Javadoc of `@EnableBatchProcessing`] for more details.
 
-For more about Spring Batch, see the {spring-batch}[Spring Batch project page].
+For more info about Spring Batch, see the {spring-batch}[Spring Batch project page].
 
 
 
-[[howto-execute-spring-batch-jobs-on-startup]]
-=== Execute Spring Batch Jobs on Startup
-Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` (from Spring Batch) somewhere in your context.
+[[howto-spring-batch-running-jobs-on-startup]]
+=== Running Spring Batch Jobs on Startup
+Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` to one of your `@Configuration` classes.
 
-By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherCommandLineRunner.java[JobLauncherCommandLineRunner] for details).
+By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
 You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
 
-[TIP]
-.Specifying job parameters on the command line
-====
-Unlike command line option arguments that <<spring-boot-features.adoc#boot-features-external-config-command-line-args,set properties in the `Environment`>> (i.e. by starting with `--`, such as `--my-property=value`), job parameters have to be specified on the command line without dashes (e.g. `jobParam=value`).
-====
+See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[@EnableBatchProcessing] for more details.
 
-If the application context includes a `JobRegistry`, the jobs in `spring.batch.job.names` are looked up in the registry instead of being autowired from the context.
-This is a common pattern with more complex systems, where multiple jobs are defined in child contexts and registered centrally.
 
-See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java[@EnableBatchProcessing] for more details.
+
+[[howto-spring-batch-running-command-line]]
+=== Running from the Command Line
+Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<spring-boot-features.adoc#boot-features-external-config-command-line-args,accessing command line properties>>.
+This should not be used to pass arguments to batch jobs.
+To specify batch arguments on the command line, use the regular format (i.e. without `--`), as shown in the following example:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
+----
+
+If you specify a property of the `Environment` on the command line, it is ignored by the job.
+Consider the following command:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar myapp.jar --server.port=7070 someParameter=someValue
+----
+
+This provides only one argument to the batch job: `someParameter=someValue`.
+
+
+
+[[howto-spring-batch-storing-job-repository]]
+=== Storing the Job Repository
+Spring Batch requires a data store for the `Job` repository.
+If you use Spring Boot, you must use an actual database.
+Note that it can be an in-memory database, see {spring-batch-docs}job.html#configuringJobRepository[Configuring a Job Repository].
 
 
 

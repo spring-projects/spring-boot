@@ -1188,7 +1188,7 @@
 										<link>https://docs.oracle.com/javaee/7/api</link>
 										<link>https://docs.spring.io/spring-framework/docs/${spring-framework.version}/javadoc-api</link>
 										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api</link>
-										<link>https://tomcat.apache.org/tomcat-8.5-doc/api</link>
+										<link>https://tomcat.apache.org/tomcat-9.0-doc/api</link>
 										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
 										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}</link>
 									</links>
@@ -1525,6 +1525,7 @@
 								<jooq-version>${jooq.version}</jooq-version>
 								<spring-boot-version>${revision}</spring-boot-version>
 								<spring-amqp-version>${spring-amqp.version}</spring-amqp-version>
+								<spring-batch-version>${spring-batch.version}</spring-batch-version>
 								<spring-data-couchbase-version>${flattenedpom.version.org.springframework.data.spring-data-couchbase}</spring-data-couchbase-version>
 								<spring-data-commons-version>${flattenedpom.version.org.springframework.data.spring-data-commons}</spring-data-commons-version>
 								<spring-data-jpa-version>${flattenedpom.version.org.springframework.data.spring-data-jpa}</spring-data-jpa-version>
