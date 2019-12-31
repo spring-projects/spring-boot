@@ -75,6 +75,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andrew McGhie
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
+ * @author Chris Bono
  */
 class ServerPropertiesTests {
 
@@ -235,6 +236,12 @@ class ServerPropertiesTests {
 	void testCustomizeJettyIdleTimeout() {
 		bind("server.jetty.thread-idle-timeout", "10s");
 		assertThat(this.properties.getJetty().getThreadIdleTimeout()).hasSeconds(10);
+	}
+
+	@Test
+	void testCustomizeJettyMaxQueueCapacity() {
+		bind("server.jetty.max-queue-capacity", "5150");
+		assertThat(this.properties.getJetty().getMaxQueueCapacity()).isEqualTo(5150);
 	}
 
 	@Test

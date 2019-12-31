@@ -24,8 +24,12 @@ import reactor.netty.http.server.HttpServer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.embedded.JettyConstrainedQueuedThreadPoolFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyThreadPoolFactory;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
@@ -101,6 +105,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
+	@EnableConfigurationProperties(ServerProperties.class)
 	static class EmbeddedJetty {
 
 		@Bean
@@ -110,9 +115,16 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
+		JettyThreadPoolFactory jettyThreadPoolFactory(ServerProperties serverProperties) {
+			return new JettyConstrainedQueuedThreadPoolFactory(serverProperties);
+		}
+
+		@Bean
 		JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
-				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
+				JettyThreadPoolFactory threadPoolFactory, ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
+			serverFactory.setThreadPool(threadPoolFactory.create());
 			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
 			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;

@@ -28,6 +28,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.server.HttpServer;
 
@@ -35,12 +37,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.web.embedded.JettyConstrainedQueuedThreadPoolFactory;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyThreadPoolFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
@@ -64,6 +68,7 @@ import org.springframework.web.servlet.FrameworkServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,6 +81,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Raheela Aslam
  * @author Madhura Bhave
+ * @author Chris Bono
  */
 class ServletWebServerFactoryAutoConfigurationTests {
 
@@ -178,6 +184,40 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
 			assertThat(factory.getServerCustomizers()).contains(customizer);
 			verify(customizer, times(1)).customize(any(Server.class));
+		});
+	}
+
+	@Test
+	void jettyDefaultThreadPoolFactoryUsedToCreateThreadPoolOnWebServerFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withPropertyValues("server.port:0", "server.jetty.max-queue-capacity:5150");
+		runner.run((context) -> {
+			assertThat(context.getBean(JettyThreadPoolFactory.class))
+					.isInstanceOf(JettyConstrainedQueuedThreadPoolFactory.class);
+			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
+			assertThat(factory.getThreadPool()).isNotNull(); // its null by default so
+																// this verifies the
+																// factory was used
+		});
+	}
+
+	@Test
+	void jettyCustomThreadPoolFactoryUsedToCreateThreadPoolOnWebServerFactory() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(JettyCustomThreadPoolFactoryConfiguration.class)
+						.withPropertyValues("server.port:0");
+		runner.run((context) -> {
+			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
+			JettyThreadPoolFactory threadPoolFactory = context.getBean("jettyCustomThreadPoolFactory",
+					JettyThreadPoolFactory.class);
+			verify(threadPoolFactory, times(1)).create();
+			assertThat(factory.getThreadPool()).isSameAs(JettyCustomThreadPoolFactoryConfiguration.threadPool);
 		});
 	}
 
@@ -575,6 +615,20 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		@Bean
 		WebServerFactoryCustomizer<JettyServletWebServerFactory> jettyCustomizer() {
 			return (jetty) -> jetty.addServerCustomizers(this.customizer);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JettyCustomThreadPoolFactoryConfiguration {
+
+		static ThreadPool threadPool = new QueuedThreadPool();
+
+		@Bean
+		JettyThreadPoolFactory jettyCustomThreadPoolFactory() {
+			JettyThreadPoolFactory threadPoolFactory = mock(JettyThreadPoolFactory.class);
+			when(threadPoolFactory.create()).thenReturn(threadPool);
+			return threadPoolFactory;
 		}
 
 	}
