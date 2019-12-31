@@ -1811,7 +1811,7 @@ The following cache libraries are supported:
 Metrics are tagged by the name of the cache and by the name of the `CacheManager` that is derived from the bean name.
 
 NOTE: Only caches that are configured on startup are bound to the registry.
-For caches not defined in the cache’s configuration, that is caches created on-the-fly or programmatically after the startup phase, an explicit registration is required.
+For caches not defined in the cache’s configuration, e.g. caches created on-the-fly or programmatically after the startup phase, an explicit registration is required.
 A `CacheMetricsRegistrar` bean is made available to make that process easier.
 
 
