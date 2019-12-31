@@ -1034,6 +1034,11 @@ public class ServerProperties {
 		private Integer minThreads = 8;
 
 		/**
+		 * Maximum capacity of the thread pools backing queue.
+		 */
+		private Integer maxQueueCapacity;
+
+		/**
 		 * Maximum thread idle time.
 		 */
 		private Duration threadIdleTimeout = Duration.ofMillis(60000);
@@ -1096,6 +1101,14 @@ public class ServerProperties {
 
 		public Integer getMaxThreads() {
 			return this.maxThreads;
+		}
+
+		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+			this.maxQueueCapacity = maxQueueCapacity;
+		}
+
+		public Integer getMaxQueueCapacity() {
+			return this.maxQueueCapacity;
 		}
 
 		public void setThreadIdleTimeout(Duration threadIdleTimeout) {
