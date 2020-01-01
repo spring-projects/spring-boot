@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,7 +212,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		return unsatisfiedDependencyException.getInjectionPoint();
 	}
 
-	private class Source {
+	private static class Source {
 
 		private final String className;
 
@@ -307,7 +307,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 
 	}
 
-	private class AutoConfigurationResult {
+	private static class AutoConfigurationResult {
 
 		private final MethodMetadata methodMetadata;
 

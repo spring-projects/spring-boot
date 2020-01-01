@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,11 +135,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointServerWebExchangeMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
