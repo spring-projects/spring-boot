@@ -260,6 +260,26 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void defaultUseForwardHeaders() {
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(factory.getEngineValves()).hasSize(0);
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
+		testRemoteIpValveConfigured();
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		TomcatServletWebServerFactory factory = customizeAndGetFactory();
+		assertThat(factory.getEngineValves()).hasSize(0);
+	}
+
+	@Test
 	void defaultRemoteIpValve() {
 		// Since 1.1.7 you need to specify at least the protocol
 		bind("server.tomcat.remoteip.protocol-header=X-Forwarded-Proto",

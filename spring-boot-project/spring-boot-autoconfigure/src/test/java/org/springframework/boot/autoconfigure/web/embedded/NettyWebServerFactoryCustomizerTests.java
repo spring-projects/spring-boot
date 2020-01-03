@@ -93,6 +93,23 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(false);
+	}
+
+	@Test
 	void setServerConnectionTimeoutAsZero() {
 		setupServerConnectionTimeout(Duration.ZERO);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);

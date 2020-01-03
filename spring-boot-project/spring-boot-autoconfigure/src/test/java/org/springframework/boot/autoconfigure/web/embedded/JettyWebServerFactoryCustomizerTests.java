@@ -87,6 +87,23 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(false);
+	}
+
+	@Test
 	void accessLogCanBeCustomized() throws IOException {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		bind("server.jetty.accesslog.enabled=true", "server.jetty.accesslog.format=extended_ncsa",

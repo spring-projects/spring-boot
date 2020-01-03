@@ -85,7 +85,7 @@ public class ServerProperties {
 	/**
 	 * Strategy for handling X-Forwarded-* headers.
 	 */
-	private ForwardHeadersStrategy forwardHeadersStrategy = ForwardHeadersStrategy.NONE;
+	private ForwardHeadersStrategy forwardHeadersStrategy;
 
 	/**
 	 * Value to use for the Server response header (if empty, no header is sent).
