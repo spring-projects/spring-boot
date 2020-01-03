@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -598,6 +599,18 @@ public class MapBinderTests {
 		assertThat(result.getValues()).containsExactly(entry("a", "b"));
 	}
 
+	@Test
+	public void bindToMapWithWildcardShouldConvertToTheRightType() {
+		// gh-18767
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.addresses.localhost[0]", "127.0.0.1");
+		source.put("foo.addresses.localhost[1]", "127.0.0.2");
+		this.sources.add(source);
+		MapWithWildcardProperties result = this.binder.bind("foo", Bindable.of(MapWithWildcardProperties.class)).get();
+		assertThat(result.getAddresses().get("localhost").stream().map(InetAddress::getHostAddress))
+				.containsExactly("127.0.0.1", "127.0.0.2");
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
 		return Bindable.of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
@@ -709,6 +722,20 @@ public class MapBinderTests {
 
 		public Map<String, String> getValues() {
 			return Collections.unmodifiableMap(this.values);
+		}
+
+	}
+
+	public static class MapWithWildcardProperties {
+
+		private Map<String, ? extends List<? extends InetAddress>> addresses;
+
+		public Map<String, ? extends List<? extends InetAddress>> getAddresses() {
+			return this.addresses;
+		}
+
+		public void setAddresses(Map<String, ? extends List<? extends InetAddress>> addresses) {
+			this.addresses = addresses;
 		}
 
 	}
