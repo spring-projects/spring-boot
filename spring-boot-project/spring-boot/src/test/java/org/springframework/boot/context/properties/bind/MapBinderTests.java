@@ -594,7 +594,7 @@ class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWithWildcardShouldConvertToTheRightType() {
+	void bindToMapWithWildcardShouldConvertToTheRightType() {
 		// gh-18767
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.addresses.localhost[0]", "127.0.0.1");
