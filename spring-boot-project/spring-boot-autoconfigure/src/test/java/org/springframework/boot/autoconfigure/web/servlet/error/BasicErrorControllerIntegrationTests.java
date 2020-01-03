@@ -200,6 +200,17 @@ class BasicErrorControllerIntegrationTests {
 		assertThat(resp).contains("We are out of storage");
 	}
 
+	@Test
+	void testIncompatibleMediaType() {
+		load();
+		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/incompatibleType")))
+				.accept(MediaType.TEXT_PLAIN).build();
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(entity.getHeaders().getContentType()).isNull();
+		assertThat(entity.getBody()).isNull();
+	}
+
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
 			String message, String path) {
 		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
@@ -296,6 +307,11 @@ class BasicErrorControllerIntegrationTests {
 			@RequestMapping(path = "/noStorage")
 			String noStorage() {
 				throw new InsufficientStorageException();
+			}
+
+			@RequestMapping(path = "/incompatibleType", produces = "text/plain")
+			String incompatibleType() {
+				throw new ExpectedException();
 			}
 
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")

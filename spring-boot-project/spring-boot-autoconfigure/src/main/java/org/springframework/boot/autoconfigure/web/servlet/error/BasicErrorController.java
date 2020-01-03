@@ -32,6 +32,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -100,6 +102,12 @@ public class BasicErrorController extends AbstractErrorController {
 		}
 		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);
+	}
+
+	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+	public ResponseEntity<String> mediaTypeNotAcceptable(HttpServletRequest request) {
+		HttpStatus status = getStatus(request);
+		return ResponseEntity.status(status).build();
 	}
 
 	/**
