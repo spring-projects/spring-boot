@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.system;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +61,12 @@ public enum JavaVersion {
 	/**
 	 * Java 13.
 	 */
-	THIRTEEN("13", String.class, "stripIndent");
+	THIRTEEN("13", String.class, "stripIndent"),
+
+	/**
+	 * Java 14.
+	 */
+	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess");
 
 	private final String name;
 
