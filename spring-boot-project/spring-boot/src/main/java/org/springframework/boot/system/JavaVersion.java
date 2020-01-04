@@ -62,6 +62,7 @@ public enum JavaVersion {
 	 * Java 13.
 	 */
 	THIRTEEN("13", String.class, "stripIndent"),
+
 	/**
 	 * Java 14.
 	 */
