@@ -102,7 +102,7 @@ public abstract class ResourceUtils {
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
-				if (resource.getURI().getScheme().equals("file") && resource.getFile().isDirectory()) {
+				if ("file".equals(resource.getURI().getScheme()) && resource.getFile().isDirectory()) {
 					result.addAll(getChildFiles(resource));
 					continue;
 				}
@@ -124,7 +124,7 @@ public abstract class ResourceUtils {
 	}
 
 	private static String absolutePath(Resource resource) throws IOException {
-		if (!resource.getURI().getScheme().equals("file")) {
+		if (!"file".equals(resource.getURI().getScheme())) {
 			return resource.getURL().toExternalForm();
 		}
 		return resource.getFile().getAbsoluteFile().toURI().toString();

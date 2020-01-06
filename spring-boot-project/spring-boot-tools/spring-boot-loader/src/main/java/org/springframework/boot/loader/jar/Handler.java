@@ -256,7 +256,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected boolean sameFile(URL u1, URL u2) {
-		if (!u1.getProtocol().equals("jar") || !u2.getProtocol().equals("jar")) {
+		if (!"jar".equals(u1.getProtocol()) || !"jar".equals(u2.getProtocol())) {
 			return false;
 		}
 		int separator1 = u1.getFile().indexOf(SEPARATOR);

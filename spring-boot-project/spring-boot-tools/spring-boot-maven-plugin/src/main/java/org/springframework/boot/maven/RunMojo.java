@@ -91,7 +91,7 @@ public class RunMojo extends AbstractRunMojo {
 
 	private boolean isJava13OrLater() {
 		for (Method method : String.class.getMethods()) {
-			if (method.getName().equals("stripIndent")) {
+			if ("stripIndent".equals(method.getName())) {
 				return true;
 			}
 		}

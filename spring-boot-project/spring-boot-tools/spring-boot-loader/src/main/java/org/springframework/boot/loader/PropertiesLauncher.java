@@ -515,7 +515,7 @@ public class PropertiesLauncher extends Launcher {
 	private List<Archive> getNestedArchives(String path) throws Exception {
 		Archive parent = this.parent;
 		String root = path;
-		if (!root.equals("/") && root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+		if (!"/".equals(root) && root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
@@ -538,7 +538,7 @@ public class PropertiesLauncher extends Launcher {
 				root = "";
 			}
 		}
-		if (root.equals("/") || root.equals("./") || root.equals(".")) {
+		if ("/".equals(root) || "./".equals(root) || ".".equals(root)) {
 			// The prefix for nested jars is actually empty if it's at the root
 			root = "";
 		}
@@ -584,7 +584,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 		else {
 			// It's a directory
-			if (!path.endsWith("/") && !path.equals(".")) {
+			if (!path.endsWith("/") && !".".equals(path)) {
 				path = path + "/";
 			}
 		}

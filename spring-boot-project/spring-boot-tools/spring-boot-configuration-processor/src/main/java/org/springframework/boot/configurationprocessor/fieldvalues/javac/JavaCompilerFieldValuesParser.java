@@ -176,10 +176,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				}
 				return result;
 			}
-			if (expression.getKind().equals("IDENTIFIER")) {
+			if ("IDENTIFIER".equals(expression.getKind())) {
 				return this.staticFinals.get(expression.toString());
 			}
-			if (expression.getKind().equals("MEMBER_SELECT")) {
+			if ("MEMBER_SELECT".equals(expression.getKind())) {
 				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
 			}
 			return defaultValue;

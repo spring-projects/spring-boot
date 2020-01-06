@@ -306,7 +306,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			for (AnnotatedNode classNode : nodes) {
 				List<AnnotationNode> annotations = classNode.getAnnotations();
 				for (AnnotationNode node : new ArrayList<>(annotations)) {
-					if (node.getClassNode().getNameWithoutPackage().equals("GrabResolver")) {
+					if ("GrabResolver".equals(node.getClassNode().getNameWithoutPackage())) {
 						node.setMember("initClass", new ConstantExpression(false));
 					}
 				}
