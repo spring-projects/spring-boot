@@ -49,7 +49,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the thread is a main invocation
 	 */
 	protected boolean isMain(Thread thread) {
-		return "main".equals(thread.getName())
+		return thread.getName().equals("main")
 				&& thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
 	}
 

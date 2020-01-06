@@ -54,7 +54,7 @@ public class ClassPathFolders implements Iterable<File> {
 	}
 
 	private void addUrl(URL url) {
-		if ("file".equals(url.getProtocol()) && url.getPath().endsWith("/")) {
+		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
 			try {
 				this.folders.add(ResourceUtils.getFile(url));
 			}

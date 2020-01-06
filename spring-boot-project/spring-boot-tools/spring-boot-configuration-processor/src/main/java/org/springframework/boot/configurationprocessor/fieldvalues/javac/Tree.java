@@ -56,7 +56,7 @@ class Tree extends ReflectionWrapper {
 		@Override
 		@SuppressWarnings("rawtypes")
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if ("visitClass".equals(method.getName()) && (Integer) args[1] == 0) {
+			if (method.getName().equals("visitClass") && (Integer) args[1] == 0) {
 				Iterable members = (Iterable) Tree.this.getClassTreeMembers.invoke(args[0]);
 				for (Object member : members) {
 					if (member != null) {
@@ -64,7 +64,7 @@ class Tree extends ReflectionWrapper {
 					}
 				}
 			}
-			if ("visitVariable".equals(method.getName())) {
+			if (method.getName().equals("visitVariable")) {
 				this.treeVisitor.visitVariable(new VariableTree(args[0]));
 			}
 			return null;

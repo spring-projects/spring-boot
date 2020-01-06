@@ -74,7 +74,7 @@ public interface JerseyApplicationPath {
 		if (!path.startsWith("/")) {
 			path = "/" + path;
 		}
-		if ("/".equals(path)) {
+		if (path.equals("/")) {
 			return "/*";
 		}
 		if (path.contains("*")) {

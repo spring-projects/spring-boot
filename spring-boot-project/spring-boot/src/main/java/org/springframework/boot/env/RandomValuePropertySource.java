@@ -82,10 +82,10 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	private Object getRandomValue(String type) {
-		if ("int".equals(type)) {
+		if (type.equals("int")) {
 			return getSource().nextInt();
 		}
-		if ("long".equals(type)) {
+		if (type.equals("long")) {
 			return getSource().nextLong();
 		}
 		String range = getRange(type, "int");
@@ -96,7 +96,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (range != null) {
 			return getNextLongInRange(range);
 		}
-		if ("uuid".equals(type)) {
+		if (type.equals("uuid")) {
 			return UUID.randomUUID().toString();
 		}
 		return getRandomBytes();

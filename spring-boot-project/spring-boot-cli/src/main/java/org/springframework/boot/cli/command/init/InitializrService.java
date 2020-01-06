@@ -122,7 +122,7 @@ class InitializrService {
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
-		if ("text/plain".equals(contentType.getMimeType())) {
+		if (contentType.getMimeType().equals("text/plain")) {
 			return getContent(httpEntity);
 		}
 		return parseJsonMetadata(httpEntity);

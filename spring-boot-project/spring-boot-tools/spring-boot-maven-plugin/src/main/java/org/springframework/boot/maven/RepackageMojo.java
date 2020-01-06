@@ -210,7 +210,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if ("pom".equals(this.project.getPackaging())) {
+		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("repackage goal could not be applied to pom project.");
 			return;
 		}

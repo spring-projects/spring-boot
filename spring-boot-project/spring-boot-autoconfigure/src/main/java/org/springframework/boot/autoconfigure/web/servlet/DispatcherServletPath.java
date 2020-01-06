@@ -74,7 +74,7 @@ public interface DispatcherServletPath {
 	 * @return the path as a servlet URL mapping
 	 */
 	default String getServletUrlMapping() {
-		if ("".equals(getPath()) || "/".equals(getPath())) {
+		if (getPath().equals("") || getPath().equals("/")) {
 			return "/";
 		}
 		if (getPath().contains("*")) {
