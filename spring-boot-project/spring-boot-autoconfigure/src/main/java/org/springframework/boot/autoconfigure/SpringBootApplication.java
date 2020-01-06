@@ -23,8 +23,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -103,6 +106,22 @@ public @interface SpringBootApplication {
 	 */
 	@AliasFor(annotation = ComponentScan.class, attribute = "basePackageClasses")
 	Class<?>[] scanBasePackageClasses() default {};
+
+	/**
+	 * The {@link BeanNameGenerator} class to be used for naming detected components
+	 * within the Spring container.
+	 * <p>
+	 * The default value of the {@link BeanNameGenerator} interface itself indicates that
+	 * the scanner used to process this {@code @SpringBootApplication} annotation should
+	 * use its inherited bean name generator, e.g. the default
+	 * {@link AnnotationBeanNameGenerator} or any custom instance supplied to the
+	 * application context at bootstrap time.
+	 * @return {@link BeanNameGenerator} to use
+	 * @see SpringApplication#setBeanNameGenerator(BeanNameGenerator)
+	 * @since 2.3.0
+	 */
+	@AliasFor(annotation = ComponentScan.class, attribute = "nameGenerator")
+	Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
 	/**
 	 * Specify whether {@link Bean @Bean} methods should get proxied in order to enforce
