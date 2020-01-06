@@ -303,7 +303,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private boolean isSet(ConfigurableEnvironment environment, String property) {
 		String value = environment.getProperty(property);
-		return Boolean.parseBoolean(value);
+		return (value != null && !value.equals("false"));
 	}
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
