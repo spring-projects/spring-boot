@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,18 +47,18 @@ import org.springframework.web.context.WebApplicationContext;
 @ConditionalOnBean({ BeanFactoryBookmarkOperationAdvisor.class, BookmarkInterceptor.class })
 class Neo4jBookmarkManagementConfiguration {
 
-	private static final String BOOKMARK_MANAGER_BEAN_NAME = "bookmarkManager";
+	private static final String BOOKMARK_MANAGER_BEAN_NAME = "neo4jBookmarkManager";
 
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
 	@ConditionalOnWebApplication
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.INTERFACES)
-	BookmarkManager requestScopedBookmarkManager() {
+	BookmarkManager requestScopedNeo4jBookmarkManager() {
 		return new CaffeineBookmarkManager();
 	}
 
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
 	@ConditionalOnNotWebApplication
-	BookmarkManager singletonScopedBookmarkManager() {
+	BookmarkManager singletonScopedNeo4jBookmarkManager() {
 		return new CaffeineBookmarkManager();
 	}
 

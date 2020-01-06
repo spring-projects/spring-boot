@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,14 +104,14 @@ class Neo4jRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
-	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
+	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class, sessionFactoryRef = "neo4jSessionFactory")
 	static class CustomizedConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	// To not find any repositories
-	@EnableNeo4jRepositories("foo.bar")
+	@EnableNeo4jRepositories(value = "foo.bar", sessionFactoryRef = "neo4jSessionFactory")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
 	static class SortOfInvalidCustomConfiguration {
 

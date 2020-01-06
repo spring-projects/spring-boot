@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,14 +107,14 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
-	@EnableNeo4jRepositories(basePackageClasses = Country.class)
+	@EnableNeo4jRepositories(basePackageClasses = Country.class, sessionFactoryRef = "neo4jSessionFactory")
 	static class TestConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
-	@EnableNeo4jRepositories(basePackageClasses = Country.class)
+	@EnableNeo4jRepositories(basePackageClasses = Country.class, sessionFactoryRef = "neo4jSessionFactory")
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	static class MixedConfiguration {
