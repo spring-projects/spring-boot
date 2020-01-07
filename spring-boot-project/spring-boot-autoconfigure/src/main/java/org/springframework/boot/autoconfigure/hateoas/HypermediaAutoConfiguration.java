@@ -36,6 +36,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.plugin.core.Plugin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
@@ -47,7 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ EntityModel.class, RequestMapping.class, Plugin.class })
+@ConditionalOnClass({ EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
