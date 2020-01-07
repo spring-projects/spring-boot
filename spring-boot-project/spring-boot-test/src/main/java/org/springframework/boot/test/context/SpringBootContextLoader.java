@@ -29,7 +29,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
@@ -76,6 +75,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.4.0
  * @see SpringBootTest
  */
@@ -97,7 +97,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		application.getSources().addAll(Arrays.asList(configLocations));
 		ConfigurableEnvironment environment = getEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
-			setActiveProfiles(environment, config.getActiveProfiles());
+			environment.setActiveProfiles(config.getActiveProfiles());
 		}
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(getClass().getClassLoader());
@@ -153,11 +153,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	protected String[] getArgs(MergedContextConfiguration config) {
 		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
 				.getValue("args", String[].class).orElse(NO_ARGS);
-	}
-
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
-		TestPropertyValues.of("spring.profiles.active=" + StringUtils.arrayToCommaDelimitedString(profiles))
-				.applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
