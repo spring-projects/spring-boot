@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguratio
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.MediaTypes;
@@ -53,6 +54,12 @@ class HypermediaAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(BaseConfig.class);
+
+	@Test
+	void autoConfigurationWhenSpringMvcNotOnClasspathShouldBackOff() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(RequestMappingHandlerAdapter.class))
+				.run((context) -> assertThat(context.getBeansOfType(HypermediaConfiguration.class)).isEmpty());
+	}
 
 	@Test
 	void linkDiscoverersCreated() {
