@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver;
 
-
 import io.micrometer.stackdriver.StackdriverConfig;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,4 +37,5 @@ class StackdriverPropertiesTest extends StepRegistryPropertiesTests {
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getResourceType()).isEqualTo(config.resourceType());
 	}
+
 }

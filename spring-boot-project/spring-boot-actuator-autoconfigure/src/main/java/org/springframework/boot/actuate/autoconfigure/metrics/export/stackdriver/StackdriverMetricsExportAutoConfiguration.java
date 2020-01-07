@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdrive
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.stackdriver.StackdriverConfig;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -34,9 +35,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Stackdriver.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to
+ * Stackdriver.
  *
  * @author Johannes Graf
+ * @author Stephane Nicoll
+ * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
@@ -44,10 +48,10 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(StackdriverMeterRegistry.class)
 @ConditionalOnProperty(prefix = "management.metrics.export.stackdriver", name = "enabled", havingValue = "true",
-	matchIfMissing = true
-)
+		matchIfMissing = true)
 @EnableConfigurationProperties(StackdriverProperties.class)
 public class StackdriverMetricsExportAutoConfiguration {
+
 	private final StackdriverProperties properties;
 
 	public StackdriverMetricsExportAutoConfiguration(StackdriverProperties stackdriverProperties) {
@@ -62,9 +66,8 @@ public class StackdriverMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StackdriverMeterRegistry StackdriverMeterRegistry(StackdriverConfig stackdriverConfig, Clock clock) {
-		return StackdriverMeterRegistry.builder(stackdriverConfig)
-				.clock(clock)
-				.build();
+	public StackdriverMeterRegistry stackdriverMeterRegistry(StackdriverConfig stackdriverConfig, Clock clock) {
+		return StackdriverMeterRegistry.builder(stackdriverConfig).clock(clock).build();
 	}
+
 }

@@ -19,28 +19,29 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdrive
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for configuring Stackdriver metrics
- * export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Stackdriver
+ * metrics export.
  *
  * @author Johannes Graf
+ * @author Stephane Nicoll
+ * @since 2.3.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.stackdriver")
 public class StackdriverProperties extends StepRegistryProperties {
 
 	/**
-	 * The ID of your google cloud platform project
+	 * Identifier of the Google Cloud project to monitor.
 	 */
 	private String projectId;
 
 	/**
-	 * The resource type of the metrics
+	 * Monitored resource type.
 	 */
 	private String resourceType = "global";
 
 	public String getProjectId() {
-		return projectId;
+		return this.projectId;
 	}
 
 	public void setProjectId(String projectId) {
@@ -48,10 +49,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 	}
 
 	public String getResourceType() {
-		return resourceType;
+		return this.resourceType;
 	}
 
 	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
 	}
+
 }
