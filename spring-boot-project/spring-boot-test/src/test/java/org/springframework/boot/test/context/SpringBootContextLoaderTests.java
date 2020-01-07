@@ -92,19 +92,19 @@ class SpringBootContextLoaderTests {
 	}
 
 	@Test
-	public void noActiveProfiles() {
+	void noActiveProfiles() {
 		Environment environment = getApplicationEnvironment(SimpleConfig.class);
 		assertThat(environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
-	public void multipleActiveProfiles() {
+	void multipleActiveProfiles() {
 		Environment environment = getApplicationEnvironment(MultipleActiveProfiles.class);
 		assertThat(environment.getActiveProfiles()).containsExactly("profile1", "profile2");
 	}
 
 	@Test
-	public void activeProfileWithComma() {
+	void activeProfileWithComma() {
 		Environment environment = getApplicationEnvironment(ActiveProfileWithComma.class);
 		assertThat(environment.getActiveProfiles()).containsExactly("profile1,2");
 	}
