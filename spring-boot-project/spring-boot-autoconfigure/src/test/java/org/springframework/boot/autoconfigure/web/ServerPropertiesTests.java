@@ -260,6 +260,30 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeUndertowWorkerThreads() {
+		bind("server.undertow.worker-threads", "150");
+		assertThat(this.properties.getUndertow().getWorkerThreads()).isEqualTo(150);
+	}
+
+	@Test
+	void testCustomizeUndertowIoThreads() {
+		bind("server.undertow.io-threads", "10");
+		assertThat(this.properties.getUndertow().getIoThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeUndertowMaxRequests() {
+		bind("server.undertow.max-requests", "200");
+		assertThat(this.properties.getUndertow().getMaxRequests()).isEqualTo(200);
+	}
+
+	@Test
+	void testCustomizeUndertowMaxQueueCapacity() {
+		bind("server.undertow.max-queue-capacity", "100");
+		assertThat(this.properties.getUndertow().getMaxQueueCapacity()).isEqualTo(100);
+	}
+
+	@Test
 	void testCustomizeJettyAccessLog() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.accesslog.enabled", "true");

@@ -231,7 +231,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 						.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
-			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
+			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(2);
 		});
 	}
 

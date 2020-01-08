@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.undertow.UndertowOptions;
+import io.undertow.server.handlers.RequestLimitingHandler;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -1308,6 +1309,21 @@ public class ServerProperties {
 		private Integer workerThreads;
 
 		/**
+		 * Number of max concurrent requests. When specified will put a
+		 * {@link RequestLimitingHandler} in place. The default is null. Can only be
+		 * specified in Servlet environments.
+		 */
+		private Integer maxRequests;
+
+		/**
+		 * Maximum number of requests to queue up when running with a
+		 * {@link RequestLimitingHandler} and the {@link #maxRequests} is reached. The
+		 * default is -1 (unbounded). Can only be specified in Servlet environments and is
+		 * only used when {@link #maxRequests} is specified.
+		 */
+		private Integer maxQueueCapacity;
+
+		/**
 		 * Whether to allocate buffers outside the Java heap. The default is derived from
 		 * the maximum amount of memory that is available to the JVM.
 		 */
@@ -1401,6 +1417,22 @@ public class ServerProperties {
 
 		public void setWorkerThreads(Integer workerThreads) {
 			this.workerThreads = workerThreads;
+		}
+
+		public Integer getMaxRequests() {
+			return this.maxRequests;
+		}
+
+		public void setMaxRequests(Integer maxRequests) {
+			this.maxRequests = maxRequests;
+		}
+
+		public Integer getMaxQueueCapacity() {
+			return this.maxQueueCapacity;
+		}
+
+		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+			this.maxQueueCapacity = maxQueueCapacity;
 		}
 
 		public Boolean getDirectBuffers() {

@@ -79,6 +79,13 @@ public class ServletWebServerFactoryAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnClass(name = "io.undertow.Undertow")
+	public UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
+			ServerProperties serverProperties) {
+		return new UndertowServletWebServerFactoryCustomizer(serverProperties);
+	}
+
+	@Bean
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
