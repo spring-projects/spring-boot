@@ -339,7 +339,7 @@ class SysVinitLaunchScriptIT {
 			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + testScript),
 					"/" + testScript);
 			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
-			withStartupTimeout(Duration.ofMinutes(5));
+			withStartupTimeout(Duration.ofMinutes(10));
 		}
 
 		private static File findApplication() {

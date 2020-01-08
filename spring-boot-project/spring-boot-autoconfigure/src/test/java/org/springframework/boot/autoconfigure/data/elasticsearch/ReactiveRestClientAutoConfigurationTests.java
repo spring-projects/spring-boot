@@ -48,7 +48,7 @@ public class ReactiveRestClientAutoConfigurationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));

@@ -48,7 +48,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Container
 	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private AnnotationConfigApplicationContext context;
 

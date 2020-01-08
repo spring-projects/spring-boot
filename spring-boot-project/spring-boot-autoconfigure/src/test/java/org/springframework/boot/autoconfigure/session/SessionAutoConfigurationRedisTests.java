@@ -56,7 +56,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 
 	@Container
 	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

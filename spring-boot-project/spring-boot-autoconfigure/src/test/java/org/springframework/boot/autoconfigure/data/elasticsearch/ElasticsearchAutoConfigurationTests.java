@@ -48,7 +48,7 @@ class ElasticsearchAutoConfigurationTests {
 
 	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private AnnotationConfigApplicationContext context;
 
