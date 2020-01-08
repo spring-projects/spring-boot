@@ -53,7 +53,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	static final CouchbaseContainer couchbase = new CouchbaseContainer().withClusterAdmin("spring", "password")
 			.withNewBucket(DefaultBucketSettings.builder().enableFlush(true).name("default").password("secret")
 					.quota(100).replicas(0).type(BucketType.COUCHBASE).build())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private AnnotationConfigApplicationContext context;
 
