@@ -1040,6 +1040,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-stackdriver</artifactId>
+				<version>${micrometer.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-bom</artifactId>
 				<version>${micrometer.version}</version>
 				<type>pom</type>

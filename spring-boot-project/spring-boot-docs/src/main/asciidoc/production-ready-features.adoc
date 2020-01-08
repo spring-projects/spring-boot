@@ -1245,6 +1245,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<production-ready-metrics-export-prometheus,Prometheus>>
 - <<production-ready-metrics-export-signalfx,SignalFx>>
 - <<production-ready-metrics-export-simple,Simple (in-memory)>>
+- <<production-ready-metrics-export-stackdriver,Stackdriver>>
 - <<production-ready-metrics-export-statsd,StatsD>>
 - <<production-ready-metrics-export-wavefront,Wavefront>>
 
@@ -1580,6 +1581,25 @@ You can also disable it explicitly:
 [source,properties,indent=0,configprops]
 ----
 	management.metrics.export.simple.enabled=false
+----
+
+
+
+[[production-ready-metrics-export-stackdriver]]
+==== Stackdriver
+Stackdriver registry pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver] periodically.
+To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], your Google Cloud project id must be provided:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.stackdriver.project-id=my-project
+----
+
+You can also change the interval at which metrics are sent to Stackdriver:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.stackdriver.step=30s
 ----
 
 
