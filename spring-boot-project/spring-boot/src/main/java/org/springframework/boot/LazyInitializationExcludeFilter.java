@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,12 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
  * beans). Adding an instance of this filter to the application context can be used for
  * these edge cases.
  * <p>
- * A typical example would be something like this:
- * <p>
- * <pre><code>
+ * A typical example would be something like this: <pre>
  * &#64;Bean
  * public static LazyInitializationExcludeFilter integrationLazyInitializationExcludeFilter() {
  *   return LazyInitializationExcludeFilter.forBeanTypes(IntegrationFlow.class);
- * }</code></pre>
+ * }
+ * </pre>
  * <p>
  * NOTE: Beans of this type will be instantiated very early in the spring application
  * lifecycle so they should generally be declared static and not have any dependencies.
