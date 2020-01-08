@@ -29,9 +29,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
@@ -63,7 +61,7 @@ class CassandraDataAutoConfigurationTests {
 
 	@Test
 	void templateExists() {
-		load(TestExcludeConfiguration.class);
+		load(TestConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class)).hasSize(1);
 	}
 
@@ -115,13 +113,6 @@ class CassandraDataAutoConfigurationTests {
 		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(
-			excludeFilters = @ComponentScan.Filter(classes = { Session.class }, type = FilterType.ASSIGNABLE_TYPE))
-	static class TestExcludeConfiguration {
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
