@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
@@ -73,8 +74,9 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
-	 * {@link AnyNestedCondition} that checks that either {@code spring.datasource.type}
-	 * is set or {@link PooledDataSourceAvailableCondition} applies.
+	 * {@link AnyNestedCondition} that checks that either one of
+	 * {@code spring.datasource.type}, {@code spring.datasource.url} properties is set or
+	 * {@link PooledDataSourceAvailableCondition} applies.
 	 */
 	static class PooledDataSourceCondition extends AnyNestedCondition {
 
@@ -84,6 +86,12 @@ public class DataSourceAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
 		static class ExplicitType {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.datasource", name = "url")
+		@ConditionalOnClass(SimpleDriverDataSource.class)
+		static class ExplicitUrl {
 
 		}
 

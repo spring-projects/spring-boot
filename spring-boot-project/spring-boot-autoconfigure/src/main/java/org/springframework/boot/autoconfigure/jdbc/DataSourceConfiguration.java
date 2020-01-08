@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,17 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -114,12 +118,39 @@ abstract class DataSourceConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type")
+	@Conditional(ExplicitDataSourceTypeOrUrlCondition.class)
 	static class Generic {
 
 		@Bean
 		DataSource dataSource(DataSourceProperties properties) {
-			return properties.initializeDataSourceBuilder().build();
+			return properties.initializeDataSourceBuilder().type(determineType(properties)).build();
+		}
+
+		private static Class<? extends DataSource> determineType(DataSourceProperties properties) {
+			Class<? extends DataSource> type = properties.getType();
+			if (type == null) {
+				type = DataSourceBuilder.findType(properties.getClassLoader());
+			}
+			return (type != null) ? type : SimpleDriverDataSource.class;
+		}
+
+	}
+
+	static class ExplicitDataSourceTypeOrUrlCondition extends AnyNestedCondition {
+
+		ExplicitDataSourceTypeOrUrlCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		static class ExplicitType {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.datasource", name = "url")
+		@ConditionalOnClass(SimpleDriverDataSource.class)
+		static class ExplicitUrl {
+
 		}
 
 	}

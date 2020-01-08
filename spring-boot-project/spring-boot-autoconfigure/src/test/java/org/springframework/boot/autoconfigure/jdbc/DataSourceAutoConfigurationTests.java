@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,6 +159,16 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
+	void createDataSourceExplicitUrlPresentAndNoPoolDataSourceAvailable() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
+						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"))
+				.withPropertyValues("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb")
+				.run(this::containsOnlySimpleDriverDataSource);
+	}
+
+	@Test
 	void explicitTypeSupportedDataSource() {
 		this.contextRunner
 				.withPropertyValues("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
@@ -169,7 +179,8 @@ class DataSourceAutoConfigurationTests {
 
 	private void containsOnlySimpleDriverDataSource(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(DataSource.class);
-		assertThat(context).getBean(DataSource.class).isExactlyInstanceOf(SimpleDriverDataSource.class);
+		assertThat(context).getBean(DataSource.class).isExactlyInstanceOf(SimpleDriverDataSource.class)
+				.extracting("driver").isNotNull();
 	}
 
 	@Test
