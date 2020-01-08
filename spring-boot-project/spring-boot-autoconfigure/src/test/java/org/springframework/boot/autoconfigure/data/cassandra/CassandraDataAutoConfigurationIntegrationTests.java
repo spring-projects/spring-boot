@@ -47,7 +47,7 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
 	public static SkippableContainer<CassandraContainer<?>> cassandra = new SkippableContainer<>(
-			() -> new CassandraContainer<>().withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(2)));
+			() -> new CassandraContainer<>().withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10)));
 
 	private AnnotationConfigApplicationContext context;
 
