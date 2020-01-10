@@ -37,14 +37,26 @@ final class Versions {
 
 	private Versions() {
 	}
-
+	
+ /**
+  * Returns the version of the Spring boot
+  *
+  * @return returns a String
+  */
 	static String getBootVersion() {
 		String baseDir = StringUtils.cleanPath(new File(".").getAbsolutePath());
 		String mainBaseDir = evaluateExpression("pom.xml", PROPERTIES + "/*[local-name()='main.basedir']/text()");
 		mainBaseDir = mainBaseDir.replace("${basedir}", baseDir);
 		return evaluateExpression(mainBaseDir + "/pom.xml", PROPERTIES + "/*[local-name()='revision']/text()");
 	}
-
+	
+  /**
+  * evaluates the Expressions
+  * @param file - name of the file
+  * @param expression - regular expression
+  * @return returns a String
+  */
+	
 	private static String evaluateExpression(String file, String expression) {
 		try {
 			InputSource source = new InputSource(new FileReader(file));
