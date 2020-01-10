@@ -57,7 +57,7 @@ public class OptionalDependenciesPluginIntegrationTests {
 			out.println("}");
 		}
 		BuildResult buildResult = runGradle("printConfigurations");
-		assertThat(buildResult.getOutput()).contains("optional");
+		assertThat(buildResult.getOutput()).contains(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME);
 	}
 
 	@Test
