@@ -136,14 +136,17 @@ public final class WebFluxTags {
 	 */
 	public static Tag outcome(ServerWebExchange exchange) {
 		Integer statusCode = extractStatusCode(exchange);
-		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode) : Outcome.UNKNOWN;
+		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode) : Outcome.SUCCESS;
 		return outcome.asTag();
 	}
 
 	private static Integer extractStatusCode(ServerWebExchange exchange) {
 		ServerHttpResponse response = exchange.getResponse();
 		if (response instanceof AbstractServerHttpResponse) {
-			return ((AbstractServerHttpResponse) response).getStatusCodeValue();
+			Integer statusCode = ((AbstractServerHttpResponse) response).getStatusCodeValue();
+			if (statusCode != null) {
+				return statusCode;
+			}
 		}
 		HttpStatus status = response.getStatusCode();
 		return (status != null) ? status.value() : null;
