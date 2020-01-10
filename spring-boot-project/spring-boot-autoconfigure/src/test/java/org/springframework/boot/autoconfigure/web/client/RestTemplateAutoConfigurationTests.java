@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,13 @@ class RestTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
+
+	@Test
+	void restTemplateBuilderShouldBeLazilyDefined() {
+		this.contextRunner.run(
+				(context) -> assertThat(context.getBeanFactory().getBeanDefinition("restTemplateBuilder").isLazyInit())
+						.isTrue());
+	}
 
 	@Test
 	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {

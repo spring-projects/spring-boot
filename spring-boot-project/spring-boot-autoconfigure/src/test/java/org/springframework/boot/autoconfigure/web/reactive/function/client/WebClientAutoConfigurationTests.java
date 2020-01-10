@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class WebClientAutoConfigurationTests {
 			verify(secondConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
 					any());
 			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
-			verify(customizer, times(1)).customize(any(WebClient.Builder.class));
+			verify(customizer, times(2)).customize(any(WebClient.Builder.class));
 		});
 	}
 

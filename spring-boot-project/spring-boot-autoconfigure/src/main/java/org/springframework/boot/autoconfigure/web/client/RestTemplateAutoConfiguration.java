@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -54,6 +55,7 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateAutoConfiguration {
 
 	@Bean
+	@Lazy
 	@ConditionalOnMissingBean
 	public RestTemplateBuilder restTemplateBuilder(ObjectProvider<HttpMessageConverters> messageConverters,
 			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers,
