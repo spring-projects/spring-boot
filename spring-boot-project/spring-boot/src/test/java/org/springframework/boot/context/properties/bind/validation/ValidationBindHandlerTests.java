@@ -122,7 +122,7 @@ class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
+		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo.nested");
 		assertThat(cause.getMessage()).contains("nested.age");
 		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}
