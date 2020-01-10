@@ -13,6 +13,7 @@ dependencies {
 
 	intTestImplementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
 	intTestImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	intTestImplementation 'org.apache.httpcomponents:httpasyncclient'
 	intTestImplementation 'org.awaitility:awaitility'
 	intTestImplementation 'org.testcontainers:testcontainers'

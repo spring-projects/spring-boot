@@ -15,6 +15,7 @@ dependencies {
 	app project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter-web', configuration: 'mavenRepository')
 
 	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	intTestImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 	intTestImplementation 'org.testcontainers:testcontainers'
 }

@@ -26,12 +26,14 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Deployment integration tests.
  */
+@ExtendWith(DisabledIfDockerUnavailable.class)
 class DeploymentIntegrationTests {
 
 	@ParameterizedTest

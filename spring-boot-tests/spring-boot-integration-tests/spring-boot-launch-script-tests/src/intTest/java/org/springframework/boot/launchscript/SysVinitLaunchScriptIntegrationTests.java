@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -32,6 +33,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -42,6 +44,7 @@ import static org.hamcrest.Matchers.containsString;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  */
+@ExtendWith(DisabledIfDockerUnavailable.class)
 class SysVinitLaunchScriptIntegrationTests {
 
 	private static final char ESC = 27;
