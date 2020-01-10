@@ -231,7 +231,7 @@ jobs:
       build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
       build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
       disable_checksum_uploads: true
-      threads: 8
+      threads: 1
       artifact_set:
       - include:
         - "/**/spring-boot-docs-*.zip"
