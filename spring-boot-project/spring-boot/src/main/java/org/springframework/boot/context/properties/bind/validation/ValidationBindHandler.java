@@ -16,10 +16,8 @@
 
 package org.springframework.boot.context.properties.bind.validation;
 
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,7 +50,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 	private final Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 
-	private final Deque<BindValidationException> exceptions = new LinkedList<>();
+	private BindValidationException exception;
 
 	public ValidationBindHandler(Validator... validators) {
 		this.validators = validators;
@@ -94,7 +92,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		this.boundTypes.clear();
 		this.boundResults.clear();
 		this.boundProperties.clear();
-		this.exceptions.clear();
+		this.exception = null;
 	}
 
 	@Override
@@ -105,13 +103,15 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
-		Object validationTarget = getValidationTarget(target, context, result);
-		Class<?> validationType = target.getBoxedType().resolve();
-		if (validationTarget != null) {
-			validateAndPush(name, validationTarget, validationType);
+		if (this.exception == null) {
+			Object validationTarget = getValidationTarget(target, context, result);
+			Class<?> validationType = target.getBoxedType().resolve();
+			if (validationTarget != null) {
+				validateAndPush(name, validationTarget, validationType);
+			}
 		}
-		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
-			throw this.exceptions.pop();
+		if (context.getDepth() == 0 && this.exception != null) {
+			throw this.exception;
 		}
 	}
 
@@ -134,7 +134,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 			}
 		}
 		if (result != null && result.hasErrors()) {
-			this.exceptions.push(new BindValidationException(result.getValidationErrors()));
+			this.exception = new BindValidationException(result.getValidationErrors());
 		}
 	}
 

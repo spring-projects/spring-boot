@@ -201,6 +201,15 @@ class ValidationBindHandlerTests {
 		assertThat(cause.getMessage()).contains("rejected value [2]");
 	}
 
+	@Test
+	void validationShouldBeSkippedIfPreviousValidationErrorPresent() {
+		this.sources.add(new MockConfigurationPropertySource("foo.inner.person-age", 2));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
+				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleCamelCase.class), this.handler));
+		FieldError fieldError = (FieldError) cause.getValidationErrors().getAllErrors().get(0);
+		assertThat(fieldError.getField()).isEqualTo("personAge");
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
