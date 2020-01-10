@@ -25,6 +25,7 @@ import org.testcontainers.DockerClientFactory;
  * An {@link ExecutionCondition} that disables execution if Docker is unavailable.
  *
  * @author Andy Wilkinson
+ * @since 2.3.0
  */
 public class DisabledIfDockerUnavailable implements ExecutionCondition {
 
