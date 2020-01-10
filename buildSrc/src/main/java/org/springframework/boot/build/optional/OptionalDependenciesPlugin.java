@@ -44,7 +44,7 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		Configuration optional = project.getConfigurations().create("optional");
+		Configuration optional = project.getConfigurations().create(OPTIONAL_CONFIGURATION_NAME);
 		optional.attributes((attributes) -> attributes.attribute(Usage.USAGE_ATTRIBUTE,
 				project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME)));
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
