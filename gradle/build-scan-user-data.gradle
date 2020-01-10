@@ -1,10 +1,15 @@
 tagOs()
+tagJdk()
 tagIde()
 tagCiOrLocal()
 addGitMetadata()
 
 void tagOs() {
 	gradleEnterprise.buildScan.tag System.getProperty('os.name')
+}
+
+void tagJdk() {
+	gradleEnterprise.buildScan.tag "JDK-${System.getProperty('java.specification.version')}"
 }
 
 void tagIde() {
