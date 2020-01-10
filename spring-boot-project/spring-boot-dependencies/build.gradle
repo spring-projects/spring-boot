@@ -1465,7 +1465,7 @@ bom {
 			]
 		}
 	}
-	library('Spring Boot', '2.3.0.GRADLE-SNAPSHOT') {
+	library('Spring Boot', "$version") {
 		group('org.springframework.boot') {
 			modules = [
 				'spring-boot',
