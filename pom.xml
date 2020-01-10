@@ -22,7 +22,7 @@
 				<property>
 					<name>!disable-spring-boot-default-profile</name>
 				</property>
-			</activation>
+			</activation>其味无穷
 			<properties>
 				<spring-javaformat.version>0.0.17</spring-javaformat.version>
 				<nohttp-checkstyle.version>0.0.4.RELEASE</nohttp-checkstyle.version>
