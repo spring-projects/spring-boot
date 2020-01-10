@@ -32,7 +32,7 @@ gradleEnterprise {
 	}
 }
 
-apply from: new File(settingsDir, 'gradle/build-cache-settings.gradle')
+apply from: "$settingsDir/gradle/build-cache-settings.gradle"
 
 rootProject.name='spring-boot-build'
 
@@ -62,10 +62,10 @@ include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-configurati
 include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests'
 include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests'
 
-new File("$rootDir/spring-boot-project/spring-boot-starters").eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-starter.*/) {
+file("$rootDir/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {
 	include "spring-boot-project:spring-boot-starters:$it.name"
 }
 
-new File("$rootDir/spring-boot-tests/spring-boot-smoke-tests").eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-smoke-test.*/) {
+file("$rootDir/spring-boot-tests/spring-boot-smoke-tests").eachDirMatch(~/spring-boot-smoke-test.*/) {
 	include "spring-boot-tests:spring-boot-smoke-tests:$it.name"
 }
