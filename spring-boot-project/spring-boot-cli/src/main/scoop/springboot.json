@@ -1,11 +1,11 @@
 {
   "homepage": "https://projects.spring.io/spring-boot/",
-  "version": "${scoop-version}",
+  "version": "${scoopVersion}",
   "license": "Apache 2.0",
   "hash": "${hash}",
   "url": "https://repo.spring.io/${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.zip",
   "extract_dir": "spring-${project.version}",
-  "bin": "bin\\spring.bat",
+  "bin": "bin\\\\spring.bat",
   "suggest": {
     "JDK": [
       "java/oraclejdk",
@@ -14,13 +14,13 @@
   },
   "checkver": {
     "github": "https://github.com/spring-projects/spring-boot",
-    "re": "/releases/tag/(?:v)?(2[\\d.]+)\\.RELEASE"
+    "re": "/releases/tag/(?:v)?(2[\\d.]+)\\\\.RELEASE"
   },
   "autoupdate": {
-    "url": "https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/$version.RELEASE/spring-boot-cli-$version.RELEASE-bin.zip",
-    "extract_dir": "spring-$version.RELEASE",
+    "url": "https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/\$version.RELEASE/spring-boot-cli-\$version.RELEASE-bin.zip",
+    "extract_dir": "spring-\$version.RELEASE",
     "hash": {
-      "url": "$url.sha256"
+      "url": "\$url.sha256"
     }
   }
 }

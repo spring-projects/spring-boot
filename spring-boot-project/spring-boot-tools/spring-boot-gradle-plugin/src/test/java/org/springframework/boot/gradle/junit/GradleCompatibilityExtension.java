@@ -17,9 +17,11 @@
 package org.springframework.boot.gradle.junit;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.gradle.api.JavaVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -38,8 +40,17 @@ import org.springframework.boot.gradle.testkit.GradleBuildExtension;
  */
 public final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
-	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "5.0", "5.1.1", "5.2.1", "5.3.1",
-			"5.4.1", "5.5.1", "5.6.4", "6.0.1");
+	private static final List<String> GRADLE_VERSIONS;
+
+	static {
+		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
+			GRADLE_VERSIONS = Collections.singletonList("default");
+		}
+		else {
+			GRADLE_VERSIONS = Arrays.asList("4.10.3", "5.0", "5.1.1", "5.2.1", "5.3.1", "5.4.1", "5.5.1", "5.6.4",
+					"default");
+		}
+	}
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {

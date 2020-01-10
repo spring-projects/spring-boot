@@ -191,8 +191,7 @@ public class JSONStringer {
 	 * @return the JSON stringer
 	 * @throws JSONException if processing of json failed
 	 */
-	JSONStringer close(Scope empty, Scope nonempty, String closeBracket)
-			throws JSONException {
+	JSONStringer close(Scope empty, Scope nonempty, String closeBracket) throws JSONException {
 		Scope context = peek();
 		if (context != nonempty && context != empty) {
 			throw new JSONException("Nesting problem");

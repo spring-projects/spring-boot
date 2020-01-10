@@ -100,11 +100,12 @@ class FileSystemWatcherTests {
 	}
 
 	@Test
-	void sourceFolderMustNotBeAFile() {
-		File folder = new File("pom.xml");
-		assertThat(folder.isFile()).isTrue();
-		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
-				.withMessageContaining("Folder 'pom.xml' must not be a file");
+	void sourceFolderMustNotBeAFile() throws IOException {
+		File file = new File(this.tempDir, "file");
+		assertThat(file.createNewFile()).isTrue();
+		assertThat(file.isFile()).isTrue();
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(file))
+				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
 	@Test

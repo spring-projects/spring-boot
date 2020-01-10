@@ -104,7 +104,7 @@ class ChangeableUrlsTests {
 	private URL makeUrl(String name) throws IOException {
 		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		file = new File(file, name);
-		file = new File(file, "target");
+		file = new File(file, "build");
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();

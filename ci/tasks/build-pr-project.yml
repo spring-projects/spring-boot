@@ -7,5 +7,8 @@ outputs:
 caches:
 - path: maven
 - path: gradle
+params:
+  CI: true
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
 run:
   path: git-repo/ci/scripts/build-project.sh

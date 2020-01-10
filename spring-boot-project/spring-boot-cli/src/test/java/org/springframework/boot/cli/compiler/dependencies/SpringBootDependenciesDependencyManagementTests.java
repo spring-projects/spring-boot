@@ -19,7 +19,6 @@ package org.springframework.boot.cli.compiler.dependencies;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.empty;
 
 /**
  * Tests for {@link SpringBootDependenciesDependencyManagement}
@@ -45,7 +44,7 @@ class SpringBootDependenciesDependencyManagementTests {
 
 	@Test
 	void getDependencies() {
-		assertThat(this.dependencyManagement.getDependencies()).isNotEqualTo(empty());
+		assertThat(this.dependencyManagement.getDependencies()).isNotEmpty();
 	}
 
 }

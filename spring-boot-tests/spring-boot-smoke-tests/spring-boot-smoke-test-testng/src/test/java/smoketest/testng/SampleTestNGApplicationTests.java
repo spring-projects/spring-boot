@@ -34,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
+public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	void testHome() {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");

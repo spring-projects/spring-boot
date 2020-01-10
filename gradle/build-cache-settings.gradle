@@ -1,0 +1,18 @@
+buildCache {
+	local {
+		enabled = true
+	}
+	remote(HttpBuildCache) {
+		enabled = true
+		url = 'https://ge.spring.io/cache/'
+		def cacheUsername = System.getenv('GRADLE_ENTERPRISE_CACHE_USERNAME')
+		def cachePassword = System.getenv('GRADLE_ENTERPRISE_CACHE_PASSWORD')
+		if (cacheUsername && cachePassword) {
+			push = true
+			credentials {
+				username = cacheUsername
+				password = cachePassword
+			}
+		}
+	}
+}

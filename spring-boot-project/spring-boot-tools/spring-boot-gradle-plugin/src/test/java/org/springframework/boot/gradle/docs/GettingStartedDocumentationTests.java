@@ -38,7 +38,7 @@ class GettingStartedDocumentationTests {
 
 	@TestTemplate
 	void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins").build("verify");
+		this.gradleBuild.script("src/docs/gradle/getting-started/typical-plugins").build("verify");
 	}
 
 }

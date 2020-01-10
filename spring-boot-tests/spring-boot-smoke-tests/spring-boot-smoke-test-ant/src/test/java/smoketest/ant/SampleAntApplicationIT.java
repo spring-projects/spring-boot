@@ -38,7 +38,7 @@ public class SampleAntApplicationIT {
 
 	@Test
 	void runJar() throws Exception {
-		File target = new File("target");
+		File target = new File("build/ant/libs");
 		File[] jarFiles = target.listFiles(new FileFilter() {
 
 			@Override

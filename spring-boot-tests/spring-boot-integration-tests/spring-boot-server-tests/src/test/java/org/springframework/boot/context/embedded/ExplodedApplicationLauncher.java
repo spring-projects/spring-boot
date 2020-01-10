@@ -80,6 +80,7 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 				extracted.mkdirs();
 			}
 			else {
+				extracted.getParentFile().mkdirs();
 				FileOutputStream extractedOutputStream = new FileOutputStream(extracted);
 				StreamUtils.copy(jarFile.getInputStream(jarEntry), extractedOutputStream);
 				extractedOutputStream.close();

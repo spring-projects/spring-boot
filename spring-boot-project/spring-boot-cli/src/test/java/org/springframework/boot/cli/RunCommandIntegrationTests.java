@@ -42,7 +42,7 @@ class RunCommandIntegrationTests {
 	CliTester cli;
 
 	RunCommandIntegrationTests(CapturedOutput output) {
-		this.cli = new CliTester("src/it/resources/run-command/", output);
+		this.cli = new CliTester("src/test/resources/run-command/", output);
 	}
 
 	private Properties systemProperties = new Properties();

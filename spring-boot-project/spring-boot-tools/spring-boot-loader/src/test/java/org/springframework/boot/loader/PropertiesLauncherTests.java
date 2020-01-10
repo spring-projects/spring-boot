@@ -269,13 +269,19 @@ class PropertiesLauncherTests {
 		List<Archive> archives = new ArrayList<>();
 		String path = System.getProperty("java.class.path");
 		for (String url : path.split(File.pathSeparator)) {
-			archives.add(archive(url));
+			Archive archive = archive(url);
+			if (archive != null) {
+				archives.add(archive);
+			}
 		}
 		return archives;
 	}
 
 	private Archive archive(String url) throws IOException {
 		File file = new FileSystemResource(url).getFile();
+		if (!file.exists()) {
+			return null;
+		}
 		if (url.endsWith(".jar")) {
 			return new JarFileArchive(file);
 		}

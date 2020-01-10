@@ -16,6 +16,10 @@
 
 package org.springframework.boot.devtools.restart;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,8 +86,17 @@ class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	void urlsCanBeRetrieved() {
-		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread())).isNotEmpty();
+	void urlsCanBeRetrieved() throws IOException {
+		Thread thread = Thread.currentThread();
+		ClassLoader classLoader = thread.getContextClassLoader();
+		try (URLClassLoader contextClassLoader = new URLClassLoader(
+				new URL[] { new URL("file:test-app/build/classes/main/") }, classLoader)) {
+			thread.setContextClassLoader(contextClassLoader);
+			assertThat(new DefaultRestartInitializer().getUrls(thread)).isNotEmpty();
+		}
+		finally {
+			thread.setContextClassLoader(classLoader);
+		}
 	}
 
 	protected void testSkippedStacks(String s) {

@@ -62,7 +62,7 @@ class DevToolsSettingsTests {
 
 	private URL makeUrl(File file, String name) throws IOException {
 		file = new File(file, name);
-		file = new File(file, "target");
+		file = new File(file, "build");
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();

@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.10
+    tag: 0.0.11-SNAPSHOT
 - name: pull-request
   type: docker-image
   source:
@@ -209,19 +209,9 @@ jobs:
       timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - in_parallel:
-      - task: build-smoke-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-deployment-tests.yml
+      params:
+        GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
     on_failure:
       do:
       - put: repo-status-build
@@ -241,16 +231,15 @@ jobs:
       build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
       build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
       disable_checksum_uploads: true
-      exclude:
-      - "**/*.effective-pom"
-      - "**/spring-boot-configuration-docs/**"
-      - "**/spring-boot-test-support/**"
+      threads: 8
       artifact_set:
       - include:
         - "/**/spring-boot-docs-*.zip"
         properties:
           "zip.type": "docs"
           "zip.deployed": "false"
+    get_params:
+      threads: 8
     on_failure:
       do:
       - put: slack-alert
@@ -283,19 +272,6 @@ jobs:
       timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
-    - in_parallel:
-      - task: build-smoke-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
-        timeout: ((task-timeout))
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-deployment-tests.yml
     on_success:
       put: git-pull-request
       params:
@@ -321,19 +297,9 @@ jobs:
       timeout: ((task-timeout))
       image: spring-boot-jdk11-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - in_parallel:
-      - task: build-smoke-tests
-        timeout: ((task-timeout))
-        image: spring-boot-jdk11-ci-image
-        file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
-        timeout: ((task-timeout))
-        image: spring-boot-jdk11-ci-image
-        file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
-        timeout: ((task-timeout))
-        image: spring-boot-jdk11-ci-image
-        file: git-repo/ci/tasks/build-deployment-tests.yml
+      params:
+        GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
     on_failure:
       do:
       - put: repo-status-jdk11-build
@@ -362,24 +328,14 @@ jobs:
     - put: repo-status-jdk13-build
       params: { state: "pending", commit: "git-repo" }
     - do:
-        - task: build-project
-          privileged: true
-          timeout: ((task-timeout))
-          image: spring-boot-jdk13-ci-image
-          file: git-repo/ci/tasks/build-project.yml
-        - in_parallel:
-            - task: build-smoke-tests
-              timeout: ((task-timeout))
-              image: spring-boot-jdk13-ci-image
-              file: git-repo/ci/tasks/build-smoke-tests.yml
-            - task: build-integration-tests
-              timeout: ((task-timeout))
-              image: spring-boot-jdk13-ci-image
-              file: git-repo/ci/tasks/build-integration-tests.yml
-            - task: build-deployment-tests
-              timeout: ((task-timeout))
-              image: spring-boot-jdk13-ci-image
-              file: git-repo/ci/tasks/build-deployment-tests.yml
+      - task: build-project
+        privileged: true
+        timeout: ((task-timeout))
+        image: spring-boot-jdk13-ci-image
+        file: git-repo/ci/tasks/build-project.yml
+        params:
+          GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
       on_failure:
         do:
           - put: repo-status-jdk13-build
@@ -412,6 +368,9 @@ jobs:
         tags:
         - WIN64
         timeout: ((task-timeout))
+        params:
+          GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
       on_failure:
         do:
           - put: slack-alert
@@ -437,6 +396,8 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: M
+      GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params
@@ -455,6 +416,8 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RC
+      GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params
@@ -473,6 +436,8 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RELEASE
+      GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params

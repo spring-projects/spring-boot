@@ -1,0 +1,50 @@
+plugins {
+	id 'java-library'
+	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.deployed'
+}
+
+description = 'Spring Boot Loader Tools'
+
+def generatedResources = "${buildDir}/generated-resources/main"
+
+configurations {
+	loader
+}
+
+dependencies {
+	api "org.apache.commons:commons-compress:1.19"
+
+	compileOnly "ch.qos.logback:logback-classic"
+
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	implementation "org.springframework:spring-core"
+
+	loader project(":spring-boot-project:spring-boot-tools:spring-boot-loader")
+
+	testImplementation "org.assertj:assertj-core"
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testImplementation "org.mockito:mockito-core"
+	testImplementation "org.zeroturnaround:zt-zip:1.13"
+}
+
+sourceSets {
+	main {
+		output.dir(generatedResources, builtBy: 'reproducibleLoaderJar')
+	}
+}
+
+task reproducibleLoaderJar(type: Jar) {
+	dependsOn configurations.loader
+	from {
+		zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = 'spring-boot-loader.jar'
+	destinationDirectory = file("${generatedResources}/META-INF/loader")
+}
+
+jar {
+	dependsOn reproducibleLoaderJar
+}

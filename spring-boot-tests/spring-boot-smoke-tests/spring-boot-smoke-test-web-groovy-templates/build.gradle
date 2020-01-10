@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot.conventions'
+}
+
+description = 'Spring Boot web Groovy Templates smoke test'
+
+dependencies {	
+	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-groovy-templates')
+	if (JavaVersion.current().java9Compatible) {
+		implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
+	}
+	
+	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+}

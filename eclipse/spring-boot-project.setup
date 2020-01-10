@@ -4,13 +4,12 @@
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
-    xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
     name="spring.boot.2.3.x"
     label="Spring Boot 2.3.x">
   <setupTask
@@ -70,8 +69,6 @@
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
         name="org.eclipse.m2e.feature.feature.group" versionRange="[1.14.0,2.0.0)"/>
-    <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group"/>
      <requirement
         name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <requirement
@@ -98,15 +95,6 @@
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
     </description>
-  </setupTask>
-  <setupTask
-      xsi:type="maven:MavenImportTask">
-    <sourceLocator
-        rootFolder="${checkout.location}"
-        locateNestedProjects="true">
-        <excludedPath>spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin</excludedPath>
-    </sourceLocator>
-    <description></description>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">

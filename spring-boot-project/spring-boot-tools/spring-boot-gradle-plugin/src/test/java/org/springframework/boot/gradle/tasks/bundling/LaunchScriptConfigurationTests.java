@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,8 @@ class LaunchScriptConfigurationTests {
 
 	@Test
 	void initInfoProvidesUsesArchiveBaseNameByDefault() {
-		given(this.task.getBaseName()).willReturn("base-name");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoProvides",
 				"base-name");
 	}
@@ -57,7 +59,8 @@ class LaunchScriptConfigurationTests {
 
 	@Test
 	void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
-		given(this.task.getBaseName()).willReturn("base-name");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"base-name");
 	}
@@ -71,7 +74,8 @@ class LaunchScriptConfigurationTests {
 
 	@Test
 	void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
-		given(this.task.getBaseName()).willReturn("base-name");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"base-name");
 	}
@@ -88,6 +92,13 @@ class LaunchScriptConfigurationTests {
 		given(this.project.getDescription()).willReturn("The\nproject\ndescription");
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"The\n#  project\n#  description");
+	}
+
+	@SuppressWarnings("unchecked")
+	private Property<String> stringProperty(String value) {
+		Property<String> property = mock(Property.class);
+		given(property.get()).willReturn(value);
+		return property;
 	}
 
 }

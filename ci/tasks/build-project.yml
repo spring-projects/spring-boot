@@ -8,6 +8,11 @@ caches:
 - path: maven
 - path: gradle
 - path: embedmongo
+params:
+  CI: true
+  GRADLE_ENTERPRISE_CACHE_USERNAME:
+  GRADLE_ENTERPRISE_CACHE_PASSWORD:
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
 run:
   path: bash
   args:
@@ -16,4 +21,3 @@ run:
       source /docker-lib.sh
       start_docker
       ${PWD}/git-repo/ci/scripts/build-project.sh
-

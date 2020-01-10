@@ -74,10 +74,11 @@ public class ReactiveRestClientAutoConfigurationTests {
 
 	@Test
 	void restClientCanQueryElasticsearchNode() {
-		this.contextRunner
-				.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints="
-						+ elasticsearch.getContainerIpAddress() + ":" + elasticsearch.getFirstMappedPort())
-				.run((context) -> {
+		this.contextRunner.withPropertyValues(
+				"spring.data.elasticsearch.client.reactive.endpoints=" + elasticsearch.getContainerIpAddress() + ":"
+						+ elasticsearch.getFirstMappedPort(),
+				"spring.data.elasticsearch.client.reactive.connection-timeout=120s",
+				"spring.data.elasticsearch.client.reactive.socket-timeout=120s").run((context) -> {
 					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");

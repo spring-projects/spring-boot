@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.Session;
 import org.testcontainers.containers.Neo4jContainer;
@@ -46,7 +48,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataNeo4jTestIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication();
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
 	private Session session;
