@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.DataObjectPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.ResolvableType;
@@ -187,7 +188,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 
 		private ConfigurationPropertyName getName(String field) {
-			return this.name.append(field);
+			return this.name.append(DataObjectPropertyName.toDashedForm(field));
 		}
 
 		ValidationErrors getValidationErrors() {

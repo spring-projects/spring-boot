@@ -193,6 +193,14 @@ class ValidationBindHandlerTests {
 				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageContaining("years"));
 	}
 
+	@Test
+	void validationErrorsForCamelCaseFieldsShouldContainRejectedValue() {
+		this.sources.add(new MockConfigurationPropertySource("foo.inner.person-age", 2));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
+				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleCamelCase.class), this.handler));
+		assertThat(cause.getMessage()).contains("rejected value [2]");
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
@@ -301,6 +309,33 @@ class ValidationBindHandlerTests {
 
 		void setAddress(String address) {
 			this.address = address;
+		}
+
+	}
+
+	@Validated
+	static class ExampleCamelCase {
+
+		@Valid
+		private InnerProperties inner = new InnerProperties();
+
+		InnerProperties getInner() {
+			return this.inner;
+		}
+
+		static class InnerProperties {
+
+			@Min(5)
+			private int personAge;
+
+			int getPersonAge() {
+				return this.personAge;
+			}
+
+			void setPersonAge(int personAge) {
+				this.personAge = personAge;
+			}
+
 		}
 
 	}
