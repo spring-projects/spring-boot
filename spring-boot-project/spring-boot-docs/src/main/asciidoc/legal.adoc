@@ -3,7 +3,7 @@
 
 {spring-boot-version}
 
-Copyright &#169; 2012-2019
+Copyright &#169; 2012-2020
 
 Copies of this document may be made for your own use and for distribution to
 others, provided that you do not charge any fee for such copies and further
