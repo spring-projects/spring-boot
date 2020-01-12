@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,6 +154,24 @@ class HazelcastAutoConfigurationServerTests {
 					Map<String, QueueConfig> queueConfigs = config.getQueueConfigs();
 					assertThat(queueConfigs.keySet()).containsOnly("another-queue");
 				});
+	}
+
+	@Test
+	void configureConfigUsingCustomizer() {
+		this.contextRunner.withUserConfiguration(HazelcastCustomizerConfiguration.class).run((context) -> {
+			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+			assertThat(hazelcast.getConfig().getInstanceName()).isEqualTo("spring-boot-instance");
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastCustomizerConfiguration {
+
+		@Bean
+		HazelcastConfigCustomizer hazelcastConfigInstanceNameCustomizer() {
+			return (config) -> config.setInstanceName("spring-boot-instance");
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

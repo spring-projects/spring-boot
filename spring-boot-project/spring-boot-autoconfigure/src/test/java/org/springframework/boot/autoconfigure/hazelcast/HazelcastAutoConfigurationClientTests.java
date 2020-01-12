@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.hazelcast;
+
+import java.util.Collections;
 
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
@@ -124,6 +126,14 @@ class HazelcastAutoConfigurationClientTests {
 						.getBean(HazelcastInstance.class).isInstanceOf(HazelcastClientProxy.class));
 	}
 
+	@Test
+	void configureConfigUsingCustomizer() {
+		this.contextRunner.withUserConfiguration(HazelcastCustomizerConfiguration.class)
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.xml")
+				.run((context) -> assertSpecificHazelcastClient("spring-boot"));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
 		return (context) -> assertThat(context).getBean(HazelcastInstance.class).isInstanceOf(HazelcastInstance.class)
 				.has(labelEqualTo(label));
@@ -132,6 +142,16 @@ class HazelcastAutoConfigurationClientTests {
 	private static Condition<HazelcastInstance> labelEqualTo(String label) {
 		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig().getLabels().stream()
 				.anyMatch((e) -> e.equals(label)), "Label equals to " + label);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastCustomizerConfiguration {
+
+		@Bean
+		HazelcastClientConfigCustomizer hazelcastClientConfigLabelCustomizer() {
+			return (clientConfig) -> clientConfig.setLabels(Collections.singleton("spring-boot"));
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

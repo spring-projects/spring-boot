@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import java.net.URL;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
+import com.hazelcast.client.config.XmlClientConfigLocator;
 import com.hazelcast.client.config.YamlClientConfigBuilder;
+import com.hazelcast.client.config.YamlClientConfigLocator;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.core.io.Resource;
@@ -40,12 +42,38 @@ public class HazelcastClientFactory {
 	private final ClientConfig clientConfig;
 
 	/**
+	 * Create a new {@link HazelcastInstanceFactory} instance.
+	 * @param configCustomizers any {@link HazelcastClientConfigCustomizer customizers}
+	 * that should be applied when the {@link ClientConfig} is built and before
+	 * {@link HazelcastInstance} is created.
+	 * @since 2.3.0
+	 */
+	public HazelcastClientFactory(HazelcastClientConfigCustomizer... configCustomizers) {
+		Assert.notNull(configCustomizers, "ConfigCustomizers must not be null");
+		ClientConfig config = getDefaultClientConfig();
+		for (HazelcastClientConfigCustomizer configCustomizer : configCustomizers) {
+			configCustomizer.customize(config);
+		}
+		this.clientConfig = config;
+	}
+
+	/**
 	 * Create a {@link HazelcastClientFactory} for the specified configuration location.
 	 * @param clientConfigLocation the location of the configuration file
+	 * @param configCustomizers any {@link HazelcastClientConfigCustomizer customizers}
+	 * that should be applied when the {@link ClientConfig} is built and before
+	 * {@link HazelcastInstance} is created.
 	 * @throws IOException if the configuration location could not be read
 	 */
-	public HazelcastClientFactory(Resource clientConfigLocation) throws IOException {
-		this.clientConfig = getClientConfig(clientConfigLocation);
+	public HazelcastClientFactory(Resource clientConfigLocation, HazelcastClientConfigCustomizer... configCustomizers)
+			throws IOException {
+		Assert.notNull(clientConfigLocation, "ConfigLocation must not be null");
+		Assert.notNull(configCustomizers, "ConfigCustomizers must not be null");
+		ClientConfig config = getClientConfig(clientConfigLocation);
+		for (HazelcastClientConfigCustomizer configCustomizer : configCustomizers) {
+			configCustomizer.customize(config);
+		}
+		this.clientConfig = config;
 	}
 
 	/**
@@ -64,6 +92,27 @@ public class HazelcastClientFactory {
 			return new YamlClientConfigBuilder(configUrl).build();
 		}
 		return new XmlClientConfigBuilder(configUrl).build();
+	}
+
+	private ClientConfig getDefaultClientConfig() {
+		XmlClientConfigLocator xmlConfigLocator = new XmlClientConfigLocator();
+		YamlClientConfigLocator yamlConfigLocator = new YamlClientConfigLocator();
+		if (yamlConfigLocator.locateFromSystemProperty()) {
+			return new YamlClientConfigBuilder(yamlConfigLocator).build();
+		}
+		if (xmlConfigLocator.locateFromSystemProperty()) {
+			return new XmlClientConfigBuilder(xmlConfigLocator).build();
+		}
+		if (xmlConfigLocator.locateInWorkDirOrOnClasspath()) {
+			return new XmlClientConfigBuilder(xmlConfigLocator).build();
+		}
+		if (yamlConfigLocator.locateInWorkDirOrOnClasspath()) {
+			return new YamlClientConfigBuilder(yamlConfigLocator).build();
+		}
+		if (xmlConfigLocator.locateDefault()) {
+			return new XmlClientConfigBuilder(xmlConfigLocator).build();
+		}
+		throw new IllegalStateException("Hazelcast ClientConfig does not exist");
 	}
 
 	/**
