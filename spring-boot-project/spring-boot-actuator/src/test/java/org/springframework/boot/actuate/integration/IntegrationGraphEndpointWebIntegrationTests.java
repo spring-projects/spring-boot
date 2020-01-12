@@ -36,7 +36,7 @@ class IntegrationGraphEndpointWebIntegrationTests {
 	void graph(WebTestClient client) {
 		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
-				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.1f)
+				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.2f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 

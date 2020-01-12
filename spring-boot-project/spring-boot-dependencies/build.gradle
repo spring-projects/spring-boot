@@ -1684,7 +1684,7 @@ bom {
 			]
 		}
 	}
-	library('Spring Integration', '5.2.2.RELEASE') {
+	library('Spring Integration', '5.3.0.BUILD-SNAPSHOT') {
 		group('org.springframework.integration') {
 			modules = [
 				'spring-integration-http' {
