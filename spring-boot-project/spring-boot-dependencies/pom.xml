@@ -166,7 +166,7 @@
 		<solr.version>7.7.2</solr.version>
 		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.1.13.BUILD-SNAPSHOT</spring.version>
-		<spring-amqp.version>2.1.12.RELEASE</spring-amqp.version>
+		<spring-amqp.version>2.1.13.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.1.3.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.7.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-SR14</spring-data-releasetrain.version>
