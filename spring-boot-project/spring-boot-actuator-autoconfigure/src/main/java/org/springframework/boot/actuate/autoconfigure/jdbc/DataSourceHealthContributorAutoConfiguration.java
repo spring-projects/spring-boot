@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.jdbc;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -64,12 +65,15 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class DataSourceHealthContributorAutoConfiguration extends
 		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
 
+	private Map<String, DataSource> dataSources;
+
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	public DataSourceHealthContributorAutoConfiguration(Map<String, DataSource> dataSources,
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+		this.dataSources = dataSources;
 		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
 	}
 
@@ -89,7 +93,12 @@ public class DataSourceHealthContributorAutoConfiguration extends
 		if (source instanceof AbstractRoutingDataSource) {
 			return new RoutingDataSourceHealthIndicator();
 		}
-		return new DataSourceHealthIndicator(source, getValidationQuery(source));
+		String name = this.dataSources.entrySet().stream()
+				.filter(entry -> entry.getValue().equals(source))
+				.findAny()
+				.map(Entry::getKey)
+				.orElse(null);
+		return new DataSourceHealthIndicator(name, source, getValidationQuery(source));
 	}
 
 	private String getValidationQuery(DataSource source) {

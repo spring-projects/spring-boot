@@ -82,7 +82,18 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	 * @param query the validation query to use (can be {@code null})
 	 */
 	public DataSourceHealthIndicator(DataSource dataSource, String query) {
-		super("DataSource health check failed");
+		this(null, dataSource, query);
+	}
+
+	/**
+	 * Create a new {@link DataSourceHealthIndicator} using the specified
+	 * {@link DataSource} and validation query.
+	 * @param name the name of the data source
+	 * @param dataSource the data source
+	 * @param query the validation query to use (can be {@code null})
+	 */
+	public DataSourceHealthIndicator(String name, DataSource dataSource, String query) {
+		super(ex -> "DataSource " + name + " health check failed : " + ex.getMessage());
 		this.dataSource = dataSource;
 		this.query = query;
 		this.jdbcTemplate = (dataSource != null) ? new JdbcTemplate(dataSource) : null;
