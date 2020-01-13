@@ -96,7 +96,7 @@
 		<jakarta-servlet-jsp.version>2.3.5</jakarta-servlet-jsp.version>
 		<jakarta-servlet-jsp-jstl.version>1.2.7</jakarta-servlet-jsp-jstl.version>
 		<jakarta-transaction.version>1.3.3</jakarta-transaction.version>
-		<jakarta-validation.version>2.0.1</jakarta-validation.version>
+		<jakarta-validation.version>2.0.2</jakarta-validation.version>
 		<jakarta-websocket.version>1.1.2</jakarta-websocket.version>
 		<jakarta-ws-rs.version>2.1.6</jakarta-ws-rs.version>
 		<jakarta-xml-bind.version>2.3.2</jakarta-xml-bind.version>
