@@ -21,5 +21,5 @@ dependencies {
 		exclude group: 'javax.websocket', module: 'javax.websocket-api'
 		exclude group: 'javax.websocket', module: 'javax.websocket-client-api'
 	}
-	api 'org.mortbay.jasper:apache-el'
+	api 'org.glassfish:jakarta.el'
 }
