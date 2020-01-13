@@ -1558,6 +1558,33 @@
       }
     },
     {
+      "name": "spring.data.cassandra.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not compatible with Dropwizard Metrics.",
+      "deprecation": {
+        "reason": "Cassandra no longer providers JMX metrics.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.pool-timeout",
+      "type": "java.time.Duration",
+      "description": "Pool timeout when trying to acquire a connection from a host's pool.",
+      "deprecation": {
+        "reason": "No longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.port",
+      "type": "java.lang.Integer",
+      "description": "Port of the Cassandra server.",
+      "deprecation": {
+        "reason": "each contact point must be of the form 'host:port'.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.cassandra.read-timeout-millis",
       "type": "java.lang.Integer",
       "description": "Socket option: read time out.",

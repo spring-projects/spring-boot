@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Initializer;
-import com.datastax.driver.core.PoolingOptions;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
+import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.impl.Parseable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -27,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraAutoConfiguration}
@@ -41,110 +43,66 @@ class CassandraAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
 	@Test
-	void createClusterWithDefault() {
+	void driverConfigLoaderWithDefaultConfiguration() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context.getBean(Cluster.class).getClusterName()).startsWith("cluster");
+			assertThat(context).hasSingleBean(DriverConfigLoader.class);
+			assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+					.isDefined(DefaultDriverOption.SESSION_NAME)).isFalse();
 		});
 	}
 
 	@Test
-	void createClusterWithOverrides() {
-		this.contextRunner.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context.getBean(Cluster.class).getClusterName()).isEqualTo("testcluster");
+	void driverConfigLoaderWithCustomSessionName() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.session-name=testcluster").run((context) -> {
+			assertThat(context).hasSingleBean(DriverConfigLoader.class);
+			assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+					.getString(DefaultDriverOption.SESSION_NAME)).isEqualTo("testcluster");
 		});
 	}
 
 	@Test
-	void createCustomizeCluster() {
-		this.contextRunner.withUserConfiguration(MockCustomizerConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(context).hasSingleBean(ClusterBuilderCustomizer.class);
-		});
-	}
-
-	@Test
-	void customizerOverridesAutoConfig() {
-		this.contextRunner.withUserConfiguration(SimpleCustomizerConfig.class)
-				.withPropertyValues("spring.data.cassandra.cluster-name=testcluster").run((context) -> {
-					assertThat(context).hasSingleBean(Cluster.class);
-					assertThat(context.getBean(Cluster.class).getClusterName()).isEqualTo("overridden-name");
+	void driverConfigLoaderWithCustomSessionNameAndCustomizer() {
+		this.contextRunner.withUserConfiguration(SimpleDriverConfigLoaderBuilderCustomizerConfig.class)
+				.withPropertyValues("spring.data.cassandra.session-name=testcluster").run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+							.getString(DefaultDriverOption.SESSION_NAME)).isEqualTo("overridden-name");
 				});
 	}
 
 	@Test
-	void defaultPoolOptions() {
+	void driverConfigLoaderApplyConsistentDefaults() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
-			PoolingOptions poolingOptions = context.getBean(Cluster.class).getConfiguration().getPoolingOptions();
-			assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(PoolingOptions.DEFAULT_IDLE_TIMEOUT_SECONDS);
-			assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(PoolingOptions.DEFAULT_POOL_TIMEOUT_MILLIS);
-			assertThat(poolingOptions.getHeartbeatIntervalSeconds())
-					.isEqualTo(PoolingOptions.DEFAULT_HEARTBEAT_INTERVAL_SECONDS);
-			assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(PoolingOptions.DEFAULT_MAX_QUEUE_SIZE);
+			Config defaultConfig = defaultConfig();
+			DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+					.getDefaultProfile();
+			// TODO
 		});
 	}
 
 	@Test
-	void customizePoolOptions() {
+	void driverConfigLoaderCustomizePoolOptions() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
-				"spring.data.cassandra.pool.pool-timeout=52", "spring.data.cassandra.pool.heartbeat-interval=62",
-				"spring.data.cassandra.pool.max-queue-size=72").run((context) -> {
-					assertThat(context).hasSingleBean(Cluster.class);
-					PoolingOptions poolingOptions = context.getBean(Cluster.class).getConfiguration()
-							.getPoolingOptions();
-					assertThat(poolingOptions.getIdleTimeoutSeconds()).isEqualTo(42);
-					assertThat(poolingOptions.getPoolTimeoutMillis()).isEqualTo(52);
-					assertThat(poolingOptions.getHeartbeatIntervalSeconds()).isEqualTo(62);
-					assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
+				"spring.data.cassandra.pool.heartbeat-interval=62", "spring.data.cassandra.pool.max-queue-size=72")
+				.run((context) -> {
+					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(config.getInt(DefaultDriverOption.HEARTBEAT_TIMEOUT)).isEqualTo(42);
+					assertThat(config.getInt(DefaultDriverOption.HEARTBEAT_INTERVAL)).isEqualTo(62);
+					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
 				});
 	}
 
-	@Test
-	void clusterFactoryIsCalledToCreateCluster() {
-		this.contextRunner.withUserConfiguration(ClusterFactoryConfig.class)
-				.run((context) -> assertThat(context.getBean(TestClusterFactory.class).initializer).isNotNull());
+	private static Config defaultConfig() {
+		return Parseable.newResources("reference.conf", ConfigParseOptions.defaults()).parse().toConfig();
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class MockCustomizerConfig {
+	static class SimpleDriverConfigLoaderBuilderCustomizerConfig {
 
 		@Bean
-		ClusterBuilderCustomizer customizer() {
-			return mock(ClusterBuilderCustomizer.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class SimpleCustomizerConfig {
-
-		@Bean
-		ClusterBuilderCustomizer customizer() {
-			return (clusterBuilder) -> clusterBuilder.withClusterName("overridden-name");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ClusterFactoryConfig {
-
-		@Bean
-		TestClusterFactory clusterFactory() {
-			return new TestClusterFactory();
-		}
-
-	}
-
-	static class TestClusterFactory implements ClusterFactory {
-
-		private Initializer initializer = null;
-
-		@Override
-		public Cluster create(Initializer initializer) {
-			this.initializer = initializer;
-			return Cluster.buildFrom(initializer);
+		DriverConfigLoaderBuilderCustomizer customizer() {
+			return (builder) -> builder.withString(DefaultDriverOption.SESSION_NAME, "overridden-name");
 		}
 
 	}

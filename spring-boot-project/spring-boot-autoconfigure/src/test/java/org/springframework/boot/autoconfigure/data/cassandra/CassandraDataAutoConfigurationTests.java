@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Collections;
 import java.util.Set;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -101,7 +101,7 @@ class CassandraDataAutoConfigurationTests {
 	@Test
 	void clusterDoesNotExist() {
 		this.context = new AnnotationConfigApplicationContext(CassandraDataAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(CqlSession.class)).isEmpty();
 	}
 
 	void load(Class<?>... config) {
@@ -119,8 +119,8 @@ class CassandraDataAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		Session getObject() {
-			return mock(Session.class);
+		CqlSession cqlSession() {
+			return mock(CqlSession.class);
 		}
 
 	}

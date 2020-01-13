@@ -159,11 +159,11 @@ bom {
 			]
 		}
 	}
-	library('Cassandra Driver', '3.7.2') {
-		group('com.datastax.cassandra') {
+	library('Cassandra Driver', '4.3.1') {
+		group('com.datastax.oss') {
 			modules = [
-				'cassandra-driver-core',
-				'cassandra-driver-mapping'
+				'java-driver-core',
+				'java-driver-query-builder'
 			]
 		}
 	}
