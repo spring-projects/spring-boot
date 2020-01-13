@@ -868,13 +868,6 @@ bom {
 			]
 		}
 	}
-	library('Jest', '6.3.1') {
-		group('io.searchbox') {
-			modules = [
-				'jest'
-			]
-		}
-	}
 	library('Jetty EL', '8.5.40') {
 		group('org.mortbay.jasper') {
 			modules = [
