@@ -152,7 +152,7 @@ You can run a full build using the following command:
 [indent=0]
 ----
 	$ ./mvnw -Pfull clean install
-
+----
 
 === NOTE: 
 As for the standard build, you may need to increase the amount of memory available
