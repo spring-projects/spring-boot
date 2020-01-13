@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified"
-	targetNamespace="https://www.springframework.org/spring-ws/wsdl/schemas">
-	<element name="request" type="string" />
-	<element name="response" type="string" />
-</schema>

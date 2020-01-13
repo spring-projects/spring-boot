@@ -1,3 +1,0 @@
-org.springframework.boot.env.PropertySourceLoader=\
-org.springframework.boot.context.config.TestPropertySourceLoader1,\
-org.springframework.boot.context.config.TestPropertySourceLoader2

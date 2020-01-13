@@ -53,9 +53,12 @@ added after the original pull request but before a merge.
   https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ
   Plugin] or format the code from the Gradle build by running
   `./gradlew format`.
+  or format the code from the Maven build by running
+  `./mvnw io.spring.javaformat:spring-javaformat-maven-plugin:apply`.
 * The build includes checkstyle rules for many of our code conventions. Run
-  `./gradlew checkstyleMain checkstyleTest` if you want to check you changes are
-  compliant.
+  `./mvnw validate` if you want to check your changes are compliant in Maven.
+  or `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are
+  compliant in gradle.
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
   for.
@@ -77,12 +80,107 @@ added after the original pull request but before a merge.
 If you don't have an IDE preference we would recommend that you use
 https://spring.io/tools/sts[Spring Tools Suite] or
 https://eclipse.org[Eclipse] when working with the code. We use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support and
 https://projects.eclipse.org/projects/tools.buildship[Buildship] Eclipse plugin for Gradle
 support. Other IDEs and tools should also work without issue.
 
 
 
 === Building from Source
+Spring Boot source can be built from the command line using
+##Maven
+https://maven.apache.org/run-maven/index.html[Apache Maven] on (OpenJDK, ...) >= 11 or Oracle JDK >= 1.8 and 
+Maven >= 3, this allows it to be used with QuickPerf also.
+We include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather than
+needing to install Maven locally.
+
+The easiest way to setup the Maven Wrapper for your project is to use the
+[Takari Maven Plugin][1] with its provided `wrapper` goal. To add or update all
+the necessary Maven Wrapper files to your project execute the following command:
+
+```bash
+mvn -N io.takari:maven:0.7.7:wrapper
+```
+
+> Note: The default usage should be `mvn -N io.takari:maven:wrapper` but for
+> some users this seem to result in usage of an old version of the wrapper and
+> therefore installation of older Maven defaults and so on.
+
+Normally you instruct users to install a specific version of Apache Maven, put
+it on the PATH and then run the `mvn` command like the following:
+
+```bash
+mvn clean install
+```
+
+But now, with a Maven Wrapper setup, you can instruct users to run wrapper
+scripts on Linux and Mac with:
+
+```bash
+./mvnw clean install
+```
+
+or on Windows with
+
+```bash
+mvnw.cmd clean install
+```
+
+==== Default Build
+The project can be built from the root directory using the standard Maven command:
+
+[indent=0]
+----
+	$ ./mvnw clean install
+----
+
+NOTE: You may need to increase the amount of memory available to Maven by setting
+a `MAVEN_OPTS` environment variable with the value `-Xmx512m`
+
+If you are rebuilding often, you might also want to skip the tests and the execution of
+checkstyle until you are ready to submit a pull request:
+
+[indent=0]
+----
+	$ ./mvnw clean install -DskipTests -Pfast
+----
+
+
+==== Full Build
+You can run a full build using the following command:
+
+[indent=0]
+----
+	$ ./mvnw -Pfull clean install
+
+
+=== NOTE: 
+As for the standard build, you may need to increase the amount of memory available
+to Maven by setting a `MAVEN_OPTS` environment variable with the value `-Xmx512m`. We
+generate more artifacts when running the full build (such as Javadoc jars), so you may
+find the process a little slower than the standard build.
+
+[TIP]
+====
+If you want to run a build without the smoke tests and integration tests, building the
+`spring-boot-project` module is enough. You can cd there and run the same command, or you
+can run this from the top-level directory:
+[indent=0]
+----
+	$ ./mvnw -f spring-boot-project -Pfull clean install
+----
+====
+
+=== Build QuickPerf
+
+To build:
+* Clone the repository: ```git clone https://github.com/quick-perf/quickperf.git```
+* Navigate to the *quickperf* repository
+* mvn clean install <br>
+
+Or
+
+=== Build with Gradle
 Spring Boot source can be built from the command line using https://gradle.org[Gradle] on
 JDK 1.8 or above. We include https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle's
 wrapper scripts] (`./gradlew` or `gradlew.bat`) that you can run rather than needing to
@@ -94,8 +192,6 @@ The project can be built from the root directory using the standard Gradle comma
 ----
 	$ ./gradlew build
 ----
-
-
 
 === Importing into Eclipse
 You can import the Spring Boot code into any Eclipse 2019-09-based distribution. The
@@ -152,12 +248,28 @@ work with Buildship, we provide an additional Eclipse plugin that you can instal
 NOTE: The plugin is optional. Projects can be imported without the plugins, your code
 changes just won't be automatically formatted.
 
+With the requisite eclipse plugins installed you can select
+`import existing maven projects` from the `file` menu to import the code. You will
+need to import the root `spring-boot` pom and the `spring-boot-smoke-tests` pom separately.
+
 With the requisite Eclipse plugins installed you can select
 `Gradle -> Existing Gradle project` from the `File -> Import…` menu to import the code.
 
 
 
 === Importing into IntelliJ IDEA
+== Maven
+**Please, do this first!**
+Go to `Preferences | Build, Execution, Deployment | Build Tools | Maven | Importing`
+and set `VM options for importer` to `-Xmx2g` to allocate sufficient memory for IDEA's
+Maven import process to parse the Spring Boot project structure. _Not doing so could
+mean the import fails silently, leaving the project setup incomplete._
+
+For the actual import use "`File`" -> "`Open`" and select the root `pom.xml`, or the
+`spring-boot-project/pom.xml` if you only want the Spring Boot project sources.
+
+== Gradle
+
 Use "`File`" -> "`Open`" and then select the root `build.gradle` file to import the code.
 
 
@@ -186,9 +298,16 @@ needs to be added.
 
 
 === Importing into Other IDEs
+Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 Gradle is well supported by most Java IDEs. Refer to your vendor documentation.
 
 
+== Integration Tests
+The smoke tests run as part of the build when you `./mvnw install`.
+Due to the fact that they make use of the `spring-boot-maven-plugin`
+they cannot be called directly, and so instead are launched via the
+`maven-invoker-plugin`. If you encounter build failures running the integration tests,
+check the `build.log` file in the appropriate smoke test directory.
 
 == Cloning the git repository on Windows
 Some files in the git repository may exceed the Windows maximum file path (260
