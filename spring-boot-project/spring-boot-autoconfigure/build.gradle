@@ -34,7 +34,6 @@ dependencies {
 	optional 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	optional 'io.lettuce:lettuce-core'
 	optional 'io.projectreactor.netty:reactor-netty'
-	optional 'io.searchbox:jest'
 	optional 'io.rsocket:rsocket-core'
 	optional 'io.rsocket:rsocket-transport-netty'
 	optional ('io.undertow:undertow-servlet') {

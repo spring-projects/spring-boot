@@ -62,7 +62,6 @@ dependencies {
 	optional 'io.micrometer:micrometer-registry-statsd'
 	optional 'io.micrometer:micrometer-registry-wavefront'
 	optional 'io.projectreactor.netty:reactor-netty'
-	optional 'io.searchbox:jest'
 	optional 'jakarta.jms:jakarta.jms-api'
 	optional 'jakarta.servlet:jakarta.servlet-api'
 	optional 'javax.cache:cache-api'
