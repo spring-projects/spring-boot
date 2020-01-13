@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.validation.annotation.Validated;
 
@@ -33,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  */
 @ClassPathExclusions("hibernate-validator-*.jar")
-class ValidationExceptionFailureAnalyzerTests {
+@ClassPathOverrides("javax.validation:validation-api:2.0.1.Final")
+class JavaxApiValidationExceptionFailureAnalyzerTests2 {
 
 	@Test
 	void validatedPropertiesTest() {
