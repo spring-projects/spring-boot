@@ -1023,7 +1023,10 @@ public class SpringApplication {
 	 * @param defaultProperties the additional properties to set
 	 */
 	public void setDefaultProperties(Map<String, Object> defaultProperties) {
-		this.defaultProperties = defaultProperties;
+		this.defaultProperties = new HashMap<>();
+		for (Object key : Collections.list(defaultProperties.propertyNames())) {
+			this.defaultProperties.put((String) key, defaultProperties.get(key));
+		}
 	}
 
 	/**
