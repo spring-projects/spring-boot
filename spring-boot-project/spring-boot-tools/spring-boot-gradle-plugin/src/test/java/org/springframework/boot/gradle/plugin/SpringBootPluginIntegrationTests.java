@@ -21,6 +21,8 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
@@ -45,11 +47,13 @@ class SpringBootPluginIntegrationTests {
 				.contains("Spring Boot plugin requires Gradle 5.6 or later. The current version is Gradle 5.5.1");
 	}
 
+	@DisabledOnJre(JRE.JAVA_13)
 	@Test
 	void succeedWithVersionOfGradleHigherThanRequired() {
 		this.gradleBuild.gradleVersion("5.6.1").build();
 	}
 
+	@DisabledOnJre(JRE.JAVA_13)
 	@Test
 	void succeedWithVersionOfGradleMatchingWhatIsRequired() {
 		this.gradleBuild.gradleVersion("5.6").build();
