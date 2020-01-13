@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.jta.bitronix;
 
 import java.sql.Connection;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -58,6 +60,28 @@ public class PoolingDataSourceBeanTests {
 		this.bean.setUniqueName("un");
 		this.bean.afterPropertiesSet();
 		assertThat(this.bean.getUniqueName()).isEqualTo("un");
+	}
+
+	@Test
+	public void shouldReturnGlobalLoggerWhenDataSourceIsAbsent() throws SQLFeatureNotSupportedException {
+		assertThat(this.bean.getParentLogger()).isSameAs(Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+	}
+
+	@Test
+	public void shouldReturnGlobalLoggerWhenDataSourceThrowsException() throws SQLFeatureNotSupportedException {
+		XADataSource dataSource = mock(XADataSource.class);
+		given(dataSource.getParentLogger()).willThrow(new SQLFeatureNotSupportedException());
+		this.bean.setDataSource(dataSource);
+		assertThat(this.bean.getParentLogger()).isSameAs(Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+	}
+
+	@Test
+	public void shouldReturnParentLoggerFromDataSource() throws SQLFeatureNotSupportedException {
+		Logger logger = Logger.getLogger("test");
+		XADataSource dataSource = mock(XADataSource.class);
+		given(dataSource.getParentLogger()).willReturn(logger);
+		this.bean.setDataSource(dataSource);
+		assertThat(this.bean.getParentLogger()).isSameAs(logger);
 	}
 
 	@Test
