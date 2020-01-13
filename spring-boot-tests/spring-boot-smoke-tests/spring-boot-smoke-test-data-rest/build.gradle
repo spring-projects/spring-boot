@@ -11,9 +11,10 @@ dependencies {
 		exclude module: 'spring-boot-starter-tomcat'
 	}
 	implementation 'com.h2database:h2'
-	
+
 	runtimeOnly project(':spring-boot-project:spring-boot-starters:spring-boot-starter-jetty')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+
 	testRuntimeOnly 'com.jayway.jsonpath:json-path'
 }

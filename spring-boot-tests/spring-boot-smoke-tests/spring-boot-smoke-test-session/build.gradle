@@ -8,7 +8,7 @@ description = 'Spring Boot Session smoke test'
 def sessionStores = [
 	'hazelcast': [
 		'com.hazelcast:hazelcast',
-		'org.springframework.session:spring-session-hazelcast'		
+		'org.springframework.session:spring-session-hazelcast'
 	],
 	'jdbc': [
 		project(':spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc'),
@@ -17,11 +17,11 @@ def sessionStores = [
 	],
 	'mongodb': [
 		project(':spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb'),
-		'org.springframework.session:spring-session-data-mongodb'		
+		'org.springframework.session:spring-session-data-mongodb'
 	],
 	'redis': [
 		project(':spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis'),
-		'org.springframework.session:spring-session-data-redis'		
+		'org.springframework.session:spring-session-data-redis'
 	]
 ]
 
@@ -29,8 +29,8 @@ dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-actuator')
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-security')
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
-	
+
 	sessionStores[project.findProperty('sessionStore') ?: 'jdbc'].each { runtimeOnly it }
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }

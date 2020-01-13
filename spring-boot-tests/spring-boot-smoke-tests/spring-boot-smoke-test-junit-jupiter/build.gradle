@@ -7,7 +7,7 @@ description = 'Spring Boot JUnit Jupiter smoke test'
 
 dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
-	
+
 	testImplementation(project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')) {
 		exclude group: 'org.junit.vintage'
 	}
@@ -15,12 +15,12 @@ dependencies {
 
 test {
 	testLogging {
-	 	afterSuite { description, result ->
-	 		if (!description.parent) {
-		 		if (!result.testCount) {
-		 			throw new GradleException('No tests were executed')
-		 		}
-		 	}
+		afterSuite { description, result ->
+			if (!description.parent) {
+				if (!result.testCount) {
+					throw new GradleException('No tests were executed')
+				}
+			}
 	 	}
 	}
 }

@@ -5,13 +5,13 @@ plugins {
 
 description = 'Spring Boot web static smoke test'
 
-dependencies {	
+dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
-	
+
 	providedRuntime  project(':spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat')
-	
+
 	runtimeOnly 'org.webjars:bootstrap:3.0.3'
 	runtimeOnly 'org.webjars:jquery:2.0.3-1'
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }

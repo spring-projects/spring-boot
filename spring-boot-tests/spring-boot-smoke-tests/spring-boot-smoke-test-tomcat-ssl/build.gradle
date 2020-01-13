@@ -7,7 +7,7 @@ description = 'Spring Boot Tomcat SSL smoke test'
 
 dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 	testImplementation 'org.apache.httpcomponents:httpclient'
 }

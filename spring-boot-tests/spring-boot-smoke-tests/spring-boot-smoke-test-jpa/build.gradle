@@ -18,8 +18,8 @@ dependencies {
 		exclude group: 'javax.xml.bind', module: 'jaxb-api'
 	}
 	implementation 'org.springframework:spring-orm'
-	
+
 	runtimeOnly 'com.h2database:h2'
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }

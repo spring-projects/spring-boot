@@ -9,8 +9,7 @@ dependencies {
 	implementation(project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')) {
 		exclude module: 'spring-boot-starter-tomcat'
 	}
-	
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-jetty')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }

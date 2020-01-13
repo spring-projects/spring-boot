@@ -9,6 +9,7 @@ description = 'Spring Boot Atmosphere smoke test'
 dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
 	implementation 'org.atmosphere:atmosphere-runtime:2.4.14'
+
 	runtimeOnly 'org.webjars:atmosphere-javascript:2.3.4'
 
 	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

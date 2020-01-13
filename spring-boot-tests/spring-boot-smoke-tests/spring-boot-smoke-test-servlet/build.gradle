@@ -7,8 +7,10 @@ description = 'Spring Boot Servlet smoke test'
 
 dependencies {
 	compileOnly project(':spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat')
+
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-security')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+
 	testRuntimeOnly project(':spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat')
 }

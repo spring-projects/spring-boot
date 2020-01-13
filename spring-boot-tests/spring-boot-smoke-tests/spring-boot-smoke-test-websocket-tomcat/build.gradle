@@ -5,8 +5,8 @@ plugins {
 
 description = 'Spring Boot WebSocket Tomcat smoke test'
 
-dependencies {	
+dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-websocket')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }

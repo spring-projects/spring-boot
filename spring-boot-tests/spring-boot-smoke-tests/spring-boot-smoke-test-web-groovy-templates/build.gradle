@@ -5,12 +5,12 @@ plugins {
 
 description = 'Spring Boot web Groovy Templates smoke test'
 
-dependencies {	
+dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-groovy-templates')
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-validation')
 	if (JavaVersion.current().java9Compatible) {
 		implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
 	}
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 }
