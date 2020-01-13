@@ -5,7 +5,7 @@ plugins {
 description = "Starter for building hypermedia-based RESTful web application with Spring MVC and Spring HATEOAS"
 
 dependencies {
-	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api platform(project(':spring-boot-project:spring-boot-dependencies'))
 	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
 	api 'org.springframework.hateoas:spring-hateoas'
 	api 'org.springframework.plugin:spring-plugin-core'

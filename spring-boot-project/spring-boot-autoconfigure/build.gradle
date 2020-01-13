@@ -4,6 +4,7 @@ plugins {
 	id 'org.springframework.boot.auto-configuration'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.deployed'
+	id 'org.springframework.boot.internal-dependency-management'
 	id 'org.springframework.boot.optional-dependencies'
 }
 
@@ -11,10 +12,9 @@ description = 'Spring Boot AutoConfigure'
 
 dependencies {
 	api project(':spring-boot-project:spring-boot')
+	api platform(project(':spring-boot-project:spring-boot-dependencies'))
 
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
-
-	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'com.atomikos:transactions-jdbc'
 	optional 'com.atomikos:transactions-jta'
 	optional 'com.couchbase.client:couchbase-spring-cache'
@@ -149,7 +149,7 @@ dependencies {
 	optional 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	optional 'redis.clients:jedis'
 
-	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	testImplementation platform(project(':spring-boot-project:spring-boot-parent'))
 	testImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	testImplementation project(':spring-boot-project:spring-boot-test')
 	testImplementation 'ch.qos.logback:logback-classic'

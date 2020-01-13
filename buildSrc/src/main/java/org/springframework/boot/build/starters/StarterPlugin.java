@@ -29,6 +29,7 @@ import org.gradle.api.plugins.PluginContainer;
 
 import org.springframework.boot.build.ConventionsPlugin;
 import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.InternalDependencyManagementPlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForConflicts;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,7 @@ public class StarterPlugin implements Plugin<Project> {
 		plugins.apply(DeployedPlugin.class);
 		plugins.apply(JavaLibraryPlugin.class);
 		plugins.apply(ConventionsPlugin.class);
+		plugins.apply(InternalDependencyManagementPlugin.class);
 		StarterMetadata starterMetadata = project.getTasks().create("starterMetadata", StarterMetadata.class);
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);

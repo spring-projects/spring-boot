@@ -113,7 +113,7 @@ public class BomExtension {
 			for (String bomImport : group.getBoms()) {
 				this.putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
 				this.dependencyHandler.add("api", this.dependencyHandler
-						.enforcedPlatform(createDependencyNotation(group.getId(), bomImport, library.getVersion())));
+						.platform(createDependencyNotation(group.getId(), bomImport, library.getVersion())));
 			}
 		}
 	}
