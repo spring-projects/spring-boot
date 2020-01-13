@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Initializer;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 
 /**
- * {@code ClusterFactory} provides control over the creation of a {@link Cluster} from an
- * {@link Initializer}.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link CqlSession} via a {@link CqlSessionBuilder} whilst retaining default
+ * auto-configuration.
  *
- * @author Steffen F. Qvistgaard
- * @since 2.2.0
+ * @author Stephane Nicoll
+ * @since 2.3.0
  */
 @FunctionalInterface
-public interface ClusterFactory {
+public interface CqlSessionBuilderCustomizer {
 
 	/**
-	 * Creates a {@link Cluster} from the given {@link Initializer}.
-	 * @param initializer the {@code Initializer}
-	 * @return the {@code Cluster}
+	 * Customize the {@link CqlSessionBuilder}.
+	 * @param cqlSessionBuilder the builder to customize
 	 */
-	Cluster create(Initializer initializer);
+	void customize(CqlSessionBuilder cqlSessionBuilder);
 
 }

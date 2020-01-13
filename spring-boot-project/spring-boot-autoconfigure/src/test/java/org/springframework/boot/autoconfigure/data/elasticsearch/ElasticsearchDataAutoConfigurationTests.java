@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,8 @@ import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoC
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.core.ElasticsearchEntityMapper;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.EntityMapper;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
@@ -48,12 +46,13 @@ import static org.mockito.Mockito.mock;
  * @author Artur Konczak
  * @author Brian Clozel
  * @author Peter-Josef Meisch
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchDataAutoConfigurationTests {
 
 	@Container
-	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
+	static ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
@@ -71,6 +70,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void defaultTransportBeansAreRegistered() {
 		this.contextRunner
 				.withPropertyValues(
@@ -83,6 +83,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void defaultTransportBeansNotRegisteredIfNoTransportClient() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchTemplate.class));
 	}
@@ -91,16 +92,11 @@ class ElasticsearchDataAutoConfigurationTests {
 	void defaultRestBeansRegistered() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class)
 				.hasSingleBean(ReactiveElasticsearchTemplate.class).hasSingleBean(ElasticsearchConverter.class)
-				.hasSingleBean(SimpleElasticsearchMappingContext.class).hasSingleBean(EntityMapper.class)
 				.hasSingleBean(ElasticsearchConverter.class));
 	}
 
 	@Test
-	void defaultEntityMapperRegistered() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(EntityMapper.class));
-	}
-
-	@Test
+	@SuppressWarnings("deprecation")
 	void customTransportTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
 				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
@@ -119,16 +115,11 @@ class ElasticsearchDataAutoConfigurationTests {
 						.contains("reactiveElasticsearchTemplate"));
 	}
 
-	@Test
-	void customEntityMapperShouldeBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomEntityMapper.class).run((context) -> assertThat(context)
-				.getBeanNames(EntityMapper.class).containsExactly("elasticsearchEntityMapper"));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTransportTemplate {
 
 		@Bean
+		@SuppressWarnings("deprecation")
 		ElasticsearchTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchTemplate.class);
 		}
@@ -151,16 +142,6 @@ class ElasticsearchDataAutoConfigurationTests {
 		@Bean
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
 			return mock(ReactiveElasticsearchTemplate.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomEntityMapper {
-
-		@Bean
-		EntityMapper elasticsearchEntityMapper() {
-			return mock(ElasticsearchEntityMapper.class);
 		}
 
 	}

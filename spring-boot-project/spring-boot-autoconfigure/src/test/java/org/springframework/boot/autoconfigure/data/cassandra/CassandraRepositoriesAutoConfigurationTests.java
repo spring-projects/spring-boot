@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Set;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -59,7 +59,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 	void testDefaultRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CityRepository.class);
-			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
 			assertThat(getInitialEntitySet(context)).hasSize(1);
 		});
 	}
@@ -67,7 +67,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 	@Test
 	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Cluster.class);
+			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
 			assertThat(getInitialEntitySet(context)).isEmpty();
 		});
 	}
@@ -104,8 +104,8 @@ class CassandraRepositoriesAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		Session session() {
-			return mock(Session.class);
+		CqlSession cqlSession() {
+			return mock(CqlSession.class);
 		}
 
 	}

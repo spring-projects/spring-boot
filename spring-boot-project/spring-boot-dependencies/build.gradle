@@ -159,11 +159,11 @@ bom {
 			]
 		}
 	}
-	library('Cassandra Driver', '3.7.2') {
-		group('com.datastax.cassandra') {
+	library('Cassandra Driver', '4.3.1') {
+		group('com.datastax.oss') {
 			modules = [
-				'cassandra-driver-core',
-				'cassandra-driver-mapping'
+				'java-driver-core',
+				'java-driver-query-builder'
 			]
 		}
 	}
@@ -288,7 +288,7 @@ bom {
 			]
 		}
 	}
-	library('Elasticsearch', '6.8.5') {
+	library('Elasticsearch', '7.5.1') {
 		group('org.elasticsearch') {
 			modules = [
 				'elasticsearch'
@@ -1663,7 +1663,7 @@ bom {
 			]
 		}
 	}
-	library('Spring Data Releasetrain', 'Moore-SR3') {
+	library('Spring Data Releasetrain', 'Neumann-BUILD-SNAPSHOT') {
 		group('org.springframework.data') {
 			imports = [
 				'spring-data-releasetrain'

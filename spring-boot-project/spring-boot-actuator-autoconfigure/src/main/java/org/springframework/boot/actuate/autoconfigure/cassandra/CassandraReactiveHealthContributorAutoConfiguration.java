@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package org.springframework.boot.actuate.autoconfigure.cassandra;
 
 import java.util.Map;
 
-import com.datastax.driver.core.Cluster;
+import com.datastax.oss.driver.api.core.CqlSession;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
@@ -43,7 +43,7 @@ import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ Cluster.class, ReactiveCassandraOperations.class, Flux.class })
+@ConditionalOnClass({ CqlSession.class, ReactiveCassandraOperations.class, Flux.class })
 @ConditionalOnBean(ReactiveCassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)

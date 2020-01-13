@@ -6,7 +6,7 @@ plugins {
 description = 'Spring Boot Testing Support'
 
 dependencies {
-	compileOnly "com.datastax.cassandra:cassandra-driver-core"
+	compileOnly "com.datastax.oss:java-driver-core"
 	compileOnly "javax.servlet:javax.servlet-api"
 	compileOnly "junit:junit"
 	compileOnly "org.junit.jupiter:junit-jupiter"
