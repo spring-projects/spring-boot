@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,13 +107,16 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 
 	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		try {
-			return this.getParentLogger();
+		XADataSource dataSource = this.dataSource;
+		if (dataSource != null) {
+			try {
+				return dataSource.getParentLogger();
+			}
+			catch (Exception ex) {
+				// Swallow and continue
+			}
 		}
-		catch (Exception ex) {
-			// Work around https://jira.codehaus.org/browse/BTM-134
-			return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-		}
+		return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	}
 
 	/**
