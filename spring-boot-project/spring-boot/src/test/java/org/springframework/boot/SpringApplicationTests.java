@@ -36,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.springframework.core.env.*;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.BeansException;
@@ -83,14 +84,6 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.CommandLinePropertySource;
-import org.springframework.core.env.CompositePropertySource;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.Profiles;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -854,6 +847,43 @@ class SpringApplicationTests {
 		assertThat(this.context).isInstanceOf(AnnotationConfigApplicationContext.class);
 		assertThat(getEnvironment().getProperty("bar")).isEqualTo("foo");
 		assertThat(getEnvironment().getProperty("baz")).isEqualTo("");
+	}
+
+	@Test
+	void defaultPropertiesCopiesValuesFromImmutableMapAndAllowsUpdatingProperties() {
+		Map<String, Object> immutablePropertyMap = Collections.singletonMap("immutableKey", "immutableValue");
+
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setDefaultProperties(immutablePropertyMap);
+		this.context = application.run();
+
+		assertThat(getEnvironment().getProperty("immutableKey")).isEqualTo("immutableValue");
+		assertThat(immutablePropertyMap.get("immutableKey")).isEqualTo("immutableValue");
+
+		MapPropertySource source = (MapPropertySource) this.context.getEnvironment().getPropertySources().get("defaultProperties");
+		source.getSource().put("immutableKey", "differentValue");
+
+		assertThat(getEnvironment().getProperty("immutableKey")).isEqualTo("differentValue");
+	}
+
+	@Test
+	void defaultPropertiesCopiesMapAndDoesNotMutateWhenSourceMapMutates() {
+		Map<String, Object> propertyMap = new HashMap<String, Object>();
+		propertyMap.put("immutableKey", "immutableValue");
+
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setDefaultProperties(propertyMap);
+		this.context = application.run();
+
+		assertThat(getEnvironment().getProperty("immutableKey")).isEqualTo("immutableValue");
+		assertThat(propertyMap.get("immutableKey")).isEqualTo("immutableValue");
+
+		propertyMap.put("immutableKey", "differentValue");
+
+		assertThat(getEnvironment().getProperty("immutableKey")).isEqualTo("immutableValue");
+		assertThat(propertyMap.get("immutableKey")).isEqualTo("differentValue");
 	}
 
 	@Test
