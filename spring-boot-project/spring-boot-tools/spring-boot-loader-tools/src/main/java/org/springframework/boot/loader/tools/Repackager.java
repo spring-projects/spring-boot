@@ -369,12 +369,12 @@ public class Repackager {
 
 		@Override
 		public JarArchiveEntry transform(JarArchiveEntry entry) {
-			if ("META-INF/INDEX.LIST".equals(entry.getName())) {
+			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
-			if ((entry.getName().startsWith("META-INF/") && !"META-INF/aop.xml".equals(entry.getName())
+			if ((entry.getName().startsWith("META-INF/") && !entry.getName().equals("META-INF/aop.xml")
 					&& !entry.getName().endsWith(".kotlin_module")) || entry.getName().startsWith("BOOT-INF/")
-					|| "module-info.class".equals(entry.getName())) {
+					|| entry.getName().equals("module-info.class")) {
 				return entry;
 			}
 			JarArchiveEntry renamedEntry = new JarArchiveEntry(this.namePrefix + entry.getName());
