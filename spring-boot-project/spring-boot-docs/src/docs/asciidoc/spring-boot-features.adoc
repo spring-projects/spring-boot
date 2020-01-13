@@ -5664,9 +5664,6 @@ If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configur
 If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
 If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
 
-If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
-If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
-
 You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
 
 [source,properties,indent=0,configprops]
