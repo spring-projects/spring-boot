@@ -31,7 +31,7 @@ class KotlinNoSuchBeanFailureAnalyzerNoKotlinReflectTests {
 		assertThat(analysis!!.getAction()).startsWith(
 				java.lang.String.format("Consider defining a bean of type '%s' in your configuration.", String::class.java!!.getName()))
 		assertThat(analysis!!.getAction()).contains(java.lang.String.format(
-				"Consider adding a dependency on kotlin-reflect so that the contructor used for @ConstructorBinding can be located. Also, ensure that @ConstructorBinding is present on '%s' ", ConstructorBoundProperties::class.java!!.getName()))
+				"Consider adding a dependency on kotlin-reflect so that the constructor used for @ConstructorBinding can be located. Also, ensure that @ConstructorBinding is present on '%s' ", ConstructorBoundProperties::class.java!!.getName()))
 	}
 
 	private fun createFailure(config: Class<*>, vararg environment: String): FatalBeanException? {
