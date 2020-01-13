@@ -53,6 +53,8 @@ class LaunchScriptConfigurationTests {
 	@Test
 	void initInfoShortDescriptionUsesDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
@@ -68,6 +70,8 @@ class LaunchScriptConfigurationTests {
 	@Test
 	void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("Project\ndescription");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
@@ -83,6 +87,8 @@ class LaunchScriptConfigurationTests {
 	@Test
 	void initInfoDescriptionUsesProjectDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"Project description");
 	}
@@ -90,6 +96,8 @@ class LaunchScriptConfigurationTests {
 	@Test
 	void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("The\nproject\ndescription");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"The\n#  project\n#  description");
 	}

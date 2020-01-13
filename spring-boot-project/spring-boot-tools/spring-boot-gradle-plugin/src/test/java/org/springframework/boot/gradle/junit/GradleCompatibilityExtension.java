@@ -47,8 +47,7 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 			GRADLE_VERSIONS = Collections.singletonList("default");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("4.10.3", "5.0", "5.1.1", "5.2.1", "5.3.1", "5.4.1", "5.5.1", "5.6.4",
-					"default");
+			GRADLE_VERSIONS = Arrays.asList("5.6.4", "default");
 		}
 	}
 

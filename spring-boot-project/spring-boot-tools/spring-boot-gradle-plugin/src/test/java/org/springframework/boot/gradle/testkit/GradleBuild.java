@@ -149,9 +149,6 @@ public class GradleBuild {
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
-		else if (this.dsl == Dsl.KOTLIN) {
-			gradleRunner.withGradleVersion("4.10.3");
-		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
