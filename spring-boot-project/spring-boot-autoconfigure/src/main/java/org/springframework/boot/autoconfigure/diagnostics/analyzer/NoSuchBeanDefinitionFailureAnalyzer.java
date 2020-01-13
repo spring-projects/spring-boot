@@ -123,7 +123,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 			if (configurationProperties.isPresent()) {
 				if (KotlinDetector.isKotlinType(declaringClass) && !KotlinDetector.isKotlinReflectPresent()) {
 					action = String.format(
-							"%s%nConsider adding a dependency on kotlin-reflect so that the contructor used for @%s can be located. Also, ensure that @%s is present on '%s' if you intended to use constructor-based "
+							"%s%nConsider adding a dependency on kotlin-reflect so that the constructor used for @%s can be located. Also, ensure that @%s is present on '%s' if you intended to use constructor-based "
 									+ "configuration property binding.",
 							action, ConstructorBinding.class.getSimpleName(), ConstructorBinding.class.getSimpleName(),
 							constructor.getName());
