@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.action.support.WriteRequest;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
@@ -74,25 +72,6 @@ abstract class ElasticsearchDataConfiguration {
 		@ConditionalOnBean(RestHighLevelClient.class)
 		ElasticsearchRestTemplate elasticsearchTemplate(RestHighLevelClient client, ElasticsearchConverter converter) {
 			return new ElasticsearchRestTemplate(client, converter);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Client.class)
-	static class TransportClientConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
-		@ConditionalOnBean(Client.class)
-		@Deprecated
-		ElasticsearchTemplate elasticsearchTemplate(Client client, ElasticsearchConverter converter) {
-			try {
-				return new ElasticsearchTemplate(client, converter);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
 		}
 
 	}

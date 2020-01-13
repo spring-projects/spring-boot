@@ -16,14 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
@@ -31,10 +26,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
-import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,15 +41,10 @@ import static org.mockito.Mockito.mock;
  * @author Peter-Josef Meisch
  * @author Scott Frederick
  */
-@Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchDataAutoConfigurationTests {
 
-	@Container
-	static ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
-
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class,
 					ReactiveRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
 
 	@BeforeEach
@@ -70,36 +58,10 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void defaultTransportBeansAreRegistered() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.data.elasticsearch.cluster-nodes:" + elasticsearch.getTcpHost().getHostString() + ":"
-								+ elasticsearch.getTcpHost().getPort(),
-						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class)
-						.hasSingleBean(SimpleElasticsearchMappingContext.class)
-						.hasSingleBean(ElasticsearchConverter.class));
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void defaultTransportBeansNotRegisteredIfNoTransportClient() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchTemplate.class));
-	}
-
-	@Test
 	void defaultRestBeansRegistered() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class)
 				.hasSingleBean(ReactiveElasticsearchTemplate.class).hasSingleBean(ElasticsearchConverter.class)
 				.hasSingleBean(ElasticsearchConverter.class));
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void customTransportTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
-				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
 	}
 
 	@Test
@@ -113,17 +75,6 @@ class ElasticsearchDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
 				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTransportTemplate {
-
-		@Bean
-		@SuppressWarnings("deprecation")
-		ElasticsearchTemplate elasticsearchTemplate() {
-			return mock(ElasticsearchTemplate.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

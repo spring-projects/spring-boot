@@ -52,9 +52,8 @@ class ElasticsearchRepositoriesAutoConfigurationTests {
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
-							ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class,
+					ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
 			.withPropertyValues("spring.elasticsearch.rest.uris=" + elasticsearch.getHttpHostAddress());
 
 	@Test

@@ -128,7 +128,9 @@ dependencies {
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.skyscreamer:jsonassert'
 	testImplementation 'org.springframework:spring-orm'
-	testImplementation 'org.springframework.data:spring-data-elasticsearch'
+	testImplementation ('org.springframework.data:spring-data-elasticsearch') {
+		exclude group: 'org.elasticsearch.client', module: 'transport'
+	}
 	testImplementation 'org.springframework.data:spring-data-rest-webmvc'
 	testImplementation 'org.springframework.integration:spring-integration-jmx'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'

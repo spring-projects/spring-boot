@@ -4144,11 +4144,9 @@ Spring Boot supports several clients:
 * The official Java "Low Level" and "High Level" REST clients
 * The `ReactiveElasticsearchClient` provided by Spring Data Elasticsearch
 
-The transport client is still available but its support has been deprecated in https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch] and Elasticsearch itself.
-It will be removed in a future release.
 Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elasticsearch`.
 
-The https://github.com/searchbox-io/Jest[Jest] client has been deprecated as well, since both Elasticsearch and Spring Data Elasticsearch provide official support for REST clients.
+The https://github.com/searchbox-io/Jest[Jest] client has been deprecated, since both Elasticsearch and Spring Data Elasticsearch provide official support for REST clients.
 
 
 

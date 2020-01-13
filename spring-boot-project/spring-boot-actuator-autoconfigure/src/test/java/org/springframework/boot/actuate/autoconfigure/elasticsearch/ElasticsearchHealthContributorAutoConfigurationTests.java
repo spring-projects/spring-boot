@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,13 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAu
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ElasticSearchClientHealthContributorAutoConfiguration} and
- * {@link ElasticSearchJestHealthContributorAutoConfiguration}.
+ * Tests for {@link ElasticSearchJestHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
  */
@@ -39,17 +37,7 @@ import static org.mockito.Mockito.mock;
 class ElasticsearchHealthContributorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(ElasticsearchAutoConfiguration.class, ElasticSearchClientHealthContributorAutoConfiguration.class,
-					ElasticSearchJestHealthContributorAutoConfiguration.class,
-					HealthContributorAutoConfiguration.class));
-
-	@Test
-	void runShouldCreateIndicator() {
-		this.contextRunner.withPropertyValues("spring.data.elasticsearch.cluster-nodes:localhost:0")
-				.withSystemProperties("es.set.netty.runtime.available.processors=false")
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchHealthIndicator.class)
-						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class));
-	}
+			.of(ElasticSearchJestHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runWhenUsingJestClientShouldCreateIndicator() {

@@ -115,7 +115,9 @@ dependencies {
 	optional 'org.springframework.data:spring-data-jpa'
 	optional 'org.springframework.data:spring-data-rest-webmvc'
 	optional 'org.springframework.data:spring-data-cassandra'
-	optional 'org.springframework.data:spring-data-elasticsearch'
+	optional ('org.springframework.data:spring-data-elasticsearch') {
+		exclude group: 'org.elasticsearch.client', module: 'transport'
+	}
 	optional 'org.springframework.data:spring-data-jdbc'
 	optional 'org.springframework.data:spring-data-ldap'
 	optional 'org.springframework.data:spring-data-mongodb'
