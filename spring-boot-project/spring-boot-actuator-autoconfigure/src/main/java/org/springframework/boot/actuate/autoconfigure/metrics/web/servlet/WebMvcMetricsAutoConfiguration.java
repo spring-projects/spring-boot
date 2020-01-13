@@ -71,7 +71,7 @@ public class WebMvcMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(WebMvcTagsProvider.class)
 	public DefaultWebMvcTagsProvider webMvcTagsProvider() {
-		return new DefaultWebMvcTagsProvider();
+		return new DefaultWebMvcTagsProvider(this.properties.getWeb().getServer().getRequest().isIgnoreTrailingSlash());
 	}
 
 	@Bean

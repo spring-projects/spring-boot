@@ -244,6 +244,11 @@ public class MetricsProperties {
 				private String metricName = "http.server.requests";
 
 				/**
+				 * Whether the trailing slash should be ignored when recording metrics.
+				 */
+				private boolean ignoreTrailingSlash = true;
+
+				/**
 				 * Auto-timed request settings.
 				 */
 				@NestedConfigurationProperty
@@ -259,6 +264,14 @@ public class MetricsProperties {
 
 				public void setMetricName(String metricName) {
 					this.metricName = metricName;
+				}
+
+				public boolean isIgnoreTrailingSlash() {
+					return this.ignoreTrailingSlash;
+				}
+
+				public void setIgnoreTrailingSlash(boolean ignoreTrailingSlash) {
+					this.ignoreTrailingSlash = ignoreTrailingSlash;
 				}
 
 			}

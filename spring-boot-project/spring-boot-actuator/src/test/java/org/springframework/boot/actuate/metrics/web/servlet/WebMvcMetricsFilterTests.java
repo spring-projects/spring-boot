@@ -289,6 +289,14 @@ class WebMvcMetricsFilterTests {
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"30.0\"");
 	}
 
+	@Test
+	void trailingSlashShouldNotRecordDuplicateMetrics() throws Exception {
+		this.mvc.perform(get("/api/c1/simple/10")).andExpect(status().isOk());
+		this.mvc.perform(get("/api/c1/simple/10/")).andExpect(status().isOk());
+		assertThat(this.registry.get("http.server.requests").tags("status", "200", "uri", "/api/c1/simple/{id}").timer()
+				.count()).isEqualTo(2);
+	}
+
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Timed(percentiles = 0.95)
@@ -356,7 +364,7 @@ class WebMvcMetricsFilterTests {
 
 		@Bean
 		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(true), "http.server.requests",
 					AutoTimer.ENABLED);
 		}
 
@@ -377,6 +385,11 @@ class WebMvcMetricsFilterTests {
 		@Timed(extraTags = { "public", "true" })
 		@GetMapping("/{id}")
 		String successfulWithExtraTags(@PathVariable Long id) {
+			return id.toString();
+		}
+
+		@GetMapping("/simple/{id}")
+		String simpleMapping(@PathVariable Long id) {
 			return id.toString();
 		}
 

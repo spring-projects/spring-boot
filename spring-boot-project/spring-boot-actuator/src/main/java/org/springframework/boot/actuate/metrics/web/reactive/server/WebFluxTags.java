@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.regex.Pattern;
+
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.boot.actuate.metrics.http.Outcome;
@@ -47,6 +49,8 @@ public final class WebFluxTags {
 	private static final Tag URI_UNKNOWN = Tag.of("uri", "UNKNOWN");
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
+
+	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
 
 	private WebFluxTags() {
 	}
@@ -87,9 +91,27 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
+		return uri(exchange, false);
+	}
+
+	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code exchange}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
+	 * @param exchange the exchange
+	 * @param ignoreTrailingSlash whether to ignore the trailing slash
+	 * @return the uri tag derived from the exchange
+	 */
+	public static Tag uri(ServerWebExchange exchange, boolean ignoreTrailingSlash) {
 		PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (pathPattern != null) {
-			return Tag.of("uri", pathPattern.getPatternString());
+			String patternString = pathPattern.getPatternString();
+			if (ignoreTrailingSlash) {
+				patternString = TRAILING_SLASH_PATTERN.matcher(patternString).replaceAll("");
+			}
+			return Tag.of("uri", patternString);
 		}
 		HttpStatus status = exchange.getResponse().getStatusCode();
 		if (status != null) {

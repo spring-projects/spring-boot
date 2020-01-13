@@ -31,10 +31,20 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class DefaultWebFluxTagsProvider implements WebFluxTagsProvider {
 
+	private final boolean ignoreTrailingSlash;
+
+	public DefaultWebFluxTagsProvider() {
+		this(false);
+	}
+
+	public DefaultWebFluxTagsProvider(boolean ignoreTrailingSlash) {
+		this.ignoreTrailingSlash = ignoreTrailingSlash;
+	}
+
 	@Override
 	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable exception) {
-		return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange), WebFluxTags.exception(exception),
-				WebFluxTags.status(exchange), WebFluxTags.outcome(exchange));
+		return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange, this.ignoreTrailingSlash),
+				WebFluxTags.exception(exception), WebFluxTags.status(exchange), WebFluxTags.outcome(exchange));
 	}
 
 }
