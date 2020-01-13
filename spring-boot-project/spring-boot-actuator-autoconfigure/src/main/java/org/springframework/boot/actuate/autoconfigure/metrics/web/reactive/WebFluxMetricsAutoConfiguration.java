@@ -59,7 +59,8 @@ public class WebFluxMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(WebFluxTagsProvider.class)
 	public DefaultWebFluxTagsProvider webfluxTagConfigurer() {
-		return new DefaultWebFluxTagsProvider();
+		return new DefaultWebFluxTagsProvider(
+				this.properties.getWeb().getServer().getRequest().isIgnoreTrailingSlash());
 	}
 
 	@Bean

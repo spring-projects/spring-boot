@@ -48,6 +48,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -62,6 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  * @author Dmytro Nosan
  * @author Tadaya Tsuyukubo
+ * @author Madhura Bhave
  */
 @ExtendWith(OutputCaptureExtension.class)
 class WebMvcMetricsAutoConfigurationTests {
@@ -79,10 +81,22 @@ class WebMvcMetricsAutoConfigurationTests {
 	void definesTagsProviderAndFilterWhenMeterRegistryIsPresent() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+			assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebMvcTagsProvider.class),
+					"ignoreTrailingSlash")).isEqualTo(true);
 			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 			assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
 					.isInstanceOf(WebMvcMetricsFilter.class);
 		});
+	}
+
+	@Test
+	void tagsProviderWhenIgnoreTrailingSlashIsFalse() {
+		this.contextRunner.withPropertyValues("management.metrics.web.server.request.ignore-trailing-slash=false")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+					assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebMvcTagsProvider.class),
+							"ignoreTrailingSlash")).isEqualTo(false);
+				});
 	}
 
 	@Test
