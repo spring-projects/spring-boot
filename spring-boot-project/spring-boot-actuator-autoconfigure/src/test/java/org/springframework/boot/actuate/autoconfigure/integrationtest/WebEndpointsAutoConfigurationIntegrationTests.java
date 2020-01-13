@@ -80,12 +80,10 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			ElasticsearchDataAutoConfiguration.class,
-			org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration.class,
-			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
+			ElasticsearchDataAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
+			SolrAutoConfiguration.class, RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
+			MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
-	@SuppressWarnings("deprecation")
 	static class WebEndpointTestApplication {
 
 	}

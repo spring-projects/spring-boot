@@ -4146,9 +4146,6 @@ Spring Boot supports several clients:
 
 Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elasticsearch`.
 
-The https://github.com/searchbox-io/Jest[Jest] client has been deprecated, since both Elasticsearch and Spring Data Elasticsearch provide official support for REST clients.
-
-
 
 [[boot-features-connecting-to-elasticsearch-rest]]
 ==== Connecting to Elasticsearch using REST clients
@@ -4191,33 +4188,6 @@ You can further tune how it is configured, as shown in the following example:
 
 If the configuration properties are not enough and you'd like to fully control the client
 configuration, you can register a custom `ClientConfiguration` bean.
-
-[[boot-features-connecting-to-elasticsearch-jest]]
-==== Connecting to Elasticsearch using Jest
-Now that Spring Boot supports the official `RestHighLevelClient`, Jest support is deprecated.
-
-If you have `Jest` on the classpath, you can inject an auto-configured `JestClient` that by default targets `http://localhost:9200`.
-You can further tune how the client is configured, as shown in the following example:
-
-[source,properties,indent=0,configprops]
-----
-	spring.elasticsearch.jest.uris=https://search.example.com:9200
-	spring.elasticsearch.jest.read-timeout=10000
-	spring.elasticsearch.jest.username=user
-	spring.elasticsearch.jest.password=secret
-----
-
-You can also register an arbitrary number of beans that implement `HttpClientConfigBuilderCustomizer` for more advanced customizations.
-The following example tunes additional HTTP settings:
-
-[source,java,indent=0]
-----
-include::{code-examples}/elasticsearch/jest/JestClientCustomizationExample.java[tag=customizer]
-----
-
-To take full control over the registration, define a `JestClient` bean.
-
-
 
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch by Using Spring Data

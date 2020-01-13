@@ -429,15 +429,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.elasticsearch.jest.uris",
-      "defaultValue": [
-        "http://localhost:9200"
-      ],
-      "deprecation": {
-        "reason": "The Jest client support is deprecated. Use other supported clients instead."
-      }
-    },
-    {
       "name": "spring.elasticsearch.rest.uris",
       "defaultValue": [
         "http://localhost:9200"
