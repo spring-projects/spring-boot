@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,19 +213,6 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	@Deprecated
-	void addLogFilePropertyWithDeprecatedProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
-				"logging.file=" + this.logFile);
-		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		String existingOutput = this.output.toString();
-		logger.info("Hello world");
-		String output = this.output.toString().substring(existingOutput.length()).trim();
-		assertThat(output).startsWith(this.logFile.getAbsolutePath());
-	}
-
-	@Test
 	void addLogFilePropertyWithDefault() {
 		assertThat(this.logFile).doesNotExist();
 		addPropertiesToEnvironment(this.context, "logging.file.name=" + this.logFile);
@@ -236,31 +223,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	@Deprecated
-	void addLogFilePropertyWithDefaultAndDeprecatedProperty() {
-		addPropertiesToEnvironment(this.context, "logging.file=" + this.logFile);
-		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		logger.info("Hello world");
-		assertThat(this.logFile).isFile();
-	}
-
-	@Test
 	void addLogPathProperty() {
 		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
 				"logging.file.path=" + this.tempDir);
-		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		String existingOutput = this.output.toString();
-		logger.info("Hello world");
-		String output = this.output.toString().substring(existingOutput.length()).trim();
-		assertThat(output).startsWith(new File(this.tempDir.toFile(), "spring.log").getAbsolutePath());
-	}
-
-	@Test
-	void addLogPathPropertyWithDeprecatedProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
-				"logging.path=" + this.tempDir);
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		String existingOutput = this.output.toString();
@@ -493,15 +458,6 @@ class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
 				.isEqualTo("my.log.%d{yyyyMMdd}.%i.gz");
 		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
-	}
-
-	@Test
-	@Deprecated
-	void systemPropertiesAreSetForLoggingConfigurationWithDeprecatedProperties() {
-		addPropertiesToEnvironment(this.context, "logging.file=" + this.logFile, "logging.path=path");
-		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo(this.logFile.getAbsolutePath());
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
 	}
 
 	@Test
