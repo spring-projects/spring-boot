@@ -112,17 +112,6 @@ class WebFluxMetricsAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	@Deprecated
-	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabledWithDeprecatedProperty() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.auto-time-requests=false").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.find("http.server.requests").meter()).isNull();
-				});
-	}
-
 	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context) {
 		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
 		for (int i = 0; i < 3; i++) {
