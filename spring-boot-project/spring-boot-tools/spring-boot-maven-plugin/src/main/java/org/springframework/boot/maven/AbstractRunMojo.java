@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,15 +93,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
 	private boolean addResources = false;
-
-	/**
-	 * Path to agent jar. NOTE: a forked process is required to use this feature.
-	 * @since 1.0.0
-	 * @deprecated since 2.2.0 in favor of {@code agents}
-	 */
-	@Deprecated
-	@Parameter(property = "spring-boot.run.agent")
-	private File[] agent;
 
 	/**
 	 * Path to agent jars. NOTE: a forked process is required to use this feature.
@@ -240,20 +231,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.fork;
 	}
 
-	/**
-	 * Specify if fork should be enabled by default.
-	 * @return {@code true} if fork should be enabled by default
-	 * @see #logDisabledFork()
-	 * @deprecated as of 2.2.0 in favour of enabling forking by default.
-	 */
-	@Deprecated
-	protected boolean enableForkByDefault() {
-		return hasAgent() || hasJvmArgs() || hasEnvVariables() || hasWorkingDirectorySet();
-	}
-
 	private boolean hasAgent() {
-		File[] configuredAgents = determineAgents();
-		return (configuredAgents != null && configuredAgents.length > 0);
+		return (this.agents != null && this.agents.length > 0);
 	}
 
 	private boolean hasJvmArgs() {
@@ -398,22 +377,17 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addAgents(List<String> args) {
-		File[] configuredAgents = determineAgents();
-		if (configuredAgents != null) {
+		if (this.agents != null) {
 			if (getLog().isInfoEnabled()) {
-				getLog().info("Attaching agents: " + Arrays.asList(configuredAgents));
+				getLog().info("Attaching agents: " + Arrays.asList(this.agents));
 			}
-			for (File agent : configuredAgents) {
+			for (File agent : this.agents) {
 				args.add("-javaagent:" + agent);
 			}
 		}
 		if (this.noverify) {
 			args.add("-noverify");
 		}
-	}
-
-	private File[] determineAgents() {
-		return (this.agents != null) ? this.agents : this.agent;
 	}
 
 	private void addActiveProfileArgument(RunArguments arguments) {
