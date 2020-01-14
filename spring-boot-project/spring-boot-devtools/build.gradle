@@ -4,7 +4,6 @@ plugins {
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.deployed'
 	id 'org.springframework.boot.integration-test'
-	id 'org.springframework.boot.internal-dependency-management'
     id 'org.springframework.boot.optional-dependencies'
 }
 
@@ -15,13 +14,13 @@ configurations {
 }
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-dependencies'))
-
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-autoconfigure')
 
 	intTestDependencies project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
 
+	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	intTestImplementation project(':spring-boot-project:spring-boot-autoconfigure')
 	intTestImplementation project(':spring-boot-project:spring-boot-test')
 	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
@@ -32,7 +31,7 @@ dependencies {
 	intTestImplementation 'net.bytebuddy:byte-buddy'
 	intTestRuntimeOnly 'org.springframework:spring-web'
 
-	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'javax.servlet:javax.servlet-api'
 	optional 'org.apache.derby:derby'
 	optional 'org.hibernate:hibernate-core'

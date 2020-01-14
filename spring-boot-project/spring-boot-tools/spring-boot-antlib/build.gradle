@@ -2,7 +2,6 @@ plugins {
 	id 'java-library'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.deployed'
-	id 'org.springframework.boot.internal-dependency-management'
 }
 
 description = 'Spring Boot Antlib'
@@ -20,11 +19,10 @@ dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
 	antIvy "org.apache.ivy:ivy:2.4.0"
 
-	api platform(project(":spring-boot-project:spring-boot-dependencies"))
-
 	compileOnly project(":spring-boot-project:spring-boot-tools:spring-boot-loader")
 	compileOnly "org.apache.ant:ant:${antVersion}"
 
+	implementation enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies"))
 	implementation project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools")
 	implementation "org.springframework:spring-core"
 }

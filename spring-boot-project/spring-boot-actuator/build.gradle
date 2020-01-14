@@ -9,11 +9,10 @@ plugins {
 description = 'Spring Boot Actuator'
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-dependencies'))
-
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 
-	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'com.hazelcast:hazelcast'
 	optional 'com.hazelcast:hazelcast-spring'

@@ -3,7 +3,6 @@ plugins {
 	id 'org.springframework.boot.deployed'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.integration-test'
-	id 'org.springframework.boot.internal-dependency-management'
 }
 
 description = "Spring Boot CLI"
@@ -16,14 +15,16 @@ configurations {
 
 dependencies {
 	compileOnly project(':spring-boot-project:spring-boot')
+
 	compileOnly 'jakarta.servlet:jakarta.servlet-api'
 	compileOnly 'org.codehaus.groovy:groovy-templates'
 	compileOnly 'org.springframework:spring-web'
 
 	dependenciesBom project(path: ':spring-boot-project:spring-boot-dependencies', configuration: 'effectiveBom')
 
-	implementation platform(project(':spring-boot-project:spring-boot-parent'))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
+
 	implementation 'com.vaadin.external.google:android-json'
 	implementation 'jline:jline'
 	implementation 'net.sf.jopt-simple:jopt-simple'
@@ -50,7 +51,7 @@ dependencies {
 	implementation 'org.springframework:spring-core'
 	implementation 'org.springframework.security:spring-security-crypto'
 
-	intTestImplementation platform(project(':spring-boot-project:spring-boot-dependencies'))
+	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
 	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	intTestImplementation 'org.assertj:assertj-core'

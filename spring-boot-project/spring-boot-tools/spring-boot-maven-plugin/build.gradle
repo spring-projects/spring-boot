@@ -2,7 +2,6 @@ plugins {
 	id 'org.asciidoctor.jvm.convert'
 	id 'org.asciidoctor.jvm.pdf'
 	id 'org.springframework.boot.conventions'
-	id 'org.springframework.boot.internal-dependency-management'
 	id 'org.springframework.boot.maven-plugin'
 	id 'org.springframework.boot.optional-dependencies'
 }
@@ -14,25 +13,25 @@ configurations {
 }
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-parent'))
-
 	compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations'
 	compileOnly 'org.sonatype.plexus:plexus-build-api'
 
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
 	implementation 'org.apache.maven.shared:maven-common-artifact-filters'
 	implementation 'org.apache.maven:maven-plugin-api'
 
-	intTestImplementation platform(project(':spring-boot-project:spring-boot-parent'))
+	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	intTestImplementation 'org.apache.maven.shared:maven-invoker'
 	intTestImplementation 'org.assertj:assertj-core'
 	intTestImplementation 'org.junit.jupiter:junit-jupiter'
 
-	optional platform(project(':spring-boot-project:spring-boot-parent'))
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	optional 'org.apache.maven.plugins:maven-shade-plugin'
 
 	runtimeOnly 'org.sonatype.plexus:plexus-build-api'
 
+	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	testImplementation 'org.assertj:assertj-core'
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.mockito:mockito-core'

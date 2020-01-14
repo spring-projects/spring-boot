@@ -4,22 +4,21 @@ plugins {
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.configuration-properties'
 	id 'org.springframework.boot.deployed'
-	id 'org.springframework.boot.internal-dependency-management'
 	id 'org.springframework.boot.optional-dependencies'
 }
 
 description = 'Spring Boot'
 
 dependencies {
-	annotationProcessor platform(project(':spring-boot-project:spring-boot-dependencies'))
+	annotationProcessor enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	annotationProcessor 'org.apache.logging.log4j:log4j-core'
-
-	api platform(project(':spring-boot-project:spring-boot-dependencies'))
 
 	api 'org.springframework:spring-core'
 	api 'org.springframework:spring-context'
 
-	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'ch.qos.logback:logback-classic'
 	optional 'com.atomikos:transactions-jdbc'
 	optional 'com.atomikos:transactions-jms'
