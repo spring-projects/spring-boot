@@ -1,6 +1,6 @@
 plugins {
 	id 'java-gradle-plugin'
-	id 'io.spring.javaformat' version '0.0.18-SNAPSHOT'
+	id 'io.spring.javaformat' version '0.0.19-SNAPSHOT'
 	id 'checkstyle'
 }
 
