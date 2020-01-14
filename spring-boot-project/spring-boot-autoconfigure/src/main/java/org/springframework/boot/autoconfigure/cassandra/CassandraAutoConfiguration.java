@@ -63,14 +63,14 @@ public class CassandraAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Lazy
-	public CqlSession cqlSession(CqlSessionBuilder cqlSessionBuilder) {
+	public CqlSession cassandraSession(CqlSessionBuilder cqlSessionBuilder) {
 		return cqlSessionBuilder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CqlSessionBuilder cqlSessionBuilder(CassandraProperties properties, DriverConfigLoader driverConfigLoader,
-			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
+	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
+			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureSsl(properties, builder);
 		builder.withKeyspace(properties.getKeyspaceName());

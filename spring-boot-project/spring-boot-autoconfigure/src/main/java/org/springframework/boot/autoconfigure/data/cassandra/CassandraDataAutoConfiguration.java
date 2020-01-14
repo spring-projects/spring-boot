@@ -96,7 +96,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(SessionFactory.class)
-	public SessionFactoryFactoryBean cassandraSession(Environment environment, CassandraConverter converter) {
+	public SessionFactoryFactoryBean cassandraSessionFactory(Environment environment, CassandraConverter converter) {
 		SessionFactoryFactoryBean session = new SessionFactoryFactoryBean();
 		session.setSession(this.session);
 		session.setConverter(converter);
