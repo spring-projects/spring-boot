@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -287,17 +286,6 @@ public class RabbitProperties {
 
 	public void setRequestedChannelMax(int requestedChannelMax) {
 		this.requestedChannelMax = requestedChannelMax;
-	}
-
-	@DeprecatedConfigurationProperty(reason = "replaced to support additional confirm types",
-			replacement = "spring.rabbitmq.publisher-confirm-type")
-	public boolean isPublisherConfirms() {
-		return ConfirmType.CORRELATED.equals(this.publisherConfirmType);
-	}
-
-	@Deprecated
-	public void setPublisherConfirms(boolean publisherConfirms) {
-		this.publisherConfirmType = (publisherConfirms) ? ConfirmType.CORRELATED : ConfirmType.NONE;
 	}
 
 	public boolean isPublisherReturns() {
@@ -730,28 +718,6 @@ public class RabbitProperties {
 
 		public void setMaxConcurrency(Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
-		}
-
-		/**
-		 * Return the number of messages processed in one transaction.
-		 * @return the number of messages
-		 * @deprecated since 2.2.0 in favor of {@link SimpleContainer#getBatchSize()}
-		 */
-		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.batch-size")
-		@Deprecated
-		public Integer getTransactionSize() {
-			return getBatchSize();
-		}
-
-		/**
-		 * Set the number of messages processed in one transaction.
-		 * @param transactionSize the number of messages
-		 * @deprecated since 2.2.0 in favor of
-		 * {@link SimpleContainer#setBatchSize(Integer)}
-		 */
-		@Deprecated
-		public void setTransactionSize(Integer transactionSize) {
-			setBatchSize(transactionSize);
 		}
 
 		public Integer getBatchSize() {
