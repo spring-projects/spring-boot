@@ -37,6 +37,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.StringUtils;
@@ -247,6 +248,9 @@ public class ServerProperties {
 		private String applicationDisplayName = "application";
 
 		@NestedConfigurationProperty
+		private final Encoding encoding = new Encoding();
+
+		@NestedConfigurationProperty
 		private final Jsp jsp = new Jsp();
 
 		@NestedConfigurationProperty
@@ -278,6 +282,10 @@ public class ServerProperties {
 
 		public Map<String, String> getContextParameters() {
 			return this.contextParameters;
+		}
+
+		public Encoding getEncoding() {
+			return this.encoding;
 		}
 
 		public Jsp getJsp() {

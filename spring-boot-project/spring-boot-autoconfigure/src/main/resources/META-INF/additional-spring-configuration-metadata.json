@@ -473,15 +473,93 @@
       "defaultValue": ".tpl"
     },
     {
-      "name": "spring.http.encoding.enabled",
+      "name": "server.servlet.encoding.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable http encoding support.",
       "defaultValue": true
     },
     {
-      "name": "spring.http.converters.preferred-json-mapper",
+      "name": "spring.http.encoding.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable http encoding support.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.enabled",
+        "level" : "error"
+      }
+    },
+    {
+      "name" : "spring.http.encoding.charset",
+      "type": "java.nio.charset.Charset",
+      "description" : "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.charset",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests and responses.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force-request",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when force has not been specified.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force-request",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force-response",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP responses.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force-response",
+        "level" : "error"
+      }
+    },
+
+    {
+      "name" : "spring.http.encoding.mapping",
+      "type" : "java.util.Map<java.util.Locale,java.nio.charset.Charset>",
+      "description" : "Locale in which to encode mapping.",
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.mapping",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.log-request-details",
+      "type": "java.lang.Boolean",
+      "description": "Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "spring.mvc.log-request-details",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "type": "java.lang.String",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.",
+      "deprecation" : {
+        "replacement" : "spring.mvc.converters.preferred-json-mapper",
+        "level" : "error"
+      }
     },
     {
       "name": "spring.integration.jdbc.initialize-schema",
@@ -2356,7 +2434,7 @@
       ]
     },
     {
-      "name": "spring.http.converters.preferred-json-mapper",
+      "name": "spring.mvc.converters.preferred-json-mapper",
       "values": [
         {
           "value": "gson"

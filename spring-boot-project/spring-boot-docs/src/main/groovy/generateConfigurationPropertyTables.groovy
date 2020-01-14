@@ -36,7 +36,7 @@ def generateConfigMetadataDocumentation() {
 					.withKeyPrefixes("server")
 				.addSection("web")
 					.withKeyPrefixes("spring.hateoas",
-						"spring.http", "spring.servlet", "spring.jersey",
+						"spring.servlet", "spring.jersey",
 						"spring.mvc", "spring.resources", "spring.webflux")
 				.addSection("json")
 					.withKeyPrefixes("spring.jackson", "spring.gson")
