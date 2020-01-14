@@ -58,20 +58,6 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	 * @param meterRegistry the registry to which metrics are recorded
 	 * @param tagProvider provider for metrics tags
 	 * @param metricName name of the metric to record
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsClientHttpRequestInterceptor(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
-			String metricName) {
-		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
-	}
-
-	/**
-	 * Create a new {@code MetricsClientHttpRequestInterceptor}.
-	 * @param meterRegistry the registry to which metrics are recorded
-	 * @param tagProvider provider for metrics tags
-	 * @param metricName name of the metric to record
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
