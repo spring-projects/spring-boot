@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,17 +198,6 @@ class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.virtual_host:/").run((context) -> {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
-				});
-	}
-
-	@Test
-	@Deprecated
-	void testConnectionFactoryPublisherConfirmTypeUsingDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.publisher-confirms=true").run((context) -> {
-					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
-					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
-					assertThat(connectionFactory.isSimplePublisherConfirms()).isFalse();
 				});
 	}
 
@@ -456,18 +445,6 @@ class RabbitAutoConfigurationTests {
 					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
 					checkCommonProps(context, rabbitListenerContainerFactory);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void testRabbitListenerContainerFactoryWithDeprecatedTransactionSizeStillWorks() {
-		this.contextRunner
-				.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.simple.transactionSize:20").run((context) -> {
-					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-							.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
-					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				});
 	}
 
