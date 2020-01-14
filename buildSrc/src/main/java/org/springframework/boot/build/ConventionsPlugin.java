@@ -38,6 +38,7 @@ import org.gradle.api.publish.maven.MavenPomOrganization;
 import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.publish.tasks.GenerateModuleMetadata;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -79,6 +80,8 @@ import org.gradle.api.tasks.testing.Test;
  * Maven Central's requirements.
  * <li>If the {@link JavaPlugin Java plugin} has also been applied, creation of Javadoc
  * and source jars is enabled.
+ * <li>Generation of Gradle module metadata is disabled as it is incompatible with our
+ * two-step publishing process.</li>
  * </ul>
  *
  * <p/>
@@ -144,6 +147,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void applyMavenPublishingConventions(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
+			project.getTasks().withType(GenerateModuleMetadata.class).all((generate) -> generate.setEnabled(false));
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			if (project.hasProperty("deploymentRepository")) {
 				publishing.getRepositories().maven((mavenRepository) -> {
