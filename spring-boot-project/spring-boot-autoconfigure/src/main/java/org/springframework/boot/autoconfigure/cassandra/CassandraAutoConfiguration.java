@@ -91,11 +91,11 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DriverConfigLoader driverConfigLoader(CassandraProperties properties,
+	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
 				() -> cassandraConfiguration(properties), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
-		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customizer(builder));
+		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 

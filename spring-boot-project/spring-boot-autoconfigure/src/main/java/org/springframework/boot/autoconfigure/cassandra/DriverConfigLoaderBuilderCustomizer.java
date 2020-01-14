@@ -34,6 +34,6 @@ public interface DriverConfigLoaderBuilderCustomizer {
 	 * builder}.
 	 * @param builder the builder to customize
 	 */
-	void customizer(ProgrammaticDriverConfigLoaderBuilder builder);
+	void customize(ProgrammaticDriverConfigLoaderBuilder builder);
 
 }
