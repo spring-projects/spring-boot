@@ -182,7 +182,7 @@
 		<selenium-htmlunit.version>2.36.0</selenium-htmlunit.version>
 		<sendgrid.version>4.4.1</sendgrid.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
-		<slf4j.version>1.7.29</slf4j.version>
+		<slf4j.version>1.7.30</slf4j.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
 		<solr.version>8.2.0</solr.version>
 		<spring-amqp.version>2.2.3.BUILD-SNAPSHOT</spring-amqp.version>
