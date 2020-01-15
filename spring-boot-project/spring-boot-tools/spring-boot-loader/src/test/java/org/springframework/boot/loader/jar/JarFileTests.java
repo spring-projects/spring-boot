@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -511,11 +511,12 @@ public class JarFileTests {
 			jarOutputStream.write(new byte[] { (byte) 1 });
 			jarOutputStream.closeEntry();
 		}
-		JarFile jarFile = new JarFile(file);
-		Enumeration<java.util.jar.JarEntry> entries = jarFile.entries();
-		JarEntry entry = entries.nextElement();
-		assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
-		assertThat(entry.getName()).isEqualTo("1.dat");
+		try (JarFile jar = new JarFile(file)) {
+			Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+			JarEntry entry = entries.nextElement();
+			assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
+			assertThat(entry.getName()).isEqualTo("1.dat");
+		}
 	}
 
 	private int getJavaVersion() {
