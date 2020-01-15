@@ -996,7 +996,7 @@ bom {
 			]
 		}
 	}
-	library('Kafka', '2.3.1') {
+	library('Kafka', '2.4.0') {
 		group('org.apache.kafka') {
 			modules = [
 				'connect-api',
@@ -1010,10 +1010,12 @@ bom {
 				'kafka-streams',
 				'kafka-streams-scala_2.11',
 				'kafka-streams-scala_2.12',
+				'kafka-streams-scala_2.13',
 				'kafka-streams-test-utils',
 				'kafka-tools',
 				'kafka_2.11',
-				'kafka_2.12'
+				'kafka_2.12',
+				'kafka_2.13'
 			]
 		}
 	}
@@ -1690,7 +1692,7 @@ bom {
 			]
 		}
 	}
-	library('Spring Kafka', '2.3.4.RELEASE') {
+	library('Spring Kafka', '2.4.1.RELEASE') {
 		group('org.springframework.kafka') {
 			modules = [
 				'spring-kafka',
