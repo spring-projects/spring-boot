@@ -1,11 +1,14 @@
 plugins {
 	id 'java-library'
 	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.internal-dependency-management'
 }
 
 description = 'Spring Boot Testing Support'
 
 dependencies {
+	api platform(project(path: ":spring-boot-project:spring-boot-parent"))
+
 	compileOnly "com.datastax.oss:java-driver-core"
 	compileOnly "javax.servlet:javax.servlet-api"
 	compileOnly "junit:junit"
@@ -17,7 +20,6 @@ dependencies {
 	compileOnly "org.springframework.data:spring-data-redis"
 	compileOnly "org.testcontainers:testcontainers"
 
-	implementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
 	implementation "org.apache.maven.resolver:maven-resolver-connector-basic"
 	implementation "org.apache.maven.resolver:maven-resolver-impl"
 	implementation "org.apache.maven:maven-resolver-provider"

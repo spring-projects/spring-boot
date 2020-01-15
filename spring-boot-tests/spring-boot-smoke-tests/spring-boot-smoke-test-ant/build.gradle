@@ -29,7 +29,7 @@ dependencies {
 	testRepository project(path: ':spring-boot-project:spring-boot-tools:spring-boot-loader', configuration: 'mavenRepository')
 	testRepository project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter', configuration: 'mavenRepository')
 
-	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	testImplementation platform(project(':spring-boot-project:spring-boot-dependencies'))
 	testImplementation project(path: ':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
 	testImplementation 'org.assertj:assertj-core'
 	testImplementation 'org.junit.jupiter:junit-jupiter'

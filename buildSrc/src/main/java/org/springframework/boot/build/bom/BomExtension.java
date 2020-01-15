@@ -30,6 +30,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.InvalidUserCodeException;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.build.bom.Library.Exclusion;
@@ -51,9 +52,9 @@ public class BomExtension {
 
 	private final List<Library> libraries = new ArrayList<Library>();
 
-	private final DependencyHandler dependencyHandler;
-
 	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
+
+	private final DependencyHandler dependencyHandler;
 
 	public BomExtension(DependencyHandler dependencyHandler) {
 		this.dependencyHandler = dependencyHandler;
@@ -107,13 +108,16 @@ public class BomExtension {
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				this.putArtifactVersionProperty(group.getId(), module.getName(), library.getVersionProperty());
-				this.dependencyHandler.getConstraints().add("api",
+				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						createDependencyNotation(group.getId(), module.getName(), library.getVersion()));
 			}
 			for (String bomImport : group.getBoms()) {
 				this.putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
-				this.dependencyHandler.add("api", this.dependencyHandler
-						.enforcedPlatform(createDependencyNotation(group.getId(), bomImport, library.getVersion())));
+				String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion());
+				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
+						this.dependencyHandler.platform(bomDependency));
+				this.dependencyHandler.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME,
+						this.dependencyHandler.enforcedPlatform(bomDependency));
 			}
 		}
 	}

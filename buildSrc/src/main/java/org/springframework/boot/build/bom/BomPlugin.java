@@ -67,6 +67,8 @@ import org.springframework.util.FileCopyUtils;
  */
 public class BomPlugin implements Plugin<Project> {
 
+	static final String API_ENFORCED_CONFIGURATION_NAME = "apiEnforced";
+
 	@Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
@@ -75,6 +77,7 @@ public class BomPlugin implements Plugin<Project> {
 		plugins.apply(JavaPlatformPlugin.class);
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
+		createApiEnforcedConfiguration(project);
 		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project.getDependencies());
 		project.getTasks().create("bomrCheck", CheckBom.class, bom);
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
@@ -112,6 +115,19 @@ public class BomPlugin implements Plugin<Project> {
 					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 				});
+	}
+
+	private void createApiEnforcedConfiguration(Project project) {
+		Configuration apiEnforced = project.getConfigurations().create(API_ENFORCED_CONFIGURATION_NAME,
+				(configuration) -> {
+					configuration.setCanBeConsumed(false);
+					configuration.setCanBeResolved(false);
+					configuration.setVisible(false);
+				});
+		project.getConfigurations().getByName(JavaPlatformPlugin.ENFORCED_API_ELEMENTS_CONFIGURATION_NAME)
+				.extendsFrom(apiEnforced);
+		project.getConfigurations().getByName(JavaPlatformPlugin.ENFORCED_RUNTIME_ELEMENTS_CONFIGURATION_NAME)
+				.extendsFrom(apiEnforced);
 	}
 
 	private static final class PublishingCustomizer {

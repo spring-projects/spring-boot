@@ -5,6 +5,7 @@ plugins {
 	id 'org.springframework.boot.auto-configuration'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.deployed'
+	id 'org.springframework.boot.internal-dependency-management'
     id 'org.springframework.boot.optional-dependencies'
 }
 
@@ -16,12 +17,13 @@ configurations {
 }
 
 dependencies {
-	asciidoctorExtensions enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	asciidoctorExtensions platform(project(':spring-boot-project:spring-boot-dependencies'))
 	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+	api platform(project(':spring-boot-project:spring-boot-dependencies'))
 
 	api project(':spring-boot-project:spring-boot-actuator')
 
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-autoconfigure')
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -29,7 +31,7 @@ dependencies {
 	implementation 'org.springframework:spring-core'
 	implementation 'org.springframework:spring-context'
 
-	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'ch.qos.logback:logback-classic'
 	optional 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 	optional 'com.github.ben-manes.caffeine:caffeine'

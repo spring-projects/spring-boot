@@ -3,16 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.deployed'
+	id 'org.springframework.boot.internal-dependency-management'
     id 'org.springframework.boot.optional-dependencies'
 }
 
 description = 'Spring Boot Test'
 
 dependencies {
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api platform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 
-	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	optional platform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'com.google.code.gson:gson'
 	optional 'com.jayway.jsonpath:json-path'
@@ -36,7 +37,6 @@ dependencies {
 	optional 'org.springframework:spring-webflux'
 	optional 'net.sourceforge.htmlunit:htmlunit'
 
-	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	testImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	testImplementation 'io.mockk:mockk'
 	testImplementation 'javax.json:javax.json-api'
