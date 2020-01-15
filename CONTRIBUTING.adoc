@@ -158,7 +158,13 @@ With the requisite Eclipse plugins installed you can select
 
 
 === Importing into IntelliJ IDEA
-Use "`File`" -> "`Open`" and then select the root `build.gradle` file to import the code.
+If you have performed a checkout of this repository already, use "`File`" -> "`Open`" and
+then select the root `build.gradle` file to import the code.
+
+Alternatively, you can let IntellIJ IDEA checkout the code for you. Use "`File`" ->
+"`New`" -> "`Project from Version Control`" and
+`https://github.com/spring-projects/spring-boot` for the URL. One the checkout is done, a
+pop-up will suggest to open the project.
 
 
 
