@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,12 +35,6 @@ class WebConversionServiceTests {
 	@Test
 	void customDateFormatWithJavaUtilDate() {
 		customDateFormat(Date.from(ZonedDateTime.of(2018, 1, 1, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant()));
-	}
-
-	@Test
-	@Deprecated
-	void customDateFormatWithJodaTime() {
-		customDateFormat(LocalDate.fromDateFields(new DateTime(2018, 1, 1, 20, 30).toDate()));
 	}
 
 	@Test

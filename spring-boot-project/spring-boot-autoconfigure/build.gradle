@@ -21,7 +21,6 @@ dependencies {
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor'
 	optional 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
-	optional 'com.fasterxml.jackson.datatype:jackson-datatype-joda'
 	optional 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	optional 'com.fasterxml.jackson.module:jackson-module-parameter-names'
 	optional 'com.google.code.gson:gson'
