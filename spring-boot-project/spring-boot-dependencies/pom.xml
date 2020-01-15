@@ -177,7 +177,7 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.4.RELEASE</spring-retry.version>
+		<spring-retry.version>1.2.5.RELEASE</spring-retry.version>
 		<spring-security.version>5.1.7.RELEASE</spring-security.version>
 		<spring-session-bom.version>Bean-SR8</spring-session-bom.version>
 		<spring-ws.version>3.0.8.RELEASE</spring-ws.version>
