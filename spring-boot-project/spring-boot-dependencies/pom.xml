@@ -192,7 +192,7 @@
 		<thymeleaf-extras-java8time.version>3.0.4.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>9.0.30</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.14</unboundid-ldapsdk.version>
-		<undertow.version>2.0.28.Final</undertow.version>
+		<undertow.version>2.0.29.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
 		<woodstox.version>5.0.3</woodstox.version>
