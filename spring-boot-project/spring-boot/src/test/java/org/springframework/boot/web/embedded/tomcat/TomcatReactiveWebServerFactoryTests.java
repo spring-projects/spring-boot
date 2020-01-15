@@ -33,6 +33,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -63,6 +64,16 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
 		return new TomcatReactiveWebServerFactory(0);
+	}
+
+	@Test
+	@Disabled("gh-19702")
+	void compressionOfResponseToGetRequest() {
+	}
+
+	@Test
+	@Disabled("gh-19702")
+	void compressionOfResponseToPostRequest() {
 	}
 
 	@Test
