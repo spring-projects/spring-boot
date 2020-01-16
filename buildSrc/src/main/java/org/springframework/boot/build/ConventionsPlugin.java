@@ -45,6 +45,8 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 
+import org.springframework.boot.build.testing.TestFailuresPlugin;
+
 /**
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
  * Conventions are applied in response to various plugins being applied.
@@ -55,7 +57,8 @@ import org.gradle.api.tasks.testing.Test;
  *
  * <ul>
  * <li>{@code sourceCompatibility} is set to {@code 1.8}
- * <li>Spring Java Format and Checkstyle plugins are applied
+ * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
+ * Checkstyle}, and {@link TestFailuresPlugin Test Failures} plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding
  * <li>{@link Javadoc} tasks are configured to use UTF-8 encoding
@@ -103,6 +106,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void applyJavaConventions(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+			project.getPlugins().apply(TestFailuresPlugin.class);
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {

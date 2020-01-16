@@ -81,6 +81,10 @@ gradlePlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
 		}
+		testFailuresPlugin {
+			id = "org.springframework.boot.test-failures"
+			implementationClass = "org.springframework.boot.build.testing.TestFailuresPlugin"
+		}
 	}
 }
 
