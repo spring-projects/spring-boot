@@ -44,10 +44,10 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 
 	static {
 		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			GRADLE_VERSIONS = Collections.singletonList("default");
+			GRADLE_VERSIONS = Arrays.asList("6.1", "default");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("5.6.4", "default");
+			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.1", "default");
 		}
 	}
 
