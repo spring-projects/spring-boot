@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts.Expanded;
 import org.springframework.boot.loader.tools.Layouts.Jar;
+import org.springframework.boot.loader.tools.Layouts.LayeredJar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
@@ -140,8 +141,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
-	 * archive type.
+	 * it). Possible values are JAR, LAYERED_JAR, WAR, ZIP, DIR, NONE. Defaults to a guess
+	 * based on the archive type.
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.repackage.layout")
@@ -379,6 +380,11 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		 * Jar Layout.
 		 */
 		JAR(new Jar()),
+
+		/**
+		 * Layered Jar Layout.
+		 */
+		LAYERED_JAR(new LayeredJar()),
 
 		/**
 		 * War Layout.
