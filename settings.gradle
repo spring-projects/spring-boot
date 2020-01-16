@@ -17,7 +17,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.1'
+    id 'com.gradle.enterprise' version '3.1.1'
 }
 
 apply from: "$rootDir/gradle/build-scan-user-data.gradle"
@@ -27,7 +27,8 @@ gradleEnterprise {
 		obfuscation {
 			ipAddresses { addresses -> addresses.collect { address -> '0.0.0.0'} }
 		}
-		publishAlwaysIf(System.getenv('GRADLE_ENTERPRISE_URL') != null)
+		publishAlways()
+		publishIfAuthenticated()
 		server = 'https://ge.spring.io'
 	}
 }
