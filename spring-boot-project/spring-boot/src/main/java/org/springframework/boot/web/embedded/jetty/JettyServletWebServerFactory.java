@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -327,9 +327,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			ServletContextInitializer... initializers) {
 		List<Configuration> configurations = new ArrayList<>();
 		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
-		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
+		configurations.addAll(getConfigurations());
 		return configurations.toArray(new Configuration[0]);
 	}
 
