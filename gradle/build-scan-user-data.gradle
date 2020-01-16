@@ -52,7 +52,7 @@ boolean isCi() {
 
 String getBranch() {
 	def branch = System.getenv('BRANCH')
-	if (branch != null && !branch.isEmpty()) {
+	if (branch) {
 		return branch
 	}
 	return execAndGetStdout('git', 'rev-parse', '--abbrev-ref', 'HEAD')
