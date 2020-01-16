@@ -210,6 +210,7 @@ jobs:
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
       params:
+        BRANCH: ((branch))
         GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
         GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
         GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
@@ -299,6 +300,7 @@ jobs:
       image: spring-boot-jdk11-ci-image
       file: git-repo/ci/tasks/build-project.yml
       params:
+        BRANCH: ((branch))
         GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
         GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
         GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
@@ -336,6 +338,7 @@ jobs:
         image: spring-boot-jdk13-ci-image
         file: git-repo/ci/tasks/build-project.yml
         params:
+          BRANCH: ((branch))
           GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
           GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))

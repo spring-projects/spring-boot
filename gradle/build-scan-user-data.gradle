@@ -27,7 +27,7 @@ void tagCiOrLocal() {
 void addGitMetadata() {
 	gradleEnterprise.buildScan.background {
 		def gitCommitId = execAndGetStdout('git', 'rev-parse', '--short=8', '--verify', 'HEAD')
-		def gitBranchName = execAndGetStdout('git', 'rev-parse', '--abbrev-ref', 'HEAD')
+		def gitBranchName = getBranch()
 		def gitStatus = execAndGetStdout('git', 'status', '--porcelain')
 
 		if(gitCommitId) {
@@ -48,6 +48,14 @@ void addGitMetadata() {
 
 boolean isCi() {
 	System.getenv('CI')
+}
+
+String getBranch() {
+	def branch = System.getenv('BRANCH')
+	if (branch) {
+		return branch
+	}
+	return execAndGetStdout('git', 'rev-parse', '--abbrev-ref', 'HEAD')
 }
 
 String execAndGetStdout(String... args) {
