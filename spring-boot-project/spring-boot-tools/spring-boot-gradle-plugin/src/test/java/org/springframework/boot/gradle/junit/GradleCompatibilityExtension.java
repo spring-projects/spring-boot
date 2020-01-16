@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.junit;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -44,10 +43,10 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 
 	static {
 		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			GRADLE_VERSIONS = Collections.singletonList("default");
+			GRADLE_VERSIONS = Arrays.asList("6.0.1", "default");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("5.6.4", "default");
+			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.0.1", "default");
 		}
 	}
 
