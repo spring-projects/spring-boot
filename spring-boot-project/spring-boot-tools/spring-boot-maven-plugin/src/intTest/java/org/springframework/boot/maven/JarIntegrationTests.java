@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the Maven plugin's jar support.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @ExtendWith(MavenBuildExtension.class)
 class JarIntegrationTests extends AbstractArchiveIntegrationTests {
@@ -277,6 +278,16 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 					.hasEntryWithName("custom");
 			assertThat(jar(new File(project, "default/target/default-0.0.1.BUILD-SNAPSHOT.jar")))
 					.hasEntryWithName("sample");
+		});
+	}
+
+	@TestTemplate
+	void whenJarIsRepackagedWithTheLayeredLayoutTheJarContainsLayers(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-layered").execute((project) -> {
+			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/dependencies/lib/jar-release")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot");
 		});
 	}
 
