@@ -911,13 +911,6 @@ bom {
 			]
 		}
 	}
-	library('Joda Time', '2.10.5') {
-		group('joda-time') {
-			modules = [
-				'joda-time'
-			]
-		}
-	}
 	library('Johnzon', '1.2.2') {
 		group('org.apache.johnzon') {
 			modules = [
