@@ -61,7 +61,7 @@ class GrabCommandIntegrationTests {
 		System.setProperty("groovy.grape.report.downloads", "true");
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertThat(new File(this.cli.getTemp(), "repository/joda-time/joda-time")).isDirectory();
+		assertThat(new File(this.cli.getTemp(), "repository/com/fasterxml/jackson/core/jackson-core")).isDirectory();
 		assertThat(output).contains("Downloading: ");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,22 +38,6 @@ import org.springframework.web.util.UriTemplateHandler;
 public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 
 	private final MetricsClientHttpRequestInterceptor interceptor;
-
-	/**
-	 * Creates a new {@code MetricsRestTemplateInterceptor} that will record metrics using
-	 * the given {@code meterRegistry} with tags provided by the given
-	 * {@code tagProvider}.
-	 * @param meterRegistry the meter registry
-	 * @param tagProvider the tag provider
-	 * @param metricName the name of the recorded metric
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
-			String metricName) {
-		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
-	}
 
 	/**
 	 * Creates a new {@code MetricsRestTemplateInterceptor}. When {@code autoTimeRequests}
