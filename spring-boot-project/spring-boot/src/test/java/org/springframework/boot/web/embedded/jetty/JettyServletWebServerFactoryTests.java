@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Test;
@@ -299,6 +301,26 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 				assertThat(threadPool.isRunning()).isFalse();
 			}
 		});
+	}
+
+	@Test
+	void errorHandlerCanBeOverridden() {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.addConfigurations(new AbstractConfiguration() {
+
+			@Override
+			public void configure(WebAppContext context) throws Exception {
+				context.setErrorHandler(new CustomErrorHandler());
+			}
+
+		});
+		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
+		WebAppContext context = (WebAppContext) jettyWebServer.getServer().getHandler();
+		assertThat(context.getErrorHandler()).isInstanceOf(CustomErrorHandler.class);
+	}
+
+	private static class CustomErrorHandler extends ErrorPageErrorHandler {
+
 	}
 
 }
