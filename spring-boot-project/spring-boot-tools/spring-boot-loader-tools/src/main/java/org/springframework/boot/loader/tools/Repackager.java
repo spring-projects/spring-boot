@@ -62,6 +62,8 @@ public class Repackager {
 
 	private static final String BOOT_CLASSPATH_INDEX_ATTRIBUTE = "Spring-Boot-Classpath-Index";
 
+	private static final String BOOT_LAYERS_INDEX_ATTRIBUTE = "Spring-Boot-Layers-Index";
+
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
@@ -79,6 +81,8 @@ public class Repackager {
 	private Layout layout;
 
 	private LayoutFactory layoutFactory;
+
+	private Layers layers = Layers.IMPLICIT;
 
 	public Repackager(File source) {
 		this(source, null);
@@ -126,6 +130,16 @@ public class Repackager {
 	public void setLayout(Layout layout) {
 		Assert.notNull(layout, "Layout must not be null");
 		this.layout = layout;
+	}
+
+	/**
+	 * Sets the layers that should be used in the jar.
+	 * @param layers the jar layers
+	 * @see LayeredLayout
+	 */
+	public void setLayers(Layers layers) {
+		Assert.notNull(layers, "Layers must not be null");
+		this.layers = layers;
 	}
 
 	/**
@@ -244,7 +258,7 @@ public class Repackager {
 
 	private EntryTransformer getEntityTransformer() {
 		if (this.layout instanceof RepackagingLayout) {
-			return new RepackagingEntryTransformer((RepackagingLayout) this.layout);
+			return new RepackagingEntryTransformer((RepackagingLayout) this.layout, this.layers);
 		}
 		return EntryTransformer.NONE;
 	}
@@ -328,12 +342,21 @@ public class Repackager {
 
 	private void addBootAttributes(Attributes attributes) {
 		attributes.putValue(BOOT_VERSION_ATTRIBUTE, getClass().getPackage().getImplementationVersion());
-		if (this.layout instanceof RepackagingLayout) {
+		if (this.layout instanceof LayeredLayout) {
+			addBootBootAttributesForLayeredLayout(attributes, (LayeredLayout) this.layout);
+		}
+		else if (this.layout instanceof RepackagingLayout) {
 			addBootBootAttributesForRepackagingLayout(attributes, (RepackagingLayout) this.layout);
 		}
 		else {
 			addBootBootAttributesForPlainLayout(attributes, this.layout);
 		}
+	}
+
+	private void addBootBootAttributesForLayeredLayout(Attributes attributes, LayeredLayout layout) {
+		String layersIndexFileLocation = layout.getLayersIndexFileLocation();
+		putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layersIndexFileLocation);
+		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 	}
 
 	private void addBootBootAttributesForRepackagingLayout(Attributes attributes, RepackagingLayout layout) {
@@ -388,8 +411,11 @@ public class Repackager {
 
 		private final RepackagingLayout layout;
 
-		private RepackagingEntryTransformer(RepackagingLayout layout) {
+		private final Layers layers;
+
+		private RepackagingEntryTransformer(RepackagingLayout layout, Layers layers) {
 			this.layout = layout;
+			this.layers = layers;
 		}
 
 		@Override
@@ -400,7 +426,7 @@ public class Repackager {
 			if (!isTransformable(entry)) {
 				return entry;
 			}
-			String transformedName = this.layout.getRepackagedClassesLocation() + entry.getName();
+			String transformedName = transformName(entry.getName());
 			JarArchiveEntry transformedEntry = new JarArchiveEntry(transformedName);
 			transformedEntry.setTime(entry.getTime());
 			transformedEntry.setSize(entry.getSize());
@@ -423,6 +449,15 @@ public class Repackager {
 				transformedEntry.setLastModifiedTime(entry.getLastModifiedTime());
 			}
 			return transformedEntry;
+		}
+
+		private String transformName(String name) {
+			if (this.layout instanceof LayeredLayout) {
+				Layer layer = this.layers.getLayer(name);
+				Assert.state(layer != null, "Invalid 'null' layer from " + this.layers.getClass().getName());
+				return ((LayeredLayout) this.layout).getRepackagedClassesLocation(layer) + name;
+			}
+			return this.layout.getRepackagedClassesLocation() + name;
 		}
 
 		private boolean isTransformable(JarArchiveEntry entry) {
@@ -456,7 +491,14 @@ public class Repackager {
 		}
 
 		private String getLocation(Library library) {
-			return Repackager.this.layout.getLibraryLocation(library.getName(), library.getScope());
+			Layout layout = Repackager.this.layout;
+			if (layout instanceof LayeredLayout) {
+				Layers layers = Repackager.this.layers;
+				Layer layer = layers.getLayer(library);
+				Assert.state(layer != null, "Invalid 'null' library layer from " + layers.getClass().getName());
+				return ((LayeredLayout) layout).getLibraryLocation(library.getName(), library.getScope(), layer);
+			}
+			return layout.getLibraryLocation(library.getName(), library.getScope());
 		}
 
 		@Override

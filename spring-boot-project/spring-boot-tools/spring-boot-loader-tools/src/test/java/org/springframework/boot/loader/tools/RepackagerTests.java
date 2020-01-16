@@ -28,8 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -330,6 +335,43 @@ class RepackagerTests {
 		String[] libraries = index.split("\\r?\\n");
 		assertThat(Arrays.asList(libraries)).contains("BOOT-INF/lib/" + libJarFile1.getName(),
 				"BOOT-INF/lib/" + libJarFile2.getName(), "BOOT-INF/lib/" + libJarFile3.getName());
+	}
+
+	@Test
+	void layeredLayout() throws Exception {
+		TestJarFile libJar1 = new TestJarFile(this.tempDir);
+		libJar1.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile1 = libJar1.getFile();
+		TestJarFile libJar2 = new TestJarFile(this.tempDir);
+		libJar2.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile2 = libJar2.getFile();
+		TestJarFile libJar3 = new TestJarFile(this.tempDir);
+		libJar3.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile3 = libJar3.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		TestLayers layers = new TestLayers();
+		layers.addLibrary(libJarFile1, "0001");
+		layers.addLibrary(libJarFile2, "0002");
+		layers.addLibrary(libJarFile3, "0003");
+		repackager.setLayers(layers);
+		repackager.setLayout(new Layouts.LayeredJar());
+		repackager.repackage((callback) -> {
+			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
+			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
+			callback.library(new Library(libJarFile3, LibraryScope.COMPILE));
+		});
+		assertThat(hasEntry(file, "BOOT-INF/classpath.idx")).isTrue();
+		ZipUtil.unpack(file, new File(file.getParent()));
+		FileInputStream inputStream = new FileInputStream(new File(file.getParent() + "/BOOT-INF/classpath.idx"));
+		String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+		String[] libraries = index.split("\\r?\\n");
+		List<String> expected = new ArrayList<>();
+		expected.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
+		expected.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
+		expected.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
+		assertThat(Arrays.asList(libraries)).containsExactly(expected.toArray(new String[0]));
 	}
 
 	@Test
@@ -742,6 +784,42 @@ class RepackagerTests {
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {
 			writer.writeEntry("test", new ByteArrayInputStream("test".getBytes()));
+		}
+
+	}
+
+	static class TestLayers implements Layers {
+
+		private static final Layer DEFAULT_LAYER = new Layer("default");
+
+		private Set<Layer> layers = new LinkedHashSet<Layer>();
+
+		private Map<String, Layer> libraries = new HashMap<>();
+
+		TestLayers() {
+			this.layers.add(DEFAULT_LAYER);
+		}
+
+		void addLibrary(File jarFile, String layerName) {
+			Layer layer = new Layer(layerName);
+			this.layers.add(layer);
+			this.libraries.put(jarFile.getName(), layer);
+		}
+
+		@Override
+		public Iterator<Layer> iterator() {
+			return this.layers.iterator();
+		}
+
+		@Override
+		public Layer getLayer(String name) {
+			return DEFAULT_LAYER;
+		}
+
+		@Override
+		public Layer getLayer(Library library) {
+			String name = new File(library.getName()).getName();
+			return this.libraries.getOrDefault(name, DEFAULT_LAYER);
 		}
 
 	}
