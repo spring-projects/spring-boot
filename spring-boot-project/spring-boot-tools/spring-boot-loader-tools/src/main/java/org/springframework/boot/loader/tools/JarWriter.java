@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,11 +56,13 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
-	private static final UnpackHandler NEVER_UNPACK = new NeverUnpackHandler();
-
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
+
+	private static final int UNIX_FILE_MODE = UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM;
+
+	private static final int UNIX_DIR_MODE = UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM;
 
 	private final JarArchiveOutputStream jarOutput;
 
@@ -121,11 +123,11 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), NEVER_UNPACK);
+		this.writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
 	}
 
 	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), unpackHandler);
+		this.writeEntries(jarFile, EntryTransformer.NONE, unpackHandler);
 	}
 
 	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
@@ -244,7 +246,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
-		writeEntry(entry, entryWriter, NEVER_UNPACK);
+		writeEntry(entry, entryWriter, UnpackHandler.NEVER);
 	}
 
 	/**
@@ -257,28 +259,26 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
 			throws IOException {
-		String parent = entry.getName();
-		if (parent.endsWith("/")) {
-			parent = parent.substring(0, parent.length() - 1);
-			entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
-		}
-		else {
-			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
-		}
-		if (parent.lastIndexOf('/') != -1) {
-			parent = parent.substring(0, parent.lastIndexOf('/') + 1);
-			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent), null, unpackHandler);
-			}
-		}
-
-		if (this.writtenEntries.add(entry.getName())) {
+		String name = entry.getName();
+		writeParentFolderEntries(name);
+		if (this.writtenEntries.add(name)) {
+			entry.setUnixMode(name.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
 			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
 			this.jarOutput.putArchiveEntry(entry);
 			if (entryWriter != null) {
 				entryWriter.write(this.jarOutput);
 			}
 			this.jarOutput.closeArchiveEntry();
+		}
+	}
+
+	private void writeParentFolderEntries(String name) throws IOException {
+		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
+		while (parent.lastIndexOf('/') != -1) {
+			parent = parent.substring(0, parent.lastIndexOf('/'));
+			if (!parent.isEmpty()) {
+				writeEntry(new JarArchiveEntry(parent + "/"), null, UnpackHandler.NEVER);
+			}
 		}
 	}
 
@@ -444,21 +444,15 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * An {@code EntryTransformer} enables the transformation of {@link JarEntry jar
 	 * entries} during the writing process.
 	 */
+	@FunctionalInterface
 	interface EntryTransformer {
 
+		/**
+		 * No-op entity transformer.
+		 */
+		EntryTransformer NONE = (jarEntry) -> jarEntry;
+
 		JarArchiveEntry transform(JarArchiveEntry jarEntry);
-
-	}
-
-	/**
-	 * An {@code EntryTransformer} that returns the entry unchanged.
-	 */
-	private static final class IdentityEntryTransformer implements EntryTransformer {
-
-		@Override
-		public JarArchiveEntry transform(JarArchiveEntry jarEntry) {
-			return jarEntry;
-		}
 
 	}
 
@@ -468,23 +462,23 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	interface UnpackHandler {
 
+		UnpackHandler NEVER = new UnpackHandler() {
+
+			@Override
+			public boolean requiresUnpack(String name) {
+				return false;
+			}
+
+			@Override
+			public String sha1Hash(String name) throws IOException {
+				throw new UnsupportedOperationException();
+			}
+
+		};
+
 		boolean requiresUnpack(String name);
 
 		String sha1Hash(String name) throws IOException;
-
-	}
-
-	private static final class NeverUnpackHandler implements UnpackHandler {
-
-		@Override
-		public boolean requiresUnpack(String name) {
-			return false;
-		}
-
-		@Override
-		public String sha1Hash(String name) {
-			throw new UnsupportedOperationException();
-		}
 
 	}
 

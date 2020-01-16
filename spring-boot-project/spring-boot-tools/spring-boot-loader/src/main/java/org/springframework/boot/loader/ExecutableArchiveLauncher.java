@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
+	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
+
 	private final Archive archive;
 
 	public ExecutableArchiveLauncher() {
@@ -44,11 +46,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	protected ExecutableArchiveLauncher(Archive archive) {
-		this.archive = archive;
-	}
-
-	protected final Archive getArchive() {
-		return this.archive;
+		try {
+			this.archive = archive;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	@Override
@@ -56,7 +59,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = null;
 		if (manifest != null) {
-			mainClass = manifest.getMainAttributes().getValue("Start-Class");
+			mainClass = manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE);
 		}
 		if (mainClass == null) {
 			throw new IllegalStateException("No 'Start-Class' manifest entry specified in " + this);
@@ -123,6 +126,14 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	@Override
 	protected boolean supportsNestedJars() {
 		return this.archive.supportsNestedJars();
+	}
+
+	/**
+	 * Return the root archive.
+	 * @return the root archive
+	 */
+	protected final Archive getArchive() {
+		return this.archive;
 	}
 
 }

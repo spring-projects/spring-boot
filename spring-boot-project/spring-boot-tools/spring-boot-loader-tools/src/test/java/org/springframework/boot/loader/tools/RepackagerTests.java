@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -324,8 +324,8 @@ class RepackagerTests {
 		Layout layout = mock(Layout.class);
 		LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
-		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
-		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE))).willReturn("test-lib/");
+		given(layout.getLibraryLocation(anyString(), eq(scope))).willReturn("test/");
+		given(layout.getLibraryLocation(anyString(), eq(LibraryScope.COMPILE))).willReturn("test-lib/");
 		repackager.setLayout(layout);
 		repackager.repackage((callback) -> callback.library(new Library(libJarFile, scope)));
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();
