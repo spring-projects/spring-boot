@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,13 +28,16 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -52,6 +56,7 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
@@ -187,6 +192,28 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		new CrcAndSize(file).setupStoredEntry(entry);
 		try (FileInputStream input = new FileInputStream(file)) {
 			writeEntry(entry, new InputStreamEntryWriter(input), new LibraryUnpackHandler(library));
+		}
+	}
+
+	/**
+	 * Write a simple index file containing the specified UTF-8 lines.
+	 * @param location the location of the index file
+	 * @param lines the lines to write
+	 * @throws IOException if the write fails
+	 * @since 2.3.0
+	 */
+	public void writeIndexFile(String location, List<String> lines) throws IOException {
+		if (location != null) {
+			JarArchiveEntry entry = new JarArchiveEntry(location);
+			writeEntry(entry, (outputStream) -> {
+				BufferedWriter writer = new BufferedWriter(
+						new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+				for (String line : lines) {
+					writer.write(line);
+					writer.write("\n");
+				}
+				writer.flush();
+			});
 		}
 	}
 

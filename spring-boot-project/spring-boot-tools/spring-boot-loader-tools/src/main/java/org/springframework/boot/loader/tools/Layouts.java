@@ -28,6 +28,7 @@ import java.util.Map;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public final class Layouts {
@@ -86,6 +87,11 @@ public final class Layouts {
 		@Override
 		public String getRepackagedClassesLocation() {
 			return "BOOT-INF/classes/";
+		}
+
+		@Override
+		public String getClasspathIndexFileLocation() {
+			return "BOOT-INF/classpath.idx";
 		}
 
 		@Override

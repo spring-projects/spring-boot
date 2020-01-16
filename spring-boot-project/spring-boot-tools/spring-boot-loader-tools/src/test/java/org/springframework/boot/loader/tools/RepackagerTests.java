@@ -18,11 +18,14 @@ package org.springframework.boot.loader.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
@@ -45,6 +48,7 @@ import org.zeroturnaround.zip.ZipUtil;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -59,6 +63,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class RepackagerTests {
 
@@ -297,6 +302,34 @@ class RepackagerTests {
 		entry = getEntry(file, "BOOT-INF/lib/" + libJarFileToUnpack.getName());
 		assertThat(entry.getComment()).startsWith("UNPACK:");
 		assertThat(entry.getComment()).hasSize(47);
+	}
+
+	@Test
+	void index() throws Exception {
+		TestJarFile libJar1 = new TestJarFile(this.tempDir);
+		libJar1.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile1 = libJar1.getFile();
+		TestJarFile libJar2 = new TestJarFile(this.tempDir);
+		libJar2.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile2 = libJar2.getFile();
+		TestJarFile libJar3 = new TestJarFile(this.tempDir);
+		libJar3.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
+		File libJarFile3 = libJar3.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage((callback) -> {
+			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
+			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
+			callback.library(new Library(libJarFile3, LibraryScope.COMPILE));
+		});
+		assertThat(hasEntry(file, "BOOT-INF/classpath.idx")).isTrue();
+		ZipUtil.unpack(file, new File(file.getParent()));
+		FileInputStream inputStream = new FileInputStream(new File(file.getParent() + "/BOOT-INF/classpath.idx"));
+		String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+		String[] libraries = index.split("\\r?\\n");
+		assertThat(Arrays.asList(libraries)).contains("BOOT-INF/lib/" + libJarFile1.getName(),
+				"BOOT-INF/lib/" + libJarFile2.getName(), "BOOT-INF/lib/" + libJarFile3.getName());
 	}
 
 	@Test

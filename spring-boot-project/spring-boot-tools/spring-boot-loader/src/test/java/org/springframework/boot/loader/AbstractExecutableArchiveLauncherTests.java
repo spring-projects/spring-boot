@@ -20,8 +20,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,6 +44,7 @@ import org.springframework.util.FileCopyUtils;
  * Base class for testing {@link ExecutableArchiveLauncher} implementations.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public abstract class AbstractExecutableArchiveLauncherTests {
 
@@ -48,11 +52,25 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 	File tempDir;
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
+		return createJarArchive(name, entryPrefix, false);
+	}
+
+	@SuppressWarnings("resource")
+	protected File createJarArchive(String name, String entryPrefix, boolean indexed) throws IOException {
 		File archive = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/classes/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/lib/"));
+		if (indexed) {
+			JarEntry indexEntry = new JarEntry(entryPrefix + "/classpath.idx");
+			jarOutputStream.putNextEntry(indexEntry);
+			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
+			writer.write("BOOT-INF/lib/foo.jar\n");
+			writer.write("BOOT-INF/lib/bar.jar\n");
+			writer.write("BOOT-INF/lib/baz.jar\n");
+			writer.flush();
+		}
 		addNestedJars(entryPrefix, "/lib/foo.jar", jarOutputStream);
 		addNestedJars(entryPrefix, "/lib/bar.jar", jarOutputStream);
 		addNestedJars(entryPrefix, "/lib/baz.jar", jarOutputStream);

@@ -18,7 +18,9 @@ package org.springframework.boot.loader;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JarLauncher}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
@@ -65,6 +68,16 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 				classPathArchive.close();
 			}
 		}
+	}
+
+	@Test
+	void explodedJarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
+		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
+		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+		URL[] urls = classLoader.getURLs();
+		assertThat(urls).containsExactly(getExpectedFileUrls(explodedRoot));
 	}
 
 	protected final URL[] getExpectedFileUrls(File explodedRoot) {

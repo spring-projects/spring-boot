@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.loader;
 
+import java.io.IOException;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
+import org.springframework.boot.loader.archive.ExplodedArchive;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
@@ -26,9 +31,12 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
+
+	private static final String DEFAULT_CLASSPATH_INDEX_LOCATION = "BOOT-INF/classpath.idx";
 
 	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
 		if (entry.isDirectory()) {
@@ -42,6 +50,23 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 
 	protected JarLauncher(Archive archive) {
 		super(archive);
+	}
+
+	@Override
+	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+		// Only needed for exploded archives, regular ones already have a defined order
+		if (archive instanceof ExplodedArchive) {
+			String location = getClassPathIndexFileLocation(archive);
+			return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
+		}
+		return super.getClassPathIndex(archive);
+	}
+
+	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
+		Manifest manifest = archive.getManifest();
+		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
+		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
+		return (location != null) ? location : DEFAULT_CLASSPATH_INDEX_LOCATION;
 	}
 
 	@Override

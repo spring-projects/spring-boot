@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public class Repackager {
@@ -58,6 +59,8 @@ public class Repackager {
 	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
 
 	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
+
+	private static final String BOOT_CLASSPATH_INDEX_ATTRIBUTE = "Spring-Boot-Classpath-Index";
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
@@ -336,6 +339,7 @@ public class Repackager {
 	private void addBootBootAttributesForRepackagingLayout(Attributes attributes, RepackagingLayout layout) {
 		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, this.layout.getLibraryLocation("", LibraryScope.COMPILE));
+		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 	}
 
 	private void addBootBootAttributesForPlainLayout(Attributes attributes, Layout layout) {
@@ -472,6 +476,10 @@ public class Repackager {
 			for (Entry<String, Library> entry : this.libraryEntryNames.entrySet()) {
 				writer.writeNestedLibrary(entry.getKey().substring(0, entry.getKey().lastIndexOf('/') + 1),
 						entry.getValue());
+			}
+			if (Repackager.this.layout instanceof RepackagingLayout) {
+				String location = ((RepackagingLayout) (Repackager.this.layout)).getClasspathIndexFileLocation();
+				writer.writeIndexFile(location, new ArrayList<>(this.libraryEntryNames.keySet()));
 			}
 		}
 
