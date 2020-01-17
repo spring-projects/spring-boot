@@ -19,6 +19,7 @@ dependencies {
 		api 'io.mockk:mockk:1.9.3'
 		api 'jline:jline:2.11'
 		api 'net.sf.jopt-simple:jopt-simple:5.0.4'
+		api 'org.apache.commons:commons-compress:1.19'
 		api 'org.apache.maven:maven-plugin-api:3.6.3'
 		api 'org.apache.maven:maven-resolver-provider:3.6.3'
 		api 'org.apache.maven:maven-settings-builder:3.6.3'
@@ -36,6 +37,5 @@ dependencies {
 		api 'org.spockframework:spock-core:1.3-groovy-2.5'
 		api 'org.spockframework:spock-spring:1.3-groovy-2.5'
 		api 'org.testng:testng:6.14.3'
-
 	}
 }

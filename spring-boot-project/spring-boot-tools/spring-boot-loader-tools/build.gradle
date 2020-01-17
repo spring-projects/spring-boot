@@ -14,8 +14,8 @@ configurations {
 }
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-dependencies'))
-	api "org.apache.commons:commons-compress:1.19"
+	api platform(project(':spring-boot-project:spring-boot-parent'))
+	api "org.apache.commons:commons-compress"
 
 	compileOnly "ch.qos.logback:logback-classic"
 
