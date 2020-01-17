@@ -40,6 +40,7 @@ import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
+import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
@@ -125,6 +126,22 @@ class CouchbaseDataAutoConfigurationTests {
 		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
 				.isTrue();
+	}
+
+	@Test
+	void typeKeyIsClassByDefault() {
+		load(CouchbaseTestConfigurer.class);
+		AbstractCouchbaseDataConfiguration couchbaseDataConfiguration = this.context
+				.getBean(AbstractCouchbaseDataConfiguration.class);
+		assertThat(couchbaseDataConfiguration.typeKey()).isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
+	}
+
+	@Test
+	void customTypeKey() {
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.type-key=custom");
+		AbstractCouchbaseDataConfiguration couchbaseDataConfiguration = this.context
+				.getBean(AbstractCouchbaseDataConfiguration.class);
+		assertThat(couchbaseDataConfiguration.typeKey()).isEqualTo("custom");
 	}
 
 	private void load(Class<?> config, String... environment) {

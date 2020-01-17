@@ -97,4 +97,9 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 		return new IndexManager(false, false, false);
 	}
 
+	@Override
+	public String typeKey() {
+		return this.properties.getTypeKey();
+	}
+
 }
