@@ -60,7 +60,8 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, and {@link TestFailuresPlugin Test Failures} plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
- * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding
+ * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding and
+ * {@code -parameters}
  * <li>{@link Javadoc} tasks are configured to use UTF-8 encoding
  * <li>{@link Jar} tasks are configured to have the following manifest entries:
  * <ul>
