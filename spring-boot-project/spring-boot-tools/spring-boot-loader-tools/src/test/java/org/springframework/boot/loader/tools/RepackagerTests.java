@@ -330,11 +330,13 @@ class RepackagerTests {
 		});
 		assertThat(hasEntry(file, "BOOT-INF/classpath.idx")).isTrue();
 		ZipUtil.unpack(file, new File(file.getParent()));
-		FileInputStream inputStream = new FileInputStream(new File(file.getParent() + "/BOOT-INF/classpath.idx"));
-		String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-		String[] libraries = index.split("\\r?\\n");
-		assertThat(Arrays.asList(libraries)).contains("BOOT-INF/lib/" + libJarFile1.getName(),
-				"BOOT-INF/lib/" + libJarFile2.getName(), "BOOT-INF/lib/" + libJarFile3.getName());
+		try (FileInputStream inputStream = new FileInputStream(
+				new File(file.getParent() + "/BOOT-INF/classpath.idx"))) {
+			String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+			String[] libraries = index.split("\\r?\\n");
+			assertThat(Arrays.asList(libraries)).contains("BOOT-INF/lib/" + libJarFile1.getName(),
+					"BOOT-INF/lib/" + libJarFile2.getName(), "BOOT-INF/lib/" + libJarFile3.getName());
+		}
 	}
 
 	@Test
@@ -364,14 +366,16 @@ class RepackagerTests {
 		});
 		assertThat(hasEntry(file, "BOOT-INF/classpath.idx")).isTrue();
 		ZipUtil.unpack(file, new File(file.getParent()));
-		FileInputStream inputStream = new FileInputStream(new File(file.getParent() + "/BOOT-INF/classpath.idx"));
-		String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-		String[] libraries = index.split("\\r?\\n");
-		List<String> expected = new ArrayList<>();
-		expected.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
-		expected.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
-		expected.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
-		assertThat(Arrays.asList(libraries)).containsExactly(expected.toArray(new String[0]));
+		try (FileInputStream inputStream = new FileInputStream(
+				new File(file.getParent() + "/BOOT-INF/classpath.idx"))) {
+			String index = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+			String[] libraries = index.split("\\r?\\n");
+			List<String> expected = new ArrayList<>();
+			expected.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
+			expected.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
+			expected.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
+			assertThat(Arrays.asList(libraries)).containsExactly(expected.toArray(new String[0]));
+		}
 	}
 
 	@Test
