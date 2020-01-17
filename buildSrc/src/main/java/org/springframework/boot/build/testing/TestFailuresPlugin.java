@@ -17,6 +17,7 @@
 package org.springframework.boot.build.testing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -69,6 +70,7 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		@Override
 		public void afterSuite(TestDescriptor descriptor, TestResult result) {
 			if (!this.failures.isEmpty()) {
+				Collections.sort(this.failures);
 				this.testResults.addFailures(this.test, this.failures);
 			}
 		}
@@ -76,7 +78,7 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		@Override
 		public void afterTest(TestDescriptor descriptor, TestResult result) {
 			if (result.getFailedTestCount() > 0) {
-				this.failures.add(new TestFailure(descriptor, result.getExceptions()));
+				this.failures.add(new TestFailure(descriptor));
 			}
 		}
 
@@ -96,11 +98,8 @@ public class TestFailuresPlugin implements Plugin<Project> {
 
 		private final TestDescriptor descriptor;
 
-		private final List<Throwable> exceptions;
-
-		private TestFailure(TestDescriptor descriptor, List<Throwable> exceptions) {
+		private TestFailure(TestDescriptor descriptor) {
 			this.descriptor = descriptor;
-			this.exceptions = exceptions;
 		}
 
 		@Override
