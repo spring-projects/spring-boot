@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -104,7 +105,13 @@ public class ConventionsPlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
-			project.getTasks().withType(JavaCompile.class, (compile) -> compile.getOptions().setEncoding("UTF-8"));
+			project.getTasks().withType(JavaCompile.class, (compile) -> {
+				compile.getOptions().setEncoding("UTF-8");
+				List<String> args = compile.getOptions().getCompilerArgs();
+				if (!args.contains("-parameters")) {
+					args.add("-parameters");
+				}
+			});
 			project.getTasks().withType(Javadoc.class,
 					(javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 			project.getTasks().withType(Test.class, (test) -> {
