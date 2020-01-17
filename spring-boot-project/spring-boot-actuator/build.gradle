@@ -40,7 +40,7 @@ dependencies {
 	optional 'org.glassfish.jersey.core:jersey-server'
 	optional 'org.glassfish.jersey.containers:jersey-container-servlet-core'
 	optional 'org.hibernate.validator:hibernate-validator'
-	optional 'org.infinispan:infinispan-spring4-embedded'
+	optional 'org.infinispan:infinispan-spring5-embedded'
 	optional 'org.influxdb:influxdb-java'
 	optional 'org.liquibase:liquibase-core'
 	optional 'org.mongodb:mongodb-driver-async'
