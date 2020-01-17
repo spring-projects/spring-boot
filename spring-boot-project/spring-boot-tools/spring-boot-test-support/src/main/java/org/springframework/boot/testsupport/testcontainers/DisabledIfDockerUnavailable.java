@@ -16,38 +16,25 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.DockerClientFactory;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * An {@link ExecutionCondition} that disables execution if Docker is unavailable.
+ * Disables test execution if Docker is unavailable.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public class DisabledIfDockerUnavailable implements ExecutionCondition {
-
-	@Override
-	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		System.out.println("Checking Docker's availability");
-		if (isDockerAvailable()) {
-			System.out.println("Docker available");
-			return ConditionEvaluationResult.enabled("Docker is available");
-		}
-		System.out.println("Docker unavailable");
-		return ConditionEvaluationResult.disabled("Docker is not available");
-	}
-
-	private boolean isDockerAvailable() {
-		try {
-			DockerClientFactory.instance().client();
-			return true;
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-	}
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@ExtendWith(DisabledIfDockerUnavailableCondition.class)
+public @interface DisabledIfDockerUnavailable {
 
 }

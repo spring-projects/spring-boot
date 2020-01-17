@@ -26,7 +26,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -44,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Deployment integration tests.
  */
-@ExtendWith(DisabledIfDockerUnavailable.class)
+@DisabledIfDockerUnavailable
 class DeploymentIntegrationTests {
 
 	@ParameterizedTest
@@ -116,6 +115,7 @@ class DeploymentIntegrationTests {
 			}
 		}
 
+		@Override
 		public String toString() {
 			return this.baseImage;
 		}
