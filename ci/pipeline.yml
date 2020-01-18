@@ -212,8 +212,8 @@ jobs:
       params:
         BRANCH: ((branch))
         GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-        GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+        GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
     on_failure:
       do:
       - put: repo-status-build
@@ -302,8 +302,8 @@ jobs:
       params:
         BRANCH: ((branch))
         GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-        GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+        GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
     on_failure:
       do:
       - put: repo-status-jdk11-build
@@ -340,8 +340,8 @@ jobs:
         params:
           BRANCH: ((branch))
           GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-          GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+          GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
       on_failure:
         do:
           - put: repo-status-jdk13-build
@@ -376,8 +376,8 @@ jobs:
         timeout: ((task-timeout))
         params:
           GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-          GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+          GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
       on_failure:
         do:
           - put: slack-alert
@@ -404,8 +404,8 @@ jobs:
     params:
       RELEASE_TYPE: M
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-      GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+      GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params
@@ -425,8 +425,8 @@ jobs:
     params:
       RELEASE_TYPE: RC
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-      GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+      GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params
@@ -446,8 +446,8 @@ jobs:
     params:
       RELEASE_TYPE: RELEASE
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-      GRADLE_ENTERPRISE_CACHE_USER: ((gradle_enterprise_cache_user.username))
-      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+      GRADLE_ENTERPRISE_CACHE_USER: ((gradle-enterprise-cache-username))
+      GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
   - put: artifactory-repo
     params:
       <<: *artifactory-params
