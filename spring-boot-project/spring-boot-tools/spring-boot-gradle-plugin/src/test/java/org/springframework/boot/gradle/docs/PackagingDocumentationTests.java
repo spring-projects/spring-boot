@@ -178,6 +178,18 @@ class PackagingDocumentationTests {
 		assertThat(bootJar).isFile();
 	}
 
+	@TestTemplate
+	void bootJarLayered() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered").build("bootJar");
+		File file = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(file).isFile();
+		try (JarFile jar = new JarFile(file)) {
+			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
+			assertThat(entry).isNotNull();
+		}
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));

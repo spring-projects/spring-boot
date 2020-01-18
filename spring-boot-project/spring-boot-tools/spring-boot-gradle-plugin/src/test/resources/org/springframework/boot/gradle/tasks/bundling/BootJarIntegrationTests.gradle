@@ -10,4 +10,7 @@ bootJar {
 			properties 'prop' : project.hasProperty('launchScriptProperty') ? launchScriptProperty : 'default'
 		}
 	}
+	if (project.hasProperty('layered') && project.getProperty('layered')) {
+		layered()
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
@@ -26,14 +29,21 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.bundling.Jar;
+
+import org.springframework.boot.loader.tools.Layer;
+import org.springframework.boot.loader.tools.Layers;
+import org.springframework.boot.loader.tools.Library;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class BootJar extends Jar implements BootArchive {
@@ -46,6 +56,10 @@ public class BootJar extends Jar implements BootArchive {
 	private String mainClassName;
 
 	private FileCollection classpath;
+
+	private Layers layers;
+
+	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers/";
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -73,6 +87,12 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void copy() {
 		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
+		Attributes attributes = this.getManifest().getAttributes();
+		if (this.layers != null) {
+			attributes.remove("Spring-Boot-Classes");
+			attributes.remove("Spring-Boot-Lib");
+			attributes.putIfAbsent("Spring-Boot-Layers-Index", "BOOT-INF/layers.idx");
+		}
 		super.copy();
 	}
 
@@ -120,6 +140,56 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
 		action.execute(enableLaunchScriptIfNecessary());
+	}
+
+	/**
+	 * Configures the archive to have layers.
+	 */
+	public void layered() {
+		this.layers = Layers.IMPLICIT;
+		this.bootInf.eachFile((details) -> {
+			Layer layer = layerForFileDetails(details);
+			if (layer != null) {
+				details.setPath(
+						BOOT_INF_LAYERS + "/" + layer + "/" + details.getPath().substring("BOOT-INF/".length()));
+			}
+		}).setIncludeEmptyDirs(false);
+		this.bootInf.into("", (spec) -> spec.from(createLayersIndex()));
+	}
+
+	private Layer layerForFileDetails(FileCopyDetails details) {
+		String path = details.getPath();
+		if (path.startsWith("BOOT-INF/lib/")) {
+			return this.layers.getLayer(new Library(details.getFile(), null));
+		}
+		if (path.startsWith("BOOT-INF/classes/")) {
+			return this.layers.getLayer(details.getSourcePath());
+		}
+		return null;
+	}
+
+	private File createLayersIndex() {
+		try {
+			StringWriter content = new StringWriter();
+			BufferedWriter writer = new BufferedWriter(content);
+			for (Layer layer : this.layers) {
+				writer.write(layer.toString());
+				writer.write("\n");
+			}
+			writer.flush();
+			File source = getProject().getResources().getText().fromString(content.toString()).asFile();
+			File indexFile = new File(source.getParentFile(), "layers.idx");
+			source.renameTo(indexFile);
+			return indexFile;
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to create layers.idx", ex);
+		}
+	}
+
+	@Input
+	boolean isLayered() {
+		return this.layers != null;
 	}
 
 	@Override

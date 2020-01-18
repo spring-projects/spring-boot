@@ -272,3 +272,29 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle[tags=properties
 include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
 ----
 
+
+[[packaging-layered-jars]]
+==== Packaging layered jars
+
+By default, the `bootJar` tasks builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+For cases where a docker image needs to be built from the contents of the jar, the jar format can be enhanced to support layer folders.
+To use this feature, the layering feature must be enabled:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered.gradle.kts[tags=layered]
+----
+
+The jar will then be split into layer folders which may include:
+
+* `application`
+* `resources`
+* `snapshots-dependencies`
+* `dependencies`
