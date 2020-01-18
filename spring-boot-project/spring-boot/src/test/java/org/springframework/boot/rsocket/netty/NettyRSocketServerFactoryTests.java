@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.rsocket.netty;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.AbstractRSocket;
@@ -87,10 +88,13 @@ class NettyRSocketServerFactoryTests {
 	@Test
 	void specificPort() {
 		NettyRSocketServerFactory factory = getFactory();
-		int specificPort = SocketUtils.findAvailableTcpPort(41000);
-		factory.setPort(specificPort);
-		this.server = factory.create(new EchoRequestResponseAcceptor());
-		this.server.start();
+		int specificPort = doWithRetry(() -> {
+			int port = SocketUtils.findAvailableTcpPort(41000);
+			factory.setPort(port);
+			this.server = factory.create(new EchoRequestResponseAcceptor());
+			this.server.start();
+			return port;
+		});
 		this.requester = createRSocketTcpClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
@@ -117,10 +121,13 @@ class NettyRSocketServerFactoryTests {
 		ReactorResourceFactory resourceFactory = new ReactorResourceFactory();
 		resourceFactory.afterPropertiesSet();
 		factory.setResourceFactory(resourceFactory);
-		int specificPort = SocketUtils.findAvailableTcpPort(41000);
-		factory.setPort(specificPort);
-		this.server = factory.create(new EchoRequestResponseAcceptor());
-		this.server.start();
+		int specificPort = doWithRetry(() -> {
+			int port = SocketUtils.findAvailableTcpPort(41000);
+			factory.setPort(port);
+			this.server = factory.create(new EchoRequestResponseAcceptor());
+			this.server.start();
+			return port;
+		});
 		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
@@ -162,6 +169,19 @@ class NettyRSocketServerFactoryTests {
 				.encoder(CharSequenceEncoder.allMimeTypes())
 				.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT)).build();
 		return RSocketRequester.builder().rsocketStrategies(strategies);
+	}
+
+	private <T> T doWithRetry(Callable<T> action) {
+		Exception lastFailure = null;
+		for (int i = 0; i < 10; i++) {
+			try {
+				return action.call();
+			}
+			catch (Exception ex) {
+				lastFailure = ex;
+			}
+		}
+		throw new IllegalStateException("Action was not successful in 10 attempts", lastFailure);
 	}
 
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
