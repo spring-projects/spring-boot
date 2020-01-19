@@ -26,6 +26,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
@@ -53,7 +54,7 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  *
  * <p/>
  *
- * When the {@link JavaPlugin Java plugin} is applied:
+ * When the {@link JavaBasePlugin Java base plugin} is applied:
  *
  * <ul>
  * <li>{@code sourceCompatibility} is set to {@code 1.8}
@@ -106,7 +107,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void applyJavaConventions(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
