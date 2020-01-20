@@ -4771,6 +4771,14 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 	spring.cache.redis.time-to-live=600000
 ----
 
+If you require more control over `RedisCacheManager` e.g. set _time to live_ for the particular caches, you can customize `org.springframework.data.redis.cache.RedisCacheManager$RedisCacheManagerBuilder`
+programmatically by declaring `RedisCacheManagerBuilderCustomizer` bean(s) as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/cache/redis/RedisCacheManagerBuilderCustomizerConfiguration.java[tag=configuration]
+----
+
 NOTE: By default, a key prefix is added so that, if two separate caches use the same key, Redis does not have overlapping keys and cannot return invalid values.
 We strongly recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 
