@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -91,38 +89,11 @@ class SpringBootContextLoaderTests {
 		assertKey(config, "variables", "foo=FOO\n bar=BAR");
 	}
 
-	@Test
-	void noActiveProfiles() {
-		Environment environment = getApplicationEnvironment(SimpleConfig.class);
-		assertThat(environment.getActiveProfiles()).isEmpty();
-	}
-
-	@Test
-	void multipleActiveProfiles() {
-		Environment environment = getApplicationEnvironment(MultipleActiveProfiles.class);
-		assertThat(environment.getActiveProfiles()).containsExactly("profile1", "profile2");
-	}
-
-	@Test
-	void activeProfileWithComma() {
-		Environment environment = getApplicationEnvironment(ActiveProfileWithComma.class);
-		assertThat(environment.getActiveProfiles()).containsExactly("profile1,2");
-	}
-
 	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) {
-		TestContext context = getTestContext(testClass);
+		TestContext context = new ExposedTestContextManager(testClass).getExposedTestContext();
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils.getField(context,
 				"mergedContextConfiguration");
 		return TestPropertySourceUtils.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
-	}
-
-	private Environment getApplicationEnvironment(Class<?> testClass) {
-		TestContext context = getTestContext(testClass);
-		return context.getApplicationContext().getEnvironment();
-	}
-
-	private TestContext getTestContext(Class<?> testClass) {
-		return new ExposedTestContextManager(testClass).getExposedTestContext();
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
@@ -169,20 +140,6 @@ class SpringBootContextLoaderTests {
 	@SpringBootTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
 	@ContextConfiguration(classes = Config.class)
 	static class NewLineInValue {
-
-	}
-
-	@SpringBootTest
-	@ActiveProfiles({ "profile1", "profile2" })
-	@ContextConfiguration(classes = Config.class)
-	static class MultipleActiveProfiles {
-
-	}
-
-	@SpringBootTest
-	@ActiveProfiles({ "profile1,2" })
-	@ContextConfiguration(classes = Config.class)
-	static class ActiveProfileWithComma {
 
 	}
 
