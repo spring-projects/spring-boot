@@ -232,7 +232,7 @@ bom {
 			]
 		}
 	}
-	library('Dependency Management Plugin', '1.0.8.RELEASE') {
+	library('Dependency Management Plugin', '1.0.9.RELEASE') {
 		group('io.spring.gradle') {
 			modules = [
 				'dependency-management-plugin'
