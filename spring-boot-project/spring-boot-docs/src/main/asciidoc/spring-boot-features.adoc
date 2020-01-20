@@ -4774,8 +4774,17 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 NOTE: By default, a key prefix is added so that, if two separate caches use the same key, Redis does not have overlapping keys and cannot return invalid values.
 We strongly recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 
-TIP: You can take full control of the configuration by adding a `RedisCacheConfiguration` `@Bean` of your own.
-This can be useful if you're looking for customizing the serialization strategy.
+TIP: You can take full control of the default configuration by adding a `RedisCacheConfiguration` `@Bean` of your own.
+This can be useful if you're looking for customizing the default serialization strategy.
+
+If you need more control over the configuration, consider registering a `RedisCacheManagerBuilderCustomizer` bean.
+The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:
+
+[source,java,indent=0]
+----
+include::{code-examples}/cache/RedisCacheManagerCustomizationExample.java[tag=configuration]
+----
+
 
 
 
