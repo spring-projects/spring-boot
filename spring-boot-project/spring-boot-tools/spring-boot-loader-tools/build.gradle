@@ -16,10 +16,9 @@ configurations {
 dependencies {
 	api platform(project(':spring-boot-project:spring-boot-parent'))
 	api "org.apache.commons:commons-compress"
+	api "org.springframework:spring-core"
 
 	compileOnly "ch.qos.logback:logback-classic"
-
-	implementation "org.springframework:spring-core"
 
 	loader project(":spring-boot-project:spring-boot-tools:spring-boot-loader")
 
