@@ -102,7 +102,7 @@ need JDK 1.8.
 	$ ./gradlew publishToMavenLocal
 ----
 
-This will build all of the jars and documentation and publish it to your local
+This will build all of the jars and documentation and publish them to your local
 Maven cache. It won't run any of the tests. If you want to build everything, use the
 `build` task:
 
@@ -233,5 +233,5 @@ Boot step-by-step:
 
 
 == License
-Spring Boot is an Open Source software released under the
+Spring Boot is Open Source software released under the
 https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
