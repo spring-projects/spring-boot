@@ -53,8 +53,16 @@ ant.properties['projectDir'] = project.layout.projectDirectory
 antresolve {
 	dependsOn syncTestRepository, configurations.antDependencies
 	doFirst {
-		ClassLoader antClassLoader = org.apache.tools.ant.Project.class.classLoader
-		configurations.antDependencies.each { antClassLoader.addURL it.toURI().toURL() }
+		ant.taskdef(
+				resource: "org/apache/ivy/ant/antlib.xml",
+				uri: "antlib:org.apache.ivy.ant",
+				classpath: configurations.antDependencies.asPath
+		)
+		ant.taskdef(
+				resource: "org/springframework/boot/ant/antlib.xml",
+				uri: "antlib:org.springframework.boot.ant",
+				classpath: configurations.antDependencies.asPath
+		)
 	}
 }
 
