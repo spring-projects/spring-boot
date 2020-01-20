@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.docs.cache;
+
 import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
@@ -27,12 +29,12 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
  *
  * @author Dmytro Nosan
  */
-// tag::configuration[]
 @Configuration(proxyBeanMethods = false)
-public class RedisCacheManagerBuilderCustomizerConfiguration {
+public class RedisCacheManagerCustomizationExample {
 
+	// tag::configuration[]
 	@Bean
-	public RedisCacheManagerBuilderCustomizer ttlRedisCacheManagerBuilderCustomizer() {
+	public RedisCacheManagerBuilderCustomizer myRedisCacheManagerBuilderCustomizer() {
 		return (builder) -> builder
 				.withCacheConfiguration("cache1",
 						RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(10)))
@@ -40,6 +42,6 @@ public class RedisCacheManagerBuilderCustomizerConfiguration {
 						RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(1)));
 
 	}
+	// end::configuration[]
 
 }
-// end::configuration[]
