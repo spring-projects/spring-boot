@@ -15,6 +15,7 @@ configurations {
 
 dependencies {
 	api platform(project(':spring-boot-project:spring-boot-parent'))
+	api project(':spring-boot-project:spring-boot-tools:spring-boot-cloudnativebuildpack')
 
 	compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations'
 	compileOnly 'org.sonatype.plexus:plexus-build-api'
