@@ -87,6 +87,7 @@ dependencies {
 	optional 'org.hibernate:hibernate-core'
 	optional 'org.hibernate:hibernate-jcache'
 	optional 'org.hibernate.validator:hibernate-validator'
+	optional 'org.infinispan:infinispan-component-annotations'
 	optional 'org.infinispan:infinispan-jcache'
 	optional 'org.infinispan:infinispan-spring5-embedded'
 	optional 'org.influxdb:influxdb-java'

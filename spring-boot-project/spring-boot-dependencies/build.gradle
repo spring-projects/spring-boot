@@ -534,53 +534,13 @@ bom {
 			]
 		}
 	}
-	library('Infinispan', '9.4.16.Final') {
+	library('Infinispan', '10.1.1.Final') {
 		group('org.infinispan') {
+			imports = [
+					'infinispan-bom'
+			]
 			modules = [
-				'infinispan-cachestore-jdbc',
-				'infinispan-cachestore-jpa',
-				'infinispan-cachestore-leveldb',
-				'infinispan-cachestore-remote',
-				'infinispan-cachestore-rest',
-				'infinispan-cachestore-rocksdb',
-				'infinispan-cdi-common',
-				'infinispan-cdi-embedded',
-				'infinispan-cdi-remote',
-				'infinispan-client-hotrod',
-				'infinispan-cloud',
-				'infinispan-clustered-counter',
-				'infinispan-clustered-lock',
-				'infinispan-commons',
-				'infinispan-core',
-				'infinispan-directory-provider',
-				'infinispan-hibernate-cache-v53',
-				'infinispan-jcache',
 				'infinispan-jcache-commons',
-				'infinispan-jcache-remote',
-				'infinispan-lucene-directory',
-				'infinispan-objectfilter',
-				'infinispan-osgi',
-				'infinispan-persistence-cli',
-				'infinispan-persistence-soft-index',
-				'infinispan-query',
-				'infinispan-query-dsl',
-				'infinispan-remote-query-client',
-				'infinispan-remote-query-server',
-				'infinispan-scripting',
-				'infinispan-server-core',
-				'infinispan-server-hotrod',
-				'infinispan-server-memcached',
-				'infinispan-server-router',
-				'infinispan-spring4-common',
-				'infinispan-spring4-embedded',
-				'infinispan-spring4-remote',
-				'infinispan-spring5-common',
-				'infinispan-spring5-embedded',
-				'infinispan-spring5-remote',
-				'infinispan-tasks',
-				'infinispan-tasks-api',
-				'infinispan-tools',
-				'infinispan-tree'
 			]
 			plugins = [
 				'infinispan-protocol-parser-generator-maven-plugin'
