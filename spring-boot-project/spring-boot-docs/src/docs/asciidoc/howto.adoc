@@ -448,15 +448,12 @@ The following Gradle example shows how to exclude Netty and include Undertow for
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations {
-		// exclude Reactor Netty
-		compile.exclude module: 'spring-boot-starter-reactor-netty'
-	}
-
 	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-webflux'
+		implementation('org.springframework.boot:spring-boot-starter-webflux') {
+		    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-reactor-netty'
+		}
 		// Use Undertow instead
-		compile 'org.springframework.boot:spring-boot-starter-undertow'
+		implementation 'org.springframework.boot:spring-boot-starter-undertow'
 		// ...
 	}
 ----
@@ -1435,8 +1432,8 @@ And the following example shows one way to set up the starters in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-		compile 'org.springframework.boot:spring-boot-starter-log4j2'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 	}
 
 	configurations {
@@ -2898,12 +2895,11 @@ The following example shows how to do so in Gradle:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations {
-		compile.exclude module: "lettuce"
-	}
-
 	dependencies {
-		compile("redis.clients:jedis")
+		implementation('org.springframework.boot:spring-boot-starter-data-redis') {
+		    exclude group: 'io.lettuce', module: 'lettuce-core'
+		}
+		implementation 'redis.clients:jedis'
 		// ...
 	}
 ----
