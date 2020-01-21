@@ -310,11 +310,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring4-embedded</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 			<optional>true</optional>
