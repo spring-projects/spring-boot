@@ -19,6 +19,8 @@ package org.springframework.boot.cloudnativebuildpack.docker;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.cloudnativebuildpack.docker.type.ImageReference;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
@@ -29,6 +31,7 @@ import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnava
  * @author Phillip Webb
  */
 @DisabledIfDockerUnavailable
+@DisabledOnOs(OS.LINUX)
 class DockerApiIntegrationTests {
 
 	private final DockerApi docker = new DockerApi();
