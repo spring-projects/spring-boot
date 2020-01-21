@@ -25,6 +25,8 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	antDependencies 'org.apache.ivy:ivy:2.4.0'
 	antDependencies project(path: ':spring-boot-project:spring-boot-tools:spring-boot-antlib')
+	antDependencies 'org.apache.ant:ant-launcher:1.9.3'
+	antDependencies 'org.apache.ant:ant:1.9.3'
 
 	testRepository project(path: ':spring-boot-project:spring-boot-tools:spring-boot-loader', configuration: 'mavenRepository')
 	testRepository project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter', configuration: 'mavenRepository')
@@ -44,22 +46,18 @@ task syncTestRepository(type: Sync) {
 	}
 }
 
-ant.importBuild('build.xml') {
-	'ant' + it
-}
-ant.properties['ant-spring-boot.version'] = project.version
-ant.properties['projectDir'] = project.layout.projectDirectory
-
-antresolve {
+task antRun(type: JavaExec) {
 	dependsOn syncTestRepository, configurations.antDependencies
-	doFirst {
-		ClassLoader antClassLoader = org.apache.tools.ant.Project.class.classLoader
-		configurations.antDependencies.each { antClassLoader.addURL it.toURI().toURL() }
-	}
+	classpath = configurations.antDependencies;
+	main = 'org.apache.tools.ant.launch.Launcher'
+	systemProperties = [
+		'ant-spring-boot.version' : version,
+		'projectDir': project.layout.projectDirectory
+	]
 }
 
 task test(type: Test) {
-	dependsOn antbuild
+	dependsOn antRun
 	testClassesDirs = sourceSets.test.output.classesDirs
 	classpath = sourceSets.test.runtimeClasspath
 }
