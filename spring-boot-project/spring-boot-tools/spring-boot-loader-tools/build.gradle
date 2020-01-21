@@ -30,7 +30,7 @@ dependencies {
 
 sourceSets {
 	main {
-		output.dir(generatedResources, builtBy: 'reproducibleLoaderJar')
+		resources.srcDirs generatedResources
 	}
 }
 
@@ -45,6 +45,6 @@ task reproducibleLoaderJar(type: Jar) {
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
-jar {
+processResources {
 	dependsOn reproducibleLoaderJar
 }
