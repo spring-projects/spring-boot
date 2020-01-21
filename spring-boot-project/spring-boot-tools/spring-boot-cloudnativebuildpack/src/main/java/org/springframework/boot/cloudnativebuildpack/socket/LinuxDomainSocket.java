@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.LastErrorException;
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.Structure;
 
 import org.springframework.util.Assert;
@@ -32,6 +34,10 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 class LinuxDomainSocket extends DomainSocket {
+
+	static {
+		Native.register(Platform.C_LIBRARY_NAME);
+	}
 
 	LinuxDomainSocket(String path) throws IOException {
 		super(path);
