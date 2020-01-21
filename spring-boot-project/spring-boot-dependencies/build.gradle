@@ -1162,7 +1162,7 @@ bom {
 			]
 		}
 	}
-	library('Micrometer', '1.3.3-SNAPSHOT') {
+	library('Micrometer', '1.3.3') {
 		group('io.micrometer') {
 			modules = [
 				'micrometer-registry-stackdriver' {
