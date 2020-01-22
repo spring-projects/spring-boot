@@ -90,8 +90,12 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	@Override
 	Iterator<Entry> iterator();
 
-	default boolean supportsNestedJars() {
-		return true;
+	/**
+	 * Return if the archive is exploded (already unpacked).
+	 * @return if the archive is exploded
+	 */
+	default boolean isExploded() {
+		return false;
 	}
 
 	/**

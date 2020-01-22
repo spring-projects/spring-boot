@@ -164,8 +164,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected boolean supportsNestedJars() {
-		return this.archive.supportsNestedJars();
+	protected boolean isExploded() {
+		return this.archive.isExploded();
 	}
 
 	/**

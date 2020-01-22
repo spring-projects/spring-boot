@@ -42,17 +42,33 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		ClassLoader.registerAsParallelCapable();
 	}
 
+	private final boolean exploded;
+
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
+		this(false, urls, parent);
+	}
+
+	/**
+	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * @param exploded the the underlying archive is exploded
+	 * @param urls the URLs from which to load classes and resources
+	 * @param parent the parent class loader for delegation
+	 */
+	public LaunchedURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
+		this.exploded = exploded;
 	}
 
 	@Override
 	public URL findResource(String name) {
+		if (this.exploded) {
+			return super.findResource(name);
+		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			return super.findResource(name);
@@ -64,6 +80,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
+		if (this.exploded) {
+			return super.findResources(name);
+		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			return new UseFastConnectionExceptionsEnumeration(super.findResources(name));
@@ -85,6 +104,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 			catch (ClassNotFoundException ex) {
 			}
+		}
+		if (this.exploded) {
+			return super.loadClass(name, resolve);
 		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
@@ -168,6 +190,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * Clear URL caches.
 	 */
 	public void clearCache() {
+		if (this.exploded) {
+			return;
+		}
 		for (URL url : getURLs()) {
 			try {
 				URLConnection connection = url.openConnection();

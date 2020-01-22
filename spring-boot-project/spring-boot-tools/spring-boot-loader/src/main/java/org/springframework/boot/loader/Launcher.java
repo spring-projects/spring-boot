@@ -49,7 +49,7 @@ public abstract class Launcher {
 	 * @throws Exception if the application fails to launch
 	 */
 	protected void launch(String[] args) throws Exception {
-		if (supportsNestedJars()) {
+		if (!isExploded()) {
 			JarFile.registerUrlProtocolHandler();
 		}
 		ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator());
@@ -94,10 +94,7 @@ public abstract class Launcher {
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		if (supportsNestedJars()) {
-			return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
-		}
-		return new ExplodedURLClassLoader(urls, getClass().getClassLoader());
+		return new LaunchedURLClassLoader(isExploded(), urls, getClass().getClassLoader());
 	}
 
 	/**
@@ -168,12 +165,12 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Returns if the launcher needs to support fully nested JARs. If this method returns
-	 * {@code false} then only regular JARs are supported and the additional URL and
-	 * ClassLoader support infrastructure will not be installed.
-	 * @return if nested JARs are supported
+	 * Returns if the launcher is running in an exploded mode. If this method returns
+	 * {@code true} then only regular JARs are supported and the additional URL and
+	 * ClassLoader support infrastructure can be optimized.
+	 * @return if the jar is exploded.
 	 */
-	protected boolean supportsNestedJars() {
+	protected boolean isExploded() {
 		return true;
 	}
 

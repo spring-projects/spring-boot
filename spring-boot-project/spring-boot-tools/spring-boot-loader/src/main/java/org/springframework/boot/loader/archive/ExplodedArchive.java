@@ -114,8 +114,8 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public boolean supportsNestedJars() {
-		return false;
+	public boolean isExploded() {
+		return true;
 	}
 
 	@Override
