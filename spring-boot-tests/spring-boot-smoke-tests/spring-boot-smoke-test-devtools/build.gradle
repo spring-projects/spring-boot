@@ -1,9 +1,9 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot.conventions'
+	id "java"
+	id "org.springframework.boot.conventions"
 }
 
-description = 'Spring Boot DevTools smoke test'
+description = "Spring Boot DevTools smoke test"
 
 configurations {
 	developmentOnly
@@ -11,10 +11,10 @@ configurations {
 }
 
 dependencies {
-	developmentOnly project(':spring-boot-project:spring-boot-devtools')
+	developmentOnly project(":spring-boot-project:spring-boot-devtools")
 
-	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf')
-	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
+	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf")
+	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
 
-	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
 }

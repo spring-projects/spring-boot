@@ -1,11 +1,11 @@
 plugins {
-	id 'java-library'
-	id 'org.springframework.boot.conventions'
-	id 'org.springframework.boot.deployed'
-	id 'org.springframework.boot.internal-dependency-management'
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
 }
 
-description = 'Spring Boot Loader Tools'
+description = "Spring Boot Loader Tools"
 
 def generatedResources = "${buildDir}/generated-resources/main"
 
@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-parent'))
+	api platform(project(":spring-boot-project:spring-boot-parent"))
 	api "org.apache.commons:commons-compress"
 	api "org.springframework:spring-core"
 
@@ -41,7 +41,7 @@ task reproducibleLoaderJar(type: Jar) {
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
-	archiveFileName = 'spring-boot-loader.jar'
+	archiveFileName = "spring-boot-loader.jar"
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 

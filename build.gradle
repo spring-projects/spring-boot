@@ -1,20 +1,19 @@
 plugins {
-	id 'org.jetbrains.kotlin.jvm' apply false // https://youtrack.jetbrains.com/issue/KT-30276
+	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
 }
 
-description = 'Spring Boot Build'
+description = "Spring Boot Build"
 
 allprojects {
-	group 'org.springframework.boot'
+	group "org.springframework.boot"
 
 	repositories {
 		mavenCentral()
-		maven { url 'https://repo.spring.io/milestone' }
-		maven { url 'https://repo.spring.io/snapshot' }
+		maven { url "https://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
 	}
 
 	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 60, 'minutes'
+		resolutionStrategy.cacheChangingModulesFor 60, "minutes"
 	}
-
 }

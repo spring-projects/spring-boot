@@ -2,14 +2,14 @@ pluginManagement {
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/snapshot' }
+		maven { url "https://repo.spring.io/snapshot" }
 	}
 	resolutionStrategy {
 		eachPlugin {
-			if (requested.id.id == 'org.jetbrains.kotlin.jvm') {
+			if (requested.id.id == "org.jetbrains.kotlin.jvm") {
 				useVersion "${kotlinVersion}"
 			}
-			if (requested.id.id == 'org.jetbrains.kotlin.plugin.spring') {
+			if (requested.id.id == "org.jetbrains.kotlin.plugin.spring") {
 				useVersion "${kotlinVersion}"
 			}
 		}
@@ -17,7 +17,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.1.1'
+    id "com.gradle.enterprise" version "3.1.1"
 }
 
 apply from: "${rootDir}/gradle/build-scan-user-data.gradle"
@@ -25,45 +25,45 @@ gradleEnterprise {
 	buildScan {
 		captureTaskInputFiles = true
 		obfuscation {
-			ipAddresses { addresses -> addresses.collect { address -> '0.0.0.0'} }
+			ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0"} }
 		}
 		publishAlways()
 		publishIfAuthenticated()
-		server = 'https://ge.spring.io'
+		server = "https://ge.spring.io"
 	}
 }
 
 apply from: "${settingsDir}/gradle/build-cache-settings.gradle"
 
-rootProject.name='spring-boot-build'
+rootProject.name="spring-boot-build"
 
-include 'spring-boot-project:spring-boot-dependencies'
-include 'spring-boot-project:spring-boot-parent'
-include 'spring-boot-project:spring-boot-tools:spring-boot-antlib'
-include 'spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor'
-include 'spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform'
-include 'spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata'
-include 'spring-boot-project:spring-boot-tools:spring-boot-configuration-processor'
-include 'spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin'
-include 'spring-boot-project:spring-boot-tools:spring-boot-layertools'
-include 'spring-boot-project:spring-boot-tools:spring-boot-loader'
-include 'spring-boot-project:spring-boot-tools:spring-boot-loader-tools'
-include 'spring-boot-project:spring-boot-tools:spring-boot-maven-plugin'
-include 'spring-boot-project:spring-boot-tools:spring-boot-test-support'
-include 'spring-boot-project:spring-boot'
-include 'spring-boot-project:spring-boot-autoconfigure'
-include 'spring-boot-project:spring-boot-actuator'
-include 'spring-boot-project:spring-boot-actuator-autoconfigure'
-include 'spring-boot-project:spring-boot-cli'
-include 'spring-boot-project:spring-boot-devtools'
-include 'spring-boot-project:spring-boot-docs'
-include 'spring-boot-project:spring-boot-properties-migrator'
-include 'spring-boot-project:spring-boot-test'
-include 'spring-boot-project:spring-boot-test-autoconfigure'
-include 'spring-boot-tests:spring-boot-deployment-tests'
-include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests'
-include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests'
-include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests'
+include "spring-boot-project:spring-boot-dependencies"
+include "spring-boot-project:spring-boot-parent"
+include "spring-boot-project:spring-boot-tools:spring-boot-antlib"
+include "spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor"
+include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
+include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
+include "spring-boot-project:spring-boot-tools:spring-boot-layertools"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader-tools"
+include "spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
+include "spring-boot-project:spring-boot-tools:spring-boot-test-support"
+include "spring-boot-project:spring-boot"
+include "spring-boot-project:spring-boot-autoconfigure"
+include "spring-boot-project:spring-boot-actuator"
+include "spring-boot-project:spring-boot-actuator-autoconfigure"
+include "spring-boot-project:spring-boot-cli"
+include "spring-boot-project:spring-boot-devtools"
+include "spring-boot-project:spring-boot-docs"
+include "spring-boot-project:spring-boot-properties-migrator"
+include "spring-boot-project:spring-boot-test"
+include "spring-boot-project:spring-boot-test-autoconfigure"
+include "spring-boot-tests:spring-boot-deployment-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
 
 file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {
 	include "spring-boot-project:spring-boot-starters:${it.name}"

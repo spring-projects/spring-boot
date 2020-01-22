@@ -1,9 +1,9 @@
 plugins {
-	id 'org.springframework.boot.conventions'
-	id 'java-base'
+	id "org.springframework.boot.conventions"
+	id "java-base"
 }
 
-description = 'Spring Boot Ant smoke test'
+description = "Spring Boot Ant smoke test"
 
 configurations {
 	antDependencies
@@ -23,36 +23,36 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	antDependencies 'org.apache.ivy:ivy:2.4.0'
-	antDependencies project(path: ':spring-boot-project:spring-boot-tools:spring-boot-antlib')
-	antDependencies 'org.apache.ant:ant-launcher:1.9.3'
-	antDependencies 'org.apache.ant:ant:1.9.3'
+	antDependencies "org.apache.ivy:ivy:2.4.0"
+	antDependencies project(path: ":spring-boot-project:spring-boot-tools:spring-boot-antlib")
+	antDependencies "org.apache.ant:ant-launcher:1.9.3"
+	antDependencies "org.apache.ant:ant:1.9.3"
 
-	testRepository project(path: ':spring-boot-project:spring-boot-tools:spring-boot-loader', configuration: 'mavenRepository')
-	testRepository project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter', configuration: 'mavenRepository')
+	testRepository project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository")
+	testRepository project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
 
-	testImplementation platform(project(':spring-boot-project:spring-boot-dependencies'))
-	testImplementation project(path: ':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
-	testImplementation 'org.assertj:assertj-core'
-	testImplementation 'org.junit.jupiter:junit-jupiter'
-	testImplementation 'org.springframework:spring-core'
+	testImplementation platform(project(":spring-boot-project:spring-boot-dependencies"))
+	testImplementation project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools")
+	testImplementation "org.assertj:assertj-core"
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testImplementation "org.springframework:spring-core"
 }
 
 task syncTestRepository(type: Sync) {
 	destinationDir = file("${buildDir}/test-repository")
 	from configurations.testRepository
 	rename {
-		it.replaceAll('-[0-9]+\\.[0-9]+-[0-9]+\\.', '-SNAPSHOT.')
+		it.replaceAll("-[0-9]+\\.[0-9]+-[0-9]+\\.", "-SNAPSHOT.")
 	}
 }
 
 task antRun(type: JavaExec) {
 	dependsOn syncTestRepository, configurations.antDependencies
 	classpath = configurations.antDependencies;
-	main = 'org.apache.tools.ant.launch.Launcher'
+	main = "org.apache.tools.ant.launch.Launcher"
 	systemProperties = [
-		'ant-spring-boot.version' : version,
-		'projectDir': project.layout.projectDirectory
+		"ant-spring-boot.version" : version,
+		"projectDir": project.layout.projectDirectory
 	]
 }
 

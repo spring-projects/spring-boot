@@ -1,10 +1,10 @@
 plugins {
-	id 'java-library'
-	id 'org.springframework.boot.conventions'
-	id 'org.springframework.boot.deployed'
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
 }
 
-description = 'Spring Boot Configuration Annotation Processor'
+description = "Spring Boot Configuration Annotation Processor"
 
 sourceSets {
 	main {

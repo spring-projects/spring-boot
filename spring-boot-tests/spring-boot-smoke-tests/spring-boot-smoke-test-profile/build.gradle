@@ -1,12 +1,12 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot.conventions'
+	id "java"
+	id "org.springframework.boot.conventions"
 }
 
-description = 'Spring Boot profile smoke test'
+description = "Spring Boot profile smoke test"
 
 dependencies {
-	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter')
+	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
 
-	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
 }

@@ -1,10 +1,10 @@
 plugins {
-	id 'java-library'
-	id 'org.springframework.boot.conventions'
-	id 'org.springframework.boot.internal-dependency-management'
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.internal-dependency-management"
 }
 
-description = 'Spring Boot Testing Support'
+description = "Spring Boot Testing Support"
 
 dependencies {
 	api platform(project(path: ":spring-boot-project:spring-boot-parent"))
@@ -24,7 +24,7 @@ dependencies {
 	implementation "org.apache.maven.resolver:maven-resolver-impl"
 	implementation "org.apache.maven:maven-resolver-provider"
 	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
-		exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	implementation "org.assertj:assertj-core"
 	implementation "org.hamcrest:hamcrest-core"
@@ -34,6 +34,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter"
 	testImplementation "org.springframework:spring-context"
 
-	testRuntimeOnly 'org.hibernate.validator:hibernate-validator'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly "org.hibernate.validator:hibernate-validator"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }

@@ -1,14 +1,14 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot.conventions'
+	id "java"
+	id "org.springframework.boot.conventions"
 }
 
-description = 'Spring Boot property validation smoke test'
+description = "Spring Boot property validation smoke test"
 
 dependencies {
-	annotationProcessor project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-processor')
+	annotationProcessor project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")
 
-	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter')
+	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
 
-	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
 }

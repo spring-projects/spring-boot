@@ -1,11 +1,11 @@
 plugins {
-	id 'java-library'
-	id 'maven-publish'
-	id 'org.springframework.boot.conventions'
-	id 'org.springframework.boot.internal-dependency-management'
+	id "java-library"
+	id "maven-publish"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.internal-dependency-management"
 }
 
-description = 'Spring Boot Configuration Metadata'
+description = "Spring Boot Configuration Metadata"
 
 dependencies {
 	api platform(project(path: ":spring-boot-project:spring-boot-parent"))

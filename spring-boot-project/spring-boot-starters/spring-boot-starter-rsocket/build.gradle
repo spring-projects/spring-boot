@@ -1,18 +1,18 @@
 plugins {
-	id 'org.springframework.boot.starter'
+	id "org.springframework.boot.starter"
 }
 
 description = "Starter for building RSocket clients and servers"
 
 dependencies {
-	api platform(project(':spring-boot-project:spring-boot-dependencies'))
-	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter')
-	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter-json')
-	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter-reactor-netty')
-	api 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor'
-	api 'io.rsocket:rsocket-core'
-	api 'io.rsocket:rsocket-transport-netty'
-	api 'org.springframework:spring-messaging'
-	api 'org.springframework.security:spring-security-config'
-	api 'org.springframework.security:spring-security-web'
+	api platform(project(":spring-boot-project:spring-boot-dependencies"))
+	api project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
+	api project(":spring-boot-project:spring-boot-starters:spring-boot-starter-json")
+	api project(":spring-boot-project:spring-boot-starters:spring-boot-starter-reactor-netty")
+	api "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor"
+	api "io.rsocket:rsocket-core"
+	api "io.rsocket:rsocket-transport-netty"
+	api "org.springframework:spring-messaging"
+	api "org.springframework.security:spring-security-config"
+	api "org.springframework.security:spring-security-web"
 }
