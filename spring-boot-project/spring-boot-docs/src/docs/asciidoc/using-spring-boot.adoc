@@ -409,7 +409,7 @@ If you find that specific auto-configuration classes that you do not want are be
 	}
 ----
 
-If you choose to use `@EnableAutoConfiguration` rather than `@SpringBootApplication`, please note that it also has an `exlcude` attribute that can be used. If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
+If you choose to use `@EnableAutoConfiguration` rather than `@SpringBootApplication`, please note that it also has an `exclude` attribute that can be used. If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
 Finally, you can also control the list of auto-configuration classes to exclude by using the configprop:spring.autoconfigure.exclude[] property.
 
 TIP: You can define exclusions both at the annotation level and by using the property.
