@@ -28,14 +28,14 @@ dependencies {
 	antDependencies "org.apache.ant:ant-launcher:1.9.3"
 	antDependencies "org.apache.ant:ant:1.9.3"
 
-	testRepository project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository")
-	testRepository project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
+	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
 
-	testImplementation platform(project(":spring-boot-project:spring-boot-dependencies"))
-	testImplementation project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools")
-	testImplementation "org.assertj:assertj-core"
-	testImplementation "org.junit.jupiter:junit-jupiter"
-	testImplementation "org.springframework:spring-core"
+	testImplementation(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	testImplementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.springframework:spring-core")
 }
 
 task syncTestRepository(type: Sync) {

@@ -14,18 +14,18 @@ configurations {
 }
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-parent"))
-	api "org.apache.commons:commons-compress"
-	api "org.springframework:spring-core"
+	api(platform(project(":spring-boot-project:spring-boot-parent")))
+	api("org.apache.commons:commons-compress")
+	api("org.springframework:spring-core")
 
-	compileOnly "ch.qos.logback:logback-classic"
+	compileOnly("ch.qos.logback:logback-classic")
 
-	loader project(":spring-boot-project:spring-boot-tools:spring-boot-loader")
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
-	testImplementation "org.assertj:assertj-core"
-	testImplementation "org.junit.jupiter:junit-jupiter"
-	testImplementation "org.mockito:mockito-core"
-	testImplementation "org.zeroturnaround:zt-zip:1.13"
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
 sourceSets {

@@ -6,12 +6,12 @@ plugins {
 description = "Spring Boot traditional deployment smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
-	implementation "org.springframework:spring-webmvc"
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation("org.springframework:spring-webmvc")
 
-	providedRuntime project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat")
-	providedRuntime "org.apache.tomcat.embed:tomcat-embed-jasper"
+	providedRuntime(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
-	testImplementation "org.apache.httpcomponents:httpclient"
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents:httpclient")
 }

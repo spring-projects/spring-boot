@@ -8,19 +8,19 @@ plugins {
 description = "Spring Boot Loader"
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-dependencies"))
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
-	compileOnly "org.springframework:spring-core"
+	compileOnly("org.springframework:spring-core")
 
-	testImplementation project(":spring-boot-project:spring-boot-tools:spring-boot-test-support")
-	testImplementation "org.assertj:assertj-core"
-	testImplementation "org.awaitility:awaitility"
-	testImplementation "org.junit.jupiter:junit-jupiter"
-	testImplementation "org.mockito:mockito-core"
-	testImplementation "org.springframework:spring-test"
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.springframework:spring-test")
 
-	testRuntimeOnly "ch.qos.logback:logback-classic"
-	testRuntimeOnly "org.bouncycastle:bcprov-jdk16:1.46"
-	testRuntimeOnly "org.slf4j:jcl-over-slf4j"
-	testRuntimeOnly "org.springframework:spring-webmvc"
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("org.bouncycastle:bcprov-jdk16:1.46")
+	testRuntimeOnly("org.slf4j:jcl-over-slf4j")
+	testRuntimeOnly("org.springframework:spring-webmvc")
 }

@@ -6,9 +6,9 @@ plugins {
 description = "Spring Boot Batch smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-batch")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-batch"))
 	
-	runtimeOnly "org.hsqldb:hsqldb"
+	runtimeOnly("org.hsqldb:hsqldb")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

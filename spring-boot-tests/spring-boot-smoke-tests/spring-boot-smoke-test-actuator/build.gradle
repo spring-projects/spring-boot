@@ -6,14 +6,14 @@ plugins {
 description = "Spring Boot Actuator smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation"))
 
-	runtimeOnly "com.h2database:h2"
+	runtimeOnly("com.h2database:h2")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
-	testRuntimeOnly "org.apache.httpcomponents:httpclient"
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testRuntimeOnly("org.apache.httpcomponents:httpclient")
 }

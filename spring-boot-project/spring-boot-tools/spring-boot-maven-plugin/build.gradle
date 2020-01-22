@@ -14,30 +14,30 @@ configurations {
 }
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-parent"))
-	api project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform")
+	api(platform(project(":spring-boot-project:spring-boot-parent")))
+	api(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 
-	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations"
-	compileOnly "org.sonatype.plexus:plexus-build-api"
+	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
+	compileOnly("org.sonatype.plexus:plexus-build-api")
 
-	implementation project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools")
-	implementation "org.apache.maven.shared:maven-common-artifact-filters"
-	implementation "org.apache.maven:maven-plugin-api"
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("org.apache.maven.shared:maven-common-artifact-filters")
+	implementation("org.apache.maven:maven-plugin-api")
 
-	intTestImplementation platform(project(":spring-boot-project:spring-boot-parent"))
-	intTestImplementation "org.apache.maven.shared:maven-invoker"
-	intTestImplementation "org.assertj:assertj-core"
-	intTestImplementation "org.junit.jupiter:junit-jupiter"
+	intTestImplementation(platform(project(":spring-boot-project:spring-boot-parent")))
+	intTestImplementation("org.apache.maven.shared:maven-invoker")
+	intTestImplementation("org.assertj:assertj-core")
+	intTestImplementation("org.junit.jupiter:junit-jupiter")
 
-	optional platform(project(":spring-boot-project:spring-boot-parent"))
-	optional "org.apache.maven.plugins:maven-shade-plugin"
+	optional(platform(project(":spring-boot-project:spring-boot-parent")))
+	optional("org.apache.maven.plugins:maven-shade-plugin")
 
-	runtimeOnly "org.sonatype.plexus:plexus-build-api"
+	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
-	testImplementation "org.assertj:assertj-core"
-	testImplementation "org.junit.jupiter:junit-jupiter"
-	testImplementation "org.mockito:mockito-core"
-	testImplementation "org.springframework:spring-core"
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.springframework:spring-core")
 }
 
 syncDocumentationSourceForAsciidoctor {

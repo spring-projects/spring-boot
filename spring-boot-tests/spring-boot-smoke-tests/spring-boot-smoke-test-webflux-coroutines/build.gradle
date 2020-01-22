@@ -19,12 +19,12 @@ compileTestKotlin {
 }
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux")
-	implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-	implementation "org.jetbrains.kotlin:kotlin-reflect"
-	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor"
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
-	testImplementation "io.projectreactor:reactor-test"
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("io.projectreactor:reactor-test")
 }

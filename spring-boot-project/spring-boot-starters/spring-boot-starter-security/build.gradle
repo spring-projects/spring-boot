@@ -5,9 +5,9 @@ plugins {
 description = "Starter for using Spring Security"
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-dependencies"))
-	api project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
-	api "org.springframework:spring-aop"
-	api "org.springframework.security:spring-security-config"
-	api "org.springframework.security:spring-security-web"
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework:spring-aop")
+	api("org.springframework.security:spring-security-config")
+	api("org.springframework.security:spring-security-web")
 }

@@ -6,18 +6,18 @@ plugins {
 description = "Spring Boot Atomikos JTA smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-artemis")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-jpa")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jta-atomikos")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-artemis"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-jpa"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jta-atomikos"))
 	if (JavaVersion.current().java9Compatible) {
-		implementation "jakarta.xml.bind:jakarta.xml.bind-api"
+		implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 	}
-	implementation "org.springframework:spring-jms"
+	implementation("org.springframework:spring-jms")
 
-	runtimeOnly "com.h2database:h2"
-	runtimeOnly ("org.apache.activemq:artemis-jms-server") {
+	runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.apache.activemq:artemis-jms-server") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
 	}
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

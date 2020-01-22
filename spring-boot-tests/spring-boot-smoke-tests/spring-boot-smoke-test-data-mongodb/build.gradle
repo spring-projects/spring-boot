@@ -6,9 +6,9 @@ plugins {
 description = "Spring Boot Data MongoDB smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb"))
 
-	runtimeOnly "de.flapdoodle.embed:de.flapdoodle.embed.mongo"
+	runtimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

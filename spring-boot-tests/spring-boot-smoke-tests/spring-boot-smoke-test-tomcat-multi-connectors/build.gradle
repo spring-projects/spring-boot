@@ -6,8 +6,8 @@ plugins {
 description = "Spring Boot Tomcat multi-connectors smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
-	testImplementation "org.apache.httpcomponents:httpclient"
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents:httpclient")
 }

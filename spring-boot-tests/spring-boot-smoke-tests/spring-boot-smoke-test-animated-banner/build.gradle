@@ -6,5 +6,5 @@ plugins {
 description = "Spring Boot animated banner smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 }

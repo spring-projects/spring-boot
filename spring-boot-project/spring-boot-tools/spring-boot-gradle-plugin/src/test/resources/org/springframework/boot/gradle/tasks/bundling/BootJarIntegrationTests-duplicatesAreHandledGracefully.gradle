@@ -22,6 +22,6 @@ repositories {
 }
 
 dependencies {
-	implementation "org.apache.commons:commons-lang3:3.6"
+	implementation("org.apache.commons:commons-lang3:3.6")
 	provided "org.apache.commons:commons-lang3:3.6"
 }

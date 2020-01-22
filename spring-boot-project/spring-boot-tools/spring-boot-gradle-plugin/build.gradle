@@ -26,21 +26,21 @@ repositories {
 }
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-dependencies"))
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
-	asciidoctorExtensions "io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.3.0.RELEASE"
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.3.0.RELEASE")
 
-	implementation project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools")
-	implementation "io.spring.gradle:dependency-management-plugin"
-	implementation "org.apache.commons:commons-compress"
-	implementation "org.springframework:spring-core"
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("io.spring.gradle:dependency-management-plugin")
+	implementation("org.apache.commons:commons-compress")
+	implementation("org.springframework:spring-core")
 
-	optional platform(project(":spring-boot-project:spring-boot-dependencies"))
-	optional "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50"
+	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
 
-	testImplementation "org.junit.jupiter:junit-jupiter"
-	testImplementation "org.assertj:assertj-core"
-	testImplementation "org.mockito:mockito-core"
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.mockito:mockito-core")
 }
 
 gradlePlugin {

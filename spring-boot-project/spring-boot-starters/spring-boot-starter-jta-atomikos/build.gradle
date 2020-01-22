@@ -5,10 +5,10 @@ plugins {
 description = "Starter for JTA transactions using Atomikos"
 
 dependencies {
-	api platform(project(":spring-boot-project:spring-boot-dependencies"))
-	api project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
-	api "com.atomikos:transactions-jms"
-	api "com.atomikos:transactions-jta"
-	api "com.atomikos:transactions-jdbc"
-	api "jakarta.transaction:jakarta.transaction-api"
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("com.atomikos:transactions-jms")
+	api("com.atomikos:transactions-jta")
+	api("com.atomikos:transactions-jdbc")
+	api("jakarta.transaction:jakarta.transaction-api")
 }

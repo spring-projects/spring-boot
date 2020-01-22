@@ -6,9 +6,9 @@ plugins {
 description = "Spring Boot web UI smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

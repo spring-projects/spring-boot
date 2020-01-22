@@ -6,10 +6,10 @@ plugins {
 description = "Spring Boot web method security smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

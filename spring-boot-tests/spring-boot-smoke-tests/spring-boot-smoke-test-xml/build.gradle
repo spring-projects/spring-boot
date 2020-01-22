@@ -6,7 +6,7 @@ plugins {
 description = "Spring Boot XML smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

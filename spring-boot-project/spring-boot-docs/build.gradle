@@ -16,23 +16,23 @@ configurations {
 }
 
 dependencies {
-	actuatorApiDocumentation project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation")
+	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
-	autoConfiguration project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata")
-	autoConfiguration project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata")
-	autoConfiguration project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata")
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
 
-	configurationProperties project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata")
-	configurationProperties project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata")
-	configurationProperties project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata")
-	configurationProperties project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata")
-	configurationProperties project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata")
+	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 
-	gradlePluginDocumentation project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation")
+	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 
-	mavenPluginDocumentation project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation")
+	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
-	testSlices project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata")
+	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
@@ -156,10 +156,10 @@ syncDocumentationSourceForAsciidoctor {
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}
-	from ("src/main/java") {
+	from("src/main/java") {
 		into "main/java"
 	}
-	from ("src/test/java") {
+	from("src/test/java") {
 		into "test/java"
 	}
 }
@@ -173,10 +173,10 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}
-	from ("src/main/java") {
+	from("src/main/java") {
 		into "main/java"
 	}
-	from ("src/test/java") {
+	from("src/test/java") {
 		into "test/java"
 	}
 }
@@ -190,10 +190,10 @@ syncDocumentationSourceForAsciidoctorPdf {
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
 	}
-	from ("src/main/java") {
+	from("src/main/java") {
 		into "main/java"
 	}
-	from ("src/test/java") {
+	from("src/test/java") {
 		into "test/java"
 	}
 }

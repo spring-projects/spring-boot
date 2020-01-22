@@ -34,11 +34,11 @@ def caches = [
 ]
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-cache")
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-cache"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
 	if (project.hasProperty("cache")) {
 		caches[project.getProperty("cache")].each { runtimeOnly it }

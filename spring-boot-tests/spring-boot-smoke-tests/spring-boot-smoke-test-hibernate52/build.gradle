@@ -16,7 +16,7 @@ dependencies {
 		exclude group: "org.hibernate.javax.persistence", module: "hibernate-jpa-2.1-api"
 	}
 
-	runtimeOnly "com.h2database:h2"
+	runtimeOnly("com.h2database:h2")
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

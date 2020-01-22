@@ -6,7 +6,7 @@ plugins {
 description = "Spring Boot Data Couchbase smoke test"
 
 dependencies {
-	implementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
 
-	testImplementation project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }
