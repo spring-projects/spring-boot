@@ -140,7 +140,6 @@ dependencies {
 	optional 'org.springframework.session:spring-session-jdbc'
 	optional 'org.springframework.amqp:spring-rabbit'
 	optional 'org.springframework.kafka:spring-kafka'
-	optional 'org.springframework.cloud:spring-cloud-spring-service-connector'
 	optional 'org.springframework.ws:spring-ws-core'
 	optional 'org.thymeleaf:thymeleaf'
 	optional 'org.thymeleaf:thymeleaf-spring5'

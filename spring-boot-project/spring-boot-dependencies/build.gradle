@@ -1437,7 +1437,6 @@ bom {
 				'spring-boot-starter-artemis',
 				'spring-boot-starter-batch',
 				'spring-boot-starter-cache',
-				'spring-boot-starter-cloud-connectors',
 				'spring-boot-starter-data-cassandra',
 				'spring-boot-starter-data-cassandra-reactive',
 				'spring-boot-starter-data-couchbase',
@@ -1597,17 +1596,6 @@ bom {
 				'spring-batch-infrastructure',
 				'spring-batch-integration',
 				'spring-batch-test'
-			]
-		}
-	}
-	library('Spring Cloud Connectors', '2.0.7.RELEASE') {
-		group('org.springframework.cloud') {
-			modules = [
-				'spring-cloud-cloudfoundry-connector',
-				'spring-cloud-connectors-core',
-				'spring-cloud-heroku-connector',
-				'spring-cloud-localconfig-connector',
-				'spring-cloud-spring-service-connector'
 			]
 		}
 	}
