@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 1.4.0
  * @see AutoConfigureDataJpa
  * @see AutoConfigureTestDatabase
@@ -98,6 +100,14 @@ public @interface DataJpaTest {
 	 */
 	@PropertyMapping("spring.jpa.show-sql")
 	boolean showSql() default true;
+
+	/**
+	 * The {@link BootstrapMode} for the test repository support. Defaults to
+	 * {@link BootstrapMode#LAZY}.
+	 * @return the {@link BootstrapMode} to use for test the repository
+	 */
+	@PropertyMapping("spring.data.jpa.repositories.bootstrap-mode")
+	BootstrapMode bootstrapMode() default BootstrapMode.LAZY;
 
 	/**
 	 * Determines if default filtering should be used with

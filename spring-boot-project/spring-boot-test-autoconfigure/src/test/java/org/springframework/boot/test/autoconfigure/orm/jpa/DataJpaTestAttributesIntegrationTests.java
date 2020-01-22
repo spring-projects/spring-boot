@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,18 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.repository.config.BootstrapMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for the {@link DataJpaTest#properties properties} attribute of
- * {@link DataJpaTest @DataJpaTest}.
+ * Tests for non-default attributes of {@link DataJpaTest @DataJpaTest}.
  *
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  */
-@DataJpaTest(properties = "spring.profiles.active=test")
-class DataJpaTestPropertiesIntegrationTests {
+@DataJpaTest(properties = "spring.profiles.active=test", bootstrapMode = BootstrapMode.DEFERRED)
+class DataJpaTestAttributesIntegrationTests {
 
 	@Autowired
 	private Environment environment;
@@ -38,6 +39,12 @@ class DataJpaTestPropertiesIntegrationTests {
 	@Test
 	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@Test
+	void bootstrapModeIsSet() {
+		assertThat(this.environment.getProperty("spring.data.jpa.repositories.bootstrap-mode"))
+				.isEqualTo(BootstrapMode.DEFERRED.name());
 	}
 
 }
