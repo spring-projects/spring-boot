@@ -57,7 +57,9 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback, AfterE
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		this.process.destroy();
+		if (this.process != null) {
+			this.process.destroy();
+		}
 	}
 
 	@Override
