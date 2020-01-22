@@ -75,7 +75,7 @@ dependencies {
 }
 
 task copyIntTestDependencies(type: Copy) {
-	destinationDir = file("$buildDir/dependencies")
+	destinationDir = file("${buildDir}/dependencies")
 	from {
 		configurations.intTestDependencies
 	}

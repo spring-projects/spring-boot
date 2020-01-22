@@ -152,7 +152,7 @@ compileTestJava {
 }
 
 test {
-	outputs.dir("$buildDir/generated-snippets")
+	outputs.dir("${buildDir}/generated-snippets")
 }
 
 asciidoctor {

@@ -970,7 +970,7 @@ bom {
 			]
 		}
 	}
-	library('Kotlin', "$kotlinVersion") {
+	library('Kotlin', "${kotlinVersion}") {
 		group('org.jetbrains.kotlin') {
 			imports = [
 				'kotlin-bom'
@@ -1411,7 +1411,7 @@ bom {
 			]
 		}
 	}
-	library('Spring Boot', "$version") {
+	library('Spring Boot', "${version}") {
 		group('org.springframework.boot') {
 			modules = [
 				'spring-boot',

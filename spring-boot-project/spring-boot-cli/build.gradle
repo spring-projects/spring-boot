@@ -81,7 +81,7 @@ dependencies {
 }
 
 task syncSpringBootDependenciesBom(type: Sync) {
-	destinationDir = file("$buildDir/generated-resources/org/springframework/boot/cli/compiler/dependencies")
+	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/cli/compiler/dependencies")
 	from configurations.dependenciesBom
 }
 
@@ -92,7 +92,7 @@ task syncTestRepository(type: Sync) {
 
 sourceSets {
 	main {
-		output.dir("$buildDir/generated-resources", builtBy: 'syncSpringBootDependenciesBom')
+		output.dir("${buildDir}/generated-resources", builtBy: 'syncSpringBootDependenciesBom')
 	}
 }
 
@@ -156,12 +156,12 @@ task tar(type: Tar) {
 
 task scoopManifest(type: org.springframework.boot.build.cli.ScoopManifest) {
 	dependsOn zip
-	outputDir = file("$buildDir/scoop")
+	outputDir = file("${buildDir}/scoop")
 	template = file('src/main/scoop/springboot.json')
 	archive = zip.archiveFile
 }
 
-def scoopManifestArtifact = artifacts.add('archives', file("$buildDir/scoop/springboot.json")) {
+def scoopManifestArtifact = artifacts.add('archives', file("${buildDir}/scoop/springboot.json")) {
 	type 'json'
 	classifier 'scoop'
 	builtBy 'scoopManifest'
@@ -169,12 +169,12 @@ def scoopManifestArtifact = artifacts.add('archives', file("$buildDir/scoop/spri
 
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
-	outputDir = file("$buildDir/homebrew")
+	outputDir = file("${buildDir}/homebrew")
 	template = file('src/main/homebrew/springboot.rb')
 	archive = tar.archiveFile
 }
 
-def homebrewFormulaArtifact = artifacts.add('archives', file("$buildDir/homebrew/springboot.rb")) {
+def homebrewFormulaArtifact = artifacts.add('archives', file("${buildDir}/homebrew/springboot.rb")) {
 	type 'rb'
 	classifier 'homebrew'
 	builtBy 'homebrewFormula'

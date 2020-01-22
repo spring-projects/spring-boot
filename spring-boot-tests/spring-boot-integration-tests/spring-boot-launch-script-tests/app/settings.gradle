@@ -1,6 +1,6 @@
 pluginManagement {
 	repositories {
-		maven { url "file:$rootDir/../int-test-maven-repository"}
+		maven { url "file:${rootDir}/../int-test-maven-repository"}
 		mavenCentral()
 		maven { url 'https://repo.spring.io/snapshot' }
 		maven { url 'https://repo.spring.io/milestone' }

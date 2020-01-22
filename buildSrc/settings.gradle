@@ -12,4 +12,4 @@ pluginManagement {
 	}
 }
 
-apply from: "$settingsDir/../gradle/build-cache-settings.gradle"
+apply from: "${settingsDir}/../gradle/build-cache-settings.gradle"

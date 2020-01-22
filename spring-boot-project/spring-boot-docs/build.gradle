@@ -43,7 +43,7 @@ task javadoc(type: Javadoc) {
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
-		destinationDir = project.file "$buildDir/docs/javadoc"
+		destinationDir = project.file "${buildDir}/docs/javadoc"
 		options {
 			author = true
 			docTitle = "Spring Boot ${project.version} API"
@@ -75,27 +75,27 @@ task javadoc(type: Javadoc) {
 
 task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
-	outputFile = file("$buildDir/docs/generated/test-slice-auto-configuration.adoc")
+	outputFile = file("${buildDir}/docs/generated/test-slice-auto-configuration.adoc")
 }
 
 task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("$buildDir/docs/generated/starters/")
+	outputDir = file("${buildDir}/docs/generated/starters/")
 }
 
 task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
-	outputDir = file("$buildDir/docs/generated/auto-configuration-classes/")
+	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/")
 }
 
 task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("$buildDir/docs/generated/dependency-versions.adoc")
+	outputFile = file("${buildDir}/docs/generated/dependency-versions.adoc")
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("$buildDir/docs/generated/config-docs/")
+	outputDir = file("${buildDir}/docs/generated/config-docs/")
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
@@ -148,7 +148,7 @@ syncDocumentationSourceForAsciidoctor {
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
 	dependsOn documentConfigurationProperties
-	from("$buildDir/docs/generated") {
+	from("${buildDir}/docs/generated") {
 		into 'asciidoc'
 	}
 	from ("src/main/java") {
@@ -165,7 +165,7 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
 	dependsOn documentConfigurationProperties
-	from("$buildDir/docs/generated") {
+	from("${buildDir}/docs/generated") {
 		into 'asciidoc'
 	}
 	from ("src/main/java") {
@@ -182,7 +182,7 @@ syncDocumentationSourceForAsciidoctorPdf {
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
 	dependsOn documentConfigurationProperties
-	from("$buildDir/docs/generated") {
+	from("${buildDir}/docs/generated") {
 		into 'asciidoc'
 	}
 	from ("src/main/java") {
