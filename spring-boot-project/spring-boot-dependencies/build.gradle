@@ -1425,6 +1425,7 @@ bom {
 				'spring-boot-configuration-metadata',
 				'spring-boot-configuration-processor',
 				'spring-boot-devtools',
+				'spring-boot-layertools',
 				'spring-boot-loader',
 				'spring-boot-loader-tools',
 				'spring-boot-properties-migrator',

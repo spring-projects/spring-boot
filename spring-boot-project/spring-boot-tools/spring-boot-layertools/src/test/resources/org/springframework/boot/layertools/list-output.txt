@@ -1,0 +1,4 @@
+dependencies
+snapshot-dependencies
+resources
+application

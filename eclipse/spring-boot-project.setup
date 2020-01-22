@@ -127,7 +127,7 @@
         name="spring-boot-tools">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-plugin|autoconfigure-processor|cloudnativebuildpack)"/>
+          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|*.layertools|.*-plugin|autoconfigure-processor|cloudnativebuildpack)"/>
     </workingSet>
     <workingSet
         name="spring-boot-starters">
