@@ -19,6 +19,7 @@ package org.springframework.boot.layertools;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -91,7 +92,7 @@ class IndexedLayers implements Layers {
 			}
 			return null;
 		}
-		catch (FileNotFoundException ex) {
+		catch (FileNotFoundException | NoSuchFileException ex) {
 			return null;
 		}
 		catch (IOException ex) {
