@@ -21,11 +21,11 @@ import java.util.function.Function;
 
 import org.apache.maven.artifact.Artifact;
 
-import org.springframework.boot.cloudnativebuildpack.build.BuildRequest;
-import org.springframework.boot.cloudnativebuildpack.docker.type.ImageName;
-import org.springframework.boot.cloudnativebuildpack.docker.type.ImageReference;
-import org.springframework.boot.cloudnativebuildpack.io.Owner;
-import org.springframework.boot.cloudnativebuildpack.io.TarArchive;
+import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.docker.type.ImageName;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.buildpack.platform.io.Owner;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.StringUtils;
 
 /**

@@ -25,9 +25,9 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.cloudnativebuildpack.build.BuildRequest;
-import org.springframework.boot.cloudnativebuildpack.io.Owner;
-import org.springframework.boot.cloudnativebuildpack.io.TarArchive;
+import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.io.Owner;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;

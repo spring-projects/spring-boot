@@ -1421,7 +1421,7 @@ bom {
 				'spring-boot-actuator-autoconfigure',
 				'spring-boot-autoconfigure',
 				'spring-boot-autoconfigure-processor',
-				'spring-boot-cloudnativebuildpack',
+				'spring-boot-buildpack-platform',
 				'spring-boot-configuration-metadata',
 				'spring-boot-configuration-processor',
 				'spring-boot-devtools',
