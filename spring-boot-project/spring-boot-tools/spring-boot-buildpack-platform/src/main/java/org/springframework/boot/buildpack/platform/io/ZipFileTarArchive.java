@@ -35,8 +35,9 @@ import org.springframework.util.StreamUtils;
  * Adapter class to convert a ZIP file to a {@link TarArchive}.
  *
  * @author Phillip Webb
+ * @since 2.3.0
  */
-class ZipFileTarArchive implements TarArchive {
+public class ZipFileTarArchive implements TarArchive {
 
 	static final long NORMALIZED_MOD_TIME = TarArchive.NORMALIZED_TIME.toEpochMilli();
 
@@ -44,7 +45,13 @@ class ZipFileTarArchive implements TarArchive {
 
 	private final Owner owner;
 
-	ZipFileTarArchive(File zip, Owner owner) {
+	/**
+	 * Creates an archive from the contents of the given {@code zip}. Each entry in the
+	 * archive will be owned by the given {@code owner}.
+	 * @param zip the zip to use as a source
+	 * @param owner the owner of the tar entries
+	 */
+	public ZipFileTarArchive(File zip, Owner owner) {
 		Assert.notNull(zip, "Zip must not be null");
 		Assert.notNull(owner, "Owner must not be null");
 		this.zip = zip;

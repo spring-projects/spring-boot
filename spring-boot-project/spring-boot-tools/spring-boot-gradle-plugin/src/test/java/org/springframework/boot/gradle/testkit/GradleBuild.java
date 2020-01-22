@@ -27,9 +27,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.Versioned;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.sun.jna.Platform;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.http.HttpRequest;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
@@ -41,6 +48,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
 
 import org.springframework.asm.ClassVisitor;
+import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
@@ -94,7 +102,12 @@ public class GradleBuild {
 				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinCompilerClient.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
-				new File(pathOfJarContaining(ArchiveEntry.class)));
+				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
+				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
+				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
+				new File(pathOfJarContaining(Versioned.class)),
+				new File(pathOfJarContaining(ParameterNamesModule.class)),
+				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {

@@ -34,6 +34,7 @@ import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -67,6 +68,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_WAR_TASK_NAME = "bootWar";
+
+	/**
+	 * The name of the default {@link BootBuildImage} task.
+	 * @since 2.3.0
+	 */
+	public static final String BOOT_BUILD_IMAGE_TASK_NAME = "bootBuildImage";
 
 	/**
 	 * The coordinates {@code (group:name:version)} of the

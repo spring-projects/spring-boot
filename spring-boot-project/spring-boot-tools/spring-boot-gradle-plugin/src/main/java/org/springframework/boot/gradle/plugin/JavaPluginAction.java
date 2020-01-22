@@ -36,6 +36,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
 import org.springframework.util.StringUtils;
@@ -65,6 +66,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		disableJarTask(project);
 		configureBuildTask(project);
 		BootJar bootJar = configureBootJarTask(project);
+		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
@@ -92,6 +94,14 @@ final class JavaPluginAction implements PluginApplicationAction {
 		});
 		bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		return bootJar;
+	}
+
+	private void configureBootBuildImageTask(Project project, BootJar bootJar) {
+		BootBuildImage buildImage = project.getTasks().create(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME,
+				BootBuildImage.class);
+		buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
+		buildImage.setGroup(BasePlugin.BUILD_GROUP);
+		buildImage.from(bootJar);
 	}
 
 	private void configureArtifactPublication(BootJar bootJar) {

@@ -26,6 +26,7 @@ Andy Wilkinson
 :api-documentation: {spring-boot-docs}/gradle-plugin/api
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
 :build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
+:boot-build-image-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html
 :boot-jar-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html
 :boot-war-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html
 :boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html

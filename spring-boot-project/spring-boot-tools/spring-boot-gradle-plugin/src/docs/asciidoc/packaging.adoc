@@ -298,3 +298,12 @@ The jar will then be split into layer folders which may include:
 * `resources`
 * `snapshots-dependencies`
 * `dependencies`
+
+
+
+[[packaging-oci-images]]
+== Packaging OCI images
+
+The plugin can create OCI images from executable jars using a https://buildpacks.io[buildpack].
+Images can be built using the `bootBuildImage` task and a local Docker installation.
+The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].

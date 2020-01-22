@@ -15,10 +15,11 @@ When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring B
    The jar will contain everything on the runtime classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars are packaged in `BOOT-INF/lib`
 2. Configures the `assemble` task to depend on the `bootJar` task.
 3. Disables the `jar` task.
-4. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run your application.
-5. Creates a configuration named `bootArchives` that contains the artifact produced by the `bootJar` task.
-6. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
-7. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
+4. Creates a {boot-build-image-javadoc}[`BootBuildImage`] task named `bootBuildImage` that will create a OCI image using a https://buildpacks.io[buildpack].
+5. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run your application.
+6. Creates a configuration named `bootArchives` that contains the artifact produced by the `bootJar` task.
+7. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
+8. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
 
 
 
