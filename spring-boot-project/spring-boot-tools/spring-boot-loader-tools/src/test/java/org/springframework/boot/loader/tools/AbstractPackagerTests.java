@@ -261,13 +261,20 @@ abstract class AbstractPackagerTests<P extends Packager> {
 			callback.library(new Library(libJarFile3, LibraryScope.COMPILE));
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
-		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		String[] libraries = index.split("\\n");
-		List<String> expected = new ArrayList<>();
-		expected.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
-		expected.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
-		expected.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
-		assertThat(Arrays.asList(libraries)).containsExactly(expected.toArray(new String[0]));
+		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
+		List<String> expectedJars = new ArrayList<>();
+		expectedJars.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
+		expectedJars.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
+		expectedJars.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
+		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly(expectedJars.toArray(new String[0]));
+		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
+		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
+		List<String> expectedLayers = new ArrayList<>();
+		expectedLayers.add("default");
+		expectedLayers.add("0001");
+		expectedLayers.add("0002");
+		expectedLayers.add("0003");
+		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly(expectedLayers.toArray(new String[0]));
 	}
 
 	@Test

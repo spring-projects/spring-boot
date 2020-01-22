@@ -159,6 +159,7 @@ public abstract class Packager {
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
 		writeableLibraries.write(writer);
+		writeLayerIndex(writer);
 	}
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
@@ -168,6 +169,17 @@ public abstract class Packager {
 		}
 		else if (layout.isExecutable()) {
 			writer.writeLoaderClasses();
+		}
+	}
+
+	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
+		if (this.layers != null && getLayout() instanceof LayeredLayout) {
+			String location = ((LayeredLayout) this.layout).getLayersIndexFileLocation();
+			if (StringUtils.hasLength(location)) {
+				List<String> layerNames = new ArrayList<>();
+				this.layers.forEach((layer) -> layerNames.add(layer.toString()));
+				writer.writeIndexFile(location, layerNames);
+			}
 		}
 	}
 
@@ -304,8 +316,7 @@ public abstract class Packager {
 	}
 
 	private void addBootBootAttributesForLayeredLayout(Attributes attributes, LayeredLayout layout) {
-		String layersIndexFileLocation = layout.getLayersIndexFileLocation();
-		putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layersIndexFileLocation);
+		putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 	}
 
