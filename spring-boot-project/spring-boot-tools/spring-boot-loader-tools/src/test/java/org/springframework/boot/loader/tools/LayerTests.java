@@ -59,4 +59,14 @@ class LayerTests {
 		assertThat(new Layer("test")).hasToString("test");
 	}
 
+	@Test
+	void createWhenUsingReservedNameThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ext"))
+				.withMessage("Layer name 'ext' is reserved");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ExT"))
+				.withMessage("Layer name 'ExT' is reserved");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("springbootloader"))
+				.withMessage("Layer name 'springbootloader' is reserved");
+	}
+
 }
