@@ -40,7 +40,8 @@ class TotalProgressBarTests {
 		bar.accept(new TotalProgressEvent(50));
 		assertThat(out.toString()).isEqualTo("prefix: [ #########################");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString()).isEqualTo("prefix: [ ################################################## ]\n");
+		assertThat(out.toString())
+				.isEqualTo(String.format("prefix: [ ################################################## ]%n"));
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class TotalProgressBarTests {
 		bar.accept(new TotalProgressEvent(50));
 		assertThat(out.toString()).isEqualTo("[ #########################");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString()).isEqualTo("[ ################################################## ]\n");
+		assertThat(out.toString()).isEqualTo(String.format("[ ################################################## ]%n"));
 	}
 
 	@Test
@@ -66,7 +67,7 @@ class TotalProgressBarTests {
 		bar.accept(new TotalProgressEvent(50));
 		assertThat(out.toString()).isEqualTo(".........................");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString()).isEqualTo("..................................................\n");
+		assertThat(out.toString()).isEqualTo(String.format("..................................................%n"));
 	}
 
 	static class TestPrintStream extends PrintStream {
