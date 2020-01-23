@@ -45,7 +45,7 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public void pulledBulder(BuildRequest request, Image image) {
+	public void pulledBuilder(BuildRequest request, Image image) {
 		log(" > Pulled builder image '" + getDigest(image) + "'");
 	}
 

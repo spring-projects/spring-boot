@@ -81,7 +81,7 @@ public class Builder {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingBuilder(request, builderImageReference);
 		TotalProgressPullListener listener = new TotalProgressPullListener(progressConsumer);
 		Image builderImage = this.docker.image().pull(builderImageReference, listener);
-		this.log.pulledBulder(request, builderImage);
+		this.log.pulledBuilder(request, builderImage);
 		return builderImage;
 	}
 

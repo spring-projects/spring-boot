@@ -132,7 +132,7 @@ public final class VolumeName {
 
 	/**
 	 * Factory method to create a {@link VolumeName} with a specific value.
-	 * @param value the volme reference value
+	 * @param value the volume reference value
 	 * @return a new {@link VolumeName} instance
 	 */
 	public static VolumeName of(String value) {

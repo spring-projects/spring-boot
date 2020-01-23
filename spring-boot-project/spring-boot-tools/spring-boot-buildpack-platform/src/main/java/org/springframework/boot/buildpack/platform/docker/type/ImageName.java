@@ -30,7 +30,7 @@ public class ImageName {
 
 	private static final String DEFAULT_DOMAIN = "docker.io";
 
-	private static final String OFFICAL_REPOSITORY_NAME = "library";
+	private static final String OFFICIAL_REPOSITORY_NAME = "library";
 
 	private static final String LEGACY_DOMAIN = "index.docker.io";
 
@@ -128,7 +128,7 @@ public class ImageName {
 			}
 		}
 		if (DEFAULT_DOMAIN.equals(domain) && !value.contains("/")) {
-			value = OFFICAL_REPOSITORY_NAME + "/" + value;
+			value = OFFICIAL_REPOSITORY_NAME + "/" + value;
 		}
 		return new String[] { domain, value };
 

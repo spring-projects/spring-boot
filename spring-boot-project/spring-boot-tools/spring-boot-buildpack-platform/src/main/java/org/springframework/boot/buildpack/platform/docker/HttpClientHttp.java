@@ -156,7 +156,7 @@ class HttpClientHttp implements Http {
 	 *
 	 * @author Phillip Webb
 	 */
-	private class WritableHttpEntity extends AbstractHttpEntity {
+	private static class WritableHttpEntity extends AbstractHttpEntity {
 
 		private final IOConsumer<OutputStream> writer;
 

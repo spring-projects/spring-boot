@@ -35,7 +35,7 @@ class TarLayoutWriter implements Layout, Closeable {
 
 	static final long NORMALIZED_MOD_TIME = TarArchive.NORMALIZED_TIME.toEpochMilli();
 
-	private TarArchiveOutputStream outputStream;
+	private final TarArchiveOutputStream outputStream;
 
 	TarLayoutWriter(OutputStream outputStream) {
 		this.outputStream = new TarArchiveOutputStream(outputStream);

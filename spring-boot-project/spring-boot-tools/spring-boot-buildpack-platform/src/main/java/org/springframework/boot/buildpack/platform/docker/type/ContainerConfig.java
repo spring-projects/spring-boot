@@ -103,11 +103,11 @@ public class ContainerConfig {
 
 		private String command;
 
-		private List<String> args = new ArrayList<>();
+		private final List<String> args = new ArrayList<>();
 
-		private Map<String, String> labels = new LinkedHashMap<>();
+		private final Map<String, String> labels = new LinkedHashMap<>();
 
-		private Map<String, String> binds = new LinkedHashMap<>();
+		private final Map<String, String> binds = new LinkedHashMap<>();
 
 		Update(ImageReference image) {
 			this.image = image;

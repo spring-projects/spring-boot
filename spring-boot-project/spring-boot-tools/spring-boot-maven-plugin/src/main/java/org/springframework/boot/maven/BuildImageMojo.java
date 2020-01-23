@@ -30,7 +30,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -65,41 +64,36 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	/**
 	 * Directory containing the JAR.
-	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File sourceDirectory;
 
 	/**
 	 * Name of the JAR.
-	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
 	 * Skip the execution.
-	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.skip", defaultValue = "false")
 	private boolean skip;
 
 	/**
 	 * Classifier used when finding the source jar.
-	 * @since 2.3.0
 	 */
 	@Parameter
 	private String classifier;
 
 	/**
 	 * Image configuration operations.
-	 * @since 2.3.0
 	 */
 	@Parameter
 	private Image image;
 
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
 			getLog().debug("build-image goal could not be applied to pom project.");
 			return;

@@ -114,7 +114,7 @@ class Phase {
 		}
 		update.withCommand("/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
 		update.withLabel("author", "spring-boot");
-		this.binds.forEach((source, dest) -> update.withBind(source, dest));
+		this.binds.forEach(update::withBind);
 	}
 
 }

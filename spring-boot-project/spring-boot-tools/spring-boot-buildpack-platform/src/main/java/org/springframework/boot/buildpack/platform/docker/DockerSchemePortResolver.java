@@ -28,7 +28,7 @@ import org.apache.http.util.Args;
  */
 class DockerSchemePortResolver implements SchemePortResolver {
 
-	private static int DEFAULT_DOCKER_PORT = 2376;
+	private static final int DEFAULT_DOCKER_PORT = 2376;
 
 	@Override
 	public int resolve(HttpHost host) throws UnsupportedSchemeException {

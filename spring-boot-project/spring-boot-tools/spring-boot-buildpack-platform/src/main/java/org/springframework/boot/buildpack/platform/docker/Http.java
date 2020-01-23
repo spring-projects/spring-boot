@@ -82,7 +82,7 @@ interface Http {
 
 		/**
 		 * Return the content of the response.
-		 * @return the reseponse content
+		 * @return the response content
 		 * @throws IOException on IO error
 		 */
 		InputStream getContent() throws IOException;

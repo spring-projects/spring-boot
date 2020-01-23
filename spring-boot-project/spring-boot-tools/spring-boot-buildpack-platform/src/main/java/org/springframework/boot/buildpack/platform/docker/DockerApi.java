@@ -227,9 +227,8 @@ public class DockerApi {
 		private ContainerReference createContainer(ContainerConfig config) throws IOException {
 			URI createUri = buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
-				ContainerReference containerReference = ContainerReference
+				return ContainerReference
 						.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());
-				return containerReference;
 			}
 		}
 

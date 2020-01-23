@@ -47,7 +47,7 @@ public class BuildRequest {
 
 	private final boolean cleanCache;
 
-	private final boolean versboseLogging;
+	private final boolean verboseLogging;
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
@@ -57,17 +57,17 @@ public class BuildRequest {
 		this.builder = DEFAULT_BUILDER;
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
-		this.versboseLogging = false;
+		this.verboseLogging = false;
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
-			Map<String, String> env, boolean cleanCache, boolean versboseLogging) {
+			Map<String, String> env, boolean cleanCache, boolean verboseLogging) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
 		this.env = env;
 		this.cleanCache = cleanCache;
-		this.versboseLogging = versboseLogging;
+		this.verboseLogging = verboseLogging;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class BuildRequest {
 	public BuildRequest withBuilder(ImageReference builder) {
 		Assert.notNull(builder, "Builder must not be null");
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedForm(), this.env, this.cleanCache,
-				this.versboseLogging);
+				this.verboseLogging);
 	}
 
 	/**
@@ -90,10 +90,10 @@ public class BuildRequest {
 	public BuildRequest withEnv(String name, String value) {
 		Assert.hasText(name, "Name must not be empty");
 		Assert.hasText(value, "Value must not be empty");
-		Map<String, String> env = new LinkedHashMap<String, String>(this.env);
+		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, Collections.unmodifiableMap(env),
-				this.cleanCache, this.versboseLogging);
+				this.cleanCache, this.verboseLogging);
 	}
 
 	/**
@@ -103,10 +103,10 @@ public class BuildRequest {
 	 */
 	public BuildRequest withEnv(Map<String, String> env) {
 		Assert.notNull(env, "Env must not be null");
-		Map<String, String> updatedEnv = new LinkedHashMap<String, String>(this.env);
+		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
 		return new BuildRequest(this.name, this.applicationContent, this.builder,
-				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.versboseLogging);
+				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.env, cleanCache,
-				this.versboseLogging);
+				this.verboseLogging);
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class BuildRequest {
 	 * @return if verbose logging should be used
 	 */
 	public boolean isVerboseLogging() {
-		return this.versboseLogging;
+		return this.verboseLogging;
 	}
 
 	/**

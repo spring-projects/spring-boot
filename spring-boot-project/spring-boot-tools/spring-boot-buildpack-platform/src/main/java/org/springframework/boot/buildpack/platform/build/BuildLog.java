@@ -53,7 +53,7 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param image the builder image that was pulled
 	 */
-	void pulledBulder(BuildRequest request, Image image);
+	void pulledBuilder(BuildRequest request, Image image);
 
 	/**
 	 * Log that a run image is being pulled.
@@ -73,7 +73,7 @@ public interface BuildLog {
 	/**
 	 * Log that the lifecycle is executing.
 	 * @param request the build request
-	 * @param version the lifecyle version
+	 * @param version the lifecycle version
 	 * @param buildCacheVolume the name of the build cache volume in use
 	 */
 	void executingLifecycle(BuildRequest request, LifecycleVersion version, VolumeName buildCacheVolume);

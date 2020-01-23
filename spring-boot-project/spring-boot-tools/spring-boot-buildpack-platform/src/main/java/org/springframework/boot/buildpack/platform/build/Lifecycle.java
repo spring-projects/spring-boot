@@ -70,16 +70,16 @@ class Lifecycle implements Closeable {
 	 * @param log build output log
 	 * @param docker the Docker API
 	 * @param request the request to process
-	 * @param runImageReferece a reference to run image that should be used
+	 * @param runImageReference a reference to run image that should be used
 	 * @param builder the ephemeral builder used to run the phases
 	 */
-	Lifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReferece,
+	Lifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReference,
 			EphemeralBuilder builder) {
 		checkPlatformVersion(builder);
 		this.log = log;
 		this.docker = docker;
 		this.request = request;
-		this.runImageReference = runImageReferece;
+		this.runImageReference = runImageReference;
 		this.builder = builder;
 		this.version = LifecycleVersion.parse(builder.getBuilderMetadata().getLifecycle().getVersion());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
@@ -258,7 +258,7 @@ class Lifecycle implements Closeable {
 		 * convention of using {@code '/workspace'}.
 		 * <p>
 		 * Note that application content is uploaded to the container with the first phase
-		 * that runs and saved in a volume that is passed to supsequent phases. The folder
+		 * that runs and saved in a volume that is passed to subsequent phases. The folder
 		 * is mutable and buildpacks may modify the content.
 		 */
 		static final String APPLICATION = "/workspace";

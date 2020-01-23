@@ -93,10 +93,7 @@ public class TotalProgressPullListener implements UpdateListener<PullImageUpdate
 		if (value < 0) {
 			return 0;
 		}
-		if (value > 100) {
-			return 100;
-		}
-		return value;
+		return Math.min(value, 100);
 	}
 
 	/**
@@ -125,7 +122,7 @@ public class TotalProgressPullListener implements UpdateListener<PullImageUpdate
 
 		private int updateProgress(int current, ProgressDetail detail) {
 			int result = withinPercentageBounds((int) ((100.0 / detail.getTotal()) * detail.getCurrent()));
-			return (result > current) ? result : current;
+			return Math.max(result, current);
 		}
 
 		void finish() {

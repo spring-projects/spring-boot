@@ -59,7 +59,7 @@ class PrintStreamBuildLogTests {
 		log.start(request);
 		Consumer<TotalProgressEvent> pullBuildImageConsumer = log.pullingBuilder(request, builderImageReference);
 		pullBuildImageConsumer.accept(new TotalProgressEvent(100));
-		log.pulledBulder(request, builderImage);
+		log.pulledBuilder(request, builderImage);
 		Consumer<TotalProgressEvent> pullRunImageConsumer = log.pullingRunImage(request, runImageReference);
 		pullRunImageConsumer.accept(new TotalProgressEvent(100));
 		log.pulledRunImage(request, runImage);

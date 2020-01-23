@@ -233,7 +233,7 @@ class BuilderMetadata extends MappedObject {
 	 */
 	static final class Update {
 
-		private ObjectNode copy;
+		private final ObjectNode copy;
 
 		private Update(BuilderMetadata source) {
 			this.copy = source.getNode().deepCopy();

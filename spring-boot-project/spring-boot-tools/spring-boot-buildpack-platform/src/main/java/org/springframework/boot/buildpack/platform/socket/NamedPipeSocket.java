@@ -134,7 +134,7 @@ public class NamedPipeSocket extends Socket {
 	/**
 	 * Waits for the name pipe file using a simple sleep.
 	 */
-	private class SleepAwaiter implements Consumer<String> {
+	private static class SleepAwaiter implements Consumer<String> {
 
 		@Override
 		public void accept(String path) {
@@ -150,7 +150,7 @@ public class NamedPipeSocket extends Socket {
 	/**
 	 * Waits for the name pipe file using Windows specific logic.
 	 */
-	private class WindowsAwaiter implements Consumer<String> {
+	private static class WindowsAwaiter implements Consumer<String> {
 
 		@Override
 		public void accept(String path) {

@@ -35,7 +35,7 @@ import org.springframework.boot.buildpack.platform.json.MappedObject;
  */
 public class ImageConfig extends MappedObject {
 
-	private Map<String, String> labels;
+	private final Map<String, String> labels;
 
 	private final Map<String, String> configEnv;
 
@@ -93,7 +93,7 @@ public class ImageConfig extends MappedObject {
 	 */
 	public static final class Update {
 
-		private ObjectNode copy;
+		private final ObjectNode copy;
 
 		private Update(ImageConfig source) {
 			this.copy = source.getNode().deepCopy();

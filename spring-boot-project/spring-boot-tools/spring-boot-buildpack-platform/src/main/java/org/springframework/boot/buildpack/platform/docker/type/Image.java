@@ -41,7 +41,7 @@ public class Image extends MappedObject {
 
 	private final ImageConfig config;
 
-	private List<LayerId> layers;
+	private final List<LayerId> layers;
 
 	private final String os;
 
@@ -104,7 +104,7 @@ public class Image extends MappedObject {
 	/**
 	 * Create a new {@link Image} instance from the specified JSON content.
 	 * @param content the JSON content
-	 * @return a new {@link Image} instace
+	 * @return a new {@link Image} instance
 	 * @throws IOException on IO error
 	 */
 	public static Image of(InputStream content) throws IOException {

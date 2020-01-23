@@ -56,7 +56,7 @@ public class ImageArchive implements TarArchive {
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
 			.withZone(ZoneOffset.UTC);
 
-	private static final IOConsumer<Update> NO_UPDDATES = (update) -> {
+	private static final IOConsumer<Update> NO_UPDATES = (update) -> {
 	};
 
 	private final ObjectMapper objectMapper;
@@ -189,14 +189,14 @@ public class ImageArchive implements TarArchive {
 		ArrayNode manifest = this.objectMapper.createArrayNode();
 		ObjectNode entry = manifest.addObject();
 		entry.set("Config", entry.textNode(config));
-		entry.set("Layers", getManfiestLayers(writtenLayers));
+		entry.set("Layers", getManifestLayers(writtenLayers));
 		if (this.tag != null) {
 			entry.set("RepoTags", entry.arrayNode().add(this.tag.toString()));
 		}
 		return manifest;
 	}
 
-	private ArrayNode getManfiestLayers(List<LayerId> writtenLayers) {
+	private ArrayNode getManifestLayers(List<LayerId> writtenLayers) {
 		ArrayNode layers = this.objectMapper.createArrayNode();
 		for (int i = 0; i < this.existingLayers.size(); i++) {
 			layers.add("");
@@ -212,7 +212,7 @@ public class ImageArchive implements TarArchive {
 	 * @throws IOException on IO error
 	 */
 	public static ImageArchive from(Image image) throws IOException {
-		return from(image, NO_UPDDATES);
+		return from(image, NO_UPDATES);
 	}
 
 	/**

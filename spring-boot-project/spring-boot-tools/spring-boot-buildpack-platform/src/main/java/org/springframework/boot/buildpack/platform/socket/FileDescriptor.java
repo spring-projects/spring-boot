@@ -88,7 +88,7 @@ class FileDescriptor {
 	 */
 	private enum Status {
 
-		OPEN, CLOSE_PENDING, CLOSED;
+		OPEN, CLOSE_PENDING, CLOSED
 
 	}
 
