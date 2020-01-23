@@ -50,8 +50,7 @@ import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.util.StringUtils;
 
 /**
- * Package an application into a OCI image using a
- * <a href="https://buildpacks.io">buildpack</a>.
+ * Package an application into a OCI image using a buildpack.
  *
  * @author Phillip Webb
  * @since 2.3.0

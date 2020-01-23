@@ -17,6 +17,7 @@ It allows you to package executable jar or war archives, run Spring Boot applica
 
 include::getting-started.adoc[]
 include::packaging.adoc[]
+include::packaging-oci-image.adoc[]
 include::running.adoc[]
 include::integration-tests.adoc[]
 include::build-info.adoc[]
