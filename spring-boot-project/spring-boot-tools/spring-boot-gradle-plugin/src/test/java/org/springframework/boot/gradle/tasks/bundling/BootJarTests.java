@@ -124,6 +124,12 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	}
 
 	@Test
+	void whenJarIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
+		List<String> entryNames = getEntryNames(createLayeredJar());
+		assertThat(entryNames).contains("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+	}
+
+	@Test
 	void classpathIndexPointsToBootInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))

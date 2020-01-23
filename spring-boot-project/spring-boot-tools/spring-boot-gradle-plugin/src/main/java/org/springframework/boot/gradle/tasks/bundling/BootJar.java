@@ -18,7 +18,9 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
 import org.springframework.boot.loader.tools.Library;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -177,6 +180,15 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	public void layered() {
 		this.layers = Layers.IMPLICIT;
+		this.bootInf.into("lib", (spec) -> spec.from((Callable<File>) () -> {
+			String jarName = "spring-boot-jarmode-layertools.jar";
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/jarmode/" + jarName);
+			File taskTmp = new File(getProject().getBuildDir(), "tmp/" + getName());
+			taskTmp.mkdirs();
+			File layerToolsJar = new File(taskTmp, jarName);
+			FileCopyUtils.copy(stream, new FileOutputStream(layerToolsJar));
+			return layerToolsJar;
+		}));
 		this.bootInf.eachFile((details) -> {
 			Layer layer = layerForFileDetails(details);
 			if (layer != null) {
