@@ -17,6 +17,9 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Encapsulates information about a single library that may be packed into the archive.
@@ -86,6 +89,15 @@ public class Library {
 	}
 
 	/**
+	 * Open a stream that provides the content of the source file.
+	 * @return the file content
+	 * @throws IOException on error
+	 */
+	InputStream openStream() throws IOException {
+		return new FileInputStream(this.file);
+	}
+
+	/**
 	 * Return the scope of the library.
 	 * @return the scope
 	 */
@@ -100,6 +112,10 @@ public class Library {
 	 */
 	public boolean isUnpackRequired() {
 		return this.unpackRequired;
+	}
+
+	long getLastModified() {
+		return this.file.lastModified();
 	}
 
 }

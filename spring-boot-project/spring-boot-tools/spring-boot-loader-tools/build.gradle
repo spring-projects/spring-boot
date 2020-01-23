@@ -11,6 +11,7 @@ def generatedResources = "${buildDir}/generated-resources/main"
 
 configurations {
 	loader
+	jarmode
 }
 
 dependencies {
@@ -21,6 +22,8 @@ dependencies {
 	compileOnly("ch.qos.logback:logback-classic")
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+
+	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"))
 
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -45,6 +48,18 @@ task reproducibleLoaderJar(type: Jar) {
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
+task reproducibleJarModeLayerToolsJar(type: Jar) {
+	dependsOn configurations.jarmode
+	from {
+		zipTree(configurations.jarmode.incoming.files.filter {it.name.startsWith "spring-boot-jarmode-layertools" }.singleFile)
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-jarmode-layertools.jar"
+	destinationDirectory = file("${generatedResources}/META-INF/jarmode")
+}
+
 processResources {
 	dependsOn reproducibleLoaderJar
+	dependsOn reproducibleJarModeLayerToolsJar
 }

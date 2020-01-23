@@ -254,6 +254,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		layers.addLibrary(libJarFile2, "0002");
 		layers.addLibrary(libJarFile3, "0003");
 		packager.setLayers(layers);
+		packager.setIncludeRelevantJarModeJars(false);
 		packager.setLayout(new Layouts.LayeredJar());
 		execute(packager, (callback) -> {
 			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
@@ -275,6 +276,23 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expectedLayers.add("0002");
 		expectedLayers.add("0003");
 		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly(expectedLayers.toArray(new String[0]));
+	}
+
+	@Test
+	void layeredLayoutAddJarModeJar() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		P packager = createPackager();
+		TestLayers layers = new TestLayers();
+		packager.setLayers(layers);
+		packager.setLayout(new Layouts.LayeredJar());
+		execute(packager, Libraries.NONE);
+		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
+		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
+		assertThat(Arrays.asList(classpathIndex.split("\\n")))
+				.containsExactly("BOOT-INF/layers/default/lib/spring-boot-jarmode-layertools.jar");
+		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
+		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
+		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly("default");
 	}
 
 	@Test

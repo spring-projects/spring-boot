@@ -20,17 +20,15 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -127,17 +125,16 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	/**
 	 * Write a nested library.
-	 * @param destination the destination of the library
+	 * @param location the destination of the library
 	 * @param library the library
 	 * @throws IOException if the write fails
 	 */
-	public void writeNestedLibrary(String destination, Library library) throws IOException {
-		File file = library.getFile();
-		JarArchiveEntry entry = new JarArchiveEntry(destination + library.getName());
-		entry.setTime(getNestedLibraryTime(file));
-		new CrcAndSize(file).setupStoredEntry(entry);
-		try (FileInputStream input = new FileInputStream(file)) {
-			writeEntry(entry, new InputStreamEntryWriter(input), new LibraryUnpackHandler(library));
+	public void writeNestedLibrary(String location, Library library) throws IOException {
+		JarArchiveEntry entry = new JarArchiveEntry(location + library.getName());
+		entry.setTime(getNestedLibraryTime(library));
+		new CrcAndSize(library::openStream).setupStoredEntry(entry);
+		try (InputStream inputStream = library.openStream()) {
+			writeEntry(entry, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
 		}
 	}
 
@@ -148,7 +145,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @throws IOException if the write fails
 	 * @since 2.3.0
 	 */
-	public void writeIndexFile(String location, List<String> lines) throws IOException {
+	public void writeIndexFile(String location, Collection<String> lines) throws IOException {
 		if (location != null) {
 			JarArchiveEntry entry = new JarArchiveEntry(location);
 			writeEntry(entry, (outputStream) -> {
@@ -163,22 +160,22 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		}
 	}
 
-	private long getNestedLibraryTime(File file) {
+	private long getNestedLibraryTime(Library library) {
 		try {
-			try (JarFile jarFile = new JarFile(file)) {
-				Enumeration<JarEntry> entries = jarFile.entries();
-				while (entries.hasMoreElements()) {
-					JarEntry entry = entries.nextElement();
+			try (JarInputStream jarStream = new JarInputStream(library.openStream())) {
+				JarEntry entry = jarStream.getNextJarEntry();
+				while (entry != null) {
 					if (!entry.isDirectory()) {
 						return entry.getTime();
 					}
+					entry = jarStream.getNextJarEntry();
 				}
 			}
 		}
 		catch (Exception ex) {
-			// Ignore and just use the source file timestamp
+			// Ignore and just use the library timestamp
 		}
-		return file.lastModified();
+		return library.getLastModified();
 	}
 
 	/**
@@ -292,8 +289,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 		private long size;
 
-		CrcAndSize(File file) throws IOException {
-			try (FileInputStream inputStream = new FileInputStream(file)) {
+		CrcAndSize(InputStreamSupplier supplier) throws IOException {
+			try (InputStream inputStream = supplier.openStream()) {
 				load(inputStream);
 			}
 		}
@@ -380,7 +377,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 		@Override
 		public String sha1Hash(String name) throws IOException {
-			return FileUtils.sha1Hash(this.library.getFile());
+			return Digest.sha1(this.library::openStream);
 		}
 
 	}

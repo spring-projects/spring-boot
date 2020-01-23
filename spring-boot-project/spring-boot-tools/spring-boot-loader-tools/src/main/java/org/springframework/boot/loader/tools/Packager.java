@@ -17,7 +17,6 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -81,6 +80,8 @@ public abstract class Packager {
 
 	private Layers layers = Layers.IMPLICIT;
 
+	private boolean includeRelevantJarModeJars = true;
+
 	/**
 	 * Create a new {@link Packager} instance.
 	 * @param source the source JAR file to package
@@ -141,6 +142,14 @@ public abstract class Packager {
 		this.layers = layers;
 	}
 
+	/**
+	 * Sets if jarmode jars relevant for the packaging should be automatcially included.
+	 * @param includeRelevantJarModeJars if relevant jars are included
+	 */
+	public void setIncludeRelevantJarModeJars(boolean includeRelevantJarModeJars) {
+		this.includeRelevantJarModeJars = includeRelevantJarModeJars;
+	}
+
 	protected final boolean isAlreadyPackaged() throws IOException {
 		return isAlreadyPackaged(this.source);
 	}
@@ -191,9 +200,9 @@ public abstract class Packager {
 		return EntryTransformer.NONE;
 	}
 
-	private boolean isZip(File file) {
+	private boolean isZip(InputStreamSupplier supplier) {
 		try {
-			try (FileInputStream inputStream = new FileInputStream(file)) {
+			try (InputStream inputStream = supplier.openStream()) {
 				return isZip(inputStream);
 			}
 		}
@@ -430,14 +439,24 @@ public abstract class Packager {
 
 		WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
-				if (isZip(library.getFile())) {
-					String location = getLocation(library);
-					if (location != null) {
-						Library existing = this.libraries.putIfAbsent(location + library.getName(), library);
-						Assert.state(existing == null, "Duplicate library " + library.getName());
-					}
+				if (isZip(library::openStream)) {
+					addLibrary(library);
 				}
 			});
+			if (Packager.this.includeRelevantJarModeJars) {
+				if (getLayout() instanceof LayeredLayout) {
+					addLibrary(JarModeLibrary.LAYER_TOOLS);
+				}
+			}
+		}
+
+		private void addLibrary(Library library) {
+			String location = getLocation(library);
+			if (location != null) {
+				String path = location + library.getName();
+				Library existing = this.libraries.putIfAbsent(path, library);
+				Assert.state(existing == null, "Duplicate library " + library.getName());
+			}
 		}
 
 		private String getLocation(Library library) {
@@ -461,17 +480,19 @@ public abstract class Packager {
 		public String sha1Hash(String name) throws IOException {
 			Library library = this.libraries.get(name);
 			Assert.notNull(library, "No library found for entry name '" + name + "'");
-			return FileUtils.sha1Hash(library.getFile());
+			return Digest.sha1(library::openStream);
 		}
 
 		private void write(AbstractJarWriter writer) throws IOException {
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
-				writer.writeNestedLibrary(entry.getKey().substring(0, entry.getKey().lastIndexOf('/') + 1),
-						entry.getValue());
+				String path = entry.getKey();
+				Library library = entry.getValue();
+				String location = path.substring(0, path.lastIndexOf('/') + 1);
+				writer.writeNestedLibrary(location, library);
 			}
 			if (getLayout() instanceof RepackagingLayout) {
 				String location = ((RepackagingLayout) getLayout()).getClasspathIndexFileLocation();
-				writer.writeIndexFile(location, new ArrayList<>(this.libraries.keySet()));
+				writer.writeIndexFile(location, this.libraries.keySet());
 			}
 		}
 
