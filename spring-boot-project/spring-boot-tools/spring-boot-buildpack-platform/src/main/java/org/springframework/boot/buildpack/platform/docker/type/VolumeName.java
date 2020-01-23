@@ -124,7 +124,8 @@ public final class VolumeName {
 	}
 
 	private static String asHexString(byte[] digest, int digestLength) {
-		Assert.isTrue(digestLength <= digest.length, "DigestLength must be less than or equal to " + digest.length);
+		Assert.isTrue(digestLength <= digest.length,
+				() -> "DigestLength must be less than or equal to " + digest.length);
 		byte[] shortDigest = new byte[6];
 		System.arraycopy(digest, 0, shortDigest, 0, shortDigest.length);
 		return String.format("%0" + digestLength + "x", new BigInteger(1, shortDigest));

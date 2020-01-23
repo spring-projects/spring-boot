@@ -77,7 +77,7 @@ class StackId {
 	private static StackId fromImageConfig(ImageConfig imageConfig) {
 		Map<String, String> labels = imageConfig.getLabels();
 		String value = (labels != null) ? labels.get(LABEL_NAME) : null;
-		Assert.state(StringUtils.hasText(value), "Missing '" + LABEL_NAME + "' stack label");
+		Assert.state(StringUtils.hasText(value), () -> "Missing '" + LABEL_NAME + "' stack label");
 		return new StackId(value);
 	}
 

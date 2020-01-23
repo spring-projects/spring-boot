@@ -69,7 +69,7 @@ class IndexedLayers implements Layers {
 		Matcher matcher = LAYER_PATTERN.matcher(name);
 		if (matcher.matches()) {
 			String layer = matcher.group(1);
-			Assert.state(this.layers.contains(layer), "Unexpected layer '" + layer + "'");
+			Assert.state(this.layers.contains(layer), () -> "Unexpected layer '" + layer + "'");
 			return layer;
 		}
 		return this.layers.contains(APPLICATION_LAYER) ? APPLICATION_LAYER : SPRING_BOOT_APPLICATION_LAYER;
