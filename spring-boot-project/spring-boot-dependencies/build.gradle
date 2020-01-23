@@ -1620,7 +1620,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.3.0.BUILD-SNAPSHOT") {
+	library("Spring Integration", "5.3.0.M1") {
 		group("org.springframework.integration") {
 			modules = [
 				"spring-integration-http" {
