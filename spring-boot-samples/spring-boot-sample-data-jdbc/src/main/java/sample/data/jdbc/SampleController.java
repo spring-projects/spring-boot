@@ -18,6 +18,8 @@ package sample.data.jdbc;
 
 import java.util.List;
 
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class SampleController {
+public class SampleController implements HealthIndicator {
 
 	private final CustomerRepository customerRepository;
 
@@ -33,11 +35,30 @@ public class SampleController {
 		this.customerRepository = customerRepository;
 	}
 
+	String n;
+
 	@GetMapping("/")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public List<Customer> customers(@RequestParam String name) {
+		this.n = name;
 		return this.customerRepository.findByName(name);
+	}
+
+	@Override
+	public Health health() {
+		int errorCode = check();
+		if (errorCode != 200) {
+			return Health.down().withDetail("Error Code", errorCode).build();
+		}
+		return Health.up().withDetail("Everything is OK", errorCode).build();
+	}
+
+	public int check() {
+		if (this.customerRepository.findByName(this.n).isEmpty() | this.n == null) {
+			return 500;
+		}
+		return 200;
 	}
 
 }
