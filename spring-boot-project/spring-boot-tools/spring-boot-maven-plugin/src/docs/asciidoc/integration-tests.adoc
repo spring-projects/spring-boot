@@ -11,7 +11,7 @@ To make sure that the lifecycle of your Spring Boot application is properly mana
 		<plugin>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-maven-plugin</artifactId>
-			<version>{version}</version>
+			<version>{gradle-project-version}</version>
 			<executions>
 				<execution>
 					<id>pre-integration-test</id>
@@ -79,7 +79,7 @@ The example below showcases how you could achieve the same feature using the htt
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{version}</version>
+					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>pre-integration-test</id>
@@ -136,7 +136,7 @@ This example shows how you can skip integration tests with a command-line proper
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{version}</version>
+					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>pre-integration-test</id>
