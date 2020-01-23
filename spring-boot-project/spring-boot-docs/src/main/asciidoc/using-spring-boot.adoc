@@ -403,15 +403,14 @@ If you find that specific auto-configuration classes that you do not want are be
 ----
 	import org.springframework.boot.autoconfigure.*;
 	import org.springframework.boot.autoconfigure.jdbc.*;
-	import org.springframework.context.annotation.*;
 
-	@Configuration
 	@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
-	public class MyConfiguration {
+	public class MyApplication {
 	}
 ----
 
-If you choose to use `@EnableAutoConfiguration` rather than `@SpringBootApplication`, please note that it also has an `exclude` attribute that can be used. If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
+If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
+If you prefer to use `@EnableAutoConfiguration` rather than `@SpringBootApplication`, `exclude` and `excludeName` are also available.
 Finally, you can also control the list of auto-configuration classes to exclude by using the `spring.autoconfigure.exclude` property.
 
 TIP: You can define exclusions both at the annotation level and by using the property.
