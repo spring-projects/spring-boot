@@ -25,6 +25,7 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
@@ -38,11 +39,13 @@ import org.springframework.context.ApplicationListener;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-public class TomcatMetricsBinder implements ApplicationListener<ApplicationStartedEvent> {
+public class TomcatMetricsBinder implements ApplicationListener<ApplicationStartedEvent>, DisposableBean {
 
 	private final MeterRegistry meterRegistry;
 
 	private final Iterable<Tag> tags;
+
+	private volatile TomcatMetrics tomcatMetrics;
 
 	public TomcatMetricsBinder(MeterRegistry meterRegistry) {
 		this(meterRegistry, Collections.emptyList());
@@ -57,7 +60,8 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Manager manager = findManager(applicationContext);
-		new TomcatMetrics(manager, this.tags).bindTo(this.meterRegistry);
+		this.tomcatMetrics = new TomcatMetrics(manager, this.tags);
+		this.tomcatMetrics.bindTo(this.meterRegistry);
 	}
 
 	private Manager findManager(ApplicationContext applicationContext) {
@@ -78,6 +82,11 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void destroy() {
+		this.tomcatMetrics.close();
 	}
 
 }
