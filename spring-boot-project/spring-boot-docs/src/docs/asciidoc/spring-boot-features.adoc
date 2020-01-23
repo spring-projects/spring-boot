@@ -4252,17 +4252,19 @@ There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the d
 
 [[boot-features-connecting-to-cassandra]]
 ==== Connecting to Cassandra
-You can inject an auto-configured `CassandraTemplate` or a Cassandra `Session` instance as you would with any other Spring Bean.
+You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.data.cassandra.*` properties can be used to customize the connection.
-Generally, you provide `keyspace-name` and `contact-points` properties, as shown in the following example:
+Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
 	spring.data.cassandra.keyspace-name=mykeyspace
-	spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
+	spring.data.cassandra.contact-points=cassandrahost1:9042,cassandrahost2:9042
+	spring.data.cassandra.local-datacenter=datacenter1
 ----
 
-You can also register an arbitrary number of beans that implement `ClusterBuilderCustomizer` for more advanced customizations.
+You can also register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer` for more advanced driver customizations.
+The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
 
 The following code listing shows how to inject a Cassandra bean:
 
@@ -4271,7 +4273,7 @@ The following code listing shows how to inject a Cassandra bean:
 	@Component
 	public class MyBean {
 
-		private CassandraTemplate template;
+		private final CassandraTemplate template;
 
 		@Autowired
 		public MyBean(CassandraTemplate template) {
