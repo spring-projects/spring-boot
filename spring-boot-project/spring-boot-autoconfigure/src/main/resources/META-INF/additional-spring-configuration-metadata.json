@@ -305,7 +305,7 @@
     {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
-        "localhost"
+        "127.0.0.1:9042"
       ]
     },
     {
