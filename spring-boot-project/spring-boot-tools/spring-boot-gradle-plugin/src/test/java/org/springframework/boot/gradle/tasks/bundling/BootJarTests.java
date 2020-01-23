@@ -16,11 +16,13 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,10 +63,79 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	}
 
 	@Test
-	void layers() throws IOException {
+	void whenJarIsLayeredThenBootInfContainsOnlyLayersAndIndexFiles() throws IOException {
+		List<String> entryNames = getEntryNames(createLayeredJar());
+		assertThat(entryNames.stream().filter((name) -> name.startsWith("BOOT-INF/"))
+				.filter((name) -> !name.startsWith("BOOT-INF/layers/"))).contains("BOOT-INF/layers.idx",
+						"BOOT-INF/classpath.idx");
+	}
+
+	@Test
+	void whenJarIsLayeredThenManifestContainsEntryForLayersIndexInPlaceOfClassesAndLib() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
+					.isEqualTo("BOOT-INF/layers.idx");
+		}
+	}
+
+	@Test
+	void whenJarIsLayeredThenLayersIndexIsPresentAndListsLayersInOrder() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(entryLines(jarFile, "BOOT-INF/layers.idx")).containsExactly("dependencies",
+					"snapshot-dependencies", "resources", "application");
+		}
+	}
+
+	@Test
+	void whenJarIsLayeredThenContentsAreMovedToLayerDirectories() throws IOException {
+		List<String> entryNames = getEntryNames(createLayeredJar());
+		assertThat(entryNames)
+				.containsSubsequence("BOOT-INF/layers/dependencies/lib/first-library.jar",
+						"BOOT-INF/layers/dependencies/lib/second-library.jar")
+				.contains("BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar")
+				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
+						"BOOT-INF/layers/application/classes/application.properties")
+				.contains("BOOT-INF/layers/resources/classes/static/test.css");
+	}
+
+	@Test
+	void whenJarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
+					"BOOT-INF/layers/dependencies/lib/first-library.jar",
+					"BOOT-INF/layers/dependencies/lib/second-library.jar",
+					"BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar");
+		}
+	}
+
+	@Test
+	void classpathIndexPointsToBootInfLibs() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("BOOT-INF/classpath.idx");
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("BOOT-INF/lib/first-library.jar",
+					"BOOT-INF/lib/second-library.jar", "BOOT-INF/lib/third-library-SNAPSHOT.jar");
+		}
+	}
+
+	private File createPopulatedJar() throws IOException {
+		addContent();
+		executeTask();
+		return getTask().getArchiveFile().get().getAsFile();
+	}
+
+	private File createLayeredJar() throws IOException {
+		addContent();
+		getTask().layered();
+		executeTask();
+		return getTask().getArchiveFile().get().getAsFile();
+	}
+
+	private void addContent() throws IOException {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Main");
-		bootJar.layered();
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();
@@ -79,54 +150,12 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		css.createNewFile();
 		bootJar.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
 				jarFile("third-library-SNAPSHOT.jar"));
-		bootJar.requiresUnpack("second-library.jar");
-		executeTask();
-		List<String> entryNames = getEntryNames(bootJar.getArchiveFile().get().getAsFile());
-		assertThat(entryNames).containsSubsequence("org/springframework/boot/loader/",
-				"BOOT-INF/layers/application/classes/com/example/Application.class",
-				"BOOT-INF/layers/resources/classes/static/test.css",
-				"BOOT-INF/layers/application/classes/application.properties",
-				"BOOT-INF/layers/dependencies/lib/first-library.jar",
-				"BOOT-INF/layers/dependencies/lib/second-library.jar",
-				"BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar");
-		assertThat(entryNames).doesNotContain("BOOT-INF/classes").doesNotContain("BOOT-INF/lib")
-				.doesNotContain("BOOT-INF/com/");
-		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
-					.isEqualTo("BOOT-INF/layers.idx");
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("BOOT-INF/classpath.idx");
-			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/layers.idx"))) {
-				assertThat(input).hasContent("dependencies\nsnapshot-dependencies\nresources\napplication\n");
-			}
-			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/classpath.idx"))) {
-				assertThat(input).hasContent(
-						"BOOT-INF/layers/dependencies/lib/first-library.jar\nBOOT-INF/layers/dependencies/lib/second-library.jar\nBOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar\n");
-			}
-		}
 	}
 
-	@Test
-	void classpathIndex() throws IOException {
-		BootJar bootJar = getTask();
-		bootJar.setMainClassName("com.example.Main");
-		File classesJavaMain = new File(this.temp, "classes/java/main");
-		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
-		applicationClass.getParentFile().mkdirs();
-		applicationClass.createNewFile();
-		bootJar.classpath(classesJavaMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
-				jarFile("third-library-SNAPSHOT.jar"));
-		bootJar.requiresUnpack("second-library.jar");
-		executeTask();
-		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("BOOT-INF/classpath.idx");
-			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/classpath.idx"))) {
-				assertThat(input).hasContent(
-						"BOOT-INF/lib/first-library.jar\nBOOT-INF/lib/second-library.jar\nBOOT-INF/lib/third-library-SNAPSHOT.jar\n");
-			}
+	private List<String> entryLines(JarFile jarFile, String entryName) throws IOException {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(jarFile.getInputStream(jarFile.getEntry(entryName))))) {
+			return reader.lines().collect(Collectors.toList());
 		}
 	}
 
