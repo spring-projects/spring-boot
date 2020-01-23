@@ -177,8 +177,8 @@ public class BootJar extends Jar implements BootArchive {
 		this.bootInf.eachFile((details) -> {
 			Layer layer = layerForFileDetails(details);
 			if (layer != null) {
-				details.setPath(
-						BOOT_INF_LAYERS + "/" + layer + "/" + details.getPath().substring("BOOT-INF/".length()));
+				String relativePath = details.getPath().substring("BOOT-INF/".length());
+				details.setPath(BOOT_INF_LAYERS + "/" + layer + "/" + relativePath);
 			}
 		}).setIncludeEmptyDirs(false);
 		this.bootInf.into("", (spec) -> spec.from(createLayersIndex()));

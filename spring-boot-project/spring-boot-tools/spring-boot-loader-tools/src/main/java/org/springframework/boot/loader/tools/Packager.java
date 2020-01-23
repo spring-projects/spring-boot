@@ -159,6 +159,7 @@ public abstract class Packager {
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
 		writeableLibraries.write(writer);
+
 		writeLayerIndex(writer);
 	}
 
@@ -425,14 +426,14 @@ public abstract class Packager {
 	 */
 	private final class WritableLibraries implements UnpackHandler {
 
-		private final Map<String, Library> libraryEntryNames = new LinkedHashMap<>();
+		private final Map<String, Library> libraries = new LinkedHashMap<>();
 
 		WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library.getFile())) {
 					String location = getLocation(library);
 					if (location != null) {
-						Library existing = this.libraryEntryNames.putIfAbsent(location + library.getName(), library);
+						Library existing = this.libraries.putIfAbsent(location + library.getName(), library);
 						Assert.state(existing == null, "Duplicate library " + library.getName());
 					}
 				}
@@ -452,25 +453,25 @@ public abstract class Packager {
 
 		@Override
 		public boolean requiresUnpack(String name) {
-			Library library = this.libraryEntryNames.get(name);
+			Library library = this.libraries.get(name);
 			return library != null && library.isUnpackRequired();
 		}
 
 		@Override
 		public String sha1Hash(String name) throws IOException {
-			Library library = this.libraryEntryNames.get(name);
+			Library library = this.libraries.get(name);
 			Assert.notNull(library, "No library found for entry name '" + name + "'");
 			return FileUtils.sha1Hash(library.getFile());
 		}
 
 		private void write(AbstractJarWriter writer) throws IOException {
-			for (Entry<String, Library> entry : this.libraryEntryNames.entrySet()) {
+			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				writer.writeNestedLibrary(entry.getKey().substring(0, entry.getKey().lastIndexOf('/') + 1),
 						entry.getValue());
 			}
 			if (getLayout() instanceof RepackagingLayout) {
 				String location = ((RepackagingLayout) getLayout()).getClasspathIndexFileLocation();
-				writer.writeIndexFile(location, new ArrayList<>(this.libraryEntryNames.keySet()));
+				writer.writeIndexFile(location, new ArrayList<>(this.libraries.keySet()));
 			}
 		}
 
