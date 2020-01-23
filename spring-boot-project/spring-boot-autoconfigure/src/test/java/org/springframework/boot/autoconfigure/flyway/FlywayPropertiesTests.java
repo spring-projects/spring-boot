@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,7 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isIgnoreIgnoredMigrations()).isEqualTo(properties.isIgnoreIgnoredMigrations());
 		assertThat(configuration.isIgnorePendingMigrations()).isEqualTo(properties.isIgnorePendingMigrations());
 		assertThat(configuration.isIgnoreFutureMigrations()).isEqualTo(properties.isIgnoreFutureMigrations());
+		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isMixed()).isEqualTo(properties.isMixed());
 		assertThat(configuration.isOutOfOrder()).isEqualTo(properties.isOutOfOrder());
 		assertThat(configuration.isSkipDefaultCallbacks()).isEqualTo(properties.isSkipDefaultCallbacks());
