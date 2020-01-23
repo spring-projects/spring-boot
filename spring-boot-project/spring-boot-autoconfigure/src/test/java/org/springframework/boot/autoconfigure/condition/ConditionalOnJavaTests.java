@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ class ConditionalOnJavaTests {
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
-		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
+		Class<?> javaVersionClass = Class.forName(JavaVersion.class.getName(), false, classLoader);
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass, "getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
 		classLoader.close();

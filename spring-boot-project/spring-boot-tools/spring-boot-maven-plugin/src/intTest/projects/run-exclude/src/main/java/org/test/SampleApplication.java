@@ -32,7 +32,7 @@ public class SampleApplication {
 
 		try {
 			ClassLoader classLoader = SampleApplication.class.getClassLoader();
-			classLoader.loadClass(className);
+			Class.forName(className, false, classLoader);
 			return true;
 		}
 		catch (ClassNotFoundException e) {

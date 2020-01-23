@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class SpringApplicationWebApplicationInitializer extends SpringBootServle
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			Class<?>[] sourceClasses = new Class<?>[this.sources.length];
 			for (int i = 0; i < this.sources.length; i++) {
-				sourceClasses[i] = classLoader.loadClass(this.sources[i]);
+				sourceClasses[i] = Class.forName(this.sources[i], false, classLoader);
 			}
 			return builder.sources(sourceClasses).properties("spring.groovy.template.check-template-location=false");
 		}
