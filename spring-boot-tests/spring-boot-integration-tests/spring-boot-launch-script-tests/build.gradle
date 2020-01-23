@@ -29,7 +29,7 @@ task syncAppSource(type: Sync) {
 	from "app"
 	into "${buildDir}/app"
 	filter { line ->
-		line.replace("id 'org.springframework.boot'", "id 'org.springframework.boot' version '${project.version}'")
+		line.replace("id \"org.springframework.boot\"", "id \"org.springframework.boot\" version \"${project.version}\"")
 	}
 }
 
