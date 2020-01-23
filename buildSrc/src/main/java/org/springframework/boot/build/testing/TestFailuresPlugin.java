@@ -56,7 +56,7 @@ public class TestFailuresPlugin implements Plugin<Project> {
 
 	private final class FailureRecordingTestListener implements TestListener {
 
-		private List<TestFailure> failures = new ArrayList<>();
+		private final List<TestFailure> failures = new ArrayList<>();
 
 		private final TestResultsExtension testResults;
 
@@ -106,7 +106,7 @@ public class TestFailuresPlugin implements Plugin<Project> {
 		public int compareTo(TestFailure other) {
 			int comparison = this.descriptor.getClassName().compareTo(other.descriptor.getClassName());
 			if (comparison == 0) {
-				comparison = this.descriptor.getName().compareTo(other.descriptor.getClassName());
+				comparison = this.descriptor.getName().compareTo(other.descriptor.getName());
 			}
 			return comparison;
 		}
