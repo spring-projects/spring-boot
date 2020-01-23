@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.Test;
 
@@ -98,6 +99,18 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
 						"BOOT-INF/layers/application/classes/application.properties")
 				.contains("BOOT-INF/layers/resources/classes/static/test.css");
+	}
+
+	@Test
+	void whenJarIsLayeredJarsInLibAreStored() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar())) {
+			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/first-library.jar").getMethod())
+					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/second-library.jar").getMethod())
+					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar")
+					.getMethod()).isEqualTo(ZipEntry.STORED);
+		}
 	}
 
 	@Test

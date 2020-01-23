@@ -110,13 +110,15 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void classpathJarsArePackagedBeneathLibPath() throws IOException {
+	void classpathJarsArePackagedBeneathLibPathAndAreStored() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "one.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "two.jar")).isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "one.jar")).isNotNull().extracting(ZipEntry::getMethod)
+					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry(this.libPath + "two.jar")).isNotNull().extracting(ZipEntry::getMethod)
+					.isEqualTo(ZipEntry.STORED);
 		}
 	}
 
@@ -407,6 +409,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				"org/springframework/boot/loader/", this.classesPath + "com/example/Application.class",
 				this.libPath + "first-library.jar", this.libPath + "second-library.jar",
 				this.libPath + "third-library.jar");
+	}
+
+	@Test
+	void libEntriesAreStored() throws IOException {
+
 	}
 
 	protected File jarFile(String name) throws IOException {

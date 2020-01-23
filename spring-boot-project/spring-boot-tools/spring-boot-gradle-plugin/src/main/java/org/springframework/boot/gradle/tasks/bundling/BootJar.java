@@ -23,7 +23,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
@@ -282,16 +285,27 @@ public class BootJar extends Jar implements BootArchive {
 	 * Returns the {@link ZipCompression} that should be used when adding the file
 	 * represented by the given {@code details} to the jar.
 	 * <p>
-	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
-	 * deflated.
+	 * By default, any file in {@code BOOT-INF/lib/} or
+	 * {@code BOOT-INF/layers/<layer>/lib} is stored and all other files are deflated.
 	 * @param details the details
 	 * @return the compression to use
 	 */
 	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
-		if (details.getRelativePath().getPathString().startsWith("BOOT-INF/lib/")) {
-			return ZipCompression.STORED;
+		String path = details.getRelativePath().getPathString();
+		for (String prefix : getLibPathPrefixes()) {
+			if (path.startsWith(prefix)) {
+				return ZipCompression.STORED;
+			}
 		}
 		return ZipCompression.DEFLATED;
+	}
+
+	private Set<String> getLibPathPrefixes() {
+		if (this.layers == null) {
+			return Collections.singleton("BOOT-INF/lib/");
+		}
+		return StreamSupport.stream(this.layers.spliterator(), false)
+				.map((layer) -> "BOOT-INF/layers/" + layer + "/lib/").collect(Collectors.toSet());
 	}
 
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
