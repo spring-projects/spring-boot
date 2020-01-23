@@ -16,7 +16,9 @@
 
 package org.springframework.boot.loader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,6 +39,8 @@ import org.springframework.boot.loader.jar.Handler;
  * @since 1.0.0
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
+
+	private static final int BUFFER_SIZE = 4096;
 
 	static {
 		ClassLoader.registerAsParallelCapable();
@@ -96,7 +100,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		if (name.startsWith("org.springframework.boot.loader.jarmode.")) {
 			try {
-				Class<?> result = findClass(name);
+				Class<?> result = loadClassInLaunchedClassLoader(name);
 				if (resolve) {
 					resolveClass(result);
 				}
@@ -126,6 +130,35 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		finally {
 			Handler.setUseFastConnectionExceptions(false);
+		}
+	}
+
+	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
+		String internalName = name.replace('.', '/') + ".class";
+		InputStream inputStream = getParent().getResourceAsStream(internalName);
+		if (inputStream == null) {
+			throw new ClassNotFoundException(name);
+		}
+		try {
+			try {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead = -1;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+				inputStream.close();
+				byte[] bytes = outputStream.toByteArray();
+				Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
+				definePackageIfNecessary(name);
+				return definedClass;
+			}
+			finally {
+				inputStream.close();
+			}
+		}
+		catch (IOException ex) {
+			throw new ClassNotFoundException("Cannot load resource for class [" + name + "]", ex);
 		}
 	}
 
