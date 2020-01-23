@@ -4,3 +4,9 @@ services:
     build: .
     ports:
       - "81:81"
+  db:
+    build:
+      context: .
+      args: 
+        - user:qwerty
+        - pass:123
