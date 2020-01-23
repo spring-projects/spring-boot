@@ -43,7 +43,7 @@ public class MainMethodRunner {
 	}
 
 	public void run() throws Exception {
-		Class<?> mainClass = Thread.currentThread().getContextClassLoader().loadClass(this.mainClassName);
+		Class<?> mainClass = Class.forName(this.mainClassName, false, Thread.currentThread().getContextClassLoader());
 		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 		mainMethod.setAccessible(true);
 		mainMethod.invoke(null, new Object[] { this.args });
