@@ -63,30 +63,35 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	/**
 	 * Directory containing the JAR.
+	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File sourceDirectory;
 
 	/**
 	 * Name of the JAR.
+	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
 	 * Skip the execution.
+	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.skip", defaultValue = "false")
 	private boolean skip;
 
 	/**
 	 * Classifier used when finding the source jar.
+	 * @since 2.3.0
 	 */
 	@Parameter
 	private String classifier;
 
 	/**
 	 * Image configuration operations.
+	 * @since 2.3.0
 	 */
 	@Parameter
 	private Image image;
