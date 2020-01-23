@@ -56,6 +56,12 @@ public class CassandraProperties {
 	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("127.0.0.1:9042"));
 
 	/**
+	 * Datacenter that is considered "local". Contact points should be from this
+	 * datacenter.
+	 */
+	private String localDatacenter;
+
+	/**
 	 * Login user of the server.
 	 */
 	private String username;
@@ -139,6 +145,14 @@ public class CassandraProperties {
 
 	public List<String> getContactPoints() {
 		return this.contactPoints;
+	}
+
+	public String getLocalDatacenter() {
+		return this.localDatacenter;
+	}
+
+	public void setLocalDatacenter(String localDatacenter) {
+		this.localDatacenter = localDatacenter;
 	}
 
 	public String getUsername() {

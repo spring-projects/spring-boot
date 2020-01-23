@@ -52,6 +52,20 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void driverConfigLoaderWithContactPoints() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.contact-points=cluster.example.com:9042",
+				"spring.data.cassandra.local-datacenter=cassandra-eu1").run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(configuration.getStringList(DefaultDriverOption.CONTACT_POINTS))
+							.containsOnly("cluster.example.com:9042");
+					assertThat(configuration.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER))
+							.isEqualTo("cassandra-eu1");
+				});
+	}
+
+	@Test
 	void driverConfigLoaderWithCustomSessionName() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.session-name=testcluster").run((context) -> {
 			assertThat(context).hasSingleBean(DriverConfigLoader.class);

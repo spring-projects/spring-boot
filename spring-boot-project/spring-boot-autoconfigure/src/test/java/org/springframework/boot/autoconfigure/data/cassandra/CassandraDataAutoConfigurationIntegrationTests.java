@@ -29,12 +29,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.config.SessionFactoryFactoryBean;
 
@@ -58,9 +55,9 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	@BeforeEach
 	void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class);
 		TestPropertyValues
 				.of("spring.data.cassandra.contact-points:localhost:" + cassandra.getFirstMappedPort(),
+						"spring.data.cassandra.local-datacenter=datacenter1",
 						"spring.data.cassandra.read-timeout=24000", "spring.data.cassandra.connect-timeout=10000")
 				.applyTo(this.context.getEnvironment());
 	}
@@ -103,16 +100,6 @@ class CassandraDataAutoConfigurationIntegrationTests {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
 		}
-	}
-
-	@Configuration
-	static class TestConfiguration {
-
-		@Bean
-		CqlSessionBuilderCustomizer sessionCustomizer() {
-			return (builder) -> builder.withLocalDatacenter("datacenter1");
-		}
-
 	}
 
 }
