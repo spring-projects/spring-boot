@@ -136,7 +136,7 @@ public class ImageArchive implements TarArchive {
 	private String writeConfig(Layout writer, List<LayerId> writtenLayers) throws IOException {
 		try {
 			ObjectNode config = createConfig(writtenLayers);
-			String json = this.objectMapper.writeValueAsString(config);
+			String json = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			InspectedContent content = InspectedContent.of(Content.of(json), digest::update);
 			String name = "/" + LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
