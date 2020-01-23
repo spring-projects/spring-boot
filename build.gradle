@@ -9,8 +9,12 @@ allprojects {
 
 	repositories {
 		mavenCentral()
-		maven { url "https://repo.spring.io/milestone" }
-		maven { url "https://repo.spring.io/snapshot" }
+		if (!version.endsWith('RELEASE')) {
+			maven { url "https://repo.spring.io/milestone" }
+		}
+		if (version.endsWith('BUILD-SNAPSHOT')) {
+			maven { url "https://repo.spring.io/snapshot" }
+		}
 	}
 
 	configurations.all {
