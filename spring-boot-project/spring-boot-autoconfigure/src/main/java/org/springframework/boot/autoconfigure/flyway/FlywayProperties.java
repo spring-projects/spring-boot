@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,6 +208,12 @@ public class FlywayProperties {
 	 * Whether to ignore future migrations when reading the schema history table.
 	 */
 	private boolean ignoreFutureMigrations = true;
+
+	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
 
 	/**
 	 * Whether to allow mixing transactional and non-transactional statements within the
@@ -547,6 +553,14 @@ public class FlywayProperties {
 
 	public void setIgnoreFutureMigrations(boolean ignoreFutureMigrations) {
 		this.ignoreFutureMigrations = ignoreFutureMigrations;
+	}
+
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
 	}
 
 	public boolean isMixed() {

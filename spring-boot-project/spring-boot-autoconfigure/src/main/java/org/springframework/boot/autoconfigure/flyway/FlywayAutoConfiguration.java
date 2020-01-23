@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,6 +218,8 @@ public class FlywayAutoConfiguration {
 					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
+			// No method reference for compatibility with Flyway version < 6.2
+			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
@@ -240,6 +242,15 @@ public class FlywayAutoConfiguration {
 				catch (NoSuchMethodError ex) {
 					// Flyway 5.x
 				}
+			}
+		}
+
+		private void configureValidateMigrationNaming(FluentConfiguration flyway, boolean isValidateMigrationNaming) {
+			try {
+				flyway.validateMigrationNaming(isValidateMigrationNaming);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < v6.2
 			}
 		}
 
