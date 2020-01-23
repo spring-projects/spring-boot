@@ -96,8 +96,36 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
 					.isEqualTo("BOOT-INF/layers.idx");
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("BOOT-INF/classpath.idx");
 			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/layers.idx"))) {
 				assertThat(input).hasContent("dependencies\nsnapshot-dependencies\nresources\napplication\n");
+			}
+			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/classpath.idx"))) {
+				assertThat(input).hasContent(
+						"BOOT-INF/layers/dependencies/lib/first-library.jar\nBOOT-INF/layers/dependencies/lib/second-library.jar\nBOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar\n");
+			}
+		}
+	}
+
+	@Test
+	void classpathIndex() throws IOException {
+		BootJar bootJar = getTask();
+		bootJar.setMainClassName("com.example.Main");
+		File classesJavaMain = new File(this.temp, "classes/java/main");
+		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
+		applicationClass.getParentFile().mkdirs();
+		applicationClass.createNewFile();
+		bootJar.classpath(classesJavaMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
+				jarFile("third-library-SNAPSHOT.jar"));
+		bootJar.requiresUnpack("second-library.jar");
+		executeTask();
+		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("BOOT-INF/classpath.idx");
+			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/classpath.idx"))) {
+				assertThat(input).hasContent(
+						"BOOT-INF/lib/first-library.jar\nBOOT-INF/lib/second-library.jar\nBOOT-INF/lib/third-library-SNAPSHOT.jar\n");
 			}
 		}
 	}

@@ -20,7 +20,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -59,7 +61,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private Layers layers;
 
-	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers/";
+	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers";
+
+	private List<String> dependencies = new ArrayList<>();
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -68,7 +72,10 @@ public class BootJar extends Jar implements BootArchive {
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
-		this.bootInf.into("lib", classpathFiles(File::isFile));
+		this.bootInf.into("lib", classpathFiles(File::isFile))
+				.eachFile((details) -> BootJar.this.dependencies.add(details.getPath()));
+		this.bootInf.into("",
+				(spec) -> spec.from((Callable<File>) () -> createClasspathIndex(BootJar.this.dependencies)));
 		this.bootInf.filesMatching("module-info.class",
 				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
 		getRootSpec().eachFile((details) -> {
@@ -93,7 +100,27 @@ public class BootJar extends Jar implements BootArchive {
 			attributes.remove("Spring-Boot-Lib");
 			attributes.putIfAbsent("Spring-Boot-Layers-Index", "BOOT-INF/layers.idx");
 		}
+		attributes.putIfAbsent("Spring-Boot-Classpath-Index", "BOOT-INF/classpath.idx");
 		super.copy();
+	}
+
+	private File createClasspathIndex(List<String> dependencies) {
+		try {
+			StringWriter content = new StringWriter();
+			BufferedWriter writer = new BufferedWriter(content);
+			for (String dependency : dependencies) {
+				writer.write(dependency);
+				writer.write("\n");
+			}
+			writer.flush();
+			File source = getProject().getResources().getText().fromString(content.toString()).asFile();
+			File indexFile = new File(source.getParentFile(), "classpath.idx");
+			source.renameTo(indexFile);
+			return indexFile;
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to create classpath.idx", ex);
+		}
 	}
 
 	@Override
