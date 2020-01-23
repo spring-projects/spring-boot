@@ -118,7 +118,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 				}
 			}
 		}
-		Assert.state(method != null, "Unable to find " + testClass + "." + testMethodName);
+		Assert.state(method != null, () -> "Unable to find " + testClass + "." + testMethodName);
 		return method;
 	}
 

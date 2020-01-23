@@ -413,7 +413,7 @@ public abstract class Packager {
 		private String transformName(String name) {
 			if (this.layout instanceof LayeredLayout) {
 				Layer layer = this.layers.getLayer(name);
-				Assert.state(layer != null, "Invalid 'null' layer from " + this.layers.getClass().getName());
+				Assert.state(layer != null, () -> "Invalid 'null' layer from " + this.layers.getClass().getName());
 				return ((LayeredLayout) this.layout).getRepackagedClassesLocation(layer) + name;
 			}
 			return this.layout.getRepackagedClassesLocation() + name;
@@ -455,7 +455,7 @@ public abstract class Packager {
 			if (location != null) {
 				String path = location + library.getName();
 				Library existing = this.libraries.putIfAbsent(path, library);
-				Assert.state(existing == null, "Duplicate library " + library.getName());
+				Assert.state(existing == null, () -> "Duplicate library " + library.getName());
 			}
 		}
 
@@ -464,7 +464,7 @@ public abstract class Packager {
 			if (layout instanceof LayeredLayout) {
 				Layers layers = Packager.this.layers;
 				Layer layer = layers.getLayer(library);
-				Assert.state(layer != null, "Invalid 'null' library layer from " + layers.getClass().getName());
+				Assert.state(layer != null, () -> "Invalid 'null' library layer from " + layers.getClass().getName());
 				return ((LayeredLayout) layout).getLibraryLocation(library.getName(), library.getScope(), layer);
 			}
 			return layout.getLibraryLocation(library.getName(), library.getScope());
@@ -479,7 +479,7 @@ public abstract class Packager {
 		@Override
 		public String sha1Hash(String name) throws IOException {
 			Library library = this.libraries.get(name);
-			Assert.notNull(library, "No library found for entry name '" + name + "'");
+			Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
 			return Digest.sha1(library::openStream);
 		}
 

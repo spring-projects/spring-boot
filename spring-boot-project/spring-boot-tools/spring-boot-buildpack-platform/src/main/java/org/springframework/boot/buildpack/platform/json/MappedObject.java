@@ -200,7 +200,7 @@ public class MappedObject {
 			if (declaringClass == Object.class) {
 				method.invoke(proxy, args);
 			}
-			Assert.state(args == null || args.length == 0, "Unsupported method " + method);
+			Assert.state(args == null || args.length == 0, () -> "Unsupported method " + method);
 			String name = getName(method.getName());
 			Class<?> type = method.getReturnType();
 			return valueForProperty(name, type);

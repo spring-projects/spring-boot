@@ -65,7 +65,7 @@ class BsdDomainSocket extends DomainSocket {
 		public byte[] sunPath = new byte[MAX_PATH_LENGTH];
 
 		private SockaddrUn(byte sunFamily, byte[] path) {
-			Assert.isTrue(path.length < MAX_PATH_LENGTH, "Path cannot exceed " + MAX_PATH_LENGTH + " bytes");
+			Assert.isTrue(path.length < MAX_PATH_LENGTH, () -> "Path cannot exceed " + MAX_PATH_LENGTH + " bytes");
 			System.arraycopy(path, 0, this.sunPath, 0, path.length);
 			this.sunPath[path.length] = 0;
 			this.sunLen = (byte) (fieldOffset("sunPath") + path.length);

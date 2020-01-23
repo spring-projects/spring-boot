@@ -123,7 +123,7 @@ class BuilderMetadata extends MappedObject {
 		Assert.notNull(imageConfig, "ImageConfig must not be null");
 		Map<String, String> labels = imageConfig.getLabels();
 		String json = (labels != null) ? labels.get(LABEL_NAME) : null;
-		Assert.notNull(json, "No '" + LABEL_NAME + "' label found in image config");
+		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config");
 		return fromJson(json);
 	}
 
