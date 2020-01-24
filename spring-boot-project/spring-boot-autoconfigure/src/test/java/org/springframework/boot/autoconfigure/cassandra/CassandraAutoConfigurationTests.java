@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
@@ -41,6 +43,17 @@ class CassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
+
+	@Test
+	void cqlSessionBuilderThreadSafe() {
+		this.contextRunner.run((context) -> {
+			CqlIdentifier keyspace = CqlIdentifier.fromCql("test");
+			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
+			assertThat(context.getBean(CqlSessionBuilder.class).withKeyspace(keyspace))
+					.hasFieldOrPropertyWithValue("keyspace", keyspace);
+			assertThat(context.getBean(CqlSessionBuilder.class)).hasFieldOrPropertyWithValue("keyspace", null);
+		});
+	}
 
 	@Test
 	void driverConfigLoaderWithDefaultConfiguration() {
