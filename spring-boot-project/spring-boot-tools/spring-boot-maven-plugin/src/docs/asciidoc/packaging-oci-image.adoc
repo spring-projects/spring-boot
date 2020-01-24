@@ -96,7 +96,7 @@ You can take control over the name, as shown in the following example:
 							</goals>
 							<configuration>
 								<image>
-									<name>example.com/library/${project.artifactId}</builder>
+									<name>example.com/library/${project.artifactId}</name>
 								</image>
 							</configuration>
 						</execution>
