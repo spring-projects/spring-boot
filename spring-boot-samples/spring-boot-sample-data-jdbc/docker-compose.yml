@@ -5,8 +5,7 @@ services:
     ports:
       - "81:81"
   db:
-    build:
-      context: .
-      args: 
-        - user:qwerty
-        - pass:123
+    image: postgres
+    restart: always
+    environment:
+      env_file: ./user.env

@@ -40,7 +40,7 @@ public class SampleController implements HealthIndicator {
 	@GetMapping("/")
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public List<Customer> customers(@RequestParam String name) {
+	public List<Customer> customers(String name) {
 		this.n = name;
 		return this.customerRepository.findByName(name);
 	}
