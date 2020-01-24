@@ -16,10 +16,8 @@
 
 package org.springframework.boot.testsupport.classpath;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -76,7 +74,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 			invocation.proceed();
 			return;
 		}
-		fakeInvocation(invocation);
+		invocation.skip();
 		runTestWithModifiedClassPath(invocationContext, extensionContext);
 	}
 
@@ -129,17 +127,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 			invocation.proceed();
 			return;
 		}
-		fakeInvocation(invocation);
-	}
-
-	private void fakeInvocation(Invocation<Void> invocation) {
-		try {
-			Field field = ReflectionUtils.findField(invocation.getClass(), "invoked");
-			ReflectionUtils.makeAccessible(field);
-			ReflectionUtils.setField(field, invocation, new AtomicBoolean(true));
-		}
-		catch (Throwable ex) {
-		}
+		invocation.skip();
 	}
 
 	private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
