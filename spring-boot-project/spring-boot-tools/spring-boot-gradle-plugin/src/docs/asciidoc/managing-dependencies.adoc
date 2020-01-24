@@ -23,7 +23,7 @@ include::../gradle/managing-dependencies/dependencies.gradle.kts[tags=dependenci
 === Customizing managed versions
 
 The `spring-boot-dependencies` bom that is automatically imported when the dependency management plugin is applied uses properties to control the versions of the dependencies that it manages.
-Please refer to the {github-code}/spring-boot-project/spring-boot-dependencies/pom.xml[bom] for a complete list of these properties.
+Browse the {version-properties-appendix}[`Version Properties Appendix`] in the Spring Boot reference for a complete list of version properties.
 
 To customize a managed version you set its corresponding property.
 For example, to customize the version of SLF4J which is controlled by the `slf4j.version` property:
