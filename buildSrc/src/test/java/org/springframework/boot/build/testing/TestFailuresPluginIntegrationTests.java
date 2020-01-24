@@ -149,7 +149,7 @@ class TestFailuresPluginIntegrationTests {
 			writer.println("}");
 			writer.println();
 			writer.println("dependencies {");
-			writer.println("	testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'");
+			writer.println("	testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'");
 			writer.println("	testImplementation 'org.assertj:assertj-core:3.11.1'");
 			writer.println("}");
 			writer.println();
