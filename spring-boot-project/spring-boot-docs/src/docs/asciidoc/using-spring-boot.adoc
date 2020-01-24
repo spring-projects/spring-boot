@@ -81,7 +81,7 @@ For instance, to upgrade to another Spring Data release train, you would add the
 	</properties>
 ----
 
-TIP: Check the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom] for a list of supported properties.
+TIP: Check out the <<howto.adoc#howto-customize-dependency-versions, Customize Dependency Versions "`How-to`">> for more information.
 
 
 
