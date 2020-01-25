@@ -1005,7 +1005,7 @@ bom {
 			]
 		}
 	}
-	library("Log4j2", "2.12.1") {
+	library("Log4j2", "2.13.0") {
 		group("org.apache.logging.log4j") {
 			modules = [
 				"log4j-to-slf4j"
