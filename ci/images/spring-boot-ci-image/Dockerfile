@@ -1,4 +1,4 @@
-FROM ubuntu:bionic-20190807
+FROM ubuntu:bionic-20200112
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
