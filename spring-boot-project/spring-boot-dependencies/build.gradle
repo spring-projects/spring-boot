@@ -1199,7 +1199,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "3.11.2") {
+	library("MongoDB", "3.12.1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
