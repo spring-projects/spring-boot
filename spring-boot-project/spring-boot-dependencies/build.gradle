@@ -935,7 +935,7 @@ bom {
 			]
 		}
 	}
-	library("JUnit", "4.12") {
+	library("JUnit", "4.13") {
 		group("junit") {
 			modules = [
 				"junit"
