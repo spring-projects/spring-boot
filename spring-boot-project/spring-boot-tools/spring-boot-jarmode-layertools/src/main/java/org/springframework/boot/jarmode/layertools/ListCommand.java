@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The {@code 'list-layers'} tools command.
+ * The {@code 'list'} tools command.
  *
  * @author Phillip Webb
  */
