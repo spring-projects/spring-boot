@@ -125,8 +125,8 @@ public class UpgradeBom extends DefaultTask {
 	private void applyChanges(Upgrade upgrade, Path buildFile) throws IOException {
 		String contents = new String(Files.readAllBytes(buildFile), StandardCharsets.UTF_8);
 		String modified = contents.replace(
-				"library('" + upgrade.getLibrary().getName() + "', '" + upgrade.getLibrary().getVersion() + "')",
-				"library('" + upgrade.getLibrary().getName() + "', '" + upgrade.getVersion() + "')");
+				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getLibrary().getVersion() + "\")",
+				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getVersion() + "\")");
 		Files.write(buildFile, modified.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 	}
 
