@@ -1192,7 +1192,7 @@ bom {
 			]
 		}
 	}
-	library("Mongo Driver ReactiveStreams", "1.12.0") {
+	library("Mongo Driver ReactiveStreams", "1.13.0") {
 		group("org.mongodb") {
 			modules = [
 				"mongodb-driver-reactivestreams"
