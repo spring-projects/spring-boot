@@ -156,7 +156,7 @@ NOTE: Only production configuration is filtered that way (in other words, no fil
 TIP: If you enable the `addResources` flag, the `spring-boot:run` goal can add `src/main/resources` directly to the classpath (for hot reloading purposes).
 Doing so circumvents the resource filtering and this feature.
 Instead, you can use the `exec:java` goal or customize the plugin's configuration.
-See the {spring-boot-maven-plugin-docs}/usage.html[plugin usage page] for more details.
+See the {spring-boot-maven-plugin-docs}#getting-started[plugin usage page] for more details.
 
 If you do not use the starter parent, you need to include the following  element inside the `<build/>` element of your `pom.xml`:
 
@@ -2224,7 +2224,7 @@ If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` in your a
 [[howto-change-the-user-details-service-and-add-user-accounts]]
 === Change the UserDetailsService and Add User Accounts
 If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`, or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not created.
-This means you have the full feature set of Spring Security available (such as {spring-security-docs}#jc-authentication[various authentication options]).
+This means you have the full feature set of Spring Security available (such as {spring-security-docs}#servlet-authentication[various authentication options]).
 
 The easiest way to add user accounts is to provide your own `UserDetailsService` bean.
 
@@ -2320,7 +2320,7 @@ See {spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateAutoCo
 [[howto-reload-fast-restart]]
 === Fast Application Restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
-While not as fast as technologies such as https://jrebel.com/software/jrebel/[JRebel] it is usually significantly faster than a "`cold start`".
+While not as fast as technologies such as https://www.jrebel.com/products/jrebel[JRebel] it is usually significantly faster than a "`cold start`".
 You should probably give it a try before investigating some of the more complex reload options discussed later in this document.
 
 For more details, see the <<using-spring-boot.adoc#using-boot-devtools>> section.
@@ -2369,7 +2369,7 @@ To generate build information with Maven, add an execution for the `build-info` 
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-docs}/#build-info[Spring Boot Maven Plugin documentation] for more details.
+TIP: See the {spring-boot-maven-plugin-docs}#goals-build-info[Spring Boot Maven Plugin documentation] for more details.
 
 The following example does the same with Gradle:
 
@@ -2481,7 +2481,7 @@ However, you must additionally add an `<executions>` section, as follows:
 	</build>
 ----
 
-See the {spring-boot-maven-plugin-docs}/usage.html[plugin documentation] for full usage details.
+See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] for full usage details.
 
 
 
@@ -2595,7 +2595,7 @@ In Maven, the executable jar must be the main artifact and you can add a classif
 === Remote Debug a Spring Boot Application Started with Maven
 To attach a remote debugger to a Spring Boot application that was started with Maven, you can use the `jvmArguments` property of the {spring-boot-maven-plugin-docs}[maven plugin].
 
-See {spring-boot-maven-plugin-docs}/examples/run-debug.html[this example] for more details.
+See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more details.
 
 
 

@@ -44,7 +44,7 @@ The parent project provides the following features:
 * UTF-8 source encoding.
 * A <<using-boot-dependency-management,Dependency Management section>>, inherited from the spring-boot-dependencies pom, that manages the versions of common dependencies.
 This dependency management lets you omit <version> tags for those dependencies when used in your own pom.
-* An execution of the {spring-boot-maven-plugin-docs}/repackage-mojo.html[`repackage` goal] with a `repackage` execution id.
+* An execution of the {spring-boot-maven-plugin-docs}#goals-repackage[`repackage` goal] with a `repackage` execution id.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin], https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
@@ -622,7 +622,7 @@ You might also want to use the `JAVA_OPTS` operating system environment variable
 === Hot Swapping
 Since Spring Boot applications are just plain Java applications, JVM hot-swapping should work out of the box.
 JVM hot swapping is somewhat limited with the bytecode that it can replace.
-For a more complete solution, https://jrebel.com/software/jrebel/[JRebel] can be used.
+For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.
 
 The `spring-boot-devtools` module also includes support for quick application restarts.
 See the <<using-boot-devtools>> section later in this chapter and the <<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> for details.

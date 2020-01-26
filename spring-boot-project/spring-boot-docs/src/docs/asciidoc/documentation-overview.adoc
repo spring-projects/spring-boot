@@ -11,8 +11,8 @@ It serves as a map for the rest of the document.
 == About the Documentation
 The Spring Boot reference guide is available as:
 
-* {spring-boot-docs}/html[Multi-page HTML]
-* {spring-boot-docs}/htmlsingle[Single page HTML]
+* {spring-boot-docs}/html/[Multi-page HTML]
+* {spring-boot-docs}/htmlsingle/[Single page HTML]
 * {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
 
 The latest copy is available at {spring-boot-current-docs}.
@@ -88,4 +88,4 @@ Finally, we have a few topics for more advanced users:
 
 * *Spring Boot Applications Deployment:* <<deployment.adoc#cloud-deployment, Cloud Deployment>> | <<deployment.adoc#deployment-service, OS Service>>
 * *Build tool plugins:* <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> | <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
-* *Appendix:* <<appendix-application-properties.adoc#common-application-properties,Application Properties>> | <<appendix-configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> | <<appendix-auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> | <<appendix-test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> | <<appendix-executable-jar-format.adoc#executable-jar,Executable Jars>> | <<appendix-dependency-versions.adoc#appendex-dependency-versions,Dependency Versions>>
+* *Appendix:* <<appendix-application-properties.adoc#common-application-properties,Application Properties>> | <<appendix-configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> | <<appendix-auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> | <<appendix-test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> | <<appendix-executable-jar-format.adoc#executable-jar,Executable Jars>> | <<appendix-dependency-versions.adoc#dependency-versions,Dependency Versions>>
