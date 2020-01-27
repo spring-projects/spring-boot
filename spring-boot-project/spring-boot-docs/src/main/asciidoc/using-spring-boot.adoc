@@ -622,7 +622,7 @@ You might also want to use the `JAVA_OPTS` operating system environment variable
 === Hot Swapping
 Since Spring Boot applications are just plain Java applications, JVM hot-swapping should work out of the box.
 JVM hot swapping is somewhat limited with the bytecode that it can replace.
-For a more complete solution, https://jrebel.com/software/jrebel/[JRebel] can be used.
+For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.
 
 The `spring-boot-devtools` module also includes support for quick application restarts.
 See the <<using-boot-devtools>> section later in this chapter and the <<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> for details.
