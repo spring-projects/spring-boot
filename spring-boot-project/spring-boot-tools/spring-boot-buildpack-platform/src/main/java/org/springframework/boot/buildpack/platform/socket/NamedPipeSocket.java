@@ -36,6 +36,8 @@ import com.sun.jna.platform.win32.Kernel32;
  */
 public class NamedPipeSocket extends Socket {
 
+	private static final int WAIT_INTERVAL = 100;
+
 	private static final long TIMEOUT = TimeUnit.MILLISECONDS.toNanos(1000);
 
 	private final RandomAccessFile file;
@@ -44,16 +46,14 @@ public class NamedPipeSocket extends Socket {
 
 	private final OutputStream outputStream;
 
-	private final Consumer<String> awaiter;
-
 	NamedPipeSocket(String path) throws IOException {
 		this.file = open(path);
 		this.inputStream = new NamedPipeInputStream();
 		this.outputStream = new NamedPipeOutputStream();
-		this.awaiter = Platform.isWindows() ? new WindowsAwaiter() : new SleepAwaiter();
 	}
 
-	private RandomAccessFile open(String path) throws IOException {
+	private static RandomAccessFile open(String path) throws IOException {
+		Consumer<String> awaiter = Platform.isWindows() ? new WindowsAwaiter() : new SleepAwaiter();
 		long startTime = System.nanoTime();
 		while (true) {
 			try {
@@ -63,7 +63,7 @@ public class NamedPipeSocket extends Socket {
 				if (System.nanoTime() - startTime > TIMEOUT) {
 					throw ex;
 				}
-				this.awaiter.accept(path);
+				awaiter.accept(path);
 			}
 		}
 	}
@@ -139,9 +139,10 @@ public class NamedPipeSocket extends Socket {
 		@Override
 		public void accept(String path) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(WAIT_INTERVAL);
 			}
 			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 			}
 		}
 
@@ -154,7 +155,7 @@ public class NamedPipeSocket extends Socket {
 
 		@Override
 		public void accept(String path) {
-			Kernel32.INSTANCE.WaitNamedPipe(path, 100);
+			Kernel32.INSTANCE.WaitNamedPipe(path, WAIT_INTERVAL);
 		}
 
 	}
