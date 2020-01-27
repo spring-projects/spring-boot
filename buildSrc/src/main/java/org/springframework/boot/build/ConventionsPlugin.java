@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
@@ -61,9 +62,9 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, and {@link TestFailuresPlugin Test Failures} plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
- * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding and
- * {@code -parameters}
- * <li>{@link Javadoc} tasks are configured to use UTF-8 encoding
+ * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
+ * to use UTF-8 encoding
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
  * <li>{@link Jar} tasks are configured to have the following manifest entries:
  * <ul>
  * <li>{@code Automatic-Module-Name}
@@ -142,6 +143,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void configureSpringJavaFormat(Project project) {
 		project.getPlugins().apply(SpringJavaFormatPlugin.class);
+		project.getTasks().withType(FormatTask.class, (formatTask) -> formatTask.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
 		checkstyle.setToolVersion("8.22");
