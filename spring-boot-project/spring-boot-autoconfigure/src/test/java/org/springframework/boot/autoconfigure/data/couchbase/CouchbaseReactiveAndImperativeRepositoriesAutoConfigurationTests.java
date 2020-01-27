@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -27,8 +26,7 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurati
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.ReactiveCityRepository;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -47,21 +45,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@AfterEach
-	void close() {
-		this.context.close();
-	}
-
 	@Test
 	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
-		this.context.register(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
+		new ApplicationContextRunner()
+				.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
+				.withPropertyValues("spring.datasource.initialization-mode:never").run((context) -> assertThat(context)
+						.hasSingleBean(CityRepository.class).hasSingleBean(ReactiveCityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

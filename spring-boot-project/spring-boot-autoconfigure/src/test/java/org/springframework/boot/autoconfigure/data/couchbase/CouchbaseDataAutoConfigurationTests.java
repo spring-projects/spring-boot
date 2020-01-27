@@ -19,18 +19,16 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -56,101 +54,94 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CouchbaseDataAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class,
+					CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class));
 
 	@Test
 	void disabledIfCouchbaseIsNotConfigured() {
-		load(null);
-		assertThat(this.context.getBeansOfType(IndexManager.class)).isEmpty();
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(IndexManager.class));
 	}
 
 	@Test
 	void customConfiguration() {
-		load(CustomCouchbaseConfiguration.class);
-		CouchbaseTemplate couchbaseTemplate = this.context.getBean(CouchbaseTemplate.class);
-		assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
+		this.contextRunner.withUserConfiguration(CustomCouchbaseConfiguration.class).run((context) -> {
+			CouchbaseTemplate couchbaseTemplate = context.getBean(CouchbaseTemplate.class);
+			assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
+		});
 	}
 
 	@Test
 	void validatorIsPresent() {
-		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
+				.run((context) -> assertThat(context).hasSingleBean(ValidatingCouchbaseEventListener.class));
 	}
 
 	@Test
 	void autoIndexIsDisabledByDefault() {
-		load(CouchbaseTestConfigurer.class);
-		IndexManager indexManager = this.context.getBean(IndexManager.class);
-		assertThat(indexManager.isIgnoreViews()).isTrue();
-		assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
-		assertThat(indexManager.isIgnoreN1qlSecondary()).isTrue();
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class).run((context) -> {
+			IndexManager indexManager = context.getBean(IndexManager.class);
+			assertThat(indexManager.isIgnoreViews()).isTrue();
+			assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
+			assertThat(indexManager.isIgnoreN1qlSecondary()).isTrue();
+		});
 	}
 
 	@Test
 	void enableAutoIndex() {
-		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.auto-index=true");
-		IndexManager indexManager = this.context.getBean(IndexManager.class);
-		assertThat(indexManager.isIgnoreViews()).isFalse();
-		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
-		assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
+				.withPropertyValues("spring.data.couchbase.auto-index=true").run((context) -> {
+					IndexManager indexManager = context.getBean(IndexManager.class);
+					assertThat(indexManager.isIgnoreViews()).isFalse();
+					assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
+					assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
+				});
 	}
 
 	@Test
 	void changeConsistency() {
-		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.consistency=eventually-consistent");
-		SpringBootCouchbaseDataConfiguration configuration = this.context
-				.getBean(SpringBootCouchbaseDataConfiguration.class);
-		assertThat(configuration.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
+				.withPropertyValues("spring.data.couchbase.consistency=eventually-consistent").run((context) -> {
+					SpringBootCouchbaseDataConfiguration configuration = context
+							.getBean(SpringBootCouchbaseDataConfiguration.class);
+					assertThat(configuration.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
+				});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void entityScanShouldSetInitialEntitySet() {
-		load(EntityScanConfig.class);
-		CouchbaseMappingContext mappingContext = this.context.getBean(CouchbaseMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-				"initialEntitySet");
-		assertThat(initialEntitySet).containsOnly(City.class);
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
+			CouchbaseMappingContext mappingContext = context.getBean(CouchbaseMappingContext.class);
+			Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+					"initialEntitySet");
+			assertThat(initialEntitySet).containsOnly(City.class);
+		});
 	}
 
 	@Test
 	void typeKeyDefault() {
-		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey())
-				.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
+				.run((context) -> assertThat(context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey())
+						.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
 	}
 
 	@Test
 	void typeKeyCanBeCustomized() {
-		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.type-key=_custom");
-		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey()).isEqualTo("_custom");
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
+				.withPropertyValues("spring.data.couchbase.type-key=_custom")
+				.run((context) -> assertThat(context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey())
+						.isEqualTo("_custom"));
 	}
 
 	@Test
 	void customConversions() {
-		load(CustomConversionsConfig.class);
-		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
-		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-				.isTrue();
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(context);
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(PropertyPlaceholderAutoConfiguration.class, ValidationAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class);
-		context.refresh();
-		this.context = context;
+		this.contextRunner.withUserConfiguration(CustomConversionsConfig.class).run((context) -> {
+			CouchbaseTemplate template = context.getBean(CouchbaseTemplate.class);
+			assertThat(
+					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
+							.isTrue();
+		});
 	}
 
 	@Configuration
