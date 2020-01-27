@@ -4,6 +4,7 @@
 The plugin can create https://github.com/opencontainers/image-spec[OCI images] using a https://buildpacks.io/[buildpack].
 Images can be built using the `build-image` goal and a local Docker installation.
 
+The easiest way to get started is to to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -51,19 +52,11 @@ If you need to customize the builder used to create the image, configure yours a
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>{version}</version>
-					<executions>
-						<execution>
-							<id>build-image</id>
-							<goals>
-								<goal>build-image</goal>
-							</goals>
-							<configuration>
-								<image>
-									<builder>mine/java-cnb-builder</builder>
-								</image>
-							</configuration>
-						</execution>
-					</executions>
+					<configuration>
+						<image>
+							<builder>mine/java-cnb-builder</builder>
+						</image>
+					</configuration>
 				</plugin>
 			</plugins>
 		</build>
@@ -88,19 +81,11 @@ You can take control over the name, as shown in the following example:
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>{version}</version>
-					<executions>
-						<execution>
-							<id>build-image</id>
-							<goals>
-								<goal>build-image</goal>
-							</goals>
-							<configuration>
-								<image>
-									<name>example.com/library/${project.artifactId}</name>
-								</image>
-							</configuration>
-						</execution>
-					</executions>
+					<configuration>
+						<image>
+							<name>example.com/library/${project.artifactId}</name>
+						</image>
+					</configuration>
 				</plugin>
 			</plugins>
 		</build>
