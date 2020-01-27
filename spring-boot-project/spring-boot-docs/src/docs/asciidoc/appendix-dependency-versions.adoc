@@ -13,10 +13,10 @@ When you declare a dependency on one of these artifacts without declaring a vers
 
 include::dependency-versions.adoc[]
 
-[[version-properties]]
+[[dependency-versions-properties]]
 == Version Properties
 
-The following table provides all version properties that can be used to override the versions managed by Spring-Boot.
+The following table provides all properties that can be used to override the versions managed by Spring Boot.
 Browse the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] for a complete list of dependencies.
 
 include::version-properties.adoc[]
