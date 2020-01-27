@@ -6916,7 +6916,7 @@ NOTE: Make sure to not use the regular `@Import` annotation to import auto-confi
 
 [[boot-features-testing-spring-boot-applications-testing-user-configuration]]
 ==== User Configuration and Slicing
-If you <<using-boot-structuring-your-code, structure your code>> in a sensible way, your `@SpringBootApplication` class is <<boot-features-testing-spring-boot-applications-detecting-config, used by default>> as the configuration of your tests.
+If you <<using-spring-boot.adoc#using-boot-structuring-your-code, structure your code>> in a sensible way, your `@SpringBootApplication` class is <<boot-features-testing-spring-boot-applications-detecting-config, used by default>> as the configuration of your tests.
 
 It then becomes important not to litter the application's main class with configuration settings that are specific to a particular area of its functionality.
 
