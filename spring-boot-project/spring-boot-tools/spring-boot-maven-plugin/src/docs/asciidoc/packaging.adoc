@@ -332,7 +332,7 @@ Spring Boot repackages the jar file for this project using a custom layout facto
 The layout factory is provided as an implementation of `LayoutFactory` (from `spring-boot-loader-tools`) explicitly specified in the pom.
 If there is only one custom `LayoutFactory` on the plugin classpath and it is listed in `META-INF/spring.factories` then it is unnecessary to explicitly set it in the plugin configuration.
 
-Layout factories are always ignored if an explicit <<goals-repackage-optional-parameters-layout,layout>> is set.
+Layout factories are always ignored if an explicit <<goals-repackage-parameters-details-layoutFactory,layout>> is set.
 
 
 

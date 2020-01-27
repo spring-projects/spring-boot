@@ -109,7 +109,7 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println();
 				writer.printf("[[%s-required]]%n", parametersSectionId);
 				writer.println("=== Required parameters");
-				writeParametersTable(writer, mojo.getGoal(), requiredParameters);
+				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
 			List<Parameter> optionalParameters = parameters.stream().filter((parameter) -> !parameter.isRequired())
 					.collect(Collectors.toList());
