@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Jakub Kubrynski
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Jorge Cordoba
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
  * @see ConditionalOnSingleCandidate
@@ -387,7 +388,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private final ClassLoader classLoader;
 
-		private final Class<?> annotationType;
+		private final Class<? extends Annotation> annotationType;
 
 		private final Set<String> names;
 
@@ -581,11 +582,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		ConditionMessage.Builder message() {
-			return ConditionMessage.forCondition(ConditionalOnBean.class, this);
+			return ConditionMessage.forCondition(this.annotationType, this);
 		}
 
 		ConditionMessage.Builder message(ConditionMessage message) {
-			return message.andCondition(ConditionalOnBean.class, this);
+			return message.andCondition(this.annotationType, this);
 		}
 
 		@Override
