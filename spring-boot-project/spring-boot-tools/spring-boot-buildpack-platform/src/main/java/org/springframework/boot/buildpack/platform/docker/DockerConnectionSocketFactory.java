@@ -43,7 +43,7 @@ class DockerConnectionSocketFactory implements ConnectionSocketFactory {
 	@Override
 	public Socket createSocket(HttpContext context) throws IOException {
 		if (Platform.isWindows()) {
-			NamedPipeSocket.get(WINDOWS_NAMED_PIPE_PATH);
+			return NamedPipeSocket.get(WINDOWS_NAMED_PIPE_PATH);
 		}
 		return DomainSocket.get(DOMAIN_SOCKET_PATH);
 	}
