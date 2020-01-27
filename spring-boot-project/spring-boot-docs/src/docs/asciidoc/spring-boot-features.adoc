@@ -4449,7 +4449,7 @@ You can also inject an auto-configured `LdapTemplate` instance as you would with
 
 [[boot-features-ldap-embedded]]
 ==== Embedded In-memory LDAP Server
-For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://www.ldap.com/unboundid-ldap-sdk-for-java[UnboundID].
+For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
 [source,properties,indent=0,configprops]
@@ -4872,7 +4872,7 @@ By default, ActiveMQ creates a destination if it does not yet exist so that dest
 
 [[boot-features-artemis]]
 ==== Artemis Support
-Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/artemis/[Artemis] is available on the classpath.
+Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/components/artemis/[Artemis] is available on the classpath.
 If the broker is present, an embedded broker is automatically started and configured (unless the mode property has been explicitly set).
 The supported modes are `embedded` (to make explicit that an embedded broker is required and that an error should occur if the broker is not available on the classpath) and `native` (to connect to a broker using the `netty` transport protocol).
 When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
@@ -5880,11 +5880,11 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 === Test Scope Dependencies
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
-* https://junit.org/junit5[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5/[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
 * {spring-framework-docs}testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
-* https://joel-costigliola.github.io/assertj/[AssertJ]: A fluent assertion library.
+* https://assertj.github.io/doc/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
-* https://mockito.github.io[Mockito]: A Java mocking framework.
+* https://site.mockito.org/[Mockito]: A Java mocking framework.
 * https://github.com/skyscreamer/JSONassert[JSONassert]: An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath]: XPath for JSON.
 
@@ -7675,7 +7675,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 [[boot-features-kotlin-resources-further-reading]]
 ==== Further reading
 * {kotlin-docs}[Kotlin language reference]
-* https://slack.kotlinlang.org/[Kotlin Slack] (with a dedicated #spring channel)
+* https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)
 * https://stackoverflow.com/questions/tagged/spring+kotlin[Stackoverflow with `spring` and `kotlin` tags]
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]
