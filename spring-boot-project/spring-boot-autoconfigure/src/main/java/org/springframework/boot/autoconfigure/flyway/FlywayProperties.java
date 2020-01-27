@@ -210,12 +210,6 @@ public class FlywayProperties {
 	private boolean ignoreFutureMigrations = true;
 
 	/**
-	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
-	 * naming convention.
-	 */
-	private boolean validateMigrationNaming = false;
-
-	/**
 	 * Whether to allow mixing transactional and non-transactional statements within the
 	 * same migration.
 	 */
@@ -235,6 +229,12 @@ public class FlywayProperties {
 	 * Whether to skip default resolvers. If true, only custom resolvers are used.
 	 */
 	private boolean skipDefaultResolvers;
+
+	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
 
 	/**
 	 * Whether to automatically call validate when performing a migration.
@@ -555,14 +555,6 @@ public class FlywayProperties {
 		this.ignoreFutureMigrations = ignoreFutureMigrations;
 	}
 
-	public boolean isValidateMigrationNaming() {
-		return this.validateMigrationNaming;
-	}
-
-	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
-		this.validateMigrationNaming = validateMigrationNaming;
-	}
-
 	public boolean isMixed() {
 		return this.mixed;
 	}
@@ -593,6 +585,14 @@ public class FlywayProperties {
 
 	public void setSkipDefaultResolvers(boolean skipDefaultResolvers) {
 		this.skipDefaultResolvers = skipDefaultResolvers;
+	}
+
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
 	}
 
 	public boolean isValidateOnMigrate() {

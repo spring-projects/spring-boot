@@ -80,11 +80,11 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isIgnoreIgnoredMigrations()).isEqualTo(properties.isIgnoreIgnoredMigrations());
 		assertThat(configuration.isIgnorePendingMigrations()).isEqualTo(properties.isIgnorePendingMigrations());
 		assertThat(configuration.isIgnoreFutureMigrations()).isEqualTo(properties.isIgnoreFutureMigrations());
-		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isMixed()).isEqualTo(properties.isMixed());
 		assertThat(configuration.isOutOfOrder()).isEqualTo(properties.isOutOfOrder());
 		assertThat(configuration.isSkipDefaultCallbacks()).isEqualTo(properties.isSkipDefaultCallbacks());
 		assertThat(configuration.isSkipDefaultResolvers()).isEqualTo(properties.isSkipDefaultResolvers());
+		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isValidateOnMigrate()).isEqualTo(properties.isValidateOnMigrate());
 	}
 

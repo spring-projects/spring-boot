@@ -206,6 +206,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
+			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 			// Pro properties
 			map.from(properties.getBatch()).whenNonNull().to(configuration::batch);
@@ -218,8 +219,16 @@ public class FlywayAutoConfiguration {
 					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
-			// No method reference for compatibility with Flyway version < 6.2
-			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
+		}
+
+		private void configureValidateMigrationNaming(FluentConfiguration configuration,
+				boolean validateMigrationNaming) {
+			try {
+				configuration.validateMigrationNaming(validateMigrationNaming);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 6.2
+			}
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
@@ -242,15 +251,6 @@ public class FlywayAutoConfiguration {
 				catch (NoSuchMethodError ex) {
 					// Flyway 5.x
 				}
-			}
-		}
-
-		private void configureValidateMigrationNaming(FluentConfiguration flyway, boolean isValidateMigrationNaming) {
-			try {
-				flyway.validateMigrationNaming(isValidateMigrationNaming);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < v6.2
 			}
 		}
 
