@@ -2421,7 +2421,7 @@ Using this format lets the time be parsed into a `Date` and its format, when ser
 [[howto-customize-dependency-versions]]
 === Customize Dependency Versions
 If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies` (for instance, `spring-boot-starter-parent`) but you want to override a specific third-party dependency, you can add appropriate `<properties>` elements.
-Browse the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/pom.xml[`spring-boot-dependencies`] POM for a complete list of properties.
+Browse the <<appendix-dependency-versions.adoc#dependency-versions-properties, `Version properties`>> for a complete list of version properties.
 For example, to pick a different `slf4j` version, you would add the following property:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]

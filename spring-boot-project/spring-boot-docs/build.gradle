@@ -98,6 +98,12 @@ task documentDependencyVersions(type: org.springframework.boot.build.constraints
 	outputFile = file("${buildDir}/docs/generated/dependency-versions.adoc")
 }
 
+task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
+	dependsOn dependencyVersions
+	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
+	outputFile = file("${buildDir}/docs/generated/version-properties.adoc")
+}
+
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
 	outputDir = file("${buildDir}/docs/generated/config-docs/")
@@ -152,6 +158,7 @@ syncDocumentationSourceForAsciidoctor {
 	dependsOn documentStarters
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
@@ -169,6 +176,7 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	dependsOn documentStarters
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
@@ -186,6 +194,7 @@ syncDocumentationSourceForAsciidoctorPdf {
 	dependsOn documentStarters
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	from("${buildDir}/docs/generated") {
 		into "asciidoc"
