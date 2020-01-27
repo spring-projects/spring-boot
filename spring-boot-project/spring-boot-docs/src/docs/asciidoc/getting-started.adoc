@@ -703,7 +703,7 @@ To do so, insert the following lines just below the `dependencies` section:
 
 NOTE: The `spring-boot-starter-parent` POM includes `<executions>` configuration to bind the `repackage` goal.
 If you do not use the parent POM, you need to declare this configuration yourself.
-See the {spring-boot-maven-plugin-docs}/usage.html[plugin documentation] for details.
+See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] for details.
 
 Save your `pom.xml` and run `mvn package` from the command line, as follows:
 
