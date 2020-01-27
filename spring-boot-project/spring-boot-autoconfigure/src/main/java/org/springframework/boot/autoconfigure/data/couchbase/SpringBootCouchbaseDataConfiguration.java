@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,11 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 	}
 
 	@Override
+	public String typeKey() {
+		return this.properties.getTypeKey();
+	}
+
+	@Override
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_TEMPLATE)
 	@Bean(name = BeanNames.COUCHBASE_TEMPLATE)
 	public CouchbaseTemplate couchbaseTemplate() throws Exception {
@@ -95,11 +100,6 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 			return new IndexManager(true, true, true);
 		}
 		return new IndexManager(false, false, false);
-	}
-
-	@Override
-	public String typeKey() {
-		return this.properties.getTypeKey();
 	}
 
 }

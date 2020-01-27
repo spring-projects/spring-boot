@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ public class CouchbaseDataProperties {
 	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
 
 	/**
-	 * Name of the field that will store the type information for complex types when using
-	 * MappingCouchbaseConverter.
+	 * Name of the field that stores the type information for complex types when using
+	 * "MappingCouchbaseConverter".
 	 */
 	private String typeKey = DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY;
 

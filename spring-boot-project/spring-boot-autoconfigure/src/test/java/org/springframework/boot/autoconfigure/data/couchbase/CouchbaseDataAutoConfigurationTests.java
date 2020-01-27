@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,27 +121,24 @@ class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
+	void typeKeyDefault() {
+		load(CouchbaseTestConfigurer.class);
+		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey())
+				.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
+	}
+
+	@Test
+	void typeKeyCanBeCustomized() {
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.type-key=_custom");
+		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey()).isEqualTo("_custom");
+	}
+
+	@Test
 	void customConversions() {
 		load(CustomConversionsConfig.class);
 		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
 				.isTrue();
-	}
-
-	@Test
-	void typeKeyIsClassByDefault() {
-		load(CouchbaseTestConfigurer.class);
-		AbstractCouchbaseDataConfiguration couchbaseDataConfiguration = this.context
-				.getBean(AbstractCouchbaseDataConfiguration.class);
-		assertThat(couchbaseDataConfiguration.typeKey()).isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
-	}
-
-	@Test
-	void customTypeKey() {
-		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.type-key=custom");
-		AbstractCouchbaseDataConfiguration couchbaseDataConfiguration = this.context
-				.getBean(AbstractCouchbaseDataConfiguration.class);
-		assertThat(couchbaseDataConfiguration.typeKey()).isEqualTo("custom");
 	}
 
 	private void load(Class<?> config, String... environment) {
