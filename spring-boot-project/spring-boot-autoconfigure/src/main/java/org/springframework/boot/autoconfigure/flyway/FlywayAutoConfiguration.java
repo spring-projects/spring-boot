@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,6 +206,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
+			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 			// Pro properties
 			map.from(properties.getBatch()).whenNonNull().to(configuration::batch);
@@ -218,6 +219,16 @@ public class FlywayAutoConfiguration {
 					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
+		}
+
+		private void configureValidateMigrationNaming(FluentConfiguration configuration,
+				boolean validateMigrationNaming) {
+			try {
+				configuration.validateMigrationNaming(validateMigrationNaming);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 6.2
+			}
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {

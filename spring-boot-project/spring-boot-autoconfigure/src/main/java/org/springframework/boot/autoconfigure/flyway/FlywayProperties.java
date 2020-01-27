@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,6 +229,12 @@ public class FlywayProperties {
 	 * Whether to skip default resolvers. If true, only custom resolvers are used.
 	 */
 	private boolean skipDefaultResolvers;
+
+	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
 
 	/**
 	 * Whether to automatically call validate when performing a migration.
@@ -579,6 +585,14 @@ public class FlywayProperties {
 
 	public void setSkipDefaultResolvers(boolean skipDefaultResolvers) {
 		this.skipDefaultResolvers = skipDefaultResolvers;
+	}
+
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
 	}
 
 	public boolean isValidateOnMigrate() {
