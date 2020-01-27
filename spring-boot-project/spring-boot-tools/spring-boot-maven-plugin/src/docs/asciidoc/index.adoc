@@ -9,6 +9,9 @@ Stephane Nicoll, Andy Wilkinson
 :hide-uri-scheme:
 :docinfo: shared,private
 
+:buildpacks-reference: https://buildpacks.io/docs
+:spring-boot-api: https://docs.spring.io/spring-boot/docs/{gradle-project-version}/api/org/springframework/boot
+
 [[introduction]]
 == Introduction
 

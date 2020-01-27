@@ -30,8 +30,38 @@ It is possible to automate the creation of an image whenever the `package` phase
 TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
+[[build-image-customization]]
+=== Image Customizations
 By default, the image is built using the `cloudfoundry/cnb:0.0.43-bionic` builder and its name is deduced from the `artifactId` of the project.
-Both these settings can be tuned via configuration, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
+The `image` parameter allows to configure how the builder should operate on the project.
+The following table summarizes the available properties and their default values:
+
+|===
+| Property | Description | Default value
+
+| `builder`
+| {buildpacks-reference}/concepts/components/builder/[Builder image] name to use.
+| `cloudfoundry/cnb:0.0.43-bionic`
+
+| `name`
+| {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name].
+| `docker.io/library/${project.artifactId}:${project.version}`
+
+| `env`
+| Environment properties that should be passed to the builder.
+|
+
+| `cleanCache`
+| Whether to clean the cache before building.
+| `false`
+
+| `verboseLogging`
+| Whether verbose logging is required.
+| `false`
+
+|===
+
+For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 
@@ -64,6 +94,33 @@ If you need to customize the builder used to create the image, configure yours a
 ----
 
 This configuration will use the `latest` version of the `mine/java-cnb-builder` builder.
+
+If the builder exposes configuration options, those can be set using the `env` attributes, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<image>
+							<builder>mine/java-cnb-builder</builder>
+							<env>
+								<BP_JAVA_VERSION>13.0.1</BP_JAVA_VERSION>
+							</env>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The example above assumes that `mine/java-cnb-builder` defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use).
 
 
 
