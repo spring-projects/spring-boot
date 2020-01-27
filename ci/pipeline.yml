@@ -7,7 +7,7 @@ resource_types:
 - name: pull-request
   type: docker-image
   source:
-    repository: jtarchie/pr
+    repository: teliaoss/github-pr-resource
 - name: github-status-resource
   type: docker-image
   source:
@@ -43,8 +43,8 @@ resources:
   icon: source-pull
   source:
     access_token: ((github-ci-pull-request-token))
-    repo: ((github-repo-name))
-    base: ((branch))
+    repository: ((github-repo-name))
+    base_branch: ((branch))
     ignore_paths: ["ci/*"]
 - name: github-pre-release
   type: github-release
