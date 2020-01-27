@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
 import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
@@ -44,7 +43,7 @@ public class CouchbaseDataProperties {
 	 * Name of the field that stores the type information for complex types when using
 	 * "MappingCouchbaseConverter".
 	 */
-	private String typeKey = DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY;
+	private String typeKey = "_class";
 
 	public boolean isAutoIndex() {
 		return this.autoIndex;
