@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
+import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
@@ -117,6 +118,19 @@ class CouchbaseDataAutoConfigurationTests {
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
 				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
+	}
+
+	@Test
+	void typeKeyDefault() {
+		load(CouchbaseTestConfigurer.class);
+		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey())
+				.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
+	}
+
+	@Test
+	void typeKeyCanBeCustomized() {
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.type-key=_custom");
+		assertThat(this.context.getBean(AbstractCouchbaseDataConfiguration.class).typeKey()).isEqualTo("_custom");
 	}
 
 	@Test
