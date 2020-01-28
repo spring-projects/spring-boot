@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.Test;
 
+import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -81,6 +83,18 @@ public abstract class AbstractJettyServletWebServerFactoryTests extends Abstract
 	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Test
+	public void contextPathIsLoggedOnStartupWhenCompressionIsEnabled() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setContextPath("/custom");
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		factory.setCompression(compression);
+		this.webServer = factory.getWebServer(exampleServletRegistration());
+		this.webServer.start();
+		assertThat(this.output.toString()).containsOnlyOnce("with context path '/custom'");
 	}
 
 }

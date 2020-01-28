@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.BindException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -206,8 +207,18 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.server.getHandlers()).filter(ContextHandler.class::isInstance)
-				.map(ContextHandler.class::cast).map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
+		return Arrays.stream(this.server.getHandlers()).map(this::findContextHandler).filter(Objects::nonNull)
+				.map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
+	}
+
+	private ContextHandler findContextHandler(Handler handler) {
+		while (handler instanceof HandlerWrapper) {
+			if (handler instanceof ContextHandler) {
+				return (ContextHandler) handler;
+			}
+			handler = ((HandlerWrapper) handler).getHandler();
+		}
+		return null;
 	}
 
 	private void handleDeferredInitialize(Handler... handlers) throws Exception {
