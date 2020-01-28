@@ -16,17 +16,20 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.Collections;
 import java.util.List;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -121,21 +124,22 @@ class MongoClientFactoryTests {
 	}
 
 	private MongoClient createMongoClient(MongoProperties properties, Environment environment) {
-		return new MongoClientFactory(properties, environment).createMongoClient(null);
+		return new MongoClientFactory(properties, environment, Collections.emptyList()).createMongoClient(null);
 	}
 
 	@SuppressWarnings("deprecation")
 	private List<ServerAddress> getAllAddresses(MongoClient client) {
 		// At some point we'll probably need to use reflection to find the address but for
 		// now, we can use the deprecated getAllAddress method.
-		return client.getAllAddress();
+		return client.getClusterDescription().getClusterSettings().getHosts();
 	}
 
 	@SuppressWarnings("deprecation")
 	private List<MongoCredential> getCredentials(MongoClient client) {
 		// At some point we'll probably need to use reflection to find the credentials but
 		// for now, we can use the deprecated getCredentialsList method.
-		return client.getCredentialsList();
+		return Collections.singletonList(
+				((MongoClientSettings) ReflectionTestUtils.getField(client, "settings")).getCredential());
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.junit.jupiter.api.Test;
 
@@ -40,10 +40,9 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.BasicMongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -171,16 +170,16 @@ class MongoDataAutoConfigurationTests {
 	@Test
 	void createsMongoDbFactoryForPreferredMongoClient() {
 		this.contextRunner.run((context) -> {
-			MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
-			assertThat(dbFactory).isInstanceOf(SimpleMongoDbFactory.class);
+			MongoDatabaseFactory dbFactory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
 		});
 	}
 
 	@Test
 	void createsMongoDbFactoryForFallbackMongoClient() {
 		this.contextRunner.withUserConfiguration(FallbackMongoClientConfiguration.class).run((context) -> {
-			MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
-			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDbFactory.class);
+			MongoDatabaseFactory dbFactory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
 		});
 	}
 
@@ -226,8 +225,8 @@ class MongoDataAutoConfigurationTests {
 	static class MongoDbFactoryConfiguration {
 
 		@Bean
-		MongoDbFactory mongoDbFactory() {
-			return new SimpleMongoClientDbFactory(MongoClients.create(), "test");
+		MongoDatabaseFactory mongoDbFactory() {
+			return new SimpleMongoClientDatabaseFactory(MongoClients.create(), "test");
 		}
 
 	}

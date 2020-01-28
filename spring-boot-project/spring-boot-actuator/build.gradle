@@ -43,7 +43,7 @@ dependencies {
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core")
-	optional("org.mongodb:mongodb-driver-async")
+	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-messaging")

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

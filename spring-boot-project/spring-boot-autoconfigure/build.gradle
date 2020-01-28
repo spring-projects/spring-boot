@@ -95,7 +95,7 @@ dependencies {
 	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core")
 	optional("org.messaginghub:pooled-jms")
-	optional("org.mongodb:mongodb-driver-async")
+	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-jdbc")
