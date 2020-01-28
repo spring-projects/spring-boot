@@ -8,9 +8,6 @@ dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("io.projectreactor:reactor-core")
-	api("org.mongodb:mongodb-driver-sync")
 	api("org.mongodb:mongodb-driver-reactivestreams")
-	api("org.springframework.data:spring-data-mongodb") {
-		exclude group: "org.mongodb", module: "mongo-java-driver"
-	}
+	api("org.springframework.data:spring-data-mongodb")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.net.SocketFactory;
-
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -32,7 +30,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MongoAutoConfiguration}.
@@ -51,25 +48,25 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	void optionsAdded() {
-		this.contextRunner.withUserConfiguration(OptionsConfig.class)
+	void settingsAdded() {
+		this.contextRunner.withUserConfiguration(SettingsConfig.class)
 				.run((context) -> assertThat(extractClientSettings(context.getBean(MongoClient.class))
 						.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
 	}
 
 	@Test
-	void optionsAddedButNoHost() {
-		this.contextRunner.withUserConfiguration(OptionsConfig.class)
+	void settingsAddedButNoHost() {
+		this.contextRunner.withUserConfiguration(SettingsConfig.class)
 				.run((context) -> assertThat(extractClientSettings(context.getBean(MongoClient.class))
 						.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
 	}
 
 	@Test
-	void optionsSslConfig() {
-		this.contextRunner.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
+	void settingsSslConfig() {
+		this.contextRunner.withUserConfiguration(SslSettingsConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(MongoClient.class);
-			MongoClientSettings options = extractClientSettings(context.getBean(MongoClient.class));
-			assertThat(options.getSslSettings().isEnabled()).isTrue();
+			MongoClientSettings settings = extractClientSettings(context.getBean(MongoClient.class));
+			assertThat(settings.getSslSettings().isEnabled()).isTrue();
 		});
 	}
 
@@ -84,27 +81,22 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class OptionsConfig {
+	static class SettingsConfig {
 
 		@Bean
-		MongoClientSettings mongoOptions() {
-			return MongoClientSettings.builder()
-					.applyToSocketSettings((it) -> it.connectTimeout(300, TimeUnit.MILLISECONDS)).build();
+		MongoClientSettings mongoClientSettings() {
+			return MongoClientSettings.builder().applyToSocketSettings(
+					(socketSettings) -> socketSettings.connectTimeout(300, TimeUnit.MILLISECONDS)).build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class SslOptionsConfig {
+	static class SslSettingsConfig {
 
 		@Bean
-		MongoClientSettings mongoClientOptions(SocketFactory socketFactory) {
-			return MongoClientSettings.builder().applyToSslSettings((it) -> it.enabled(true)).build();
-		}
-
-		@Bean
-		SocketFactory mySocketFactory() {
-			return mock(SocketFactory.class);
+		MongoClientSettings mongoClientSettings() {
+			return MongoClientSettings.builder().applyToSslSettings((ssl) -> ssl.enabled(true)).build();
 		}
 
 	}
@@ -113,7 +105,7 @@ class MongoAutoConfigurationTests {
 	static class FallbackMongoClientConfig {
 
 		@Bean
-		com.mongodb.client.MongoClient fallbackMongoClient() {
+		MongoClient fallbackMongoClient() {
 			return MongoClients.create();
 		}
 

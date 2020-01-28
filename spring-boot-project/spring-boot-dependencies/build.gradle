@@ -1196,10 +1196,10 @@ bom {
 		group("org.mongodb") {
 			modules = [
 				"bson",
-				"mongodb-driver-sync",
-				"mongodb-driver-async",
 				"mongodb-driver-core",
-				"mongodb-driver-reactivestreams"
+				"mongodb-driver-legacy",
+				"mongodb-driver-reactivestreams",
+				"mongodb-driver-sync"
 			]
 		}
 	}

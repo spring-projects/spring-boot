@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void createsMongoDbFactoryForPreferredMongoClient() {
+	void createsMongoDatabaseFactoryForPreferredMongoClient() {
 		this.contextRunner.run((context) -> {
 			MongoDatabaseFactory dbFactory = context.getBean(MongoDatabaseFactory.class);
 			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
@@ -176,7 +176,7 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void createsMongoDbFactoryForFallbackMongoClient() {
+	void createsMongoDatabaseFactoryForFallbackMongoClient() {
 		this.contextRunner.withUserConfiguration(FallbackMongoClientConfiguration.class).run((context) -> {
 			MongoDatabaseFactory dbFactory = context.getBean(MongoDatabaseFactory.class);
 			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
@@ -184,8 +184,8 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresIfUserProvidesMongoDbFactoryButNoClient() {
-		this.contextRunner.withUserConfiguration(MongoDbFactoryConfiguration.class)
+	void autoConfiguresIfUserProvidesMongoDatabaseFactoryButNoClient() {
+		this.contextRunner.withUserConfiguration(MongoDatabaseFactoryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
@@ -222,10 +222,10 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class MongoDbFactoryConfiguration {
+	static class MongoDatabaseFactoryConfiguration {
 
 		@Bean
-		MongoDatabaseFactory mongoDbFactory() {
+		MongoDatabaseFactory mongoDatabaseFactory() {
 			return new SimpleMongoClientDatabaseFactory(MongoClients.create(), "test");
 		}
 

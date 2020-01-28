@@ -3833,19 +3833,19 @@ Spring Boot offers several conveniences for working with MongoDB, including the 
 
 [[boot-features-connecting-to-mongodb]]
 ==== Connecting to a MongoDB Database
-To access Mongo databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDbFactory`.
+To access Mongo databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
 [source,java,indent=0]
 ----
-	import org.springframework.data.mongodb.MongoDbFactory;
-	import com.mongodb.DB;
+	import org.springframework.data.mongodb.MongoDatabaseFactory;
+	import com.mongodb.client.MongoDatabase;
 
 	@Component
 	public class MyBean {
 
-		private final MongoDbFactory mongo;
+		private final MongoDatabaseFactory mongo;
 
 		@Autowired
 		public MyBean(MongoDbFactory mongo) {
@@ -3855,7 +3855,7 @@ The following example shows how to connect to a MongoDB database:
 		// ...
 
 		public void example() {
-			DB db = mongo.getDb();
+			MongoDatabase db = mongo.getMongoDatabase();
 			// ...
 		}
 
@@ -3869,7 +3869,7 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
 ----
 
-Alternatively, as long as you use Mongo 2.x, you can specify a `host`/`port`.
+Alternatively, you can specify a `host`/`port`.
 For example, you might declare the following settings in your `application.properties`:
 
 [source,properties,indent=0,configprops]
@@ -3878,8 +3878,7 @@ For example, you might declare the following settings in your `application.prope
 	spring.data.mongodb.port=27017
 ----
 
-If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDbFactory`.
-Both `com.mongodb.MongoClient` and `com.mongodb.client.MongoClient` are supported.
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
 NOTE: If you use the Mongo 3.0 Java driver, `spring.data.mongodb.host` and `spring.data.mongodb.port` are not supported.
 In such cases, `spring.data.mongodb.uri` should be used to provide all of the configuration.
@@ -3887,8 +3886,8 @@ In such cases, `spring.data.mongodb.uri` should be used to provide all of the co
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
 
-TIP: If you do not use Spring Data Mongo, you can inject `com.mongodb.MongoClient` beans instead of using `MongoDbFactory`.
-If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDbFactory` or `MongoClient` bean.
+TIP: If you do not use Spring Data Mongo, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
+If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.
 
 NOTE: If you are using the reactive driver, Netty is required for SSL.
 The auto-configuration configures this factory automatically if Netty is available and the factory to use hasn't been customized already.
@@ -3902,7 +3901,6 @@ As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.data.mongodb.core.MongoTemplate;
 	import org.springframework.stereotype.Component;
 
@@ -3911,7 +3909,6 @@ As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the
 
 		private final MongoTemplate mongoTemplate;
 
-		@Autowired
 		public MyBean(MongoTemplate mongoTemplate) {
 			this.mongoTemplate = mongoTemplate;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,15 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
+import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -71,7 +69,7 @@ class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(getCredentials(client).get(0), "user", "secret", "test");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
 	}
 
 	@Test
@@ -81,7 +79,22 @@ class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(getCredentials(client).get(0), "user", "secret", "foo");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
+	}
+
+	@Test
+	void uuidRepresentationDefaultToJavaLegacy() {
+		MongoProperties properties = new MongoProperties();
+		MongoClient client = createMongoClient(properties);
+		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.JAVA_LEGACY);
+	}
+
+	@Test
+	void uuidRepresentationCanBeCustomized() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUuidRepresentation(UuidRepresentation.STANDARD);
+		MongoClient client = createMongoClient(properties);
+		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.STANDARD);
 	}
 
 	@Test
@@ -91,7 +104,7 @@ class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(getCredentials(client).get(0), "user", "secret", "foo");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
 	}
 
 	@Test
@@ -103,9 +116,7 @@ class MongoClientFactoryTests {
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		List<MongoCredential> credentialsList = getCredentials(client);
-		assertThat(credentialsList).hasSize(1);
-		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
 	}
 
 	@Test
@@ -124,22 +135,15 @@ class MongoClientFactoryTests {
 	}
 
 	private MongoClient createMongoClient(MongoProperties properties, Environment environment) {
-		return new MongoClientFactory(properties, environment, Collections.emptyList()).createMongoClient(null);
+		return new MongoClientFactory(properties, environment).createMongoClient(null);
 	}
 
-	@SuppressWarnings("deprecation")
 	private List<ServerAddress> getAllAddresses(MongoClient client) {
-		// At some point we'll probably need to use reflection to find the address but for
-		// now, we can use the deprecated getAllAddress method.
 		return client.getClusterDescription().getClusterSettings().getHosts();
 	}
 
-	@SuppressWarnings("deprecation")
-	private List<MongoCredential> getCredentials(MongoClient client) {
-		// At some point we'll probably need to use reflection to find the credentials but
-		// for now, we can use the deprecated getCredentialsList method.
-		return Collections.singletonList(
-				((MongoClientSettings) ReflectionTestUtils.getField(client, "settings")).getCredential());
+	private MongoClientSettings getClientSettings(MongoClient client) {
+		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
@@ -152,12 +156,6 @@ class MongoClientFactoryTests {
 		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
 		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
 		assertThat(credentials.getSource()).isEqualTo(expectedSource);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(MongoProperties.class)
-	static class Config {
-
 	}
 
 }

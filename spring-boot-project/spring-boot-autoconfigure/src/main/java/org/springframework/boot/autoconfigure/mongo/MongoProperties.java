@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import com.mongodb.ConnectionString;
+import org.bson.UuidRepresentation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -94,6 +95,11 @@ public class MongoProperties {
 	private Class<?> fieldNamingStrategy;
 
 	/**
+	 * Representation to use when converting a UUID to a BSON binary value.
+	 */
+	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+
+	/**
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
@@ -144,6 +150,14 @@ public class MongoProperties {
 
 	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
+	}
+
+	public UuidRepresentation getUuidRepresentation() {
+		return this.uuidRepresentation;
+	}
+
+	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
+		this.uuidRepresentation = uuidRepresentation;
 	}
 
 	public String getUri() {
