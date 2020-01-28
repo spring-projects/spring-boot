@@ -52,8 +52,8 @@ public class ImagePackager extends Packager {
 
 	private void packageImage(Libraries libraries, AbstractJarWriter writer) throws IOException {
 		File source = isAlreadyPackaged() ? getBackupFile() : getSource();
-		Assert.state(source.exists() && source.isFile(), "Unable to read jar file " + source);
-		Assert.state(!isAlreadyPackaged(source), "Repackaged jar file " + source + " cannot be exported");
+		Assert.state(source.exists() && source.isFile(), () -> "Unable to read jar file " + source);
+		Assert.state(!isAlreadyPackaged(source), () -> "Repackaged jar file " + source + " cannot be exported");
 		try (JarFile sourceJar = new JarFile(source)) {
 			write(sourceJar, libraries, writer);
 		}

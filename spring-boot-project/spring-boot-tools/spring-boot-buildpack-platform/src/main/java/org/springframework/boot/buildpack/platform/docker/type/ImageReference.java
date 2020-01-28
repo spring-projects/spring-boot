@@ -151,7 +151,7 @@ public final class ImageReference {
 	 * @throws IllegalStateException if the image reference contains a digest
 	 */
 	public ImageReference inTaggedForm() {
-		Assert.state(this.digest == null, "Image reference '" + this + "' cannot contain a digest");
+		Assert.state(this.digest == null, () -> "Image reference '" + this + "' cannot contain a digest");
 		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, this.digest);
 	}
 
@@ -163,7 +163,7 @@ public final class ImageReference {
 	 */
 	public static ImageReference forJarFile(File jarFile) {
 		String filename = jarFile.getName();
-		Assert.isTrue(filename.toLowerCase().endsWith(".jar"), "File '" + jarFile + "' is not a JAR");
+		Assert.isTrue(filename.toLowerCase().endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {

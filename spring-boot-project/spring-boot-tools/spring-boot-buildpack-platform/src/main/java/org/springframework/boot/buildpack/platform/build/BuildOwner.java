@@ -49,7 +49,7 @@ class BuildOwner implements Owner {
 
 	private long getValue(Map<String, String> env, String name) {
 		String value = env.get(name);
-		Assert.state(StringUtils.hasText(value), "Missing '" + name + "' value from the builder environment");
+		Assert.state(StringUtils.hasText(value), () -> "Missing '" + name + "' value from the builder environment");
 		try {
 			return Long.parseLong(value);
 		}

@@ -85,7 +85,7 @@ public final class LayerId {
 	public static LayerId of(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		int i = value.indexOf(':');
-		Assert.isTrue(i >= 0, "Invalid layer ID '" + value + "'");
+		Assert.isTrue(i >= 0, () -> "Invalid layer ID '" + value + "'");
 		return new LayerId(value, value.substring(0, i), value.substring(i + 1));
 	}
 

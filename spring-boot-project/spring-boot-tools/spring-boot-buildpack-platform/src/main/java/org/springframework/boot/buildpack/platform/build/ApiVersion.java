@@ -121,7 +121,7 @@ final class ApiVersion {
 	static ApiVersion parse(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		Matcher matcher = PATTERN.matcher(value);
-		Assert.isTrue(matcher.matches(), "Malformed version number '" + value + "'");
+		Assert.isTrue(matcher.matches(), () -> "Malformed version number '" + value + "'");
 		try {
 			int major = Integer.parseInt(matcher.group(1));
 			int minor = Integer.parseInt(matcher.group(2));
