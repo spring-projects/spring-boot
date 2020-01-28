@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -27,31 +27,26 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoDbFactorySupport;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.core.MongoDatabaseFactorySupport;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 /**
- * Configuration for a {@link MongoDbFactory}.
+ * Configuration for a {@link MongoDatabaseFactory}.
  *
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(MongoDbFactory.class)
+@ConditionalOnMissingBean(MongoDatabaseFactory.class)
 @Conditional(AnyMongoClientAvailable.class)
 class MongoDbFactoryConfiguration {
 
 	@Bean
-	MongoDbFactorySupport<?> mongoDbFactory(ObjectProvider<MongoClient> mongo,
-			ObjectProvider<com.mongodb.client.MongoClient> mongoClient, MongoProperties properties) {
-		MongoClient preferredClient = mongo.getIfAvailable();
-		if (preferredClient != null) {
-			return new SimpleMongoDbFactory(preferredClient, properties.getMongoClientDatabase());
-		}
+	MongoDatabaseFactorySupport<?> mongoDbFactory(ObjectProvider<MongoClient> mongoClient, MongoProperties properties) {
+
 		com.mongodb.client.MongoClient fallbackClient = mongoClient.getIfAvailable();
 		if (fallbackClient != null) {
-			return new SimpleMongoClientDbFactory(fallbackClient, properties.getMongoClientDatabase());
+			return new SimpleMongoClientDatabaseFactory(fallbackClient, properties.getMongoClientDatabase());
 		}
 		throw new IllegalStateException("Expected to find at least one MongoDB client.");
 	}

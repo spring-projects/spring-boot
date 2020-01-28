@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import com.mongodb.MongoClient;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,7 +46,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class, MongoTemplate.class })
+@ConditionalOnClass({ com.mongodb.client.MongoClient.class, MongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
 @Import({ MongoDataConfiguration.class, MongoDbFactoryConfiguration.class, MongoDbFactoryDependentConfiguration.class })
 @AutoConfigureAfter(MongoAutoConfiguration.class)

@@ -23,6 +23,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterSettings;
+import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
@@ -117,13 +118,13 @@ class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	void uriCannotBeSetWithCredentials() {
+	void uriCanBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties)).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
+		MongoCredential credential = extractMongoCredentials(createMongoClient(properties));
+		assertMongoCredential(credential, "user", "secret", "mydb");
 	}
 
 	@Test
@@ -195,7 +196,8 @@ class ReactiveMongoClientFactoryTests {
 
 	@SuppressWarnings("deprecation")
 	private MongoClientSettings getSettings(MongoClient client) {
-		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(), "wrapped");
+		AsyncMongoClient wrapped = (AsyncMongoClient) ReflectionTestUtils.getField(client, "wrapped");
+		return (MongoClientSettings) ReflectionTestUtils.getField(wrapped, "settings");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {

@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.util.Set;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;

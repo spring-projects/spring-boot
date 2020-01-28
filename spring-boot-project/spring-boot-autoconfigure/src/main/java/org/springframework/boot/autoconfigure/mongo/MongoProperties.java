@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -178,7 +178,7 @@ public class MongoProperties {
 		if (this.database != null) {
 			return this.database;
 		}
-		return new MongoClientURI(determineUri()).getDatabase();
+		return new ConnectionString(determineUri()).getDatabase();
 	}
 
 	public Boolean isAutoIndexCreation() {
