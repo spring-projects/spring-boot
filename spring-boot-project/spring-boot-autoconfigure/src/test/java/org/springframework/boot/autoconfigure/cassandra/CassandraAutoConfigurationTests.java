@@ -45,13 +45,13 @@ class CassandraAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
 	@Test
-	void cqlSessionBuilderThreadSafe() {
+	void cqlSessionBuildHasScopePrototype() {
 		this.contextRunner.run((context) -> {
 			CqlIdentifier keyspace = CqlIdentifier.fromCql("test");
-			assertThat(context).hasSingleBean(CqlSessionBuilder.class);
-			assertThat(context.getBean(CqlSessionBuilder.class).withKeyspace(keyspace))
-					.hasFieldOrPropertyWithValue("keyspace", keyspace);
-			assertThat(context.getBean(CqlSessionBuilder.class)).hasFieldOrPropertyWithValue("keyspace", null);
+			CqlSessionBuilder firstBuilder = context.getBean(CqlSessionBuilder.class);
+			assertThat(firstBuilder.withKeyspace(keyspace)).hasFieldOrPropertyWithValue("keyspace", keyspace);
+			CqlSessionBuilder secondBuilder = context.getBean(CqlSessionBuilder.class);
+			assertThat(secondBuilder).hasFieldOrPropertyWithValue("keyspace", null);
 		});
 	}
 
