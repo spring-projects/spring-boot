@@ -55,6 +55,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	@BeforeEach
 	void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
+		System.setProperty("datastax-java-driver.advanced.connection.init-query-timeout", "1 second");
 		TestPropertyValues
 				.of("spring.data.cassandra.contact-points:localhost:" + cassandra.getFirstMappedPort(),
 						"spring.data.cassandra.local-datacenter=datacenter1",
@@ -64,6 +65,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 
 	@AfterEach
 	void close() {
+		System.clearProperty("datastax-java-driver.advanced.connection.init-query-timeout");
 		if (this.context != null) {
 			this.context.close();
 		}
