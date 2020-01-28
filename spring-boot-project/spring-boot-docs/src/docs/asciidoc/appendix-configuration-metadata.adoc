@@ -155,7 +155,7 @@ The JSON object contained in the `properties` array can contain the attributes d
 
 | `type`
 | String
-| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.util.String,acme.MyEnum>`).
+| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,acme.MyEnum>`).
   You can use this attribute to guide the user as to the types of values that they can enter.
   For consistency, the type of a primitive is specified by using its wrapper counterpart (for example, `boolean` becomes `java.lang.Boolean`).
   Note that this class may be a complex type that gets converted from a `String` as values are bound.
