@@ -63,7 +63,7 @@ class PluginXmlParser {
 	}
 
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
-		List<Mojo> mojos = new ArrayList<Mojo>();
+		List<Mojo> mojos = new ArrayList<>();
 		for (Node mojoNode : nodesAt("//plugin/mojos/mojo", plugin)) {
 			mojos.add(new Mojo(textAt("goal", mojoNode), format(textAt("description", mojoNode)),
 					parseParameters(mojoNode)));

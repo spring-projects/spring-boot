@@ -55,7 +55,7 @@ public class ExtractVersionConstraints extends AbstractTask {
 
 	private final Set<VersionProperty> versionProperties = new TreeSet<>();
 
-	private final List<String> projectPaths = new ArrayList<String>();
+	private final List<String> projectPaths = new ArrayList<>();
 
 	public ExtractVersionConstraints() {
 		DependencyHandler dependencies = getProject().getDependencies();

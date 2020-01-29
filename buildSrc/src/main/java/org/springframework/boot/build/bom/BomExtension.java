@@ -50,7 +50,7 @@ public class BomExtension {
 
 	private final Map<String, String> artifactVersionProperties = new HashMap<>();
 
-	private final List<Library> libraries = new ArrayList<Library>();
+	private final List<Library> libraries = new ArrayList<>();
 
 	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
 

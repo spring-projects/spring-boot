@@ -32,8 +32,8 @@ import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 /**
- * An {@Action} to post-process a {@code Log4j2Plugins.dat} and re-order its content so
- * that it is reproducible.
+ * An {@link Action} to post-process a {@code Log4j2Plugins.dat} and re-order its content
+ * so that it is reproducible.
  *
  * @author Andy Wilkinson
  */
