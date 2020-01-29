@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,11 +53,12 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 	File tempDir;
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
-		return createJarArchive(name, entryPrefix, false);
+		return createJarArchive(name, entryPrefix, false, Collections.emptyList());
 	}
 
 	@SuppressWarnings("resource")
-	protected File createJarArchive(String name, String entryPrefix, boolean indexed) throws IOException {
+	protected File createJarArchive(String name, String entryPrefix, boolean indexed, List<String> extraLibs)
+			throws IOException {
 		File archive = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
@@ -74,6 +76,9 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		addNestedJars(entryPrefix, "/lib/foo.jar", jarOutputStream);
 		addNestedJars(entryPrefix, "/lib/bar.jar", jarOutputStream);
 		addNestedJars(entryPrefix, "/lib/baz.jar", jarOutputStream);
+		for (String lib : extraLibs) {
+			addNestedJars(entryPrefix, "/lib/" + lib, jarOutputStream);
+		}
 		jarOutputStream.close();
 		return archive;
 	}

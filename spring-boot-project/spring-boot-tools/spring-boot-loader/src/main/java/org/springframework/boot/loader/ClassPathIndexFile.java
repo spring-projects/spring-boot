@@ -72,6 +72,13 @@ final class ClassPathIndexFile {
 		return this.folders.contains(name);
 	}
 
+	boolean containsEntry(String name) {
+		if (name == null || name.isEmpty()) {
+			return false;
+		}
+		return this.lines.contains(name);
+	}
+
 	List<URL> getUrls() {
 		return Collections.unmodifiableList(this.lines.stream().map(this::asUrl).collect(Collectors.toList()));
 	}
