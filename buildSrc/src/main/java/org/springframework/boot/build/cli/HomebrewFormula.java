@@ -18,10 +18,11 @@ package org.springframework.boot.build.cli;
 
 import java.util.Collections;
 
+import org.gradle.api.Task;
 import org.gradle.api.tasks.TaskAction;
 
 /**
- * A {@Task} for creating a Homebrew formula manifest.
+ * A {@link Task} for creating a Homebrew formula manifest.
  *
  * @author Andy Wilkinson
  */

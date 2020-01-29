@@ -71,7 +71,7 @@ public class CheckBom extends DefaultTask {
 		for (String exclusion : exclusions) {
 			if (!resolved.contains(exclusion) && exclusion.endsWith(":*")) {
 				String group = exclusion.substring(0, exclusion.indexOf(':') + 1);
-				if (!resolved.stream().filter((candidate) -> candidate.startsWith(group)).findFirst().isPresent()) {
+				if (resolved.stream().noneMatch((candidate) -> candidate.startsWith(group))) {
 					unused.add(exclusion);
 				}
 			}
