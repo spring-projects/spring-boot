@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
+import io.micrometer.core.annotation.Timed;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Dmytro Nosan
  * @author Stephane Nicoll
+ * @author Chanhyeong LEE
  */
 @RestController
 public class TestController {
@@ -40,6 +43,12 @@ public class TestController {
 
 	@GetMapping("test2")
 	public String test2() {
+		return "test2";
+	}
+
+	@Timed
+	@GetMapping("test3")
+	public String test3() {
 		return "test2";
 	}
 
