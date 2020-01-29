@@ -48,6 +48,7 @@ import org.springframework.web.util.NestedServletException;
  *
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author Chanhyeong LEE
  * @since 2.0.0
  */
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
@@ -123,8 +124,10 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		Set<Timed> annotations = getTimedAnnotations(handler);
 		Timer.Sample timerSample = timingContext.getTimerSample();
 		if (annotations.isEmpty()) {
-			Builder builder = this.autoTimer.builder(this.metricName);
-			timerSample.stop(getTimer(builder, handler, request, response, exception));
+			if (this.autoTimer.isEnabled()) {
+				Builder builder = this.autoTimer.builder(this.metricName);
+				timerSample.stop(getTimer(builder, handler, request, response, exception));
+			}
 			return;
 		}
 		for (Timed annotation : annotations) {
