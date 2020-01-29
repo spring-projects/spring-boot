@@ -17,7 +17,6 @@
 package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -38,6 +37,7 @@ import org.springframework.boot.buildpack.platform.docker.Http.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -87,19 +87,19 @@ class DockerApiTests {
 		return this.httpClient;
 	}
 
-	private Response emptyResponse() throws IOException {
+	private Response emptyResponse() {
 		return responseOf(null);
 	}
 
-	private Response responseOf(String name) throws IOException {
+	private Response responseOf(String name) {
 		return new Response() {
 
 			@Override
-			public void close() throws IOException {
+			public void close() {
 			}
 
 			@Override
-			public InputStream getContent() throws IOException {
+			public InputStream getContent() {
 				if (name == null) {
 					return null;
 				}
@@ -322,7 +322,22 @@ class DockerApiTests {
 		}
 
 		@Test
-		void removeWhenReferenceIsNulllThrowsException() {
+		void waitWhenReferenceIsNullThrowsException() {
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.wait(null))
+					.withMessage("Reference must not be null");
+		}
+
+		@Test
+		void waitReturnsStatus() throws Exception {
+			ContainerReference reference = ContainerReference.of("e90e34656806");
+			URI waitUri = new URI(CONTAINERS_URL + "/e90e34656806/wait");
+			given(httpClient().post(waitUri)).willReturn(responseOf("container-wait-response.json"));
+			ContainerStatus status = this.api.wait(reference);
+			assertThat(status.getStatusCode()).isEqualTo(1);
+		}
+
+		@Test
+		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
 					.withMessage("Reference must not be null");
 		}

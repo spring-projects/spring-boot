@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +39,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -48,6 +48,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -95,6 +96,7 @@ class LifecycleTests {
 	void executeExecutesPhases() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		this.lifecycle.execute();
 		assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
 		assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
@@ -109,6 +111,7 @@ class LifecycleTests {
 	void executeOnlyUploadsContentOnce() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		this.lifecycle.execute();
 		assertThat(this.content).hasSize(1);
 	}
@@ -117,15 +120,26 @@ class LifecycleTests {
 	void executeWhenAleadyRunThrowsException() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		this.lifecycle.execute();
 		assertThatIllegalStateException().isThrownBy(this.lifecycle::execute)
 				.withMessage("Lifecycle has already been executed");
 	}
 
 	@Test
+	void executeWhenBuilderReturnsErrorThrowsException() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(9, null));
+		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> this.lifecycle.execute())
+				.withMessage("Builder lifecycle 'detector' failed with status code 9");
+	}
+
+	@Test
 	void executeWhenCleanCacheClearsCache() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest().withCleanCache(true);
 		createLifecycle(request).execute();
 		VolumeName name = VolumeName.of("pack-cache-b35197ac41ea.build");
@@ -174,7 +188,7 @@ class LifecycleTests {
 		};
 	}
 
-	private ArrayNode getCommand(ContainerConfig config) throws JsonProcessingException, JsonMappingException {
+	private ArrayNode getCommand(ContainerConfig config) throws JsonProcessingException {
 		JsonNode node = SharedObjectMapper.get().readTree(config.toString());
 		return (ArrayNode) node.at("/Cmd");
 	}

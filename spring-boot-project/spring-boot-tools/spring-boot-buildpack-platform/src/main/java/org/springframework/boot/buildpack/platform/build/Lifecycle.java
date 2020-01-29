@@ -25,6 +25,7 @@ import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -202,6 +203,11 @@ class Lifecycle implements Closeable {
 		try {
 			this.docker.container().start(reference);
 			this.docker.container().logs(reference, logConsumer::accept);
+
+			ContainerStatus status = this.docker.container().wait(reference);
+			if (status.getStatusCode() != 0) {
+				throw new BuilderException(phase.getName(), status.getStatusCode());
+			}
 		}
 		finally {
 			this.docker.container().remove(reference, true);

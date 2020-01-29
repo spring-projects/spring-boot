@@ -29,12 +29,15 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,7 +66,7 @@ class BuilderTests {
 	}
 
 	@Test
-	void buildInvokesBuildpack() throws Exception {
+	void buildInvokesBuilder() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
@@ -103,14 +106,53 @@ class BuilderTests {
 				"Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'org.cloudfoundry.stacks.cflinuxfs3'");
 	}
 
-	private DockerApi mockDockerApi() {
-		DockerApi docker = mock(DockerApi.class);
-		ImageApi imageApi = mock(ImageApi.class);
+	@Test
+	void buildWhenBuilderReturnsErrorThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApiLifecycleError();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.43-bionic")), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:full-cnb")), any()))
+				.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest();
+		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> builder.build(request))
+				.withMessage("Builder lifecycle 'detector' failed with status code 9");
+	}
+
+	private DockerApi mockDockerApi() throws IOException {
 		ContainerApi containerApi = mock(ContainerApi.class);
+		ContainerReference reference = ContainerReference.of("container-ref");
+		given(containerApi.create(any(), any())).willReturn(reference);
+		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(0, null));
+
+		ImageApi imageApi = mock(ImageApi.class);
 		VolumeApi volumeApi = mock(VolumeApi.class);
+
+		DockerApi docker = mock(DockerApi.class);
 		given(docker.image()).willReturn(imageApi);
 		given(docker.container()).willReturn(containerApi);
 		given(docker.volume()).willReturn(volumeApi);
+
+		return docker;
+	}
+
+	private DockerApi mockDockerApiLifecycleError() throws IOException {
+		ContainerApi containerApi = mock(ContainerApi.class);
+		ContainerReference reference = ContainerReference.of("container-ref");
+		given(containerApi.create(any(), any())).willReturn(reference);
+		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(9, null));
+
+		ImageApi imageApi = mock(ImageApi.class);
+		VolumeApi volumeApi = mock(VolumeApi.class);
+
+		DockerApi docker = mock(DockerApi.class);
+		given(docker.image()).willReturn(imageApi);
+		given(docker.container()).willReturn(containerApi);
+		given(docker.volume()).willReturn(volumeApi);
+
 		return docker;
 	}
 

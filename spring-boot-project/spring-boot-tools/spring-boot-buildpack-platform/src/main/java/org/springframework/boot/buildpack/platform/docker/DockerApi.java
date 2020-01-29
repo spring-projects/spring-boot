@@ -30,6 +30,7 @@ import org.springframework.boot.buildpack.platform.docker.Http.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
+import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -268,6 +269,19 @@ public class DockerApi {
 			finally {
 				listener.onFinish();
 			}
+		}
+
+		/**
+		 * Wait for a container to stop and retrieve the status.
+		 * @param reference the container reference
+		 * @return a {@link ContainerStatus} indicating the exit status of the container
+		 * @throws IOException on IO error
+		 */
+		public ContainerStatus wait(ContainerReference reference) throws IOException {
+			Assert.notNull(reference, "Reference must not be null");
+			URI uri = buildUrl("/containers/" + reference + "/wait");
+			Response response = http().post(uri);
+			return ContainerStatus.of(response.getContent());
 		}
 
 		/**
