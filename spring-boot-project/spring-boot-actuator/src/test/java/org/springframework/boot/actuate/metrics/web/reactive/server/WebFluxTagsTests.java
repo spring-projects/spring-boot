@@ -113,7 +113,7 @@ class WebFluxTagsTests {
 	}
 
 	@Test
-	void outcomeTagIsUnknownWhenResponseStatusIsNull() {
+	void outcomeTagIsSuccessWhenResponseStatusIsNull() {
 		this.exchange.getResponse().setStatusCode(null);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
