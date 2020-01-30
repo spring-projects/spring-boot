@@ -19,9 +19,7 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -42,7 +40,6 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
-import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link EphemeralBuilder}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class EphemeralBuilderTests extends AbstractJsonTests {
 
@@ -102,32 +100,9 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getArchiveContainsDefaultDirsLayer() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
-		File folder = unpack(getLayer(builder.getArchive(), 0), "dirs");
-		assertThat(new File(folder, "workspace")).isDirectory();
-		assertThat(new File(folder, "layers")).isDirectory();
-		assertThat(new File(folder, "cnb")).isDirectory();
-		assertThat(new File(folder, "cnb/buildpacks")).isDirectory();
-		assertThat(new File(folder, "platform")).isDirectory();
-		assertThat(new File(folder, "platform/env")).isDirectory();
-	}
-
-	@Test
-	void getArchiveContainsStackLayer() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
-		File folder = unpack(getLayer(builder.getArchive(), 1), "stack");
-		File tomlFile = new File(folder, "cnb/stack.toml");
-		assertThat(tomlFile).exists();
-		String toml = FileCopyUtils
-				.copyToString(new InputStreamReader(new FileInputStream(tomlFile), StandardCharsets.UTF_8));
-		assertThat(toml).contains("[run-image]").contains("image = ");
-	}
-
-	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
-		File folder = unpack(getLayer(builder.getArchive(), 2), "env");
+		File folder = unpack(getLayer(builder.getArchive(), 0), "env");
 		assertThat(new File(folder, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 	}
 

@@ -21,19 +21,18 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 
-import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack.RunImage;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.Owner;
-import org.springframework.boot.buildpack.platform.toml.Toml;
 
 /**
  * An short lived builder that is created for each {@link Lifecycle} run.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class EphemeralBuilder {
 
@@ -74,8 +73,6 @@ class EphemeralBuilder {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
 			update.withTag(name);
 			update.withCreateDate(Instant.now(clock));
-			update.withNewLayer(getDefaultDirsLayer(buildOwner));
-			update.withNewLayer(getStackLayer(builderMetadata));
 			if (env != null && !env.isEmpty()) {
 				update.withNewLayer(getEnvLayer(env));
 			}
@@ -84,30 +81,6 @@ class EphemeralBuilder {
 
 	private void updateMetadata(BuilderMetadata.Update update) {
 		update.withCreatedBy("Spring Boot", "dev");
-	}
-
-	private Layer getDefaultDirsLayer(Owner buildOwner) throws IOException {
-		return Layer.of((layout) -> {
-			layout.folder("/workspace", buildOwner);
-			layout.folder("/layers", buildOwner);
-			layout.folder("/cnb", Owner.ROOT);
-			layout.folder("/cnb/buildpacks", Owner.ROOT);
-			layout.folder("/platform", Owner.ROOT);
-			layout.folder("/platform/env", Owner.ROOT);
-		});
-	}
-
-	private Layer getStackLayer(BuilderMetadata builderMetadata) throws IOException {
-		Toml toml = getRunImageToml(builderMetadata.getStack().getRunImage());
-		return Layer.of((layout) -> layout.file("/cnb/stack.toml", Owner.ROOT, Content.of(toml.toString())));
-	}
-
-	private Toml getRunImageToml(RunImage runImage) {
-		Toml toml = new Toml();
-		toml.table("run-image");
-		toml.string("image", runImage.getImage());
-		toml.array("mirrors", runImage.getMirrors());
-		return toml;
 	}
 
 	private Layer getEnvLayer(Map<String, String> env) throws IOException {
