@@ -17,15 +17,21 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.bucket.BucketType;
+import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.cluster.DefaultBucketSettings;
+import com.couchbase.client.java.cluster.UserRole;
+import com.couchbase.client.java.cluster.UserSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.couchbase.CouchbaseContainer;
@@ -51,11 +57,18 @@ class CouchbaseAutoConfigurationIntegrationTests {
 
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer().withClusterAdmin("spring", "password")
-			.withNewBucket(DefaultBucketSettings.builder().enableFlush(true).name("default").password("secret")
-					.quota(100).replicas(0).type(BucketType.COUCHBASE).build())
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private AnnotationConfigApplicationContext context;
+
+	@BeforeAll
+	static void createBucket() {
+		BucketSettings bucketSettings = DefaultBucketSettings.builder().enableFlush(true).name("default")
+				.password("password").quota(100).replicas(0).type(BucketType.COUCHBASE).build();
+		List<UserRole> userSettings = Collections.singletonList(new UserRole("admin"));
+		couchbase.createBucket(bucketSettings,
+				UserSettings.build().password(bucketSettings.password()).roles(userSettings), true);
+	}
 
 	@BeforeEach
 	void setUp() {
