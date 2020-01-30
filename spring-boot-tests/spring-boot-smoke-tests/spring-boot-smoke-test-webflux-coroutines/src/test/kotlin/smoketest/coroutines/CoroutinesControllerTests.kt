@@ -23,4 +23,16 @@ class CoroutinesControllerTests(@Autowired private val webClient: WebTestClient)
 				.expectBody<String>().isEqualTo("Hello World")
 	}
 
+	@Test
+	fun testMono() {
+		webClient.get().uri("/mono").accept(MediaType.TEXT_PLAIN).exchange()
+				.expectBody<String>().isEqualTo("Hello World")
+	}
+
+	@Test
+	fun testFlux() {
+		webClient.get().uri("/flux").accept(MediaType.TEXT_PLAIN).exchange()
+				.expectBody<String>().isEqualTo("Hello World")
+	}
+
 }
