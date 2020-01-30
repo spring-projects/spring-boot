@@ -1,5 +1,5 @@
 = Spring Boot Gradle Plugin Reference Guide
-Andy Wilkinson
+Andy Wilkinson, Scott Frederick
 :doctype: book
 :toc: left
 :toclevels: 4
@@ -25,6 +25,7 @@ Andy Wilkinson
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{gradle-project-version}
 :api-documentation: {spring-boot-docs}/gradle-plugin/api
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
+:spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
 :version-properties-appendix: {spring-boot-reference}/#dependency-versions-coordinates
 :build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
 :boot-build-image-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html
@@ -32,7 +33,7 @@ Andy Wilkinson
 :boot-war-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html
 :boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
 :github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
-
+:buildpacks-reference: https://buildpacks.io/docs
 
 
 [[introduction]]
@@ -47,6 +48,7 @@ In addition to this user guide, {api-documentation}[API documentation] is also a
 include::getting-started.adoc[]
 include::managing-dependencies.adoc[]
 include::packaging.adoc[]
+include::packaging-oci-image.adoc[]
 include::publishing.adoc[]
 include::running.adoc[]
 include::integrating-with-actuator.adoc[]

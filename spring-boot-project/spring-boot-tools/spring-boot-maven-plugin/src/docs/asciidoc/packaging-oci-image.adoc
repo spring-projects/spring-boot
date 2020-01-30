@@ -1,7 +1,7 @@
 [[build-image]]
 == Packaging OCI Images
 
-The plugin can create https://github.com/opencontainers/image-spec[OCI images] using a https://buildpacks.io/[buildpack].
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
 Images can be built using the `build-image` goal and a local Docker installation.
 
 The easiest way to get started is to to invoke `mvn spring-boot:build-image` on a project.
@@ -14,7 +14,7 @@ It is possible to automate the creation of an image whenever the `package` phase
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{version}</version>
+				<version>{gradle-project-version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -32,7 +32,11 @@ When the `build-image` repackages the application, it applies the same settings 
 
 [[build-image-customization]]
 === Image Customizations
-By default, the image is built using the `cloudfoundry/cnb:0.0.43-bionic` builder and its name is deduced from the `artifactId` of the project.
+The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
+The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
+By default, the plugin chooses a builder image.
+The name of the generated image is deduced from project properties.
+
 The `image` parameter allows to configure how the builder should operate on the project.
 The following table summarizes the available properties and their default values:
 
@@ -40,15 +44,15 @@ The following table summarizes the available properties and their default values
 | Property | Description | Default value
 
 | `builder`
-| {buildpacks-reference}/concepts/components/builder/[Builder image] name to use.
+| Name of the Builder image to use.
 | `cloudfoundry/cnb:0.0.43-bionic`
 
 | `name`
-| {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name].
+| {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
 | `docker.io/library/${project.artifactId}:${project.version}`
 
 | `env`
-| Environment properties that should be passed to the builder.
+| Environment variables that should be passed to the builder.
 |
 
 | `cleanCache`
@@ -56,7 +60,7 @@ The following table summarizes the available properties and their default values
 | `false`
 
 | `verboseLogging`
-| Whether verbose logging is required.
+| Enables verbose logging of builder operations.
 | `false`
 
 |===
@@ -81,7 +85,7 @@ If you need to customize the builder used to create the image, configure yours a
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{version}</version>
+					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<builder>mine/java-cnb-builder</builder>
@@ -93,7 +97,7 @@ If you need to customize the builder used to create the image, configure yours a
 	</project>
 ----
 
-This configuration will use the `latest` version of the `mine/java-cnb-builder` builder.
+This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
 
 If the builder exposes configuration options, those can be set using the `env` attributes, as shown in the following example:
 
@@ -105,7 +109,7 @@ If the builder exposes configuration options, those can be set using the `env` a
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{version}</version>
+					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<builder>mine/java-cnb-builder</builder>
@@ -126,7 +130,7 @@ The example above assumes that `mine/java-cnb-builder` defines a `BP_JAVA_VERSIO
 
 [[build-image-example-custom-image-name]]
 ==== Custom Image Name
-By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:{project.version}`.
+By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -137,7 +141,7 @@ You can take control over the name, as shown in the following example:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{version}</version>
+					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<name>example.com/library/${project.artifactId}</name>
@@ -149,5 +153,5 @@ You can take control over the name, as shown in the following example:
 	</project>
 ----
 
-Note that this configuration does not provide an explicit version so `latest` is used.
-It is possible to specify a version as well, either using `${project.version}`, any property available in the build or an hardcoded version.
+Note that this configuration does not provide an explicit tag so `latest` is used.
+It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.
