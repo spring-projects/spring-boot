@@ -70,6 +70,8 @@ class MavenBuild {
 
 	private final Properties properties = new Properties();
 
+	private Consumer<File> preparation;
+
 	private File projectDir;
 
 	MavenBuild(File home) {
@@ -106,6 +108,11 @@ class MavenBuild {
 
 	MavenBuild systemProperty(String name, String value) {
 		this.properties.setProperty(name, value);
+		return this;
+	}
+
+	MavenBuild prepare(Consumer<File> callback) {
+		this.preparation = callback;
 		return this;
 	}
 
@@ -158,6 +165,9 @@ class MavenBuild {
 			request.setBatchMode(true);
 			File target = new File(this.temp, "target");
 			target.mkdirs();
+			if (this.preparation != null) {
+				this.preparation.accept(this.temp);
+			}
 			File buildLogFile = new File(target, "build.log");
 			try (PrintWriter buildLog = new PrintWriter(new FileWriter(buildLogFile))) {
 				request.setOutputHandler(new InvocationOutputHandler() {

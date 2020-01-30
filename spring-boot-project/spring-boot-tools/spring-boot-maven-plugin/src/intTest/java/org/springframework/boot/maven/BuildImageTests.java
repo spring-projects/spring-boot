@@ -18,6 +18,10 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Random;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +46,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image").goals("package").execute((project) -> {
+		mavenBuild.project("build-image").goals("package").prepare(this::writeLongNameResource).execute((project) -> {
 			File jar = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar).isFile();
 			File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
@@ -77,6 +81,19 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 				removeImage(imageReference);
 			}
 		});
+	}
+
+	private void writeLongNameResource(File project) {
+		StringBuilder name = new StringBuilder();
+		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
+		try {
+			Path path = project.toPath().resolve(Paths.get("src", "main", "resources", name.toString()));
+			Files.createDirectories(path.getParent());
+			Files.createFile(path);
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void removeImage(ImageReference imageReference) {

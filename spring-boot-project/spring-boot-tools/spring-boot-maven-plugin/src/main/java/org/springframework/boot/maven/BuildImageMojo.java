@@ -215,6 +215,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		@Override
 		public void writeTo(OutputStream outputStream) throws IOException {
 			TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
+			tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 			this.packager.packageImage(this.libraries, (entry, entryWriter) -> write(entry, entryWriter, tar));
 		}
 

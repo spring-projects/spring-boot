@@ -20,6 +20,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Random;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -51,6 +55,7 @@ class BootBuildImageIntegrationTests {
 	@TestTemplate
 	void bootBuildImageBuildsImage() throws IOException {
 		writeMainClass();
+		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		ImageReference imageReference = ImageReference.of(ImageName.of(this.gradleBuild.getProjectDir().getName()));
@@ -81,6 +86,20 @@ class BootBuildImageIntegrationTests {
 			writer.println("    }");
 			writer.println();
 			writer.println("}");
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private void writeLongNameResource() {
+		StringBuilder name = new StringBuilder();
+		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
+		try {
+			Path path = this.gradleBuild.getProjectDir().toPath()
+					.resolve(Paths.get("src", "main", "resources", name.toString()));
+			Files.createDirectories(path.getParent());
+			Files.createFile(path);
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

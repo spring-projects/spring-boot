@@ -61,6 +61,7 @@ public class ZipFileTarArchive implements TarArchive {
 	@Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
+		tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 		try (ZipFile zipFile = new ZipFile(this.zip)) {
 			Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
 			while (entries.hasMoreElements()) {

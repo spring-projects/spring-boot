@@ -39,6 +39,7 @@ class TarLayoutWriter implements Layout, Closeable {
 
 	TarLayoutWriter(OutputStream outputStream) {
 		this.outputStream = new TarArchiveOutputStream(outputStream);
+		this.outputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 	}
 
 	@Override
