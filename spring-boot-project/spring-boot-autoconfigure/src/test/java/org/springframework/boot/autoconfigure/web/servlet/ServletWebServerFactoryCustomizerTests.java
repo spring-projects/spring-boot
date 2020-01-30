@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,14 +105,14 @@ class ServletWebServerFactoryCustomizerTests {
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getTimeout()).isEqualTo(Duration.ofSeconds(123));
+		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(123);
 		Cookie cookie = sessionCaptor.getValue().getCookie();
 		assertThat(cookie.getName()).isEqualTo("testname");
 		assertThat(cookie.getDomain()).isEqualTo("testdomain");
 		assertThat(cookie.getPath()).isEqualTo("/testpath");
 		assertThat(cookie.getComment()).isEqualTo("testcomment");
 		assertThat(cookie.getHttpOnly()).isTrue();
-		assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofSeconds(60));
+		assertThat(cookie.getMaxAge()).hasSeconds(60);
 
 	}
 

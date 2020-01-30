@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,7 +106,7 @@ class ServerPropertiesTests {
 	@Test
 	void testConnectionTimeout() {
 		bind("server.connection-timeout", "60s");
-		assertThat(this.properties.getConnectionTimeout()).isEqualTo(Duration.ofMillis(60000));
+		assertThat(this.properties.getConnectionTimeout()).hasMillis(60000);
 	}
 
 	@Test
@@ -149,7 +148,7 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(tomcat.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
 	}
@@ -235,7 +234,7 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyIdleTimeout() {
 		bind("server.jetty.thread-idle-timeout", "10s");
-		assertThat(this.properties.getJetty().getThreadIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(this.properties.getJetty().getThreadIdleTimeout()).hasSeconds(10);
 	}
 
 	@Test
@@ -308,7 +307,7 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatBackgroundProcessorDelayMatchesEngineDefault() {
 		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay())
-				.isEqualTo(Duration.ofSeconds((new StandardEngine().getBackgroundProcessorDelay())));
+				.hasSeconds((new StandardEngine().getBackgroundProcessorDelay()));
 	}
 
 	@Test
