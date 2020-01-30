@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 public class DockerApi {
 
 	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
-	
+
 	static final String API_VERSION = "v1.24";
 
 	private final Http http;
