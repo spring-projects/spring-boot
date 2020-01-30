@@ -676,7 +676,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	void defaultSessionTimeout() {
-		assertThat(getFactory().getSession().getTimeout()).isEqualTo(Duration.ofMinutes(30));
+		assertThat(getFactory().getSession().getTimeout()).hasMinutes(30);
 	}
 
 	@Test
