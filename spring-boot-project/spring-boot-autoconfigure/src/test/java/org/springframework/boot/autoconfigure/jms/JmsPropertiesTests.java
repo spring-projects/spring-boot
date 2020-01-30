@@ -83,7 +83,7 @@ class JmsPropertiesTests {
 	@Test
 	void defaultReceiveTimeoutMatchesListenerContainersDefault() {
 		assertThat(new JmsProperties().getListener().getReceiveTimeout())
-				.hasMinutes(AbstractPollingMessageListenerContainer.DEFAULT_RECEIVE_TIMEOUT);
+				.hasMillis(AbstractPollingMessageListenerContainer.DEFAULT_RECEIVE_TIMEOUT);
 	}
 
 }
