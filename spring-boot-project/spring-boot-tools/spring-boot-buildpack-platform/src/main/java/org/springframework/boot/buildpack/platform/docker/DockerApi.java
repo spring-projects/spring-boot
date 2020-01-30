@@ -49,6 +49,8 @@ import org.springframework.util.StringUtils;
 public class DockerApi {
 
 	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
+	
+	static final String API_VERSION = "v1.24";
 
 	private final Http http;
 
@@ -94,7 +96,7 @@ public class DockerApi {
 
 	private URI buildUrl(String path, String... params) {
 		try {
-			URIBuilder builder = new URIBuilder("docker://localhost/v1.40" + path);
+			URIBuilder builder = new URIBuilder("docker://localhost/" + API_VERSION + path);
 			int param = 0;
 			while (param < params.length) {
 				builder.addParameter(params[param++], params[param++]);

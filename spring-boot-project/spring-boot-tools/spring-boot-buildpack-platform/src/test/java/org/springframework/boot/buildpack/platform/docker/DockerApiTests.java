@@ -64,7 +64,7 @@ import static org.mockito.Mockito.verify;
  */
 class DockerApiTests {
 
-	private static final String API_URL = "docker://localhost/v1.40";
+	private static final String API_URL = "docker://localhost/" + DockerApi.API_VERSION;
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
