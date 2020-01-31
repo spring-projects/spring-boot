@@ -64,10 +64,23 @@ public class ContainerStatus extends MappedObject {
 		return this.waitingErrorMessage;
 	}
 
+	/**
+	 * Create a new {@link ContainerStatus} instance from the specified JSON content
+	 * stream.
+	 * @param content the JSON content stream
+	 * @return a new {@link ContainerStatus} instance
+	 * @throws IOException on IO error
+	 */
 	public static ContainerStatus of(InputStream content) throws IOException {
 		return of(content, ContainerStatus::new);
 	}
 
+	/**
+	 * Create a new {@link ContainerStatus} instance with the specified values.
+	 * @param statusCode the status code
+	 * @param errorMessage the error message
+	 * @return a new {@link ContainerStatus} instance
+	 */
 	public static ContainerStatus of(int statusCode, String errorMessage) {
 		return new ContainerStatus(statusCode, errorMessage);
 	}
