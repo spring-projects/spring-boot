@@ -24,6 +24,7 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
@@ -33,6 +34,7 @@ import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
  * Entry point to Spring Boot's Gradle DSL.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class SpringBootExtension {
@@ -89,22 +91,24 @@ public class SpringBootExtension {
 	 * @param configurer the task configurer
 	 */
 	public void buildInfo(Action<BuildInfo> configurer) {
-		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo", BuildInfo.class);
-		bootBuildInfo.setGroup(BasePlugin.BUILD_GROUP);
-		bootBuildInfo.setDescription("Generates a META-INF/build-info.properties file.");
+		TaskProvider<BuildInfo> bootBuildInfo = this.project.getTasks().register("bootBuildInfo", BuildInfo.class,
+				(task) -> {
+					task.setGroup(BasePlugin.BUILD_GROUP);
+					task.setDescription("Generates a META-INF/build-info.properties file.");
+					task.getConventionMapping().map("destinationDir",
+							() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
+				});
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo);
+			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo.get());
 			this.project.afterEvaluate((evaluated) -> {
-				BuildInfoProperties properties = bootBuildInfo.getProperties();
+				BuildInfoProperties properties = bootBuildInfo.get().getProperties();
 				if (properties.getArtifact() == null) {
 					properties.setArtifact(determineArtifactBaseName());
 				}
 			});
-			bootBuildInfo.getConventionMapping().map("destinationDir",
-					() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
 		});
 		if (configurer != null) {
-			configurer.execute(bootBuildInfo);
+			configurer.execute(bootBuildInfo.get());
 		}
 	}
 

@@ -29,12 +29,13 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
+import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
@@ -46,6 +47,7 @@ import org.springframework.util.StringUtils;
  * {@link Action} that is executed in response to the {@link JavaPlugin} being applied.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 final class JavaPluginAction implements PluginApplicationAction {
 
@@ -66,7 +68,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		disableJarTask(project);
 		configureBuildTask(project);
-		BootJar bootJar = configureBootJarTask(project);
+		TaskProvider<BootJar> bootJar = configureBootJarTask(project);
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
@@ -76,55 +78,57 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void disableJarTask(Project project) {
-		project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME).setEnabled(false);
+		project.getTasks().named(JavaPlugin.JAR_TASK_NAME).configure((task) -> task.setEnabled(false));
 	}
 
 	private void configureBuildTask(Project project) {
-		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(this.singlePublishedArtifact);
+		project.getTasks().named(BasePlugin.ASSEMBLE_TASK_NAME)
+				.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
 	}
 
-	private BootJar configureBootJarTask(Project project) {
-		BootJar bootJar = project.getTasks().create(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class);
-		bootJar.setDescription(
-				"Assembles an executable jar archive containing the main classes and their dependencies.");
-		bootJar.setGroup(BasePlugin.BUILD_GROUP);
-		SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		bootJar.classpath((Callable<FileCollection>) () -> mainSourceSet.getRuntimeClasspath());
-		Configuration runtimeClasspathConfiguration = project.getConfigurations()
-				.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
-		runtimeClasspathConfiguration.getIncoming().afterResolve(bootJar::resolvedDependencies);
-		bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
-		return bootJar;
+	private TaskProvider<BootJar> configureBootJarTask(Project project) {
+		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
+			bootJar.setDescription(
+					"Assembles an executable jar archive containing the main classes and their dependencies.");
+			bootJar.setGroup(BasePlugin.BUILD_GROUP);
+			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			bootJar.classpath((Callable<FileCollection>) mainSourceSet::getRuntimeClasspath);
+			Configuration runtimeClasspathConfiguration = project.getConfigurations()
+					.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
+			runtimeClasspathConfiguration.getIncoming().afterResolve(bootJar::resolvedDependencies);
+			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
+		});
 	}
 
-	private void configureBootBuildImageTask(Project project, BootJar bootJar) {
-		BootBuildImage buildImage = project.getTasks().create(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME,
-				BootBuildImage.class);
-		buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
-		buildImage.setGroup(BasePlugin.BUILD_GROUP);
-		buildImage.getJar().set(bootJar.getArchiveFile());
-		buildImage.getTargetJavaVersion().set(javaPluginConvention(project).getTargetCompatibility());
+	private void configureBootBuildImageTask(Project project, TaskProvider<BootJar> bootJar) {
+		project.getTasks().register(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class, (buildImage) -> {
+			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
+			buildImage.setGroup(BasePlugin.BUILD_GROUP);
+			buildImage.getJar().set(bootJar.get().getArchiveFile());
+			buildImage.getTargetJavaVersion().set(javaPluginConvention(project).getTargetCompatibility());
+		});
 	}
 
-	private void configureArtifactPublication(BootJar bootJar) {
-		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
+	private void configureArtifactPublication(TaskProvider<BootJar> bootJar) {
+		LazyPublishArtifact artifact = new LazyPublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 	}
 
 	private void configureBootRunTask(Project project) {
-		BootRun run = project.getTasks().create("bootRun", BootRun.class);
-		run.setDescription("Runs this project as a Spring Boot application.");
-		run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
-		run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-				.getRuntimeClasspath());
-		run.getConventionMapping().map("jvmArgs", () -> {
-			if (project.hasProperty("applicationDefaultJvmArgs")) {
-				return project.property("applicationDefaultJvmArgs");
-			}
-			return Collections.emptyList();
+		project.getTasks().register("bootRun", BootRun.class, (run) -> {
+			run.setDescription("Runs this project as a Spring Boot application.");
+			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
+			run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
+					.getRuntimeClasspath());
+			run.getConventionMapping().map("jvmArgs", () -> {
+				if (project.hasProperty("applicationDefaultJvmArgs")) {
+					return project.property("applicationDefaultJvmArgs");
+				}
+				return Collections.emptyList();
+			});
+			run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
 		});
-		run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
 	}
 
 	private JavaPluginConvention javaPluginConvention(Project project) {
