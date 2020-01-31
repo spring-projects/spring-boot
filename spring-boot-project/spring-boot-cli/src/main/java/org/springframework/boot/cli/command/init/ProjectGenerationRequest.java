@@ -71,7 +71,7 @@ class ProjectGenerationRequest {
 
 	private String bootVersion;
 
-	private List<String> dependencies = new ArrayList<>();
+	private final List<String> dependencies = new ArrayList<>();
 
 	/**
 	 * The URL of the service to use.

@@ -69,7 +69,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers";
 
-	private List<String> dependencies = new ArrayList<>();
+	private final List<String> dependencies = new ArrayList<>();
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -111,22 +111,11 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private File createClasspathIndex(List<String> dependencies) {
-		try {
-			StringWriter content = new StringWriter();
-			BufferedWriter writer = new BufferedWriter(content);
-			for (String dependency : dependencies) {
-				writer.write(dependency);
-				writer.write("\n");
-			}
-			writer.flush();
-			File source = getProject().getResources().getText().fromString(content.toString()).asFile();
-			File indexFile = new File(source.getParentFile(), "classpath.idx");
-			source.renameTo(indexFile);
-			return indexFile;
-		}
-		catch (IOException ex) {
-			throw new RuntimeException("Failed to create classpath.idx", ex);
-		}
+		String content = dependencies.stream().collect(Collectors.joining("\n", "", "\n"));
+		File source = getProject().getResources().getText().fromString(content).asFile();
+		File indexFile = new File(source.getParentFile(), "classpath.idx");
+		source.renameTo(indexFile);
+		return indexFile;
 	}
 
 	@Override
