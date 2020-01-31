@@ -1,9 +1,10 @@
 [[build-image]]
 == Packaging OCI images
-
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from executable jars using https://buildpacks.io[Cloud Native Buildpacks].
 Images can be built using the `bootBuildImage` task and a local Docker installation.
 The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
+
+
 
 [[build-image-customization]]
 === Image Customizations
@@ -37,11 +38,14 @@ The following table summarizes the available properties and their default values
 | `verboseLogging`
 | Enables verbose logging of builder operations.
 | `false`
-
 |===
+
+
 
 [[build-image-examples]]
 === Examples
+
+
 
 [[build-image-example-custom-image-builder]]
 ==== Custom Image Builder
@@ -76,6 +80,7 @@ include::../gradle/packaging/boot-build-image-env.gradle.kts[tags=env]
 ----
 
 The example above assumes that the builder defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use).
+
 
 
 [[build-image-example-custom-image-name]]

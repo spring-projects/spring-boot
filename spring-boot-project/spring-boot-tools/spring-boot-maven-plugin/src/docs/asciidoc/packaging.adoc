@@ -73,8 +73,12 @@ The `layout` property defaults to a guess based on the archive type (`jar` or `w
 
 include::goals/repackage.adoc[leveloffset=+1]
 
+
+
 [[repackage-examples]]
 === Examples
+
+
 
 [[repackage-example-custom-classifier]]
 ==== Custom Classifier

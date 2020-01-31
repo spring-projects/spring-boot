@@ -203,7 +203,6 @@ class Lifecycle implements Closeable {
 		try {
 			this.docker.container().start(reference);
 			this.docker.container().logs(reference, logConsumer::accept);
-
 			ContainerStatus status = this.docker.container().wait(reference);
 			if (status.getStatusCode() != 0) {
 				throw new BuilderException(phase.getName(), status.getStatusCode());

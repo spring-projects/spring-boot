@@ -30,6 +30,8 @@ It is possible to automate the creation of an image whenever the `package` phase
 TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
+
+
 [[build-image-customization]]
 === Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
@@ -62,7 +64,6 @@ The following table summarizes the available properties and their default values
 | `verboseLogging`
 | Enables verbose logging of builder operations.
 | `false`
-
 |===
 
 For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
@@ -70,8 +71,11 @@ For more details, see <<build-image-example-custom-image-builder,custom image bu
 include::goals/build-image.adoc[leveloffset=+1]
 
 
+
 [[build-image-examples]]
 === Examples
+
+
 
 [[build-image-example-custom-image-builder]]
 ==== Custom Image Builder

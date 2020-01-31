@@ -1,6 +1,5 @@
 [[running-your-application]]
 == Running your application with Gradle
-
 To run your application without first building an archive use the `bootRun` task:
 
 [source,bash,indent=0,subs="verbatim"]
@@ -28,7 +27,6 @@ include::../gradle/running/boot-run-main.gradle[tags=main]
 include::../gradle/running/boot-run-main.gradle.kts[tags=main]
 ----
 
-
 Alternatively, the main class name can be configured project-wide using the `mainClassName` property of the Spring Boot DSL:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -42,7 +40,6 @@ include::../gradle/running/spring-boot-dsl-main-class-name.gradle[tags=main-clas
 ----
 include::../gradle/running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-class]
 ----
-
 
 By default, `bootRun` will configure the JVM to optimize its launch for faster startup during development.
 This behavior can be disabled by using the `optimizedLaunch` property, as shown in the following example:
@@ -59,7 +56,6 @@ include::../gradle/running/boot-run-disable-optimized-launch.gradle[tags=launch]
 include::../gradle/running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
 ----
 
-
 If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -73,6 +69,7 @@ include::../gradle/running/application-plugin-main-class-name.gradle[tags=main-c
 ----
 include::../gradle/running/application-plugin-main-class-name.gradle.kts[tags=main-class]
 ----
+
 
 
 [[running-your-application-passing-arguments]]
@@ -105,6 +102,5 @@ include::../gradle/running/boot-run-source-resources.gradle[tags=source-resource
 ----
 include::../gradle/running/boot-run-source-resources.gradle.kts[tags=source-resources]
 ----
-
 
 This makes them reloadable in the live application which can be helpful at development time.

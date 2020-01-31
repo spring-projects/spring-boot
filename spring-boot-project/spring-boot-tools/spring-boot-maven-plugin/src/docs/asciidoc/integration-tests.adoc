@@ -1,6 +1,5 @@
 [[integration-tests]]
 == Running Integration tests
-
 While you may start your Spring Boot application very easily from your test (or test suite) itself, it may be desirable to handle that in the build itself.
 To make sure that the lifecycle of your Spring Boot application is properly managed around your integration tests, you can use the `start` and `stop` goals, as shown in the following example:
 
@@ -38,6 +37,7 @@ You could also configure a more advanced setup to skip the integration tests whe
 include::goals/start.adoc[leveloffset=+1]
 
 include::goals/stop.adoc[leveloffset=+1]
+
 
 
 [[integration-tests-example]]
