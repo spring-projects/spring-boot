@@ -51,6 +51,7 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 		ConfigurationPropertiesBindingPostProcessor.register(registry);
 		BoundConfigurationProperties.register(registry);
 		ConfigurationPropertiesBeanDefinitionValidator.register(registry);
+		ConfigurationBeanFactoryMetadata.register(registry);
 	}
 
 }
