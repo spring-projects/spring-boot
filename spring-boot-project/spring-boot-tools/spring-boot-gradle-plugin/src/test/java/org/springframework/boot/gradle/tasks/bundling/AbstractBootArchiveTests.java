@@ -411,11 +411,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				this.libPath + "third-library.jar");
 	}
 
-	@Test
-	void libEntriesAreStored() throws IOException {
-
-	}
-
 	protected File jarFile(String name) throws IOException {
 		File file = newFile(name);
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {

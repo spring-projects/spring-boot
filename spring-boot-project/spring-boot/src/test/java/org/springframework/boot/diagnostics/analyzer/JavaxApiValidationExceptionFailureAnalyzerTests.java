@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @ClassPathExclusions("hibernate-validator-*.jar")
 @ClassPathOverrides("javax.validation:validation-api:2.0.1.Final")
-class JavaxApiValidationExceptionFailureAnalyzerTests2 {
+class JavaxApiValidationExceptionFailureAnalyzerTests {
 
 	@Test
 	void validatedPropertiesTest() {

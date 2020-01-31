@@ -326,7 +326,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Provides access to the java binary executable, regardless of OS.
 	 * @return the java executable
-	 **/
+	 */
 	protected String getJavaExecutable() {
 		Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session);
 		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
