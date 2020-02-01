@@ -50,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  * @author HaiTao Zhang
+ * @author Chris Bono
  */
 class EnvironmentEndpointTests {
 
@@ -246,11 +247,19 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
-	void uriPropertryWithSensitiveInfo() {
+	void uriPropertyWithSensitiveInfo() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		TestPropertyValues.of("sensitive.uri=http://user:password@localhost:8080").applyTo(environment);
 		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("sensitive.uri");
 		assertThat(descriptor.getProperty().getValue()).isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@Test
+	void addressesPropertyWithMultipleEntriesEachWithSensitiveInfo() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestPropertyValues.of("sensitive.addresses=http://user:password@localhost:8080,http://user2:password2@localhost:8082").applyTo(environment);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("sensitive.addresses");
+		assertThat(descriptor.getProperty().getValue()).isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082");
 	}
 
 	private static ConfigurableEnvironment emptyEnvironment() {

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.context.properties;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author HaiTao Zhang
+ * @author Chris Bono
  */
 class ConfigurationPropertiesReportEndpointTests {
 
@@ -170,17 +172,24 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	void sanitizedUriWithSensitiveInfo() {
+	void sanitizeUriWithSensitiveInfo() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("sensitiveUri"))
 						.isEqualTo("http://user:******@localhost:8080")));
 	}
 
 	@Test
-	void sanitizedUriWithNoPassword() {
+	void sanitizeUriWithNoPassword() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("noPasswordUri"))
 						.isEqualTo("http://user:******@localhost:8080")));
+	}
+
+	@Test
+	void sanitizeAddressesFieldContainingMultipleRawSensitiveUris() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("rawSensitiveAddresses"))
+						.isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082")));
 	}
 
 	@Test
@@ -574,6 +583,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
 
+		private String rawSensitiveAddresses = "http://user:password@localhost:8080,http://user2:password2@localhost:8082";
+
 		private List<ListItem> listItems = new ArrayList<>();
 
 		private List<List<ListItem>> listOfListItems = new ArrayList<>();
@@ -597,6 +608,14 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public URI getNoPasswordUri() {
 			return this.noPasswordUri;
+		}
+
+		public String getRawSensitiveAddresses() {
+			return this.rawSensitiveAddresses;
+		}
+
+		public void setRawSensitiveAddresses(final String rawSensitiveAddresses) {
+			this.rawSensitiveAddresses = rawSensitiveAddresses;
 		}
 
 		public List<ListItem> getListItems() {
