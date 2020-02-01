@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Johannes Graf
  */
-class StackdriverMetricsExportAutoConfigurationTest {
+class StackdriverMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(StackdriverMetricsExportAutoConfiguration.class));
@@ -45,7 +45,7 @@ class StackdriverMetricsExportAutoConfigurationTest {
 	}
 
 	@Test
-	void failsWithoutAnProjectId() {
+	void failsWithoutAProjectId() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context).hasFailed());
 	}
