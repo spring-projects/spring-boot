@@ -25,8 +25,8 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	antDependencies "org.apache.ivy:ivy:2.4.0"
 	antDependencies project(path: ":spring-boot-project:spring-boot-tools:spring-boot-antlib")
-	antDependencies "org.apache.ant:ant-launcher:1.9.3"
-	antDependencies "org.apache.ant:ant:1.9.3"
+	antDependencies "org.apache.ant:ant-launcher:1.10.7"
+	antDependencies "org.apache.ant:ant:1.10.7"
 
 	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
