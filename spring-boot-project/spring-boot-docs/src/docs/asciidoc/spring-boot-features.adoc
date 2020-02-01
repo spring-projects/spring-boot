@@ -396,6 +396,10 @@ On your application classpath (for example, inside your jar) you can have an `ap
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
 For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
+NOTE: Spring Boot also supports wildcard locations when loading configuration files.
+By default, a wildcard location of `config/*/` outside of your jar is supported.
+Wildcard locations are also supported when specifying `spring.config.additional-location` and `spring.config.location`.
+
 [[boot-features-external-config-application-json]]
 [TIP]
 ====
@@ -492,10 +496,11 @@ If `spring.config.location` contains directories (as opposed to files), they sho
 Files specified in `spring.config.location` are used as-is, with no support for profile-specific variants, and are overridden by any profile-specific properties.
 
 Config locations are searched in reverse order.
-By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/`.
+By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/`.
 The resulting search order is the following:
 
 . `file:./config/`
+. `file:./config/*/`
 . `file:./`
 . `classpath:/config/`
 . `classpath:/`
@@ -513,6 +518,7 @@ For example, if additional locations of `classpath:/custom-config/,file:./custom
 . `file:./custom-config/`
 . `classpath:custom-config/`
 . `file:./config/`
+. `file:./config/*/`
 . `file:./`
 . `classpath:/config/`
 . `classpath:/`
