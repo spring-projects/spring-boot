@@ -17,6 +17,10 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class SanitizerTests {
 
 	@Test
-	void defaults() {
+	void defaultNonUriKeys() {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
@@ -40,21 +45,64 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("my.uri", "http://user:password@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
 	}
 
-	@Test
-	void uriWithNoPasswordShouldNotBeSanitized() {
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleEntryWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize("my.uri", "http://localhost:8080")).isEqualTo("http://localhost:8080");
+		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080")).isEqualTo("http://user:******@localhost:8080");
 	}
 
-	@Test
-	void uriWithPasswordMatchingOtherPartsOfString() {
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleEntryWithNoPasswordShouldNotBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize("my.uri", "http://user://@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
+		assertThat(sanitizer.sanitize(key, "http://localhost:8080")).isEqualTo("http://localhost:8080");
+		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080")).isEqualTo("http://user@localhost:8080");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithSingleEntryWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user://@localhost:8080")).isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleEntriesEachWithPasswordShouldHaveAllSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user1:password1@localhost:8080,http://user2:password2@localhost:8082"))
+				.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleEntriesNoneWithPasswordShouldHaveNoneSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080,http://localhost:8082"))
+				.isEqualTo("http://user@localhost:8080,http://localhost:8082");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleEntriesSomeWithPasswordShouldHaveThoseSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083"))
+				.isEqualTo("http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083");
+	}
+
+	@ParameterizedTest(name = "key = {0}")
+	@MethodSource("matchingUriUserInfoKeys")
+	void uriWithMultipleEntriesWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(key, "http://user1://@localhost:8080,http://user2://@localhost:8082"))
+				.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
+	}
+
+	static private Stream<String> matchingUriUserInfoKeys() {
+		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "address", "my.address", "myaddress", "addresses", "my.addresses", "myaddresses");
 	}
 
 	@Test
@@ -63,5 +111,4 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");
 	}
-
 }

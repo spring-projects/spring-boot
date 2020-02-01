@@ -16,8 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -32,18 +34,23 @@ import org.springframework.util.StringUtils;
  * @author Nicolas Lejeune
  * @author Stephane Nicoll
  * @author HaiTao Zhang
+ * @author Chris Bono
  * @since 2.0.0
  */
 public class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
+	private static final String[] DEFAULT_KEYS_TO_SANITIZE = { "password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command", "uri", "uris", "address", "addresses" };
+
+	private static final String[] URI_USERINFO_KEYS = { "uri", "uris", "address", "addresses" };
+
 	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("[A-Za-z]+://.+:(.*)@.+$");
 
 	private Pattern[] keysToSanitize;
 
 	public Sanitizer() {
-		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command", "uri");
+		this(DEFAULT_KEYS_TO_SANITIZE);
 	}
 
 	public Sanitizer(String... keysToSanitize) {
@@ -91,8 +98,8 @@ public class Sanitizer {
 		}
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
-				if (pattern.matcher("uri").matches()) {
-					return sanitizeUri(value);
+				if (keyIsUriWithUserInfo(pattern)) {
+					return sanitizeUris(value.toString());
 				}
 				return "******";
 			}
@@ -100,14 +107,28 @@ public class Sanitizer {
 		return value;
 	}
 
-	private Object sanitizeUri(Object value) {
-		String uriString = value.toString();
+	private boolean keyIsUriWithUserInfo(Pattern pattern) {
+		for (String uriKey : URI_USERINFO_KEYS) {
+			if (pattern.matcher(uriKey).matches()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Object sanitizeUris(String uriString) {
+		// Treat each uri value as possibly containing multiple uris (comma separated)
+		return Arrays.stream(uriString.split(","))
+				.map(this::sanitizeUri)
+				.collect(Collectors.joining(","));
+	}
+
+	private String sanitizeUri(String uriString) {
 		Matcher matcher = URI_USERINFO_PATTERN.matcher(uriString);
 		String password = matcher.matches() ? matcher.group(1) : null;
 		if (password != null) {
 			return StringUtils.replace(uriString, ":" + password + "@", ":******@");
 		}
-		return value;
+		return uriString;
 	}
-
 }
