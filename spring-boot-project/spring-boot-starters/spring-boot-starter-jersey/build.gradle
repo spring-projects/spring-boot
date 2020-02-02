@@ -17,7 +17,7 @@ dependencies {
 		exclude group: "jakarta.el", module: "jakarta.el-api"
 		exclude group: "org.glassfish", module: "jakarta.el"
 	}
-	api("org.glassfish.jersey.ext:jersey-spring4")
+	api("org.glassfish.jersey.ext:jersey-spring5")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson")
 }
 

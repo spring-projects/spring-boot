@@ -119,7 +119,7 @@ dependencies {
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.eclipse.jetty:jetty-webapp")
-	testImplementation("org.glassfish.jersey.ext:jersey-spring4")
+	testImplementation("org.glassfish.jersey.ext:jersey-spring5")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.hsqldb:hsqldb")

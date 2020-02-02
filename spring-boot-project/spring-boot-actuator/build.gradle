@@ -83,7 +83,7 @@ dependencies {
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
-	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring4")
+	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }
 
