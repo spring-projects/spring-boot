@@ -94,6 +94,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	 */
 	public AbstractServletWebServerFactory(int port) {
 		super(port);
+		checkPort(port);
 	}
 
 	/**
@@ -104,6 +105,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	 */
 	public AbstractServletWebServerFactory(String contextPath, int port) {
 		super(port);
+		checkPort(port);
 		checkContextPath(contextPath);
 		this.contextPath = contextPath;
 	}
@@ -132,6 +134,12 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
 				throw new IllegalArgumentException("ContextPath must start with '/' and not end with '/'");
 			}
+		}
+	}
+	
+	private void checkPort(int port){
+		if(port < 0){
+			throw new IllegalArgumentException("Server port cannot be less than 0");
 		}
 	}
 
