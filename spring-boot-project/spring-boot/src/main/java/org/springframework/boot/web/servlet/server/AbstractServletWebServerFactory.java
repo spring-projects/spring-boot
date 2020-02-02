@@ -136,9 +136,9 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			}
 		}
 	}
-	
-	private void checkPort(int port){
-		if(port < 0) {
+
+	private void checkPort(int port) {
+		if (port < 0) {
 			throw new IllegalArgumentException("Server port cannot be less than 0");
 		}
 	}
