@@ -16,15 +16,14 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -46,7 +45,7 @@ import org.springframework.util.StringUtils;
  */
 public class BootBuildImage extends DefaultTask {
 
-	private Supplier<File> jar;
+	private RegularFileProperty jar;
 
 	private String imageName;
 
@@ -58,22 +57,17 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean verboseLogging;
 
-	/**
-	 * Configures this task to create an image from the given {@code bootJar} task. This
-	 * task is also configured to depend upon the given task.
-	 * @param bootJar the fat jar from which the image should be created.
-	 */
-	public void from(BootJar bootJar) {
-		dependsOn(bootJar);
-		this.jar = () -> bootJar.getArchiveFile().get().getAsFile();
+	public BootBuildImage() {
+		this.jar = getProject().getObjects().fileProperty();
 	}
 
 	/**
-	 * Configures this task to create an image from the given jar file.
-	 * @param jar the jar from which the image should be created.
+	 * Returns the property for the jar file from which the image will be built.
+	 * @return the jar property
 	 */
-	public void from(File jar) {
-		this.jar = () -> jar;
+	@Input
+	public RegularFileProperty getJar() {
+		return this.jar;
 	}
 
 	/**
@@ -192,8 +186,8 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	BuildRequest createRequest() {
-		BuildRequest request = customize(
-				BuildRequest.of(determineImageReference(), (owner) -> new ZipFileTarArchive(this.jar.get(), owner)));
+		BuildRequest request = customize(BuildRequest.of(determineImageReference(),
+				(owner) -> new ZipFileTarArchive(this.jar.get().getAsFile(), owner)));
 		return request;
 	}
 

@@ -101,7 +101,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 				BootBuildImage.class);
 		buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
 		buildImage.setGroup(BasePlugin.BUILD_GROUP);
-		buildImage.from(bootJar);
+		buildImage.getJar().set(bootJar.getArchiveFile());
 	}
 
 	private void configureArtifactPublication(BootJar bootJar) {
