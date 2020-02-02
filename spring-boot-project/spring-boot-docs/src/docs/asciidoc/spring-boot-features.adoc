@@ -4277,7 +4277,6 @@ The following code listing shows how to inject a Cassandra bean:
 
 		private final CassandraTemplate template;
 
-		@Autowired
 		public MyBean(CassandraTemplate template) {
 			this.template = template;
 		}
