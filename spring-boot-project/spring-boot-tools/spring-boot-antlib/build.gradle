@@ -18,7 +18,7 @@ configurations {
 
 dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
-	antIvy "org.apache.ivy:ivy:2.4.0"
+	antIvy "org.apache.ivy:ivy:2.5.0"
 
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
