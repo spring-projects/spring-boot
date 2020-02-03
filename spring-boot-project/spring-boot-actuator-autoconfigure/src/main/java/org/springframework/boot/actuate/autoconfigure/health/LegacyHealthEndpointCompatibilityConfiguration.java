@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
@@ -36,6 +35,7 @@ import org.springframework.util.CollectionUtils;
  * Configuration to adapt legacy deprecated health endpoint classes and interfaces.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @see HealthEndpointAutoConfiguration
  */
 @Configuration(proxyBeanMethods = false)
@@ -51,16 +51,6 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 			aggregator.setStatusOrder(healthIndicatorProperties.getOrder());
 		}
 		return aggregator;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	HealthStatusHttpMapper healthStatusHttpMapper(HealthIndicatorProperties healthIndicatorProperties) {
-		HealthStatusHttpMapper mapper = new HealthStatusHttpMapper();
-		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getHttpMapping())) {
-			mapper.setStatusMapping(healthIndicatorProperties.getHttpMapping());
-		}
-		return mapper;
 	}
 
 	@Bean

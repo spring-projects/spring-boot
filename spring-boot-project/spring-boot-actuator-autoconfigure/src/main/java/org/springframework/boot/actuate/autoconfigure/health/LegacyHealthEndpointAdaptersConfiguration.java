@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
  * Configuration to adapt legacy deprecated health endpoint classes and interfaces.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @see HealthEndpointAutoConfiguration
  */
 @Configuration(proxyBeanMethods = false)
@@ -37,13 +37,6 @@ class LegacyHealthEndpointAdaptersConfiguration {
 	StatusAggregator healthAggregatorStatusAggregatorAdapter(
 			org.springframework.boot.actuate.health.HealthAggregator healthAggregator) {
 		return new HealthAggregatorStatusAggregatorAdapter(healthAggregator);
-	}
-
-	@Bean
-	@ConditionalOnBean(org.springframework.boot.actuate.health.HealthStatusHttpMapper.class)
-	HttpCodeStatusMapper healthStatusHttpMapperHttpCodeStatusMapperAdapter(
-			org.springframework.boot.actuate.health.HealthStatusHttpMapper healthStatusHttpMapper) {
-		return new HealthStatusHttpMapperHttpCodeStatusMapperAdapter(healthStatusHttpMapper);
 	}
 
 }
