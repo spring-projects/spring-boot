@@ -154,6 +154,21 @@ test {
 	outputs.dir("${buildDir}/generated-snippets")
 }
 
+task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
+	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	dependsOn dependencyVersions
+	baseDirFollowsSourceDir()
+	doFirst {
+		def versionConstraints = dependencyVersions.versionConstraints
+		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
+		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
+		attributes "spring-integration-docs": integrationDocs
+	}
+}
+
 asciidoctor {
 	configurations "asciidoctorExtensions"
 	dependsOn test

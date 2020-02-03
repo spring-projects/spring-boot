@@ -20,7 +20,7 @@ include::{snippets}/integrationgraph/graph/http-response.adoc[]
 [[integrationgraph-retrieving-response-structure]]
 === Response Structure
 The response contains all Spring Integration components used within the application, as well as the links between them.
-More information about the structure can be found in the https://docs.spring.io/spring-integration/reference/html/index-single.html#integration-graph[reference documentation].
+More information about the structure can be found in the {spring-integration-docs}index-single.html#integration-graph[reference documentation].
 
 
 
