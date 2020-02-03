@@ -24,7 +24,7 @@
 				</property>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.19</spring-javaformat.version>
+				<spring-javaformat.version>0.0.20</spring-javaformat.version>
 				<nohttp-checkstyle.version>0.0.4.RELEASE</nohttp-checkstyle.version>
 			</properties>
 			<build>
@@ -32,12 +32,12 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>3.0.0</version>
+						<version>3.1.0</version>
 						<dependencies>
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>8.22</version>
+								<version>8.29</version>
 							</dependency>
 							<dependency>
 								<groupId>io.spring.javaformat</groupId>
