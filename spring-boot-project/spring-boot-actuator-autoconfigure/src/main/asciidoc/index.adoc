@@ -9,6 +9,8 @@ Andy Wilkinson
 :hide-uri-scheme:
 :docinfo: shared,private
 
+:spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
+
 This API documentation describes Spring Boot Actuators web endpoints.
 
 

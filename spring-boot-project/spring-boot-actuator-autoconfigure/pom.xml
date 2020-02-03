@@ -799,6 +799,7 @@
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
 								<snippets>${project.build.directory}/generated-snippets/</snippets>
+								<spring-integration-version>${spring-integration.version}</spring-integration-version>
 							</attributes>
 						</configuration>
 						<dependencies>
