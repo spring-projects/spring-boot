@@ -62,7 +62,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	@Override
 	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId) {
-		Set<String> versions = new HashSet<String>();
+		Set<String> versions = new HashSet<>();
 		for (String repositoryUrl : this.repositoryUrls) {
 			versions.addAll(resolveVersions(groupId, artifactId, repositoryUrl));
 		}
@@ -70,7 +70,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 	}
 
 	private Set<String> resolveVersions(String groupId, String artifactId, String repositoryUrl) {
-		Set<String> versions = new HashSet<String>();
+		Set<String> versions = new HashSet<>();
 		String url = repositoryUrl + "/" + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
 		try {
 			String metadata = this.rest.getForObject(url, String.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class ExtractVersionConstraints extends AbstractTask {
 
 	private final Set<VersionProperty> versionProperties = new TreeSet<>();
 
-	private final List<String> projectPaths = new ArrayList<String>();
+	private final List<String> projectPaths = new ArrayList<>();
 
 	public ExtractVersionConstraints() {
 		DependencyHandler dependencies = getProject().getDependencies();

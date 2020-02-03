@@ -28,7 +28,7 @@ import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 
 /**
- * A {@Plugin} to configure integration testing support in a {@link Project}.
+ * A {@link Plugin} to configure integration testing support in a {@link Project}.
  *
  * @author Andy Wilkinson
  */

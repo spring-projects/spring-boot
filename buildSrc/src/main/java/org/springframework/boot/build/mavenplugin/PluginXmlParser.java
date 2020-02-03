@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class PluginXmlParser {
 	}
 
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
-		List<Mojo> mojos = new ArrayList<Mojo>();
+		List<Mojo> mojos = new ArrayList<>();
 		for (Node mojoNode : nodesAt("//plugin/mojos/mojo", plugin)) {
 			mojos.add(new Mojo(textAt("goal", mojoNode), format(textAt("description", mojoNode)),
 					parseParameters(mojoNode)));
