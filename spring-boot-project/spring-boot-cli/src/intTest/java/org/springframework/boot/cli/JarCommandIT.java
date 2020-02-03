@@ -55,7 +55,7 @@ class JarCommandIT {
 		invocation.await();
 		assertThat(invocation.getStandardOutput()).isEqualTo("");
 		assertThat(invocation.getErrorOutput())
-				.contains("The name of the " + "resulting jar and at least one source file must be specified");
+				.contains("The name of the resulting jar and at least one source file must be specified");
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class JarCommandIT {
 		invocation.await();
 		assertThat(invocation.getStandardOutput()).isEqualTo("");
 		assertThat(invocation.getErrorOutput())
-				.contains("The name of the " + "resulting jar and at least one source file must be specified");
+				.contains("The name of the resulting jar and at least one source file must be specified");
 	}
 
 	@Test
