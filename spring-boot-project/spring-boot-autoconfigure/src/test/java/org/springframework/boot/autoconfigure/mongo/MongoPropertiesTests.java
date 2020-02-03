@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,18 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,50 +55,40 @@ class MongoPropertiesTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	void allMongoClientOptionsCanBeSet() {
-		MongoClientOptions.Builder builder = MongoClientOptions.builder();
-		builder.alwaysUseMBeans(true);
-		builder.connectionsPerHost(101);
-		builder.connectTimeout(10001);
-		builder.cursorFinalizerEnabled(false);
-		builder.description("test");
-		builder.maxWaitTime(120001);
-		builder.socketKeepAlive(false);
-		builder.socketTimeout(1000);
-		builder.threadsAllowedToBlockForConnectionMultiplier(6);
-		builder.minConnectionsPerHost(0);
-		builder.maxConnectionIdleTime(60000);
-		builder.maxConnectionLifeTime(60000);
-		builder.heartbeatFrequency(10001);
-		builder.minHeartbeatFrequency(501);
-		builder.heartbeatConnectTimeout(20001);
-		builder.heartbeatSocketTimeout(20001);
-		builder.localThreshold(20);
-		builder.requiredReplicaSetName("testReplicaSetName");
-		MongoClientOptions options = builder.build();
+	void allMongoClientSettingsCanBeSet() {
+		MongoClientSettings.Builder builder = MongoClientSettings.builder();
+		builder.applyToSocketSettings((settings) -> {
+			settings.connectTimeout(1000, TimeUnit.MILLISECONDS);
+			settings.readTimeout(1000, TimeUnit.MILLISECONDS);
+		}).applyToServerSettings((settings) -> {
+			settings.heartbeatFrequency(10001, TimeUnit.MILLISECONDS);
+			settings.minHeartbeatFrequency(501, TimeUnit.MILLISECONDS);
+		}).applyToConnectionPoolSettings((settings) -> {
+			settings.maxWaitTime(120001, TimeUnit.MILLISECONDS);
+			settings.maxConnectionLifeTime(60000, TimeUnit.MILLISECONDS);
+			settings.maxConnectionIdleTime(60000, TimeUnit.MILLISECONDS);
+		}).applyToSslSettings((settings) -> settings.enabled(true)).applicationName("test");
+
+		MongoClientSettings settings = builder.build();
 		MongoProperties properties = new MongoProperties();
-		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(options);
-		MongoClientOptions wrapped = client.getMongoClientOptions();
-		assertThat(wrapped.isAlwaysUseMBeans()).isEqualTo(options.isAlwaysUseMBeans());
-		assertThat(wrapped.getConnectionsPerHost()).isEqualTo(options.getConnectionsPerHost());
-		assertThat(wrapped.getConnectTimeout()).isEqualTo(options.getConnectTimeout());
-		assertThat(wrapped.isCursorFinalizerEnabled()).isEqualTo(options.isCursorFinalizerEnabled());
-		assertThat(wrapped.getDescription()).isEqualTo(options.getDescription());
-		assertThat(wrapped.getMaxWaitTime()).isEqualTo(options.getMaxWaitTime());
-		assertThat(wrapped.getSocketTimeout()).isEqualTo(options.getSocketTimeout());
-		assertThat(wrapped.isSocketKeepAlive()).isEqualTo(options.isSocketKeepAlive());
-		assertThat(wrapped.getThreadsAllowedToBlockForConnectionMultiplier())
-				.isEqualTo(options.getThreadsAllowedToBlockForConnectionMultiplier());
-		assertThat(wrapped.getMinConnectionsPerHost()).isEqualTo(options.getMinConnectionsPerHost());
-		assertThat(wrapped.getMaxConnectionIdleTime()).isEqualTo(options.getMaxConnectionIdleTime());
-		assertThat(wrapped.getMaxConnectionLifeTime()).isEqualTo(options.getMaxConnectionLifeTime());
-		assertThat(wrapped.getHeartbeatFrequency()).isEqualTo(options.getHeartbeatFrequency());
-		assertThat(wrapped.getMinHeartbeatFrequency()).isEqualTo(options.getMinHeartbeatFrequency());
-		assertThat(wrapped.getHeartbeatConnectTimeout()).isEqualTo(options.getHeartbeatConnectTimeout());
-		assertThat(wrapped.getHeartbeatSocketTimeout()).isEqualTo(options.getHeartbeatSocketTimeout());
-		assertThat(wrapped.getLocalThreshold()).isEqualTo(options.getLocalThreshold());
-		assertThat(wrapped.getRequiredReplicaSetName()).isEqualTo(options.getRequiredReplicaSetName());
+		MongoClient client = createMongoClient(properties, settings);
+		MongoClientSettings wrapped = (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
+		assertThat(wrapped.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getSocketSettings().getReadTimeout(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getSocketSettings().getReadTimeout(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getServerSettings().getHeartbeatFrequency(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getServerSettings().getHeartbeatFrequency(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getServerSettings().getMinHeartbeatFrequency(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getServerSettings().getMinHeartbeatFrequency(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getApplicationName()).isEqualTo(settings.getApplicationName());
+		assertThat(wrapped.getConnectionPoolSettings().getMaxWaitTime(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getConnectionPoolSettings().getMaxWaitTime(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getConnectionPoolSettings().getMaxConnectionLifeTime(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getConnectionPoolSettings().getMaxConnectionLifeTime(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getConnectionPoolSettings().getMaxConnectionIdleTime(TimeUnit.MILLISECONDS))
+				.isEqualTo(settings.getConnectionPoolSettings().getMaxConnectionIdleTime(TimeUnit.MILLISECONDS));
+		assertThat(wrapped.getSslSettings().isEnabled()).isEqualTo(settings.getSslSettings().isEnabled());
 	}
 
 	@Test
@@ -105,7 +97,7 @@ class MongoPropertiesTests {
 		properties.setHost("localhost");
 		properties.setPort(27017);
 		properties.setUri("mongodb://mongo1.example.com:12345");
-		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
@@ -116,7 +108,7 @@ class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
-		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
@@ -126,7 +118,7 @@ class MongoPropertiesTests {
 	void onlyUriSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo1.example.com:12345");
-		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
@@ -135,17 +127,22 @@ class MongoPropertiesTests {
 	@Test
 	void noCustomAddressAndNoUriUsesDefaultUri() {
 		MongoProperties properties = new MongoProperties();
-		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
 
-	@SuppressWarnings("deprecation")
+	private MongoClient createMongoClient(MongoProperties properties, MongoClientSettings settings) {
+		return new MongoClientFactory(properties, null).createMongoClient(settings);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties) {
+		return createMongoClient(properties, null);
+	}
+
 	private List<ServerAddress> getAllAddresses(MongoClient client) {
-		// At some point we'll probably need to use reflection to find the address but for
-		// now, we can use the deprecated getAllAddress method.
-		return client.getAllAddress();
+		return client.getClusterDescription().getClusterSettings().getHosts();
 	}
 
 	@Test

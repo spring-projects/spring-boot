@@ -1192,21 +1192,14 @@ bom {
 			]
 		}
 	}
-	library("Mongo Driver ReactiveStreams", "1.13.0") {
-		group("org.mongodb") {
-			modules = [
-				"mongodb-driver-reactivestreams"
-			]
-		}
-	}
-	library("MongoDB", "3.12.1") {
+	library("MongoDB", "4.0.0-beta1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
-				"mongodb-driver",
-				"mongodb-driver-async",
 				"mongodb-driver-core",
-				"mongo-java-driver"
+				"mongodb-driver-legacy",
+				"mongodb-driver-reactivestreams",
+				"mongodb-driver-sync"
 			]
 		}
 	}
@@ -1601,7 +1594,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Releasetrain", "Neumann-M2") {
+	library("Spring Data Releasetrain", "Neumann-BUILD-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-releasetrain"

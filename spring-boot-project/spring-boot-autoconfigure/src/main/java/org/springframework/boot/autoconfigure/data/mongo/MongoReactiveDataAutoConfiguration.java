@@ -97,9 +97,9 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
-	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
+	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
-		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDbFactory, mappingMongoConverter, null);
+		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDatabaseFactory, mappingMongoConverter, null);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Collections;
 import java.util.List;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientOptions.Builder;
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 import org.springframework.core.env.Environment;
 
@@ -53,18 +54,21 @@ public class MongoClientFactory {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}. If the environment
-	 * contains a {@code local.mongo.port} property, it is used to configure a client to
-	 * an embedded MongoDB instance.
-	 * @param options the options
+	 * Creates a {@link MongoClient} using the given {@link MongoClientSettings settings}.
+	 * If the environment contains a {@code local.mongo.port} property, it is used to
+	 * configure a client to an embedded MongoDB instance.
+	 * @param settings the settings
 	 * @return the Mongo client
 	 */
-	public MongoClient createMongoClient(MongoClientOptions options) {
+	public MongoClient createMongoClient(MongoClientSettings settings) {
+		Builder settingsBuilder = (settings != null) ? MongoClientSettings.builder(settings)
+				: MongoClientSettings.builder();
+		settingsBuilder.uuidRepresentation(this.properties.getUuidRepresentation());
 		Integer embeddedPort = getEmbeddedPort();
 		if (embeddedPort != null) {
-			return createEmbeddedMongoClient(options, embeddedPort);
+			return createEmbeddedMongoClient(settingsBuilder, embeddedPort);
 		}
-		return createNetworkMongoClient(options);
+		return createNetworkMongoClient(settingsBuilder);
 	}
 
 	private Integer getEmbeddedPort() {
@@ -77,35 +81,37 @@ public class MongoClientFactory {
 		return null;
 	}
 
-	private MongoClient createEmbeddedMongoClient(MongoClientOptions options, int port) {
-		if (options == null) {
-			options = MongoClientOptions.builder().build();
-		}
+	private MongoClient createEmbeddedMongoClient(Builder settings, int port) {
 		String host = (this.properties.getHost() != null) ? this.properties.getHost() : "localhost";
-		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)), options);
+		settings.applyToClusterSettings(
+				(cluster) -> cluster.hosts(Collections.singletonList(new ServerAddress(host, port))));
+		return MongoClients.create(settings.build());
 	}
 
-	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
+	private MongoClient createNetworkMongoClient(Builder settings) {
 		MongoProperties properties = this.properties;
 		if (properties.getUri() != null) {
-			return createMongoClient(properties.getUri(), options);
+			return createMongoClient(properties.getUri(), settings);
 		}
 		if (hasCustomAddress() || hasCustomCredentials()) {
-			if (options == null) {
-				options = MongoClientOptions.builder().build();
+			if (hasCustomCredentials()) {
+				String database = (this.properties.getAuthenticationDatabase() != null)
+						? this.properties.getAuthenticationDatabase() : this.properties.getMongoClientDatabase();
+				settings.credential((MongoCredential.createCredential(this.properties.getUsername(), database,
+						this.properties.getPassword())));
 			}
-			MongoCredential credentials = getCredentials(properties);
 			String host = getValue(properties.getHost(), "localhost");
 			int port = getValue(properties.getPort(), MongoProperties.DEFAULT_PORT);
 			List<ServerAddress> seeds = Collections.singletonList(new ServerAddress(host, port));
-			return (credentials != null) ? new MongoClient(seeds, credentials, options)
-					: new MongoClient(seeds, options);
+			settings.applyToClusterSettings((cluster) -> cluster.hosts(seeds));
+			return MongoClients.create(settings.build());
 		}
-		return createMongoClient(MongoProperties.DEFAULT_URI, options);
+		return createMongoClient(MongoProperties.DEFAULT_URI, settings);
 	}
 
-	private MongoClient createMongoClient(String uri, MongoClientOptions options) {
-		return new MongoClient(new MongoClientURI(uri, builder(options)));
+	private MongoClient createMongoClient(String uri, Builder settings) {
+		settings.applyConnectionString(new ConnectionString(uri));
+		return MongoClients.create(settings.build());
 	}
 
 	private <T> T getValue(T value, T fallback) {
@@ -116,25 +122,8 @@ public class MongoClientFactory {
 		return this.properties.getHost() != null || this.properties.getPort() != null;
 	}
 
-	private MongoCredential getCredentials(MongoProperties properties) {
-		if (!hasCustomCredentials()) {
-			return null;
-		}
-		String username = properties.getUsername();
-		String database = getValue(properties.getAuthenticationDatabase(), properties.getMongoClientDatabase());
-		char[] password = properties.getPassword();
-		return MongoCredential.createCredential(username, database, password);
-	}
-
 	private boolean hasCustomCredentials() {
 		return this.properties.getUsername() != null && this.properties.getPassword() != null;
-	}
-
-	private Builder builder(MongoClientOptions options) {
-		if (options != null) {
-			return MongoClientOptions.builder(options);
-		}
-		return MongoClientOptions.builder();
 	}
 
 }

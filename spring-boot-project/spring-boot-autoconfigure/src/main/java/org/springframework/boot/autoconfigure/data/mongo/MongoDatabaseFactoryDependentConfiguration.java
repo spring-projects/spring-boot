@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.mongo;
 
 import com.mongodb.ClientSessionOptions;
-import com.mongodb.DB;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
@@ -28,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
@@ -43,29 +42,29 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Configuration for Mongo-related beans that depend on a {@link MongoDbFactory}.
+ * Configuration for Mongo-related beans that depend on a {@link MongoDatabaseFactory}.
  *
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnBean(MongoDbFactory.class)
-class MongoDbFactoryDependentConfiguration {
+@ConditionalOnBean(MongoDatabaseFactory.class)
+class MongoDatabaseFactoryDependentConfiguration {
 
 	private final MongoProperties properties;
 
-	MongoDbFactoryDependentConfiguration(MongoProperties properties) {
+	MongoDatabaseFactoryDependentConfiguration(MongoProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoOperations.class)
-	MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
-		return new MongoTemplate(mongoDbFactory, converter);
+	MongoTemplate mongoTemplate(MongoDatabaseFactory factory, MongoConverter converter) {
+		return new MongoTemplate(factory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
-	MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
+	MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory, MongoMappingContext context,
 			MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
@@ -75,61 +74,55 @@ class MongoDbFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
-	GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory, this.properties),
+	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate) {
+		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, this.properties),
 				mongoTemplate.getConverter());
 	}
 
 	/**
-	 * {@link MongoDbFactory} decorator to respect
+	 * {@link MongoDatabaseFactory} decorator to respect
 	 * {@link MongoProperties#getGridFsDatabase()} if set.
 	 */
-	static class GridFsMongoDbFactory implements MongoDbFactory {
+	static class GridFsMongoDatabaseFactory implements MongoDatabaseFactory {
 
-		private final MongoDbFactory mongoDbFactory;
+		private final MongoDatabaseFactory mongoDatabaseFactory;
 
 		private final MongoProperties properties;
 
-		GridFsMongoDbFactory(MongoDbFactory mongoDbFactory, MongoProperties properties) {
-			Assert.notNull(mongoDbFactory, "MongoDbFactory must not be null");
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties) {
+			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
 			Assert.notNull(properties, "Properties must not be null");
-			this.mongoDbFactory = mongoDbFactory;
+			this.mongoDatabaseFactory = mongoDatabaseFactory;
 			this.properties = properties;
 		}
 
 		@Override
-		public MongoDatabase getDb() throws DataAccessException {
+		public MongoDatabase getMongoDatabase() throws DataAccessException {
 			String gridFsDatabase = this.properties.getGridFsDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
-				return this.mongoDbFactory.getDb(gridFsDatabase);
+				return this.mongoDatabaseFactory.getMongoDatabase(gridFsDatabase);
 			}
-			return this.mongoDbFactory.getDb();
+			return this.mongoDatabaseFactory.getMongoDatabase();
 		}
 
 		@Override
-		public MongoDatabase getDb(String dbName) throws DataAccessException {
-			return this.mongoDbFactory.getDb(dbName);
+		public MongoDatabase getMongoDatabase(String dbName) throws DataAccessException {
+			return this.mongoDatabaseFactory.getMongoDatabase(dbName);
 		}
 
 		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
-			return this.mongoDbFactory.getExceptionTranslator();
-		}
-
-		@Override
-		@Deprecated
-		public DB getLegacyDb() {
-			return this.mongoDbFactory.getLegacyDb();
+			return this.mongoDatabaseFactory.getExceptionTranslator();
 		}
 
 		@Override
 		public ClientSession getSession(ClientSessionOptions options) {
-			return this.mongoDbFactory.getSession(options);
+			return this.mongoDatabaseFactory.getSession(options);
 		}
 
 		@Override
-		public MongoDbFactory withSession(ClientSession session) {
-			return this.mongoDbFactory.withSession(session);
+		public MongoDatabaseFactory withSession(ClientSession session) {
+			return this.mongoDatabaseFactory.withSession(session);
 		}
 
 	}

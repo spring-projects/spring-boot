@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterSettings;
+import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
+import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
@@ -72,7 +74,7 @@ class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "test");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
 	}
 
 	@Test
@@ -82,7 +84,22 @@ class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
+	}
+
+	@Test
+	void uuidRepresentationDefaultToJavaLegacy() {
+		MongoProperties properties = new MongoProperties();
+		MongoClient client = createMongoClient(properties);
+		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.JAVA_LEGACY);
+	}
+
+	@Test
+	void uuidRepresentationCanBeCustomized() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUuidRepresentation(UuidRepresentation.STANDARD);
+		MongoClient client = createMongoClient(properties);
+		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.STANDARD);
 	}
 
 	@Test
@@ -92,7 +109,7 @@ class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
 	}
 
 	@Test
@@ -104,8 +121,7 @@ class ReactiveMongoClientFactoryTests {
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		MongoCredential credential = extractMongoCredentials(client);
-		assertMongoCredential(credential, "user", "secret", "test");
+		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
 	}
 
 	@Test
@@ -113,7 +129,7 @@ class ReactiveMongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://localhost/test?retryWrites=true");
 		MongoClient client = createMongoClient(properties);
-		assertThat(getSettings(client).getRetryWrites()).isTrue();
+		assertThat(getClientSettings(client).getRetryWrites()).isTrue();
 	}
 
 	@Test
@@ -184,18 +200,14 @@ class ReactiveMongoClientFactoryTests {
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		MongoClientSettings settings = getSettings(client);
+		MongoClientSettings settings = getClientSettings(client);
 		ClusterSettings clusterSettings = settings.getClusterSettings();
 		return clusterSettings.getHosts();
 	}
 
-	private MongoCredential extractMongoCredentials(MongoClient client) {
-		return getSettings(client).getCredential();
-	}
-
-	@SuppressWarnings("deprecation")
-	private MongoClientSettings getSettings(MongoClient client) {
-		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(), "wrapped");
+	private MongoClientSettings getClientSettings(MongoClient client) {
+		AsyncMongoClient wrapped = (AsyncMongoClient) ReflectionTestUtils.getField(client, "wrapped");
+		return (MongoClientSettings) ReflectionTestUtils.getField(wrapped, "settings");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
