@@ -94,7 +94,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	void annotatedResponseStatusCodeWithExceptionMessage() {
+	public void annotatedResponseStatusCodeWithExceptionMessage() {
 		Exception error = new CustomException("Test Message");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
