@@ -861,8 +861,8 @@ You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWe
 			return connector;
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("can't access keystore: [" + "keystore"
-					+ "] or truststore: [" + "keystore" + "]", ex);
+			throw new IllegalStateException("can't access keystore: [" + keystore
+					+ "] or truststore: [" + truststore + "]", ex);
 		}
 	}
 ----
