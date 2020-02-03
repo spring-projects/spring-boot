@@ -23,7 +23,7 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	antDependencies "org.apache.ivy:ivy:2.4.0"
+	antDependencies "org.apache.ivy:ivy:2.5.0"
 	antDependencies project(path: ":spring-boot-project:spring-boot-tools:spring-boot-antlib")
 	antDependencies "org.apache.ant:ant-launcher:1.10.7"
 	antDependencies "org.apache.ant:ant:1.10.7"
