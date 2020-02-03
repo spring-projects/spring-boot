@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,17 @@ import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
 	private static final String[] EMPTY_PATH = {};
+
+	/**
+	 * Create a new {@link HealthEndpoint} instance that will use the given {@code
+	 * healthIndicator} to generate its response.
+	 * @param healthIndicator the health indicator
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #HealthEndpoint(HealthContributorRegistry, HealthEndpointGroups)}
+	 */
+	@Deprecated
+	public HealthEndpoint(HealthIndicator healthIndicator) {
+	}
 
 	/**
 	 * Create a new {@link HealthEndpoint} instance.

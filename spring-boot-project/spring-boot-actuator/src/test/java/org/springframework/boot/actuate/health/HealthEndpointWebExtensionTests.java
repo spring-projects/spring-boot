@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -36,6 +37,16 @@ import static org.mockito.Mockito.mock;
  */
 class HealthEndpointWebExtensionTests
 		extends HealthEndpointSupportTests<HealthContributorRegistry, HealthContributor, HealthComponent> {
+
+	@Test
+	@SuppressWarnings("deprecation")
+	void createWhenUsingDeprecatedConstructorThrowsException() {
+		HealthEndpoint delegate = mock(HealthEndpoint.class);
+		HealthWebEndpointResponseMapper responseMapper = mock(HealthWebEndpointResponseMapper.class);
+		assertThatIllegalStateException().isThrownBy(() -> new HealthEndpointWebExtension(delegate, responseMapper))
+				.withMessage("Unable to create class org.springframework.boot.actuate."
+						+ "health.HealthEndpointWebExtension using deprecated constructor");
+	}
 
 	@Test
 	void healthReturnsSystemHealth() {
