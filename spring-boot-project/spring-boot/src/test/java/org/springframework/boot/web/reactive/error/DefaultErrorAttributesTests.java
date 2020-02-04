@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,18 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				false);
 		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes.get("message")).isEqualTo("");
+		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
+	}
+
+	@Test
+	public void annotatedResponseStatusCodeWithExceptionMessage() {
+		Exception error = new CustomException("Test Message");
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
+				false);
+		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes.get("message")).isEqualTo("Test Message");
 		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
 	}
 
@@ -217,6 +229,13 @@ public class DefaultErrorAttributesTests {
 
 	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
 	private static class CustomException extends RuntimeException {
+
+		CustomException() {
+		}
+
+		CustomException(String message) {
+			super(message);
+		}
 
 	}
 

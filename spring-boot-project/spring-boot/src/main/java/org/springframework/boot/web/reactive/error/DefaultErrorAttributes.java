@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -80,39 +81,37 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
-		HttpStatus errorStatus = determineHttpStatus(error);
+		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
+				ResponseStatus.class);
+		HttpStatus errorStatus = determineHttpStatus(error, responseStatus);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error));
+		errorAttributes.put("message", determineMessage(error, responseStatus));
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}
 
-	private HttpStatus determineHttpStatus(Throwable error) {
+	private HttpStatus determineHttpStatus(Throwable error, ResponseStatus responseStatus) {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
-				ResponseStatus.class);
 		if (responseStatus != null) {
 			return responseStatus.code();
 		}
 		return HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
-	private String determineMessage(Throwable error) {
+	private String determineMessage(Throwable error, ResponseStatus responseStatus) {
 		if (error instanceof WebExchangeBindException) {
 			return error.getMessage();
 		}
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
-				ResponseStatus.class);
-		if (responseStatus != null) {
+		if (responseStatus != null && StringUtils.hasText(responseStatus.reason())) {
 			return responseStatus.reason();
 		}
-		return error.getMessage();
+		return (error.getMessage() != null) ? error.getMessage() : "";
 	}
 
 	private Throwable determineException(Throwable error) {
