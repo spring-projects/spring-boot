@@ -3,7 +3,7 @@ pluginManagement {
 		mavenCentral()
 		gradlePluginPortal()
 		maven {
-			url 'https://repo.spring.io/plugins-release'
+			url 'https://repo.spring.io/plugins-snapshot'
 		}
 		if (version.endsWith('BUILD-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
@@ -23,7 +23,7 @@ pluginManagement {
 
 plugins {
 	id "com.gradle.enterprise" version "3.1.1"
-	id "io.spring.gradle-enterprise-conventions" version "0.0.1"
+	id "io.spring.gradle-enterprise-conventions" version "0.0.2-SNAPSHOT"
 }
 
 rootProject.name="spring-boot-build"
