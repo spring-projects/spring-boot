@@ -250,25 +250,10 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.1.1") {
+	library("Dropwizard Metrics", "4.1.2") {
 		group("io.dropwizard.metrics") {
-			modules = [
-				"metrics-annotation",
-				"metrics-core",
-				"metrics-ehcache",
-				"metrics-graphite",
-				"metrics-healthchecks",
-				"metrics-httpasyncclient",
-				"metrics-jdbi",
-				"metrics-jersey2",
-				"metrics-jetty9",
-				"metrics-jmx",
-				"metrics-json",
-				"metrics-jvm",
-				"metrics-log4j2",
-				"metrics-logback",
-				"metrics-servlet",
-				"metrics-servlets"
+			imports = [
+				"metrics-bom"
 			]
 		}
 	}
