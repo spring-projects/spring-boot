@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -37,6 +39,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  *
  * @author Andy Wilkinson
  * @author Levi Puot Paul
+ * @author Madhura Bhave
  */
 @WebMvcTest
 class WebMvcTestAutoConfigurationIntegrationTests {
@@ -74,6 +77,16 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class)).hasSize(1);
 		assertThat(ReflectionTestUtils.getField(this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
 				"taskExecutor")).isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
+	}
+
+	@Test
+	void oAuth2ClientAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(OAuth2ClientAutoConfiguration.class));
+	}
+
+	@Test
+	void oAuth2ResourceServerAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(OAuth2ResourceServerAutoConfiguration.class));
 	}
 
 }
