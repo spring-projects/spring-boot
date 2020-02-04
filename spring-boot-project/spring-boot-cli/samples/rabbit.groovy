@@ -25,8 +25,8 @@ class RabbitExample implements CommandLineRunner {
 	}
 
 	@Bean
-	Queue queue() {
-		new Queue("spring-boot", false)
+	org.springframework.amqp.core.Queue queue() {
+		new org.springframework.amqp.core.Queue("spring-boot", false)
 	}
 
 }
