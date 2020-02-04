@@ -144,7 +144,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 				Builder builder = this.autoTimer.builder(this.metricName);
 				timerSample.stop(getTimer(builder, handler, request, response, exception));
 			}
-		} else {
+		}
+		else {
 			for (Timed annotation : annotations) {
 				Builder builder = Timer.builder(annotation, this.metricName);
 				timerSample.stop(getTimer(builder, handler, request, response, exception));
