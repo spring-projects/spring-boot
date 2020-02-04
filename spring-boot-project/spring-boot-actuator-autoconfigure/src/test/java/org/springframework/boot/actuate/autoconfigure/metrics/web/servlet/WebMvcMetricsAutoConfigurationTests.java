@@ -71,8 +71,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(OutputCaptureExtension.class)
 class WebMvcMetricsAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
 	@Test
 	void backsOffWhenMeterRegistryIsMissing() {
@@ -183,11 +183,12 @@ class WebMvcMetricsAutoConfigurationTests {
 						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
+		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context, String... urls)
 			throws Exception {
-		if (urls.length == 0) {
-			urls = new String[] { "/test0", "/test1", "/test2" };
-		}
 		assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 		Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 		assertThat(filter).isInstanceOf(WebMvcMetricsFilter.class);
