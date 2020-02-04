@@ -2,6 +2,9 @@ pluginManagement {
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
+		maven {
+			url 'https://repo.spring.io/plugins-release'
+		}
 		if (version.endsWith('BUILD-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
@@ -19,23 +22,9 @@ pluginManagement {
 }
 
 plugins {
-    id "com.gradle.enterprise" version "3.1.1"
+	id "com.gradle.enterprise" version "3.1.1"
+	id "io.spring.gradle-enterprise-conventions" version "0.0.1"
 }
-
-apply from: "${rootDir}/gradle/build-scan-user-data.gradle"
-gradleEnterprise {
-	buildScan {
-		captureTaskInputFiles = true
-		obfuscation {
-			ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0"} }
-		}
-		publishAlways()
-		publishIfAuthenticated()
-		server = "https://ge.spring.io"
-	}
-}
-
-apply from: "${settingsDir}/gradle/build-cache-settings.gradle"
 
 rootProject.name="spring-boot-build"
 
