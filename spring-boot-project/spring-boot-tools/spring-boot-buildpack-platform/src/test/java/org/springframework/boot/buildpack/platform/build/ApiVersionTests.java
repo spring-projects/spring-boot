@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ApiVersion}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ApiVersionTests {
 
@@ -63,7 +64,7 @@ class ApiVersionTests {
 	void assertSupportsWhenDoesNotSupportThrowsException() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
-				.withMessage("Version 'v1.3' is not supported by this version ('v1.2')");
+				.withMessage("Detected platform API version 'v1.3' does not match supported version 'v1.2'");
 	}
 
 	@Test

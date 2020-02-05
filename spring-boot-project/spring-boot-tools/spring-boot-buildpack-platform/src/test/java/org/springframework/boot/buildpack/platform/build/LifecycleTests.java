@@ -60,6 +60,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link Lifecycle}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class LifecycleTests {
 
@@ -67,43 +68,43 @@ class LifecycleTests {
 
 	private DockerApi docker;
 
-	private Lifecycle lifecycle;
-
 	private Map<String, ContainerConfig> configs = new LinkedHashMap<>();
 
 	private Map<String, ContainerContent> content = new LinkedHashMap<>();
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		this.out = new TestPrintStream();
 		this.docker = mockDockerApi();
-		BuildRequest request = getTestRequest();
-		this.lifecycle = createLifecycle(request);
-	}
-
-	private DockerApi mockDockerApi() {
-		DockerApi docker = mock(DockerApi.class);
-		ImageApi imageApi = mock(ImageApi.class);
-		ContainerApi containerApi = mock(ContainerApi.class);
-		VolumeApi volumeApi = mock(VolumeApi.class);
-		given(docker.image()).willReturn(imageApi);
-		given(docker.container()).willReturn(containerApi);
-		given(docker.volume()).willReturn(volumeApi);
-		return docker;
 	}
 
 	@Test
-	void executeExecutesPhases() throws Exception {
+	void executeExecutesPhasesWithCacherPhase() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		this.lifecycle.execute();
+		createLifecycle("0.5").execute();
 		assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
-		assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
-		assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+		assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-0.1.json"));
+		assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-0.1.json"));
 		assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
-		assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
+		assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-0.1.json"));
 		assertPhaseWasRun("cacher", withExpectedConfig("lifecycle-cacher.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeExecutesPhasesWithEmbeddedCaching() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		createLifecycle("0.6").execute();
+		assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+		assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-0.2.json"));
+		assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-0.2.json"));
+		assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+		assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-0.2.json"));
+		assertPhaseWasNotRun("cacher");
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
@@ -112,7 +113,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		this.lifecycle.execute();
+		createLifecycle().execute();
 		assertThat(this.content).hasSize(1);
 	}
 
@@ -121,8 +122,9 @@ class LifecycleTests {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		this.lifecycle.execute();
-		assertThatIllegalStateException().isThrownBy(this.lifecycle::execute)
+		Lifecycle lifecycle = createLifecycle();
+		lifecycle.execute();
+		assertThatIllegalStateException().isThrownBy(lifecycle::execute)
 				.withMessage("Lifecycle has already been executed");
 	}
 
@@ -131,7 +133,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(9, null));
-		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> this.lifecycle.execute())
+		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> createLifecycle().execute())
 				.withMessage("Builder lifecycle 'detector' failed with status code 9");
 	}
 
@@ -148,27 +150,50 @@ class LifecycleTests {
 
 	@Test
 	void closeClearsVolumes() throws Exception {
-		this.lifecycle.close();
+		createLifecycle().close();
 		verify(this.docker.volume()).delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
 		verify(this.docker.volume()).delete(VolumeName.of("pack-app-aaaaaaaaaa"), true);
+	}
+
+	private DockerApi mockDockerApi() {
+		DockerApi docker = mock(DockerApi.class);
+		ImageApi imageApi = mock(ImageApi.class);
+		ContainerApi containerApi = mock(ContainerApi.class);
+		VolumeApi volumeApi = mock(VolumeApi.class);
+		given(docker.image()).willReturn(imageApi);
+		given(docker.container()).willReturn(containerApi);
+		given(docker.volume()).willReturn(volumeApi);
+		return docker;
 	}
 
 	private BuildRequest getTestRequest() {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
-		BuildRequest request = BuildRequest.of(name, (owner) -> content);
-		return request;
+		return BuildRequest.of(name, (owner) -> content);
+	}
+
+	private Lifecycle createLifecycle() throws IOException {
+		return createLifecycle("0.6");
+	}
+
+	private Lifecycle createLifecycle(String version) throws IOException {
+		return createLifecycle(getTestRequest(), version);
 	}
 
 	private Lifecycle createLifecycle(BuildRequest request) throws IOException {
-		EphemeralBuilder builder = mockEphemeralBuilder();
+		return createLifecycle(request, "0.6");
+	}
+
+	private Lifecycle createLifecycle(BuildRequest request, String version) throws IOException {
+		EphemeralBuilder builder = mockEphemeralBuilder((version != null) ? version : "0.5");
 		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, ImageReference.of("cloudfoundry/run"),
 				builder);
 	}
 
-	private EphemeralBuilder mockEphemeralBuilder() throws IOException {
+	private EphemeralBuilder mockEphemeralBuilder(String version) throws IOException {
 		EphemeralBuilder builder = mock(EphemeralBuilder.class);
-		byte[] metadataContent = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream("builder-metadata.json"));
+		byte[] metadataContent = FileCopyUtils
+				.copyToByteArray(getClass().getResourceAsStream("builder-metadata-version-" + version + ".json"));
 		BuilderMetadata metadata = BuilderMetadata.fromJson(new String(metadataContent, StandardCharsets.UTF_8));
 		given(builder.getName()).willReturn(ImageReference.of("pack.local/ephemeral-builder"));
 		given(builder.getBuilderMetadata()).willReturn(metadata);
@@ -199,6 +224,11 @@ class LifecycleTests {
 		verify(this.docker.container()).logs(eq(containerReference), any());
 		verify(this.docker.container()).remove(containerReference, true);
 		configConsumer.accept(this.configs.get(containerReference.toString()));
+	}
+
+	private void assertPhaseWasNotRun(String name) {
+		ContainerReference containerReference = ContainerReference.of("lifecycle-" + name);
+		assertThat(this.configs.get(containerReference.toString())).isNull();
 	}
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {

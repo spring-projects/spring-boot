@@ -22,16 +22,14 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
- * API Version number comprised a major and minor value.
+ * API Version number comprised of a major and minor value.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 final class ApiVersion {
 
-	/**
-	 * The platform API version supported by this release.
-	 */
-	static final ApiVersion PLATFORM = new ApiVersion(0, 1);
+	private static final ApiVersion PLATFORM_0_1 = new ApiVersion(0, 1);
 
 	private static final Pattern PATTERN = Pattern.compile("^v?(\\d+)\\.(\\d*)$");
 
@@ -68,7 +66,7 @@ final class ApiVersion {
 	void assertSupports(ApiVersion other) {
 		if (!supports(other)) {
 			throw new IllegalStateException(
-					"Version '" + other + "' is not supported by this version ('" + this + "')");
+					"Detected platform API version '" + other + "' does not match supported version '" + this + "'");
 		}
 	}
 
@@ -77,7 +75,7 @@ final class ApiVersion {
 	 * the same version number. A 1.x or higher release matches when the versions have the
 	 * same major version and a minor that is equal or greater.
 	 * @param other the version to check against
-	 * @return of the specified API is supported
+	 * @return if the specified API is supported
 	 * @see #assertSupports(ApiVersion)
 	 */
 	boolean supports(ApiVersion other) {
@@ -88,6 +86,25 @@ final class ApiVersion {
 			return false;
 		}
 		return this.minor >= other.minor;
+	}
+
+	/**
+	 * Returns a value indicating whether the API version has a separate cache phase, or
+	 * caching is distributed across other stages.
+	 * @return {@code true} if the API has a separate cache phase, {@code false} otherwise
+	 */
+	boolean hasCachePhase() {
+		return supports(PLATFORM_0_1);
+	}
+
+	/**
+	 * Returns a value indicating whether the API version requires that the analyze phase
+	 * must follow the restore phase, or if the reverse order is required.
+	 * @return {@code true} if the analyze phase follows restore, {@code false} if restore
+	 * follows analyze
+	 */
+	boolean analyzeFollowsRestore() {
+		return supports(PLATFORM_0_1);
 	}
 
 	@Override
@@ -130,6 +147,10 @@ final class ApiVersion {
 		catch (NumberFormatException ex) {
 			throw new IllegalArgumentException("Malformed version number '" + value + "'", ex);
 		}
+	}
+
+	static ApiVersion of(int major, int minor) {
+		return new ApiVersion(major, minor);
 	}
 
 }
