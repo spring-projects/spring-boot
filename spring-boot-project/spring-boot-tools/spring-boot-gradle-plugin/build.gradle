@@ -28,7 +28,7 @@ repositories {
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.3.0.RELEASE")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.0.RELEASE")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
