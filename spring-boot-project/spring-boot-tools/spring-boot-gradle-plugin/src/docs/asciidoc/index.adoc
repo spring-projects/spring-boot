@@ -26,7 +26,7 @@ Andy Wilkinson, Scott Frederick
 :api-documentation: {spring-boot-docs}/gradle-plugin/api
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
 :spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
-:version-properties-appendix: {spring-boot-reference}/#dependency-versions-coordinates
+:version-properties-appendix: {spring-boot-reference}/#dependency-versions-properties
 :build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
 :boot-build-image-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html
 :boot-jar-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html
