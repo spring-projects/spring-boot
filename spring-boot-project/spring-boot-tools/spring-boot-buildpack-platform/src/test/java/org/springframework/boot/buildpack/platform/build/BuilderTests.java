@@ -50,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link Builder}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class BuilderTests {
 
@@ -71,7 +72,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.43-bionic")), any()))
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.53-bionic")), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:full-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));
@@ -96,7 +97,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image-with-bad-stack.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.43-bionic")), any()))
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.53-bionic")), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:full-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));
@@ -112,7 +113,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.43-bionic")), any()))
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/cnb:0.0.53-bionic")), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:full-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));

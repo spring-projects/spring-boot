@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link BootBuildImage}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @ExtendWith(GradleCompatibilityExtension.class)
 @DisabledIfDockerUnavailable
@@ -53,11 +54,12 @@ class BootBuildImageIntegrationTests {
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	void bootBuildImageBuildsImage() throws IOException {
+	void buildsImageWithDefaultBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.53-bionic");
 		ImageReference imageReference = ImageReference.of(ImageName.of(this.gradleBuild.getProjectDir().getName()));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -65,6 +67,31 @@ class BootBuildImageIntegrationTests {
 		finally {
 			new DockerApi().image().remove(imageReference, false);
 		}
+	}
+
+	@TestTemplate
+	void buildsImageWithV1Builder() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.43-bionic");
+		ImageReference imageReference = ImageReference.of(ImageName.of(this.gradleBuild.getProjectDir().getName()));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void failsWithBuilderError() {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("Builder lifecycle 'builder' failed with status code");
 	}
 
 	private void writeMainClass() {

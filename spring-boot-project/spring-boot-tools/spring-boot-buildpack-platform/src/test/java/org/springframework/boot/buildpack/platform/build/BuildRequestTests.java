@@ -54,7 +54,7 @@ public class BuildRequestTests {
 		writeTestJarFile(jarFile);
 		BuildRequest request = BuildRequest.forJarFile(jarFile);
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.43-bionic");
+		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
 		assertThat(request.getApplicationContent(Owner.ROOT)).satisfies(this::hasExpectedJarContent);
 		assertThat(request.getEnv()).isEmpty();
 	}
@@ -65,7 +65,7 @@ public class BuildRequestTests {
 		writeTestJarFile(jarFile);
 		BuildRequest request = BuildRequest.forJarFile(ImageReference.of("test-app"), jarFile);
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/test-app:latest");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.43-bionic");
+		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
 		assertThat(request.getApplicationContent(Owner.ROOT)).satisfies(this::hasExpectedJarContent);
 		assertThat(request.getEnv()).isEmpty();
 	}

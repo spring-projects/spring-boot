@@ -31,11 +31,12 @@ import org.springframework.util.Assert;
  * A build request to be handled by the {@link Builder}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class BuildRequest {
 
-	private static final ImageReference DEFAULT_BUILDER = ImageReference.of("cloudfoundry/cnb:0.0.43-bionic");
+	private static final ImageReference DEFAULT_BUILDER = ImageReference.of("cloudfoundry/cnb:0.0.53-bionic");
 
 	private final ImageReference name;
 

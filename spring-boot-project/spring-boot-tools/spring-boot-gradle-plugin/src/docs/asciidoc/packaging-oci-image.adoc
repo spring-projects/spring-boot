@@ -21,7 +21,7 @@ The following table summarizes the available properties and their default values
 
 | `builder`
 | Name of the Builder image to use.
-| `cloudfoundry/cnb:0.0.43-bionic`
+| `cloudfoundry/cnb:0.0.53-bionic`
 
 | `imageName`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.

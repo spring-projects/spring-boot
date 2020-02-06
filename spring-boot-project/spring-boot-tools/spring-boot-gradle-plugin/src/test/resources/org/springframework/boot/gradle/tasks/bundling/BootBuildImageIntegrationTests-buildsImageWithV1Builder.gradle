@@ -1,0 +1,11 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+ bootBuildImage {
+	 builder = "cloudfoundry/cnb:0.0.43-bionic"
+ }
