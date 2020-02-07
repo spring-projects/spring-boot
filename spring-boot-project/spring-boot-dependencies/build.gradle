@@ -981,7 +981,7 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "3.8.2") {
+	library("Liquibase", "3.8.5") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-core" {
