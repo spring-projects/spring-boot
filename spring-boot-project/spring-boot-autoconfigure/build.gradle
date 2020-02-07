@@ -167,6 +167,7 @@ dependencies {
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.neo4j:neo4j-ogm-bolt-native-types")
 	testImplementation("org.neo4j:neo4j-ogm-http-driver")
 	testImplementation("org.neo4j:neo4j-ogm-embedded-driver")
