@@ -365,7 +365,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "2.5.8") {
+	library("Groovy", "2.5.9") {
 		group("org.codehaus.groovy") {
 			modules = [
 				"groovy",
