@@ -497,7 +497,7 @@ bom {
 			]
 		}
 	}
-	library("HttpClient", "4.5.10") {
+	library("HttpClient", "4.5.11") {
 		group("org.apache.httpcomponents") {
 			modules = [
 				"fluent-hc",
