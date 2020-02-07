@@ -127,6 +127,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Jar.class, (jar) -> {
 				project.afterEvaluate((evaluated) -> {
+					jar.metaInf((metaInf) -> metaInf.from(project.getRootProject().file("LICENSE.txt")));
 					jar.manifest((manifest) -> {
 						Map<String, Object> attributes = new TreeMap<>();
 						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
