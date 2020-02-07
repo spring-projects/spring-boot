@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cloud;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,28 +84,38 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void getActiveWhenHasServiceHostAndServicePortShouldReturnKubernetes() {
-		MockEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = new HashMap<>();
-		source.put("EXAMPLE_SERVICE_HOST", "---");
-		source.put("EXAMPLE_SERVICE_PORT", "8080");
-		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
-		environment.getPropertySources().addFirst(propertySource);
+	void getActiveWhenHasKubernetesServiceHostAndPortShouldReturnKubernetes() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("KUBERNETES_SERVICE_HOST", "---");
+		envVars.put("KUBERNETES_SERVICE_PORT", "8080");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test
-	void getActiveWhenHasKubernetesHostAndPortShouldReturnKubernetes() {
-		MockEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = new HashMap<>();
-		source.put("KUBERNETES_SERVICE_HOST", "---");
-		source.put("KUBERNETES_SERVICE_PORT", "8080");
-		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
-		environment.getPropertySources().addFirst(propertySource);
+	void getActiveWhenHasKubernetesServiceHostAndNoKubernetesServicePortShouldNotReturnKubernetes() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("KUBERNETES_SERVICE_HOST", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasKubernetesServicePortAndNoKubernetesServiceHostShouldNotReturnKubernetes() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("KUBERNETES_SERVICE_PORT", "8080"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasServiceHostAndServicePortShouldReturnKubernetes() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("EXAMPLE_SERVICE_HOST", "---");
+		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
@@ -114,16 +123,18 @@ class CloudPlatformTests {
 
 	@Test
 	void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("EXAMPLE_SERVICE_HOST", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
 		MockEnvironment environment = new MockEnvironment();
 		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				Collections.singletonMap("EXAMPLE_SERVICE_HOST", "---"));
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, environmentVariables);
 		environment.getPropertySources().addFirst(propertySource);
-		CloudPlatform platform = CloudPlatform.getActive(environment);
-		File path = new File("/var/run/secrets/kubernetes.io");
-		if (!path.exists() && !path.isDirectory()) {
-			assertThat(platform).isNull();
-		}
+		return environment;
 	}
 
 }

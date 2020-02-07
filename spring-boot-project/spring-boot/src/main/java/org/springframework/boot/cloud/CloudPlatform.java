@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.cloud;
-
-import java.io.File;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -75,22 +73,16 @@ public enum CloudPlatform {
 	 */
 	KUBERNETES {
 
-		private static final String SERVICE_HOST_SUFFIX = "_SERVICE_HOST";
-
-		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
-
-		private static final String SECRET_LOCATION = "/var/run/secrets/kubernetes.io";
-
 		private static final String KUBERNETES_SERVICE_HOST = "KUBERNETES_SERVICE_HOST";
 
 		private static final String KUBERNETES_SERVICE_PORT = "KUBERNETES_SERVICE_PORT";
 
+		private static final String SERVICE_HOST_SUFFIX = "_SERVICE_HOST";
+
+		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
+
 		@Override
 		public boolean isActive(Environment environment) {
-			if (environment.containsProperty(KUBERNETES_SERVICE_HOST)
-					|| environment.containsProperty(KUBERNETES_SERVICE_PORT) || isSecretLocationExists()) {
-				return true;
-			}
 			if (environment instanceof ConfigurableEnvironment) {
 				return isActive((ConfigurableEnvironment) environment);
 			}
@@ -100,8 +92,14 @@ public enum CloudPlatform {
 		private boolean isActive(ConfigurableEnvironment environment) {
 			PropertySource<?> environmentPropertySource = environment.getPropertySources()
 					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
-			if (environmentPropertySource instanceof EnumerablePropertySource) {
-				return isActive((EnumerablePropertySource<?>) environmentPropertySource);
+			if (environmentPropertySource != null) {
+				if (environmentPropertySource.containsProperty(KUBERNETES_SERVICE_HOST)
+						&& environmentPropertySource.containsProperty(KUBERNETES_SERVICE_PORT)) {
+					return true;
+				}
+				if (environmentPropertySource instanceof EnumerablePropertySource) {
+					return isActive((EnumerablePropertySource<?>) environmentPropertySource);
+				}
 			}
 			return false;
 		}
@@ -117,11 +115,6 @@ public enum CloudPlatform {
 				}
 			}
 			return false;
-		}
-
-		private boolean isSecretLocationExists() {
-			File file = new File(SECRET_LOCATION);
-			return file.exists() && file.isDirectory();
 		}
 
 	};
