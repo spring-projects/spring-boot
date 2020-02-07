@@ -457,7 +457,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate Validator", "6.1.0.Final") {
+	library("Hibernate Validator", "6.1.2.Final") {
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
