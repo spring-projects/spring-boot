@@ -1,9 +1,3 @@
-buildscript {
-	dependencies {
-		classpath "org.springframework:spring-core:5.2.2.RELEASE"
-	}
-}
-
 plugins {
 	id "java"
 	id "org.springframework.boot.conventions"
