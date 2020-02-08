@@ -26,7 +26,6 @@ dependencies {
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.samskivert:jmustache")
-	optional("com.sendgrid:sendgrid-java")
 	optional("com.zaxxer:HikariCP")
 	optional("io.netty:netty-tcnative-boringssl-static")
 	optional("io.projectreactor:reactor-tools")
