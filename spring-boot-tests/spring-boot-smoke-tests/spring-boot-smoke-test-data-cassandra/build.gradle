@@ -11,30 +11,15 @@ plugins {
 
 description = "Spring Boot Data Cassandra smoke test"
 
+ext {
+	testcontainersVersion = "1.12.5"
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-cassandra"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation("org.cassandraunit:cassandra-unit-spring:3.5.0.1") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
-}
-
-test {
-	jvmArgumentProviders.add new CassandraPortsProvider()
-	enabled = !JavaVersion.current().java9Compatible
-}
-
-class CassandraPortsProvider implements CommandLineArgumentProvider {
-
-	@Override
-	Iterable<String> asArguments() {
-		def ports = org.springframework.util.SocketUtils.findAvailableTcpPorts(2)
-		return [
-				"-Dspring.data.cassandra.port=${ports[0]}",
-				"-Dcassandra.native_transport_port=${ports[0]}",
-				"-Dcassandra.port.storage=${ports[1]}"
-		]
-	}
-
+	testImplementation "org.testcontainers:cassandra:${testcontainersVersion}"
+	testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+	testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
 }
