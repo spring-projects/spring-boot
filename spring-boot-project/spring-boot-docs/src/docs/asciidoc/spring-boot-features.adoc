@@ -7787,8 +7787,7 @@ This layering is designed to separate code based on how likely it is to change b
 Library code is less likely to change between builds, so it is placed in its own layers to allow tooling to re-use the layers from cache.
 Application code is more likely to change between builds so it is isolated in a separate layer.
 
-For Maven, layered jars can be created using a new `layout` type called `LAYERED_JAR`.
-See the {spring-boot-maven-plugin-docs}/#goals-build-image-parameters-details-layout[layout section] for more details.
+For Maven, refer to the {spring-boot-maven-plugin-docs}/#repackage-layered-jars[packaging layered jars section] for more details on creating a layered jar.
 For Gradle, refer to the {spring-boot-gradle-plugin-docs}/#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
 
 ==== Writing the Dockerfile

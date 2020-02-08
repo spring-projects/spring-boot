@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link BootJar}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
@@ -51,6 +52,15 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	void notUpToDateWhenBuiltWithLayersAndToolsAndThenWithLayersAndWithoutTools()
+			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+		assertThat(this.gradleBuild.build("-Playered=true", "bootJar").task(":bootJar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("-Playered=true", "-PexcludeTools=true", "bootJar").task(":bootJar")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 }

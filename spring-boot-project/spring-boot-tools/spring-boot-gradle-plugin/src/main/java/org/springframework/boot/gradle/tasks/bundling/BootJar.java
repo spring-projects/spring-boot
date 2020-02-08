@@ -40,6 +40,8 @@ import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.loader.tools.Layer;
@@ -66,6 +68,8 @@ public class BootJar extends Jar implements BootArchive {
 	private FileCollection classpath;
 
 	private Layers layers;
+
+	private LayerConfiguration layerConfiguration;
 
 	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers";
 
@@ -164,20 +168,33 @@ public class BootJar extends Jar implements BootArchive {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
 
+	@Optional
+	@Nested
+	@Input
+	public LayerConfiguration getLayerConfiguration() {
+		return this.layerConfiguration;
+	}
+
 	/**
 	 * Configures the archive to have layers.
 	 */
 	public void layered() {
-		this.layers = Layers.IMPLICIT;
-		this.bootInf.into("lib", (spec) -> spec.from((Callable<File>) () -> {
-			String jarName = "spring-boot-jarmode-layertools.jar";
-			InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/jarmode/" + jarName);
-			File taskTmp = new File(getProject().getBuildDir(), "tmp/" + getName());
-			taskTmp.mkdirs();
-			File layerToolsJar = new File(taskTmp, jarName);
-			FileCopyUtils.copy(stream, new FileOutputStream(layerToolsJar));
-			return layerToolsJar;
-		}));
+		enableLayers();
+		applyLayers();
+	}
+
+	private void applyLayers() {
+		if (this.layerConfiguration.isIncludeLayerTools()) {
+			this.bootInf.into("lib", (spec) -> spec.from((Callable<File>) () -> {
+				String jarName = "spring-boot-jarmode-layertools.jar";
+				InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/jarmode/" + jarName);
+				File taskTmp = new File(getProject().getBuildDir(), "tmp/" + getName());
+				taskTmp.mkdirs();
+				File layerToolsJar = new File(taskTmp, jarName);
+				FileCopyUtils.copy(stream, new FileOutputStream(layerToolsJar));
+				return layerToolsJar;
+			}));
+		}
 		this.bootInf.eachFile((details) -> {
 			Layer layer = layerForFileDetails(details);
 			if (layer != null) {
@@ -186,6 +203,20 @@ public class BootJar extends Jar implements BootArchive {
 			}
 		}).setIncludeEmptyDirs(false);
 		this.bootInf.into("", (spec) -> spec.from(createLayersIndex()));
+	}
+
+	public void layered(Action<LayerConfiguration> action) {
+		action.execute(enableLayers());
+		applyLayers();
+	}
+
+	private LayerConfiguration enableLayers() {
+		this.layers = Layers.IMPLICIT;
+		if (this.layerConfiguration == null) {
+			this.layerConfiguration = new LayerConfiguration();
+		}
+
+		return this.layerConfiguration;
 	}
 
 	private Layer layerForFileDetails(FileCopyDetails details) {

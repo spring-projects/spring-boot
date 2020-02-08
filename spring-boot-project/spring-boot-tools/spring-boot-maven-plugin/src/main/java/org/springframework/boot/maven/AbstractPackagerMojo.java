@@ -105,6 +105,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	public boolean includeSystemScope;
 
 	/**
+	 * Layer configuration with the option to exclude layer tools jar.
+	 * @since 2.3.0
+	 */
+	@Parameter
+	private Layered layered;
+
+	/**
 	 * Return a {@link Packager} configured for this MOJO.
 	 * @param <P> the packager type
 	 * @param supplier a packager supplier
@@ -118,6 +125,10 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
 			packager.setLayout(this.layout.layout());
+		}
+		if (this.layered != null && this.layered.isEnabled()) {
+			packager.setLayout(new LayeredJar());
+			packager.setIncludeRelevantJarModeJars(this.layered.isIncludeLayerTools());
 		}
 		return packager;
 	}
@@ -157,11 +168,6 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		 * Jar Layout.
 		 */
 		JAR(new Jar()),
-
-		/**
-		 * Layered Jar Layout.
-		 */
-		LAYERED_JAR(new LayeredJar()),
 
 		/**
 		 * War Layout.

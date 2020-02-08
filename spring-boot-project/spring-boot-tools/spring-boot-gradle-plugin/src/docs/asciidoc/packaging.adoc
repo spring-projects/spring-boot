@@ -287,3 +287,18 @@ The jar will then be split into layer folders which may include:
 * `snapshots-dependencies`
 * `dependencies`
 
+When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
+With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
+If you wish to exclude this dependency, you can do so in the following manner:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
+----

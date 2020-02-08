@@ -287,7 +287,21 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
 					.hasEntryWithNameStartingWith("BOOT-INF/layers/dependencies/lib/jar-release")
-					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot");
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot")
+					.hasEntryWithNameStartingWith(
+							"BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+		});
+	}
+
+	@TestTemplate
+	void whenJarIsRepackagedWithTheLayeredLayoutAndLayerToolsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-layered-no-layer-tools").execute((project) -> {
+			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/dependencies/lib/jar-release")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot")
+					.doesNotHaveEntryWithNameStartingWith(
+							"BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
 		});
 	}
 

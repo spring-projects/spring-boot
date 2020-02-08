@@ -24,6 +24,7 @@
 						<configuration>
 							<layered>
 								<enabled>true</enabled>
+								<includeLayerTools>false</includeLayerTools>
 							</layered>
 						</configuration>
 					</execution>

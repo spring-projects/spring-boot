@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
+import org.gradle.api.Action;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,6 +131,13 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	}
 
 	@Test
+	void whenJarIsLayeredAndIncludeLayerToolsIsFalseThenLayerToolsAreNotAddedToTheJar() throws IOException {
+		List<String> entryNames = getEntryNames(
+				createLayeredJar((configuration) -> configuration.setIncludeLayerTools(false)));
+		assertThat(entryNames).doesNotContain("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+	}
+
+	@Test
 	void classpathIndexPointsToBootInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
@@ -145,11 +153,20 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
-	private File createLayeredJar() throws IOException {
+	private File createLayeredJar(Action<LayerConfiguration> action) throws IOException {
 		addContent();
-		getTask().layered();
+		if (action != null) {
+			getTask().layered(action);
+		}
+		else {
+			getTask().layered();
+		}
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
+	}
+
+	private File createLayeredJar() throws IOException {
+		return createLayeredJar(null);
 	}
 
 	private void addContent() throws IOException {

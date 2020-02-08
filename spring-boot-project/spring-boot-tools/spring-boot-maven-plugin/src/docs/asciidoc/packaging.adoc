@@ -397,3 +397,56 @@ This example excludes any artifact belonging to the `com.foo` group:
 		</build>
 	</project>
 ----
+
+
+
+[[repackage-layered-jars]]
+==== Packaging layered jars
+By default, the repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+For cases where a docker image needs to be built from the contents of the jar, the jar format can be enhanced to support layer folders.
+To use this feature, the layering feature must be enabled:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<layered>
+							<enabled>true</enabled>
+						</layered>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
+With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
+If you wish to exclude this dependency, you can do so in the following manner:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<layered>
+							<enabled>true</enabled>
+							<includeLayerTools>false</enabled>
+						</layered>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
