@@ -230,11 +230,12 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void enableGeneratorFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.generator.write_numbers_as_strings:true")
+		this.contextRunner.withPropertyValues("spring.jackson.generator.strict_duplicate_detection:true")
 				.run((context) -> {
 					ObjectMapper mapper = context.getBean(ObjectMapper.class);
-					assertThat(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS.enabledByDefault()).isFalse();
-					assertThat(mapper.getFactory().isEnabled(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS)).isTrue();
+					JsonGenerator.Feature feature = JsonGenerator.Feature.STRICT_DUPLICATE_DETECTION;
+					assertThat(feature.enabledByDefault()).isFalse();
+					assertThat(mapper.getFactory().isEnabled(feature)).isTrue();
 				});
 	}
 
