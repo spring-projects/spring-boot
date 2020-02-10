@@ -55,12 +55,6 @@ gradlePlugin {
 	}
 }
 
-jar {
-	manifest {
-		attributes "Implementation-Version": project.version
-	}
-}
-
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
