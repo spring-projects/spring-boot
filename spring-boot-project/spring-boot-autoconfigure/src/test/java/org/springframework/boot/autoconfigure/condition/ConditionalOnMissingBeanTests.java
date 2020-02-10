@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -57,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Jakub Kubrynski
  * @author Andy Wilkinson
+ * @author Jorge Cordoba
  */
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
@@ -134,6 +136,16 @@ public class ConditionalOnMissingBeanTests {
 					assertThat(context).hasBean("example");
 					assertThat(context.getBean("foo")).isEqualTo("foo");
 				});
+	}
+	@Test
+	void testOnMissingBeanConditionOutputShouldNotContainConditionalOnBeanClassInMessage() {
+		this.contextRunner.withUserConfiguration(ConditionalOnMissingBeanTests.OnBeanNameConfiguration.class).run((context) -> {
+			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
+					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.values();
+			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
+			assertThat(message).doesNotContain("@ConditionalOnBean (names: foo; SearchStrategy: all) did not find any beans");
+		});
 	}
 
 	@Test
