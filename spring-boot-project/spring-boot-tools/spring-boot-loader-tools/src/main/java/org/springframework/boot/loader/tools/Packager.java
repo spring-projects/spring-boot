@@ -143,7 +143,7 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Sets if jarmode jars relevant for the packaging should be automatcially included.
+	 * Sets if jarmode jars relevant for the packaging should be automatically included.
 	 * @param includeRelevantJarModeJars if relevant jars are included
 	 */
 	public void setIncludeRelevantJarModeJars(boolean includeRelevantJarModeJars) {
