@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
@@ -122,6 +123,16 @@ class HazelcastAutoConfigurationClientTests {
 		this.contextRunner.withUserConfiguration(HazelcastServerAndClientConfig.class)
 				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml").run((context) -> assertThat(context)
 						.getBean(HazelcastInstance.class).isInstanceOf(HazelcastClientProxy.class));
+	}
+
+	@Test
+	void clientConfigWithInstanceNameCreatesClientIfNecessary() {
+		assertThat(HazelcastClient.getHazelcastClientByName("spring-boot")).isNull();
+		this.contextRunner
+				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
+						+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.extracting(HazelcastInstance::getName).isEqualTo("spring-boot"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
