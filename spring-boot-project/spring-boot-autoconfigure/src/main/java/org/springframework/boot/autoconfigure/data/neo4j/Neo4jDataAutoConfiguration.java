@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
@@ -103,20 +101,11 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass({ WebMvcConfigurer.class, OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true")
 	static class Neo4jWebConfiguration {
 
-		private static final Log logger = LogFactory.getLog(Neo4jWebConfiguration.class);
-
 		@Bean
-		OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor(Neo4jProperties properties) {
-			if (properties.getOpenInView() == null) {
-				logger.warn("spring.data.neo4j.open-in-view is enabled by default."
-						+ "Therefore, database queries may be performed during view "
-						+ "rendering. Explicitly configure "
-						+ "spring.data.neo4j.open-in-view to disable this warning");
-			}
+		OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
 			return new OpenSessionInViewInterceptor();
 		}
 

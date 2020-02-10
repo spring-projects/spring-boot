@@ -408,7 +408,9 @@
     },
     {
       "name": "spring.data.neo4j.open-in-view",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
+      "defaultValue": false
     },
     {
       "name": "spring.data.neo4j.repositories.enabled",
