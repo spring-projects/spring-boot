@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
@@ -125,7 +126,8 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
-	void clientConfigWithInstanceName() {
+	void clientConfigWithInstanceNameCreatesClientIfNecessary() {
+		assertThat(HazelcastClient.getHazelcastClientByName("spring-boot")).isNull();
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
 						+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml")
