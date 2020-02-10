@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package smoketest.rsocket;
 
 import java.time.Duration;
 
+import io.rsocket.metadata.WellKnownMimeType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -27,8 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.rsocket.context.LocalRSocketServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.security.rsocket.metadata.BasicAuthenticationEncoder;
+import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
+import org.springframework.util.MimeTypeUtils;
 
 @SpringBootTest(properties = "spring.rsocket.server.port=0")
 public class SampleRSocketApplicationTests {
@@ -49,9 +51,9 @@ public class SampleRSocketApplicationTests {
 	@Test
 	void rSocketEndpoint() {
 		RSocketRequester requester = this.builder
-				.rsocketStrategies((builder) -> builder.encoder(new BasicAuthenticationEncoder()))
+				.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
 				.setupMetadata(new UsernamePasswordMetadata("user", "password"),
-						UsernamePasswordMetadata.BASIC_AUTHENTICATION_MIME_TYPE)
+						MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
 				.connectTcp("localhost", this.port).block(Duration.ofSeconds(5));
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
 		StepVerifier.create(result)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,9 +145,9 @@ class RestClientAutoConfigurationTests {
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("foo", "bar", "1").source(source);
+					IndexRequest index = new IndexRequest("test").id("1").source(source);
 					client.index(index, RequestOptions.DEFAULT);
-					GetRequest getRequest = new GetRequest("foo", "bar", "1");
+					GetRequest getRequest = new GetRequest("test").id("1");
 					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
 				});
 	}

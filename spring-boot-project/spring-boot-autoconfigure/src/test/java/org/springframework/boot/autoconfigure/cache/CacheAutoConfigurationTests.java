@@ -267,7 +267,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).isEmpty();
 					RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
 					assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(30));
-					assertThat(redisCacheConfiguration.getKeyPrefixFor("")).isEqualTo("bar");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("")).isEqualTo("bar::");
 				});
 	}
 
@@ -758,7 +758,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		@Bean
 		org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
 			return org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig()
-					.entryTtl(java.time.Duration.ofSeconds(30)).prefixKeysWith("bar");
+					.entryTtl(java.time.Duration.ofSeconds(30)).prefixCacheNameWith("bar");
 		}
 
 	}
