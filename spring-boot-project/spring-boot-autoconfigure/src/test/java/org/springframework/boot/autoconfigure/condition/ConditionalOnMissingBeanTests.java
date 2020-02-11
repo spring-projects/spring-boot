@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Jakub Kubrynski
  * @author Andy Wilkinson
- * @author Jorge Cordoba
  */
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
@@ -137,14 +136,15 @@ public class ConditionalOnMissingBeanTests {
 					assertThat(context.getBean("foo")).isEqualTo("foo");
 				});
 	}
+
 	@Test
 	void testOnMissingBeanConditionOutputShouldNotContainConditionalOnBeanClassInMessage() {
-		this.contextRunner.withUserConfiguration(ConditionalOnMissingBeanTests.OnBeanNameConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
 			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
 					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
 					.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
-			assertThat(message).doesNotContain("@ConditionalOnBean (names: foo; SearchStrategy: all) did not find any beans");
+			assertThat(message).doesNotContain("@ConditionalOnBean");
 		});
 	}
 
