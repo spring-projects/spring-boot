@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -70,9 +71,10 @@ class ArtemisAutoConfigurationTests {
 	@Test
 	void connectionFactoryIsCachedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ConnectionFactory.class);
-			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+			assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(CachingConnectionFactory.class)
+					.hasBean("jmsConnectionFactory");
 			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+			assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
 			assertThat(connectionFactory.isCacheConsumers()).isFalse();
 			assertThat(connectionFactory.isCacheProducers()).isTrue();
@@ -86,9 +88,10 @@ class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.jms.cache.consumers=true", "spring.jms.cache.producers=false",
 						"spring.jms.cache.session-cache-size=10")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ConnectionFactory.class);
-					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(CachingConnectionFactory.class).hasBean("jmsConnectionFactory");
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					assertThat(connectionFactory.isCacheConsumers()).isTrue();
 					assertThat(connectionFactory.isCacheProducers()).isFalse();
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(10);
@@ -99,9 +102,9 @@ class ArtemisAutoConfigurationTests {
 	void connectionFactoryCachingCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.enabled=false").run((context) -> {
-					assertThat(context).hasSingleBean(ConnectionFactory.class);
 					assertThat(context).doesNotHaveBean(CachingConnectionFactory.class);
-					assertThat(context.getBean(ConnectionFactory.class)).isInstanceOf(ActiveMQConnectionFactory.class);
+					ConnectionFactory connectionFactory = getConnectionFactory(context);
+					assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
 				});
 	}
 
@@ -110,7 +113,7 @@ class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native").run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+					ConnectionFactory connectionFactory = getConnectionFactory(context);
 					assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
 					ActiveMQConnectionFactory activeMQConnectionFactory = getActiveMQConnectionFactory(
 							connectionFactory);
@@ -126,7 +129,7 @@ class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
 						"spring.artemis.port:9876")
 				.run((context) -> assertNettyConnectionFactory(
-						getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)), "192.168.1.144", 9876));
+						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.144", 9876));
 	}
 
 	@Test
@@ -136,7 +139,7 @@ class ArtemisAutoConfigurationTests {
 						"spring.artemis.password:secret")
 				.run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+					ConnectionFactory connectionFactory = getConnectionFactory(context);
 					assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
 					ActiveMQConnectionFactory activeMQConnectionFactory = getActiveMQConnectionFactory(
 							connectionFactory);
@@ -157,7 +160,7 @@ class ArtemisAutoConfigurationTests {
 							.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
 					assertThat(configuration.isPersistenceEnabled()).isFalse();
 					assertThat(configuration.isSecurityEnabled()).isFalse();
-					assertInVmConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)));
+					assertInVmConnectionFactory(getActiveMQConnectionFactory(getConnectionFactory(context)));
 				});
 	}
 
@@ -170,7 +173,7 @@ class ArtemisAutoConfigurationTests {
 					.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
 			assertThat(configuration.isPersistenceEnabled()).isFalse();
 			assertThat(configuration.isSecurityEnabled()).isFalse();
-			assertInVmConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)));
+			assertInVmConnectionFactory(getActiveMQConnectionFactory(getConnectionFactory(context)));
 		});
 	}
 
@@ -180,7 +183,7 @@ class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.enabled:false").run((context) -> {
 					assertThat(context).doesNotHaveBean(ActiveMQServer.class);
-					assertNettyConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)),
+					assertNettyConnectionFactory(getActiveMQConnectionFactory(getConnectionFactory(context)),
 							"localhost", 61616);
 				});
 	}
@@ -192,7 +195,7 @@ class ArtemisAutoConfigurationTests {
 				.withPropertyValues("spring.artemis.mode:embedded", "spring.artemis.embedded.enabled:false")
 				.run((context) -> {
 					assertThat(context.getBeansOfType(ActiveMQServer.class)).isEmpty();
-					assertInVmConnectionFactory(getActiveMQConnectionFactory(context.getBean(ConnectionFactory.class)));
+					assertInVmConnectionFactory(getActiveMQConnectionFactory(getConnectionFactory(context)));
 				});
 	}
 
@@ -344,11 +347,18 @@ class ArtemisAutoConfigurationTests {
 	@Test
 	void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled:true").run((context) -> {
-			ConnectionFactory factory = context.getBean(ConnectionFactory.class);
+			ConnectionFactory factory = getConnectionFactory(context);
 			assertThat(factory).isInstanceOf(JmsPoolConnectionFactory.class);
 			context.getSourceApplicationContext().close();
 			assertThat(factory.createConnection()).isNull();
 		});
+	}
+
+	private ConnectionFactory getConnectionFactory(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(ConnectionFactory.class).hasBean("jmsConnectionFactory");
+		ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+		assertThat(connectionFactory).isSameAs(context.getBean("jmsConnectionFactory"));
+		return connectionFactory;
 	}
 
 	private ActiveMQConnectionFactory getActiveMQConnectionFactory(ConnectionFactory connectionFactory) {
