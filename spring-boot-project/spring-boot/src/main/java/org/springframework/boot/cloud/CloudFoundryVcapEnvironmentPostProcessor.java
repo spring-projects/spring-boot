@@ -87,6 +87,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public class CloudFoundryVcapEnvironmentPostProcessor
@@ -230,7 +231,19 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		if (key.startsWith("[")) {
 			return path + key;
 		}
+		if (shouldWrap(key)) {
+			return path + "[" + key + "]";
+		}
 		return path + "." + key;
+	}
+
+	private boolean shouldWrap(String key) {
+		for (char ch : key.toCharArray()) {
+			if (!Character.isLowerCase(ch) && !Character.isDigit(ch) && ch != '-') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
