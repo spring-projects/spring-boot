@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -132,6 +134,17 @@ class ConditionalOnBeanTests {
 	private void hasBarBean(AssertableApplicationContext context) {
 		assertThat(context).hasBean("bar");
 		assertThat(context.getBean("bar")).isEqualTo("bar");
+	}
+
+	@Test
+	void onBeanConditionOutputShouldNotContainConditionalOnMissingBeanClassInMessage() {
+		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
+			Collection<ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
+					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.values();
+			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
+			assertThat(message).doesNotContain("@ConditionalOnMissingBean");
+		});
 	}
 
 	@Test
