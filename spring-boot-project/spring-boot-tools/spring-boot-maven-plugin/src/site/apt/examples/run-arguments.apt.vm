@@ -1,0 +1,51 @@
+ -----
+ Using Application Arguments
+ -----
+ Stephane Nicoll
+ -----
+ 2020-02-11
+ -----
+
+  Application arguments can be specified using <<<arguments>>>. The following sets two
+  arguments: <<<property1>>> and <<<property2=42>>>:
+
+---
+<project>
+  ...
+  <build>
+    <properties>
+      <my.value>42</my.value>
+    </properties>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <arguments>
+            <argument>property1</argument>
+            <argument>property2=${my.value}</argument>
+          </arguments>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  On the command-line, arguments are separated by a space the same way <<<jvmArguments>>>
+  are. If an argument contains a space, make sure to quote it. In the following example,
+  two arguments are available: <<<property1>>> and <<<property2=Hello World>>>:
+
+---
+mvn spring-boot:run -Dspring-boot.run.arguments="property1 'property2=Hello World'"
+---
+
+
+

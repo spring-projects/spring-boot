@@ -58,6 +58,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/run-env-variables.html}Using environment variables}}
 
+  * {{{./examples/run-arguments.html}Using application arguments}}
+
   * {{{./examples/it-random-port.html}Random port for integration tests}}
 
   * {{{./examples/it-skip.html}Skip integration tests}}
