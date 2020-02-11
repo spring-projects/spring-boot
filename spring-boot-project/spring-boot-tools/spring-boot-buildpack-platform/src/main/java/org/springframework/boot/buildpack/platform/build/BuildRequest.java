@@ -44,6 +44,8 @@ public class BuildRequest {
 
 	private final ImageReference builder;
 
+	private final Creator creator;
+
 	private final Map<String, String> env;
 
 	private final boolean cleanCache;
@@ -59,13 +61,15 @@ public class BuildRequest {
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
 		this.verboseLogging = false;
+		this.creator = Creator.withVersion("");
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
-			Map<String, String> env, boolean cleanCache, boolean verboseLogging) {
+			Creator creator, Map<String, String> env, boolean cleanCache, boolean verboseLogging) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
+		this.creator = creator;
 		this.env = env;
 		this.cleanCache = cleanCache;
 		this.verboseLogging = verboseLogging;
@@ -78,7 +82,18 @@ public class BuildRequest {
 	 */
 	public BuildRequest withBuilder(ImageReference builder) {
 		Assert.notNull(builder, "Builder must not be null");
-		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedForm(), this.env, this.cleanCache,
+		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedForm(), this.creator, this.env,
+				this.cleanCache, this.verboseLogging);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated builder.
+	 * @param creator the new {@code Creator} to use
+	 * @return an updated build request
+	 */
+	public BuildRequest withCreator(Creator creator) {
+		Assert.notNull(creator, "Creator must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, creator, this.env, this.cleanCache,
 				this.verboseLogging);
 	}
 
@@ -93,8 +108,8 @@ public class BuildRequest {
 		Assert.hasText(value, "Value must not be empty");
 		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, Collections.unmodifiableMap(env),
-				this.cleanCache, this.verboseLogging);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator,
+				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging);
 	}
 
 	/**
@@ -106,7 +121,7 @@ public class BuildRequest {
 		Assert.notNull(env, "Env must not be null");
 		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
-		return new BuildRequest(this.name, this.applicationContent, this.builder,
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator,
 				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging);
 	}
 
@@ -116,7 +131,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.env, cleanCache,
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator, this.env, cleanCache,
 				this.verboseLogging);
 	}
 
@@ -126,8 +141,8 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.env, this.cleanCache,
-				verboseLogging);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator, this.env,
+				this.cleanCache, verboseLogging);
 	}
 
 	/**
@@ -155,6 +170,14 @@ public class BuildRequest {
 	 */
 	public ImageReference getBuilder() {
 		return this.builder;
+	}
+
+	/**
+	 * Return the {@link Creator} the builder should use.
+	 * @return the {@code Creator}
+	 */
+	public Creator getCreator() {
+		return this.creator;
 	}
 
 	/**

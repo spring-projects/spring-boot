@@ -66,7 +66,8 @@ public class Builder {
 		ImageReference runImageReference = getRunImageReference(builderMetadata.getStack());
 		Image runImage = pullRunImage(request, runImageReference);
 		assertHasExpectedStackId(runImage, stackId);
-		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getEnv());
+		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getCreator(),
+				request.getEnv());
 		this.docker.image().load(builder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, runImageReference, builder);

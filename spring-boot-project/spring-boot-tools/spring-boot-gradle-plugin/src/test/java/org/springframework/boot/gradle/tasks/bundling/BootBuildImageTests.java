@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BootBuildImage}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class BootBuildImageTests {
 
@@ -82,6 +83,13 @@ class BootBuildImageTests {
 	}
 
 	@Test
+	void springBootVersionDefaultValueIsUsed() {
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getCreator().getName()).isEqualTo("Spring Boot");
+		assertThat(request.getCreator().getVersion()).isEqualTo("");
+	}
+
+	@Test
 	void whenIndividualEntriesAreAddedToTheEnvironmentThenTheyAreIncludedInTheRequest() {
 		this.buildImage.environment("ALPHA", "a");
 		this.buildImage.environment("BRAVO", "b");
@@ -91,7 +99,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenEntriesAreAddedToTheEnvironmentThenTheyAreIncludedInTheRequest() {
-		Map<String, String> environment = new HashMap<String, String>();
+		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
 		this.buildImage.environment(environment);
@@ -101,7 +109,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenTheEnvironmentIsSetItIsIncludedInTheRequest() {
-		Map<String, String> environment = new HashMap<String, String>();
+		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
 		this.buildImage.setEnvironment(environment);
@@ -111,7 +119,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenTheEnvironmentIsSetItReplacesAnyExistingEntriesAndIsIncludedInTheRequest() {
-		Map<String, String> environment = new HashMap<String, String>();
+		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
 		this.buildImage.environment("C", "Charlie");

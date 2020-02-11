@@ -41,6 +41,7 @@ import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -53,6 +54,7 @@ import org.springframework.util.StringUtils;
  * Package an application into a OCI image using a buildpack.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 @Mojo(name = "build-image", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
@@ -124,7 +126,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	private BuildRequest getBuildRequest(Libraries libraries) {
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
-		return ((this.image != null) ? this.image : new Image()).getBuildRequest(this.project.getArtifact(), content);
+		Image image = (this.image != null) ? this.image : new Image();
+		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
 
 	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {
@@ -141,6 +144,14 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		name.append(".jar");
 		return new File(this.sourceDirectory, name.toString());
+	}
+
+	private BuildRequest customize(BuildRequest request) {
+		String springBootVersion = VersionExtractor.forClass(BuildImageMojo.class);
+		if (StringUtils.hasText(springBootVersion)) {
+			request = request.withCreator(Creator.withVersion(springBootVersion));
+		}
+		return request;
 	}
 
 	/**

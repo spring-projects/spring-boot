@@ -42,17 +42,20 @@ class EphemeralBuilder {
 
 	private final ImageArchive archive;
 
+	private final Creator creator;
+
 	/**
 	 * Create a new {@link EphemeralBuilder} instance.
 	 * @param buildOwner the build owner
 	 * @param builderImage the image
 	 * @param builderMetadata the builder metadata
+	 * @param creator the builder creator
 	 * @param env the builder env
 	 * @throws IOException on IO error
 	 */
-	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata,
+	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata, Creator creator,
 			Map<String, String> env) throws IOException {
-		this(Clock.systemUTC(), buildOwner, builderImage, builderMetadata, env);
+		this(Clock.systemUTC(), buildOwner, builderImage, builderMetadata, creator, env);
 	}
 
 	/**
@@ -61,13 +64,15 @@ class EphemeralBuilder {
 	 * @param buildOwner the build owner
 	 * @param builderImage the image
 	 * @param builderMetadata the builder metadata
+	 * @param creator the builder creator
 	 * @param env the builder env
 	 * @throws IOException on IO error
 	 */
 	EphemeralBuilder(Clock clock, BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata,
-			Map<String, String> env) throws IOException {
+			Creator creator, Map<String, String> env) throws IOException {
 		ImageReference name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
+		this.creator = creator;
 		this.builderMetadata = builderMetadata.copy(this::updateMetadata);
 		this.archive = ImageArchive.from(builderImage, (update) -> {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
@@ -80,7 +85,7 @@ class EphemeralBuilder {
 	}
 
 	private void updateMetadata(BuilderMetadata.Update update) {
-		update.withCreatedBy("Spring Boot", "dev");
+		update.withCreatedBy(this.creator.getName(), this.creator.getVersion());
 	}
 
 	private Layer getEnvLayer(Map<String, String> env) throws IOException {

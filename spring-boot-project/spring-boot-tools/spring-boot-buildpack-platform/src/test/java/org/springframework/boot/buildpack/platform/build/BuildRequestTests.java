@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link BuildRequest}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 public class BuildRequestTests {
 
@@ -95,6 +96,16 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 				.withBuilder(ImageReference.of("spring/builder"));
 		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/spring/builder:latest");
+	}
+
+	@Test
+	void withCreatorUpdatesCreator() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCreator = request.withCreator(Creator.withVersion("1.0.0"));
+		assertThat(request.getCreator().getName()).isEqualTo("Spring Boot");
+		assertThat(request.getCreator().getVersion()).isEqualTo("");
+		assertThat(withCreator.getCreator().getName()).isEqualTo("Spring Boot");
+		assertThat(withCreator.getCreator().getVersion()).isEqualTo("1.0.0");
 	}
 
 	@Test

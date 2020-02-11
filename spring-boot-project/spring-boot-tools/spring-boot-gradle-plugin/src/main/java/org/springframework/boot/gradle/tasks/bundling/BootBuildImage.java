@@ -30,10 +30,12 @@ import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.docker.DockerException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
+import org.springframework.boot.gradle.plugin.VersionExtractor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,6 +43,7 @@ import org.springframework.util.StringUtils;
  * <a href="https://buildpacks.io">buildpack</a>.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class BootBuildImage extends DefaultTask {
@@ -51,7 +54,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private String builder;
 
-	private Map<String, String> environment = new HashMap<String, String>();
+	private Map<String, String> environment = new HashMap<>();
 
 	private boolean cleanCache;
 
@@ -209,6 +212,10 @@ public class BootBuildImage extends DefaultTask {
 		}
 		if (this.environment != null && !this.environment.isEmpty()) {
 			request = request.withEnv(this.environment);
+		}
+		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
+		if (StringUtils.hasText(springBootVersion)) {
+			request = request.withCreator(Creator.withVersion(springBootVersion));
 		}
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);

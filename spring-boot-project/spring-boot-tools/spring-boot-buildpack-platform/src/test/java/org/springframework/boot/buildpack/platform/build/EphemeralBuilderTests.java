@@ -62,6 +62,8 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	private Map<String, String> env;
 
+	private Creator creator = Creator.withVersion("dev");
+
 	@BeforeEach
 	void setup() throws Exception {
 		this.image = Image.of(getContent("image.json"));
@@ -71,23 +73,24 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getNameHasRandomName() throws Exception {
-		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
-		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
+		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
 		assertThat(b1.getName().toString()).startsWith("pack.local/builder/").endsWith(":latest");
 		assertThat(b1.getName().toString()).isNotEqualTo(b2.getName().toString());
 	}
 
 	@Test
 	void getArchiveHasCreatedByConfig() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
 		ImageConfig config = builder.getArchive().getImageConfig();
 		BuilderMetadata ephemeralMetadata = BuilderMetadata.fromImageConfig(config);
 		assertThat(ephemeralMetadata.getCreatedBy().getName()).isEqualTo("Spring Boot");
+		assertThat(ephemeralMetadata.getCreatedBy().getVersion()).isEqualTo("dev");
 	}
 
 	@Test
 	void getArchiveHasTag() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
 		ImageReference tag = builder.getArchive().getTag();
 		assertThat(tag.toString()).startsWith("pack.local/builder/").endsWith(":latest");
 	}
@@ -95,13 +98,14 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	@Test
 	void getArchiveHasCreateDate() throws Exception {
 		Clock clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-		EphemeralBuilder builder = new EphemeralBuilder(clock, this.owner, this.image, this.metadata, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(clock, this.owner, this.image, this.metadata, this.creator,
+				this.env);
 		assertThat(builder.getArchive().getCreateDate()).isEqualTo(Instant.now(clock));
 	}
 
 	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
 		File folder = unpack(getLayer(builder.getArchive(), 0), "env");
 		assertThat(new File(folder, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 	}
