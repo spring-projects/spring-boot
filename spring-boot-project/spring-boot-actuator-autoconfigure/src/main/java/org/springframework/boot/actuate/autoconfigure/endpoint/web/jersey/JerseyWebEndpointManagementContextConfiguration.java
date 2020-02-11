@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.Produces;
+import javax.ws.rs.ext.ContextResolver;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 
@@ -32,6 +35,8 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.json.ActuatorJsonMapperProvider;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -82,6 +87,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
 		return StringUtils.hasText(basePath)
 				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
+	}
+
+	@Bean
+	ResourceConfigCustomizer actuatorResourceConfigCustomizer(ActuatorJsonMapperProvider jsonMapperProvider) {
+		return (ResourceConfig config) -> config.register(
+				new ActuatorJsonMapperContextResolver(jsonMapperProvider.getInstance()), ContextResolver.class);
 	}
 
 	/**
@@ -141,6 +152,22 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		private void register(Collection<Resource> resources) {
 			this.resourceConfig.registerResources(new HashSet<>(resources));
+		}
+
+	}
+
+	@Produces({ ActuatorMediaType.V3_JSON, ActuatorMediaType.V2_JSON })
+	private static final class ActuatorJsonMapperContextResolver implements ContextResolver<ObjectMapper> {
+
+		private final ObjectMapper objectMapper;
+
+		private ActuatorJsonMapperContextResolver(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
+
+		@Override
+		public ObjectMapper getContext(Class<?> type) {
+			return this.objectMapper;
 		}
 
 	}

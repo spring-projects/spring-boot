@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.json.ActuatorJsonMapperProvider;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -42,9 +46,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
@@ -89,6 +99,37 @@ public class WebMvcEndpointManagementContextConfiguration {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class JsonWebMvcConfigurer implements WebMvcConfigurer, Ordered {
+
+		private final ActuatorJsonMapperProvider actuatorJsonMapperProvider;
+
+		public JsonWebMvcConfigurer(ActuatorJsonMapperProvider objectMapperFactory) {
+			this.actuatorJsonMapperProvider = objectMapperFactory;
+		}
+
+		@Override
+		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+			converters.add(new ActuatorJsonHttpMessageConverter(this.actuatorJsonMapperProvider.getInstance()));
+		}
+
+		// WebMvcAutoConfiguration is ordered at 0
+		@Override
+		public int getOrder() {
+			return -1;
+		}
+
+	}
+
+	static class ActuatorJsonHttpMessageConverter extends AbstractJackson2HttpMessageConverter {
+
+		ActuatorJsonHttpMessageConverter(ObjectMapper objectMapper) {
+			super(objectMapper, MediaType.parseMediaType(ActuatorMediaType.V3_JSON),
+					MediaType.parseMediaType(ActuatorMediaType.V2_JSON));
+		}
+
 	}
 
 }
