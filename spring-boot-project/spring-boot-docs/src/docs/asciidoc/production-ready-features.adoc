@@ -786,7 +786,8 @@ For reactive applications, such as those using Spring WebFlux, `ReactiveHealthCo
 Similar to a traditional `HealthContributor`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] and {spring-boot-actuator-module-code}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
 Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
 
-TIP: In a reactive application, The `ReactiveHealthContributorRegistry` can be used to register and unregister health indicators at runtime.
+TIP: In a reactive application, The `ReactiveHealthContributorRegistry` should be used to register and unregister health indicators at runtime.
+If you need to register a regular `HealthContributor`, you should wrap it using `ReactiveHealthContributor#adapt`.
 
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
