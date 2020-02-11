@@ -155,7 +155,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * quotes. When specified, takes precedence over {@link #arguments}.
 	 * @since 2.2.3
 	 */
-	@Parameter(property = "spring-boot.run.arguments", readonly = true)
+	@Parameter(property = "spring-boot.run.arguments")
 	private String commandlineArguments;
 
 	/**

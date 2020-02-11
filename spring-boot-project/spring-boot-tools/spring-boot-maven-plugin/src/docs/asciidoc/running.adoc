@@ -8,6 +8,8 @@ The plugin includes a run goal which can be used to launch your application from
 	$ mvn spring-boot:run
 ----
 
+Application arguments can be specified using the `arguments` parameter, see <<run-example-application-arguments,using application arguments>> for more details.
+
 By default the application is executed in a forked process and setting properties on the command-line will not affect the application.
 If you need to specify some JVM arguments (i.e. for debugging purposes), you can use the `jvmArguments` parameter, see <<run-example-debug,Debug the application>> for more details.
 There is also explicit support for <<run-example-system-properties,system properties>> and <<run-example-environment-variables,environment variables>>.
@@ -202,6 +204,43 @@ Any String typed Maven variable can be passed as system properties.
 Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
 
 Environment variables defined this way take precedence over existing values.
+
+
+
+[[run-example-application-arguments]]
+==== Using Application Arguments
+Application arguments can be specified using the `arguments` attribute.
+The following example sets two arguments: `property1` and `property2=42`:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{gradle-project-version}</version>
+				<configuration>
+					<arguments>
+						<argument>property1</argument>
+						<argument>property2=${my.value}</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+On the command-line, arguments are separated by a space the same way `jvmArguments` are.
+If an argument contains a space, make sure to quote it.
+In the following example, two arguments are available: `property1` and `property2=Hello World`:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.arguments="property1 'property2=Hello World'"
+----
 
 
 
