@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @param <C> the contributor type
  * @param <T> the contributed health component type
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T> {
 
@@ -213,6 +214,20 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
 				false);
 		assertThat(result).isNull();
+	}
+
+	@Test
+	void getHealthWhenGroupContainsCompositeContributorReturnsHealth() {
+		C contributor = createContributor(this.up);
+		C compositeContributor = createCompositeContributor(Collections.singletonMap("spring", contributor));
+		this.registry.registerContributor("test", compositeContributor);
+		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup((name) -> name.startsWith("test"));
+		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup,
+				Collections.singletonMap("testGroup", testGroup));
+		HealthResult<T> result = create(this.registry, groups).getHealth(ApiVersion.V3, SecurityContext.NONE, false,
+				"testGroup");
+		CompositeHealth health = (CompositeHealth) getHealth(result);
+		assertThat(health.getComponents()).containsKey("test");
 	}
 
 	protected abstract HealthEndpointSupport<C, T> create(R registry, HealthEndpointGroups groups);
