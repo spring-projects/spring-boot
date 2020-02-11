@@ -1043,7 +1043,7 @@
       "name": "liquibase.change-log",
       "type": "java.lang.String",
       "description": "Change log configuration path.",
-      "defaultValue": "classpath:/db/changelog/db.changelog-master.yaml",
+      "defaultValue": "classpath:db/changelog/db.changelog-master.yaml",
       "deprecation": {
         "replacement": "spring.liquibase.change-log",
         "level": "error"
