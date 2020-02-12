@@ -191,7 +191,7 @@ publishing.publications.withType(MavenPublication) {
 								dependency {
 									delegate.groupId('org.springframework.boot')
 									delegate.artifactId('spring-boot-maven-plugin')
-									delegate.version('${project.version}')
+									delegate.version('${version}')
 								}
 							}
 							executions {
