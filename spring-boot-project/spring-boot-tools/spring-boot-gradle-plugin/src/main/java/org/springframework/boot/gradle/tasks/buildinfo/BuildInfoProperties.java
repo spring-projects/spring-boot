@@ -48,6 +48,10 @@ public class BuildInfoProperties implements Serializable {
 
 	BuildInfoProperties(Project project) {
 		this.project = project;
+		//Default the properties:
+		this.group = project.getGroup().toString();
+		this.name = project.getName();
+		this.version = project.getVersion().toString();
 		this.time = Instant.now();
 	}
 
