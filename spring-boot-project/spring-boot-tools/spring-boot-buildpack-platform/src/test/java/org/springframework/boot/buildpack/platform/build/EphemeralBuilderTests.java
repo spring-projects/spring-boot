@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
 
@@ -96,11 +96,16 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getArchiveHasCreateDate() throws Exception {
-		Clock clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-		EphemeralBuilder builder = new EphemeralBuilder(clock, this.owner, this.image, this.metadata, this.creator,
-				this.env);
-		assertThat(builder.getArchive().getCreateDate()).isEqualTo(Instant.now(clock));
+	void getArchiveHasFixedCreateDate() throws Exception {
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		Instant createInstant = builder.getArchive().getCreateDate();
+		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
+		assertThat(createDateTime.getYear()).isEqualTo(1980);
+		assertThat(createDateTime.getMonthValue()).isEqualTo(1);
+		assertThat(createDateTime.getDayOfMonth()).isEqualTo(1);
+		assertThat(createDateTime.getHour()).isEqualTo(0);
+		assertThat(createDateTime.getMinute()).isEqualTo(0);
+		assertThat(createDateTime.getSecond()).isEqualTo(1);
 	}
 
 	@Test

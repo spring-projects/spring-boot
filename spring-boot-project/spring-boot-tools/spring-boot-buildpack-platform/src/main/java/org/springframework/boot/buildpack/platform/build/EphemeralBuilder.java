@@ -17,8 +17,6 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
@@ -55,21 +53,6 @@ class EphemeralBuilder {
 	 */
 	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata, Creator creator,
 			Map<String, String> env) throws IOException {
-		this(Clock.systemUTC(), buildOwner, builderImage, builderMetadata, creator, env);
-	}
-
-	/**
-	 * Create a new {@link EphemeralBuilder} instance with a specific clock.
-	 * @param clock the clock used for the current time
-	 * @param buildOwner the build owner
-	 * @param builderImage the image
-	 * @param builderMetadata the builder metadata
-	 * @param creator the builder creator
-	 * @param env the builder env
-	 * @throws IOException on IO error
-	 */
-	EphemeralBuilder(Clock clock, BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata,
-			Creator creator, Map<String, String> env) throws IOException {
 		ImageReference name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
 		this.creator = creator;
@@ -77,7 +60,6 @@ class EphemeralBuilder {
 		this.archive = ImageArchive.from(builderImage, (update) -> {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
 			update.withTag(name);
-			update.withCreateDate(Instant.now(clock));
 			if (env != null && !env.isEmpty()) {
 				update.withNewLayer(getEnvLayer(env));
 			}
