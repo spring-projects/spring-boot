@@ -80,7 +80,7 @@ public class GsonProperties {
 	private Boolean lenient;
 
 	/**
-	 * Whether to disable the escaping of HTML characters such as '&lt;', '&gt;', etc.
+	 * Whether to disable the escaping of HTML characters such as '<', '>', etc.
 	 */
 	private Boolean disableHtmlEscaping;
 

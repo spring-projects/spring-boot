@@ -66,10 +66,6 @@ class TypeUtils {
 
 	private static final Pattern NEW_LINE_PATTERN = Pattern.compile("[\r\n]+");
 
-	private static final Pattern LT_HTML_ENTITY_PATTERN = Pattern.compile("&lt;");
-
-	private static final Pattern GT_HTML_ENTITY_PATTERN = Pattern.compile("&gt;");
-
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
 		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
@@ -182,9 +178,7 @@ class TypeUtils {
 	String getJavaDoc(Element element) {
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
-			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("");
-			javadoc = LT_HTML_ENTITY_PATTERN.matcher(javadoc).replaceAll("<");
-			javadoc = GT_HTML_ENTITY_PATTERN.matcher(javadoc).replaceAll(">").trim();
+			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
 		return "".equals(javadoc) ? null : javadoc;
 	}

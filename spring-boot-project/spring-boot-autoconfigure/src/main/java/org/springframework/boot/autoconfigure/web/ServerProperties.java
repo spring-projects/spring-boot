@@ -386,13 +386,13 @@ public class ServerProperties {
 
 		/**
 		 * Comma-separated list of additional unencoded characters that should be allowed
-		 * in URI paths. Only "&lt; &gt; [ \ ] ^ ` { | }" are allowed.
+		 * in URI paths. Only "< > [ \ ] ^ ` { | }" are allowed.
 		 */
 		private List<Character> relaxedPathChars = new ArrayList<>();
 
 		/**
 		 * Comma-separated list of additional unencoded characters that should be allowed
-		 * in URI query strings. Only "&lt; &gt; [ \ ] ^ ` { | }" are allowed.
+		 * in URI query strings. Only "< > [ \ ] ^ ` { | }" are allowed.
 		 */
 		private List<Character> relaxedQueryChars = new ArrayList<>();
 
