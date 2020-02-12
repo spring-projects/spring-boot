@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Chris Bono
  */
 
-public class SslConfigurationValidatorTest {
+class SslConfigurationValidatorTests {
 
 	private static final String VALID_ALIAS = "test-alias";
 
