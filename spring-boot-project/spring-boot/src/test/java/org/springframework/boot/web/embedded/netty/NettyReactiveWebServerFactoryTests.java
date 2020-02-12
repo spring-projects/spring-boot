@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.time.Duration;
 import java.util.Arrays;
-
-import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -99,14 +97,6 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 		Mono<String> result = testSslWithAlias("test-alias");
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
 		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
-	}
-
-	@Test
-	public void whenSslIsConfiguredWithAnInvalidAliasTheSslHandshakeFails() {
-		Mono<String> result = testSslWithAlias("test-alias-bad");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectErrorMatches((throwable) -> throwable instanceof SSLHandshakeException
-				&& throwable.getMessage().contains("HANDSHAKE_FAILURE")).verify();
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {

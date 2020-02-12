@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,6 +135,44 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void sslWithValidAlias() {
+		String keyStore = "classpath:test.jks";
+		String keyPassword = "password";
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyAlias("test-alias");
+		factory.setSsl(ssl);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
+		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(connector).build();
+
+		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
+
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
+		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+	}
+
+	@Test
+	public void sslWithInvalidAliasFailsDuringStartup() {
+		String keyStore = "classpath:test.jks";
+		String keyPassword = "password";
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyAlias("test-alias-404");
+		factory.setSsl(ssl);
+		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
+				.hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
