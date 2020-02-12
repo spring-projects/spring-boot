@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslConfigurationValidator;
 import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.SslUtils;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -50,6 +50,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Chris Bono
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
@@ -245,7 +246,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		@Override
 		protected void doStart() throws Exception {
 			super.doStart();
-			SslUtils.assertStoreContainsAlias(this.sslContextFactory.getKeyStore(), this.keyAlias);
+			SslConfigurationValidator.validateKeyAlias(this.sslContextFactory.getKeyStore(), this.keyAlias);
 		}
 
 	}

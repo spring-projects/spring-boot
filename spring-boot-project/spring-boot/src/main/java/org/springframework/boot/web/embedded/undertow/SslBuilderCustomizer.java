@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslConfigurationValidator;
 import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.SslUtils;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
 
@@ -108,8 +108,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 	private KeyManager[] getKeyManagers(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
-			SslUtils.assertStoreContainsAlias(keyStore, ssl.getKeyAlias());
-
+			SslConfigurationValidator.validateKeyAlias(keyStore, ssl.getKeyAlias());
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;

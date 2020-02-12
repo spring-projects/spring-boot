@@ -27,12 +27,12 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Tests for {@link SslUtils}.
+ * Tests for {@link SslConfigurationValidator}.
  *
  * @author Chris Bono
  */
 
-public class SslUtilsTest {
+public class SslConfigurationValidatorTest {
 
 	private static final String VALID_ALIAS = "test-alias";
 
@@ -47,31 +47,31 @@ public class SslUtilsTest {
 	}
 
 	@Test
-	public void assertStoreContainsAliasPassesWhenAliasFound() throws KeyStoreException {
-		SslUtils.assertStoreContainsAlias(this.keyStore, VALID_ALIAS);
+	public void validateKeyAliasWhenAliasFoundShouldNotFail() {
+		SslConfigurationValidator.validateKeyAlias(this.keyStore, VALID_ALIAS);
 	}
 
 	@Test
-	public void assertStoreContainsAliasPassesWhenNullAlias() throws KeyStoreException {
-		SslUtils.assertStoreContainsAlias(this.keyStore, null);
+	public void validateKeyAliasWhenNullAliasShouldNotFail() {
+		SslConfigurationValidator.validateKeyAlias(this.keyStore, null);
 	}
 
 	@Test
-	public void assertStoreContainsAliasPassesWhenEmptyAlias() throws KeyStoreException {
-		SslUtils.assertStoreContainsAlias(this.keyStore, "");
+	public void validateKeyAliasWhenEmptyAliasShouldNotFail() {
+		SslConfigurationValidator.validateKeyAlias(this.keyStore, "");
 	}
 
 	@Test
-	public void assertStoreContainsAliasFailsWhenAliasNotFound() throws KeyStoreException {
-		assertThatThrownBy(() -> SslUtils.assertStoreContainsAlias(this.keyStore, INVALID_ALIAS))
+	public void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
+		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test
-	public void assertStoreContainsAliasFailsWhenKeyStoreThrowsExceptionOnContains() throws KeyStoreException {
+	public void validateKeyAliasWhenKeyStoreThrowsExceptionOnContains() throws KeyStoreException {
 		KeyStore uninitializedKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		assertThatThrownBy(() -> SslUtils.assertStoreContainsAlias(uninitializedKeyStore, "alias"))
+		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(uninitializedKeyStore, "alias"))
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage("Could not determine if keystore contains alias 'alias'");
 	}

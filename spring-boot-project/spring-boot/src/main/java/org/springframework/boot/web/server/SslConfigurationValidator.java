@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ import org.springframework.util.StringUtils;
  * Provides utilities around SSL.
  *
  * @author Chris Bono
- * @since 2.1.x
+ * @since 2.1.13
  */
-public final class SslUtils {
+public final class SslConfigurationValidator {
 
-	private SslUtils() {
+	private SslConfigurationValidator() {
 	}
 
-	public static void assertStoreContainsAlias(KeyStore keyStore, String keyAlias) {
+	public static void validateKeyAlias(KeyStore keyStore, String keyAlias) {
 		if (!StringUtils.isEmpty(keyAlias)) {
 			try {
 				Assert.state(keyStore.containsAlias(keyAlias),
