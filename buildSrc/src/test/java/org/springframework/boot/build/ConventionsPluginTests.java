@@ -19,6 +19,7 @@ package org.springframework.boot.build;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -27,6 +28,8 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,12 +50,10 @@ class ConventionsPluginTests {
 	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
-		this.licenseFile = new File(this.projectDir, "LICENSE.txt");
 	}
 
 	@Test
-	void jarIncludesLicenseFile() throws IOException {
-		writeLicenseFile();
+	void jarIncludesLegalFiles() throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'java'");
@@ -65,14 +66,13 @@ class ConventionsPluginTests {
 		File file = new File(this.projectDir, "/build/libs/test.jar");
 		assertThat(file).exists();
 		try (JarFile jar = new JarFile(file)) {
-			JarEntry entry = jar.getJarEntry("META-INF/LICENSE.txt");
-			assertThat(entry).isNotNull();
-		}
-	}
-
-	private void writeLicenseFile() throws IOException {
-		try (PrintWriter out = new PrintWriter(new FileWriter(this.licenseFile))) {
-			out.println("Test license");
+			JarEntry license = jar.getJarEntry("META-INF/LICENSE.txt");
+			assertThat(license).isNotNull();
+			JarEntry notice = jar.getJarEntry("META-INF/NOTICE.txt");
+			assertThat(notice).isNotNull();
+			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(notice)));
+			// Test that variables were replaced
+			assertThat(noticeContent).doesNotContain("${");
 		}
 	}
 

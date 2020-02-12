@@ -16,6 +16,13 @@
 
 package org.springframework.boot.build;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,9 +31,11 @@ import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -48,6 +57,7 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 
 import org.springframework.boot.build.testing.TestFailuresPlugin;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
@@ -127,7 +137,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Jar.class, (jar) -> {
 				project.afterEvaluate((evaluated) -> {
-					jar.metaInf((metaInf) -> metaInf.from(project.getRootProject().file("LICENSE.txt")));
+					jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
 					jar.manifest((manifest) -> {
 						Map<String, Object> attributes = new TreeMap<>();
 						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
@@ -140,6 +150,36 @@ public class ConventionsPlugin implements Plugin<Project> {
 				});
 			});
 		});
+	}
+
+	private void copyLegalFiles(Project project, CopySpec metaInf) {
+		copyNoticeFile(project, metaInf);
+		copyLicenseFile(project, metaInf);
+	}
+
+	private void copyNoticeFile(Project project, CopySpec metaInf) {
+		try {
+			InputStream notice = getClass().getClassLoader().getResourceAsStream("NOTICE.txt");
+			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(notice, StandardCharsets.UTF_8))
+					.replace("${version}", project.getVersion().toString())
+					.replace("${currentYear}", Integer.toString(Year.now().getValue()));
+			metaInf.from(project.getResources().getText().fromString(noticeContent),
+					(noticeFile) -> noticeFile.rename((name) -> "NOTICE.txt"));
+		}
+		catch (IOException ex) {
+			throw new GradleException("Failed to copy NOTICE.txt", ex);
+		}
+	}
+
+	private void copyLicenseFile(Project project, CopySpec metaInf) {
+		URL license = getClass().getClassLoader().getResource("LICENSE.txt");
+		try {
+			metaInf.from(project.getResources().getText().fromUri(license.toURI()),
+					(licenseFile) -> licenseFile.rename((name) -> "LICENSE.txt"));
+		}
+		catch (URISyntaxException ex) {
+			throw new GradleException("Failed to copy LICENSE.txt", ex);
+		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
