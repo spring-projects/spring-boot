@@ -29,7 +29,7 @@ test -f /opt/openjdk/bin/javac
 ###########################################################
 
 cd /
-curl -L https://download.docker.com/linux/static/stable/x86_64/docker-19.03.2.tgz | tar zx
+curl -L https://download.docker.com/linux/static/stable/x86_64/docker-19.03.5.tgz | tar zx
 mv /docker/* /bin/
 chmod +x /bin/docker*
 
