@@ -569,9 +569,6 @@ bom {
                 'infinispan-tasks-api',
                 'infinispan-tools'
             ]
-			plugins = [
-				"infinispan-protocol-parser-generator-maven-plugin"
-			]
 		}
 	}
 	library("InfluxDB Java", "2.17") {
