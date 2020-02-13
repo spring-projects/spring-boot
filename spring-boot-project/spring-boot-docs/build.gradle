@@ -8,6 +8,7 @@ plugins {
 
 configurations {
 	actuatorApiDocumentation
+	asciidoctorExtensions
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
@@ -15,8 +16,23 @@ configurations {
 	testSlices
 }
 
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+		}
+	}
+}
+
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
+
+	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
 
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
@@ -111,7 +127,11 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
+	configurations "asciidoctorExtensions"
 	baseDirFollowsSourceDir()
+	asciidoctorj {
+		fatalWarnings = ['^((?!successfully validated).)*$']
+	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		attributes	"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
