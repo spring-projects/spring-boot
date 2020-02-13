@@ -887,14 +887,6 @@ bom {
 			]
 		}
 	}
-	library("JNA", "4.5.2") {
-		group("net.java.dev.jna") {
-			modules = [
-				"jna",
-				"jna-platform"
-			]
-		}
-	}
 	library("Johnzon", "1.2.3") {
 		group("org.apache.johnzon") {
 			modules = [

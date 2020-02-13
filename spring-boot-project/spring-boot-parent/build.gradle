@@ -21,6 +21,8 @@ dependencies {
 		api("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.1.RELEASE")
 		api("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot:0.4.1.RELEASE")
 		api("jline:jline:2.11")
+		api("net.java.dev.jna:jna:4.5.2")
+		api("net.java.dev.jna:jna-platform:4.5.2")
 		api("net.sf.jopt-simple:jopt-simple:5.0.4")
 		api("org.apache.commons:commons-compress:1.19")
 		api("org.apache.maven:maven-plugin-api:3.6.3")
