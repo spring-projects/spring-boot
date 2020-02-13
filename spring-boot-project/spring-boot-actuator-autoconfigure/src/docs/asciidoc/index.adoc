@@ -23,6 +23,10 @@ Before you proceed, you should read the following topics:
 
 
 
+NOTE: To get a correct JSON response, the Jackson library should be available.
+
+
+
 [[overview-endpoint-urls]]
 === URLs
 
