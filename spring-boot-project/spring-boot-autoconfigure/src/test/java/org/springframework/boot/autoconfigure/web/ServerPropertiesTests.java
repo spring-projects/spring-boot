@@ -238,6 +238,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeJettyMaxQueueCapacity() {
+		bind("server.jetty.max-queue-capacity", "5150");
+		assertThat(this.properties.getJetty().getMaxQueueCapacity()).isEqualTo(5150);
+	}
+
+	@Test
 	void testCustomizeUndertowServerOption() {
 		bind("server.undertow.options.server.ALWAYS_SET_KEEP_ALIVE", "true");
 		assertThat(this.properties.getUndertow().getOptions().getServer()).containsEntry("ALWAYS_SET_KEEP_ALIVE",

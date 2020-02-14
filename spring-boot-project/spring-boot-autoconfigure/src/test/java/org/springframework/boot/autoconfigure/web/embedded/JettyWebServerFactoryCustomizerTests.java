@@ -18,9 +18,12 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.AbstractConnector;
@@ -30,11 +33,15 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConfiguration.ConnectionFactory;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.RequestLogWriter;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -43,6 +50,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -135,7 +143,26 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void maxThreadsCanBeCustomized() {
+	void threadPoolMatchesJettyDefaults() {
+		ThreadPool defaultThreadPool = new Server(0).getThreadPool();
+		ThreadPool configuredThreadPool = customizeAndGetServer().getServer().getThreadPool();
+		assertThat(defaultThreadPool).isInstanceOf(QueuedThreadPool.class);
+		assertThat(configuredThreadPool).isInstanceOf(QueuedThreadPool.class);
+		QueuedThreadPool defaultQueuedThreadPool = (QueuedThreadPool) defaultThreadPool;
+		QueuedThreadPool configuredQueuedThreadPool = (QueuedThreadPool) configuredThreadPool;
+		assertThat(configuredQueuedThreadPool.getMinThreads()).isEqualTo(defaultQueuedThreadPool.getMinThreads());
+		assertThat(configuredQueuedThreadPool.getMaxThreads()).isEqualTo(defaultQueuedThreadPool.getMaxThreads());
+		assertThat(configuredQueuedThreadPool.getIdleTimeout()).isEqualTo(defaultQueuedThreadPool.getIdleTimeout());
+		BlockingQueue<?> defaultQueue = getQueue(defaultThreadPool);
+		BlockingQueue<?> configuredQueue = getQueue(configuredThreadPool);
+		assertThat(defaultQueue).isInstanceOf(BlockingArrayQueue.class);
+		assertThat(configuredQueue).isInstanceOf(BlockingArrayQueue.class);
+		assertThat(((BlockingArrayQueue<?>) defaultQueue).getMaxCapacity())
+				.isEqualTo(((BlockingArrayQueue<?>) configuredQueue).getMaxCapacity());
+	}
+
+	@Test
+	void threadPoolMaxThreadsCanBeCustomized() {
 		bind("server.jetty.max-threads=100");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
@@ -143,7 +170,7 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void minThreadsCanBeCustomized() {
+	void threadPoolMinThreadsCanBeCustomized() {
 		bind("server.jetty.min-threads=100");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
@@ -151,11 +178,63 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void threadIdleTimeoutCanBeCustomized() {
+	void threadPoolIdleTimeoutCanBeCustomized() {
 		bind("server.jetty.thread-idle-timeout=100s");
 		JettyWebServer server = customizeAndGetServer();
 		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
 		assertThat(threadPool.getIdleTimeout()).isEqualTo(100000);
+	}
+
+	@Test
+	void threadPoolWithMaxQueueCapacityEqualToZeroCreateSynchronousQueue() {
+		bind("server.jetty.max-queue-capacity=0");
+		JettyWebServer server = customizeAndGetServer();
+		ThreadPool threadPool = server.getServer().getThreadPool();
+		BlockingQueue<?> queue = getQueue(threadPool);
+		assertThat(queue).isInstanceOf(SynchronousQueue.class);
+		assertDefaultThreadPoolSettings(threadPool);
+	}
+
+	@Test
+	void threadPoolWithMaxQueueCapacityEqualToZeroCustomizesThreadPool() {
+		bind("server.jetty.max-queue-capacity=0", "server.jetty.min-threads=100", "server.jetty.max-threads=100",
+				"server.jetty.thread-idle-timeout=6s");
+		JettyWebServer server = customizeAndGetServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
+		assertThat(threadPool.getMinThreads()).isEqualTo(100);
+		assertThat(threadPool.getMaxThreads()).isEqualTo(100);
+		assertThat(threadPool.getIdleTimeout()).isEqualTo(Duration.ofSeconds(6).toMillis());
+	}
+
+	@Test
+	void threadPoolWithMaxQueueCapacityPositiveCreateBlockingArrayQueue() {
+		bind("server.jetty.max-queue-capacity=1234");
+		JettyWebServer server = customizeAndGetServer();
+		ThreadPool threadPool = server.getServer().getThreadPool();
+		BlockingQueue<?> queue = getQueue(threadPool);
+		assertThat(queue).isInstanceOf(BlockingArrayQueue.class);
+		assertThat(((BlockingArrayQueue<?>) queue).getMaxCapacity()).isEqualTo(1234);
+		assertDefaultThreadPoolSettings(threadPool);
+	}
+
+	@Test
+	void threadPoolWithMaxQueueCapacityPositiveCustomizesThreadPool() {
+		bind("server.jetty.max-queue-capacity=1234", "server.jetty.min-threads=10", "server.jetty.max-threads=150",
+				"server.jetty.thread-idle-timeout=3s");
+		JettyWebServer server = customizeAndGetServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getServer().getThreadPool();
+		assertThat(threadPool.getMinThreads()).isEqualTo(10);
+		assertThat(threadPool.getMaxThreads()).isEqualTo(150);
+		assertThat(threadPool.getIdleTimeout()).isEqualTo(Duration.ofSeconds(3).toMillis());
+	}
+
+	private void assertDefaultThreadPoolSettings(ThreadPool threadPool) {
+		assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
+		QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
+		Jetty defaultProperties = new Jetty();
+		assertThat(queuedThreadPool.getMinThreads()).isEqualTo(defaultProperties.getMinThreads());
+		assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(defaultProperties.getMaxThreads());
+		assertThat(queuedThreadPool.getIdleTimeout()).isEqualTo(defaultProperties.getThreadIdleTimeout().toMillis());
 	}
 
 	private CustomRequestLog getRequestLog(JettyWebServer server) {
@@ -234,6 +313,10 @@ class JettyWebServerFactoryCustomizerTests {
 					});
 		}
 		return requestHeaderSizes;
+	}
+
+	private BlockingQueue<?> getQueue(ThreadPool threadPool) {
+		return ReflectionTestUtils.invokeMethod(threadPool, "getQueue");
 	}
 
 	private void bind(String... inlinedProperties) {

@@ -1032,14 +1032,20 @@ public class ServerProperties {
 		private Integer selectors = -1;
 
 		/**
-		 * Maximum number of threads.
-		 */
-		private Integer maxThreads = 200;
-
-		/**
 		 * Minimum number of threads.
 		 */
-		private Integer minThreads = 8;
+		private int minThreads = 8;
+
+		/**
+		 * Maximum number of threads.
+		 */
+		private int maxThreads = 200;
+
+		/**
+		 * Maximum capacity of the thread pool's backing queue. A default is computed
+		 * based on the threading configuration.
+		 */
+		private Integer maxQueueCapacity;
 
 		/**
 		 * Maximum thread idle time.
@@ -1090,20 +1096,28 @@ public class ServerProperties {
 			this.selectors = selectors;
 		}
 
-		public void setMinThreads(Integer minThreads) {
+		public void setMinThreads(int minThreads) {
 			this.minThreads = minThreads;
 		}
 
-		public Integer getMinThreads() {
+		public int getMinThreads() {
 			return this.minThreads;
 		}
 
-		public void setMaxThreads(Integer maxThreads) {
+		public void setMaxThreads(int maxThreads) {
 			this.maxThreads = maxThreads;
 		}
 
-		public Integer getMaxThreads() {
+		public int getMaxThreads() {
 			return this.maxThreads;
+		}
+
+		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+			this.maxQueueCapacity = maxQueueCapacity;
+		}
+
+		public Integer getMaxQueueCapacity() {
+			return this.maxQueueCapacity;
 		}
 
 		public void setThreadIdleTimeout(Duration threadIdleTimeout) {
