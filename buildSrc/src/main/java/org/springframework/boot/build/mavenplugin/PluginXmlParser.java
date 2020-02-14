@@ -16,21 +16,18 @@
 
 package org.springframework.boot.build.mavenplugin;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.util.*;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A parser for a Maven plugin's {@code plugin.xml} file.
@@ -51,8 +48,7 @@ class PluginXmlParser {
 			List<Mojo> mojos = parseMojos(root);
 			return new Plugin(textAt("//plugin/groupId", root), textAt("//plugin/artifactId", root),
 					textAt("//plugin/version", root), textAt("//plugin/goalPrefix", root), mojos);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
@@ -65,7 +61,7 @@ class PluginXmlParser {
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
 		List<Mojo> mojos = new ArrayList<>();
 		for (Node mojoNode : nodesAt("//plugin/mojos/mojo", plugin)) {
-			mojos.add(new Mojo(textAt("goal", mojoNode), format(textAt("description", mojoNode)),
+			mojos.add(new Mojo(textAt("goal", mojoNode), format(requireNonNull(textAt("description", mojoNode))),
 					parseParameters(mojoNode)));
 		}
 		return mojos;
@@ -97,22 +93,21 @@ class PluginXmlParser {
 	}
 
 	private Parameter parseParameter(Node parameterNode, Map<String, String> defaultValues,
-			Map<String, String> userProperties) throws XPathExpressionException {
-		Parameter parameter = new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
+									 Map<String, String> userProperties) throws XPathExpressionException {
+		return new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
 				booleanAt("required", parameterNode), booleanAt("editable", parameterNode),
-				format(textAt("description", parameterNode)), defaultValues.get(textAt("name", parameterNode)),
+				format(requireNonNull(textAt("description", parameterNode))), defaultValues.get(textAt("name", parameterNode)),
 				userProperties.get(textAt("name", parameterNode)), textAt("since", parameterNode));
-		return parameter;
 	}
 
 	private boolean booleanAt(String path, Node node) throws XPathExpressionException {
-		return Boolean.valueOf(textAt(path, node));
+		return Boolean.parseBoolean(textAt(path, node));
 	}
 
 	private String format(String input) {
 		return input.replace("<code>", "`").replace("</code>", "`").replace("&lt;", "<").replace("&gt;", ">")
-				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)\\}", "`$1`")
-				.replaceAll("\\{@link (.*?)\\}", "`$1`").replaceAll("\\{@literal (.*?)\\}", "`$1`")
+				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)}", "`$1`")
+				.replaceAll("\\{@link (.*?)}", "`$1`").replaceAll("\\{@literal (.*?)}", "`$1`")
 				.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "\\$1[\\$2]");
 	}
 
@@ -239,7 +234,7 @@ class PluginXmlParser {
 		private final String since;
 
 		private Parameter(String name, String type, boolean required, boolean editable, String description,
-				String defaultValue, String userProperty, String since) {
+						  String defaultValue, String userProperty, String since) {
 			this.name = name;
 			this.type = type;
 			this.required = required;
