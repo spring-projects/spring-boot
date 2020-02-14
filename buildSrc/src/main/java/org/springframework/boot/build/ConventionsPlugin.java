@@ -127,14 +127,27 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {
 				compile.getOptions().setEncoding("UTF-8");
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
+					compile.getOptions().getForkOptions().setJavaHome(new File(javaExecutable));
+				}
 				List<String> args = compile.getOptions().getCompilerArgs();
 				if (!args.contains("-parameters")) {
 					args.add("-parameters");
 				}
 			});
-			project.getTasks().withType(Javadoc.class,
-					(javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
+			project.getTasks().withType(Javadoc.class, (javadoc) -> {
+				javadoc.getOptions().source("1.8").encoding("UTF-8");
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/javadoc");
+					javadoc.setExecutable(javaExecutable);
+				}
+			});
 			project.getTasks().withType(Test.class, (test) -> {
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
+					test.setExecutable(javaExecutable);
+				}
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
 			});
@@ -190,6 +203,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 		File legalFile = new File(source.getParentFile(), filename);
 		source.renameTo(legalFile);
 		return legalFile;
+	}
+
+	private boolean hasCustomBuildJavaHome(Project project) {
+		return project.hasProperty("buildJavaHome") && !((String) project.property("buildJavaHome")).isEmpty();
+	}
+
+	private String getCustomBuildJavaExecutable(Project project, String executable) {
+		return project.property("buildJavaHome") + executable;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
