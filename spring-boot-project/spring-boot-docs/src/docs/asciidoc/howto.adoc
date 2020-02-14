@@ -2201,10 +2201,12 @@ See also the section on "`<<spring-boot-features.adoc#boot-features-error-handli
 === Sanitize sensible values
 Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching a certain pattern are sanitized by default (i.e. their values are replaced by `+******+`).
 
-Spring Boot uses sensible defaults for such keys: for instance, any key ending with the word "password", "secret", "key" or "token" is sanitized.
-It is also possible to use a regular expression instead, such as `+*credentials.*+` to sanitize any key that holds the word `credentials` as part of the key.
-
 The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize` and `management.endpoint.configprops.keys-to-sanitize` respectively.
+
+Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command", "uri", "uris", "address" or "addresses" is sanitized.
+Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+*credentials.*+`).
+
+If any of the keys to sanitize are URI format (i.e. `<scheme>://<username>:<password>@<host>:<port>/`), only the password part is sanitized.
 
 
 
