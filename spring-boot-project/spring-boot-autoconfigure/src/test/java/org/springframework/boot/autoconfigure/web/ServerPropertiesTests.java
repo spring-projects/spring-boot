@@ -75,7 +75,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andrew McGhie
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
- * @author Chris Bono
  */
 class ServerPropertiesTests {
 

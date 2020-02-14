@@ -32,12 +32,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.embedded.JettyConstrainedQueuedThreadPoolFactory;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.embedded.jetty.JettyThreadPoolFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
@@ -94,20 +90,12 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class, WebAppContext.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	@EnableConfigurationProperties(ServerProperties.class)
 	static class EmbeddedJetty {
 
 		@Bean
-		@ConditionalOnMissingBean
-		JettyThreadPoolFactory jettyThreadPoolFactory(ServerProperties serverProperties) {
-			return new JettyConstrainedQueuedThreadPoolFactory(serverProperties);
-		}
-
-		@Bean
-		JettyServletWebServerFactory JettyServletWebServerFactory(JettyThreadPoolFactory threadPoolFactory,
+		JettyServletWebServerFactory JettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
-			factory.setThreadPool(threadPoolFactory.create());
 			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}

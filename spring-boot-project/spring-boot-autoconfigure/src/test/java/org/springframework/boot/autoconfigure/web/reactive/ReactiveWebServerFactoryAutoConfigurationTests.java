@@ -22,18 +22,14 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.embedded.JettyConstrainedQueuedThreadPoolFactory;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
-import org.springframework.boot.web.embedded.jetty.JettyThreadPoolFactory;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -57,7 +53,6 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +63,6 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Raheela Aslam
  * @author Madhura Bhave
- * @author Chris Bono
  */
 class ReactiveWebServerFactoryAutoConfigurationTests {
 
@@ -245,36 +239,6 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 					JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
 					assertThat(factory.getServerCustomizers()).contains(customizer);
 					verify(customizer, times(1)).customize(any(Server.class));
-				});
-	}
-
-	@Test
-	void jettyDefaultThreadPoolFactoryUsedToCreateThreadPoolOnWebServerFactory() {
-		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-				.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class,
-						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port=0", "server.jetty.max-queue-capacity:5150").run((context) -> {
-					assertThat(context.getBean(JettyThreadPoolFactory.class))
-							.isInstanceOf(JettyConstrainedQueuedThreadPoolFactory.class);
-					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
-					assertThat(factory.getThreadPool()).isNotNull();
-				});
-	}
-
-	@Test
-	void jettyCustomThreadPoolFactoryUsedToCreateThreadPoolOnWebServerFactory() {
-		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-				.withUserConfiguration(JettyCustomThreadPoolFactoryConfiguration.class, HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port=0").run((context) -> {
-					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
-					JettyThreadPoolFactory threadPoolFactory = context.getBean("jettyCustomThreadPoolFactory",
-							JettyThreadPoolFactory.class);
-					verify(threadPoolFactory, times(1)).create();
-					assertThat(factory.getThreadPool()).isSameAs(JettyCustomThreadPoolFactoryConfiguration.threadPool);
 				});
 	}
 
@@ -500,20 +464,6 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 		@Bean
 		WebServerFactoryCustomizer<JettyReactiveWebServerFactory> jettyCustomizer() {
 			return (jetty) -> jetty.addServerCustomizers(this.customizer);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JettyCustomThreadPoolFactoryConfiguration {
-
-		static ThreadPool threadPool = new QueuedThreadPool();
-
-		@Bean
-		JettyThreadPoolFactory jettyCustomThreadPoolFactory() {
-			JettyThreadPoolFactory threadPoolFactory = mock(JettyThreadPoolFactory.class);
-			when(threadPoolFactory.create()).thenReturn(threadPool);
-			return threadPoolFactory;
 		}
 
 	}
