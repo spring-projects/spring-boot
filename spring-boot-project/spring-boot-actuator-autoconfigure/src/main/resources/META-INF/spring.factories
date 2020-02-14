@@ -24,7 +24,6 @@ org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfigur
 org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.influx.InfluxDbHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration,\
