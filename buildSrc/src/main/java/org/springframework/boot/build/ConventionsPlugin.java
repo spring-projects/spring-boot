@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -114,14 +115,27 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {
 				compile.getOptions().setEncoding("UTF-8");
+				if (hasCustomJavaHome(project)) {
+					String javaExecutable = getCustomJavaExecutable(project, "/bin/java");
+					compile.getOptions().getForkOptions().setJavaHome(new File(javaExecutable));
+				}
 				List<String> args = compile.getOptions().getCompilerArgs();
 				if (!args.contains("-parameters")) {
 					args.add("-parameters");
 				}
 			});
-			project.getTasks().withType(Javadoc.class,
-					(javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
+			project.getTasks().withType(Javadoc.class, (javadoc) -> {
+				javadoc.getOptions().source("1.8").encoding("UTF-8");
+				if (hasCustomJavaHome(project)) {
+					String javaExecutable = getCustomJavaExecutable(project, "/bin/javadoc");
+					javadoc.setExecutable(javaExecutable);
+				}
+			});
 			project.getTasks().withType(Test.class, (test) -> {
+				if (hasCustomJavaHome(project)) {
+					String javaExecutable = getCustomJavaExecutable(project, "/bin/java");
+					test.setExecutable(javaExecutable);
+				}
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
 			});
@@ -139,6 +153,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 				});
 			});
 		});
+	}
+
+	private boolean hasCustomJavaHome(Project project) {
+		return project.hasProperty("customJavaHome") && !((String) project.property("customJavaHome")).isEmpty();
+	}
+
+	private String getCustomJavaExecutable(Project project, String executable) {
+		return project.property("customJavaHome") + executable;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
