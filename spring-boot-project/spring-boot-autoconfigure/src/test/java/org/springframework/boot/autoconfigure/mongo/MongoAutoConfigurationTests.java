@@ -24,6 +24,7 @@ import com.mongodb.client.MongoClients;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class MongoAutoConfigurationTests {
 
@@ -50,24 +52,23 @@ class MongoAutoConfigurationTests {
 	@Test
 	void settingsAdded() {
 		this.contextRunner.withUserConfiguration(SettingsConfig.class)
-				.run((context) -> assertThat(extractClientSettings(context.getBean(MongoClient.class))
-						.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
+				.run((context) -> assertThat(
+						getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
+								.isEqualTo(300));
 	}
 
 	@Test
 	void settingsAddedButNoHost() {
 		this.contextRunner.withUserConfiguration(SettingsConfig.class)
-				.run((context) -> assertThat(extractClientSettings(context.getBean(MongoClient.class))
-						.getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
+				.run((context) -> assertThat(
+						getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
+								.isEqualTo(300));
 	}
 
 	@Test
 	void settingsSslConfig() {
-		this.contextRunner.withUserConfiguration(SslSettingsConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(MongoClient.class);
-			MongoClientSettings settings = extractClientSettings(context.getBean(MongoClient.class));
-			assertThat(settings.getSslSettings().isEnabled()).isTrue();
-		});
+		this.contextRunner.withUserConfiguration(SslSettingsConfig.class)
+				.run((context) -> assertThat(getSettings(context).getSslSettings().isEnabled()).isTrue());
 	}
 
 	@Test
@@ -76,7 +77,16 @@ class MongoAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
-	private static MongoClientSettings extractClientSettings(MongoClient client) {
+	@Test
+	void customizerOverridesAutoConfig() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+				.withUserConfiguration(SimpleCustomizerConfig.class)
+				.run((context) -> assertThat(getSettings(context).getApplicationName()).isEqualTo("overridden-name"));
+	}
+
+	private MongoClientSettings getSettings(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(MongoClient.class);
+		MongoClient client = context.getBean(MongoClient.class);
 		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
 	}
 
@@ -107,6 +117,16 @@ class MongoAutoConfigurationTests {
 		@Bean
 		MongoClient fallbackMongoClient() {
 			return MongoClients.create();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		MongoClientSettingsBuilderCustomizer customizer() {
+			return (clientSettingsBuilder) -> clientSettingsBuilder.applicationName("overridden-name");
 		}
 
 	}
