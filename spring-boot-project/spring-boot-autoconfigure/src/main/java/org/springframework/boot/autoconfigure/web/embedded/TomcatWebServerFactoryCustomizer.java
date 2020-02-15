@@ -79,14 +79,15 @@ public class TomcatWebServerFactoryCustomizer
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Tomcat tomcatProperties = properties.getTomcat();
+		ServerProperties.Tomcat.Threads threadProperties = tomcatProperties.getThreads();
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull().to(factory::setBaseDirectory);
 		propertyMapper.from(tomcatProperties::getBackgroundProcessorDelay).whenNonNull().as(Duration::getSeconds)
 				.as(Long::intValue).to(factory::setBackgroundProcessorDelay);
 		customizeRemoteIpValve(factory);
-		propertyMapper.from(tomcatProperties::getMaxThreads).when(this::isPositive)
-				.to((maxThreads) -> customizeMaxThreads(factory, tomcatProperties.getMaxThreads()));
-		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
+		propertyMapper.from(threadProperties::getMax).when(this::isPositive)
+				.to((maxThreads) -> customizeMaxThreads(factory, threadProperties.getMax()));
+		propertyMapper.from(threadProperties::getMinSpare).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
 		propertyMapper.from(this.serverProperties.getMaxHttpHeaderSize()).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive)

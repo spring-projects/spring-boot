@@ -88,9 +88,10 @@ public class UndertowWebServerFactoryCustomizer
 	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, FactoryOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Undertow properties = this.serverProperties.getUndertow();
+		ServerProperties.Undertow.Threads threadProperties = properties.getThreads();
 		map.from(properties::getBufferSize).whenNonNull().asInt(DataSize::toBytes).to(factory::setBufferSize);
-		map.from(properties::getIoThreads).to(factory::setIoThreads);
-		map.from(properties::getWorkerThreads).to(factory::setWorkerThreads);
+		map.from(threadProperties::getIo).to(factory::setIoThreads);
+		map.from(threadProperties::getWorker).to(factory::setWorkerThreads);
 		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
 		map.from(properties::getMaxHttpPostSize).as(DataSize::toBytes).when(this::isPositive)
 				.to(options.server(UndertowOptions.MAX_ENTITY_SIZE));
