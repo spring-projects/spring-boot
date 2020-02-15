@@ -81,7 +81,10 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	private boolean isHelpShown(Command command) {
-		return !(command instanceof HelpCommand) && !(command instanceof HintCommand);
+		if (command instanceof HelpCommand || command instanceof HintCommand) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
