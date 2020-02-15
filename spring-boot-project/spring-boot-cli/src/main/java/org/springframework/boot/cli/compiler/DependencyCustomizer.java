@@ -140,10 +140,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String path : paths) {
 					try {
-						if (DependencyCustomizer.this.loader.getResource(path) == null) {
-							return false;
-						}
-						return true;
+						return DependencyCustomizer.this.loader.getResource(path) != null;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue
@@ -166,10 +163,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String path : paths) {
 					try {
-						if (DependencyCustomizer.this.loader.getResource(path) != null) {
-							return true;
-						}
-						return false;
+						return DependencyCustomizer.this.loader.getResource(path) != null;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue

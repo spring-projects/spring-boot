@@ -74,10 +74,7 @@ class ProjectGenerator {
 			return true;
 		}
 		// explicit name hasn't been provided for an archive and there is no extension
-		if (isZipArchive(response) && request.getOutput() != null && !request.getOutput().contains(".")) {
-			return true;
-		}
-		return false;
+		return isZipArchive(response) && request.getOutput() != null && !request.getOutput().contains(".");
 	}
 
 	private boolean isZipArchive(ProjectGenerationResponse entity) {
