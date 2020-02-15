@@ -70,7 +70,7 @@ public enum ApiVersion {
 	private static ApiVersion forType(String type) {
 		if (type.startsWith(MEDIA_TYPE_PREFIX)) {
 			type = type.substring(MEDIA_TYPE_PREFIX.length());
-			int suffixIndex = type.indexOf("+");
+			int suffixIndex = type.indexOf('+');
 			type = (suffixIndex != -1) ? type.substring(0, suffixIndex) : type;
 			try {
 				return valueOf(type.toUpperCase());
