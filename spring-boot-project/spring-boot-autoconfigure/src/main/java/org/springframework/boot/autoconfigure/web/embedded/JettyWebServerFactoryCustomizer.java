@@ -76,11 +76,12 @@ public class JettyWebServerFactoryCustomizer
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Jetty jettyProperties = properties.getJetty();
+		ServerProperties.Jetty.Threads threadProperties = jettyProperties.getThreads();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
-		factory.setThreadPool(determineThreadPool(jettyProperties));
+		factory.setThreadPool(determineThreadPool(jettyProperties.getThreads()));
 		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
-		propertyMapper.from(jettyProperties::getSelectors).whenNonNull().to(factory::setSelectors);
+		propertyMapper.from(threadProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
+		propertyMapper.from(threadProperties::getSelectors).whenNonNull().to(factory::setSelectors);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive).to((maxHttpHeaderSize) -> factory
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
@@ -141,12 +142,12 @@ public class JettyWebServerFactoryCustomizer
 		});
 	}
 
-	private ThreadPool determineThreadPool(ServerProperties.Jetty properties) {
-		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
-		int maxThreadCount = (properties.getMaxThreads() > 0) ? properties.getMaxThreads() : 200;
-		int minThreadCount = (properties.getMinThreads() > 0) ? properties.getMinThreads() : 8;
-		int threadIdleTimeout = (properties.getThreadIdleTimeout() != null)
-				? (int) properties.getThreadIdleTimeout().toMillis() : 60000;
+	private ThreadPool determineThreadPool(ServerProperties.Jetty.Threads threadProperties) {
+		BlockingQueue<Runnable> queue = determineBlockingQueue(threadProperties.getMaxQueueCapacity());
+		int maxThreadCount = (threadProperties.getMax() > 0) ? threadProperties.getMax() : 200;
+		int minThreadCount = (threadProperties.getMin() > 0) ? threadProperties.getMin() : 8;
+		int threadIdleTimeout = (threadProperties.getIdleTimeout() != null)
+				? (int) threadProperties.getIdleTimeout().toMillis() : 60000;
 		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
 	}
 

@@ -65,6 +65,7 @@ import org.springframework.util.unit.DataSize;
  * @author Dirk Deyne
  * @author HaiTao Zhang
  * @author Victor Mandujano
+ * @author Chris Bono
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -309,6 +310,11 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
+		 * Thread related configuration.
+		 */
+		private final Threads threads = new Threads();
+
+		/**
 		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
@@ -319,16 +325,6 @@ public class ServerProperties {
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(10);
-
-		/**
-		 * Maximum amount of worker threads.
-		 */
-		private int maxThreads = 200;
-
-		/**
-		 * Minimum amount of worker threads.
-		 */
-		private int minSpareThreads = 10;
 
 		/**
 		 * Maximum size of the form content in any HTTP post request.
@@ -417,20 +413,26 @@ public class ServerProperties {
 		 */
 		private final Remoteip remoteip = new Remoteip();
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.threads.max")
 		public int getMaxThreads() {
-			return this.maxThreads;
+			return this.getThreads().getMax();
 		}
 
+		@Deprecated
 		public void setMaxThreads(int maxThreads) {
-			this.maxThreads = maxThreads;
+			this.getThreads().setMax(maxThreads);
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.tomcat.threads.min-spare")
 		public int getMinSpareThreads() {
-			return this.minSpareThreads;
+			return this.getThreads().getMinSpare();
 		}
 
+		@Deprecated
 		public void setMinSpareThreads(int minSpareThreads) {
-			this.minSpareThreads = minSpareThreads;
+			this.getThreads().setMinSpare(minSpareThreads);
 		}
 
 		@Deprecated
@@ -454,6 +456,10 @@ public class ServerProperties {
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
+		}
+
+		public Threads getThreads() {
+			return this.threads;
 		}
 
 		public Duration getBackgroundProcessorDelay() {
@@ -863,6 +869,39 @@ public class ServerProperties {
 		}
 
 		/**
+		 * Tomcat thread properties.
+		 */
+		public static class Threads {
+
+			/**
+			 * Maximum amount of worker threads.
+			 */
+			private int max = 200;
+
+			/**
+			 * Minimum amount of worker threads.
+			 */
+			private int minSpare = 10;
+
+			public int getMax() {
+				return this.max;
+			}
+
+			public void setMax(int max) {
+				this.max = max;
+			}
+
+			public int getMinSpare() {
+				return this.minSpare;
+			}
+
+			public void setMinSpare(int minSpare) {
+				this.minSpare = minSpare;
+			}
+
+		}
+
+		/**
 		 * Tomcat static resource properties.
 		 */
 		public static class Resource {
@@ -1015,42 +1054,14 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
+		 * Thread related configuration.
+		 */
+		private final Threads threads = new Threads();
+
+		/**
 		 * Maximum size of the form content in any HTTP post request.
 		 */
 		private DataSize maxHttpFormPostSize = DataSize.ofBytes(200000);
-
-		/**
-		 * Number of acceptor threads to use. When the value is -1, the default, the
-		 * number of acceptors is derived from the operating environment.
-		 */
-		private Integer acceptors = -1;
-
-		/**
-		 * Number of selector threads to use. When the value is -1, the default, the
-		 * number of selectors is derived from the operating environment.
-		 */
-		private Integer selectors = -1;
-
-		/**
-		 * Minimum number of threads.
-		 */
-		private int minThreads = 8;
-
-		/**
-		 * Maximum number of threads.
-		 */
-		private int maxThreads = 200;
-
-		/**
-		 * Maximum capacity of the thread pool's backing queue. A default is computed
-		 * based on the threading configuration.
-		 */
-		private Integer maxQueueCapacity;
-
-		/**
-		 * Maximum thread idle time.
-		 */
-		private Duration threadIdleTimeout = Duration.ofMillis(60000);
 
 		/**
 		 * Time that the connection can be idle before it is closed.
@@ -1059,6 +1070,10 @@ public class ServerProperties {
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
+		}
+
+		public Threads getThreads() {
+			return this.threads;
 		}
 
 		@Deprecated
@@ -1080,52 +1095,68 @@ public class ServerProperties {
 			this.maxHttpFormPostSize = maxHttpFormPostSize;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.acceptors")
 		public Integer getAcceptors() {
-			return this.acceptors;
+			return this.getThreads().getAcceptors();
 		}
 
 		public void setAcceptors(Integer acceptors) {
-			this.acceptors = acceptors;
+			this.getThreads().setAcceptors(acceptors);
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.selectors")
 		public Integer getSelectors() {
-			return this.selectors;
+			return this.getThreads().getSelectors();
 		}
 
 		public void setSelectors(Integer selectors) {
-			this.selectors = selectors;
+			this.getThreads().setSelectors(selectors);
 		}
 
-		public void setMinThreads(int minThreads) {
-			this.minThreads = minThreads;
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.min")
+		public Integer getMinThreads() {
+			return this.getThreads().getMin();
 		}
 
-		public int getMinThreads() {
-			return this.minThreads;
+		@Deprecated
+		public void setMinThreads(Integer minThreads) {
+			this.getThreads().setMin(minThreads);
 		}
 
-		public void setMaxThreads(int maxThreads) {
-			this.maxThreads = maxThreads;
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.max")
+		public Integer getMaxThreads() {
+			return this.getThreads().getMax();
 		}
 
-		public int getMaxThreads() {
-			return this.maxThreads;
+		@Deprecated
+		public void setMaxThreads(Integer maxThreads) {
+			this.getThreads().setMax(maxThreads);
 		}
 
-		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
-			this.maxQueueCapacity = maxQueueCapacity;
-		}
-
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.maxQueueCapacity")
 		public Integer getMaxQueueCapacity() {
-			return this.maxQueueCapacity;
+			return this.getThreads().getMaxQueueCapacity();
 		}
 
-		public void setThreadIdleTimeout(Duration threadIdleTimeout) {
-			this.threadIdleTimeout = threadIdleTimeout;
+		@Deprecated
+		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+			this.getThreads().setMaxQueueCapacity(maxQueueCapacity);
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.idle-timeout")
 		public Duration getThreadIdleTimeout() {
-			return this.threadIdleTimeout;
+			return this.getThreads().getIdleTimeout();
+		}
+
+		@Deprecated
+		public void setThreadIdleTimeout(Duration threadIdleTimeout) {
+			this.getThreads().setIdleTimeout(threadIdleTimeout);
 		}
 
 		public Duration getConnectionIdleTimeout() {
@@ -1266,6 +1297,94 @@ public class ServerProperties {
 
 		}
 
+		/**
+		 * Jetty thread properties.
+		 */
+		public static class Threads {
+
+			/**
+			 * Number of acceptor threads to use. When the value is -1, the default, the
+			 * number of acceptors is derived from the operating environment.
+			 */
+			private Integer acceptors = -1;
+
+			/**
+			 * Number of selector threads to use. When the value is -1, the default, the
+			 * number of selectors is derived from the operating environment.
+			 */
+			private Integer selectors = -1;
+
+			/**
+			 * Maximum number of threads.
+			 */
+			private Integer max = 200;
+
+			/**
+			 * Minimum number of threads.
+			 */
+			private Integer min = 8;
+
+			/**
+			 * Maximum capacity of the thread pool's backing queue. A default is computed
+			 * based on the threading configuration.
+			 */
+			private Integer maxQueueCapacity;
+
+			/**
+			 * Maximum thread idle time.
+			 */
+			private Duration idleTimeout = Duration.ofMillis(60000);
+
+			public Integer getAcceptors() {
+				return this.acceptors;
+			}
+
+			public void setAcceptors(Integer acceptors) {
+				this.acceptors = acceptors;
+			}
+
+			public Integer getSelectors() {
+				return this.selectors;
+			}
+
+			public void setSelectors(Integer selectors) {
+				this.selectors = selectors;
+			}
+
+			public void setMin(Integer min) {
+				this.min = min;
+			}
+
+			public Integer getMin() {
+				return this.min;
+			}
+
+			public void setMax(Integer max) {
+				this.max = max;
+			}
+
+			public Integer getMax() {
+				return this.max;
+			}
+
+			public Integer getMaxQueueCapacity() {
+				return this.maxQueueCapacity;
+			}
+
+			public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+				this.maxQueueCapacity = maxQueueCapacity;
+			}
+
+			public void setIdleTimeout(Duration idleTimeout) {
+				this.idleTimeout = idleTimeout;
+			}
+
+			public Duration getIdleTimeout() {
+				return this.idleTimeout;
+			}
+
+		}
+
 	}
 
 	/**
@@ -1304,17 +1423,6 @@ public class ServerProperties {
 		 * that is available to the JVM.
 		 */
 		private DataSize bufferSize;
-
-		/**
-		 * Number of I/O threads to create for the worker. The default is derived from the
-		 * number of available processors.
-		 */
-		private Integer ioThreads;
-
-		/**
-		 * Number of worker threads. The default is 8 times the number of I/O threads.
-		 */
-		private Integer workerThreads;
 
 		/**
 		 * Whether to allocate buffers outside the Java heap. The default is derived from
@@ -1378,6 +1486,11 @@ public class ServerProperties {
 
 		private final Accesslog accesslog = new Accesslog();
 
+		/**
+		 * Thread related configuration.
+		 */
+		private final Threads threads = new Threads();
+
 		private final Options options = new Options();
 
 		public DataSize getMaxHttpPostSize() {
@@ -1396,20 +1509,26 @@ public class ServerProperties {
 			this.bufferSize = bufferSize;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.undertow.threads.io")
 		public Integer getIoThreads() {
-			return this.ioThreads;
+			return this.getThreads().getIo();
 		}
 
+		@Deprecated
 		public void setIoThreads(Integer ioThreads) {
-			this.ioThreads = ioThreads;
+			this.getThreads().setIo(ioThreads);
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.undertow.threads.worker")
 		public Integer getWorkerThreads() {
-			return this.workerThreads;
+			return this.getThreads().getWorker();
 		}
 
+		@Deprecated
 		public void setWorkerThreads(Integer workerThreads) {
-			this.workerThreads = workerThreads;
+			this.getThreads().setWorker(workerThreads);
 		}
 
 		public Boolean getDirectBuffers() {
@@ -1494,6 +1613,10 @@ public class ServerProperties {
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
+		}
+
+		public Threads getThreads() {
+			return this.threads;
 		}
 
 		public Options getOptions() {
@@ -1581,6 +1704,40 @@ public class ServerProperties {
 
 			public void setRotate(boolean rotate) {
 				this.rotate = rotate;
+			}
+
+		}
+
+		/**
+		 * Undertow thread properties.
+		 */
+		public static class Threads {
+
+			/**
+			 * Number of I/O threads to create for the worker. The default is derived from
+			 * the number of available processors.
+			 */
+			private Integer io;
+
+			/**
+			 * Number of worker threads. The default is 8 times the number of I/O threads.
+			 */
+			private Integer worker;
+
+			public Integer getIo() {
+				return this.io;
+			}
+
+			public void setIo(Integer io) {
+				this.io = io;
+			}
+
+			public Integer getWorker() {
+				return this.worker;
+			}
+
+			public void setWorker(Integer worker) {
+				this.worker = worker;
 			}
 
 		}
