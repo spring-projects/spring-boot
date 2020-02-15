@@ -166,6 +166,7 @@ class MavenBuild {
 			Files.write(destination.resolve("settings.xml"), settingsXml.getBytes(StandardCharsets.UTF_8),
 					StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);
+			request.setJavaHome(new File(System.getProperty("java.home")));
 			request.setProperties(this.properties);
 			request.setGoals(this.goals.isEmpty() ? Collections.singletonList("package") : this.goals);
 			request.setUserSettingsFile(new File(this.temp, "settings.xml"));
