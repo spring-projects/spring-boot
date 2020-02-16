@@ -98,7 +98,6 @@ sourceSets {
 
 test {
 	dependsOn syncTestRepository
-	useJUnitPlatform()
 }
 
 task fullJar(type: Jar) {
