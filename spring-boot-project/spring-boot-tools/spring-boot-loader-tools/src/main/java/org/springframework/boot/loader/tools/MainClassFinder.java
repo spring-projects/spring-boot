@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -381,10 +381,7 @@ public abstract class MainClassFinder {
 				return false;
 			}
 			MainClass other = (MainClass) obj;
-			if (!this.name.equals(other.name)) {
-				return false;
-			}
-			return true;
+			return this.name.equals(other.name);
 		}
 
 		@Override

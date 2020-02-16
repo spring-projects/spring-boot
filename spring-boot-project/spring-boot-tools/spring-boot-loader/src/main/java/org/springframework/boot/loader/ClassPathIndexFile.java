@@ -54,7 +54,7 @@ final class ClassPathIndexFile {
 	}
 
 	private String getFolder(String name) {
-		int lastSlash = name.lastIndexOf("/");
+		int lastSlash = name.lastIndexOf('/');
 		return (lastSlash != -1) ? name.substring(0, lastSlash) : null;
 	}
 
