@@ -38,25 +38,18 @@ public class PluginXmlParserTests {
 	private final PluginXmlParser parser = new PluginXmlParser();
 
 	@Test
-	void parsing_a_plugin_xml_file_returns_the_gav_for_plugin() {
+	void parsingAValidPluginXMLFileReturnsTheGAVForThePlugin() {
 		Plugin plugin = this.parser.parse(new File("src/test/resources/plugin.xml"));
-
 		assertThat(plugin.getGroupId()).isEqualTo("org.springframework.boot");
-
 		assertThat(plugin.getArtifactId()).isEqualTo("spring-boot-maven-plugin");
-
 		assertThat(plugin.getVersion()).isEqualTo("2.2.0.GRADLE-SNAPSHOT");
-
 		assertThat(plugin.getGoalPrefix()).isEqualTo("spring-boot");
-
-		List<String> actualMojoGoals = plugin.getMojos().stream().map(PluginXmlParser.Mojo::getGoal).collect(Collectors.toList());
-		List<String> expectedMojoGoals = Arrays.asList("build-info", "help", "repackage", "run", "start", "stop");
-
-		assertThat(actualMojoGoals).isEqualTo(expectedMojoGoals);
+		assertThat(plugin.getMojos().stream().map(PluginXmlParser.Mojo::getGoal).collect(Collectors.toList()))
+				.isEqualTo(Arrays.<String>asList("build-info", "help", "repackage", "run", "start", "stop"));
 	}
 
 	@Test
-	void non_existent_plugin_file_throws_runtime_exception() {
+	void aNonExistentPluginFileThrowsARuntimeException() {
 		assertThrows(RuntimeException.class, () ->
 				this.parser.parse(new File("src/test/resources/nonexistent.xml")));
 	}

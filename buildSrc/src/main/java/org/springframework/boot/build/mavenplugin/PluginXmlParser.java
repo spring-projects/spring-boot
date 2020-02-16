@@ -32,12 +32,11 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * A parser for a Maven plugin's {@code plugin.xml} file.
  *
  * @author Andy Wilkinson
+ * @author Mike Smithson
  */
 class PluginXmlParser {
 
@@ -67,7 +66,7 @@ class PluginXmlParser {
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
 		List<Mojo> mojos = new ArrayList<>();
 		for (Node mojoNode : nodesAt("//plugin/mojos/mojo", plugin)) {
-			mojos.add(new Mojo(textAt("goal", mojoNode), format(requireNonNull(textAt("description", mojoNode))),
+			mojos.add(new Mojo(textAt("goal", mojoNode), format(textAt("description", mojoNode)),
 					parseParameters(mojoNode)));
 		}
 		return mojos;
@@ -102,7 +101,7 @@ class PluginXmlParser {
 			Map<String, String> userProperties) throws XPathExpressionException {
 		return new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
 				booleanAt("required", parameterNode), booleanAt("editable", parameterNode),
-				format(requireNonNull(textAt("description", parameterNode))), defaultValues.get(textAt("name", parameterNode)),
+				format(textAt("description", parameterNode)), defaultValues.get(textAt("name", parameterNode)),
 				userProperties.get(textAt("name", parameterNode)), textAt("since", parameterNode));
 	}
 
