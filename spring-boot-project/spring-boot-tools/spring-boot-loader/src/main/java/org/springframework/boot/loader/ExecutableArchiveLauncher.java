@@ -127,7 +127,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-	 * Determine if the specified entry is a a candidate for further searching.
+	 * Determine if the specified entry is a candidate for further searching.
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a candidate for further searching
 	 */
