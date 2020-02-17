@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package org.springframework.boot.build.mavenplugin;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.build.mavenplugin.PluginXmlParser.Plugin;
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.build.mavenplugin.PluginXmlParser.Plugin;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link PluginXmlParser}.
@@ -38,7 +39,7 @@ public class PluginXmlParserTests {
 	private final PluginXmlParser parser = new PluginXmlParser();
 
 	@Test
-	void parsingAValidPluginXMLFileReturnsTheGAVForThePlugin() {
+	void parseExistingDescriptorReturnPluginDescriptor() {
 		Plugin plugin = this.parser.parse(new File("src/test/resources/plugin.xml"));
 		assertThat(plugin.getGroupId()).isEqualTo("org.springframework.boot");
 		assertThat(plugin.getArtifactId()).isEqualTo("spring-boot-maven-plugin");
@@ -49,9 +50,9 @@ public class PluginXmlParserTests {
 	}
 
 	@Test
-	void aNonExistentPluginFileThrowsARuntimeException() {
-		assertThrows(RuntimeException.class, () ->
-				this.parser.parse(new File("src/test/resources/nonexistent.xml")));
+	void parseNonExistingFileThrowException() {
+		assertThatThrownBy(() -> this.parser.parse(new File("src/test/resources/nonexistent.xml")))
+				.isInstanceOf(RuntimeException.class).hasCauseInstanceOf(FileNotFoundException.class);
 	}
 
 }
