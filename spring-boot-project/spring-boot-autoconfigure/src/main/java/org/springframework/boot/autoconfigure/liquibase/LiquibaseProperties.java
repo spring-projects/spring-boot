@@ -116,7 +116,9 @@ public class LiquibaseProperties {
 	private boolean testRollbackOnUpdate;
 
 	/**
-	 * Name of the tag.
+	 * Tag name to use when applying database changes. Can also be used with
+	 * "rollbackFile" to generate a rollback script for all existing changes associated
+	 * with that tag.
 	 */
 	private String tag;
 
