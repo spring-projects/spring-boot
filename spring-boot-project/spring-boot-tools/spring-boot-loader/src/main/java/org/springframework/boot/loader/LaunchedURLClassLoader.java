@@ -59,7 +59,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
-	 * @param exploded the the underlying archive is exploded
+	 * @param exploded if the underlying archive is exploded
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
