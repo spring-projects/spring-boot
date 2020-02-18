@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -58,6 +57,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.util.StringUtils;
 
@@ -76,6 +76,8 @@ import org.springframework.util.StringUtils;
 @Conditional(EmbeddedLdapAutoConfiguration.EmbeddedLdapCondition.class)
 public class EmbeddedLdapAutoConfiguration {
 
+	private static final String DIRECTORY_SERVER_BEAN_NAME = "directoryServer";
+
 	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
 
 	private final EmbeddedLdapProperties embeddedProperties;
@@ -86,24 +88,11 @@ public class EmbeddedLdapAutoConfiguration {
 		this.embeddedProperties = embeddedProperties;
 	}
 
-	@Bean
-	@DependsOn("directoryServer")
-	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties) {
-		LdapContextSource source = new LdapContextSource();
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
-			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
-			source.setPassword(this.embeddedProperties.getCredential().getPassword());
-		}
-		source.setUrls(properties.determineUrls(environment));
-		return source;
-	}
-
-	@Bean
+	@Bean(name = DIRECTORY_SERVER_BEAN_NAME)
 	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
+		if (this.embeddedProperties.hasCredential()) {
 			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
@@ -140,9 +129,7 @@ public class EmbeddedLdapAutoConfiguration {
 		}
 	}
 
-	private boolean hasCredentials(Credential credential) {
-		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
-	}
+
 
 	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
 		String location = this.embeddedProperties.getLdif();
@@ -210,4 +197,25 @@ public class EmbeddedLdapAutoConfiguration {
 
 	}
 
+	/**
+	 * Creates an {@link LdapContextSource} for use with Embedded LDAP.
+	 */
+	@Configuration
+	@ConditionalOnClass(ContextSource.class)
+	static class EmbeddedLdapContextConfiguration {
+		
+		@Bean
+		@DependsOn(DIRECTORY_SERVER_BEAN_NAME)
+		@ConditionalOnMissingBean
+		public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties, EmbeddedLdapProperties embeddedProperties) {
+			LdapContextSource source = new LdapContextSource();
+			if (embeddedProperties.hasCredential()) {
+				source.setUserDn(embeddedProperties.getCredential().getUsername());
+				source.setPassword(embeddedProperties.getCredential().getPassword());
+			}
+			source.setUrls(properties.determineUrls(environment));
+			return source;
+		}
+	}
+	
 }
