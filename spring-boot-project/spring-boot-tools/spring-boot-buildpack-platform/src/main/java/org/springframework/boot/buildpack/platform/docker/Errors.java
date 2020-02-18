@@ -53,7 +53,7 @@ public class Errors implements Iterable<Errors.Error> {
 	}
 
 	/**
-	 * Return if the there are any contained errors.
+	 * Return if there are any contained errors.
 	 * @return if the errors are empty
 	 */
 	public boolean isEmpty() {
