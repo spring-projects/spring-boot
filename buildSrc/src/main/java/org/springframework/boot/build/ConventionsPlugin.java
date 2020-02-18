@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,6 +52,7 @@ import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.publish.tasks.GenerateModuleMetadata;
+import org.gradle.api.resources.TextResourceFactory;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -163,8 +165,9 @@ public class ConventionsPlugin implements Plugin<Project> {
 			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(notice, StandardCharsets.UTF_8))
 					.replace("${version}", project.getVersion().toString())
 					.replace("${currentYear}", Integer.toString(Year.now().getValue()));
-			metaInf.from(project.getResources().getText().fromString(noticeContent),
-					(noticeFile) -> noticeFile.rename((name) -> "NOTICE.txt"));
+			TextResourceFactory resourceFactory = project.getResources().getText();
+			File file = createLegalFile(resourceFactory.fromString(noticeContent).asFile(), "NOTICE.txt");
+			metaInf.from(file);
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to copy NOTICE.txt", ex);
@@ -174,12 +177,19 @@ public class ConventionsPlugin implements Plugin<Project> {
 	private void copyLicenseFile(Project project, CopySpec metaInf) {
 		URL license = getClass().getClassLoader().getResource("LICENSE.txt");
 		try {
-			metaInf.from(project.getResources().getText().fromUri(license.toURI()),
-					(licenseFile) -> licenseFile.rename((name) -> "LICENSE.txt"));
+			TextResourceFactory resourceFactory = project.getResources().getText();
+			File file = createLegalFile(resourceFactory.fromUri(license.toURI()).asFile(), "LICENSE.txt");
+			metaInf.from(file);
 		}
 		catch (URISyntaxException ex) {
 			throw new GradleException("Failed to copy LICENSE.txt", ex);
 		}
+	}
+
+	private File createLegalFile(File source, String filename) {
+		File legalFile = new File(source.getParentFile(), filename);
+		source.renameTo(legalFile);
+		return legalFile;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
