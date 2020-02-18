@@ -666,6 +666,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
 | Checks for low disk space.
 
+| {spring-boot-actuator-module-code}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
+| Checks that a connection to `DataSource` can be obtained.
+
 | {spring-boot-actuator-module-code}/elasticsearch/ElasticSearchRestHealthContributorAutoConfiguration.java[`ElasticSearchRestHealthContributorAutoConfiguration`]
 | Checks that an Elasticsearch cluster is up.
 
