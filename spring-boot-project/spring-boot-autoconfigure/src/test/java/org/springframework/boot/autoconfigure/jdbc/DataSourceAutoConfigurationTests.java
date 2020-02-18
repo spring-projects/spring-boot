@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -143,15 +144,19 @@ public class DataSourceAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void dataSourceWhenNoConnectionPoolsAreAvailableWithUrlDoesNotCreateDataSource() {
+		this.contextRunner.with(hideConnectionPools())
+				.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
+	}
+
 	/**
 	 * This test makes sure that if no supported data source is present, a datasource is
 	 * still created if "spring.datasource.type" is present.
 	 */
 	@Test
-	public void explicitTypeNoSupportedDataSource() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
-						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"))
+	public void dataSourceWhenNoConnectionPoolsAreAvailableWithUrlAndTypeCreatesDataSource() {
+		this.contextRunner.with(hideConnectionPools())
 				.withPropertyValues("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 						"spring.datasource.url:jdbc:hsqldb:mem:testdb",
 						"spring.datasource.type:" + SimpleDriverDataSource.class.getName())
@@ -195,6 +200,11 @@ public class DataSourceAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.initialization-mode=always")
 				.run((context) -> assertThat(context.getBean(TestInitializedDataSourceConfiguration.class).called)
 						.isTrue());
+	}
+
+	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
+		return (runner) -> runner.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
+				"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType, List<String> hiddenPackages,
