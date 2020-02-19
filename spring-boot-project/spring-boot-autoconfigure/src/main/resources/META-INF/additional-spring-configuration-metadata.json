@@ -419,6 +419,12 @@
       "defaultValue": true
     },
     {
+      "name": "spring.data.r2dbc.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable R2DBC repositories.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.data.redis.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Redis repositories.",

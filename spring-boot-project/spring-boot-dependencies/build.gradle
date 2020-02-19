@@ -1465,6 +1465,7 @@ bom {
 				"spring-boot-starter-data-ldap",
 				"spring-boot-starter-data-mongodb",
 				"spring-boot-starter-data-mongodb-reactive",
+				"spring-boot-starter-data-r2dbc",
 				"spring-boot-starter-data-redis",
 				"spring-boot-starter-data-redis-reactive",
 				"spring-boot-starter-data-neo4j",
