@@ -75,8 +75,7 @@ class CassandraReactiveDataAutoConfigurationTests {
 	void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
-				.isInstanceOf(SimpleUserTypeResolver.class);
+		assertThat(mappingContext).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	private void load(String... environment) {

@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,8 +74,8 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 	@Test
 	void asyncTaskExecutorWithApplicationTaskExecutor() {
 		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class)).hasSize(1);
-		assertThat(ReflectionTestUtils.getField(this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
-				"taskExecutor")).isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
+		assertThat(this.applicationContext.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+				.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
 	}
 
 	@Test

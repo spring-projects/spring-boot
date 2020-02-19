@@ -41,7 +41,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -92,8 +91,7 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
-			assertThat(ReflectionTestUtils.getField(executor, "taskDecorator"))
-					.isSameAs(context.getBean(TaskDecorator.class));
+			assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
 		});
 	}
 

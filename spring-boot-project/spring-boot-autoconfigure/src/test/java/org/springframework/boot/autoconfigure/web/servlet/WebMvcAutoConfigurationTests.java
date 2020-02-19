@@ -380,16 +380,15 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void defaultAsyncRequestTimeout() {
-		this.contextRunner.run((context) -> assertThat(ReflectionTestUtils
-				.getField(context.getBean(RequestMappingHandlerAdapter.class), "asyncRequestTimeout")).isNull());
+		this.contextRunner.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("asyncRequestTimeout").isNull());
 	}
 
 	@Test
 	void customAsyncRequestTimeout() {
 		this.contextRunner.withPropertyValues("spring.mvc.async.request-timeout:12345")
-				.run((context) -> assertThat(ReflectionTestUtils
-						.getField(context.getBean(RequestMappingHandlerAdapter.class), "asyncRequestTimeout"))
-								.isEqualTo(12345L));
+				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+						.extracting("asyncRequestTimeout").isEqualTo(12345L));
 	}
 
 	@Test
@@ -397,8 +396,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isSameAs(context.getBean("applicationTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isSameAs(context.getBean("applicationTaskExecutor"));
 				});
 	}
 
@@ -407,8 +406,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isNotSameAs(context.getBean("applicationTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isNotSameAs(context.getBean("applicationTaskExecutor"));
 				});
 	}
 
@@ -416,9 +415,9 @@ class WebMvcAutoConfigurationTests {
 	void asyncTaskExecutorWithMvcConfigurerCanOverrideExecutor() {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
-				.run((context) -> assertThat(ReflectionTestUtils
-						.getField(context.getBean(RequestMappingHandlerAdapter.class), "taskExecutor"))
-								.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
+				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+						.extracting("taskExecutor")
+						.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
 	}
 
 	@Test
@@ -426,8 +425,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
 					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isNotSameAs(context.getBean("customTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isNotSameAs(context.getBean("customTaskExecutor"));
 				});
 	}
 
@@ -643,8 +642,7 @@ class WebMvcAutoConfigurationTests {
 					Validator validator = context.getBean(Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 					Validator target = ((ValidatorAdapter) validator).getTarget();
-					assertThat(ReflectionTestUtils.getField(target, "targetValidator"))
-							.isSameAs(context.getBean("customJsr303Validator"));
+					assertThat(target).extracting("targetValidator").isSameAs(context.getBean("customJsr303Validator"));
 				});
 	}
 
