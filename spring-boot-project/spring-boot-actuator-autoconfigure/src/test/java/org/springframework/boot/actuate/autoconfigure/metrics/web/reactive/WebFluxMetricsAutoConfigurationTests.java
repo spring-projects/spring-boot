@@ -33,7 +33,6 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,8 +56,8 @@ class WebFluxMetricsAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
 			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
-			assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebFluxTagsProvider.class),
-					"ignoreTrailingSlash")).isEqualTo(true);
+			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
+					.isEqualTo(true);
 		});
 	}
 
@@ -67,8 +66,8 @@ class WebFluxMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.metrics.web.server.request.ignore-trailing-slash=false")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebFluxTagsProvider.class),
-							"ignoreTrailingSlash")).isEqualTo(false);
+					assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
+							.isEqualTo(false);
 				});
 	}
 

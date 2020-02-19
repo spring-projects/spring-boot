@@ -79,8 +79,7 @@ class CassandraDataAutoConfigurationTests {
 	void userTypeResolverShouldBeSet() {
 		load();
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
-				.isInstanceOf(SimpleUserTypeResolver.class);
+		assertThat(mappingContext).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	@Test
