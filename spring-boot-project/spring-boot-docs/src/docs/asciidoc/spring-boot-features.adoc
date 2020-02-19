@@ -3847,7 +3847,7 @@ Spring Boot offers several conveniences for working with MongoDB, including the 
 
 [[boot-features-connecting-to-mongodb]]
 ==== Connecting to a MongoDB Database
-To access Mongo databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
+To access MongoDB databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
@@ -3862,7 +3862,7 @@ The following example shows how to connect to a MongoDB database:
 		private final MongoDatabaseFactory mongo;
 
 		@Autowired
-		public MyBean(MongoDbFactory mongo) {
+		public MyBean(MongoDatabaseFactory mongo) {
 			this.mongo = mongo;
 		}
 
@@ -3883,24 +3883,24 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
 ----
 
-Alternatively, you can specify a `host`/`port`.
+Alternatively, you can specify connection details using discrete properties.
 For example, you might declare the following settings in your `application.properties`:
 
 [source,properties,indent=0,configprops]
 ----
-	spring.data.mongodb.host=mongoserver
+	spring.data.mongodb.host=mongoserver.example.com
 	spring.data.mongodb.port=27017
+	spring.data.mongodb.database=test
+	spring.data.mongodb.username=user
+	spring.data.mongodb.password=secret
 ----
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
-NOTE: If you use the Mongo 3.0 Java driver, `spring.data.mongodb.host` and `spring.data.mongodb.port` are not supported.
-In such cases, `spring.data.mongodb.uri` should be used to provide all of the configuration.
-
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
 
-TIP: If you do not use Spring Data Mongo, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
+TIP: If you do not use Spring Data MongoDB, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
 If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.
 
 NOTE: If you are using the reactive driver, Netty is required for SSL.
@@ -3943,7 +3943,7 @@ Spring Data includes repository support for MongoDB.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.
 
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now a Mongo data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
+You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
 [source,java,indent=0]
 ----
