@@ -49,7 +49,10 @@ interface Layers extends Iterable<String> {
 	 */
 	static Layers get(Context context) {
 		IndexedLayers indexedLayers = IndexedLayers.get(context);
-		return (indexedLayers != null) ? indexedLayers : new ImplicitLayers();
+		if (indexedLayers == null) {
+			throw new IllegalStateException("Failed to load layers.idx which is required by layertools");
+		}
+		return indexedLayers;
 	}
 
 }

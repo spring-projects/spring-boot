@@ -17,11 +17,19 @@
 package org.springframework.boot.jarmode.layertools;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.jar.JarEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -38,10 +46,13 @@ class HelpCommandTests {
 
 	private TestPrintStream out;
 
+	@TempDir
+	File temp;
+
 	@BeforeEach
-	void setup() {
+	void setup() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(new File("test.jar"));
+		given(context.getJarFile()).willReturn(createJarFile("test.jar"));
 		this.command = new HelpCommand(context, LayerToolsJarMode.Runner.getCommands(context));
 		this.out = new TestPrintStream(this);
 	}
@@ -58,6 +69,21 @@ class HelpCommandTests {
 		System.out.println(this.out);
 		assertThat(this.out).hasSameContentAsResource("help-extract-output.txt");
 
+	}
+
+	private File createJarFile(String name) throws IOException {
+		File file = new File(this.temp, name);
+		try (ZipOutputStream jarOutputStream = new ZipOutputStream(new FileOutputStream(file))) {
+			JarEntry indexEntry = new JarEntry("BOOT-INF/layers.idx");
+			jarOutputStream.putNextEntry(indexEntry);
+			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
+			writer.write("a\n");
+			writer.write("b\n");
+			writer.write("c\n");
+			writer.write("d\n");
+			writer.flush();
+		}
+		return file;
 	}
 
 }

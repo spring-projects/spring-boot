@@ -1,4 +1,5 @@
-dependencies
-snapshot-dependencies
-resources
-application
+springbootapplication
+a
+b
+c
+d
