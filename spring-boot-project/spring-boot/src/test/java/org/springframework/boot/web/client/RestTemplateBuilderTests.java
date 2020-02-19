@@ -541,8 +541,7 @@ class RestTemplateBuilderTests {
 	void readTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(ReflectionTestUtils.getField(requestFactory, "client"), "readTimeout"))
-				.isEqualTo(1234);
+		assertThat(requestFactory).extracting("client").extracting("readTimeout").isEqualTo(1234);
 	}
 
 	@Test

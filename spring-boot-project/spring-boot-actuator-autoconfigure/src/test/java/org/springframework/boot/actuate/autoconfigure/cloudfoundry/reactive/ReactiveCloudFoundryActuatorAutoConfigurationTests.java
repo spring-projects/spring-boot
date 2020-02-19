@@ -240,8 +240,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getOperations()).hasSize(2);
 					WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
-					Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
-					assertThat(ReflectionTestUtils.getField(invoker, "target"))
+					assertThat(webOperation).extracting("invoker").extracting("target")
 							.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
 				});
 	}

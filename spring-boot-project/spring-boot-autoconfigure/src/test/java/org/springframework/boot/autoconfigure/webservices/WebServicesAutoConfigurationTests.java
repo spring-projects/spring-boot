@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 
@@ -72,7 +71,7 @@ class WebServicesAutoConfigurationTests {
 	void customLoadOnStartup() {
 		this.contextRunner.withPropertyValues("spring.webservices.servlet.load-on-startup=1").run((context) -> {
 			ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
-			assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup")).isEqualTo(1);
+			assertThat(registrationBean).extracting("loadOnStartup").isEqualTo(1);
 		});
 	}
 
