@@ -33,6 +33,8 @@ dependencies {
 	optional("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty")
+	optional("io.r2dbc:r2dbc-spi")
+	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet") {
@@ -156,6 +158,7 @@ dependencies {
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
+	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("jakarta.xml.ws:jakarta.xml.ws-api")
 	testImplementation("mysql:mysql-connector-java")

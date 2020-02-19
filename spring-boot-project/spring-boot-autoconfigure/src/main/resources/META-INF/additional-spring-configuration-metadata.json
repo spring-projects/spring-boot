@@ -814,6 +814,11 @@
       "defaultValue": "quartzScheduler"
     },
     {
+      "name": "spring.r2dbc.pool.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
+    },
+    {
       "name": "spring.rabbitmq.cache.connection.mode",
       "defaultValue": "channel"
     },

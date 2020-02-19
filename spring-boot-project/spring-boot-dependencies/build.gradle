@@ -1360,6 +1360,13 @@ bom {
 			]
 		}
 	}
+	library("R2DBC Bom", "Arabba-SR2") {
+		group("io.r2dbc") {
+			imports = [
+					"r2dbc-bom"
+			]
+		}
+	}
 	library("Rabbit AMQP Client", "5.8.0") {
 		group("com.rabbitmq") {
 			modules = [

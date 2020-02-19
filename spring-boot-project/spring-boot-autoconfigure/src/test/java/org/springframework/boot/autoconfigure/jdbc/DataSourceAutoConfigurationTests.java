@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.r2dbc.spi.ConnectionFactory;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -92,6 +93,12 @@ class DataSourceAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.datasource.driverClassName:org.none.jdbcDriver")
 				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("org.none.jdbcDriver"));
+	}
+
+	@Test
+	void datasourceWhenConnectionFactoryPresentIsNotAutoConfigured() {
+		this.contextRunner.withBean(ConnectionFactory.class, () -> mock(ConnectionFactory.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test

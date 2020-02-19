@@ -78,7 +78,7 @@ public class DocumentConfigurationProperties extends AbstractTask {
 				.addSection("data-migration").withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
 				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2", "spring.influx",
 						"spring.mongodb", "spring.redis", "spring.dao", "spring.data", "spring.datasource",
-						"spring.jooq", "spring.jdbc", "spring.jpa")
+						"spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
 				.addOverride("spring.datasource.dbcp2", "Commons DBCP2 specific settings")
 				.addOverride("spring.datasource.tomcat", "Tomcat datasource specific settings")
 				.addOverride("spring.datasource.hikari", "Hikari specific settings").addSection("transaction")
