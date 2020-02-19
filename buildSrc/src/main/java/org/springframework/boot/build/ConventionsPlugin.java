@@ -16,6 +16,13 @@
 
 package org.springframework.boot.build;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,9 +31,11 @@ import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -42,12 +51,14 @@ import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.publish.tasks.GenerateModuleMetadata;
+import org.gradle.api.resources.TextResourceFactory;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 
 import org.springframework.boot.build.testing.TestFailuresPlugin;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
@@ -65,7 +76,8 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
  * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
- * <li>{@link Jar} tasks are configured to have the following manifest entries:
+ * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
+ * files and the following manifest entries:
  * <ul>
  * <li>{@code Automatic-Module-Name}
  * <li>{@code Build-Jdk-Spec}
@@ -97,6 +109,7 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * {@link AsciidoctorConventions} are applied.
  *
  * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
 public class ConventionsPlugin implements Plugin<Project> {
 
@@ -127,6 +140,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Jar.class, (jar) -> {
 				project.afterEvaluate((evaluated) -> {
+					jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
 					jar.manifest((manifest) -> {
 						Map<String, Object> attributes = new TreeMap<>();
 						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
@@ -139,6 +153,43 @@ public class ConventionsPlugin implements Plugin<Project> {
 				});
 			});
 		});
+	}
+
+	private void copyLegalFiles(Project project, CopySpec metaInf) {
+		copyNoticeFile(project, metaInf);
+		copyLicenseFile(project, metaInf);
+	}
+
+	private void copyNoticeFile(Project project, CopySpec metaInf) {
+		try {
+			InputStream notice = getClass().getClassLoader().getResourceAsStream("NOTICE.txt");
+			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(notice, StandardCharsets.UTF_8))
+					.replace("${version}", project.getVersion().toString());
+			TextResourceFactory resourceFactory = project.getResources().getText();
+			File file = createLegalFile(resourceFactory.fromString(noticeContent).asFile(), "NOTICE.txt");
+			metaInf.from(file);
+		}
+		catch (IOException ex) {
+			throw new GradleException("Failed to copy NOTICE.txt", ex);
+		}
+	}
+
+	private void copyLicenseFile(Project project, CopySpec metaInf) {
+		URL license = getClass().getClassLoader().getResource("LICENSE.txt");
+		try {
+			TextResourceFactory resourceFactory = project.getResources().getText();
+			File file = createLegalFile(resourceFactory.fromUri(license.toURI()).asFile(), "LICENSE.txt");
+			metaInf.from(file);
+		}
+		catch (URISyntaxException ex) {
+			throw new GradleException("Failed to copy LICENSE.txt", ex);
+		}
+	}
+
+	private File createLegalFile(File source, String filename) {
+		File legalFile = new File(source.getParentFile(), filename);
+		source.renameTo(legalFile);
+		return legalFile;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
