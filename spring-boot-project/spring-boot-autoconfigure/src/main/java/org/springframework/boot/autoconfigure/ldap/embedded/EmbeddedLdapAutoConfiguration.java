@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -105,7 +104,7 @@ public class EmbeddedLdapAutoConfiguration {
 	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
+		if (this.embeddedProperties.hasCredential()) {
 			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
@@ -142,9 +141,7 @@ public class EmbeddedLdapAutoConfiguration {
 		}
 	}
 
-	private boolean hasCredentials(Credential credential) {
-		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
-	}
+
 
 	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
 		String location = this.embeddedProperties.getLdif();

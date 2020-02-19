@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.ldap.embedded;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Embedded LDAP.
@@ -73,6 +73,10 @@ public class EmbeddedLdapProperties {
 
 	public void setCredential(Credential credential) {
 		this.credential = credential;
+	}
+
+	public boolean hasCredential() {
+		return credential != null && StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
 	}
 
 	public List<String> getBaseDn() {
