@@ -44,8 +44,6 @@ class ConventionsPluginTests {
 
 	private File buildFile;
 
-	private File licenseFile;
-
 	@BeforeEach
 	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;

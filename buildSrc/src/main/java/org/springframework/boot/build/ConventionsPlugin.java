@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -77,7 +76,8 @@ import org.springframework.util.FileCopyUtils;
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
  * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
- * <li>{@link Jar} tasks are configured to have the following manifest entries:
+ * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
+ * files and the following manifest entries:
  * <ul>
  * <li>{@code Automatic-Module-Name}
  * <li>{@code Build-Jdk-Spec}
@@ -109,6 +109,7 @@ import org.springframework.util.FileCopyUtils;
  * {@link AsciidoctorConventions} are applied.
  *
  * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
 public class ConventionsPlugin implements Plugin<Project> {
 
@@ -163,8 +164,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		try {
 			InputStream notice = getClass().getClassLoader().getResourceAsStream("NOTICE.txt");
 			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(notice, StandardCharsets.UTF_8))
-					.replace("${version}", project.getVersion().toString())
-					.replace("${currentYear}", Integer.toString(Year.now().getValue()));
+					.replace("${version}", project.getVersion().toString());
 			TextResourceFactory resourceFactory = project.getResources().getText();
 			File file = createLegalFile(resourceFactory.fromString(noticeContent).asFile(), "NOTICE.txt");
 			metaInf.from(file);
