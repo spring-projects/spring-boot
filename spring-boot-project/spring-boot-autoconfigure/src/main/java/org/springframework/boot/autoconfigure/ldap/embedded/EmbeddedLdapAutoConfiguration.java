@@ -76,6 +76,8 @@ import org.springframework.util.StringUtils;
 @Conditional(EmbeddedLdapAutoConfiguration.EmbeddedLdapCondition.class)
 public class EmbeddedLdapAutoConfiguration {
 
+	private static final String DIRECTORY_SERVER_BEAN_NAME = "directoryServer";
+
 	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
 
 	private final EmbeddedLdapProperties embeddedProperties;
@@ -86,21 +88,7 @@ public class EmbeddedLdapAutoConfiguration {
 		this.embeddedProperties = embeddedProperties;
 	}
 
-	@Bean
-	@DependsOn("directoryServer")
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(ContextSource.class)
-	public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties) {
-		LdapContextSource source = new LdapContextSource();
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
-			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
-			source.setPassword(this.embeddedProperties.getCredential().getPassword());
-		}
-		source.setUrls(properties.determineUrls(environment));
-		return source;
-	}
-
-	@Bean
+	@Bean(name = DIRECTORY_SERVER_BEAN_NAME)
 	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
@@ -209,4 +197,25 @@ public class EmbeddedLdapAutoConfiguration {
 
 	}
 
+	/**
+	 * Creates an {@link LdapContextSource} for use with Embedded LDAP.
+	 */
+	@Configuration
+	@ConditionalOnClass(ContextSource.class)
+	static class EmbeddedLdapContextConfiguration {
+		
+		@Bean
+		@DependsOn(DIRECTORY_SERVER_BEAN_NAME)
+		@ConditionalOnMissingBean
+		public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties, EmbeddedLdapProperties embeddedProperties) {
+			LdapContextSource source = new LdapContextSource();
+			if (embeddedProperties.hasCredential()) {
+				source.setUserDn(embeddedProperties.getCredential().getUsername());
+				source.setPassword(embeddedProperties.getCredential().getPassword());
+			}
+			source.setUrls(properties.determineUrls(environment));
+			return source;
+		}
+	}
+	
 }
