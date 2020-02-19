@@ -115,8 +115,8 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {
 				compile.getOptions().setEncoding("UTF-8");
-				if (hasCustomJavaHome(project)) {
-					String javaExecutable = getCustomJavaExecutable(project, "/bin/java");
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
 					compile.getOptions().getForkOptions().setJavaHome(new File(javaExecutable));
 				}
 				List<String> args = compile.getOptions().getCompilerArgs();
@@ -126,14 +126,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Javadoc.class, (javadoc) -> {
 				javadoc.getOptions().source("1.8").encoding("UTF-8");
-				if (hasCustomJavaHome(project)) {
-					String javaExecutable = getCustomJavaExecutable(project, "/bin/javadoc");
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/javadoc");
 					javadoc.setExecutable(javaExecutable);
 				}
 			});
 			project.getTasks().withType(Test.class, (test) -> {
-				if (hasCustomJavaHome(project)) {
-					String javaExecutable = getCustomJavaExecutable(project, "/bin/java");
+				if (hasCustomBuildJavaHome(project)) {
+					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
 					test.setExecutable(javaExecutable);
 				}
 				test.useJUnitPlatform();
@@ -155,12 +155,12 @@ public class ConventionsPlugin implements Plugin<Project> {
 		});
 	}
 
-	private boolean hasCustomJavaHome(Project project) {
-		return project.hasProperty("customJavaHome") && !((String) project.property("customJavaHome")).isEmpty();
+	private boolean hasCustomBuildJavaHome(Project project) {
+		return project.hasProperty("buildJavaHome") && !((String) project.property("buildJavaHome")).isEmpty();
 	}
 
-	private String getCustomJavaExecutable(Project project, String executable) {
-		return project.property("customJavaHome") + executable;
+	private String getCustomBuildJavaExecutable(Project project, String executable) {
+		return project.property("buildJavaHome") + executable;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
