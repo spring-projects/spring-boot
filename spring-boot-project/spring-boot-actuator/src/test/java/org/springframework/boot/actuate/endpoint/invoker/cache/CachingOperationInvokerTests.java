@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 
 import java.security.Principal;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import reactor.core.publisher.Flux;
@@ -73,25 +73,25 @@ public class CachingOperationInvokerTests {
 
 	@Test
 	public void cacheInTtlWithMonoResponse() {
-		MonoOperationInvoker.invocations = 0;
+		MonoOperationInvoker.invocations = new AtomicInteger();
 		MonoOperationInvoker target = new MonoOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
 		Object response = ((Mono<?>) invoker.invoke(context)).block();
 		Object cachedResponse = ((Mono<?>) invoker.invoke(context)).block();
-		assertThat(MonoOperationInvoker.invocations).isEqualTo(1);
+		assertThat(MonoOperationInvoker.invocations).hasValue(1);
 		assertThat(response).isSameAs(cachedResponse);
 	}
 
 	@Test
 	public void cacheInTtlWithFluxResponse() {
-		FluxOperationInvoker.invocations = 0;
+		FluxOperationInvoker.invocations = new AtomicInteger();
 		FluxOperationInvoker target = new FluxOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
 		Object response = ((Flux<?>) invoker.invoke(context)).blockLast();
 		Object cachedResponse = ((Flux<?>) invoker.invoke(context)).blockLast();
-		assertThat(FluxOperationInvoker.invocations).isEqualTo(1);
+		assertThat(FluxOperationInvoker.invocations).hasValue(1);
 		assertThat(response).isSameAs(cachedResponse);
 	}
 
@@ -154,13 +154,13 @@ public class CachingOperationInvokerTests {
 
 	private static class MonoOperationInvoker implements OperationInvoker {
 
-		static int invocations;
+		static AtomicInteger invocations = new AtomicInteger();
 
 		@Override
-		public Object invoke(InvocationContext context) throws MissingParametersException {
+		public Mono<String> invoke(InvocationContext context) throws MissingParametersException {
 			return Mono.fromCallable(() -> {
-				invocations++;
-				return Mono.just("test");
+				invocations.incrementAndGet();
+				return "test";
 			});
 		}
 
@@ -168,14 +168,11 @@ public class CachingOperationInvokerTests {
 
 	private static class FluxOperationInvoker implements OperationInvoker {
 
-		static int invocations;
+		static AtomicInteger invocations = new AtomicInteger();
 
 		@Override
-		public Object invoke(InvocationContext context) throws MissingParametersException {
-			return Flux.fromIterable(() -> {
-				invocations++;
-				return Arrays.asList("spring", "boot").iterator();
-			});
+		public Flux<String> invoke(InvocationContext context) throws MissingParametersException {
+			return Flux.just("spring", "boot").hide().doFirst(invocations::incrementAndGet);
 		}
 
 	}
