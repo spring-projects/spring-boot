@@ -61,6 +61,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.projectreactor.netty:reactor-netty")
+	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
