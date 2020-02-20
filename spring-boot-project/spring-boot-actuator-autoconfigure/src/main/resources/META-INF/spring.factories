@@ -75,6 +75,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsA
 org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mongo.MongoReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.r2dbc.ConnectionFactoryHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration,\
