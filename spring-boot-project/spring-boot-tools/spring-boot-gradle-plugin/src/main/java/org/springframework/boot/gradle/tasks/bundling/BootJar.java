@@ -170,7 +170,6 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Optional
 	@Nested
-	@Input
 	public LayerConfiguration getLayerConfiguration() {
 		return this.layerConfiguration;
 	}
