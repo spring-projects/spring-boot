@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,9 @@ class TaskExecutorBuilderTests {
 
 	@Test
 	void awaitTerminationPeriodShouldApply() {
-		ThreadPoolTaskExecutor executor = this.builder.awaitTerminationPeriod(Duration.ofMinutes(1)).build();
-		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
+		Duration period = Duration.ofMinutes(1);
+		ThreadPoolTaskExecutor executor = this.builder.awaitTerminationPeriod(period).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationMillis", period.toMillis());
 	}
 
 	@Test
