@@ -317,8 +317,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the application arguments
 	 */
 	protected RunArguments resolveApplicationArguments() {
-		RunArguments runArguments = (this.commandlineArguments != null) ? new RunArguments(this.commandlineArguments)
-				: new RunArguments(this.arguments);
+		RunArguments runArguments = (this.arguments != null) ? new RunArguments(this.arguments)
+				: new RunArguments(this.commandlineArguments);
 		addActiveProfileArgument(runArguments);
 		return runArguments;
 	}
