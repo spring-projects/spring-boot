@@ -76,6 +76,7 @@ public final class CommandLineInvoker {
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command).directory(this.workingDirectory);
 		processBuilder.environment().put("JAVA_OPTS", "-Duser.home=" + this.temp);
+		processBuilder.environment().put("JAVA_HOME", System.getProperty("java.home"));
 		return processBuilder.start();
 	}
 
