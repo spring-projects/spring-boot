@@ -44,7 +44,7 @@
 		<awaitility.version>4.0.2</awaitility.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.10.6</byte-buddy.version>
-		<caffeine.version>2.8.0</caffeine.version>
+		<caffeine.version>2.8.1</caffeine.version>
 		<cassandra-driver.version>3.7.2</cassandra-driver.version>
 		<classmate.version>1.5.1</classmate.version>
 		<commons-codec.version>1.13</commons-codec.version>
