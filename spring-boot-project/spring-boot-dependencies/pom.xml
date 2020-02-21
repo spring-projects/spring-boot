@@ -83,7 +83,7 @@
 		<infinispan.version>9.4.17.Final</infinispan.version>
 		<influxdb-java.version>2.15</influxdb-java.version>
 		<!-- deprecated since 2.1 in favor of "jackson-bom.version" -->
-		<jackson.version>2.10.2</jackson.version>
+		<jackson.version>2.10.2.20200130</jackson.version>
 		<jackson-bom.version>${jackson.version}</jackson-bom.version>
 		<jakarta-activation.version>1.2.1</jakarta-activation.version>
 		<jakarta-annotation.version>1.3.5</jakarta-annotation.version>
