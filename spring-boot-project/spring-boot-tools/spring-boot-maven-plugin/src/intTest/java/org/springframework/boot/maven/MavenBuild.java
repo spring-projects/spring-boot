@@ -46,7 +46,6 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.InvokerLogger;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -185,7 +184,6 @@ class MavenBuild {
 					buildLog.flush();
 				});
 				try {
-					invoker.getLogger().setThreshold(InvokerLogger.DEBUG);
 					InvocationResult result = invoker.execute(request);
 					assertThat(result.getExitCode()).as(contentOf(buildLogFile)).isEqualTo(expectedExitCode);
 				}
