@@ -143,7 +143,7 @@
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.16</neo4j-ogm.version>
 		<netty.version>4.1.45.Final</netty.version>
-		<netty-tcnative.version>2.0.28.Final</netty-tcnative.version>
+		<netty-tcnative.version>2.0.29.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
 		<postgresql.version>42.2.9</postgresql.version>
