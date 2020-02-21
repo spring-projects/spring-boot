@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -48,7 +50,11 @@ import org.springframework.util.StringUtils;
  */
 public class BootBuildImage extends DefaultTask {
 
+	private static final String OPENJDK_BUILDPACK_JAVA_VERSION_KEY = "BP_JAVA_VERSION";
+
 	private RegularFileProperty jar;
+
+	private Property<JavaVersion> targetJavaVersion;
 
 	private String imageName;
 
@@ -62,6 +68,7 @@ public class BootBuildImage extends DefaultTask {
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
+		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
 	}
 
 	/**
@@ -71,6 +78,17 @@ public class BootBuildImage extends DefaultTask {
 	@Input
 	public RegularFileProperty getJar() {
 		return this.jar;
+	}
+
+	/**
+	 * Returns the target Java version of the project (e.g. as provided by the
+	 * {@code targetCompatibility} build property).
+	 * @return the target Java version
+	 */
+	@Input
+	@Optional
+	public Property<JavaVersion> getTargetJavaVersion() {
+		return this.targetJavaVersion;
 	}
 
 	/**
@@ -189,9 +207,8 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	BuildRequest createRequest() {
-		BuildRequest request = customize(BuildRequest.of(determineImageReference(),
+		return customize(BuildRequest.of(determineImageReference(),
 				(owner) -> new ZipFileTarArchive(this.jar.get().getAsFile(), owner)));
-		return request;
 	}
 
 	private ImageReference determineImageReference() {
@@ -207,19 +224,41 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customize(BuildRequest request) {
-		if (StringUtils.hasText(this.builder)) {
-			request = request.withBuilder(ImageReference.of(this.builder));
-		}
-		if (this.environment != null && !this.environment.isEmpty()) {
-			request = request.withEnv(this.environment);
-		}
-		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
-		if (StringUtils.hasText(springBootVersion)) {
-			request = request.withCreator(Creator.withVersion(springBootVersion));
-		}
+		request = customizeBuilder(request);
+		request = customizeEnvironment(request);
+		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
 		return request;
+	}
+
+	private BuildRequest customizeBuilder(BuildRequest request) {
+		if (StringUtils.hasText(this.builder)) {
+			return request.withBuilder(ImageReference.of(this.builder));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeEnvironment(BuildRequest request) {
+		if (this.environment != null && !this.environment.isEmpty()) {
+			request = request.withEnv(this.environment);
+		}
+		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(OPENJDK_BUILDPACK_JAVA_VERSION_KEY)) {
+			request = request.withEnv(OPENJDK_BUILDPACK_JAVA_VERSION_KEY, translateTargetJavaVersion());
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCreator(BuildRequest request) {
+		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
+		if (StringUtils.hasText(springBootVersion)) {
+			return request.withCreator(Creator.withVersion(springBootVersion));
+		}
+		return request;
+	}
+
+	private String translateTargetJavaVersion() {
+		return this.targetJavaVersion.get().getMajorVersion() + ".*";
 	}
 
 }

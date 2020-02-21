@@ -63,6 +63,8 @@ import org.springframework.util.StringUtils;
 @Execute(phase = LifecyclePhase.PACKAGE)
 public class BuildImageMojo extends AbstractPackagerMojo {
 
+	private static final String OPENJDK_BUILDPACK_JAVA_VERSION_KEY = "BP_JAVA_VERSION";
+
 	/**
 	 * Directory containing the JAR.
 	 * @since 2.3.0
@@ -137,7 +139,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	private File getJarFile() {
 		// We can use 'project.getArtifact().getFile()' because that was done in a
-		// forked lifecyle and is now null
+		// forked lifecycle and is now null
 		StringBuilder name = new StringBuilder(this.finalName);
 		if (StringUtils.hasText(this.classifier)) {
 			name.append("-").append(this.classifier);
@@ -147,6 +149,23 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private BuildRequest customize(BuildRequest request) {
+		request = customizeEnvironment(request);
+		request = customizeCreator(request);
+		return request;
+	}
+
+	private BuildRequest customizeEnvironment(BuildRequest request) {
+		if (!request.getEnv().containsKey(OPENJDK_BUILDPACK_JAVA_VERSION_KEY)) {
+			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
+			String targetJavaVersion = compilerConfiguration.getTargetMajorVersion();
+			if (StringUtils.hasText(targetJavaVersion)) {
+				return request.withEnv(OPENJDK_BUILDPACK_JAVA_VERSION_KEY, targetJavaVersion + ".*");
+			}
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCreator(BuildRequest request) {
 		String springBootVersion = VersionExtractor.forClass(BuildImageMojo.class);
 		if (StringUtils.hasText(springBootVersion)) {
 			request = request.withCreator(Creator.withVersion(springBootVersion));
