@@ -36,7 +36,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.15.11</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.77</appengine-sdk.version>
+		<appengine-sdk.version>1.9.78</appengine-sdk.version>
 		<artemis.version>2.6.4</artemis.version>
 		<aspectj.version>1.9.5</aspectj.version>
 		<assertj.version>3.11.1</assertj.version>
