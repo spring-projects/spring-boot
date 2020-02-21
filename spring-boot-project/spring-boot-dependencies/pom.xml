@@ -53,7 +53,7 @@
 		<commons-pool2.version>2.6.2</commons-pool2.version>
 		<couchbase-client.version>2.7.12</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
-		<dependency-management-plugin.version>1.0.8.RELEASE</dependency-management-plugin.version>
+		<dependency-management-plugin.version>1.0.9.RELEASE</dependency-management-plugin.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>4.0.7</dropwizard-metrics.version>
