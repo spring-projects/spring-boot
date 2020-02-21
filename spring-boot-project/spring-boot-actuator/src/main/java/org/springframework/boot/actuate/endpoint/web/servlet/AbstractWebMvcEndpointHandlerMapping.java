@@ -232,16 +232,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	@Override
-	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
-		try {
-			return super.getHandlerInternal(request);
-		}
-		finally {
-			ProducesRequestCondition.clearMediaTypesAttribute(request);
-		}
-	}
-
-	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		return false;
 	}
