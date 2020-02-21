@@ -36,7 +36,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -136,19 +135,16 @@ class HttpClientHttp implements Http {
 		StatusLine statusLine = response.getStatusLine();
 		int statusCode = statusLine.getStatusCode();
 		HttpEntity entity = response.getEntity();
-		if (statusCode >= 200 && statusCode < 300) {
-			return new HttpClientResponse(response);
-		}
-		Errors errors = null;
+
 		if (statusCode >= 400 && statusCode < 500) {
-			try {
-				errors = SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
-			}
-			catch (Exception ex) {
-			}
+			Errors errors = SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
+			throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), errors);
 		}
-		EntityUtils.consume(entity);
-		throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), errors);
+		if (statusCode == 500) {
+			throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), null);
+		}
+
+		return new HttpClientResponse(response);
 	}
 
 	/**
@@ -175,7 +171,7 @@ class HttpClientHttp implements Http {
 		}
 
 		@Override
-		public InputStream getContent() throws IOException, UnsupportedOperationException {
+		public InputStream getContent() throws UnsupportedOperationException {
 			throw new UnsupportedOperationException();
 		}
 

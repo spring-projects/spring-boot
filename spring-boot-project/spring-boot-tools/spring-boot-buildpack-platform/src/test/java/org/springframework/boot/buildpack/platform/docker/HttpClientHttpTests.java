@@ -26,7 +26,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHeaders;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -132,7 +131,7 @@ class HttpClientHttpTests {
 		assertThat(entity.isRepeatable()).isFalse();
 		assertThat(entity.getContentLength()).isEqualTo(-1);
 		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> entity.getContent());
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
 		assertThat(writeToString(entity)).isEqualTo("test");
 		assertThat(response.getContent()).isSameAs(this.content);
 	}
@@ -152,7 +151,7 @@ class HttpClientHttpTests {
 		assertThat(entity.isRepeatable()).isFalse();
 		assertThat(entity.getContentLength()).isEqualTo(-1);
 		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> entity.getContent());
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
 		assertThat(writeToString(entity)).isEqualTo("test");
 		assertThat(response.getContent()).isSameAs(this.content);
 	}
@@ -171,7 +170,7 @@ class HttpClientHttpTests {
 	}
 
 	@Test
-	void executeWhenResposeIsIn400RangeShouldThrowDockerException() throws ClientProtocolException, IOException {
+	void executeWhenResposeIsIn400RangeShouldThrowDockerException() throws IOException {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.statusLine.getStatusCode()).willReturn(404);
 		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
@@ -179,7 +178,7 @@ class HttpClientHttpTests {
 	}
 
 	@Test
-	void executeWhenResposeIsIn500RangeShouldThrowDockerException() throws ClientProtocolException, IOException {
+	void executeWhenResposeIsIn500RangeShouldThrowDockerException() {
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getErrors()).isNull());
