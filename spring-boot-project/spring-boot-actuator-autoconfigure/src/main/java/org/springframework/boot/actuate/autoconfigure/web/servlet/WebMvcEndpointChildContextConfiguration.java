@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
-import java.util.List;
-
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.endpoint.json.ActuatorJsonMapperProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,15 +33,11 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
@@ -114,29 +106,6 @@ class WebMvcEndpointChildContextConfiguration {
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
-	}
-
-	/**
-	 * Since {@code WebMvcEndpointManagementContextConfiguration} is adding an
-	 * actuator-specific JSON message converter, {@code @EnableWebMvc} will not register
-	 * default converters. We need to register a JSON converter for plain
-	 * {@code "application/json"} still.
-	 * WebMvcEndpointChildContextConfigurationIntegrationTests
-	 */
-	@Configuration(proxyBeanMethods = false)
-	public static class FallbackJsonConverterConfigurer implements WebMvcConfigurer {
-
-		private final ActuatorJsonMapperProvider actuatorJsonMapperProvider;
-
-		FallbackJsonConverterConfigurer(ObjectProvider<ActuatorJsonMapperProvider> objectMapperSupplier) {
-			this.actuatorJsonMapperProvider = objectMapperSupplier.getIfAvailable(ActuatorJsonMapperProvider::new);
-		}
-
-		@Override
-		public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-			converters.add(new MappingJackson2HttpMessageConverter(this.actuatorJsonMapperProvider.getInstance()));
-		}
-
 	}
 
 	/**

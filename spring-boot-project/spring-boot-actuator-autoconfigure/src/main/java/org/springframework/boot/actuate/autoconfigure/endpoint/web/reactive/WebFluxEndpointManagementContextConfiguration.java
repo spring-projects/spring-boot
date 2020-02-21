@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.json.ActuatorJsonMapperProvider;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -42,13 +40,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.http.codec.CodecConfigurer;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -59,7 +52,6 @@ import org.springframework.web.reactive.DispatcherHandler;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Brian Clozel
  * @since 2.0.0
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
@@ -99,18 +91,6 @@ public class WebFluxEndpointManagementContextConfiguration {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
-	}
-
-	@Bean
-	@Order(-1)
-	public CodecCustomizer actuatorJsonCodec(ActuatorJsonMapperProvider actuatorJsonMapperProvider) {
-		return (configurer) -> {
-			MediaType v3MediaType = MediaType.parseMediaType(ActuatorMediaType.V3_JSON);
-			MediaType v2MediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
-			CodecConfigurer.CustomCodecs customCodecs = configurer.customCodecs();
-			customCodecs.register(
-					new Jackson2JsonEncoder(actuatorJsonMapperProvider.getInstance(), v3MediaType, v2MediaType));
-		};
 	}
 
 }

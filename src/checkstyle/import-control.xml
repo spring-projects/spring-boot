@@ -46,9 +46,6 @@
 				<disallow pkg="org.springframework.web.servlet" />
 			</subpackage>
 		</subpackage>
-		<subpackage name="json">
-			<allow pkg="org.springframework.http.converter" />
-		</subpackage>
 	</subpackage>
 
 	<!-- Logging -->
