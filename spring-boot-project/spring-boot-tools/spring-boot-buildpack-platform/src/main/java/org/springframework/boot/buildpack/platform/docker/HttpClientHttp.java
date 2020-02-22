@@ -45,6 +45,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
  * {@link Http} implementation backed by a {@link HttpClient}.
  *
  * @author Phillip Webb
+ * @author Mike Smithson
  */
 class HttpClientHttp implements Http {
 

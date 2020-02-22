@@ -53,6 +53,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link HttpClientHttp}.
  *
  * @author Phillip Webb
+ * @author Mike Smithson
  */
 class HttpClientHttpTests {
 
