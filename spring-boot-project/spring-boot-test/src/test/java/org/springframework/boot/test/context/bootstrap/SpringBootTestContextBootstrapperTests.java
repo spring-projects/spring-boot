@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,7 @@ import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -47,7 +49,13 @@ class SpringBootTestContextBootstrapperTests {
 
 	@Test
 	void springBootTestWithAMockWebEnvironmentCanBeUsedWithWebAppConfiguration() {
+		LogCaptor<?> logCaptor = LogCaptor.forClass(SpringBootTestContextBootstrapper.class);
+
 		buildTestContext(SpringBootTestMockWebEnvironmentAndWebAppConfiguration.class);
+
+		assertThat(logCaptor.getLogs()).contains("Found @SpringBootConfiguration "
+				+ "org.springframework.boot.test.context.bootstrap.SpringBootTestContextBootstrapperExampleConfig for test class "
+				+ "org.springframework.boot.test.context.bootstrap.SpringBootTestContextBootstrapperTests$SpringBootTestMockWebEnvironmentAndWebAppConfiguration");
 	}
 
 	@SuppressWarnings("rawtypes")

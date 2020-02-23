@@ -37,6 +37,7 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
 	optional("net.sourceforge.htmlunit:htmlunit")
+	optional("io.github.hakky54:logcaptor:1.0.1")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.mockk:mockk")
