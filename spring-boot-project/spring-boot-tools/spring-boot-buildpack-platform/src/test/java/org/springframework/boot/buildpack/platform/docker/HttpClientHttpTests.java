@@ -185,6 +185,14 @@ class HttpClientHttpTests {
 				.satisfies((ex) -> assertThat(ex.getErrors()).isNull());
 	}
 
+	@Test
+	void executeWhenClientExecutesRequestThrowsIOExceptionRethrowsAsDockerException() throws IOException {
+		given(this.client.execute(any())).willThrow(IOException.class);
+		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
+				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerException::getStatusCode)
+				.withMessageContaining("500").satisfies((ex) -> assertThat(ex.getReasonPhrase())).isNotNull();
+	}
+
 	private String writeToString(HttpEntity entity) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		entity.writeTo(out);

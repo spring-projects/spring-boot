@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.docker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 
 import org.apache.http.HttpEntity;
@@ -66,10 +68,9 @@ class HttpClientHttp implements Http {
 	 * Perform a HTTP GET operation.
 	 * @param uri the destination URI
 	 * @return the operation response
-	 * @throws IOException on IO error
 	 */
 	@Override
-	public Response get(URI uri) throws IOException {
+	public Response get(URI uri) {
 		return execute(new HttpGet(uri));
 	}
 
@@ -77,10 +78,9 @@ class HttpClientHttp implements Http {
 	 * Perform a HTTP POST operation.
 	 * @param uri the destination URI
 	 * @return the operation response
-	 * @throws IOException on IO error
 	 */
 	@Override
-	public Response post(URI uri) throws IOException {
+	public Response post(URI uri) {
 		return execute(new HttpPost(uri));
 	}
 
@@ -90,11 +90,10 @@ class HttpClientHttp implements Http {
 	 * @param contentType the content type to write
 	 * @param writer a content writer
 	 * @return the operation response
-	 * @throws IOException on IO error
 	 */
 
 	@Override
-	public Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) throws IOException {
+	public Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPost(uri), contentType, writer);
 	}
 
@@ -104,11 +103,10 @@ class HttpClientHttp implements Http {
 	 * @param contentType the content type to write
 	 * @param writer a content writer
 	 * @return the operation response
-	 * @throws IOException on IO error
 	 */
 
 	@Override
-	public Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) throws IOException {
+	public Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPut(uri), contentType, writer);
 	}
 
@@ -116,33 +114,41 @@ class HttpClientHttp implements Http {
 	 * Perform a HTTP DELETE operation.
 	 * @param uri the destination URI
 	 * @return the operation response
-	 * @throws IOException on IO error
 	 */
 
 	@Override
-	public Response delete(URI uri) throws IOException {
+	public Response delete(URI uri) {
 		return execute(new HttpDelete(uri));
 	}
 
 	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
-			IOConsumer<OutputStream> writer) throws IOException {
+			IOConsumer<OutputStream> writer) {
 		request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
 		request.setEntity(new WritableHttpEntity(writer));
 		return execute(request);
 	}
 
-	private Response execute(HttpUriRequest request) throws IOException {
-		CloseableHttpResponse response = this.client.execute(request);
-		StatusLine statusLine = response.getStatusLine();
-		int statusCode = statusLine.getStatusCode();
-		HttpEntity entity = response.getEntity();
+	private Response execute(HttpUriRequest request) {
+		CloseableHttpResponse response;
+		try {
+			response = this.client.execute(request);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			HttpEntity entity = response.getEntity();
 
-		if (statusCode >= 400 && statusCode < 500) {
-			Errors errors = SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
-			throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), errors);
+			if (statusCode >= 400 && statusCode < 500) {
+				Errors errors = SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
+				throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), errors);
+			}
+			if (statusCode == 500) {
+				throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), null);
+			}
 		}
-		if (statusCode == 500) {
-			throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), null);
+		catch (IOException ioe) {
+			StringWriter stringWriter = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(stringWriter);
+			ioe.printStackTrace(printWriter);
+			throw new DockerException(request.getURI(), 500, stringWriter.toString(), null);
 		}
 
 		return new HttpClientResponse(response);
