@@ -72,6 +72,8 @@
 :spring-data-mongodb-api: https://docs.spring.io/spring-data/mongodb/docs/{spring-data-mongodb-version}/api/org/springframework/data/mongodb
 :spring-data-neo4j: https://spring.io/projects/spring-data-neo4j
 :spring-data-neo4j-docs: https://docs.spring.io/spring-data/neo4j/docs/{spring-data-neo4j-version}/reference/html/
+:spring-data-r2dbc-api: https://docs.spring.io/spring-data/r2dbc/docs/{spring-data-r2dbc-version}/api/org/springframework/data/r2dbc
+:spring-data-r2dbc-docs: https://docs.spring.io/spring-data/r2dbc/docs/{spring-data-r2dbc-version}/reference/html/
 :spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
 :spring-data-solr: https://spring.io/projects/spring-data-solr

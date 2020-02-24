@@ -3774,6 +3774,139 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 
 
 
+[[boot-features-r2dbc]]
+=== Using R2DBC
+The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
+R2DBC's `io.r2dbc.spi.Connection` provides a standard method of working with non-blocking database connections.
+Connections are provided via a `ConnectionFactory`, similar to a `DataSource` with jdbc.
+
+`ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
+For example, you might declare the following section in `application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.r2dbc.url=r2dbc:postgresql://localhost/test
+	spring.r2dbc.username=dbuser
+	spring.r2dbc.password=dbpass
+----
+
+TIP: You do not need to specify a driver class name, since Spring Boot obtains the driver from R2DBC's Connection Factory discovery.
+
+NOTE: At least the url should be provided.
+Information specified in the URL takes precedence over individual properties, i.e. `name`, `username`, `password` and pooling options.
+
+To customize the connections created by a `ConnectionFactory`, i.e., set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
+The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
+
+[source,java,indent=0]
+----
+	@Bean
+	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
+		return (builder) -> builder.option(PORT, 5432);
+	}
+----
+
+The following examples shows how to set some PostgreSQL connection options:
+
+[source,java,indent=0]
+----
+	@Bean
+	public ConnectionFactoryOptionsBuilderCustomizer postgresCustomizer() {
+		Map<String, String> options = new HashMap<>();
+		options.put("lock_timeout", "30s");
+		options.put("statement_timeout", "60s");
+		return (builder) -> builder.option(OPTIONS, options);
+	}
+----
+
+When a `ConnectionFactory` bean is available, the regular jdbc `DataSource` auto-configuration backs off.
+If you need to initialize or migrate the database on startup, consider using the dedicated Flyway or Liquibase support.
+Alternatively, consider registering a `ResourceDatabasePopulator` bean with the scripts to invoke on startup.
+
+
+
+[[boot-features-r2dbc-embedded-database]]
+==== Embedded Database Support
+Similarly to <<boot-features-embedded-database-support,the JDBC support>>, Spring Boot can automatically configure an embedded database for reactive usage.
+You need not provide any connection URLs.
+You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
+
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>io.r2dbc</groupId>
+		<artifactId>r2dbc-h2</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+----
+
+[NOTE]
+====
+If you are using this feature in your tests, you may notice that the same database is reused by your whole test suite regardless of the number of application contexts that you use.
+If you want to make sure that each context has a separate embedded database, you should set `spring.r2dbc.generate-unique-name` to `true`.
+====
+
+
+
+[[boot-features-r2dbc-using-database-client]]
+==== Using DatabaseClient
+Spring Data's `DatabaseClient` class is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.data.r2dbc.function.DatabaseClient;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final DatabaseClient databaseClient;
+
+		@Autowired
+		public MyBean(DatabaseClient databaseClient) {
+			this.databaseClient = databaseClient;
+		}
+
+		// ...
+
+	}
+----
+
+
+
+[[boot-features-spring-data-r2dbc-repositories]]
+==== Spring Data R2DBC Repositories
+https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are interfaces that you can define to access data.
+Queries are created automatically from your method names.
+For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
+
+For more complex queries, you can annotate your method with Spring Data's {spring-data-r2dbc-api}/repository/query/Query.html[`Query`] annotation.
+
+Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
+If you use auto-configuration, repositories are searched from the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) down.
+
+The following example shows a typical Spring Data repository interface definition:
+
+[source,java,indent=0]
+----
+	package com.example.myapp.domain;
+
+	import org.springframework.data.domain.*;
+	import org.springframework.data.repository.*;
+	import reactor.core.publisher.Mono;
+
+	public interface CityRepository extends Repository<City, Long> {
+
+		Mono<City> findByNameAndStateAllIgnoringCase(String name, String state);
+
+	}
+----
+
+TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
+
+
+
 [[boot-features-nosql]]
 == Working with NoSQL Technologies
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
