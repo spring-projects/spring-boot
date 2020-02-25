@@ -2033,7 +2033,7 @@ If you like to use a different `DataSource`, you can create one and mark its `@B
 If you do so and want two data sources, remember to create another one and mark it as `@Primary`.
 Alternatively, you can use Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]` in external properties.
 Setting either `spring.flyway.url` or `spring.flyway.user` is sufficient to cause Flyway to use its own `DataSource`.
-If any of the three properties has not be set, the value of its equivalent `spring.datasource` property will be used.
+If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 You can also use Flyway to provide data for specific scenarios.
 For example, you can place test-specific migrations in `src/test/resources` and they are run only when your application starts for testing.
@@ -2557,7 +2557,7 @@ For example, to indicate that JRuby should be flagged for unpacking by using the
 [[howto-create-a-nonexecutable-jar]]
 === Create a Non-executable JAR with Exclusions
 Often, if you have an executable and a non-executable jar as two separate build products, the executable version has additional configuration files that are not needed in a library jar.
-For example, the `application.yml` configuration file might by excluded from the non-executable JAR.
+For example, the `application.yml` configuration file might be excluded from the non-executable JAR.
 
 In Maven, the executable jar must be the main artifact and you can add a classified jar for the library, as follows:
 
