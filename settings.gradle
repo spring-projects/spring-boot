@@ -28,6 +28,16 @@ plugins {
 
 rootProject.name="spring-boot-build"
 
+settings.gradle.projectsLoaded {
+	gradleEnterprise {
+		buildScan {
+			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
+				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			}
+		}
+	}
+}
+
 include "spring-boot-project:spring-boot-dependencies"
 include "spring-boot-project:spring-boot-parent"
 include "spring-boot-project:spring-boot-tools:spring-boot-antlib"

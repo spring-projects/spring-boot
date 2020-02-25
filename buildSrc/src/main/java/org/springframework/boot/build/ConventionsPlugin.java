@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
@@ -127,14 +128,22 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {
 				compile.getOptions().setEncoding("UTF-8");
+				withOptionalBuildJavaHome(project, (javaHome) -> {
+					compile.getOptions().setFork(true);
+					compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
+					compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
+				});
 				List<String> args = compile.getOptions().getCompilerArgs();
 				if (!args.contains("-parameters")) {
 					args.add("-parameters");
 				}
 			});
-			project.getTasks().withType(Javadoc.class,
-					(javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
+			project.getTasks().withType(Javadoc.class, (javadoc) -> {
+				javadoc.getOptions().source("1.8").encoding("UTF-8");
+				withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
+			});
 			project.getTasks().withType(Test.class, (test) -> {
+				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
 			});
@@ -190,6 +199,13 @@ public class ConventionsPlugin implements Plugin<Project> {
 		File legalFile = new File(source.getParentFile(), filename);
 		source.renameTo(legalFile);
 		return legalFile;
+	}
+
+	private void withOptionalBuildJavaHome(Project project, Consumer<String> consumer) {
+		String buildJavaHome = (String) project.findProperty("buildJavaHome");
+		if (buildJavaHome != null && !buildJavaHome.isEmpty()) {
+			consumer.accept(buildJavaHome);
+		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
