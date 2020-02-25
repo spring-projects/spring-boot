@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
@@ -127,10 +128,11 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.setProperty("sourceCompatibility", "1.8");
 			project.getTasks().withType(JavaCompile.class, (compile) -> {
 				compile.getOptions().setEncoding("UTF-8");
-				if (hasCustomBuildJavaHome(project)) {
-					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
-					compile.getOptions().getForkOptions().setJavaHome(new File(javaExecutable));
-				}
+				withOptionalBuildJavaHome(project, (javaHome) -> {
+					compile.getOptions().setFork(true);
+					compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
+					compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
+				});
 				List<String> args = compile.getOptions().getCompilerArgs();
 				if (!args.contains("-parameters")) {
 					args.add("-parameters");
@@ -138,16 +140,10 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Javadoc.class, (javadoc) -> {
 				javadoc.getOptions().source("1.8").encoding("UTF-8");
-				if (hasCustomBuildJavaHome(project)) {
-					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/javadoc");
-					javadoc.setExecutable(javaExecutable);
-				}
+				withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
 			});
 			project.getTasks().withType(Test.class, (test) -> {
-				if (hasCustomBuildJavaHome(project)) {
-					String javaExecutable = getCustomBuildJavaExecutable(project, "/bin/java");
-					test.setExecutable(javaExecutable);
-				}
+				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
 			});
@@ -205,12 +201,11 @@ public class ConventionsPlugin implements Plugin<Project> {
 		return legalFile;
 	}
 
-	private boolean hasCustomBuildJavaHome(Project project) {
-		return project.hasProperty("buildJavaHome") && !((String) project.property("buildJavaHome")).isEmpty();
-	}
-
-	private String getCustomBuildJavaExecutable(Project project, String executable) {
-		return project.property("buildJavaHome") + executable;
+	private void withOptionalBuildJavaHome(Project project, Consumer<String> consumer) {
+		String buildJavaHome = (String) project.findProperty("buildJavaHome");
+		if (buildJavaHome != null && !buildJavaHome.isEmpty()) {
+			consumer.accept(buildJavaHome);
+		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
