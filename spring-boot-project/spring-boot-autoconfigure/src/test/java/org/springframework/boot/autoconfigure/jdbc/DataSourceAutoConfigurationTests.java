@@ -154,6 +154,7 @@ class DataSourceAutoConfigurationTests {
 	@Test
 	void dataSourceWhenNoConnectionPoolsAreAvailableWithUrlDoesNotCreateDataSource() {
 		this.contextRunner.with(hideConnectionPools())
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testdb")
 				.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}
 
@@ -210,8 +211,8 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
-		return (runner) -> runner.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
-				"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
+		return (runner) -> runner.withClassLoader(
+				new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp2"));
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType, List<String> hiddenPackages,
