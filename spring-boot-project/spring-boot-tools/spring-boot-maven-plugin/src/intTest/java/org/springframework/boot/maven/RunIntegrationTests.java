@@ -85,14 +85,14 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenCommandLineSpecifiesJvmArgumentsTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-jvmargs-commandline").goals("spring-boot:run")
-				.systemProperty("spring-boot.run.jvmArguments", "\"-Dfoo=value1\" \"-Dbar=value2\"")
+				.systemProperty("spring-boot.run.jvmArguments", "-Dfoo=value-from-cmd")
 				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
 	@TestTemplate
 	void whenPomAndCommandLineSpecifyJvmArgumentsThenPomOverrides(MavenBuild mavenBuild) {
 		mavenBuild.project("run-jvmargs").goals("spring-boot:run")
-				.systemProperty("spring-boot.run.jvmArguments", "\"-Dfoo=value-from-cmd\"")
+				.systemProperty("spring-boot.run.jvmArguments", "-Dfoo=value-from-cmd")
 				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
@@ -117,7 +117,7 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenAWorkingDirectoryIsConfiguredTheApplicationIsRunFromThatDirectory(MavenBuild mavenBuild) {
 		mavenBuild.project("run-working-directory").goals("spring-boot:run").execute(
-				(project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*/src/main/java"));
+				(project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*src.main.java"));
 	}
 
 	@TestTemplate
