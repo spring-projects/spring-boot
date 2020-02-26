@@ -130,6 +130,8 @@ public final class EndpointRequest {
 
 		private volatile ServerWebExchangeMatcher delegate;
 
+		private static ManagementPortType managementPortType;
+
 		private EndpointServerWebExchangeMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
 		}
@@ -231,7 +233,10 @@ public final class EndpointRequest {
 
 		static boolean isManagementContext(ServerWebExchange exchange) {
 			ApplicationContext applicationContext = exchange.getApplicationContext();
-			if (ManagementPortType.get(applicationContext.getEnvironment()) == ManagementPortType.DIFFERENT) {
+			if (managementPortType == null) {
+				managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			}
+			if (managementPortType == ManagementPortType.DIFFERENT) {
 				if (applicationContext.getParent() == null) {
 					return false;
 				}
