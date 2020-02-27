@@ -48,6 +48,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
  *
  * @author Phillip Webb
  * @author Mike Smithson
+ * @author Scott Frederick
  */
 class HttpClientHttp implements Http {
 
@@ -129,9 +130,8 @@ class HttpClientHttp implements Http {
 	}
 
 	private Response execute(HttpUriRequest request) {
-		CloseableHttpResponse response;
 		try {
-			response = this.client.execute(request);
+			CloseableHttpResponse response = this.client.execute(request);
 			StatusLine statusLine = response.getStatusLine();
 			int statusCode = statusLine.getStatusCode();
 			HttpEntity entity = response.getEntity();
@@ -143,15 +143,11 @@ class HttpClientHttp implements Http {
 			if (statusCode == 500) {
 				throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), null);
 			}
+			return new HttpClientResponse(response);
 		}
 		catch (IOException ioe) {
-			StringWriter stringWriter = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(stringWriter);
-			ioe.printStackTrace(printWriter);
-			throw new DockerException(request.getURI(), 500, stringWriter.toString(), null);
+			throw new DockerException(request.getURI(), 500, ioe.getMessage(), null);
 		}
-
-		return new HttpClientResponse(response);
 	}
 
 	/**

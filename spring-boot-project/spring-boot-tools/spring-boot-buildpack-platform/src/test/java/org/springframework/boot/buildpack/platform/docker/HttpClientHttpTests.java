@@ -54,6 +54,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Mike Smithson
+ * @author Scott Frederick
  */
 class HttpClientHttpTests {
 
@@ -186,11 +187,12 @@ class HttpClientHttpTests {
 	}
 
 	@Test
-	void executeWhenClientExecutesRequestThrowsIOExceptionRethrowsAsDockerException() throws IOException {
-		given(this.client.execute(any())).willThrow(IOException.class);
+	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
+		given(this.client.execute(any())).willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerException::getStatusCode)
-				.withMessageContaining("500").satisfies((ex) -> assertThat(ex.getReasonPhrase())).isNotNull();
+				.satisfies((ex) -> assertThat(ex.getErrors()).isNull())
+				.satisfies(DockerException::getStatusCode).withMessageContaining("500")
+				.satisfies((ex) -> assertThat(ex.getReasonPhrase()).contains("test IO exception"));
 	}
 
 	private String writeToString(HttpEntity entity) throws IOException {
