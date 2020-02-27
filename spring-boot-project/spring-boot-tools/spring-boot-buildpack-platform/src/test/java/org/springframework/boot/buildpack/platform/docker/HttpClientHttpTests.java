@@ -190,8 +190,8 @@ class HttpClientHttpTests {
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
 		given(this.client.execute(any())).willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).isNull())
-				.satisfies(DockerException::getStatusCode).withMessageContaining("500")
+				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerException::getStatusCode)
+				.withMessageContaining("500")
 				.satisfies((ex) -> assertThat(ex.getReasonPhrase()).contains("test IO exception"));
 	}
 
