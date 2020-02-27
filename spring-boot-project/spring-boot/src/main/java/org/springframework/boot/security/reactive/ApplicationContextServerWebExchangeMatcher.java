@@ -53,6 +53,9 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 
 	@Override
 	public final Mono<MatchResult> matches(ServerWebExchange exchange) {
+		if (ignoreApplicationContext(exchange.getApplicationContext())) {
+			return MatchResult.notMatch();
+		}
 		return matches(exchange, getContext(exchange));
 	}
 
@@ -63,6 +66,18 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 	 * @return if the exchange matches
 	 */
 	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<C> context);
+
+	/**
+	 * Returns if the {@link ApplicationContext} should be ignored and not used for
+	 * matching. If this method returns {@code true} then the context will not be used and
+	 * the {@link #matches(ServerWebExchange) matches} method will return {@code false}.
+	 * @param applicationContext the candidate application context
+	 * @return if the application context should be ignored
+	 * @since 2.2.5
+	 */
+	protected boolean ignoreApplicationContext(ApplicationContext applicationContext) {
+		return false;
+	}
 
 	protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
