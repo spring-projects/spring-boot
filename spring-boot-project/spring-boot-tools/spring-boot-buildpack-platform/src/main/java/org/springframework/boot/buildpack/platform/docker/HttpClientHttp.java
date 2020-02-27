@@ -19,8 +19,6 @@ package org.springframework.boot.buildpack.platform.docker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 
 import org.apache.http.HttpEntity;
