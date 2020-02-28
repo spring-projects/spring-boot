@@ -38,8 +38,6 @@ public class MetricsMeterRegistryInjectionExample {
 			registry.gaugeCollectionSize("dictionary.size", Tags.empty(), this.words);
 		}
 
-		// …
-
 	}
 	// end::component[]
 
