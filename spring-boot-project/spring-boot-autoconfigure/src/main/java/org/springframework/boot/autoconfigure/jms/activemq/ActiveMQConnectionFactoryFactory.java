@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Venil Noronha
  */
-class ActiveMQConnectionFactoryFactory {
+public class ActiveMQConnectionFactoryFactory {
 
 	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";
 
@@ -43,14 +43,14 @@ class ActiveMQConnectionFactoryFactory {
 
 	private final List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers;
 
-	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
+	public ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
 			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
 	}
 
-	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			return doCreateConnectionFactory(factoryClass);
 		}
