@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,12 +68,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
 
 	/**
-	 * Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the
-	 * entire processing of the request.",
-	 */
-	private Boolean openInView;
-
-	/**
 	 * Whether to use Neo4j native types wherever possible.
 	 */
 	private boolean useNativeTypes = false;
@@ -112,14 +106,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	public void setAutoIndex(AutoIndexMode autoIndex) {
 		this.autoIndex = autoIndex;
-	}
-
-	public Boolean getOpenInView() {
-		return this.openInView;
-	}
-
-	public void setOpenInView(Boolean openInView) {
-		this.openInView = openInView;
 	}
 
 	public boolean isUseNativeTypes() {

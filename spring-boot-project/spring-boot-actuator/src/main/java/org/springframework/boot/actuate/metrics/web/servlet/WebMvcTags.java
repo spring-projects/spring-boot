@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,27 @@ public final class WebMvcTags {
 	 * @return the uri tag derived from the request
 	 */
 	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
+		return uri(request, response, false);
+	}
+
+	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
+	 * @param request the request
+	 * @param response the response
+	 * @param ignoreTrailingSlash whether to ignore the trailing slash
+	 * @return the uri tag derived from the request
+	 */
+	public static Tag uri(HttpServletRequest request, HttpServletResponse response, boolean ignoreTrailingSlash) {
 		if (request != null) {
 			String pattern = getMatchingPattern(request);
 			if (pattern != null) {
+				if (ignoreTrailingSlash) {
+					pattern = TRAILING_SLASH_PATTERN.matcher(pattern).replaceAll("");
+				}
 				return Tag.of("uri", pattern);
 			}
 			if (response != null) {
@@ -143,7 +161,7 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
+	 * Creates an {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception

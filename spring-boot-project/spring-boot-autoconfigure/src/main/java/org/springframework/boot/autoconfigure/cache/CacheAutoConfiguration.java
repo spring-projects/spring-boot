@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class CacheAutoConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could be auto-configured, check your configuration (caching " + "type is '"
+					() -> "No cache manager could be auto-configured, check your configuration (caching type is '"
 							+ this.cacheProperties.getType() + "')");
 		}
 

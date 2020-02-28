@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class LiquibaseAutoConfigurationTests {
 	void defaultSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.run(assertLiquibase((liquibase) -> {
-					assertThat(liquibase.getChangeLog()).isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
+					assertThat(liquibase.getChangeLog()).isEqualTo("classpath:db/changelog/db.changelog-master.yaml");
 					assertThat(liquibase.getContexts()).isNull();
 					assertThat(liquibase.getDefaultSchema()).isNull();
 					assertThat(liquibase.isDropFirst()).isFalse();
@@ -112,26 +112,26 @@ class LiquibaseAutoConfigurationTests {
 	@Test
 	void changelogXml() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml")
+				.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-override.xml")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
-						.isEqualTo("classpath:/db/changelog/db.changelog-override.xml")));
+						.isEqualTo("classpath:db/changelog/db.changelog-override.xml")));
 	}
 
 	@Test
 	void changelogJson() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.json")
+				.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-override.json")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
-						.isEqualTo("classpath:/db/changelog/db.changelog-override.json")));
+						.isEqualTo("classpath:db/changelog/db.changelog-override.json")));
 	}
 
 	@Test
 	@EnabledOnJre(JRE.JAVA_8)
 	void changelogSql() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")
+				.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-override.sql")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getChangeLog())
-						.isEqualTo("classpath:/db/changelog/db.changelog-override.sql")));
+						.isEqualTo("classpath:db/changelog/db.changelog-override.sql")));
 	}
 
 	@Test
@@ -343,6 +343,13 @@ class LiquibaseAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void overrideTag() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.tag:1.0.0")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getTag()).isEqualTo("1.0.0")));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(SpringLiquibase.class);
@@ -374,7 +381,7 @@ class LiquibaseAutoConfigurationTests {
 		@Bean
 		SpringLiquibase springLiquibase(DataSource dataSource) {
 			SpringLiquibase liquibase = new SpringLiquibase();
-			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");
 			liquibase.setShouldRun(true);
 			liquibase.setDataSource(dataSource);
 			return liquibase;

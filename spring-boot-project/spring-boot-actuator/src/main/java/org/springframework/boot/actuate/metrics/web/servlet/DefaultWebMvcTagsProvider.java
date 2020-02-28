@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,26 @@ import io.micrometer.core.instrument.Tags;
  */
 public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 
+	private final boolean ignoreTrailingSlash;
+
+	public DefaultWebMvcTagsProvider() {
+		this(false);
+	}
+
+	public DefaultWebMvcTagsProvider(boolean ignoreTrailingSlash) {
+		this.ignoreTrailingSlash = ignoreTrailingSlash;
+	}
+
 	@Override
 	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
 			Throwable exception) {
-		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response), WebMvcTags.exception(exception),
-				WebMvcTags.status(response), WebMvcTags.outcome(response));
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response, this.ignoreTrailingSlash),
+				WebMvcTags.exception(exception), WebMvcTags.status(response), WebMvcTags.outcome(response));
 	}
 
 	@Override
 	public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
-		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, null));
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, null, this.ignoreTrailingSlash));
 	}
 
 }

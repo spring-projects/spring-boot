@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Map;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public final class Layouts {
@@ -68,6 +69,12 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getLibraryLocation(String libraryName, LibraryScope scope) {
+			return "BOOT-INF/lib/";
+		}
+
+		@Deprecated
+		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
 			return "BOOT-INF/lib/";
 		}
@@ -83,8 +90,35 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getClasspathIndexFileLocation() {
+			return "BOOT-INF/classpath.idx";
+		}
+
+		@Override
 		public boolean isExecutable() {
 			return true;
+		}
+
+	}
+
+	/**
+	 * Executable JAR layout with support for layers.
+	 */
+	public static class LayeredJar extends Jar implements LayeredLayout {
+
+		@Override
+		public String getLayersIndexFileLocation() {
+			return "BOOT-INF/layers.idx";
+		}
+
+		@Override
+		public String getRepackagedClassesLocation(Layer layer) {
+			return "BOOT-INF/layers/" + layer + "/classes/";
+		}
+
+		@Override
+		public String getLibraryLocation(String libraryName, LibraryScope scope, Layer layer) {
+			return "BOOT-INF/layers/" + layer + "/lib/";
 		}
 
 	}
@@ -123,15 +157,15 @@ public final class Layouts {
 	 */
 	public static class War implements Layout {
 
-		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
+		private static final Map<LibraryScope, String> SCOPE_LOCATION;
 
 		static {
-			Map<LibraryScope, String> map = new HashMap<>();
-			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
-			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
-			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
-			map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
-			SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
+			Map<LibraryScope, String> locations = new HashMap<>();
+			locations.put(LibraryScope.COMPILE, "WEB-INF/lib/");
+			locations.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
+			locations.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
+			locations.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
+			SCOPE_LOCATION = Collections.unmodifiableMap(locations);
 		}
 
 		@Override
@@ -140,8 +174,14 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getLibraryLocation(String libraryName, LibraryScope scope) {
+			return SCOPE_LOCATION.get(scope);
+		}
+
+		@Deprecated
+		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return SCOPE_DESTINATIONS.get(scope);
+			return SCOPE_LOCATION.get(scope);
 		}
 
 		@Override

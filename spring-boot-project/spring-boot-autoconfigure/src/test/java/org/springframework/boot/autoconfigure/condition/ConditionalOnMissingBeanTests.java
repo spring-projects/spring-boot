@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -134,6 +135,17 @@ public class ConditionalOnMissingBeanTests {
 					assertThat(context).hasBean("example");
 					assertThat(context.getBean("foo")).isEqualTo("foo");
 				});
+	}
+
+	@Test
+	void testOnMissingBeanConditionOutputShouldNotContainConditionalOnBeanClassInMessage() {
+		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
+			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
+					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.values();
+			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
+			assertThat(message).doesNotContain("@ConditionalOnBean");
+		});
 	}
 
 	@Test
@@ -380,7 +392,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", useDefaultFilters = false,
 			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
 					classes = ScannedFactoryBeanConfiguration.class))
 	static class ComponentScannedFactoryBeanBeanMethodConfiguration {
@@ -388,7 +400,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan",
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", useDefaultFilters = false,
 			includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
 					classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
 	static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {

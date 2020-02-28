@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author HaiTao Zhang
+ * @author Chris Bono
  */
 @SuppressWarnings("unchecked")
 class ConfigurationPropertiesReportEndpointTests {
@@ -201,7 +202,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	void sanitizedUriWithSensitiveInfo() {
+	void sanitizeUriWithSensitiveInfo() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
 				.withPropertyValues("sensible.sensitiveUri=http://user:password@localhost:8080")
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("sensitiveUri"))
@@ -214,7 +215,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	void sanitizedUriWithNoPassword() {
+	void sanitizeUriWithNoPassword() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
 				.withPropertyValues("sensible.noPasswordUri=http://user:@localhost:8080")
 				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("noPasswordUri"))
@@ -224,6 +225,13 @@ class ConfigurationPropertiesReportEndpointTests {
 							assertThat(noPasswordUri.get("origin"))
 									.isEqualTo("\"sensible.noPasswordUri\" from property source \"test\"");
 						}));
+	}
+
+	@Test
+	void sanitizeAddressesFieldContainingMultipleRawSensitiveUris() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("rawSensitiveAddresses"))
+						.isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082")));
 	}
 
 	@Test
@@ -647,6 +655,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private List<String> simpleList = new ArrayList<>();
 
+		private String rawSensitiveAddresses = "http://user:password@localhost:8080,http://user2:password2@localhost:8082";
+
 		private List<ListItem> listItems = new ArrayList<>();
 
 		private List<List<ListItem>> listOfListItems = new ArrayList<>();
@@ -670,6 +680,14 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public URI getNoPasswordUri() {
 			return this.noPasswordUri;
+		}
+
+		public String getRawSensitiveAddresses() {
+			return this.rawSensitiveAddresses;
+		}
+
+		public void setRawSensitiveAddresses(final String rawSensitiveAddresses) {
+			this.rawSensitiveAddresses = rawSensitiveAddresses;
 		}
 
 		public List<ListItem> getListItems() {

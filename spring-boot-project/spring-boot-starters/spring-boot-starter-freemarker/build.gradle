@@ -1,0 +1,12 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for building MVC web applications using FreeMarker views"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.freemarker:freemarker")
+	api("org.springframework:spring-context-support")
+}

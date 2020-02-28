@@ -305,7 +305,7 @@
     {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
-        "localhost"
+        "127.0.0.1:9042"
       ]
     },
     {
@@ -346,30 +346,6 @@
       "deprecation": {
         "replacement": "spring.data.couchbase.repositories.type",
         "level": "error"
-      }
-    },
-    {
-      "name": "spring.data.elasticsearch.cluster-name",
-      "type": "java.lang.String",
-      "description": "Elasticsearch cluster name.",
-      "deprecation": {
-        "reason": "The transport client support is deprecated. Use other supported clients instead."
-      }
-    },
-    {
-      "name": "spring.data.elasticsearch.cluster-nodes",
-      "type": "java.lang.String",
-      "description": "Comma-separated list of cluster node addresses.",
-      "deprecation": {
-        "reason": "The transport client support is deprecated. Use other supported clients instead."
-      }
-    },
-    {
-      "name": "spring.data.elasticsearch.properties",
-      "type": "java.util.Map<java.lang.String,java.lang.String>",
-      "description": "Additional properties used to configure the client.",
-      "deprecation": {
-        "reason": "The transport client support is deprecated. Use other supported clients instead."
       }
     },
     {
@@ -423,17 +399,29 @@
       "defaultValue": "mongodb://localhost/test"
     },
     {
+      "name": "spring.data.mongodb.uuid-representation",
+      "defaultValue": "java-legacy"
+    },
+    {
       "name": "spring.data.neo4j.auto-index",
       "defaultValue": "none"
     },
     {
       "name": "spring.data.neo4j.open-in-view",
-      "defaultValue": true
+      "type": "java.lang.Boolean",
+      "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
+      "defaultValue": false
     },
     {
       "name": "spring.data.neo4j.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Neo4j repositories.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.data.r2dbc.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable R2DBC repositories.",
       "defaultValue": true
     },
     {
@@ -451,15 +439,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Solr repositories.",
       "defaultValue": true
-    },
-    {
-      "name": "spring.elasticsearch.jest.uris",
-      "defaultValue": [
-        "http://localhost:9200"
-      ],
-      "deprecation": {
-        "reason": "The Jest client support is deprecated. Use other supported clients instead."
-      }
     },
     {
       "name": "spring.elasticsearch.rest.uris",
@@ -506,15 +485,93 @@
       "defaultValue": ".tpl"
     },
     {
-      "name": "spring.http.encoding.enabled",
+      "name": "server.servlet.encoding.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable http encoding support.",
       "defaultValue": true
     },
     {
-      "name": "spring.http.converters.preferred-json-mapper",
+      "name": "spring.http.encoding.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable http encoding support.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.enabled",
+        "level" : "error"
+      }
+    },
+    {
+      "name" : "spring.http.encoding.charset",
+      "type": "java.nio.charset.Charset",
+      "description" : "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.charset",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests and responses.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force-request",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when force has not been specified.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force-request",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.encoding.force-response",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP responses.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.force-response",
+        "level" : "error"
+      }
+    },
+
+    {
+      "name" : "spring.http.encoding.mapping",
+      "type" : "java.util.Map<java.util.Locale,java.nio.charset.Charset>",
+      "description" : "Locale in which to encode mapping.",
+      "deprecation" : {
+        "replacement" : "server.servlet.encoding.mapping",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.http.log-request-details",
+      "type": "java.lang.Boolean",
+      "description": "Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.",
+      "defaultValue": false,
+      "deprecation" : {
+        "replacement" : "spring.mvc.log-request-details",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "type": "java.lang.String",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.",
+      "deprecation" : {
+        "replacement" : "spring.mvc.converters.preferred-json-mapper",
+        "level" : "error"
+      }
     },
     {
       "name": "spring.integration.jdbc.initialize-schema",
@@ -761,6 +818,11 @@
     {
       "name": "spring.quartz.scheduler-name",
       "defaultValue": "quartzScheduler"
+    },
+    {
+      "name": "spring.r2dbc.pool.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
     },
     {
       "name": "spring.rabbitmq.cache.connection.mode",
@@ -1043,7 +1105,7 @@
       "name": "liquibase.change-log",
       "type": "java.lang.String",
       "description": "Change log configuration path.",
-      "defaultValue": "classpath:/db/changelog/db.changelog-master.yaml",
+      "defaultValue": "classpath:db/changelog/db.changelog-master.yaml",
       "deprecation": {
         "replacement": "spring.liquibase.change-log",
         "level": "error"
@@ -1554,6 +1616,33 @@
       "description": "Socket option: connection time out.",
       "deprecation": {
         "replacement": "spring.data.cassandra.connect-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not compatible with Dropwizard Metrics.",
+      "deprecation": {
+        "reason": "Cassandra no longer providers JMX metrics.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.pool-timeout",
+      "type": "java.time.Duration",
+      "description": "Pool timeout when trying to acquire a connection from a host's pool.",
+      "deprecation": {
+        "reason": "No longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.port",
+      "type": "java.lang.Integer",
+      "description": "Port of the Cassandra server.",
+      "deprecation": {
+        "reason": "each contact point must be of the form 'host:port'.",
         "level": "error"
       }
     },
@@ -2362,7 +2451,7 @@
       ]
     },
     {
-      "name": "spring.http.converters.preferred-json-mapper",
+      "name": "spring.mvc.converters.preferred-json-mapper",
       "values": [
         {
           "value": "gson"

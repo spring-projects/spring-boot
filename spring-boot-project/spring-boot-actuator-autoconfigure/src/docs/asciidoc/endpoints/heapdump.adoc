@@ -1,0 +1,18 @@
+[[heapdump]]
+= Heap Dump (`heapdump`)
+
+The `heapdump` endpoint provides a heap dump from the application's JVM.
+
+
+
+[[heapdump-retrieving]]
+== Retrieving the Heap Dump
+
+To retrieve the heap dump, make a `GET` request to `/actuator/heapdump`.
+The response is binary data in https://docs.oracle.com/javase/8/docs/technotes/samples/hprof.html[HPROF] format and can be large.
+Typically, you should save the response to disk for subsequent analysis.
+When using curl, this can be achieved by using the `-O` option, as shown in the following example:
+
+include::{snippets}/heapdump/curl-request.adoc[]
+
+The preceding example results in a file named `heapdump` being written to the current working directory.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ public final class EndpointId {
 
 	private static final Set<String> loggedWarnings = new HashSet<>();
 
-	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9.-]+");
 
-	private static final Pattern WARNING_PATTERN = Pattern.compile("[\\.\\-]+");
+	private static final Pattern WARNING_PATTERN = Pattern.compile("[.-]+");
 
 	private static final String MIGRATE_LEGACY_NAMES_PROPERTY = "management.endpoints.migrate-legacy-ids";
 

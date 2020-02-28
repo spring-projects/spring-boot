@@ -1,0 +1,14 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::image-name[]
+bootBuildImage {
+	imageName = "example.com/library/${project.artifactId}"
+}
+// end::image-name[]

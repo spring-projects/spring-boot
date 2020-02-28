@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,17 +202,6 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void testConnectionFactoryPublisherConfirmTypeUsingDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.publisher-confirms=true").run((context) -> {
-					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
-					assertThat(connectionFactory.isPublisherConfirms()).isTrue();
-					assertThat(connectionFactory.isSimplePublisherConfirms()).isFalse();
-				});
-	}
-
-	@Test
 	void testConnectionFactoryPublisherConfirmTypeCorrelated() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.publisher-confirm-type=correlated").run((context) -> {
@@ -334,6 +323,30 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void testRabbitTemplateConfigurersIsAvailable() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(RabbitTemplateConfigurer.class));
+	}
+
+	@Test
+	void testRabbitTemplateConfigurerUsesConfig() {
+		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.exchange:my-exchange",
+						"spring.rabbitmq.template.routing-key:my-routing-key",
+						"spring.rabbitmq.template.default-receive-queue:default-queue")
+				.run((context) -> {
+					RabbitTemplateConfigurer configurer = context.getBean(RabbitTemplateConfigurer.class);
+					RabbitTemplate template = mock(RabbitTemplate.class);
+					ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+					configurer.configure(template, connectionFactory);
+					verify(template).setMessageConverter(context.getBean("myMessageConverter", MessageConverter.class));
+					verify(template).setExchange("my-exchange");
+					verify(template).setRoutingKey("my-routing-key");
+					verify(template).setDefaultReceiveQueue("default-queue");
+				});
+	}
+
+	@Test
 	void testConnectionFactoryBackOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration2.class).run((context) -> {
 			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
@@ -432,18 +445,6 @@ class RabbitAutoConfigurationTests {
 					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
 					checkCommonProps(context, rabbitListenerContainerFactory);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void testRabbitListenerContainerFactoryWithDeprecatedTransactionSizeStillWorks() {
-		this.contextRunner
-				.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.simple.transactionSize:20").run((context) -> {
-					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
-							.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
-					assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				});
 	}
 

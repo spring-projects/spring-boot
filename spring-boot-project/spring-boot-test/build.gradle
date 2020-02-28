@@ -1,0 +1,58 @@
+plugins {
+    id "java-library"
+    id "org.jetbrains.kotlin.jvm"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
+    id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Test"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+
+	implementation(project(":spring-boot-project:spring-boot"))
+
+	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.google.code.gson:gson")
+	optional("com.jayway.jsonpath:json-path")
+	optional("io.projectreactor.netty:reactor-netty")
+	optional("javax.json.bind:javax.json.bind-api")
+	optional("javax.servlet:javax.servlet-api")
+	optional("junit:junit")
+	optional("org.apache.httpcomponents:httpclient")
+	optional("org.assertj:assertj-core")
+	optional("org.hamcrest:hamcrest-core")
+	optional("org.hamcrest:hamcrest-library")
+	optional("org.jetbrains.kotlin:kotlin-stdlib")
+	optional("org.jetbrains.kotlin:kotlin-reflect")
+	optional("org.junit.jupiter:junit-jupiter-api")
+	optional("org.mockito:mockito-core")
+	optional("org.skyscreamer:jsonassert")
+	optional("org.seleniumhq.selenium:htmlunit-driver")
+	optional("org.seleniumhq.selenium:selenium-api")
+	optional("org.springframework:spring-test")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webflux")
+	optional("net.sourceforge.htmlunit:htmlunit")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.mockk:mockk")
+	testImplementation("javax.json:javax.json-api")
+	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+	testImplementation("org.codehaus.groovy:groovy")
+	testImplementation("org.codehaus.groovy:groovy-xml")
+	testImplementation("org.apache.johnzon:johnzon-jsonb")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.slf4j:slf4j-api")
+	testImplementation("org.spockframework:spock-core")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.testng:testng")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+}
+

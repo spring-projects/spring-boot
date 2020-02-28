@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,30 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
+import com.couchbase.client.java.bucket.BucketType;
+import com.couchbase.client.java.cluster.BucketSettings;
 import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.java.cluster.DefaultBucketSettings;
+import com.couchbase.client.java.cluster.UserRole;
+import com.couchbase.client.java.cluster.UserSettings;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,29 +50,60 @@ import static org.mockito.Mockito.mock;
  * Integration tests for {@link CouchbaseAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
-@ExtendWith(LocalCouchbaseServer.class)
+@Testcontainers(disabledWithoutDocker = true)
 class CouchbaseAutoConfigurationIntegrationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class));
+	@Container
+	static final CouchbaseContainer couchbase = new CouchbaseContainer().withClusterAdmin("spring", "password")
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+
+	private AnnotationConfigApplicationContext context;
+
+	@BeforeAll
+	static void createBucket() {
+		BucketSettings bucketSettings = DefaultBucketSettings.builder().enableFlush(true).name("default")
+				.password("password").quota(100).replicas(0).type(BucketType.COUCHBASE).build();
+		List<UserRole> userSettings = Collections.singletonList(new UserRole("admin"));
+		couchbase.createBucket(bucketSettings,
+				UserSettings.build().password(bucketSettings.password()).roles(userSettings), true);
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CouchbaseAutoConfiguration.class);
+		TestPropertyValues.of("spring.couchbase.bootstrap-hosts=localhost",
+				"spring.couchbase.env.bootstrap.http-direct-port:" + couchbase.getMappedPort(8091),
+				"spring.couchbase.username:spring", "spring.couchbase.password:password",
+				"spring.couchbase.bucket.name:default").applyTo(this.context.getEnvironment());
+	}
+
+	@AfterEach
+	void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	void defaultConfiguration() {
-		this.contextRunner.withPropertyValues("spring.couchbase.bootstrapHosts=localhost")
-				.run((context) -> assertThat(context).hasSingleBean(Cluster.class).hasSingleBean(ClusterInfo.class)
-						.hasSingleBean(CouchbaseEnvironment.class).hasSingleBean(Bucket.class));
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(ClusterInfo.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(CouchbaseEnvironment.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Bucket.class)).hasSize(1);
 	}
 
 	@Test
 	void customConfiguration() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
-				.withPropertyValues("spring.couchbase.bootstrapHosts=localhost").run((context) -> {
-					assertThat(context.getBeansOfType(Cluster.class)).hasSize(2);
-					assertThat(context.getBeansOfType(ClusterInfo.class)).hasSize(1);
-					assertThat(context.getBeansOfType(CouchbaseEnvironment.class)).hasSize(1);
-					assertThat(context.getBeansOfType(Bucket.class)).hasSize(2);
-				});
+		this.context.register(CustomConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(Cluster.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(ClusterInfo.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(CouchbaseEnvironment.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Bucket.class)).hasSize(2);
 	}
 
 	@Configuration(proxyBeanMethods = false)

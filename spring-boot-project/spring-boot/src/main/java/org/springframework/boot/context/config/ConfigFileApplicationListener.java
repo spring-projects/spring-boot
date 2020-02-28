@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -75,6 +76,7 @@ import org.springframework.util.StringUtils;
  * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
  * <li>file:./config/</li>
+ * <li>file:./config/{@literal *}/</li>
  * <li>file:./</li>
  * <li>classpath:config/</li>
  * <li>classpath:</li>
@@ -107,7 +109,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
 	// Note the order is from least to most specific (last one wins)
-	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
+	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/";
 
 	private static final String DEFAULT_NAMES = "application";
 
@@ -157,6 +159,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	private final DeferredLog logger = new DeferredLog();
+
+	private static final Resource[] EMPTY_RESOURCES = {};
 
 	private String searchLocations;
 
@@ -299,6 +303,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final ResourceLoader resourceLoader;
 
+		private final PathMatchingResourcePatternResolver patternResolver;
+
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
 		private Deque<Profile> profiles;
@@ -317,6 +323,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 					getClass().getClassLoader());
+			this.patternResolver = new PathMatchingResourcePatternResolver(this.resourceLoader);
 		}
 
 		void load() {
@@ -497,52 +504,65 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		private void load(PropertySourceLoader loader, String location, Profile profile, DocumentFilter filter,
 				DocumentConsumer consumer) {
 			try {
-				Resource resource = this.resourceLoader.getResource(location);
-				if (resource == null || !resource.exists()) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped missing config ", location, resource,
-								profile);
-						this.logger.trace(description);
+				Resource[] resources = getResources(location);
+				for (Resource resource : resources) {
+					if (resource == null || !resource.exists()) {
+						if (this.logger.isTraceEnabled()) {
+							StringBuilder description = getDescription("Skipped missing config ", location, resource,
+									profile);
+							this.logger.trace(description);
+						}
+						return;
 					}
-					return;
-				}
-				if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped empty config extension ", location,
-								resource, profile);
-						this.logger.trace(description);
+					if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
+						if (this.logger.isTraceEnabled()) {
+							StringBuilder description = getDescription("Skipped empty config extension ", location,
+									resource, profile);
+							this.logger.trace(description);
+						}
+						return;
 					}
-					return;
-				}
-				String name = "applicationConfig: [" + location + "]";
-				List<Document> documents = loadDocuments(loader, name, resource);
-				if (CollectionUtils.isEmpty(documents)) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped unloaded config ", location, resource,
-								profile);
-						this.logger.trace(description);
+					String name = (location.contains("*")) ? "applicationConfig: [" + resource.toString() + "]"
+							: "applicationConfig: [" + location + "]";
+					List<Document> documents = loadDocuments(loader, name, resource);
+					if (CollectionUtils.isEmpty(documents)) {
+						if (this.logger.isTraceEnabled()) {
+							StringBuilder description = getDescription("Skipped unloaded config ", location, resource,
+									profile);
+							this.logger.trace(description);
+						}
+						return;
 					}
-					return;
-				}
-				List<Document> loaded = new ArrayList<>();
-				for (Document document : documents) {
-					if (filter.match(document)) {
-						addActiveProfiles(document.getActiveProfiles());
-						addIncludedProfiles(document.getIncludeProfiles());
-						loaded.add(document);
+					List<Document> loaded = new ArrayList<>();
+					for (Document document : documents) {
+						if (filter.match(document)) {
+							addActiveProfiles(document.getActiveProfiles());
+							addIncludedProfiles(document.getIncludeProfiles());
+							loaded.add(document);
+						}
 					}
-				}
-				Collections.reverse(loaded);
-				if (!loaded.isEmpty()) {
-					loaded.forEach((document) -> consumer.accept(profile, document));
-					if (this.logger.isDebugEnabled()) {
-						StringBuilder description = getDescription("Loaded config file ", location, resource, profile);
-						this.logger.debug(description);
+					Collections.reverse(loaded);
+					if (!loaded.isEmpty()) {
+						loaded.forEach((document) -> consumer.accept(profile, document));
+						if (this.logger.isDebugEnabled()) {
+							StringBuilder description = getDescription("Loaded config file ", location, resource,
+									profile);
+							this.logger.debug(description);
+						}
 					}
 				}
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to load property source from location '" + location + "'", ex);
+			}
+		}
+
+		private Resource[] getResources(String location) {
+			try {
+				return this.patternResolver.getResources(location);
+			}
+			catch (IOException ex) {
+				return EMPTY_RESOURCES;
 			}
 		}
 

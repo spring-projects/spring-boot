@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
 import org.springframework.util.StringUtils;
@@ -65,6 +66,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		disableJarTask(project);
 		configureBuildTask(project);
 		BootJar bootJar = configureBootJarTask(project);
+		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
@@ -86,12 +88,21 @@ final class JavaPluginAction implements PluginApplicationAction {
 				"Assembles an executable jar archive containing the main classes and their dependencies.");
 		bootJar.setGroup(BasePlugin.BUILD_GROUP);
 		bootJar.classpath((Callable<FileCollection>) () -> {
-			JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
-			SourceSet mainSourceSet = convention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			return mainSourceSet.getRuntimeClasspath();
 		});
 		bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		return bootJar;
+	}
+
+	private void configureBootBuildImageTask(Project project, BootJar bootJar) {
+		BootBuildImage buildImage = project.getTasks().create(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME,
+				BootBuildImage.class);
+		buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
+		buildImage.setGroup(BasePlugin.BUILD_GROUP);
+		buildImage.getJar().set(bootJar.getArchiveFile());
+		buildImage.getTargetJavaVersion().set(javaPluginConvention(project).getTargetCompatibility());
 	}
 
 	private void configureArtifactPublication(BootJar bootJar) {
@@ -100,11 +111,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
-		JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
 		BootRun run = project.getTasks().create("bootRun", BootRun.class);
 		run.setDescription("Runs this project as a Spring Boot application.");
 		run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
-		run.classpath(javaConvention.getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
+		run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getRuntimeClasspath());
 		run.getConventionMapping().map("jvmArgs", () -> {
 			if (project.hasProperty("applicationDefaultJvmArgs")) {
 				return project.property("applicationDefaultJvmArgs");
@@ -112,6 +123,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 			return Collections.emptyList();
 		});
 		run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
+	}
+
+	private JavaPluginConvention javaPluginConvention(Project project) {
+		return project.getConvention().getPlugin(JavaPluginConvention.class);
 	}
 
 	private void configureUtf8Encoding(Project project) {

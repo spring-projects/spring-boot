@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,11 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 	@Override
 	protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
 		return new EntityScanner(this.applicationContext).scan(Document.class, Persistent.class);
+	}
+
+	@Override
+	public String typeKey() {
+		return this.properties.getTypeKey();
 	}
 
 	@Override

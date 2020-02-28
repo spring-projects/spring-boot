@@ -6,11 +6,16 @@
 	<property name="target.dir" location="target" />
 	<property name="classes.dir" location="${target.dir}/classes" />
 
+	<taskdef resource="org/apache/ivy/ant/antlib.xml"
+			uri="antlib:org.apache.ivy.ant" classpath="${ivy.class.path}"/>
+	<taskdef resource="org/apache/ant/antunit/antlib.xml"
+			uri="antlib:org.apache.ant.antunit" classpath="${antunit.class.path}"/>
+
 	<target name="setUp">
 		<ivy:cachepath inline="true" pathid="compile.classpath" organisation="joda-time" module="joda-time" type="jar" revision="2.8.1" />
-
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath" />
+		<au:logcapturer/>
 	</target>
 
 	<target name="tearDown">

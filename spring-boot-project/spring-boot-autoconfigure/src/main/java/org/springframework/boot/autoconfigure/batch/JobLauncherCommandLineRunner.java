@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ import org.springframework.boot.ApplicationRunner;
 /**
  * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. Runs all
  * jobs in the surrounding context by default. Can also be used to launch a specific job
- * by providing a jobName
+ * by providing a jobName.
  *
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  * @since 1.0.0
- * @deprecated since 2.2.0 in favor of {@link JobLauncherApplicationRunner}
+ * @deprecated since 2.3.0 in favor of {@link JobLauncherApplicationRunner}
  */
 @Deprecated
 public class JobLauncherCommandLineRunner extends JobLauncherApplicationRunner {

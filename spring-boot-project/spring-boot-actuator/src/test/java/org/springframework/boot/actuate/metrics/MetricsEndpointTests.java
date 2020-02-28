@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,16 @@ class MetricsEndpointTests {
 
 	@Test
 	void listNamesProducesListOfUniqueMeterNames() {
-		this.registry.counter("com.example.foo");
-		this.registry.counter("com.example.bar");
-		this.registry.counter("com.example.foo");
+		this.registry.counter("com.example.alpha");
+		this.registry.counter("com.example.charlie");
+		this.registry.counter("com.example.bravo");
+		this.registry.counter("com.example.delta");
+		this.registry.counter("com.example.delta");
+		this.registry.counter("com.example.echo");
+		this.registry.counter("com.example.bravo");
 		MetricsEndpoint.ListNamesResponse result = this.endpoint.listNames();
-		assertThat(result.getNames()).containsOnlyOnce("com.example.foo", "com.example.bar");
+		assertThat(result.getNames()).containsExactly("com.example.alpha", "com.example.bravo", "com.example.charlie",
+				"com.example.delta", "com.example.echo");
 	}
 
 	@Test
@@ -71,7 +76,7 @@ class MetricsEndpointTests {
 		reg1.counter("counter1").increment();
 		reg2.counter("counter2").increment();
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
-		assertThat(endpoint.listNames().getNames()).containsOnly("counter1", "counter2");
+		assertThat(endpoint.listNames().getNames()).containsExactly("counter1", "counter2");
 	}
 
 	@Test

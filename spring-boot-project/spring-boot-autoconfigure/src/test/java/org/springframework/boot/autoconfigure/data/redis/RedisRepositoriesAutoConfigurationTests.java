@@ -48,7 +48,7 @@ class RedisRepositoriesAutoConfigurationTests {
 
 	@Container
 	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

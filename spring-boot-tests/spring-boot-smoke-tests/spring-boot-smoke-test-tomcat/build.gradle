@@ -1,0 +1,14 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Tomcat smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	implementation("org.springframework:spring-webmvc")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

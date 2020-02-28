@@ -1,0 +1,21 @@
+plugins {
+	id "java"
+//	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot TestNG smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	implementation("org.springframework:spring-webmvc")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.springframework:spring-test")
+	testImplementation("org.testng:testng:6.8.13")
+}
+
+test {
+	useTestNG()
+}

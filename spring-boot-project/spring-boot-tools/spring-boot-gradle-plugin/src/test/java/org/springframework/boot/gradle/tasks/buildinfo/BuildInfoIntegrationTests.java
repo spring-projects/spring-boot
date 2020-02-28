@@ -64,7 +64,7 @@ class BuildInfoIntegrationTests {
 		assertThat(buildInfoProperties).containsEntry("build.group", "foo");
 		assertThat(buildInfoProperties).containsEntry("build.additional", "foo");
 		assertThat(buildInfoProperties).containsEntry("build.name", "foo");
-		assertThat(buildInfoProperties).containsEntry("build.version", "1.0");
+		assertThat(buildInfoProperties).containsEntry("build.version", "0.1.0");
 	}
 
 	@TestTemplate

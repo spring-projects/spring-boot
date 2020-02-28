@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,11 @@ public class FlywayProperties {
 	 * Maximum number of retries when attempting to connect to the database.
 	 */
 	private int connectRetries;
+
+	/**
+	 * Default schema name managed by Flyway (case-sensitive).
+	 */
+	private String defaultSchema;
 
 	/**
 	 * Scheme names managed by Flyway (case-sensitive).
@@ -226,6 +231,12 @@ public class FlywayProperties {
 	private boolean skipDefaultResolvers;
 
 	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
+
+	/**
 	 * Whether to automatically call validate when performing a migration.
 	 */
 	private boolean validateOnMigrate = true;
@@ -314,6 +325,14 @@ public class FlywayProperties {
 
 	public void setConnectRetries(int connectRetries) {
 		this.connectRetries = connectRetries;
+	}
+
+	public String getDefaultSchema() {
+		return this.defaultSchema;
+	}
+
+	public void setDefaultSchema(String defaultSchema) {
+		this.defaultSchema = defaultSchema;
 	}
 
 	public List<String> getSchemas() {
@@ -566,6 +585,14 @@ public class FlywayProperties {
 
 	public void setSkipDefaultResolvers(boolean skipDefaultResolvers) {
 		this.skipDefaultResolvers = skipDefaultResolvers;
+	}
+
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
 	}
 
 	public boolean isValidateOnMigrate() {

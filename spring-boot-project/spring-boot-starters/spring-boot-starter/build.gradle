@@ -1,0 +1,15 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Core starter, including auto-configuration support, logging and YAML"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
+	api("jakarta.annotation:jakarta.annotation-api")
+	api("org.springframework:spring-core")
+	api("org.yaml:snakeyaml")
+}

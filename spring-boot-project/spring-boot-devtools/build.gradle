@@ -1,0 +1,88 @@
+plugins {
+    id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.integration-test"
+	id "org.springframework.boot.internal-dependency-management"
+    id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Developer Tools"
+
+configurations {
+	intTestDependencies
+}
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+
+	implementation(project(":spring-boot-project:spring-boot"))
+	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+
+	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation("org.apache.httpcomponents:httpclient")
+	intTestImplementation("org.assertj:assertj-core")
+	intTestImplementation("org.awaitility:awaitility")
+	intTestImplementation("org.junit.jupiter:junit-jupiter")
+	intTestImplementation("net.bytebuddy:byte-buddy")
+
+	intTestRuntimeOnly("org.springframework:spring-web")
+
+	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	optional("javax.servlet:javax.servlet-api")
+	optional("org.apache.derby:derby")
+	optional("org.hibernate:hibernate-core")
+	optional("org.springframework:spring-jdbc")
+	optional("org.springframework:spring-orm")
+	optional("org.springframework:spring-web")
+	optional("org.springframework.security:spring-security-config")
+	optional("org.springframework.security:spring-security-web")
+	optional("org.springframework.data:spring-data-redis")
+	optional("org.springframework.session:spring-session-core")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("com.h2database:h2")
+	testImplementation("com.zaxxer:HikariCP")
+	testImplementation("org.apache.derby:derbyclient")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.eclipse.jetty.websocket:websocket-client")
+	testImplementation("org.hamcrest:hamcrest-library")
+	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.postgresql:postgresql")
+	testImplementation("org.springframework:spring-test")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.springframework:spring-websocket")
+	testImplementation("org.springframework.hateoas:spring-hateoas")
+	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.thymeleaf:thymeleaf")
+	testImplementation("org.thymeleaf:thymeleaf-spring5")
+	testImplementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.yaml:snakeyaml")
+}
+
+task copyIntTestDependencies(type: Copy) {
+	destinationDir = file("${buildDir}/dependencies")
+	from {
+		configurations.intTestDependencies
+	}
+	from jar
+}
+
+intTest {
+	dependsOn copyIntTestDependencies
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ import static org.mockito.Mockito.mock;
 public class ReactiveRestClientAutoConfigurationTests {
 
 	@Container
-	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(2));
+	static ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer().withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));
@@ -74,17 +74,19 @@ public class ReactiveRestClientAutoConfigurationTests {
 
 	@Test
 	void restClientCanQueryElasticsearchNode() {
-		this.contextRunner
-				.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints="
-						+ elasticsearch.getContainerIpAddress() + ":" + elasticsearch.getFirstMappedPort())
-				.run((context) -> {
+		this.contextRunner.withPropertyValues(
+				"spring.data.elasticsearch.client.reactive.endpoints=" + elasticsearch.getContainerIpAddress() + ":"
+						+ elasticsearch.getFirstMappedPort(),
+				"spring.data.elasticsearch.client.reactive.connection-timeout=120s",
+				"spring.data.elasticsearch.client.reactive.socket-timeout=120s").run((context) -> {
 					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("foo", "bar", "1").source(source);
-					GetRequest getRequest = new GetRequest("foo", "bar", "1");
-					GetResult getResult = client.index(index).then(client.get(getRequest)).block();
+					IndexRequest indexRequest = new IndexRequest("foo").id("1").source(source);
+					GetRequest getRequest = new GetRequest("foo").id("1");
+					GetResult getResult = client.index(indexRequest).then(client.get(getRequest)).block();
+					assertThat(getResult).isNotNull();
 					assertThat(getResult.isExists()).isTrue();
 				});
 	}

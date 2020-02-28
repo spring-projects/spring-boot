@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import java.util.stream.Collectors;
+
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,19 +38,23 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
-@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
+@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDatabaseFactory")
 public class MongoAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
-	public MongoClient mongo(MongoProperties properties, ObjectProvider<MongoClientOptions> options,
-			Environment environment) {
-		return new MongoClientFactory(properties, environment).createMongoClient(options.getIfAvailable());
+	@ConditionalOnMissingBean(MongoClient.class)
+	public MongoClient mongo(MongoProperties properties, Environment environment,
+			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+			ObjectProvider<MongoClientSettings> settings) {
+		return new MongoClientFactory(properties, environment,
+				builderCustomizers.orderedStream().collect(Collectors.toList()))
+						.createMongoClient(settings.getIfAvailable());
 	}
 
 }

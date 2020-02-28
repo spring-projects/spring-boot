@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,16 +56,15 @@ public class LogFileWebEndpointAutoConfiguration {
 
 	private static class LogFileCondition extends SpringBootCondition {
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
-			String config = getLogFileConfig(environment, LogFile.FILE_NAME_PROPERTY, LogFile.FILE_PROPERTY);
+			String config = getLogFileConfig(environment, LogFile.FILE_NAME_PROPERTY);
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(message.found(LogFile.FILE_NAME_PROPERTY).items(config));
 			}
-			config = getLogFileConfig(environment, LogFile.FILE_PATH_PROPERTY, LogFile.PATH_PROPERTY);
+			config = getLogFileConfig(environment, LogFile.FILE_PATH_PROPERTY);
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(message.found(LogFile.FILE_PATH_PROPERTY).items(config));
 			}
@@ -76,12 +75,8 @@ public class LogFileWebEndpointAutoConfiguration {
 			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
 		}
 
-		private String getLogFileConfig(Environment environment, String configName, String deprecatedConfigName) {
-			String config = environment.resolvePlaceholders("${" + configName + ":}");
-			if (StringUtils.hasText(config)) {
-				return config;
-			}
-			return environment.resolvePlaceholders("${" + deprecatedConfigName + ":}");
+		private String getLogFileConfig(Environment environment, String configName) {
+			return environment.resolvePlaceholders("${" + configName + ":}");
 		}
 
 	}

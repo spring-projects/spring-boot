@@ -8,14 +8,14 @@ if (project.hasProperty('applyJavaPlugin')) {
 
 task('taskExists') {
 	doFirst {
-		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+		println "${taskName} exists = ${tasks.findByName(taskName) != null}"
 	}
 }
 
 task('javaCompileEncoding') {
 	doFirst {
 		tasks.withType(JavaCompile) {
-			println "$name = ${options.encoding}"
+			println "${name} = ${options.encoding}"
 		}
 	}
 }

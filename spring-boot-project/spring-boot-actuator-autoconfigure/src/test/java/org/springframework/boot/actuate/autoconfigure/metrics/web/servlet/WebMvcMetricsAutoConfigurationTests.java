@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -24,6 +25,7 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
@@ -62,12 +64,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  * @author Dmytro Nosan
  * @author Tadaya Tsuyukubo
+ * @author Madhura Bhave
+ * @author Chanhyeong LEE
  */
 @ExtendWith(OutputCaptureExtension.class)
 class WebMvcMetricsAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
 	@Test
 	void backsOffWhenMeterRegistryIsMissing() {
@@ -79,10 +83,22 @@ class WebMvcMetricsAutoConfigurationTests {
 	void definesTagsProviderAndFilterWhenMeterRegistryIsPresent() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+			assertThat(context.getBean(DefaultWebMvcTagsProvider.class)).extracting("ignoreTrailingSlash")
+					.isEqualTo(true);
 			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 			assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
 					.isInstanceOf(WebMvcMetricsFilter.class);
 		});
+	}
+
+	@Test
+	void tagsProviderWhenIgnoreTrailingSlashIsFalse() {
+		this.contextRunner.withPropertyValues("management.metrics.web.server.request.ignore-trailing-slash=false")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+					assertThat(context.getBean(DefaultWebMvcTagsProvider.class)).extracting("ignoreTrailingSlash")
+							.isEqualTo(false);
+				});
 	}
 
 	@Test
@@ -144,6 +160,19 @@ class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void timerWorksWithTimedAnnotationsWhenAutoTimeRequestsIsFalse() {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.request.autotime.enabled=false").run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context, "/test3");
+					Collection<Meter> meters = registry.get("http.server.requests").meters();
+					assertThat(meters).hasSize(1);
+					Meter meter = meters.iterator().next();
+					assertThat(meter.getId().getTag("uri")).isEqualTo("/test3");
+				});
+	}
+
+	@Test
 	@SuppressWarnings("rawtypes")
 	void longTaskTimingInterceptorIsRegistered() {
 		this.contextRunner.withUserConfiguration(TestController.class)
@@ -154,12 +183,17 @@ class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
+		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
+	}
+
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context, String... urls)
+			throws Exception {
 		assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 		Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 		assertThat(filter).isInstanceOf(WebMvcMetricsFilter.class);
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
-		for (int i = 0; i < 3; i++) {
-			mockMvc.perform(MockMvcRequestBuilders.get("/test" + i)).andExpect(status().isOk());
+		for (String url : urls) {
+			mockMvc.perform(MockMvcRequestBuilders.get(url)).andExpect(status().isOk());
 		}
 		return context.getBean(MeterRegistry.class);
 	}

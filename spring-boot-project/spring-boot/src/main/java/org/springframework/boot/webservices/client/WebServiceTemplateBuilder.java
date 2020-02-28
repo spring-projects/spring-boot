@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,7 +329,7 @@ public class WebServiceTemplateBuilder {
 	 * @param messageFactory the message factory to use for creating messages
 	 * @return a new builder instance.
 	 * @see WebServiceTemplate#setMessageFactory(WebServiceMessageFactory)
-	 **/
+	 */
 	public WebServiceTemplateBuilder setWebServiceMessageFactory(WebServiceMessageFactory messageFactory) {
 		Assert.notNull(messageFactory, "MessageFactory must not be null");
 		return new WebServiceTemplateBuilder(this.detectHttpMessageSender, this.interceptors, this.internalCustomizers,
@@ -342,7 +342,7 @@ public class WebServiceTemplateBuilder {
 	 * @param unmarshaller the message unmarshaller
 	 * @return a new builder instance.
 	 * @see WebServiceTemplate#setUnmarshaller(Unmarshaller)
-	 **/
+	 */
 	public WebServiceTemplateBuilder setUnmarshaller(Unmarshaller unmarshaller) {
 		return new WebServiceTemplateBuilder(this.detectHttpMessageSender, this.interceptors, this.internalCustomizers,
 				this.customizers, this.messageSenders, this.marshaller, unmarshaller, this.destinationProvider,
@@ -354,7 +354,7 @@ public class WebServiceTemplateBuilder {
 	 * @param marshaller the message marshaller
 	 * @return a new builder instance.
 	 * @see WebServiceTemplate#setMarshaller(Marshaller)
-	 **/
+	 */
 	public WebServiceTemplateBuilder setMarshaller(Marshaller marshaller) {
 		return new WebServiceTemplateBuilder(this.detectHttpMessageSender, this.interceptors, this.internalCustomizers,
 				this.customizers, this.messageSenders, marshaller, this.unmarshaller, this.destinationProvider,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,13 +80,10 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration.class,
-			ElasticsearchDataAutoConfiguration.class,
-			org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration.class,
-			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
+			ElasticsearchDataAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
+			SolrAutoConfiguration.class, RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
+			MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
-	@SuppressWarnings("deprecation")
 	static class WebEndpointTestApplication {
 
 	}

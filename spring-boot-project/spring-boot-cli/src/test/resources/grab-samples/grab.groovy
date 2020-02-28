@@ -1,4 +1,4 @@
-@Grab('joda-time')
+@Grab('jackson-core')
 class GrabTest {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,7 +38,7 @@ import org.springframework.data.cassandra.repository.support.CassandraRepository
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ Session.class, CassandraRepository.class })
+@ConditionalOnClass({ CqlSession.class, CassandraRepository.class })
 @ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.IMPERATIVE)
 @ConditionalOnMissingBean(CassandraRepositoryFactoryBean.class)
 @Import(CassandraRepositoriesRegistrar.class)

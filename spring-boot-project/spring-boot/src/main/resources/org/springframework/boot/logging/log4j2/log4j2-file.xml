@@ -6,7 +6,6 @@
 		<Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
 		<Property name="CONSOLE_LOG_PATTERN">%clr{%d{${LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
 		<Property name="FILE_LOG_PATTERN">%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} %pid --- [%t] %-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
-
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
@@ -25,11 +24,11 @@
 		<Logger name="org.apache.catalina.startup.DigesterFactory" level="error" />
 		<Logger name="org.apache.catalina.util.LifecycleBase" level="error" />
 		<Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
-		<logger name="org.apache.sshd.common.util.SecurityUtils" level="warn"/>
+		<Logger name="org.apache.sshd.common.util.SecurityUtils" level="warn"/>
 		<Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
 		<Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error" />
 		<Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
-		<logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
+		<Logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
 		<Root level="info">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="File" />

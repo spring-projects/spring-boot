@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<infinispan>
-	<cache-container default-cache="default">
-		<local-cache name="default"/>
-		<local-cache name="books" statistics="true"/>
-		<local-cache name="players" statistics="true"/>
-	</cache-container>
-</infinispan>

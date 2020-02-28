@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Integration"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-aop"))
+	api("org.springframework.integration:spring-integration-core")
+}

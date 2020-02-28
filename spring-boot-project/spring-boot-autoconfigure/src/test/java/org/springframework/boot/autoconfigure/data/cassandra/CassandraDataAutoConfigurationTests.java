@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Collections;
 import java.util.Set;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +29,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
@@ -63,7 +61,7 @@ class CassandraDataAutoConfigurationTests {
 
 	@Test
 	void templateExists() {
-		load(TestExcludeConfiguration.class);
+		load(TestConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class)).hasSize(1);
 	}
 
@@ -81,8 +79,7 @@ class CassandraDataAutoConfigurationTests {
 	void userTypeResolverShouldBeSet() {
 		load();
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
-				.isInstanceOf(SimpleUserTypeResolver.class);
+		assertThat(mappingContext).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	@Test
@@ -103,7 +100,7 @@ class CassandraDataAutoConfigurationTests {
 	@Test
 	void clusterDoesNotExist() {
 		this.context = new AnnotationConfigApplicationContext(CassandraDataAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(CqlSession.class)).isEmpty();
 	}
 
 	void load(Class<?>... config) {
@@ -118,18 +115,11 @@ class CassandraDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(
-			excludeFilters = @ComponentScan.Filter(classes = { Session.class }, type = FilterType.ASSIGNABLE_TYPE))
-	static class TestExcludeConfiguration {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
-		Session getObject() {
-			return mock(Session.class);
+		CqlSession cqlSession() {
+			return mock(CqlSession.class);
 		}
 
 	}

@@ -83,13 +83,12 @@ class DispatcherServletAutoConfigurationTests {
 
 	@Test
 	void registrationOverrideWithAutowiredServlet() {
-		this.contextRunner.withUserConfiguration(CustomAutowiredRegistration.class, CustomDispatcherServletPath.class)
-				.run((context) -> {
-					ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings()).containsExactly("/foo");
-					assertThat(registration.getServletName()).isEqualTo("customDispatcher");
-					assertThat(context).hasSingleBean(DispatcherServlet.class);
-				});
+		this.contextRunner.withUserConfiguration(CustomAutowiredRegistration.class).run((context) -> {
+			ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
+			assertThat(registration.getUrlMappings()).containsExactly("/foo");
+			assertThat(registration.getServletName()).isEqualTo("customDispatcher");
+			assertThat(context).hasSingleBean(DispatcherServlet.class);
+		});
 	}
 
 	@Test

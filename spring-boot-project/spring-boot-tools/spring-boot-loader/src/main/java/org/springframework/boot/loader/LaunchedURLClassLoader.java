@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.loader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -38,9 +40,13 @@ import org.springframework.boot.loader.jar.Handler;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
+	private static final int BUFFER_SIZE = 4096;
+
 	static {
 		ClassLoader.registerAsParallelCapable();
 	}
+
+	private final boolean exploded;
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
@@ -48,11 +54,25 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param parent the parent class loader for delegation
 	 */
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
+		this(false, urls, parent);
+	}
+
+	/**
+	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * @param exploded if the underlying archive is exploded
+	 * @param urls the URLs from which to load classes and resources
+	 * @param parent the parent class loader for delegation
+	 */
+	public LaunchedURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
+		this.exploded = exploded;
 	}
 
 	@Override
 	public URL findResource(String name) {
+		if (this.exploded) {
+			return super.findResource(name);
+		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			return super.findResource(name);
@@ -64,6 +84,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
+		if (this.exploded) {
+			return super.findResources(name);
+		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			return new UseFastConnectionExceptionsEnumeration(super.findResources(name));
@@ -75,6 +98,20 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+		if (name.startsWith("org.springframework.boot.loader.jarmode.")) {
+			try {
+				Class<?> result = loadClassInLaunchedClassLoader(name);
+				if (resolve) {
+					resolveClass(result);
+				}
+				return result;
+			}
+			catch (ClassNotFoundException ex) {
+			}
+		}
+		if (this.exploded) {
+			return super.loadClass(name, resolve);
+		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			try {
@@ -93,6 +130,35 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		finally {
 			Handler.setUseFastConnectionExceptions(false);
+		}
+	}
+
+	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
+		String internalName = name.replace('.', '/') + ".class";
+		InputStream inputStream = getParent().getResourceAsStream(internalName);
+		if (inputStream == null) {
+			throw new ClassNotFoundException(name);
+		}
+		try {
+			try {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead = -1;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+				inputStream.close();
+				byte[] bytes = outputStream.toByteArray();
+				Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
+				definePackageIfNecessary(name);
+				return definedClass;
+			}
+			finally {
+				inputStream.close();
+			}
+		}
+		catch (IOException ex) {
+			throw new ClassNotFoundException("Cannot load resource for class [" + name + "]", ex);
 		}
 	}
 
@@ -157,6 +223,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * Clear URL caches.
 	 */
 	public void clearCache() {
+		if (this.exploded) {
+			return;
+		}
 		for (URL url : getURLs()) {
 			try {
 				URLConnection connection = url.openConnection();

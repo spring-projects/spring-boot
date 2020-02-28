@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,11 +174,12 @@ class JarFileArchiveTests {
 		}
 		try (JarFile jarFile = new JarFile(file)) {
 			ZipEntry nestedEntry = jarFile.getEntry("nested/zip64.jar");
-			JarFile nestedJarFile = jarFile.getNestedJarFile(nestedEntry);
-			Iterator<JarEntry> iterator = nestedJarFile.iterator();
-			for (int i = 0; i < 65537; i++) {
-				assertThat(iterator.hasNext()).as(i + "nth file is present").isTrue();
-				iterator.next();
+			try (JarFile nestedJarFile = jarFile.getNestedJarFile(nestedEntry)) {
+				Iterator<JarEntry> iterator = nestedJarFile.iterator();
+				for (int i = 0; i < 65537; i++) {
+					assertThat(iterator.hasNext()).as(i + "nth file is present").isTrue();
+					iterator.next();
+				}
 			}
 		}
 	}

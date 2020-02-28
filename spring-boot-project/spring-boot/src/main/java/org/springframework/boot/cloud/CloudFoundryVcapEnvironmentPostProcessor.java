@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public class CloudFoundryVcapEnvironmentPostProcessor
@@ -230,7 +231,19 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		if (key.startsWith("[")) {
 			return path + key;
 		}
+		if (shouldWrap(key)) {
+			return path + "[" + key + "]";
+		}
 		return path + "." + key;
+	}
+
+	private boolean shouldWrap(String key) {
+		for (char ch : key.toCharArray()) {
+			if (!Character.isLowerCase(ch) && !Character.isDigit(ch) && ch != '-') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

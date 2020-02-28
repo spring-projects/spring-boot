@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.StringUtils;
@@ -85,7 +86,7 @@ public class ServerProperties {
 	/**
 	 * Strategy for handling X-Forwarded-* headers.
 	 */
-	private ForwardHeadersStrategy forwardHeadersStrategy = ForwardHeadersStrategy.NONE;
+	private ForwardHeadersStrategy forwardHeadersStrategy;
 
 	/**
 	 * Value to use for the Server response header (if empty, no header is sent).
@@ -247,6 +248,9 @@ public class ServerProperties {
 		private String applicationDisplayName = "application";
 
 		@NestedConfigurationProperty
+		private final Encoding encoding = new Encoding();
+
+		@NestedConfigurationProperty
 		private final Jsp jsp = new Jsp();
 
 		@NestedConfigurationProperty
@@ -278,6 +282,10 @@ public class ServerProperties {
 
 		public Map<String, String> getContextParameters() {
 			return this.contextParameters;
+		}
+
+		public Encoding getEncoding() {
+			return this.encoding;
 		}
 
 		public Jsp getJsp() {
@@ -354,7 +362,7 @@ public class ServerProperties {
 		 * given time. Once the limit has been reached, the operating system may still
 		 * accept connections based on the "acceptCount" property.
 		 */
-		private int maxConnections = 10000;
+		private int maxConnections = 8192;
 
 		/**
 		 * Maximum queue length for incoming connection requests when all possible request
@@ -1024,14 +1032,20 @@ public class ServerProperties {
 		private Integer selectors = -1;
 
 		/**
-		 * Maximum number of threads.
-		 */
-		private Integer maxThreads = 200;
-
-		/**
 		 * Minimum number of threads.
 		 */
-		private Integer minThreads = 8;
+		private int minThreads = 8;
+
+		/**
+		 * Maximum number of threads.
+		 */
+		private int maxThreads = 200;
+
+		/**
+		 * Maximum capacity of the thread pool's backing queue. A default is computed
+		 * based on the threading configuration.
+		 */
+		private Integer maxQueueCapacity;
 
 		/**
 		 * Maximum thread idle time.
@@ -1082,20 +1096,28 @@ public class ServerProperties {
 			this.selectors = selectors;
 		}
 
-		public void setMinThreads(Integer minThreads) {
+		public void setMinThreads(int minThreads) {
 			this.minThreads = minThreads;
 		}
 
-		public Integer getMinThreads() {
+		public int getMinThreads() {
 			return this.minThreads;
 		}
 
-		public void setMaxThreads(Integer maxThreads) {
+		public void setMaxThreads(int maxThreads) {
 			this.maxThreads = maxThreads;
 		}
 
-		public Integer getMaxThreads() {
+		public int getMaxThreads() {
 			return this.maxThreads;
+		}
+
+		public void setMaxQueueCapacity(Integer maxQueueCapacity) {
+			this.maxQueueCapacity = maxQueueCapacity;
+		}
+
+		public Integer getMaxQueueCapacity() {
+			return this.maxQueueCapacity;
 		}
 
 		public void setThreadIdleTimeout(Duration threadIdleTimeout) {

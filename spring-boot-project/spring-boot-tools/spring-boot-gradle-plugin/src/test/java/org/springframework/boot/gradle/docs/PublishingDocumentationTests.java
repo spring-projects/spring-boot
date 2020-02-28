@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ class PublishingDocumentationTests {
 
 	@TestTemplate
 	void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven").build("deployerRepository").getOutput())
+		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven").build("deployerRepository").getOutput())
 				.contains("https://repo.example.com");
 	}
 
 	@TestTemplate
 	void mavenPublish() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven-publish").build("publishingConfiguration")
+		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven-publish").build("publishingConfiguration")
 				.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
 	}
 

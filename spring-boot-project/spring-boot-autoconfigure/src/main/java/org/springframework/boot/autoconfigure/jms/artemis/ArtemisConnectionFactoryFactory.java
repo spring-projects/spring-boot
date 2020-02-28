@@ -68,10 +68,10 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private void startEmbeddedJms() {
-		for (int i = 0; i < EMBEDDED_JMS_CLASSES.length; i++) {
-			if (ClassUtils.isPresent(EMBEDDED_JMS_CLASSES[i], null)) {
+		for (String embeddedJmsClass : EMBEDDED_JMS_CLASSES) {
+			if (ClassUtils.isPresent(embeddedJmsClass, null)) {
 				try {
-					this.beanFactory.getBeansOfType(Class.forName(EMBEDDED_JMS_CLASSES[i]));
+					this.beanFactory.getBeansOfType(Class.forName(embeddedJmsClass));
 				}
 				catch (Exception ex) {
 					// Ignore
@@ -103,8 +103,8 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private boolean isEmbeddedJmsClassPresent() {
-		for (int i = 0; i < EMBEDDED_JMS_CLASSES.length; i++) {
-			if (ClassUtils.isPresent(EMBEDDED_JMS_CLASSES[i], null)) {
+		for (String embeddedJmsClass : EMBEDDED_JMS_CLASSES) {
+			if (ClassUtils.isPresent(embeddedJmsClass, null)) {
 				return true;
 			}
 		}

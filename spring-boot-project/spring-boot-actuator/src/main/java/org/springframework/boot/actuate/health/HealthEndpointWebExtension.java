@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,23 +38,13 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * @author Eddú Meléndez
  * @author Madhura Bhave
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
 	private static final String[] NO_PATH = {};
-
-	/**
-	 * Create a new {@link HealthEndpointWebExtension} instance using a delegate endpoint.
-	 * @param delegate the delegate endpoint
-	 * @param responseMapper the response mapper
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #HealthEndpointWebExtension(HealthContributorRegistry, HealthEndpointGroups)}
-	 */
-	@Deprecated
-	public HealthEndpointWebExtension(HealthEndpoint delegate, HealthWebEndpointResponseMapper responseMapper) {
-	}
 
 	/**
 	 * Create a new {@link HealthEndpointWebExtension} instance.

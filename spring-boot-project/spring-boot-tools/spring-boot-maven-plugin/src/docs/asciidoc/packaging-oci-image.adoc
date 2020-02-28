@@ -1,0 +1,161 @@
+[[build-image]]
+== Packaging OCI Images
+
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
+Images can be built using the `build-image` goal and a local Docker installation.
+
+The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
+It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{gradle-project-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-image</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
+When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
+
+
+
+[[build-image-customization]]
+=== Image Customizations
+The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
+The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
+By default, the plugin chooses a builder image.
+The name of the generated image is deduced from project properties.
+
+The `image` parameter allows to configure how the builder should operate on the project.
+The following table summarizes the available properties and their default values:
+
+|===
+| Property | Description | Default value
+
+| `builder`
+| Name of the Builder image to use.
+| `cloudfoundry/cnb:0.0.53-bionic`
+
+| `name`
+| {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
+| `docker.io/library/${project.artifactId}:${project.version}`
+
+| `env`
+| Environment variables that should be passed to the builder.
+|
+
+| `cleanCache`
+| Whether to clean the cache before building.
+| `false`
+
+| `verboseLogging`
+| Enables verbose logging of builder operations.
+| `false`
+|===
+
+For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
+
+include::goals/build-image.adoc[leveloffset=+1]
+
+
+
+[[build-image-examples]]
+=== Examples
+
+
+
+[[build-image-example-custom-image-builder]]
+==== Custom Image Builder
+If you need to customize the builder used to create the image, configure yours as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<image>
+							<builder>mine/java-cnb-builder</builder>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
+
+If the builder exposes configuration options, those can be set using the `env` attributes, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<image>
+							<builder>mine/java-cnb-builder</builder>
+							<env>
+								<BP_JAVA_VERSION>13.0.1</BP_JAVA_VERSION>
+							</env>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The example above assumes that `mine/java-cnb-builder` defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use).
+
+
+
+[[build-image-example-custom-image-name]]
+==== Custom Image Name
+By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
+You can take control over the name, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<image>
+							<name>example.com/library/${project.artifactId}</name>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+Note that this configuration does not provide an explicit tag so `latest` is used.
+It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.

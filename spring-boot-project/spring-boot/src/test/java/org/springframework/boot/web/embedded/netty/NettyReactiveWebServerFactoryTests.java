@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.time.Duration;
 import java.util.Arrays;
-
-import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -101,14 +99,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
 	}
 
-	@Test
-	void whenSslIsConfiguredWithAnInvalidAliasTheSslHandshakeFails() {
-		Mono<String> result = testSslWithAlias("test-alias-bad");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectErrorMatches((throwable) -> throwable instanceof SSLHandshakeException
-				&& throwable.getMessage().contains("HANDSHAKE_FAILURE")).verify();
-	}
-
 	protected Mono<String> testSslWithAlias(String alias) {
 		String keyStore = "classpath:test.jks";
 		String keyPassword = "password";
@@ -123,9 +113,8 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(connector).build();
-		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
-				.flatMap((response) -> response.bodyToMono(String.class));
+		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
+				.exchange().flatMap((response) -> response.bodyToMono(String.class));
 	}
 
 }

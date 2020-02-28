@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.codec.CodecProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -49,7 +48,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
-@EnableConfigurationProperties({ HttpProperties.class, CodecProperties.class })
+@EnableConfigurationProperties(CodecProperties.class)
 public class CodecsAutoConfiguration {
 
 	private static final MimeType[] EMPTY_MIME_TYPES = {};
@@ -76,11 +75,11 @@ public class CodecsAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		CodecCustomizer defaultCodecCustomizer(HttpProperties httpProperties, CodecProperties codecProperties) {
+		CodecCustomizer defaultCodecCustomizer(CodecProperties codecProperties) {
 			return (configurer) -> {
 				PropertyMapper map = PropertyMapper.get();
 				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();
-				defaultCodecs.enableLoggingRequestDetails(httpProperties.isLogRequestDetails());
+				defaultCodecs.enableLoggingRequestDetails(codecProperties.isLogRequestDetails());
 				map.from(codecProperties.getMaxInMemorySize()).whenNonNull().asInt(DataSize::toBytes)
 						.to(defaultCodecs::maxInMemorySize);
 			};

@@ -1,0 +1,25 @@
+plugins {
+	id "war"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Jetty JSP smoke test"
+
+dependencies {
+	compileOnly("jakarta.servlet:jakarta.servlet-api")
+	compileOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
+
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+
+	providedRuntime(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	providedRuntime("org.eclipse.jetty:apache-jsp") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+
+	runtimeOnly("javax.servlet:jstl")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
+}

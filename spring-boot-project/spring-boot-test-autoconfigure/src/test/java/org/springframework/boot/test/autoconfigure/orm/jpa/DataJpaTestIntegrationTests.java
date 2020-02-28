@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
@@ -37,6 +38,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @DataJpaTest
 @TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
@@ -104,6 +106,12 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void liquibaseAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+	}
+
+	@Test
+	void bootstrapModeIsLazyByDefault() {
+		assertThat(this.applicationContext.getEnvironment().getProperty("spring.data.jpa.repositories.bootstrap-mode"))
+				.isEqualTo(BootstrapMode.LAZY.name());
 	}
 
 }

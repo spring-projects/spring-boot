@@ -1,0 +1,23 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Data JPA with Hibernate"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-aop"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+	api("jakarta.transaction:jakarta.transaction-api")
+	api("jakarta.persistence:jakarta.persistence-api")
+	api("org.hibernate:hibernate-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.persistence", module: "javax.persistence-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
+	api("org.springframework.data:spring-data-jpa") {
+		exclude group: "org.aspectj", module: "aspectjrt"
+	}
+	api("org.springframework:spring-aspects")
+}

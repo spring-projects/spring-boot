@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import org.springframework.core.env.Profiles;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -73,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Eddú Meléndez
+ * @author Madhura Bhave
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ConfigFileApplicationListenerTests {
@@ -109,7 +111,7 @@ class ConfigFileApplicationListenerTests {
 						}
 					};
 				}
-				return null;
+				return new ClassPathResource("doesnotexist");
 			}
 
 			@Override
@@ -999,6 +1001,32 @@ class ConfigFileApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);
 		this.initializer.postProcessEnvironment(this.environment, this.application);
+	}
+
+	@Test
+	void locationsWithWildcardFoldersShouldLoadAllFilesThatMatch() {
+		String location = "file:src/test/resources/config/*/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String a = this.environment.getProperty("a.property");
+		String b = this.environment.getProperty("b.property");
+		assertThat(a).isEqualTo("apple");
+		assertThat(b).isEqualTo("ball");
+	}
+
+	@Test
+	void locationsWithWildcardFilesShouldLoadAllFilesThatMatch() {
+		String location = "file:src/test/resources/config/*/testproperties.properties";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String a = this.environment.getProperty("a.property");
+		String b = this.environment.getProperty("b.property");
+		assertThat(a).isEqualTo("apple");
+		assertThat(b).isEqualTo("ball");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {

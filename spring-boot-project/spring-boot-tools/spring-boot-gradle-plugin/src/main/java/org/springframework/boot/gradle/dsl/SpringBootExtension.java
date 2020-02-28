@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 package org.springframework.boot.gradle.dsl;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.jvm.tasks.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
@@ -118,7 +115,7 @@ public class SpringBootExtension {
 
 	private String determineArtifactBaseName() {
 		Jar artifactTask = findArtifactTask();
-		return (artifactTask != null) ? getArchiveBaseName(artifactTask) : null;
+		return (artifactTask != null) ? artifactTask.getArchiveBaseName().get() : null;
 	}
 
 	private Jar findArtifactTask() {
@@ -127,29 +124,6 @@ public class SpringBootExtension {
 			return artifactTask;
 		}
 		return (Jar) this.project.getTasks().findByName("bootJar");
-	}
-
-	@SuppressWarnings("unchecked")
-	private static String getArchiveBaseName(AbstractArchiveTask task) {
-		try {
-			Method method = findMethod(task.getClass(), "getArchiveBaseName");
-			if (method != null) {
-				return ((Property<String>) method.invoke(task)).get();
-			}
-		}
-		catch (Exception ex) {
-			// Continue
-		}
-		return task.getBaseName();
-	}
-
-	private static Method findMethod(Class<?> type, String name) {
-		for (Method candidate : type.getMethods()) {
-			if (candidate.getName().equals(name)) {
-				return candidate;
-			}
-		}
-		return null;
 	}
 
 }

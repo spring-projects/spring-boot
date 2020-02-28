@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaCompiler;
@@ -59,7 +60,7 @@ public class TestCompiler {
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
 		this.outputLocation = outputLocation;
 		this.outputLocation.mkdirs();
-		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
+		Iterable<? extends File> temp = Collections.singletonList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}

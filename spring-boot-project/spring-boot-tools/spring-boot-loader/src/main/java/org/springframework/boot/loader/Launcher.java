@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.loader;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -41,6 +40,8 @@ import org.springframework.boot.loader.jar.JarFile;
  */
 public abstract class Launcher {
 
+	private static final String JAR_MODE_LAUNCHER = "org.springframework.boot.loader.jarmode.JarModeLauncher";
+
 	/**
 	 * Launch the application. This method is the initial entry point that should be
 	 * called by a subclass {@code public static void main(String[] args)} method.
@@ -48,11 +49,13 @@ public abstract class Launcher {
 	 * @throws Exception if the application fails to launch
 	 */
 	protected void launch(String[] args) throws Exception {
-		if (supportsNestedJars()) {
+		if (!isExploded()) {
 			JarFile.registerUrlProtocolHandler();
 		}
 		ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator());
-		launch(args, getMainClass(), classLoader);
+		String jarMode = System.getProperty("jarmode");
+		String launchClass = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_LAUNCHER : getMainClass();
+		launch(args, launchClass, classLoader);
 	}
 
 	/**
@@ -77,7 +80,9 @@ public abstract class Launcher {
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<>(50);
 		while (archives.hasNext()) {
-			urls.add(archives.next().getUrl());
+			Archive archive = archives.next();
+			urls.add(archive.getUrl());
+			archive.close();
 		}
 		return createClassLoader(urls.toArray(new URL[0]));
 	}
@@ -89,22 +94,19 @@ public abstract class Launcher {
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		if (supportsNestedJars()) {
-			return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
-		}
-		return new URLClassLoader(urls, getClass().getClassLoader());
+		return new LaunchedURLClassLoader(isExploded(), urls, getClass().getClassLoader());
 	}
 
 	/**
 	 * Launch the application given the archive file and a fully configured classloader.
 	 * @param args the incoming arguments
-	 * @param mainClass the main class to run
+	 * @param launchClass the launch class to run
 	 * @param classLoader the classloader
 	 * @throws Exception if the launch fails
 	 */
-	protected void launch(String[] args, String mainClass, ClassLoader classLoader) throws Exception {
+	protected void launch(String[] args, String launchClass, ClassLoader classLoader) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
-		createMainMethodRunner(mainClass, args, classLoader).run();
+		createMainMethodRunner(launchClass, args, classLoader).run();
 	}
 
 	/**
@@ -163,12 +165,12 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Returns if the launcher needs to support fully nested JARs. If this method returns
-	 * {@code false} then only regular JARs are supported and the additional URL and
-	 * ClassLoader support infrastructure will not be installed.
-	 * @return if nested JARs are supported
+	 * Returns if the launcher is running in an exploded mode. If this method returns
+	 * {@code true} then only regular JARs are supported and the additional URL and
+	 * ClassLoader support infrastructure can be optimized.
+	 * @return if the jar is exploded.
 	 */
-	protected boolean supportsNestedJars() {
+	protected boolean isExploded() {
 		return true;
 	}
 

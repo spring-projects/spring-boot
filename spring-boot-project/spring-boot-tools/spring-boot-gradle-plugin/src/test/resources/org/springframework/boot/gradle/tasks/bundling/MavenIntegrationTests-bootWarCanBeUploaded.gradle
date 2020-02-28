@@ -14,7 +14,7 @@ version = '1.0'
 uploadBootArchives {
 	repositories {
 		mavenDeployer {
-		 	repository(url: "file:$buildDir/repo")
+		 	repository(url: "file:${buildDir}/repo")
 		}
 	}
 }

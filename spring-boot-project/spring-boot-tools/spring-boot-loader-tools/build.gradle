@@ -1,0 +1,65 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
+}
+
+description = "Spring Boot Loader Tools"
+
+def generatedResources = "${buildDir}/generated-resources/main"
+
+configurations {
+	loader
+	jarmode
+}
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-parent")))
+	api("org.apache.commons:commons-compress")
+	api("org.springframework:spring-core")
+
+	compileOnly("ch.qos.logback:logback-classic")
+
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+
+	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"))
+
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.zeroturnaround:zt-zip:1.13")
+}
+
+sourceSets {
+	main {
+		resources.srcDirs generatedResources
+	}
+}
+
+task reproducibleLoaderJar(type: Jar) {
+	dependsOn configurations.loader
+	from {
+		zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-loader.jar"
+	destinationDirectory = file("${generatedResources}/META-INF/loader")
+}
+
+task reproducibleJarModeLayerToolsJar(type: Jar) {
+	dependsOn configurations.jarmode
+	from {
+		zipTree(configurations.jarmode.incoming.files.filter {it.name.startsWith "spring-boot-jarmode-layertools" }.singleFile)
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-jarmode-layertools.jar"
+	destinationDirectory = file("${generatedResources}/META-INF/jarmode")
+}
+
+processResources {
+	dependsOn reproducibleLoaderJar
+	dependsOn reproducibleJarModeLayerToolsJar
+}

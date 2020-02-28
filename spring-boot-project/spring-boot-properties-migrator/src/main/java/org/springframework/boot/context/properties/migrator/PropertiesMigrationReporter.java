@@ -98,16 +98,14 @@ class PropertiesMigrationReporter {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
 				.collect(Collectors.toList());
-		getPropertySourcesAsMap().forEach((name, source) -> {
-			candidates.forEach((metadata) -> {
-				ConfigurationProperty configurationProperty = source
-						.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
-				if (configurationProperty != null) {
-					result.add(name, new PropertyMigration(configurationProperty, metadata,
-							determineReplacementMetadata(metadata)));
-				}
-			});
-		});
+		getPropertySourcesAsMap().forEach((name, source) -> candidates.forEach((metadata) -> {
+			ConfigurationProperty configurationProperty = source
+					.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
+			if (configurationProperty != null) {
+				result.add(name,
+						new PropertyMigration(configurationProperty, metadata, determineReplacementMetadata(metadata)));
+			}
+		}));
 		return result;
 	}
 

@@ -1,0 +1,15 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for JMS messaging using Apache ActiveMQ"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework:spring-jms")
+	api("org.apache.activemq:activemq-broker") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
+	}
+	api("jakarta.jms:jakarta.jms-api")
+}

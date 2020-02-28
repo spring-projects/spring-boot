@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,29 +42,41 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
 		List<Archive> archives = new ArrayList<>();
 		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
-		assertThat(archives).hasSize(2);
-		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
-				new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL());
+		assertThat(getUrls(archives)).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
 		for (Archive archive : archives) {
 			archive.close();
 		}
 	}
 
 	@Test
-	void archivedWarHasOnlyWebInfClassesAndContentsOWebInfLibOnClasspath() throws Exception {
+	void archivedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath() throws Exception {
 		File jarRoot = createJarArchive("archive.war", "WEB-INF");
 		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
 			WarLauncher launcher = new WarLauncher(archive);
 			List<Archive> classPathArchives = new ArrayList<>();
 			launcher.getClassPathArchivesIterator().forEachRemaining(classPathArchives::add);
-			assertThat(classPathArchives).hasSize(2);
 			assertThat(getUrls(classPathArchives)).containsOnly(
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/bar.jar!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/baz.jar!/"));
 			for (Archive classPathArchive : classPathArchives) {
 				classPathArchive.close();
 			}
 		}
+	}
+
+	protected final URL[] getExpectedFileUrls(File explodedRoot) {
+		return getExpectedFiles(explodedRoot).stream().map(this::toUrl).toArray(URL[]::new);
+	}
+
+	protected final List<File> getExpectedFiles(File parent) {
+		List<File> expected = new ArrayList<>();
+		expected.add(new File(parent, "WEB-INF/classes"));
+		expected.add(new File(parent, "WEB-INF/lib/foo.jar"));
+		expected.add(new File(parent, "WEB-INF/lib/bar.jar"));
+		expected.add(new File(parent, "WEB-INF/lib/baz.jar"));
+		return expected;
 	}
 
 }

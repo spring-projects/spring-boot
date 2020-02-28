@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.testsupport.classpath;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -76,12 +74,12 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 			invocation.proceed();
 			return;
 		}
-		fakeInvocation(invocation);
+		invocation.skip();
 		runTestWithModifiedClassPath(invocationContext, extensionContext);
 	}
 
 	private void runTestWithModifiedClassPath(ReflectiveInvocationContext<Method> invocationContext,
-			ExtensionContext extensionContext) throws ClassNotFoundException, Throwable {
+			ExtensionContext extensionContext) throws Throwable {
 		Class<?> testClass = extensionContext.getRequiredTestClass();
 		Method testMethod = invocationContext.getExecutable();
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
@@ -95,9 +93,8 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		}
 	}
 
-	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName)
-			throws ClassNotFoundException, Throwable {
-		Class<?> testClass = classLoader.loadClass(testClassName);
+	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName) throws Throwable {
+		Class<?> testClass = Class.forName(testClassName, false, classLoader);
 		Method testMethod = findMethod(testClass, testMethodName);
 		LauncherDiscoveryRequest request = new LauncherDiscoveryRequestBuilder(classLoader)
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethod)).build();
@@ -121,7 +118,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 				}
 			}
 		}
-		Assert.state(method != null, "Unable to find " + testClass + "." + testMethodName);
+		Assert.state(method != null, () -> "Unable to find " + testClass + "." + testMethodName);
 		return method;
 	}
 
@@ -130,17 +127,7 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 			invocation.proceed();
 			return;
 		}
-		fakeInvocation(invocation);
-	}
-
-	private void fakeInvocation(Invocation<Void> invocation) {
-		try {
-			Field field = ReflectionUtils.findField(invocation.getClass(), "invoked");
-			ReflectionUtils.makeAccessible(field);
-			ReflectionUtils.setField(field, invocation, new AtomicBoolean(true));
-		}
-		catch (Throwable ex) {
-		}
+		invocation.skip();
 	}
 
 	private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
