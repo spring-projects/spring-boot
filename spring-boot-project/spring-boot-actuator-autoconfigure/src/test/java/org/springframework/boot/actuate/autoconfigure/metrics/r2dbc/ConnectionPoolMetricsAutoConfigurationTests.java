@@ -61,12 +61,32 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfiguredDataSourceExposedAsConnectionFactoryTypeIsInstrumented() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.r2dbc.url:r2dbc:pool:h2:mem:///name?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+				.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class)).run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("r2dbc.pool.acquired").gauges()).hasSize(1);
+				});
+	}
+
+	@Test
 	void connectionPoolInstrumentationCanBeDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.enable.r2dbc=false").run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("r2dbc.pool.acquired").gauge()).isNull();
 				});
+	}
+
+	@Test
+	void connectionPoolExposedAsConnectionFactoryTypeIsInstrumented() {
+		this.contextRunner.withUserConfiguration(ConnectionFactoryConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
+					.extracting((id) -> id.getTag("name")).containsExactly("testConnectionPool");
+		});
 	}
 
 	@Test
@@ -84,6 +104,18 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		@Bean
 		SimpleMeterRegistry registry() {
 			return new SimpleMeterRegistry();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionFactoryConfiguration {
+
+		@Bean
+		ConnectionFactory testConnectionPool() {
+			return new ConnectionPool(
+					ConnectionPoolConfiguration.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa",
+							"", Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1"))).build());
 		}
 
 	}
