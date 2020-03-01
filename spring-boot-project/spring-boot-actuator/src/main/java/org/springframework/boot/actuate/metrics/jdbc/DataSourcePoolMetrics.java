@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
@@ -65,23 +66,27 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	@Override
 	public void bindTo(MeterRegistry registry) {
 		if (this.metadataProvider.getDataSourcePoolMetadata(this.dataSource) != null) {
-			bindPoolMetadata(registry, "active", DataSourcePoolMetadata::getActive);
-			bindPoolMetadata(registry, "idle", DataSourcePoolMetadata::getIdle);
-			bindPoolMetadata(registry, "max", DataSourcePoolMetadata::getMax);
-			bindPoolMetadata(registry, "min", DataSourcePoolMetadata::getMin);
+			bindPoolMetadata(registry, "active", DataSourcePoolMetadata::getActive,
+					"Current number of active connections that have been allocated from the data source.");
+			bindPoolMetadata(registry, "idle", DataSourcePoolMetadata::getIdle,
+					"Number of established but idle connections.");
+			bindPoolMetadata(registry, "max", DataSourcePoolMetadata::getMax,
+					"Maximum number of active connections that can be allocated at the same time.");
+			bindPoolMetadata(registry, "min", DataSourcePoolMetadata::getMin,
+					"Minimum number of idle connections in the pool.");
 		}
 	}
 
 	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName,
-			Function<DataSourcePoolMetadata, N> function) {
-		bindDataSource(registry, metricName, this.metadataProvider.getValueFunction(function));
+			Function<DataSourcePoolMetadata, N> function, String description) {
+		bindDataSource(registry, metricName, this.metadataProvider.getValueFunction(function), description);
 	}
 
 	private <N extends Number> void bindDataSource(MeterRegistry registry, String metricName,
-			Function<DataSource, N> function) {
+			Function<DataSource, N> function, String description) {
 		if (function.apply(this.dataSource) != null) {
-			registry.gauge("jdbc.connections." + metricName, this.tags, this.dataSource,
-					(m) -> function.apply(m).doubleValue());
+			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> function.apply(m).doubleValue())
+					.tags(this.tags).description(description).register(registry);
 		}
 	}
 
