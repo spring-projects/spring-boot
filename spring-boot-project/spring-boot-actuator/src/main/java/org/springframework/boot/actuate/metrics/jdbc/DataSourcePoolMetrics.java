@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
@@ -65,23 +66,29 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	@Override
 	public void bindTo(MeterRegistry registry) {
 		if (this.metadataProvider.getDataSourcePoolMetadata(this.dataSource) != null) {
-			bindPoolMetadata(registry, "active", DataSourcePoolMetadata::getActive);
-			bindPoolMetadata(registry, "idle", DataSourcePoolMetadata::getIdle);
-			bindPoolMetadata(registry, "max", DataSourcePoolMetadata::getMax);
-			bindPoolMetadata(registry, "min", DataSourcePoolMetadata::getMin);
+			bindPoolMetadata(registry, "active",
+					"Current number of active connections that have been allocated from the data source.",
+					DataSourcePoolMetadata::getActive);
+			bindPoolMetadata(registry, "idle", "Number of established but idle connections.",
+					DataSourcePoolMetadata::getIdle);
+			bindPoolMetadata(registry, "max",
+					"Maximum number of active connections that can be allocated at the same time.",
+					DataSourcePoolMetadata::getMax);
+			bindPoolMetadata(registry, "min", "Minimum number of idle connections in the pool.",
+					DataSourcePoolMetadata::getMin);
 		}
 	}
 
-	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName,
+	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName, String description,
 			Function<DataSourcePoolMetadata, N> function) {
-		bindDataSource(registry, metricName, this.metadataProvider.getValueFunction(function));
+		bindDataSource(registry, metricName, description, this.metadataProvider.getValueFunction(function));
 	}
 
-	private <N extends Number> void bindDataSource(MeterRegistry registry, String metricName,
+	private <N extends Number> void bindDataSource(MeterRegistry registry, String metricName, String description,
 			Function<DataSource, N> function) {
 		if (function.apply(this.dataSource) != null) {
-			registry.gauge("jdbc.connections." + metricName, this.tags, this.dataSource,
-					(m) -> function.apply(m).doubleValue());
+			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> function.apply(m).doubleValue())
+					.tags(this.tags).description(description).register(registry);
 		}
 	}
 
