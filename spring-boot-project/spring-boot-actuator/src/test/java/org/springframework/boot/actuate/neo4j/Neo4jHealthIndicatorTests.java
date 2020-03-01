@@ -61,17 +61,21 @@ class Neo4jHealthIndicatorTests {
 	void neo4jUp() {
 		Result result = mock(Result.class);
 		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willReturn(result);
-		int nodeCount = 500;
 		Map<String, Object> expectedCypherDetails = new HashMap<>();
-		expectedCypherDetails.put("nodes", nodeCount);
+		String edition = "community";
+		String version = "4.0.0";
+		expectedCypherDetails.put("edition", edition);
+		expectedCypherDetails.put("version", version);
 		List<Map<String, Object>> queryResults = new ArrayList<>();
 		queryResults.add(expectedCypherDetails);
 		given(result.queryResults()).willReturn(queryResults);
 		Health health = this.neo4jHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
-		int nodeCountFromDetails = (int) details.get("nodes");
-		assertThat(nodeCountFromDetails).isEqualTo(nodeCount);
+		String editionFromDetails = details.get("edition").toString();
+		String versionFromDetails = details.get("version").toString();
+		assertThat(editionFromDetails).isEqualTo(edition);
+		assertThat(versionFromDetails).isEqualTo(version);
 	}
 
 	@Test

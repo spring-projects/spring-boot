@@ -40,7 +40,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	static final String CYPHER = "match (n) return count(n) as nodes";
+	static final String CYPHER = "CALL dbms.components() YIELD versions, edition"
+			+ " UNWIND versions as version return version, edition";
 
 	private final SessionFactory sessionFactory;
 
@@ -69,7 +70,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	 */
 	protected void extractResult(Session session, Health.Builder builder) throws Exception {
 		Result result = session.query(CYPHER, Collections.emptyMap());
-		builder.up().withDetail("nodes", result.queryResults().iterator().next().get("nodes"));
+		builder.up().withDetails(result.queryResults().iterator().next());
 	}
 
 }
