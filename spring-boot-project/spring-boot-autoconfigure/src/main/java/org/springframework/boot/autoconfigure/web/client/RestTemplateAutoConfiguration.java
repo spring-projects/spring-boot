@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration.NotReactiveWebApplicationCondition;
@@ -49,7 +50,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(HttpMessageConvertersAutoConfiguration.class)
+@AutoConfigureAfter({ HttpMessageConvertersAutoConfiguration.class, HypermediaAutoConfiguration.class })
 @ConditionalOnClass(RestTemplate.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestTemplateAutoConfiguration {
