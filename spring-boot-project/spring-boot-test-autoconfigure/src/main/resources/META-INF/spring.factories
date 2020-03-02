@@ -96,6 +96,7 @@ org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 
 # AutoConfigureWebClient auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient=\
+org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
@@ -140,6 +141,7 @@ org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfigu
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient=\
 org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
