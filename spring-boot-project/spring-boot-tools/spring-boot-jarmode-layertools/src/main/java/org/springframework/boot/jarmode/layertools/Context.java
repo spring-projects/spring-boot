@@ -62,7 +62,7 @@ class Context {
 			return null;
 		}
 		String relativePath = sourcePath.substring(workingPath.length() + 1);
-		return (relativePath.length() > 0) ? relativePath : null;
+		return !relativePath.isEmpty() ? relativePath : null;
 	}
 
 	/**
