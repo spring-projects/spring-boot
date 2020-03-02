@@ -16,17 +16,23 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.client.LinkDiscoverer;
@@ -37,10 +43,16 @@ import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.HttpMessageWriter;
+import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HypermediaAutoConfiguration}.
@@ -49,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Oliver Gierke
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Greg Turnquist
  */
 class HypermediaAutoConfigurationTests {
 
@@ -112,8 +125,52 @@ class HypermediaAutoConfigurationTests {
 				});
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HypermediaAutoConfiguration.class })
+	@Test
+	void restTemplateCustomizerShouldRegisterHypermediaTypes() {
+		this.contextRunner.withUserConfiguration(EnableHypermediaSupportConfig.class,
+				EnableHypermediaRestTemplateSupportConfig.class).run((context) -> {
+					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+					assertThat(restTemplate.getMessageConverters())
+							.flatExtracting(HttpMessageConverter::getSupportedMediaTypes).contains(MediaTypes.HAL_JSON)
+							.doesNotContainSequence(MediaTypes.HAL_FORMS_JSON);
+				});
+	}
+
+	@Test
+	void codecsCustomizerShouldRegisterHypermediaTypesWithWebClient() {
+		this.contextRunner.withUserConfiguration(EnableHypermediaSupportConfig.class,
+				EnableHypermediaWebClientSupportConfig.class).run((context) -> {
+					WebClient webClient = context.getBean(WebClient.Builder.class).build();
+					ExchangeStrategies strategies = (ExchangeStrategies) ReflectionTestUtils
+							.getField(ReflectionTestUtils.getField(webClient, "exchangeFunction"), "strategies");
+
+					assertThat(strategies.messageReaders()).flatExtracting(HttpMessageReader::getReadableMediaTypes)
+							.contains(MediaTypes.HAL_JSON);
+					assertThat(strategies.messageWriters()).flatExtracting(HttpMessageWriter::getWritableMediaTypes)
+							.contains(MediaTypes.HAL_JSON);
+				});
+	}
+
+	@Test
+	void codecsCustomizerShouldRegisterHypermediaTypesWithCodecConfigurer() {
+		this.contextRunner.withUserConfiguration(EnableHypermediaSupportConfig.class,
+				EnableHypermediaWebClientSupportConfig.class).run((context) -> {
+					CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+					CodecConfigurer configurer = new DefaultClientCodecConfigurer();
+					customizer.customize(configurer);
+					CodecConfigurer.CustomCodecs customCodecs = configurer.customCodecs();
+
+					assertThat(((Map<HttpMessageReader<?>, Boolean>) ReflectionTestUtils.getField(customCodecs,
+							"objectReaders")).keySet()).flatExtracting(HttpMessageReader::getReadableMediaTypes)
+									.containsExactly(MediaTypes.HAL_JSON);
+					assertThat(((Map<HttpMessageWriter<?>, Boolean>) ReflectionTestUtils.getField(customCodecs,
+							"objectWriters")).keySet()).flatExtracting(HttpMessageWriter::getWritableMediaTypes)
+									.containsExactly(MediaTypes.HAL_JSON);
+				});
+	}
+
+	@ImportAutoConfiguration({HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HypermediaAutoConfiguration.class})
 	static class BaseConfig {
 
 	}
@@ -121,6 +178,18 @@ class HypermediaAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class EnableHypermediaSupportConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration(RestTemplateAutoConfiguration.class)
+	static class EnableHypermediaRestTemplateSupportConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration(WebClientAutoConfiguration.class)
+	static class EnableHypermediaWebClientSupportConfig {
 
 	}
 
