@@ -36,21 +36,21 @@ class WebConverters {
 	private final List<HttpMessageConverter<?>> converters;
 
 	/**
-	 * Creates a new {@link WebConverters} from the given {@link ObjectMapper} and {@link HypermediaMappingInformation}s.
-	 *
+	 * Creates a new {@link WebConverters} from the given {@link ObjectMapper} and
+	 * {@link HypermediaMappingInformation}s.
 	 * @param mapper must not be {@literal null}.
 	 * @param mappingInformation must not be {@literal null}.
 	 */
 	private WebConverters(ObjectMapper mapper, List<HypermediaMappingInformation> mappingInformation) {
 
 		this.converters = mappingInformation.stream() //
-			.map(it -> createMessageConverter(it, it.configureObjectMapper(mapper.copy()))) //
-			.collect(Collectors.toList());
+				.map(it -> createMessageConverter(it, it.configureObjectMapper(mapper.copy()))) //
+				.collect(Collectors.toList());
 	}
 
 	/**
-	 * Creates a new {@link WebConverters} from the given {@link ObjectMapper} and {@link HypermediaMappingInformation}s.
-	 *
+	 * Creates a new {@link WebConverters} from the given {@link ObjectMapper} and
+	 * {@link HypermediaMappingInformation}s.
 	 * @param mapper must not be {@literal null}.
 	 * @param mappingInformations must not be {@literal null}.
 	 * @return
@@ -64,8 +64,8 @@ class WebConverters {
 	}
 
 	/**
-	 * Augments the given {@link List} of {@link HttpMessageConverter}s with the hypermedia enabled ones.
-	 *
+	 * Augments the given {@link List} of {@link HttpMessageConverter}s with the
+	 * hypermedia enabled ones.
 	 * @param converters must not be {@literal null}.
 	 */
 	public void augment(List<HttpMessageConverter<?>> converters) {
@@ -76,9 +76,8 @@ class WebConverters {
 	}
 
 	/**
-	 * Returns a new {@link List} of {@link HttpMessageConverter}s consisting of both the hypermedia based ones as well as
-	 * the given ones.
-	 *
+	 * Returns a new {@link List} of {@link HttpMessageConverter}s consisting of both the
+	 * hypermedia based ones as well as the given ones.
 	 * @param converters must not be {@literal null}.
 	 */
 	public List<HttpMessageConverter<?>> and(Collection<HttpMessageConverter<?>> converters) {
@@ -92,17 +91,19 @@ class WebConverters {
 	}
 
 	/**
-	 * Creates a new {@link TypeConstrainedMappingJackson2HttpMessageConverter} to handle {@link org.springframework.hateoas.RepresentationModel} for
-	 * the given {@link HypermediaMappingInformation} using a copy of the given {@link ObjectMapper}.
-	 *
+	 * Creates a new {@link TypeConstrainedMappingJackson2HttpMessageConverter} to handle
+	 * {@link org.springframework.hateoas.RepresentationModel} for the given
+	 * {@link HypermediaMappingInformation} using a copy of the given
+	 * {@link ObjectMapper}.
 	 * @param type must not be {@literal null}.
 	 * @param mapper must not be {@literal null}.
 	 * @return
 	 */
 	private static AbstractJackson2HttpMessageConverter createMessageConverter(HypermediaMappingInformation type,
-																			   ObjectMapper mapper) {
+			ObjectMapper mapper) {
 
 		return new TypeConstrainedMappingJackson2HttpMessageConverter(type.getRootType(), type.getMediaTypes(),
-			type.configureObjectMapper(mapper));
+				type.configureObjectMapper(mapper));
 	}
+
 }

@@ -96,6 +96,7 @@ class HypermediaTestAutoConfigurationTests {
 		WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
+
 	}
 
 	@ImportAutoConfiguration(HypermediaTestAutoConfiguration.class)
@@ -107,17 +108,20 @@ class HypermediaTestAutoConfigurationTests {
 		WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
+
 	}
 
 	@ImportAutoConfiguration(HypermediaTestAutoConfiguration.class)
 	@Configuration(proxyBeanMethods = false)
-	@EnableHypermediaSupport(type = {HypermediaType.HAL, HypermediaType.HAL_FORMS, HypermediaType.COLLECTION_JSON,
-			HypermediaType.UBER})
+	@EnableHypermediaSupport(type = { HypermediaType.HAL, HypermediaType.HAL_FORMS, HypermediaType.COLLECTION_JSON,
+			HypermediaType.UBER })
 	static class AllHypermediaTypesConfiguration {
 
 		@Bean
 		WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
+
 	}
+
 }

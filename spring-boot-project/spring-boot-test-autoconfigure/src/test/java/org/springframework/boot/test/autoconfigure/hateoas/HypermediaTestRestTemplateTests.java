@@ -48,7 +48,7 @@ public class HypermediaTestRestTemplateTests {
 				.doesNotContain(MediaTypes.HAL_FORMS_JSON, MediaTypes.UBER_JSON);
 	}
 
-	@ImportAutoConfiguration({HypermediaTestAutoConfiguration.class, RestTemplateAutoConfiguration.class})
+	@ImportAutoConfiguration({ HypermediaTestAutoConfiguration.class, RestTemplateAutoConfiguration.class })
 	@Configuration(proxyBeanMethods = false)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class TestConfiguration {

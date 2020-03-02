@@ -62,10 +62,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class})
+@ConditionalOnClass({ EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class })
 @ConditionalOnWebApplication
-@AutoConfigureAfter({WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class})
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
 @EnableConfigurationProperties(HateoasProperties.class)
 @Import(HypermediaHttpMessageConverterConfiguration.class)
 public class HypermediaAutoConfiguration {
@@ -101,6 +101,7 @@ public class HypermediaAutoConfiguration {
 				});
 			};
 		}
+
 	}
 
 	@Bean

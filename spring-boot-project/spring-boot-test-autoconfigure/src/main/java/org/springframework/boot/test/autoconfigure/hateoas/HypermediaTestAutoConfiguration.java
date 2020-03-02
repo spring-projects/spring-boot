@@ -39,12 +39,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Greg Turnquist
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter({CodecsAutoConfiguration.class})
+@AutoConfigureAfter({ CodecsAutoConfiguration.class })
 @EnableConfigurationProperties
 public class HypermediaTestAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({WebTestClient.class})
+	@ConditionalOnClass({ WebTestClient.class })
 	protected static class WebTestClientConfiguration {
 
 		@Bean
@@ -67,5 +67,7 @@ public class HypermediaTestAutoConfiguration {
 				});
 			};
 		}
+
 	}
+
 }
