@@ -60,7 +60,7 @@ class PluginXmlParser {
 
 	private String textAt(String path, Node source) throws XPathExpressionException {
 		String text = this.xpath.evaluate(path + "/text()", source);
-		return (text.length() == 0) ? null : text;
+		return text.isEmpty() ? null : text;
 	}
 
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
@@ -81,12 +81,12 @@ class PluginXmlParser {
 		Map<String, String> userProperties = new HashMap<>();
 		for (Node parameterConfigurationNode : nodesAt("configuration/*", mojoNode)) {
 			String userProperty = parameterConfigurationNode.getTextContent();
-			if (userProperty != null && userProperty.length() > 0) {
+			if (userProperty != null && !userProperty.isEmpty()) {
 				userProperties.put(parameterConfigurationNode.getNodeName(),
 						userProperty.replace("${", "`").replace("}", "`"));
 			}
 			Node defaultValueAttribute = parameterConfigurationNode.getAttributes().getNamedItem("default-value");
-			if (defaultValueAttribute != null && defaultValueAttribute.getTextContent().length() > 0) {
+			if (defaultValueAttribute != null && !defaultValueAttribute.getTextContent().isEmpty()) {
 				defaultValues.put(parameterConfigurationNode.getNodeName(), defaultValueAttribute.getTextContent());
 			}
 		}
