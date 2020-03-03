@@ -104,6 +104,7 @@ dependencies {
 	optional("org.springframework.integration:spring-integration-core")
 	optional("org.springframework.integration:spring-integration-jdbc")
 	optional("org.springframework.integration:spring-integration-jmx")
+	optional("org.springframework.integration:spring-integration-rsocket")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-tx")

@@ -5932,6 +5932,21 @@ If `spring-integration-jdbc` is available, the default database schema can be cr
 	spring.integration.jdbc.initialize-schema=always
 ----
 
+If `spring-integration-rsocket` is available, developers can configure an RSocket server using `"spring.rsocket.server.*"` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
+This infrastructure can handle Spring Integration RSocket channel adapters and `@MessageMapping` handlers (given `"spring.integration.rsocket.server.message-mapping-enabled"` is configured).
+
+Spring Boot can also auto-configure an `ClientRSocketConnector` using configuration properties:
+
+[source,properties,indent=0,configprops]
+----
+	# Connecting to a RSocket server over TCP
+	spring.integration.rsocket.client.host=example.org
+	spring.integration.rsocket.client.port=9898
+
+	# Connecting to a RSocket Server over WebSocket
+	spring.integration.rsocket.client.uri=ws://example.org
+----
+
 See the {spring-boot-autoconfigure-module-code}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/integration/IntegrationProperties.java[`IntegrationProperties`] classes for more details.
 
 By default, if a Micrometer `meterRegistry` bean is present, Spring Integration metrics will be managed by Micrometer.
