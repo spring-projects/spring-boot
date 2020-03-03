@@ -79,7 +79,7 @@ class AsciidoctorConventions {
 				asciidoctorTask.baseDirFollowsSourceDir();
 				Sync syncSource = createSyncDocumentationSourceTask(project, asciidoctorTask);
 				if (asciidoctorTask instanceof AsciidoctorTask) {
-					configureHtmlOnlyAttributes(project, asciidoctorTask);
+					configureHtmlOnlyAttributes(asciidoctorTask);
 					syncSource.from(unzipResources, (resources) -> resources.into("asciidoc"));
 					asciidoctorTask.doFirst(new Action<Task>() {
 
@@ -135,7 +135,7 @@ class AsciidoctorConventions {
 		asciidoctorTask.options(Collections.singletonMap("doctype", "book"));
 	}
 
-	private void configureHtmlOnlyAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+	private void configureHtmlOnlyAttributes(AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("highlightjsdir", "js/highlight");
 		attributes.put("highlightjs-theme", "github");
