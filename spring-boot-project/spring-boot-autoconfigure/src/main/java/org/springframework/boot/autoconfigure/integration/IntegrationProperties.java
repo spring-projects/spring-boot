@@ -40,7 +40,7 @@ public class IntegrationProperties {
 		return this.jdbc;
 	}
 
-	public RSocket getRSocket() {
+	public RSocket getRsocket() {
 		return this.rsocket;
 	}
 

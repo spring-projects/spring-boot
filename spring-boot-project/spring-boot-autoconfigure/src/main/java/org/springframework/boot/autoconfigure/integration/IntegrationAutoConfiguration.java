@@ -194,7 +194,7 @@ public class IntegrationAutoConfiguration {
 					IntegrationProperties integrationProperties) {
 
 				RSocketMessageHandler messageHandler = new ServerRSocketMessageHandler(
-						integrationProperties.getRSocket().getServer().isMessageMappingEnabled());
+						integrationProperties.getRsocket().getServer().isMessageMappingEnabled());
 				messageHandler.setRSocketStrategies(rSocketStrategies);
 				return messageHandler;
 			}
@@ -216,7 +216,7 @@ public class IntegrationAutoConfiguration {
 			public ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
 					RSocketStrategies rSocketStrategies) {
 
-				IntegrationProperties.RSocket.Client client = integrationProperties.getRSocket().getClient();
+				IntegrationProperties.RSocket.Client client = integrationProperties.getRsocket().getClient();
 				ClientRSocketConnector clientRSocketConnector = (client.getUri() != null)
 						? new ClientRSocketConnector(client.getUri())
 						: new ClientRSocketConnector(client.getHost(), client.getPort());
