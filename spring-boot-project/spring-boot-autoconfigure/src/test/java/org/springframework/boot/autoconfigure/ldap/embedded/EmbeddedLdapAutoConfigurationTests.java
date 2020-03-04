@@ -153,7 +153,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	void ldapContextSourceWithCredentialsIsCreated() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
 				"spring.ldap.embedded.credential.username:uid=root", "spring.ldap.embedded.credential.password:boot")
-				.run(context -> {
+				.run((context) -> {
 					LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
 					assertThat(ldapContextSource.getUrls()).isNotEmpty();
 					assertThat(ldapContextSource.getUserDn()).isEqualTo("uid=root");
@@ -162,7 +162,7 @@ class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	void ldapContextSourceWithoutCredentialsIsCreated() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org").run(context -> {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org").run((context) -> {
 			LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
 			assertThat(ldapContextSource.getUrls()).isNotEmpty();
 			assertThat(ldapContextSource.getUserDn()).isEmpty();
@@ -172,7 +172,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	void ldapContextWithoutSpringLdapIsNotCreated() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
-				.withClassLoader(new FilteredClassLoader(ContextSource.class)).run(context -> {
+				.withClassLoader(new FilteredClassLoader(ContextSource.class)).run((context) -> {
 					assertThat(context).hasNotFailed();
 					assertThat(context).doesNotHaveBean(LdapContextSource.class);
 				});
