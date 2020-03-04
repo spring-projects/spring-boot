@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.ldap.embedded;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
@@ -75,10 +76,6 @@ public class EmbeddedLdapProperties {
 		this.credential = credential;
 	}
 
-	public boolean hasCredential() {
-		return credential != null && StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
-	}
-
 	public List<String> getBaseDn() {
 		return this.baseDn;
 	}
@@ -125,6 +122,10 @@ public class EmbeddedLdapProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		boolean isAvailable() {
+			return StringUtils.hasText(this.username) && StringUtils.hasText(this.password);
 		}
 
 	}

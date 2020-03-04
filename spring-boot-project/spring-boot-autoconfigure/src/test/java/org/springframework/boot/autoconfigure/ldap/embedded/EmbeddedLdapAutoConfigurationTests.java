@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -38,7 +38,6 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link EmbeddedLdapAutoConfiguration}
@@ -47,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 class EmbeddedLdapAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(EmbeddedLdapAutoConfiguration.class));
 
 	@Test
@@ -151,38 +150,32 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	void testLdapContextSourceWithCredentials() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org", 
+	void ldapContextSourceWithCredentialsIsCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
 				"spring.ldap.embedded.credential.username:uid=root", "spring.ldap.embedded.credential.password:boot")
-		.run(context -> {
-			LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
-			assertThat(ldapContextSource.getUserDn()).isEqualTo("uid=root");
-			assertThat(ldapContextSource.getUrls()).isNotEmpty();
-		});
+				.run(context -> {
+					LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
+					assertThat(ldapContextSource.getUrls()).isNotEmpty();
+					assertThat(ldapContextSource.getUserDn()).isEqualTo("uid=root");
+				});
 	}
 
 	@Test
-	void testLdapContextSourceWithoutCredentials() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org") 
-		.run(context -> {
+	void ldapContextSourceWithoutCredentialsIsCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org").run(context -> {
 			LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
+			assertThat(ldapContextSource.getUrls()).isNotEmpty();
 			assertThat(ldapContextSource.getUserDn()).isEmpty();
-			assertThat(ldapContextSource.getUrls()).isNotEmpty();
 		});
 	}
 
 	@Test
-	void testNoLdapContextSourceWithoutContextSourceClass() {
-		this.contextRunner
-				.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
-				.withClassLoader(new FilteredClassLoader(ContextSource.class))
-		.run(context -> {
-			NoSuchBeanDefinitionException expectedException = 
-					new NoSuchBeanDefinitionException(LdapContextSource.class);
-			assertThatThrownBy(()-> context.getBean(LdapContextSource.class))
-					.isInstanceOf(expectedException.getClass())
-					.hasMessage(expectedException.getMessage());
-		});
+	void ldapContextWithoutSpringLdapIsNotCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.withClassLoader(new FilteredClassLoader(ContextSource.class)).run(context -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context).doesNotHaveBean(LdapContextSource.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
