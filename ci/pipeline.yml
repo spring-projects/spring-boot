@@ -390,6 +390,7 @@ jobs:
         - WIN64
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
           GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
