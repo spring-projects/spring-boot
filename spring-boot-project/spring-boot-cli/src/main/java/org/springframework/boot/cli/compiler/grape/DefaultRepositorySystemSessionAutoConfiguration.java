@@ -48,7 +48,7 @@ public class DefaultRepositorySystemSessionAutoConfiguration implements Reposito
 		}
 
 		ProxySelector existing = session.getProxySelector();
-		if (existing == null || !(existing instanceof CompositeProxySelector)) {
+		if (!(existing instanceof CompositeProxySelector)) {
 			JreProxySelector fallback = new JreProxySelector();
 			ProxySelector selector = (existing != null) ? new CompositeProxySelector(Arrays.asList(existing, fallback))
 					: fallback;
