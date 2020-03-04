@@ -149,7 +149,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.clientConnector(connector).build();
 
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
