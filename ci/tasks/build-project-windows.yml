@@ -3,6 +3,7 @@ platform: windows
 inputs:
 - name: git-repo
 params:
+  BRANCH:
   CI: true
   GRADLE_ENTERPRISE_ACCESS_KEY:
   GRADLE_ENTERPRISE_CACHE_USERNAME:
