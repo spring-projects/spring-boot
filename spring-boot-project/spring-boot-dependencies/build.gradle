@@ -1618,6 +1618,13 @@ bom {
 			]
 		}
 	}
+	library("Spring Data Couchbase", "4.0.0.M3") {
+		group("org.springframework.data") {
+			modules = [
+				"spring-data-couchbase"
+			]
+		}
+	}
 	library("Spring Data Releasetrain", "Neumann-BUILD-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
