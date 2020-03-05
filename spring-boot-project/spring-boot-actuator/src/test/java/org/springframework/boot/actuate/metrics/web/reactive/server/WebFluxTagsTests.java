@@ -75,7 +75,7 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagToleratesCustomResponseStatus() {
-		this.exchange.getResponse().setStatusCodeValue(601);
+		this.exchange.getResponse().setRawStatusCode(601);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("root");
 	}
@@ -169,14 +169,14 @@ class WebFluxTagsTests {
 
 	@Test
 	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
-		this.exchange.getResponse().setStatusCodeValue(490);
+		this.exchange.getResponse().setRawStatusCode(490);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
-		this.exchange.getResponse().setStatusCodeValue(701);
+		this.exchange.getResponse().setRawStatusCode(701);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
