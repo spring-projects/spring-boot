@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Elasticsearch Reactive REST clients.
  *
  * @author Brian Clozel
+ * @author Jinlong Song
  * @since 2.2.0
  */
 @ConfigurationProperties(prefix = "spring.data.elasticsearch.client.reactive")
@@ -61,6 +62,11 @@ public class ReactiveRestClientProperties {
 	 * Read and Write Socket timeout.
 	 */
 	private Duration socketTimeout;
+
+	/**
+	 * WebClient max in memory size
+	 */
+	private Integer maxInMemorySize;
 
 	public List<String> getEndpoints() {
 		return this.endpoints;
@@ -110,4 +116,11 @@ public class ReactiveRestClientProperties {
 		this.socketTimeout = socketTimeout;
 	}
 
+	public Integer getMaxInMemorySize() {
+		return maxInMemorySize;
+	}
+
+	public void setMaxInMemorySize(Integer maxInMemorySize) {
+		this.maxInMemorySize = maxInMemorySize;
+	}
 }

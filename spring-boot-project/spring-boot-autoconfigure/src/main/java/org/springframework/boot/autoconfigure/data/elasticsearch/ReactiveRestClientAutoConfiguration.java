@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,10 +38,11 @@ import org.springframework.web.reactive.function.client.WebClient;
  * clients.
  *
  * @author Brian Clozel
+ * @author Jinlong Song
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
+@ConditionalOnClass({ReactiveRestClients.class, WebClient.class, HttpClient.class})
 @EnableConfigurationProperties(ReactiveRestClientProperties.class)
 public class ReactiveRestClientAutoConfiguration {
 
@@ -51,12 +54,24 @@ public class ReactiveRestClientAutoConfiguration {
 		if (properties.isUseSsl()) {
 			builder.usingSsl();
 		}
+		if (!StringUtils.isEmpty(properties.getUsername()) || !StringUtils.isEmpty(properties.getPassword())) {
+			builder.withBasicAuth(properties.getUsername(), properties.getPassword());
+		}
+		if (properties.getMaxInMemorySize() != null) {
+			builder.withWebClientConfigurer(webClient -> {
+				ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+						.codecs(configurer -> configurer.defaultCodecs()
+								.maxInMemorySize(properties.getMaxInMemorySize()))
+						.build();
+				return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
+			});
+		}
 		configureTimeouts(builder, properties);
 		return builder.build();
 	}
 
 	private void configureTimeouts(ClientConfiguration.TerminalClientConfigurationBuilder builder,
-			ReactiveRestClientProperties properties) {
+								   ReactiveRestClientProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getConnectionTimeout()).whenNonNull().to(builder::withConnectTimeout);
 		map.from(properties.getSocketTimeout()).whenNonNull().to(builder::withSocketTimeout);
