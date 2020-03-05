@@ -69,7 +69,7 @@ class MetricsWebFilterTests {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
 				.onErrorResume((t) -> {
-					exchange.getResponse().setStatusCodeValue(500);
+					exchange.getResponse().setRawStatusCode(500);
 					return exchange.getResponse().setComplete();
 				}).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
@@ -84,7 +84,7 @@ class MetricsWebFilterTests {
 
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(anonymous)).onErrorResume((t) -> {
-			exchange.getResponse().setStatusCodeValue(500);
+			exchange.getResponse().setRawStatusCode(500);
 			return exchange.getResponse().setComplete();
 		}).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
@@ -96,7 +96,7 @@ class MetricsWebFilterTests {
 	void filterAddsTagsToRegistryForExceptionsAndCommittedResponse() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> {
-			exchange.getResponse().setStatusCodeValue(500);
+			exchange.getResponse().setRawStatusCode(500);
 			return exchange.getResponse().setComplete().then(Mono.error(new IllegalStateException("test error")));
 		}).onErrorResume((t) -> Mono.empty()).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
