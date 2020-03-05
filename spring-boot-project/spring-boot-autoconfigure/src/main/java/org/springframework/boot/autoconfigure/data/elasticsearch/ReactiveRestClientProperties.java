@@ -64,9 +64,9 @@ public class ReactiveRestClientProperties {
 	private Duration socketTimeout;
 
 	/**
-	 * WebClient max in memory size
+	 * WebClient max in memory size.
 	 */
-	private Integer maxInMemorySize;
+	private int maxInMemorySize = -1;
 
 	public List<String> getEndpoints() {
 		return this.endpoints;
@@ -116,11 +116,12 @@ public class ReactiveRestClientProperties {
 		this.socketTimeout = socketTimeout;
 	}
 
-	public Integer getMaxInMemorySize() {
-		return maxInMemorySize;
+	public int getMaxInMemorySize() {
+		return this.maxInMemorySize;
 	}
 
-	public void setMaxInMemorySize(Integer maxInMemorySize) {
+	public void setMaxInMemorySize(int maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
 	}
+
 }
