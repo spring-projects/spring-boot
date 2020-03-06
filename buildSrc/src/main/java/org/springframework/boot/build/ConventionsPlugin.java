@@ -144,6 +144,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			project.getTasks().withType(Test.class, (test) -> {
 				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
+				withOptionalTestJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
 			});
@@ -202,7 +203,15 @@ public class ConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void withOptionalBuildJavaHome(Project project, Consumer<String> consumer) {
-		String buildJavaHome = (String) project.findProperty("buildJavaHome");
+		withOptionalJavaHome(project, consumer, "buildJavaHome");
+	}
+
+	private void withOptionalTestJavaHome(Project project, Consumer<String> consumer) {
+		withOptionalJavaHome(project, consumer, "testJavaHome");
+	}
+
+	private void withOptionalJavaHome(Project project, Consumer<String> consumer, String javaHome) {
+		String buildJavaHome = (String) project.findProperty(javaHome);
 		if (buildJavaHome != null && !buildJavaHome.isEmpty()) {
 			consumer.accept(buildJavaHome);
 		}
