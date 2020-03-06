@@ -94,6 +94,14 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: 2.2.x
+- name: spring-boot-jdk14-ci-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk14-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: 2.2.x
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
@@ -126,6 +134,14 @@ resources:
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk13-build
+- name: repo-status-jdk14-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: jdk14-build
 - name: slack-alert
   type: slack-notification
   icon: slack
@@ -160,6 +176,10 @@ jobs:
       params:
         build: ci-images-git-repo/ci/images
         dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk13-ci-image/Dockerfile
+    - put: spring-boot-jdk14-ci-image
+      params:
+        build: ci-images-git-repo/ci/images
+        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk14-ci-image/Dockerfile
 - name: detect-jdk-updates
   plan:
   - get: git-repo
@@ -193,6 +213,15 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java13
+      image: spring-boot-ci-image
+    - task: detect-jdk14-update
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+        JDK_VERSION: java14
       image: spring-boot-ci-image
 - name: detect-ubuntu-image-updates
   plan:
@@ -413,6 +442,44 @@ jobs:
         silent: true
         icon_emoji: ":concourse:"
         username: concourse-ci
+- name: jdk14-build
+  serial: true
+  public: true
+  plan:
+    - get: spring-boot-jdk14-ci-image
+    - get: git-repo
+      trigger: true
+    - put: repo-status-jdk14-build
+      params: { state: "pending", commit: "git-repo" }
+    - do:
+      - task: build-project
+        privileged: true
+        timeout: ((task-timeout))
+        image: spring-boot-jdk14-ci-image
+        file: git-repo/ci/tasks/build-project.yml
+        params:
+          BRANCH: ((branch))
+          GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+          GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
+          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+      on_failure:
+        do:
+          - put: repo-status-jdk14-build
+            params: { state: "failure", commit: "git-repo" }
+          - put: slack-alert
+            params:
+              text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+              silent: true
+              icon_emoji: ":concourse:"
+              username: concourse-ci
+    - put: repo-status-jdk14-build
+      params: { state: "success", commit: "git-repo" }
+    - put: slack-alert
+      params:
+        text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+        silent: true
+        icon_emoji: ":concourse:"
+        username: concourse-ci
 - name: windows-build
   serial: true
   plan:
@@ -615,7 +682,7 @@ jobs:
       body: generated-release-notes/release-notes.md
 groups:
 - name: "Build"
-  jobs: ["build", "jdk11-build", "jdk13-build", "windows-build"]
+  jobs: ["build", "jdk11-build", "jdk13-build", "jdk14-build", "windows-build"]
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
