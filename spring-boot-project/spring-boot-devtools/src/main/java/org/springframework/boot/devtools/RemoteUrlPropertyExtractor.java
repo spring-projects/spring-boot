@@ -54,7 +54,7 @@ class RemoteUrlPropertyExtractor implements ApplicationListener<ApplicationEnvir
 		catch (URISyntaxException ex) {
 			throw new IllegalStateException("Malformed URL '" + url + "'");
 		}
-		Map<String, Object> source = Collections.singletonMap("remoteUrl", (Object) url);
+		Map<String, Object> source = Collections.singletonMap("remoteUrl", url);
 		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
 		environment.getPropertySources().addLast(propertySource);
 	}
