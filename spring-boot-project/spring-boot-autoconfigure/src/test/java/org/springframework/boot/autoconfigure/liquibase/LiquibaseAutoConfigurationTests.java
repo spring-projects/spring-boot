@@ -69,6 +69,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Dominic Gunn
  * @author András Deák
  * @author Andrii Hrytsiuk
+ * @author Ferenc Gratzer
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -106,6 +107,7 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(liquibase.getContexts()).isNull();
 					assertThat(liquibase.getDefaultSchema()).isNull();
 					assertThat(liquibase.isDropFirst()).isFalse();
+					assertThat(liquibase.isClearCheckSums()).isFalse();
 				}));
 	}
 
@@ -143,6 +145,7 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(liquibase.getDatabaseChangeLogLockTable())
 							.isEqualTo(properties.getDatabaseChangeLogLockTable());
 					assertThat(liquibase.isDropFirst()).isEqualTo(properties.isDropFirst());
+					assertThat(liquibase.isClearCheckSums()).isEqualTo(properties.isClearCheckSums());
 					assertThat(liquibase.isTestRollbackOnUpdate()).isEqualTo(properties.isTestRollbackOnUpdate());
 				}));
 	}
@@ -187,6 +190,13 @@ class LiquibaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.drop-first:true")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.isDropFirst()).isTrue()));
+	}
+
+	@Test
+	void overrideClearCheckSums() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.clear-check-sums:true")
+				.run(assertLiquibase((liquibase) -> assertThat(liquibase.isClearCheckSums()).isTrue()));
 	}
 
 	@Test

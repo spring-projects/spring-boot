@@ -64,6 +64,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Dominic Gunn
  * @author Dan Zheng
  * @author András Deák
+ * @author Ferenc Gratzer
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -107,6 +108,7 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDatabaseChangeLogTable(this.properties.getDatabaseChangeLogTable());
 			liquibase.setDatabaseChangeLogLockTable(this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
+			liquibase.setClearCheckSums(this.properties.isClearCheckSums());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());

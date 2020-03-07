@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Marcel Overdijk
  * @author Eddú Meléndez
+ * @author Ferenc Gratzer
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
@@ -73,6 +74,12 @@ public class LiquibaseProperties {
 	 * Whether to first drop the database schema.
 	 */
 	private boolean dropFirst;
+
+	/**
+	 * Whether to clear all checksums in the current changelog, so they will be
+	 * recalculated next update.
+	 */
+	private boolean clearCheckSums;
 
 	/**
 	 * Whether to enable Liquibase support.
@@ -185,6 +192,14 @@ public class LiquibaseProperties {
 
 	public void setDropFirst(boolean dropFirst) {
 		this.dropFirst = dropFirst;
+	}
+
+	public boolean isClearCheckSums() {
+		return this.clearCheckSums;
+	}
+
+	public void setClearCheckSums(boolean clearCheckSums) {
+		this.clearCheckSums = clearCheckSums;
 	}
 
 	public boolean isEnabled() {
