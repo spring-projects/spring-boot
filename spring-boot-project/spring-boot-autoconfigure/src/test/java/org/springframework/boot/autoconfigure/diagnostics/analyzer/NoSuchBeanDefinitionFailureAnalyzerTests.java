@@ -154,11 +154,14 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
-		String pattern = "@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)";
+		assertThat(analysis.getDescription()).containsPattern(determineAnnotationValuePattern());
+	}
+
+	private String determineAnnotationValuePattern() {
 		if (JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.FOURTEEN)) {
-			pattern = "@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)";
+			return "@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)";
 		}
-		assertThat(analysis.getDescription()).containsPattern(pattern);
+		return "@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)";
 	}
 
 	@Test
