@@ -32,7 +32,7 @@ public class VersionOverridingElasticsearchContainer extends ElasticsearchContai
 	/**
 	 * Elasticsearch version
 	 */
-	protected static final String ELASTICSEARCH_VERSION = "7.5.1";
+	protected static final String ELASTICSEARCH_VERSION = "7.6.1";
 
 	public VersionOverridingElasticsearchContainer() {
 		super(ELASTICSEARCH_IMAGE + ":" + ELASTICSEARCH_VERSION);
