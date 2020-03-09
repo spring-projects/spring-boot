@@ -112,7 +112,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		configureEngine(tomcat.getEngine());
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
 		prepareContext(tomcat.getHost(), servlet);
-		return new TomcatWebServer(tomcat, getPort() >= 0);
+        return new getTomcatWebServer(tomcat);
 	}
 
 	private void configureEngine(Engine engine) {
