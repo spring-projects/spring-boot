@@ -143,7 +143,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		blockingHandler.completeOne();
 		responseLatch.await(5, TimeUnit.SECONDS);
 		this.webServer.stop();
-		Throwable error = await().atMost(Duration.ofSeconds(5)).until(errorReference::get, (ex) -> ex != null);
+		Throwable error = await().atMost(Duration.ofSeconds(30)).until(errorReference::get, (ex) -> ex != null);
 		assertThat(error).isInstanceOf(IOException.class);
 	}
 

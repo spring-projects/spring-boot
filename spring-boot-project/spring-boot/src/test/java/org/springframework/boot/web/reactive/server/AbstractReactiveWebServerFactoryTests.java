@@ -520,7 +520,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		public void completeOne() {
 			try {
 				MonoProcessor<Void> processor = this.monoProcessors.take();
-				System.out.println("Completing " + processor);
 				processor.onComplete();
 			}
 			catch (InterruptedException ex) {
