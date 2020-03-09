@@ -147,6 +147,15 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	}
 
 	@Override
+	protected void doClose() {
+		WebServer webServer = getWebServer();
+		if (webServer != null) {
+			webServer.shutDownGracefully();
+		}
+		super.doClose();
+	}
+
+	@Override
 	protected void onClose() {
 		super.onClose();
 		stopAndReleaseReactiveWebServer();

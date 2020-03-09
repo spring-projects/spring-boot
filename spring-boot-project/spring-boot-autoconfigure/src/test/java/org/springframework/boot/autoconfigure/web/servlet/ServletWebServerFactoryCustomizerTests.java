@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
@@ -152,6 +154,18 @@ class ServletWebServerFactoryCustomizerTests {
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
 		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("myfolder"));
+	}
+
+	@Test
+	void whenGracePeriodPropertyIsSetThenGracePeriodIsCustomized() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.shutdown.grace-period", "30s");
+		bindProperties(map);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
+		verify(factory).setShutdown(shutdownCaptor.capture());
+		assertThat(shutdownCaptor.getValue().getGracePeriod()).isEqualTo(Duration.ofSeconds(30));
 	}
 
 	private void bindProperties(Map<String, String> map) {

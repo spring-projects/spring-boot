@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.naming.InitialContext;
@@ -55,6 +56,8 @@ import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
@@ -66,6 +69,7 @@ import org.mockito.InOrder;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -557,6 +561,30 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThatThrownBy(() -> factory.getWebServer(registration).start()).isInstanceOf(WebServerException.class);
 	}
 
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		Future<Object> request = initiateGetRequest("/blocking");
+		blockingServlet.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		Future<Object> unconnectableRequest = initiateGetRequest("/");
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		this.webServer.stop();
+		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
@@ -608,6 +636,11 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(ConnectorStartFailedException.class);
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((TomcatWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

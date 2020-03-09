@@ -17,10 +17,14 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -41,10 +45,12 @@ import org.mockito.InOrder;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.SocketUtils;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -256,6 +262,27 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 				.isInstanceOf(WebServerException.class);
 	}
 
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient().build();
+		webClient.get().retrieve().toBodilessEntity().subscribe();
+		blockingHandler.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<Throwable> errorReference = new AtomicReference<>();
+		webClient.get().retrieve().toBodilessEntity().doOnError(errorReference::set).subscribe();
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingHandler.completeOne();
+		this.webServer.stop();
+		assertThat(errorReference.get()).hasCauseInstanceOf(ConnectException.class);
+	}
+
 	private void doWithBlockedPort(BlockedPortAction action) throws IOException {
 		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
@@ -278,6 +305,11 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((TomcatWebServer) this.webServer).inGracefulShutdown();
 	}
 
 	interface BlockedPortAction {

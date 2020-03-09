@@ -21,12 +21,17 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.HttpHostConnectException;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -44,8 +49,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -167,6 +174,34 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 		ServerConnector connector = (ServerConnector) jettyWebServer.getServer().getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
 		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols()).containsExactly("TLSv1.1");
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		Future<Object> request = initiateGetRequest("/blocking");
+		blockingServlet.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		// Jetty accepts one additional request after a connector has been told to stop
+		// accepting requests
+		Future<Object> unconnectableRequest1 = initiateGetRequest("/");
+		Future<Object> unconnectableRequest2 = initiateGetRequest("/");
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		this.webServer.stop();
+		List<Object> results = Arrays.asList(unconnectableRequest1.get(), unconnectableRequest2.get());
+		assertThat(results).anySatisfy((result) -> assertThat(result).isInstanceOf(HttpHostConnectException.class));
 	}
 
 	private Ssl getSslSettings(String... enabledProtocols) {

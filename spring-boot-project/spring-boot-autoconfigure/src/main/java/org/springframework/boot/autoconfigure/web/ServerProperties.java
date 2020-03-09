@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
@@ -113,6 +114,9 @@ public class ServerProperties {
 
 	@NestedConfigurationProperty
 	private final Http2 http2 = new Http2();
+
+	@NestedConfigurationProperty
+	private final Shutdown shutdown = new Shutdown();
 
 	private final Servlet servlet = new Servlet();
 
@@ -197,6 +201,10 @@ public class ServerProperties {
 
 	public Http2 getHttp2() {
 		return this.http2;
+	}
+
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	public Servlet getServlet() {

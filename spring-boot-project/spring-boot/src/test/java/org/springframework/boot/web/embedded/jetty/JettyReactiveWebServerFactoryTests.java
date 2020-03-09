@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -26,11 +32,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -108,6 +116,40 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		assertThat(connector.getByteBufferPool()).isEqualTo(resourceFactory.getByteBufferPool());
 		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
 		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		JettyReactiveWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		getWebClient().build().get().retrieve().toBodilessEntity().subscribe();
+		blockingHandler.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		// We need to make two requests as Jetty accepts one additional request after a
+		// connector has been told to stop accepting requests
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		AtomicReference<Throwable> errorReference = new AtomicReference<>();
+		getWebClient().build().get().retrieve().toBodilessEntity().doOnSuccess((response) -> responseLatch.countDown())
+				.doOnError(errorReference::set).subscribe();
+		getWebClient().build().get().retrieve().toBodilessEntity().doOnSuccess((response) -> responseLatch.countDown())
+				.doOnError(errorReference::set).subscribe();
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingHandler.completeOne();
+		blockingHandler.completeOne();
+		responseLatch.await(5, TimeUnit.SECONDS);
+		this.webServer.stop();
+		Throwable error = await().atMost(Duration.ofSeconds(5)).until(errorReference::get, (ex) -> ex != null);
+		assertThat(error).isInstanceOf(IOException.class);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((JettyWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }
