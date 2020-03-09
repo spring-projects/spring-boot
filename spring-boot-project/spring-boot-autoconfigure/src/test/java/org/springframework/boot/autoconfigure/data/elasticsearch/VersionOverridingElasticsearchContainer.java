@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import org.elasticsearch.Version;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
@@ -32,7 +33,7 @@ public class VersionOverridingElasticsearchContainer extends ElasticsearchContai
 	/**
 	 * Elasticsearch version
 	 */
-	protected static final String ELASTICSEARCH_VERSION = "7.6.1";
+	protected static final String ELASTICSEARCH_VERSION = Version.CURRENT.toString();
 
 	public VersionOverridingElasticsearchContainer() {
 		super(ELASTICSEARCH_IMAGE + ":" + ELASTICSEARCH_VERSION);
