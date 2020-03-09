@@ -30,8 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @author Hans Schulz
- * @author Madhura Bhave
  */
 public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
@@ -117,26 +115,6 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
 		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
 		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
-	}
-
-	@Test
-	public void testServicePropertiesContainingKeysWithDot() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"VCAP_SERVICES={\"user-provided\":[{\"name\":\"test\",\"label\":\"test-label\","
-						+ "\"credentials\":{\"key.with.dots\":\"some-value\"}}]}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(getProperty("vcap.services.test.name")).isEqualTo("test");
-		assertThat(getProperty("vcap.services.test.credentials[key.with.dots]")).isEqualTo("some-value");
-	}
-
-	@Test
-	public void testServicePropertiesContainingKeysWithUpperCaseAndNonAlphaNumericCharacters() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"VCAP_SERVICES={\"user-provided\":[{\"name\":\"test\",\"label\":\"test-label\","
-						+ "\"credentials\":{\"My-Key\":\"some-value\", \"foo@\":\"bar\"}}]}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(getProperty("vcap.services.test.credentials[My-Key]")).isEqualTo("some-value");
-		assertThat(getProperty("vcap.services.test.credentials[foo@]")).isEqualTo("bar");
 	}
 
 	private String getProperty(String key) {
