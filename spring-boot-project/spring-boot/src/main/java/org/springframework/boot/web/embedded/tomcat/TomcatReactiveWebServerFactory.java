@@ -345,5 +345,4 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		Assert.hasLength(protocol, "Protocol must not be empty");
 		this.protocol = protocol;
 	}
-
 }
