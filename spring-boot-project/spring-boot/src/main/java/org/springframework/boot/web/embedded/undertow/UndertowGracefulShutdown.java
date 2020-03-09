@@ -64,7 +64,7 @@ class UndertowGracefulShutdown implements GracefulShutdown {
 			logger.info("Graceful shutdown complete");
 			return true;
 		}
-		logger.info("Grace period elaped with one or more requests still active");
+		logger.info("Grace period elapsed with one or more requests still active");
 		return graceful;
 	}
 

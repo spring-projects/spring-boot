@@ -69,7 +69,7 @@ class TomcatGracefulShutdown implements GracefulShutdown {
 				for (Container context : host.findChildren()) {
 					while (active(context)) {
 						if (System.currentTimeMillis() > end) {
-							logger.info("Grace period elaped with one or more requests still active");
+							logger.info("Grace period elapsed with one or more requests still active");
 							return false;
 						}
 						Thread.sleep(50);

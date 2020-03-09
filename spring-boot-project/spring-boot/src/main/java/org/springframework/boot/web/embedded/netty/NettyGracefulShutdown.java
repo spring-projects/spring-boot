@@ -88,7 +88,7 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 				return true;
 			}
 			if (logger.isInfoEnabled()) {
-				logger.info("Grace period elaped with " + activeRequests + " request(s) still active");
+				logger.info("Grace period elapsed with " + activeRequests + " request(s) still active");
 			}
 			return false;
 		}
