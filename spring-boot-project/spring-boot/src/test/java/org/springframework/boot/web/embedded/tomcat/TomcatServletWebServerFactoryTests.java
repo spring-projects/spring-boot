@@ -18,6 +18,7 @@ package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -57,7 +58,9 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
@@ -582,8 +585,40 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(shutdownResult.get()).isEqualTo(false);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-		this.webServer.stop();
 		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
+		this.webServer.stop();
+	}
+
+	@Test
+	void whenServerIsShuttingDownARequestOnAnIdleConnectionResultsInConnectionReset() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		HttpClient httpClient = HttpClients.createMinimal();
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> keepAliveRequest = initiateGetRequest(httpClient, port, "/blocking");
+		blockingServlet.awaitQueue();
+		blockingServlet.admitOne();
+		assertThat(keepAliveRequest.get()).isInstanceOf(HttpResponse.class);
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		initiateGracefulShutdown();
+		Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/blocking");
+		blockingServlet.admitOne();
+		Object response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
+		Object idleConnectionRequestResult = idleConnectionRequest.get();
+		assertThat(idleConnectionRequestResult).isInstanceOf(SocketException.class);
+		assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
+		this.webServer.stop();
 	}
 
 	@Override
