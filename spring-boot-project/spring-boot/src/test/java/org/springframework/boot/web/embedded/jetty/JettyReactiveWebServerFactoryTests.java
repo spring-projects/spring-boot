@@ -16,29 +16,30 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -127,24 +128,32 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		getWebClient().build().get().retrieve().toBodilessEntity().subscribe();
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		getWebClient().build().get().retrieve().toBodilessEntity().subscribe((response) -> responseLatch.countDown());
 		blockingHandler.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
 		// We need to make two requests as Jetty accepts one additional request after a
 		// connector has been told to stop accepting requests
-		CountDownLatch responseLatch = new CountDownLatch(1);
-		AtomicReference<Throwable> errorReference = new AtomicReference<>();
-		getWebClient().build().get().retrieve().toBodilessEntity().doOnSuccess((response) -> responseLatch.countDown())
-				.doOnError(errorReference::set).subscribe();
-		getWebClient().build().get().retrieve().toBodilessEntity().doOnSuccess((response) -> responseLatch.countDown())
-				.doOnError(errorReference::set).subscribe();
+		Mono<ResponseEntity<Void>> unconnectableRequest1 = getWebClient().build().get().retrieve().toBodilessEntity();
+		Mono<ResponseEntity<Void>> unconnectableRequest2 = getWebClient().build().get().retrieve().toBodilessEntity();
 		assertThat(shutdownResult.get()).isEqualTo(false);
-		blockingHandler.completeOne();
 		blockingHandler.completeOne();
 		responseLatch.await(5, TimeUnit.SECONDS);
 		this.webServer.stop();
-		Throwable error = await().atMost(Duration.ofSeconds(30)).until(errorReference::get, (ex) -> ex != null);
-		assertThat(error).isInstanceOf(IOException.class);
+		List<Object> results = new ArrayList<>();
+		try {
+			results.add(unconnectableRequest1.block());
+		}
+		catch (Exception ex) {
+			results.add(ex);
+		}
+		try {
+			results.add(unconnectableRequest2.block());
+		}
+		catch (Exception ex) {
+			results.add(ex);
+		}
+		assertThat(results).anySatisfy((result) -> assertThat(result).isInstanceOf(Exception.class));
 	}
 
 	@Override
