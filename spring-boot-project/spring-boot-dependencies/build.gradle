@@ -164,6 +164,11 @@ bom {
 			imports = [
 				"java-driver-bom"
 			]
+			modules = [
+				"java-driver-core" {
+ 					exclude group: "org.slf4j", module: "jcl-over-slf4j"
+ 				}
+ 			]
 		}
 	}
 	library("Classmate", "1.5.1") {
