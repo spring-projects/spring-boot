@@ -688,7 +688,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta XML WS", "2.3.2") {
+	library("Jakarta XML WS", "2.3.3") {
 		group("jakarta.xml.ws") {
 			modules = [
 				"jakarta.xml.ws-api"
