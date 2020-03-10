@@ -58,6 +58,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClients;
@@ -616,8 +617,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Object response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
 		Object idleConnectionRequestResult = idleConnectionRequest.get();
-		assertThat(idleConnectionRequestResult).isInstanceOf(SocketException.class);
-		assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
+		assertThat(idleConnectionRequestResult).isInstanceOfAny(SocketException.class, NoHttpResponseException.class);
+		if (idleConnectionRequestResult instanceof SocketException) {
+			assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
+		}
 		this.webServer.stop();
 	}
 
