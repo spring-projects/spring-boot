@@ -1041,7 +1041,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			registration.addMapping("/blocking");
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blocking");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
 		long start = System.currentTimeMillis();
 		assertThat(this.webServer.shutDownGracefully()).isFalse();
@@ -1066,7 +1067,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blocking");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
 		long start = System.currentTimeMillis();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
@@ -1090,7 +1092,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blockingAsync");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
 		blockingAsyncServlet.awaitQueue();
 		long start = System.currentTimeMillis();
 		assertThat(this.webServer.shutDownGracefully()).isFalse();
@@ -1115,7 +1118,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blockingAsync");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
 		blockingAsyncServlet.awaitQueue();
 		long start = System.currentTimeMillis();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
@@ -1133,15 +1137,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return future;
 	}
 
-	protected Future<Object> initiateGetRequest(String path) {
-		return initiateGetRequest(HttpClients.createDefault(), path);
+	protected Future<Object> initiateGetRequest(int port, String path) {
+		return initiateGetRequest(HttpClients.createMinimal(), port, path);
 	}
 
-	protected Future<Object> initiateGetRequest(HttpClient httpClient, String path) {
+	protected Future<Object> initiateGetRequest(HttpClient httpClient, int port, String path) {
 		RunnableFuture<Object> getRequest = new FutureTask<>(() -> {
 			try {
-				HttpResponse response = httpClient
-						.execute(new HttpGet("http://localhost:" + this.webServer.getPort() + path));
+				HttpResponse response = httpClient.execute(new HttpGet("http://localhost:" + port + path));
 				response.getEntity().getContent().close();
 				return response;
 			}

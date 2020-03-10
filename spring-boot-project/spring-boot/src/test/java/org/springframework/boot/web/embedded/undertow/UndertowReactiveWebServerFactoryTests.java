@@ -118,7 +118,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		WebClient webClient = getWebClient().build();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
 		webClient.get().retrieve().toBodilessEntity().subscribe();
 		blockingHandler.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
@@ -146,7 +146,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		WebClient client = getWebClient().build();
+		WebClient client = getWebClient(this.webServer.getPort()).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));

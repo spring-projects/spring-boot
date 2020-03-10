@@ -112,7 +112,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		WebClient webClient = getWebClient().build();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
 		webClient.get().retrieve().toBodilessEntity().subscribe();
 		blockingHandler.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();

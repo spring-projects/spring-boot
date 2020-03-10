@@ -109,8 +109,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			this.webServer.start();
 			return port;
 		});
-		Mono<String> result = getWebClient().build().post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromValue("Hello World")).exchange()
+		Mono<String> result = getWebClient(this.webServer.getPort()).build().post().uri("/test")
+				.contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
@@ -269,12 +269,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		StepVerifier.create(result).expectError(SSLException.class).verify(Duration.ofSeconds(10));
 	}
 
-	protected WebClient.Builder getWebClient() {
-		return getWebClient(HttpClient.create().wiretap(true));
+	protected WebClient.Builder getWebClient(int port) {
+		return getWebClient(HttpClient.create().wiretap(true), port);
 	}
 
-	protected WebClient.Builder getWebClient(HttpClient client) {
-		InetSocketAddress address = new InetSocketAddress(this.webServer.getPort());
+	protected WebClient.Builder getWebClient(HttpClient client, int port) {
+		InetSocketAddress address = new InetSocketAddress(port);
 		String baseUrl = "http://" + address.getHostString() + ":" + address.getPort();
 		return WebClient.builder().clientConnector(new ReactorClientHttpConnector(client)).baseUrl(baseUrl);
 	}
@@ -368,7 +368,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		Mono<ResponseEntity<Void>> request = getWebClient().build().get().retrieve().toBodilessEntity();
+		Mono<ResponseEntity<Void>> request = getWebClient(this.webServer.getPort()).build().get().retrieve()
+				.toBodilessEntity();
 		AtomicReference<ResponseEntity<Void>> responseReference = new AtomicReference<>();
 		CountDownLatch responseLatch = new CountDownLatch(1);
 		request.subscribe((response) -> {
@@ -399,7 +400,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		Mono<ResponseEntity<Void>> request = getWebClient().build().get().retrieve().toBodilessEntity();
+		Mono<ResponseEntity<Void>> request = getWebClient(this.webServer.getPort()).build().get().retrieve()
+				.toBodilessEntity();
 		AtomicReference<ResponseEntity<Void>> responseReference = new AtomicReference<>();
 		CountDownLatch responseLatch = new CountDownLatch(1);
 		request.subscribe((response) -> {
@@ -437,7 +439,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.tcpConfiguration((tcpClient) -> tcpClient.doOnConnected(
 						(connection) -> connection.channel().pipeline().addBefore(NettyPipeline.HttpDecompressor,
 								"CompressionTest", new CompressionDetectionHandler())));
-		return getWebClient(client).build();
+		return getWebClient(client, this.webServer.getPort()).build();
 	}
 
 	protected void assertResponseIsCompressed(ResponseEntity<Void> response) {
@@ -451,8 +453,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected void assertForwardHeaderIsUsed(AbstractReactiveWebServerFactory factory) {
 		this.webServer = factory.getWebServer(new XForwardedHandler());
 		this.webServer.start();
-		String body = getWebClient().build().get().header("X-Forwarded-Proto", "https").retrieve()
-				.bodyToMono(String.class).block(Duration.ofSeconds(30));
+		String body = getWebClient(this.webServer.getPort()).build().get().header("X-Forwarded-Proto", "https")
+				.retrieve().bodyToMono(String.class).block(Duration.ofSeconds(30));
 		assertThat(body).isEqualTo("https");
 	}
 

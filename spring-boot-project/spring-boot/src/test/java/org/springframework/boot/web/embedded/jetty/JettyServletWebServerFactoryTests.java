@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,8 +30,11 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -189,19 +192,80 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blocking");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		// Jetty accepts one additional request after a connector has been told to stop
-		// accepting requests
-		Future<Object> unconnectableRequest1 = initiateGetRequest("/");
-		Future<Object> unconnectableRequest2 = initiateGetRequest("/");
+		Future<Object> unconnectableRequest = initiateGetRequest(port, "/");
 		assertThat(shutdownResult.get()).isEqualTo(false);
 		blockingServlet.admitOne();
-		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		Object response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
+		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
 		this.webServer.stop();
-		List<Object> results = Arrays.asList(unconnectableRequest1.get(), unconnectableRequest2.get());
-		assertThat(results).anySatisfy((result) -> assertThat(result).isInstanceOf(HttpHostConnectException.class));
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenResponseToRequestOnIdleConnectionWillHaveAConnectionCloseHeader()
+			throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		HttpClient client = HttpClients.createMinimal();
+		Future<Object> request = initiateGetRequest(client, port, "/blocking");
+		blockingServlet.awaitQueue();
+		blockingServlet.admitOne();
+		Object response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
+		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNull();
+		this.webServer.shutDownGracefully();
+		request = initiateGetRequest(client, port, "/blocking");
+		blockingServlet.awaitQueue();
+		blockingServlet.admitOne();
+		response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
+		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull().extracting(Header::getValue)
+				.isEqualTo("close");
+		this.webServer.stop();
+	}
+
+	@Test
+	void whenARequestCompletesAfterGracefulShutdownHasBegunThenItHasAConnectionCloseHeader()
+			throws InterruptedException, ExecutionException {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(30));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		long start = System.currentTimeMillis();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		blockingServlet.admitOne();
+		assertThat(shutdownResult.get()).isTrue();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isLessThanOrEqualTo(30000);
+		Object requestResult = request.get();
+		assertThat(requestResult).isInstanceOf(HttpResponse.class);
+		assertThat(((HttpResponse) requestResult).getFirstHeader("Connection").getValue()).isEqualTo("close");
 	}
 
 	private Ssl getSslSettings(String... enabledProtocols) {

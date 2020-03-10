@@ -574,10 +574,11 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blocking");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		Future<Object> unconnectableRequest = initiateGetRequest("/");
+		Future<Object> unconnectableRequest = initiateGetRequest(port, "/");
 		assertThat(shutdownResult.get()).isEqualTo(false);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);

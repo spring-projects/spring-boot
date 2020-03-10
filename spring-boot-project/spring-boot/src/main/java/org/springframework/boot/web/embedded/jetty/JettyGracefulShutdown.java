@@ -17,13 +17,13 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 
 import org.springframework.boot.web.server.GracefulShutdown;
 
@@ -55,7 +55,15 @@ class JettyGracefulShutdown implements GracefulShutdown {
 		logger.info("Commencing graceful shutdown, allowing up to " + this.period.getSeconds()
 				+ "s for active requests to complete");
 		for (Connector connector : this.server.getConnectors()) {
-			((ServerConnector) connector).setAccepting(false);
+			try {
+				connector.shutdown().get();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (ExecutionException ex) {
+				// Continue
+			}
 		}
 		this.shuttingDown = true;
 		long end = System.currentTimeMillis() + this.period.toMillis();

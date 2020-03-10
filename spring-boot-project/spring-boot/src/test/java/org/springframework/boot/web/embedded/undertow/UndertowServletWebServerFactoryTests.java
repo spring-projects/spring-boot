@@ -190,10 +190,11 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
-		Future<Object> request = initiateGetRequest("/blocking");
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
 		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		Future<Object> rejectedRequest = initiateGetRequest("/");
+		Future<Object> rejectedRequest = initiateGetRequest(port, "/");
 		assertThat(shutdownResult.get()).isEqualTo(false);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
