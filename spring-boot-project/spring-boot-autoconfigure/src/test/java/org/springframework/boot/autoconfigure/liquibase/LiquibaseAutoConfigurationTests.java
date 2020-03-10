@@ -145,7 +145,7 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(liquibase.getDatabaseChangeLogLockTable())
 							.isEqualTo(properties.getDatabaseChangeLogLockTable());
 					assertThat(liquibase.isDropFirst()).isEqualTo(properties.isDropFirst());
-					assertThat(liquibase.isClearCheckSums()).isEqualTo(properties.isClearCheckSums());
+					assertThat(liquibase.isClearCheckSums()).isEqualTo(properties.isClearChecksums());
 					assertThat(liquibase.isTestRollbackOnUpdate()).isEqualTo(properties.isTestRollbackOnUpdate());
 				}));
 	}
@@ -193,9 +193,9 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void overrideClearCheckSums() {
+	void overrideClearChecksums() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.clear-check-sums:true")
+				.withPropertyValues("spring.liquibase.clear-checksums:true")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.isClearCheckSums()).isTrue()));
 	}
 

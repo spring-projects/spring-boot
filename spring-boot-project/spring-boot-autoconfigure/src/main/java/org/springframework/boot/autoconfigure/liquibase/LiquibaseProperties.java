@@ -41,6 +41,12 @@ public class LiquibaseProperties {
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
+	 * Whether to clear all checksums in the current changelog, so they will be
+	 * recalculated upon the next update.
+	 */
+	private boolean clearChecksums;
+
+	/**
 	 * Comma-separated list of runtime contexts to use.
 	 */
 	private String contexts;
@@ -74,12 +80,6 @@ public class LiquibaseProperties {
 	 * Whether to first drop the database schema.
 	 */
 	private boolean dropFirst;
-
-	/**
-	 * Whether to clear all checksums in the current changelog, so they will be
-	 * recalculated next update.
-	 */
-	private boolean clearCheckSums;
 
 	/**
 	 * Whether to enable Liquibase support.
@@ -194,12 +194,12 @@ public class LiquibaseProperties {
 		this.dropFirst = dropFirst;
 	}
 
-	public boolean isClearCheckSums() {
-		return this.clearCheckSums;
+	public boolean isClearChecksums() {
+		return this.clearChecksums;
 	}
 
-	public void setClearCheckSums(boolean clearCheckSums) {
-		this.clearCheckSums = clearCheckSums;
+	public void setClearChecksums(boolean clearChecksums) {
+		this.clearChecksums = clearChecksums;
 	}
 
 	public boolean isEnabled() {

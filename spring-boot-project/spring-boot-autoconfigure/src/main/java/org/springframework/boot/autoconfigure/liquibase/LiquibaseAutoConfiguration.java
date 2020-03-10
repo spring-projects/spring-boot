@@ -101,6 +101,7 @@ public class LiquibaseAutoConfiguration {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), dataSourceProperties);
 			liquibase.setChangeLog(this.properties.getChangeLog());
+			liquibase.setClearCheckSums(this.properties.isClearChecksums());
 			liquibase.setContexts(this.properties.getContexts());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
 			liquibase.setLiquibaseSchema(this.properties.getLiquibaseSchema());
@@ -108,7 +109,6 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDatabaseChangeLogTable(this.properties.getDatabaseChangeLogTable());
 			liquibase.setDatabaseChangeLogLockTable(this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
-			liquibase.setClearCheckSums(this.properties.isClearCheckSums());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
