@@ -161,11 +161,8 @@ bom {
 	}
 	library("Cassandra Driver", "4.5.0") {
 		group("com.datastax.oss") {
-			modules = [
-				"java-driver-core" {
-					exclude group: "org.slf4j", module: "jcl-over-slf4j"
-				},
-				"java-drive-query-builder"
+			imports = [
+				"java-driver-bom"
 			]
 		}
 	}
