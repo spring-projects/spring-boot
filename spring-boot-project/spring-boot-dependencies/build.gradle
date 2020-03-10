@@ -585,7 +585,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Activation", "1.2.1") {
+	library("Jakarta Activation", "1.2.2") {
 		group("com.sun.activation") {
 			modules = [
 				"jakarta.activation"
