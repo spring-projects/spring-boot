@@ -1541,7 +1541,7 @@ bom {
 			]
 		}
 	}
-	library("SendGrid", "4.4.4") {
+	library("SendGrid", "4.4.5") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
