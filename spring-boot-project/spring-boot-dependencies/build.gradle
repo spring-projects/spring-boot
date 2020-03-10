@@ -1526,13 +1526,9 @@ bom {
 				"selenium-ie-driver",
 				"selenium-java",
 				"selenium-opera-driver",
-				"selenium-remote-driver" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"selenium-remote-driver",
 				"selenium-safari-driver",
-				"selenium-support" {
-					exclude group: "commons-logging", module: "commons-logging"
-				}
+				"selenium-support"
 			]
 		}
 	}
@@ -1643,12 +1639,6 @@ bom {
 	}
 	library("Spring Integration", "5.3.0.M2") {
 		group("org.springframework.integration") {
-			modules = [
-				"spring-integration-http" {
-					exclude group: "commons-logging", module: "commons-logging"
-					exclude group: "commons-logging", module: "commons-logging-api"
-				}
-			]
 			imports = [
 				"spring-integration-bom"
 			]
@@ -1709,18 +1699,10 @@ bom {
 	library("Spring WS", "3.0.8.RELEASE") {
 		group("org.springframework.ws") {
 			modules = [
-				"spring-ws-core" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"spring-ws-security" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"spring-ws-support" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"spring-ws-test" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"spring-ws-core",
+				"spring-ws-security",
+				"spring-ws-support",
+				"spring-ws-test",
 				"spring-xml"
 			]
 		}
