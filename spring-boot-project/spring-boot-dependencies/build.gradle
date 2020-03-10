@@ -910,7 +910,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.12.4") {
+	library("jOOQ", "3.13.1") {
 		group("org.jooq") {
 			modules = [
 				"jooq",
