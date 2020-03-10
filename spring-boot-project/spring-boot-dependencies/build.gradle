@@ -1378,7 +1378,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "Dysprosium-SR4") {
+	library("Reactor Bom", "Dysprosium-SR5") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
