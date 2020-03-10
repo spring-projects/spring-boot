@@ -104,10 +104,10 @@ class LiquibaseEndpointTests {
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:db/changelog/db.changelog-master.yaml");
+							.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
 					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
 					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:db/changelog/db.changelog-master-backup.yaml");
+							.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
 				});
 	}
 
@@ -157,7 +157,7 @@ class LiquibaseEndpointTests {
 
 		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {
 			SpringLiquibase liquibase = new SpringLiquibase();
-			liquibase.setChangeLog("classpath:db/changelog/" + changeLog);
+			liquibase.setChangeLog("classpath:/db/changelog/" + changeLog);
 			liquibase.setShouldRun(true);
 			liquibase.setDataSource(dataSource);
 			return liquibase;

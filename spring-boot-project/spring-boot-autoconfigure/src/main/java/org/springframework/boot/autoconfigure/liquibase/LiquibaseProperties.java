@@ -37,7 +37,7 @@ public class LiquibaseProperties {
 	/**
 	 * Change log configuration path.
 	 */
-	private String changeLog = "classpath:db/changelog/db.changelog-master.yaml";
+	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
 	 * Comma-separated list of runtime contexts to use.
