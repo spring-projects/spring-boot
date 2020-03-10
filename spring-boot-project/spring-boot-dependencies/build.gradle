@@ -681,7 +681,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta XML Bind", "2.3.2") {
+	library("Jakarta XML Bind", "2.3.3") {
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
