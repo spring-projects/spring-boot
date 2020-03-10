@@ -264,7 +264,7 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 
 [[packaging-layered-jars]]
 ==== Packaging layered jars
-By default, the `bootJar` tasks builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 For cases where a docker image needs to be built from the contents of the jar, the jar format can be enhanced to support layer folders.
 To use this feature, the layering feature must be enabled:
 
@@ -280,12 +280,16 @@ include::../gradle/packaging/boot-jar-layered.gradle[tags=layered]
 include::../gradle/packaging/boot-jar-layered.gradle.kts[tags=layered]
 ----
 
-The jar will then be split into layer folders which may include:
+By default, the following layers are created:
 
-* `application`
-* `resources`
-* `snapshots-dependencies`
-* `dependencies`
+* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
+* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
+* `resources` for static resources at the default locations, i.e. `META-INF/resources/`, `resources/`, `static/`, `public/`.
+* `application` for any other classes and resources.
+
+The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
+The default order is `dependencies`, `snapshot-dependencies`, `resources`, and `application`.
+Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
 When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
@@ -302,3 +306,32 @@ include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
 ----
 include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
 ----
+
+[[packaging-layers-configuration]]
+===== Custom Layers configuration
+Depending on your application, you may want to tune how layers are created and add new ones.
+This can be done using configuration that lists the layers and their order as well as the strategies to apply to libraries and classes.
+
+The following example shows what the implicit layer configuration described above does:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-custom.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-custom.gradle.kts[tags=layered]
+----
+
+Each `layerContent` closure defines a strategy to include or exclude an entry of the jar in a layer.
+When an entry matches a strategy, it is included in the layer and further strategies are ignored.
+This is illustrated by the `dependencies` and `application` layers that have a "catch-all" include filter used to add any libraries or classes that were not processed by previous strategies.
+
+The content of a `libraries` layer can be customized using filters to `include` or `exclude` based on the dependency coordinates.
+The format is `groupId:artifactId[:version]`.
+In the example above, any artifact whose version ends with `SNAPSHOT` is going to be included in the `snapshot-dependencies` layer.
+
+The content of a `classes` layer can be customized using filters to `included` or `exclude` based on location of the entry using Ant-style pattern matching.

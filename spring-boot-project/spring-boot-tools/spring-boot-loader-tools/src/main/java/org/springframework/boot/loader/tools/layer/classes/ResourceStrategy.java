@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools.layer.classes;
 
+import java.io.Serializable;
+
 import org.springframework.boot.loader.tools.Layer;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.boot.loader.tools.Layer;
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public interface ResourceStrategy {
+public interface ResourceStrategy extends Serializable {
 
 	/**
 	 * Return a {@link Layer} for the given resource. If no matching layer is found,

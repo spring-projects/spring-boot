@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools.layer.library;
 
+import java.io.Serializable;
+
 import org.springframework.boot.loader.tools.Library;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.boot.loader.tools.Library;
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public interface LibraryFilter {
+public interface LibraryFilter extends Serializable {
 
 	/**
 	 * Return true if the {@link Library} is included by the filter.

@@ -100,14 +100,14 @@ To use this feature, the layering feature must be enabled:
 
 By default, the following layers are created:
 
-* `application` for any other classes and resources.
-* `resources` for static resources at the default locations, i.e. `META-INF/resources/`, `resources/`, `static/`, `public/`.
+* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
 * `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `dependencies` for any other dependency.
+* `resources` for static resources at the default locations, i.e. `META-INF/resources/`, `resources/`, `static/`, `public/`.
+* `application` for any other classes and resources.
 
 The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
-The default order is `application`, `resources`, `snapshot-dependencies` and `dependencies`.
-Content that is likely to change should be added first, followed by layers that are less likely to change.
+The default order is `dependencies`, `snapshot-dependencies`, `resources`, and `application`.
+Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
 
 
@@ -147,11 +147,11 @@ The following example shows what the implicit layer configuration described abov
 					  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
                       https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
 	<layers>
-		<layer>application</layer>
-		<layer>resources</layer>
-		<layer>snapshots</layer>
 		<layer>dependencies</layer>
-	</layers>
+		<layer>snapshot-dependencies</layer>
+		<layer>resources</layer>
+		<layer>application</layer>
+    </layers>
 	<libraries>
 		<layer-content layer="snapshot-dependencies">
 			<coordinates>
@@ -182,15 +182,15 @@ The following example shows what the implicit layer configuration described abov
 </layers-configuration>
 ----
 
-Each `layer-content` element defines a strategy to include an entry of the jar in a layer.
+Each `layer-content` element defines a strategy to include or exclude an entry of the jar in a layer.
 When an entry matches a strategy, it is included in the layer and further strategies are ignored.
 This is illustrated by the `dependencies` and `application` layers that have a "catch-all" include filter used to add any libraries or classes that were not processed by previous strategies.
 
-The content of a libraries layer can be customized using filters on the coordinates.
+The content of a `libraries` layer can be customized using filters to `include` or `exclude` based on the dependency coordinates.
 The format is `groupId:artifactId[:version]`.
 In the example above, any artifact whose version ends with `SNAPSHOT` is going to be included in the `snapshot-dependencies` layer.
 
-The content of a classes layer can be customized using filters on location of the entry using Ant-style pattern matching.
+The content of a `classes` layer can be customized using filters to `include` or `exclude` based on location of the entry using Ant-style pattern matching.
 
 
 

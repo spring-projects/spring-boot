@@ -74,6 +74,18 @@ class CustomLayersTests {
 	}
 
 	@Test
+	void layerForResourceIsNotInListedLayers() {
+		FilteredResourceStrategy resourceStrategy = new FilteredResourceStrategy("test-not-listed", Collections
+				.singletonList(new LocationFilter(Collections.singletonList("META-INF/**"), Collections.emptyList())));
+		Layer targetLayer = new Layer("test");
+		CustomLayers customLayers = new CustomLayers(Collections.singletonList(targetLayer),
+				Collections.singletonList(resourceStrategy), Collections.emptyList());
+		assertThatIllegalStateException().isThrownBy(() -> customLayers.getLayer("META-INF/manifest.mf"))
+				.withMessageContaining("META-INF/manifest.mf").withMessageContaining("test-not-listed")
+				.withMessageContaining("[test]");
+	}
+
+	@Test
 	void layerForLibraryIsFound() {
 		FilteredLibraryStrategy libraryStrategy = new FilteredLibraryStrategy("test", Collections
 				.singletonList(new CoordinateFilter(Collections.singletonList("com.acme:*"), Collections.emptyList())));
@@ -92,9 +104,22 @@ class CustomLayersTests {
 		assertThatIllegalStateException().isThrownBy(() -> customLayers.getLayer(mockLibrary("org.another:test")));
 	}
 
+	@Test
+	void layerForLibraryIsNotInListedLayers() {
+		FilteredLibraryStrategy libraryStrategy = new FilteredLibraryStrategy("test-not-listed", Collections
+				.singletonList(new CoordinateFilter(Collections.singletonList("com.acme:*"), Collections.emptyList())));
+		Layer targetLayer = new Layer("test");
+		CustomLayers customLayers = new CustomLayers(Collections.singletonList(targetLayer), Collections.emptyList(),
+				Collections.singletonList(libraryStrategy));
+		assertThatIllegalStateException().isThrownBy(() -> customLayers.getLayer(mockLibrary("com.acme:test")))
+				.withMessageContaining("com.acme:test").withMessageContaining("test-not-listed")
+				.withMessageContaining("[test]");
+	}
+
 	private Library mockLibrary(String coordinates) {
 		Library library = mock(Library.class);
 		given(library.getCoordinates()).willReturn(new LibraryCoordinates(coordinates));
+		given(library.getName()).willReturn(coordinates);
 		return library;
 	}
 

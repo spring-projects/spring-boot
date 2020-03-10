@@ -16,13 +16,15 @@
 
 package org.springframework.boot.loader.tools.layer.classes;
 
+import java.io.Serializable;
+
 /**
  * A filter that can tell if a resource has been included or excluded.
  *
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public interface ResourceFilter {
+public interface ResourceFilter extends Serializable {
 
 	/**
 	 * Return true if the resource is included by the filter.

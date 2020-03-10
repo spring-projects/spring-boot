@@ -57,6 +57,7 @@ public class CustomLayers implements Layers {
 		for (ResourceStrategy strategy : this.resourceStrategies) {
 			Layer matchingLayer = strategy.getMatchingLayer(resourceName);
 			if (matchingLayer != null) {
+				validateLayerName(matchingLayer, "Resource '" + resourceName + "'");
 				return matchingLayer;
 			}
 		}
@@ -68,10 +69,18 @@ public class CustomLayers implements Layers {
 		for (LibraryStrategy strategy : this.libraryStrategies) {
 			Layer matchingLayer = strategy.getMatchingLayer(library);
 			if (matchingLayer != null) {
+				validateLayerName(matchingLayer, "Library '" + library.getName() + "'");
 				return matchingLayer;
 			}
 		}
 		throw new IllegalStateException("Library '" + library.getName() + "' did not match any layer.");
+	}
+
+	private void validateLayerName(Layer layer, String nameText) {
+		if (!this.layers.contains(layer)) {
+			throw new IllegalStateException(nameText + " matched a layer '" + layer
+					+ "' that is not included in the configured layers " + this.layers + ".");
+		}
 	}
 
 }

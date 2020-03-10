@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools.layer.library;
 
+import java.io.Serializable;
+
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
 
@@ -25,7 +27,7 @@ import org.springframework.boot.loader.tools.Library;
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public interface LibraryStrategy {
+public interface LibraryStrategy extends Serializable {
 
 	/**
 	 * Return a {@link Layer} for the given {@link Library}. If no matching layer is

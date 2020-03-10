@@ -1,0 +1,41 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::layered[]
+bootJar {
+	layers {
+		layers "dependencies", "snapshot-dependencies", "resources", "application"
+		libraries {
+			layerContent("snapshot-dependencies") {
+				coordinates {
+					include "*:*:*SNAPSHOT"
+				}
+			}
+			layerContent("dependencies") {
+				coordinates {
+					include "*:*"
+				}
+			}
+		}
+		classes {
+			layerContent("resources") {
+				locations {
+					include "META-INF/resources/**", "resources/**"
+					include "static/**", "public/**"
+				}
+			}
+			layerContent("application") {
+				locations {
+					include "**"
+				}
+			}
+		}
+	}
+}
+// end::layered[]
