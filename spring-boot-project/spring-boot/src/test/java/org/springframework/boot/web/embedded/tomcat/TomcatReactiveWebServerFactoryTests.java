@@ -283,6 +283,21 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(errorReference.get()).hasCauseInstanceOf(ConnectException.class);
 	}
 
+	@Test
+	void whenGetTomcatWebServerIsOverriddenThenWebServerCreationCanBeCustomized() {
+		AtomicReference<TomcatWebServer> webServerReference = new AtomicReference<>();
+		TomcatWebServer webServer = (TomcatWebServer) new TomcatReactiveWebServerFactory() {
+
+			@Override
+			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
+				webServerReference.set(new TomcatWebServer(tomcat));
+				return webServerReference.get();
+			}
+
+		}.getWebServer(new EchoHandler());
+		assertThat(webServerReference).hasValue(webServer);
+	}
+
 	private void doWithBlockedPort(BlockedPortAction action) throws IOException {
 		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
