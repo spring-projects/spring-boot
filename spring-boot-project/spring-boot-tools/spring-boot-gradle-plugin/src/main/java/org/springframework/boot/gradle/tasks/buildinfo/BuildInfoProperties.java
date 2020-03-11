@@ -56,7 +56,7 @@ public class BuildInfoProperties implements Serializable {
 		this.version = project.getObjects().property(String.class);
 		this.version.set(project.provider(() -> project.getVersion().toString()));
 		this.name = project.getObjects().property(String.class);
-		this.name.set(project.provider(() -> project.getName().toString()));
+		this.name.set(project.provider(() -> project.getName()));
 	}
 
 	/**
