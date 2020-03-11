@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -254,6 +255,21 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		factory.setSsl(ssl);
 		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
 				.isInstanceOf(WebServerException.class);
+	}
+
+	@Test
+	void whenGetTomcatWebServerIsOverriddenThenWebServerCreationCanBeCustomized() {
+		AtomicReference<TomcatWebServer> webServerReference = new AtomicReference<>();
+		TomcatWebServer webServer = (TomcatWebServer) new TomcatReactiveWebServerFactory() {
+
+			@Override
+			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
+				webServerReference.set(new TomcatWebServer(tomcat));
+				return webServerReference.get();
+			}
+
+		}.getWebServer(new EchoHandler());
+		assertThat(webServerReference).hasValue(webServer);
 	}
 
 	private void doWithBlockedPort(BlockedPortAction action) throws IOException {
