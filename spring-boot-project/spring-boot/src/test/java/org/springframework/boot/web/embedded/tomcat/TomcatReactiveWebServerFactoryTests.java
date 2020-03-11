@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -182,6 +183,21 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 		factory.setSsl(ssl);
 		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
 				.isInstanceOf(ConnectorStartFailedException.class);
+	}
+
+	@Test
+	public void whenGetTomcatWebServerIsOverriddenThenWebServerCreationCanBeCustomized() {
+		AtomicReference<TomcatWebServer> webServerReference = new AtomicReference<>();
+		TomcatWebServer webServer = (TomcatWebServer) new TomcatReactiveWebServerFactory() {
+
+			@Override
+			protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
+				webServerReference.set(new TomcatWebServer(tomcat));
+				return webServerReference.get();
+			}
+
+		}.getWebServer(new EchoHandler());
+		assertThat(webServerReference).hasValue(webServer);
 	}
 
 }
