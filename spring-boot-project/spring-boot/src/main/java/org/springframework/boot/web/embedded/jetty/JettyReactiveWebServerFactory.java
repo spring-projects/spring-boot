@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
 		Server server = createJettyServer(servlet);
-		return new JettyWebServer(server, getPort() >= 0);
+		return new JettyWebServer(server, getPort() >= 0, getShutdown().getGracePeriod());
 	}
 
 	@Override

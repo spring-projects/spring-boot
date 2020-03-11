@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.undertow.Undertow;
 import org.awaitility.Awaitility;
@@ -30,10 +32,12 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -105,6 +109,32 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsAreRejectedWithServiceUnavailable() throws Exception {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		webClient.get().retrieve().toBodilessEntity().subscribe();
+		blockingHandler.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<Throwable> errorReference = new AtomicReference<>();
+		webClient.get().retrieve().toBodilessEntity().doOnError(errorReference::set).subscribe();
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingHandler.completeOne();
+		this.webServer.stop();
+		assertThat(errorReference.get()).isInstanceOf(ServiceUnavailable.class);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((UndertowWebServer) this.webServer).inGracefulShutdown();
+	}
+
 	private void testAccessLog(String prefix, String suffix, String expectedFile)
 			throws IOException, URISyntaxException, InterruptedException {
 		UndertowReactiveWebServerFactory factory = getFactory();
@@ -116,7 +146,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		WebClient client = getWebClient().build();
+		WebClient client = getWebClient(this.webServer.getPort()).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));

@@ -91,6 +91,11 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((JettyWebServer) this.webServer).inGracefulShutdown();
+	}
+
 	@Test
 	void contextPathIsLoggedOnStartupWhenCompressionIsEnabled(CapturedOutput output) {
 		AbstractServletWebServerFactory factory = getFactory();

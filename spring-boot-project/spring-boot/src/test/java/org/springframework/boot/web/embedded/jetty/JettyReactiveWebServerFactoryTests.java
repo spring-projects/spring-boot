@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,28 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.net.ConnectException;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Shutdown;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -108,6 +116,34 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		assertThat(connector.getByteBufferPool()).isEqualTo(resourceFactory.getByteBufferPool());
 		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
 		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		JettyReactiveWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		getWebClient(port).build().get().retrieve().toBodilessEntity()
+				.subscribe((response) -> responseLatch.countDown());
+		blockingHandler.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		Mono<ResponseEntity<Void>> unconnectableRequest = getWebClient(port).build().get().retrieve()
+				.toBodilessEntity();
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingHandler.completeOne();
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> unconnectableRequest.block())
+				.withCauseInstanceOf(ConnectException.class);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((JettyWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

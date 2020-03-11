@@ -44,7 +44,15 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -52,6 +60,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.servlet.AsyncContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -60,6 +69,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.SessionCookieConfig;
@@ -69,8 +79,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -99,6 +111,7 @@ import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.SslStoreProvider;
@@ -1002,6 +1015,158 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.satisfies(this::wrapsFailingServletException);
 	}
 
+	@Test
+	void whenThereAreNoInFlightRequestsShutDownGracefullyReturnsTrueBeforePeriodElapses() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(30));
+		factory.setShutdown(shutdown);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		long start = System.currentTimeMillis();
+		assertThat(this.webServer.shutDownGracefully()).isTrue();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isLessThanOrEqualTo(30000);
+	}
+
+	@Test
+	void whenARequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		long start = System.currentTimeMillis();
+		assertThat(this.webServer.shutDownGracefully()).isFalse();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+		assertThat(request.isDone()).isFalse();
+		blockingServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+	}
+
+	@Test
+	void whenARequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
+			throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(30));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		long start = System.currentTimeMillis();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		blockingServlet.admitOne();
+		assertThat(shutdownResult.get()).isTrue();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isLessThanOrEqualTo(30000);
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+	}
+
+	@Test
+	void whenAnAsyncRequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
+			registration.addMapping("/blockingAsync");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
+		blockingAsyncServlet.awaitQueue();
+		long start = System.currentTimeMillis();
+		assertThat(this.webServer.shutDownGracefully()).isFalse();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+		assertThat(request.isDone()).isFalse();
+		blockingAsyncServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+	}
+
+	@Test
+	void whenAnAsyncRequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
+			throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(30));
+		factory.setShutdown(shutdown);
+		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
+			registration.addMapping("/blockingAsync");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
+		blockingAsyncServlet.awaitQueue();
+		long start = System.currentTimeMillis();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		blockingAsyncServlet.admitOne();
+		assertThat(shutdownResult.get()).isTrue();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isLessThanOrEqualTo(30000);
+		assertThat(request.get(30, TimeUnit.SECONDS)).isInstanceOf(HttpResponse.class);
+	}
+
+	protected Future<Boolean> initiateGracefulShutdown() {
+		RunnableFuture<Boolean> future = new FutureTask<Boolean>(() -> this.webServer.shutDownGracefully());
+		new Thread(future).start();
+		awaitInGracefulShutdown();
+		return future;
+	}
+
+	protected Future<Object> initiateGetRequest(int port, String path) {
+		return initiateGetRequest(HttpClients.createMinimal(), port, path);
+	}
+
+	protected Future<Object> initiateGetRequest(HttpClient httpClient, int port, String path) {
+		RunnableFuture<Object> getRequest = new FutureTask<>(() -> {
+			try {
+				HttpResponse response = httpClient.execute(new HttpGet("http://localhost:" + port + path));
+				response.getEntity().getContent().close();
+				return response;
+			}
+			catch (Exception ex) {
+				return ex;
+			}
+		});
+		new Thread(getRequest, "GET " + path).start();
+		return getRequest;
+	}
+
+	protected void awaitInGracefulShutdown() {
+		while (!this.inGracefulShutdown()) {
+			try {
+				Thread.sleep(100);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
 	private void wrapsFailingServletException(WebServerException ex) {
 		Throwable cause = ex.getCause();
 		while (cause != null) {
@@ -1150,6 +1315,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected abstract AbstractServletWebServerFactory getFactory();
 
 	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet() throws Exception;
+
+	protected abstract boolean inGracefulShutdown();
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean<>(new ExampleServlet(), "/hello");
@@ -1311,6 +1478,98 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 		FailingServletException() {
 			super("Init Failure");
+		}
+
+	}
+
+	protected static class BlockingServlet extends HttpServlet {
+
+		private final BlockingQueue<CyclicBarrier> barriers = new ArrayBlockingQueue<>(10);
+
+		public BlockingServlet() {
+
+		}
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			CyclicBarrier barrier = new CyclicBarrier(2);
+			this.barriers.add(barrier);
+			try {
+				barrier.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (BrokenBarrierException ex) {
+				throw new ServletException(ex);
+			}
+		}
+
+		public void admitOne() {
+			try {
+				this.barriers.take().await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (BrokenBarrierException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		public void awaitQueue() throws InterruptedException {
+			while (this.barriers.isEmpty()) {
+				Thread.sleep(100);
+			}
+		}
+
+		public void awaitQueue(int size) throws InterruptedException {
+			while (this.barriers.size() < size) {
+				Thread.sleep(100);
+			}
+		}
+
+	}
+
+	static class BlockingAsyncServlet extends HttpServlet {
+
+		private final BlockingQueue<CyclicBarrier> barriers = new ArrayBlockingQueue<>(10);
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			CyclicBarrier barrier = new CyclicBarrier(2);
+			this.barriers.add(barrier);
+			AsyncContext async = req.startAsync();
+			new Thread(() -> {
+				try {
+					barrier.await();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				catch (BrokenBarrierException ex) {
+
+				}
+				async.complete();
+			}).start();
+		}
+
+		private void admitOne() {
+			try {
+				this.barriers.take().await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (BrokenBarrierException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		private void awaitQueue() throws InterruptedException {
+			while (this.barriers.isEmpty()) {
+				Thread.sleep(100);
+			}
 		}
 
 	}
