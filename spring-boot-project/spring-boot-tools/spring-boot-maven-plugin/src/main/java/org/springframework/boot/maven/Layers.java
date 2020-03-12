@@ -16,17 +16,21 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+
 /**
  * Layer configuration options.
  *
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public class Layered {
+public class Layers {
 
 	private boolean enabled;
 
 	private boolean includeLayerTools = true;
+
+	private File configuration;
 
 	/**
 	 * Whether layered jar layout is enabled.
@@ -42,6 +46,20 @@ public class Layered {
 	 */
 	public boolean isIncludeLayerTools() {
 		return this.includeLayerTools;
+	}
+
+	/**
+	 * The location of the layers configuration file. If no file is provided, a default
+	 * configuration is used with four layers: {@code application}, {@code resources},
+	 * {@code snapshot-dependencies} and {@code dependencies}.
+	 * @return the layers configuration file
+	 */
+	public File getConfiguration() {
+		return this.configuration;
+	}
+
+	public void setConfiguration(File configuration) {
+		this.configuration = configuration;
 	}
 
 }

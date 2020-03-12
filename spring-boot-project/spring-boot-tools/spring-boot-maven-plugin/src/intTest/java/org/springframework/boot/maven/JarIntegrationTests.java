@@ -305,4 +305,15 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@TestTemplate
+	void whenJarIsRepackagedWithTheCustomLayeredLayout(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-layered-custom").execute((project) -> {
+			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/my-dependencies-name/lib/jar-release")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers/configuration/classes/application.yml");
+		});
+	}
+
 }

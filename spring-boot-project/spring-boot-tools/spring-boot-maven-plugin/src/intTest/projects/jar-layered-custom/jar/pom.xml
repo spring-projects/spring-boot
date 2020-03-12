@@ -24,7 +24,7 @@
 						<configuration>
 							<layers>
 								<enabled>true</enabled>
-								<includeLayerTools>false</includeLayerTools>
+								<configuration>${project.basedir}/src/layers.xml</configuration>
 							</layers>
 						</configuration>
 					</execution>

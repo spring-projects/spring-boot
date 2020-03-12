@@ -71,6 +71,129 @@ The `layout` property defaults to a guess based on the archive type (`jar` or `w
 * `ZIP` (alias to `DIR`): similar to the `JAR` layout using `PropertiesLauncher`.
 * `NONE`: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
 
+[[repackage-layers]]
+=== Layered jar
+
+By default, a repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+For cases where a docker image needs to be built from the contents of the jar, the jar format can be enhanced to support layer folders.
+To use this feature, the layering feature must be enabled:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<layers>
+							<enabled>true</enabled>
+						</layers>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+By default, the following layers are created:
+
+* `application` for any other classes and resources.
+* `resources` for static resources at the default locations, i.e. `META-INF/resources/`, `resources/`, `static/`, `public/`.
+* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
+* `dependencies` for any other dependency.
+
+The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
+The default order is `application`, `resources`, `snapshot-dependencies` and `dependencies`.
+Content that is likely to change should be added first, followed by layers that are less likely to change.
+
+
+
+[[repackage-layers-configuration]]
+==== Custom Layers configuration
+Depending on your application, you may want to tune how layers are created and add new ones.
+This can be done using a separate configuration file that should be registered as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<layers>
+							<enabled>true</enabled>
+							<configuration>${project.basedir}/src/layers.xml</configuration>
+						</layers>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The configuration file lists the layers and their order as well as the strategies to apply to libraries and classes.
+The following example shows what the implicit layer configuration described above does:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
+					  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
+                      https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
+	<layers>
+		<layer>application</layer>
+		<layer>resources</layer>
+		<layer>snapshots</layer>
+		<layer>dependencies</layer>
+	</layers>
+	<libraries>
+		<layer-content layer="snapshot-dependencies">
+			<coordinates>
+				<include>*:*:*SNAPSHOT</include>
+			</coordinates>
+		</layer-content>
+		<layer-content layer="dependencies">
+			<coordinates>
+				<include>*:*</include>
+			</coordinates>
+		</layer-content>
+	</libraries>
+	<classes>
+		<layer-content layer="resources">
+			<locations>
+				<include>META-INF/resources/**</include>
+				<include>resources/**</include>
+				<include>static/**</include>
+				<include>public/**</include>
+			</locations>
+		</layer-content>
+		<layer-content layer="application">
+			<locations>
+				<include>**</include>
+			</locations>
+		</layer-content>
+	</classes>
+</layers-configuration>
+----
+
+Each `layer-content` element defines a strategy to include an entry of the jar in a layer.
+When an entry matches a strategy, it is included in the layer and further strategies are ignored.
+This is illustrated by the `dependencies` and `application` layers that have a "catch-all" include filter used to add any libraries or classes that were not processed by previous strategies.
+
+The content of a libraries layer can be customized using filters on the coordinates.
+The format is `groupId:artifactId[:version]`.
+In the example above, any artifact whose version ends with `SNAPSHOT` is going to be included in the `snapshot-dependencies` layer.
+
+The content of a classes layer can be customized using filters on location of the entry using Ant-style pattern matching.
+
+
+
 include::goals/repackage.adoc[leveloffset=+1]
 
 
@@ -400,31 +523,8 @@ This example excludes any artifact belonging to the `com.foo` group:
 
 
 
-[[repackage-layered-jars]]
-==== Packaging layered jars
-By default, the repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, the jar format can be enhanced to support layer folders.
-To use this feature, the layering feature must be enabled:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
-					<configuration>
-						<layered>
-							<enabled>true</enabled>
-						</layered>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
-----
+[[repackage-layered-jars-tools]]
+==== Layered jar tools
 
 When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
@@ -440,13 +540,59 @@ If you wish to exclude this dependency, you can do so in the following manner:
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>{gradle-project-version}</version>
 					<configuration>
-						<layered>
+						<layers>
 							<enabled>true</enabled>
 							<includeLayerTools>false</enabled>
-						</layered>
+						</layers>
 					</configuration>
 				</plugin>
 			</plugins>
 		</build>
 	</project>
 ----
+
+
+
+[[repackage-layered-jars-additional-layers]]
+==== Custom layers configuration
+
+While the default setup creates two layers for libraries, you may want to isolate the dependencies of your project in a dedicated layer.
+This allows to reuse the cache for external dependencies when an internal dependency has changed, as shown by the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
+						  https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
+		<layers>
+			<layer>application</layer>
+			<layer>resources</layer>
+			<layer>snapshots</layer>
+			<layer>company-dependencies</layer>
+			<layer>dependencies</layer>
+		</layers>
+		<libraries>
+			<layer-content layer="snapshot-dependencies">
+				<coordinates>
+					<include>*:*:*SNAPSHOT</include>
+				</coordinates>
+			</layer-content>
+			<layer-content layer="company-dependencies">
+				<coordinates>
+					<include>com.acme:*</include>
+				</coordinates>
+			</layer-content>
+			<layer-content layer="dependencies">
+				<coordinates>
+					<include>*:*</include>
+				</coordinates>
+			</layer-content>
+		</libraries>
+		<classes>
+			...
+		</classes>
+	</layers-configuration>
+----
+
+The configuration above creates an additional `company-dependencies` layer with all libraries with the `com.acme` groupId.
