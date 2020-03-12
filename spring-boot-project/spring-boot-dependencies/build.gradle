@@ -627,7 +627,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Mail", "1.6.4") {
+	library("Jakarta Mail", "1.6.5") {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
