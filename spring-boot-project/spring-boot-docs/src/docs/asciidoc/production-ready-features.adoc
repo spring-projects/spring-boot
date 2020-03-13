@@ -406,8 +406,6 @@ The following example sets the time-to-live of the `beans` endpoint's cache to 1
 
 NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the endpoint that is being configured.
 
-NOTE: When making an authenticated HTTP request, the `Principal` is considered as input to the endpoint and, therefore, the response will not be cached.
-
 
 
 [[production-ready-endpoints-hypermedia]]
