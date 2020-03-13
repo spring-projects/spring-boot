@@ -78,7 +78,8 @@ class OAuth2ResourceServerJwtConfiguration {
 		JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
-			return NimbusJwtDecoder.withPublicKey(publicKey).build();
+			return NimbusJwtDecoder.withPublicKey(publicKey)
+					.signatureAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
 		}
 
 		private byte[] getKeySpec(String keyValue) {
