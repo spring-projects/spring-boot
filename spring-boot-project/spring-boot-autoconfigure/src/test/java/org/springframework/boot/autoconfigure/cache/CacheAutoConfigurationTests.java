@@ -85,7 +85,7 @@ import static org.mockito.Mockito.verify;
  * @author Mark Paluch
  * @author Ryon Day
  */
-@ClassPathExclusions("hazelcast-client-*.jar")
+@ClassPathExclusions({ "hazelcast-client-*.jar", "hazelcast-jet-*.jar" })
 class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test

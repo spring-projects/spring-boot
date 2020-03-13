@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@ClassPathExclusions({ "hazelcast-jet*.jar" })
 class HazelcastAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
