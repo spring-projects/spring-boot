@@ -49,7 +49,7 @@ public class HazelcastJetHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<HazelcastJetHealthIndicator, JetInstance> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = {"hazelcastJetHealthIndicator", "hazelcastJetHealthContributor"})
+	@ConditionalOnMissingBean(name = { "hazelcastJetHealthIndicator", "hazelcastJetHealthContributor" })
 	public HealthContributor hazelcastHealthContributor(Map<String, JetInstance> jetInstances) {
 		return createContributor(jetInstances);
 	}
