@@ -1,0 +1,9 @@
+hazelcast-jet:
+  properties:
+    foo: bar-yaml
+
+  hazelcast:
+    network:
+      join:
+        multicast:
+          enabled: false

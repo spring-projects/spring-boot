@@ -434,6 +434,13 @@ bom {
 			]
 		}
 	}
+	library("HazelcastJet", "3.2.2") {
+		group("com.hazelcast.jet") {
+			modules = [
+					"hazelcast-jet"
+			]
+		}
+	}
 	library("Hazelcast Hibernate5", "1.3.2") {
 		group("com.hazelcast") {
 			modules = [

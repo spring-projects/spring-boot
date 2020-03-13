@@ -675,6 +675,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
 | Checks that a Hazelcast server is up.
 
+| {spring-boot-actuator-module-code}/jet/HazelcastJetHealthIndicator.java[`HazelcastJetHealthIndicator`]
+| Checks that a Hazelcast Jet server is up.
+
 | {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.
 

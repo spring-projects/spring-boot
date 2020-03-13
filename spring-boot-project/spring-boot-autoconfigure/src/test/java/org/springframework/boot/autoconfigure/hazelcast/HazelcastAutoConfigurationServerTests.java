@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ClassPathExclusions("hazelcast-client-*.jar")
+@ClassPathExclusions({ "hazelcast-client-*.jar", "hazelcast-jet*.jar" })
 class HazelcastAutoConfigurationServerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

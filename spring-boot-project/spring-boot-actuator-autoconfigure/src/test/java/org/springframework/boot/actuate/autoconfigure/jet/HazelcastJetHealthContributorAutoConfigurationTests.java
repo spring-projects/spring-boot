@@ -14,40 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.hazelcast;
+package org.springframework.boot.actuate.autoconfigure.jet;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
+import org.springframework.boot.actuate.jet.HazelcastJetHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jet.HazelcastJetAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HazelcastHealthContributorAutoConfiguration}.
+ * Tests for {@link HazelcastJetHealthContributorAutoConfiguration}.
  *
- * @author Dmytro Nosan
+ * @author Ali Gurbuz
  */
-@ClassPathExclusions({ "hazelcast-jet*.jar" })
-class HazelcastHealthContributorAutoConfigurationTests {
+class HazelcastJetHealthContributorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class,
-					HazelcastHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(HazelcastJetAutoConfiguration.class,
+					HazelcastJetHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HazelcastHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HazelcastJetHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.hazelcast.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HazelcastHealthIndicator.class));
+		this.contextRunner.withPropertyValues("management.health.hazelcast.jet.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(HazelcastJetHealthIndicator.class));
 	}
 
 }

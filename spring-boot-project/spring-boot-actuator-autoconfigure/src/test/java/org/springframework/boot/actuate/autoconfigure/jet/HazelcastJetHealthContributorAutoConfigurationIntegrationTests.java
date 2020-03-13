@@ -14,52 +14,50 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.hazelcast;
+package org.springframework.boot.actuate.autoconfigure.jet;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.jet.JetInstance;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.actuate.jet.HazelcastJetHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jet.HazelcastJetAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link HazelcastHealthContributorAutoConfiguration}.
+ * Integration tests for {@link HazelcastJetHealthContributorAutoConfiguration}.
  *
- * @author Dmytro Nosan
+ * @author Ali Gurbuz
  */
-@ClassPathExclusions({ "hazelcast-jet*.jar" })
-class HazelcastHealthContributorAutoConfigurationIntegrationTests {
+class HazelcastJetHealthContributorAutoConfigurationIntegrationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastHealthContributorAutoConfiguration.class,
-					HazelcastAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(HazelcastJetHealthContributorAutoConfiguration.class,
+					HazelcastJetAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void hazelcastUp() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(HazelcastInstance.class).hasSingleBean(HazelcastHealthIndicator.class);
-			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
-			Health health = context.getBean(HazelcastHealthIndicator.class).health();
+			assertThat(context).hasSingleBean(JetInstance.class).hasSingleBean(HazelcastJetHealthIndicator.class);
+			JetInstance jet = context.getBean(JetInstance.class);
+			Health health = context.getBean(HazelcastJetHealthIndicator.class).health();
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", hazelcast.getName())
-					.containsEntry("uuid", hazelcast.getLocalEndpoint().getUuid());
+			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", jet.getName())
+					.containsEntry("uuid", jet.getHazelcastInstance().getLocalEndpoint().getUuid());
 		});
 	}
 
 	@Test
 	void hazelcastDown() {
 		this.contextRunner.run((context) -> {
-			context.getBean(HazelcastInstance.class).shutdown();
-			assertThat(context).hasSingleBean(HazelcastHealthIndicator.class);
-			Health health = context.getBean(HazelcastHealthIndicator.class).health();
+			context.getBean(JetInstance.class).shutdown();
+			assertThat(context).hasSingleBean(HazelcastJetHealthIndicator.class);
+			Health health = context.getBean(HazelcastJetHealthIndicator.class).health();
 			assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		});
 	}

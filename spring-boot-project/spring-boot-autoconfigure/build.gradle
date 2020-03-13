@@ -25,6 +25,7 @@ dependencies {
 	optional("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	optional("com.google.code.gson:gson")
 	optional("com.hazelcast:hazelcast")
+	optional("com.hazelcast.jet:hazelcast-jet")
 	optional("com.hazelcast:hazelcast-client")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")

@@ -18,6 +18,7 @@ dependencies {
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
+	optional("com.hazelcast.jet:hazelcast-jet")
 	optional("com.sun.mail:jakarta.mail")
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")

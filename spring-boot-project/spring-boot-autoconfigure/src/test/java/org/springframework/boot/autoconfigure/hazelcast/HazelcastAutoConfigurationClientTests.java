@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
+@ClassPathExclusions({ "hazelcast-jet*.jar" })
 class HazelcastAutoConfigurationClientTests {
 
 	/**

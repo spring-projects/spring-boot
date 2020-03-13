@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jet.HazelcastJetAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
@@ -82,7 +83,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
 			SolrAutoConfiguration.class, RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			MetricsAutoConfiguration.class })
+			MetricsAutoConfiguration.class, HazelcastJetAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 

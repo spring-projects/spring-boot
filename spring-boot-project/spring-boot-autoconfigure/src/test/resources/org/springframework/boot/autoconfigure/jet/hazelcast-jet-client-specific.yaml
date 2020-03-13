@@ -1,0 +1,6 @@
+hazelcast-client:
+  group:
+    name: boot
+    password: test
+  client-labels:
+    - explicit-yaml
