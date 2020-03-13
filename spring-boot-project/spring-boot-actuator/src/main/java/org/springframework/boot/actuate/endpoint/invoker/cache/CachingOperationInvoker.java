@@ -178,15 +178,6 @@ public class CachingOperationInvoker implements OperationInvoker {
 		}
 
 		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + this.apiVersion.hashCode();
-			result = prime * result + ((this.principal == null) ? 0 : this.principal.hashCode());
-			return result;
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -210,6 +201,15 @@ public class CachingOperationInvoker implements OperationInvoker {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + this.apiVersion.hashCode();
+			result = prime * result + ((this.principal == null) ? 0 : this.principal.hashCode());
+			return result;
 		}
 
 	}
