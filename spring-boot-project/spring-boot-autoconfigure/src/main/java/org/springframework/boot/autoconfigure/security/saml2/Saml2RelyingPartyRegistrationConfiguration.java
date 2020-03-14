@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		RelyingPartyRegistration.Builder builder = RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceUrlTemplate(
 				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
-		builder.idpWebSsoUrl(properties.getIdentityprovider().getSsoUrl());
-		builder.remoteIdpEntityId(properties.getIdentityprovider().getEntityId());
+		builder.providerDetails((details) -> details.webSsoUrl(properties.getIdentityprovider().getSsoUrl()));
+		builder.providerDetails((details) -> details.entityId(properties.getIdentityprovider().getEntityId()));
 		builder.credentials((credentials) -> credentials.addAll(asCredentials(properties)));
 		return builder.build();
 	}

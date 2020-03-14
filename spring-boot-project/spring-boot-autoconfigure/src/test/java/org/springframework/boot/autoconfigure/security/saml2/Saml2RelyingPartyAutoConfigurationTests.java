@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,9 +79,9 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValues()).run((context) -> {
 			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
 			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-			assertThat(registration.getIdpWebSsoUrl())
+			assertThat(registration.getProviderDetails().getWebSsoUrl())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php");
-			assertThat(registration.getRemoteIdpEntityId())
+			assertThat(registration.getProviderDetails().getEntityId())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php");
 			assertThat(registration.getAssertionConsumerServiceUrlTemplate())
 					.isEqualTo("{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
