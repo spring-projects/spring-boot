@@ -211,10 +211,6 @@ public class SpringApplication {
 
 	private Banner banner;
 
-	private ResourceLoader resourceLoader;
-
-	private BeanNameGenerator beanNameGenerator;
-
 	private ConfigurableEnvironment environment;
 
 	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
@@ -224,10 +220,6 @@ public class SpringApplication {
 	private boolean headless = true;
 
 	private boolean registerShutdownHook = true;
-
-	private List<ApplicationContextInitializer<?>> initializers;
-
-	private List<ApplicationListener<?>> listeners;
 
 	private Map<String, Object> defaultProperties;
 
@@ -240,18 +232,23 @@ public class SpringApplication {
 	private boolean lazyInitialization = false;
 
 	/**
-	 * Create a new {@link SpringApplication} instance. The application context will load
-	 * beans from the specified primary sources (see {@link SpringApplication class-level}
-	 * documentation for details. The instance can be customized before calling
-	 * {@link #run(String...)}.
-	 * @param primarySources the primary bean sources
-	 * @see #run(Class, String[])
-	 * @see #SpringApplication(ResourceLoader, Class...)
-	 * @see #setSources(Set)
+	 * 资源加载器
 	 */
-	public SpringApplication(Class<?>... primarySources) {
-		this(null, primarySources);
-	}
+	private ResourceLoader resourceLoader;
+	/**
+	 * 主要的 Java Config 类的数组
+	 */
+	private BeanNameGenerator beanNameGenerator;
+
+	/**
+	 * ApplicationContextInitializer 数组
+	 */
+	private List<ApplicationContextInitializer<?>> initializers;
+	/**
+	 * 监听器数组
+	 */
+	private List<ApplicationListener<?>> listeners;
+
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -274,6 +271,25 @@ public class SpringApplication {
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
+
+
+
+	/**
+	 * Create a new {@link SpringApplication} instance. The application context will load
+	 * beans from the specified primary sources (see {@link SpringApplication class-level}
+	 * documentation for details. The instance can be customized before calling
+	 * {@link #run(String...)}.
+	 * @param primarySources the primary bean sources
+	 * @see #run(Class, String[])
+	 * @see #SpringApplication(ResourceLoader, Class...)
+	 * @see #setSources(Set)
+	 */
+	public SpringApplication(Class<?>... primarySources) {
+		this(null, primarySources);
+	}
+
+
+
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -295,41 +311,96 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
-	public ConfigurableApplicationContext run(String... args) {
+	public ConfigurableApplicationContext run(String... args) { //正面硬刚
+		/**
+		 *  <1> 创建 StopWatch 对象，并启动。StopWatch 主要用于简单统计 run 启动过程的时长。
+		 */
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+		//
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+		/**
+		 * <2> 配置 headless 属性
+		 */
 		configureHeadlessProperty();
+		/**
+		 * <3> 获得 SpringApplicationRunListener 的数组，并启动监听
+		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
+			/**
+			 * <4> 创建  ApplicationArguments 对象
+			 */
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			/**
+			 * <5> 加载属性配置。执行完成后，所有的 environment 的属性都会加载进来，包括 application.properties 和外部的属性配置。
+			 */
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			configureIgnoreBeanInfo(environment);
+			/**
+			 * <6> 打印 Spring Banner
+			 */
 			Banner printedBanner = printBanner(environment);
+			/**
+			 * <7> 创建 Spring 容器
+			 */
 			context = createApplicationContext();
+			/**
+			 * <8> 异常报告器
+			 */
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
+			/**
+			 * <9> 主要是调用所有初始化类的 initialize 方法
+			 */
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+			/**
+			 * <10> 初始化 Spring 容器,这个是Spring的重要方法，Spring解析中会深入分析
+			 */
 			refreshContext(context);
+			/**
+			 * <11> 执行 Spring 容器的初始化的后置逻辑。默认实现为空。
+			 */
 			afterRefresh(context, applicationArguments);
+			/**
+			 * <12> 停止 StopWatch 统计时长
+			 */
 			stopWatch.stop();
+			/**
+			 * <13> 打印 Spring Boot 启动的时长日志。
+			 */
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
+			/**
+			 * <14> 通知 SpringApplicationRunListener 的数组，Spring 容器启动完成。
+			 */
 			listeners.started(context);
+			/**
+			 * <15> 调用 ApplicationRunner 或者 CommandLineRunner 的运行方法
+			 */
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
+			/**
+			 * <16> 如果发生异常，则进行处理，并抛出 IllegalStateException 异常
+			 */
 			handleRunFailure(context, ex, exceptionReporters, listeners);
 			throw new IllegalStateException(ex);
 		}
 
 		try {
+			/**
+			 * <17> 通知 SpringApplicationRunListener 的数组，Spring 容器运行中。
+			 */
 			listeners.running(context);
 		}
 		catch (Throwable ex) {
+			/**
+			 * <18> 如果发生异常，则进行处理，并抛出 IllegalStateException 异常
+			 */
 			handleRunFailure(context, ex, exceptionReporters, null);
 			throw new IllegalStateException(ex);
 		}
@@ -422,8 +493,17 @@ public class SpringApplication {
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
+		/**
+		 * 加载指定类型对应的，在 `META-INF/spring.factories` 里的类名的数组
+		 */
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		/**
+		 * 创建对象
+		 */
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+		/**
+		 * 排序对象
+		 */
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
@@ -432,11 +512,26 @@ public class SpringApplication {
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
 			ClassLoader classLoader, Object[] args, Set<String> names) {
 		List<T> instances = new ArrayList<>(names.size());
+		/**
+		 * 遍历names数组
+		 */
 		for (String name : names) {
 			try {
+				/**
+				 * 获得name对应的对象类型
+				 */
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+				/**
+				 * 判断是否实现自type类
+				 */
 				Assert.isAssignable(type, instanceClass);
+				/**
+				 * 获得构造方法
+				 */
 				Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
+				/**
+				 * 创建对象
+				 */
 				T instance = (T) BeanUtils.instantiateClass(constructor, args);
 				instances.add(instance);
 			}
