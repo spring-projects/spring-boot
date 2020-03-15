@@ -27,9 +27,10 @@ test -f /opt/openjdk/bin/javac
 ###########################################################
 # DOCKER
 ###########################################################
+DOCKER_URL=$( ./get-docker-url.sh )
 
 cd /
-curl -L https://download.docker.com/linux/static/stable/x86_64/docker-19.03.7.tgz | tar zx
+curl -L ${DOCKER_URL} | tar zx
 mv /docker/* /bin/
 chmod +x /bin/docker*
 
