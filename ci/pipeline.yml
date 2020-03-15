@@ -209,6 +209,21 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
       image: spring-boot-ci-image
+- name: detect-docker-updates
+  plan:
+  - get: git-repo
+  - get: every-wednesday
+    trigger: true
+  - get: spring-boot-ci-image
+  - do:
+    - task: detect-docker-updates
+      file: git-repo/ci/tasks/detect-docker-updates.yml
+      params:
+        GITHUB_REPO: spring-boot
+        GITHUB_ORGANIZATION: spring-projects
+        GITHUB_PASSWORD: ((github-password))
+        GITHUB_USERNAME: ((github-username))
+      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
@@ -595,6 +610,6 @@ groups:
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
-  jobs: ["build-spring-boot-ci-images", "detect-jdk-updates", "detect-ubuntu-image-updates"]
+  jobs: ["build-spring-boot-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "Build Pull Requests"
   jobs: ["build-pull-requests"]
