@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.util.jar.JarFile;
 
+import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.util.Assert;
 
 /**
@@ -100,6 +101,9 @@ public class Repackager extends Packager {
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
 			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
+		if (lastModifiedTime != null && getLayout() instanceof War) {
+			throw new IllegalStateException("Reproducible repackaging is not supported with war packaging");
+		}
 		destination = destination.getAbsoluteFile();
 		File source = getSource();
 		if (isAlreadyPackaged() && source.equals(destination)) {
