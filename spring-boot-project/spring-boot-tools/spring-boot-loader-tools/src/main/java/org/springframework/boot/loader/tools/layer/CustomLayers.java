@@ -23,7 +23,7 @@ import java.util.List;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
 import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.layer.classes.ResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.ResourceStrategy;
 import org.springframework.boot.loader.tools.layer.library.LibraryStrategy;
 
 /**

@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.classes;
+package org.springframework.boot.loader.tools.layer.application;
 
-import java.io.Serializable;
+import java.util.List;
 
-import org.springframework.boot.loader.tools.Layer;
+import org.springframework.util.AntPathMatcher;
 
 /**
- * A strategy used to match a resource to a layer.
+ * An implementation of {@link ResourceFilter} based on the resource location.
  *
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public interface ResourceStrategy extends Serializable {
+public class LocationFilter extends AbstractResourceFilter {
 
-	/**
-	 * Return a {@link Layer} for the given resource. If no matching layer is found,
-	 * {@code null} is returned.
-	 * @param resourceName the name of the resource
-	 * @return the matching layer or {@code null}
-	 */
-	Layer getMatchingLayer(String resourceName);
+	private static final AntPathMatcher MATCHER = new AntPathMatcher();
+
+	public LocationFilter(List<String> includes, List<String> excludes) {
+		super(includes, excludes);
+	}
+
+	@Override
+	protected boolean isMatch(String resourceName, List<String> toMatch) {
+		return toMatch.stream().anyMatch((pattern) -> MATCHER.match(pattern, resourceName));
+	}
 
 }

@@ -26,9 +26,9 @@ import org.w3c.dom.NodeList;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.layer.CustomLayers;
-import org.springframework.boot.loader.tools.layer.classes.FilteredResourceStrategy;
-import org.springframework.boot.loader.tools.layer.classes.ResourceFilter;
-import org.springframework.boot.loader.tools.layer.classes.ResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.FilteredResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.ResourceFilter;
+import org.springframework.boot.loader.tools.layer.application.ResourceStrategy;
 import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
 import org.springframework.boot.loader.tools.layer.library.FilteredLibraryStrategy;
 import org.springframework.boot.loader.tools.layer.library.LibraryFilter;
@@ -134,7 +134,7 @@ public class CustomLayersProvider {
 			List<String> excludeList) {
 		if ("locations".equals(filter.getNodeName())) {
 			filters.add(
-					new org.springframework.boot.loader.tools.layer.classes.LocationFilter(includeList, excludeList));
+					new org.springframework.boot.loader.tools.layer.application.LocationFilter(includeList, excludeList));
 		}
 	}
 

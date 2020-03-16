@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
-import org.springframework.boot.loader.tools.layer.classes.FilteredResourceStrategy;
-import org.springframework.boot.loader.tools.layer.classes.LocationFilter;
+import org.springframework.boot.loader.tools.layer.application.FilteredResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.LocationFilter;
 import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
 import org.springframework.boot.loader.tools.layer.library.FilteredLibraryStrategy;
 

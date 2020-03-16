@@ -37,8 +37,8 @@ import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.loader.tools.layer.classes.FilteredResourceStrategy;
-import org.springframework.boot.loader.tools.layer.classes.LocationFilter;
+import org.springframework.boot.loader.tools.layer.application.FilteredResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.LocationFilter;
 import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
 import org.springframework.boot.loader.tools.layer.library.FilteredLibraryStrategy;
 

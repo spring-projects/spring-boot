@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.classes;
+package org.springframework.boot.loader.tools.layer.application;
 
 import java.util.ArrayList;
 import java.util.Collections;
