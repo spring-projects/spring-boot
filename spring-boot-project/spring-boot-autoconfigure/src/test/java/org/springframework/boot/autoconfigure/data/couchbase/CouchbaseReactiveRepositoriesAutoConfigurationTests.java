@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfiguration;
 import org.springframework.boot.autoconfigure.data.alt.couchbase.CityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.alt.couchbase.ReactiveCityCouchbaseRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
@@ -86,14 +86,14 @@ class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseTestConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseTestConfiguration.class)
 	static class NoRepositoryConfiguration {
 
 	}
@@ -101,7 +101,7 @@ class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CouchbaseReactiveRepositoriesAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityCouchbaseRepository.class)
-	@Import(CouchbaseDataAutoConfigurationTests.CustomCouchbaseConfiguration.class)
+	@Import(CouchbaseTestConfiguration.class)
 	static class CustomizedConfiguration {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,37 +20,33 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.cluster.ClusterInfo;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
 
-import org.springframework.data.couchbase.config.CouchbaseConfigurer;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.Mockito.mock;
 
 /**
- * Test configurer for couchbase that mocks access.
+ * Test configuration for couchbase that mocks access.
  *
  * @author Stephane Nicoll
  */
-@Component
-public class CouchbaseTestConfigurer implements CouchbaseConfigurer {
+@Configuration(proxyBeanMethods = false)
+public class CouchbaseTestConfiguration {
 
-	@Override
-	public CouchbaseEnvironment couchbaseEnvironment() throws Exception {
-		return mock(CouchbaseEnvironment.class);
+	private final Cluster cluster = mock(Cluster.class);
+
+	@Bean
+	public Cluster couchbaseCluster() {
+		return this.cluster;
 	}
 
-	@Override
-	public Cluster couchbaseCluster() throws Exception {
-		return mock(Cluster.class);
-	}
-
-	@Override
+	@Bean
 	public ClusterInfo couchbaseClusterInfo() {
 		return mock(ClusterInfo.class);
 	}
 
-	@Override
+	@Bean
 	public Bucket couchbaseClient() {
 		return mock(CouchbaseBucket.class);
 	}

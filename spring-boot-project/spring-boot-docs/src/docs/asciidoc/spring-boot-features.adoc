@@ -4485,7 +4485,6 @@ Generally, you provide the bootstrap hosts, bucket name, and password, as shown 
 ----
 
 TIP: You need to provide _at least_ the bootstrap host(s), in which case the bucket name is `default` and the password is an empty String.
-Alternatively, you can define your own `org.springframework.data.couchbase.config.CouchbaseConfigurer` `@Bean` to take control over the whole configuration.
 
 It is also possible to customize some of the `CouchbaseEnvironment` settings.
 For instance, the following configuration changes the timeout to use to open a new `Bucket` and enables SSL support:
@@ -4497,7 +4496,8 @@ For instance, the following configuration changes the timeout to use to open a n
 	spring.couchbase.env.ssl.key-store-password=secret
 ----
 
-Check the `spring.couchbase.env.*` properties for more details.
+TIP: Check the `spring.couchbase.env.*` properties for more details.
+To take more control, one or more `CouchbaseEnvironmentBuilderCustomizer` beans can be used.
 
 
 

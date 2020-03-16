@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,17 @@ package org.springframework.boot.autoconfigure.couchbase;
 
 import java.util.function.Consumer;
 
-import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseBucket;
-import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CouchbaseAutoConfiguration}.
@@ -43,36 +38,23 @@ import static org.mockito.Mockito.mock;
  */
 class CouchbaseAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class));
 
 	@Test
 	void bootstrapHostsIsRequired() {
-		this.contextRunner.run(this::assertNoCouchbaseBeans);
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseEnvironment.class)
+				.doesNotHaveBean(Cluster.class));
 	}
 
 	@Test
-	void bootstrapHostsNotRequiredIfCouchbaseConfigurerIsSet() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class).run((context) -> {
-			assertThat(context).hasSingleBean(CouchbaseTestConfigurer.class);
-			// No beans are going to be created
-			assertNoCouchbaseBeans(context);
-		});
-	}
-
-	@Test
-	void bootstrapHostsIgnoredIfCouchbaseConfigurerIsSet() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class)
-				.withPropertyValues("spring.couchbase.bootstrapHosts=localhost").run((context) -> {
-					assertThat(context).hasSingleBean(CouchbaseTestConfigurer.class);
-					assertNoCouchbaseBeans(context);
+	void bootstrapHostsCreateEnvironmentAndCluster() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+				.withPropertyValues("spring.couchbase.bootstrap-hosts=localhost").run((context) -> {
+					assertThat(context).hasSingleBean(CouchbaseEnvironment.class).hasSingleBean(Cluster.class);
+					assertThat(context.getBean(Cluster.class))
+							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
 				});
-	}
-
-	private void assertNoCouchbaseBeans(AssertableApplicationContext context) {
-		// No beans are going to be created
-		assertThat(context).doesNotHaveBean(CouchbaseEnvironment.class).doesNotHaveBean(ClusterInfo.class)
-				.doesNotHaveBean(Cluster.class).doesNotHaveBean(Bucket.class);
 	}
 
 	@Test
@@ -147,53 +129,32 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	private void testCouchbaseEnv(Consumer<DefaultCouchbaseEnvironment> environmentConsumer, String... environment) {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfigurer.class).withPropertyValues(environment)
-				.run((context) -> {
-					CouchbaseProperties properties = context.getBean(CouchbaseProperties.class);
-					DefaultCouchbaseEnvironment env = new CouchbaseConfiguration(properties)
-							.initializeEnvironmentBuilder(properties).build();
-					environmentConsumer.accept(env);
-				});
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+				.withPropertyValues("spring.couchbase.bootstrap-hosts=localhost").withPropertyValues(environment)
+				.run((context) -> environmentConsumer.accept(context.getBean(DefaultCouchbaseEnvironment.class)));
 	}
 
 	@Test
 	void customizeEnvWithCustomCouchbaseConfiguration() {
-		this.contextRunner.withUserConfiguration(CustomCouchbaseConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CouchbaseTestConfiguration.class,
+						CouchbaseEnvironmentCustomizerConfiguration.class)
 				.withPropertyValues("spring.couchbase.bootstrap-hosts=localhost",
 						"spring.couchbase.env.timeouts.connect=100")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(CouchbaseConfiguration.class);
+					assertThat(context).hasSingleBean(DefaultCouchbaseEnvironment.class);
 					DefaultCouchbaseEnvironment env = context.getBean(DefaultCouchbaseEnvironment.class);
 					assertThat(env.socketConnectTimeout()).isEqualTo(5000);
 					assertThat(env.connectTimeout()).isEqualTo(2000);
 				});
 	}
 
-	@Configuration
-	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class CouchbaseEnvironmentCustomizerConfiguration {
 
-		CustomCouchbaseConfiguration(CouchbaseProperties properties) {
-			super(properties);
-		}
-
-		@Override
-		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
-			return super.initializeEnvironmentBuilder(properties).socketConnectTimeout(5000).connectTimeout(2000);
-		}
-
-		@Override
-		public Cluster couchbaseCluster() {
-			return mock(Cluster.class);
-		}
-
-		@Override
-		public ClusterInfo couchbaseClusterInfo() {
-			return mock(ClusterInfo.class);
-		}
-
-		@Override
-		public Bucket couchbaseClient() {
-			return mock(CouchbaseBucket.class);
+		@Bean
+		CouchbaseEnvironmentBuilderCustomizer couchbaseEnvironmentBuilderCustomizer() {
+			return (builder) -> builder.socketConnectTimeout(5000).connectTimeout(2000);
 		}
 
 	}

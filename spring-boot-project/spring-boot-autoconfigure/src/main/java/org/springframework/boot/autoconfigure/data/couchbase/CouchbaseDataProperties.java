@@ -40,6 +40,11 @@ public class CouchbaseDataProperties {
 	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
 
 	/**
+	 * Fully qualified name of the FieldNamingStrategy to use.
+	 */
+	private Class<?> fieldNamingStrategy;
+
+	/**
 	 * Name of the field that stores the type information for complex types when using
 	 * "MappingCouchbaseConverter".
 	 */
@@ -59,6 +64,14 @@ public class CouchbaseDataProperties {
 
 	public void setConsistency(Consistency consistency) {
 		this.consistency = consistency;
+	}
+
+	public Class<?> getFieldNamingStrategy() {
+		return this.fieldNamingStrategy;
+	}
+
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
 	public String getTypeKey() {
