@@ -17,9 +17,17 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,6 +69,37 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 						.hasUnpackEntryWithNameStartingWith("WEB-INF/lib/spring-core-")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context-")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl-"));
+	}
+
+	@TestTemplate
+	void whenWarIsRepackagedWithOutputTimestampConfiguredThenWarIsReproducible(MavenBuild mavenBuild)
+			throws InterruptedException {
+		String firstHash = buildWarWithOutputTimestamp(mavenBuild);
+		Thread.sleep(1500);
+		String secondHash = buildWarWithOutputTimestamp(mavenBuild);
+		assertThat(firstHash).isEqualTo(secondHash);
+	}
+
+	private String buildWarWithOutputTimestamp(MavenBuild mavenBuild) {
+		AtomicReference<String> warHash = new AtomicReference<>();
+		mavenBuild.project("war-output-timestamp").execute((project) -> {
+			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(repackaged).isFile();
+			assertThat(repackaged.lastModified()).isEqualTo(1584352800000L);
+			try (JarFile jar = new JarFile(repackaged)) {
+				List<String> unreproducibleEntries = jar.stream()
+						.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
+						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
+						.collect(Collectors.toList());
+				assertThat(unreproducibleEntries).isEmpty();
+				warHash.set(FileUtils.sha1Hash(repackaged));
+				FileSystemUtils.deleteRecursively(project);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		});
+		return warHash.get();
 	}
 
 }

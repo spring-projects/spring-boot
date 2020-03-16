@@ -26,6 +26,7 @@ dependencies {
 
 	intTestImplementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.apache.maven.shared:maven-invoker")
 	intTestImplementation("org.assertj:assertj-core")

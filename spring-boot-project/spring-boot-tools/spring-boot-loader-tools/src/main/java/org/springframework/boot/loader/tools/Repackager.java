@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
 import java.util.jar.JarFile;
 
 import org.springframework.util.Assert;
@@ -82,6 +83,22 @@ public class Repackager extends Packager {
 	 * @since 1.3.0
 	 */
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
+		this.repackage(destination, libraries, launchScript, null);
+	}
+
+	/**
+	 * Repackage to the given destination so that it can be launched using '
+	 * {@literal java -jar}'.
+	 * @param destination the destination file (may be the same as the source)
+	 * @param libraries the libraries required to run the archive
+	 * @param launchScript an optional launch script prepended to the front of the jar
+	 * @param lastModifiedTime an optional last modified time to apply to the archive and
+	 * its contents
+	 * @throws IOException if the file cannot be repackaged
+	 * @since 2.3.0
+	 */
+	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
+			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
 		destination = destination.getAbsoluteFile();
 		File source = getSource();
@@ -97,7 +114,7 @@ public class Repackager extends Packager {
 		destination.delete();
 		try {
 			try (JarFile sourceJar = new JarFile(workingSource)) {
-				repackage(sourceJar, destination, libraries, launchScript);
+				repackage(sourceJar, destination, libraries, launchScript, lastModifiedTime);
 			}
 		}
 		finally {
@@ -107,10 +124,13 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript)
-			throws IOException {
-		try (JarWriter writer = new JarWriter(destination, launchScript)) {
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
+			FileTime lastModifiedTime) throws IOException {
+		try (JarWriter writer = new JarWriter(destination, launchScript, lastModifiedTime)) {
 			write(sourceJar, libraries, writer);
+		}
+		if (lastModifiedTime != null) {
+			destination.setLastModified(lastModifiedTime.toMillis());
 		}
 	}
 
