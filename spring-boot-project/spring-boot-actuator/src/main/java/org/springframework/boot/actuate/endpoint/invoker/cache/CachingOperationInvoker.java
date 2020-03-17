@@ -192,10 +192,10 @@ public class CachingOperationInvoker implements OperationInvoker {
 			if (this.apiVersion != other.apiVersion) {
 				return false;
 			}
-			if (this.principal != null) {
-				return this.principal.equals(other.principal);
-			} else {
+			if (this.principal == null) {
 				return other.principal == null;
+			} else {
+				return this.principal.equals(other.principal);
 			}
 		}
 
