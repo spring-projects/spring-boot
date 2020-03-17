@@ -101,6 +101,20 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	@Parameter
 	private Image image;
 
+	/**
+	 * Alias for {@link Image#name to support configuration via command-line property.
+	 * @since 2.3.0
+	 */
+	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
+	String imageName;
+
+	/**
+	 * Alias for {@link Image#builder to support configuration via command-line property.
+	 * @since 2.3.0
+	 */
+	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
+	String imageBuilder;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -129,6 +143,12 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private BuildRequest getBuildRequest(Libraries libraries) {
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
 		Image image = (this.image != null) ? this.image : new Image();
+		if (image.name == null && this.imageName != null) {
+			image.setName(this.imageName);
+		}
+		if (image.builder == null && this.imageBuilder != null) {
+			image.setBuilder(this.imageBuilder);
+		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
 
