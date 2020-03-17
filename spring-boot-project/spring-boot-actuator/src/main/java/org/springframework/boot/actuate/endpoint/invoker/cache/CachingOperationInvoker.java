@@ -194,9 +194,10 @@ public class CachingOperationInvoker implements OperationInvoker {
 			}
 			if (this.principal == null) {
 				return other.principal == null;
-			} else {
-				return this.principal.equals(other.principal);
+			} else if (!this.principal.equals(other.principal)) {
+				return false;
 			}
+			return true;
 		}
 
 		@Override
