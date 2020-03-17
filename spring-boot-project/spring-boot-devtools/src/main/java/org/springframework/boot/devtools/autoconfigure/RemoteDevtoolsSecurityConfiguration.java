@@ -32,7 +32,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * @author Madhura Bhave
  */
 @ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class RemoteDevtoolsSecurityConfiguration {
 
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)

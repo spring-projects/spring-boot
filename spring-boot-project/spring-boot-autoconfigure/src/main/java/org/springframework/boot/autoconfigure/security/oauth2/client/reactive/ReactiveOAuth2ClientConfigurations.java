@@ -45,7 +45,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  */
 class ReactiveOAuth2ClientConfigurations {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveClientRegistrationRepositoryConfiguration {
@@ -59,7 +59,7 @@ class ReactiveOAuth2ClientConfigurations {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveOAuth2ClientConfiguration {
 
@@ -77,7 +77,7 @@ class ReactiveOAuth2ClientConfigurations {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class SecurityWebFilterChainConfiguration {
 
