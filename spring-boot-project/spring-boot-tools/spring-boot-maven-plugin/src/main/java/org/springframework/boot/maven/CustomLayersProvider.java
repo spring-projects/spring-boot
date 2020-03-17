@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,6 +28,7 @@ import org.w3c.dom.NodeList;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.layer.CustomLayers;
 import org.springframework.boot.loader.tools.layer.application.FilteredResourceStrategy;
+import org.springframework.boot.loader.tools.layer.application.LocationFilter;
 import org.springframework.boot.loader.tools.layer.application.ResourceFilter;
 import org.springframework.boot.loader.tools.layer.application.ResourceStrategy;
 import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
@@ -51,91 +53,77 @@ public class CustomLayersProvider {
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
 			if (node instanceof Element) {
-				Element ele = (Element) node;
-				String nodeName = ele.getNodeName();
-				if ("layers".equals(nodeName)) {
-					layers.addAll(getLayers(ele));
-				}
-				if ("libraries".equals(nodeName)) {
-					libraryStrategies.addAll(getLibraryStrategies(ele.getChildNodes()));
-				}
-				if ("classes".equals(nodeName)) {
-					resourceStrategies.addAll(getResourceStrategies(ele.getChildNodes()));
-				}
+				processNode(layers, libraryStrategies, resourceStrategies, (Element) node);
 			}
 		}
 		return new CustomLayers(layers, resourceStrategies, libraryStrategies);
 	}
 
-	private List<LibraryStrategy> getLibraryStrategies(NodeList nodes) {
-		List<LibraryStrategy> strategy = new ArrayList<>();
+	private void processNode(List<Layer> layers, List<LibraryStrategy> libraryStrategies,
+			List<ResourceStrategy> resourceStrategies, Element node) {
+		String nodeName = node.getNodeName();
+		if ("layers".equals(nodeName)) {
+			layers.addAll(getLayers(node));
+		}
+		NodeList contents = node.getChildNodes();
+		if ("libraries".equals(nodeName)) {
+			libraryStrategies.addAll(getStrategies(contents,
+					(StrategyFactory<LibraryFilter, LibraryStrategy>) FilteredLibraryStrategy::new,
+					CoordinateFilter::new, "coordinates"::equals));
+		}
+		if ("classes".equals(nodeName)) {
+			resourceStrategies.addAll(getStrategies(contents,
+					(StrategyFactory<ResourceFilter, ResourceStrategy>) FilteredResourceStrategy::new,
+					LocationFilter::new, "locations"::equals));
+		}
+	}
+
+	private List<Layer> getLayers(Element element) {
+		List<Layer> layers = new ArrayList<>();
+		NodeList nodes = element.getChildNodes();
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			if (node instanceof Element) {
+				Element ele = (Element) node;
+				String nodeName = ele.getNodeName();
+				if ("layer".equals(nodeName)) {
+					layers.add(new Layer(ele.getTextContent()));
+				}
+			}
+		}
+		return layers;
+	}
+
+	private <T, E> List<T> getStrategies(NodeList nodes, StrategyFactory<E, T> strategyFactory,
+			FilterFactory<E> filterFactory, Predicate<String> filterPredicate) {
+		List<T> contents = new ArrayList<>();
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node item = nodes.item(i);
 			if (item instanceof Element) {
 				Element element = (Element) item;
-				String layer = element.getAttribute("layer");
-				if ("layer-content".equals(element.getTagName())) {
-					List<LibraryFilter> filters = new ArrayList<>();
-					NodeList filterList = item.getChildNodes();
-					if (filterList.getLength() == 0) {
-						throw new IllegalArgumentException("Filters for layer-content must not be empty.");
-					}
-					for (int k = 0; k < filterList.getLength(); k++) {
-						Node filter = filterList.item(k);
-						if (filter instanceof Element) {
-							List<String> includeList = getPatterns((Element) filter, "include");
-							List<String> excludeList = getPatterns((Element) filter, "exclude");
-							addLibraryFilter(filters, filter, includeList, excludeList);
-						}
-					}
-					strategy.add(new FilteredLibraryStrategy(layer, filters));
-				}
-			}
-		}
-		return strategy;
-	}
-
-	private void addLibraryFilter(List<LibraryFilter> filters, Node filter, List<String> includeList,
-			List<String> excludeList) {
-		if ("coordinates".equals(filter.getNodeName())) {
-			filters.add(new CoordinateFilter(includeList, excludeList));
-		}
-	}
-
-	private List<ResourceStrategy> getResourceStrategies(NodeList strategies) {
-		List<ResourceStrategy> strategy = new ArrayList<>();
-		for (int i = 0; i < strategies.getLength(); i++) {
-			Node item = strategies.item(i);
-			List<ResourceFilter> filters = new ArrayList<>();
-			if (item instanceof Element) {
-				Element element = (Element) item;
-				String layer = element.getAttribute("layer");
 				if ("layer-content".equals(element.getTagName())) {
 					NodeList filterList = item.getChildNodes();
 					if (filterList.getLength() == 0) {
 						throw new IllegalArgumentException("Filters for layer-content must not be empty.");
 					}
-					for (int k = 0; k < filterList.getLength(); k++) {
-						Node filter = filterList.item(k);
-						if (filter instanceof Element) {
-							List<String> includeList = getPatterns((Element) filter, "include");
-							List<String> excludeList = getPatterns((Element) filter, "exclude");
-							addFilter(filters, filter, includeList, excludeList);
+					List<E> filters = new ArrayList<>();
+					for (int j = 0; j < filterList.getLength(); j++) {
+						Node filterNode = filterList.item(j);
+						if (filterNode instanceof Element) {
+							List<String> includeList = getPatterns((Element) filterNode, "include");
+							List<String> excludeList = getPatterns((Element) filterNode, "exclude");
+							if (filterPredicate.test(filterNode.getNodeName())) {
+								E filter = filterFactory.getFilter(includeList, excludeList);
+								filters.add(filter);
+							}
 						}
 					}
-					strategy.add(new FilteredResourceStrategy(layer, filters));
+					String layer = element.getAttribute("layer");
+					contents.add(strategyFactory.getStrategy(layer, filters));
 				}
 			}
 		}
-		return strategy;
-	}
-
-	private void addFilter(List<ResourceFilter> filters, Node filter, List<String> includeList,
-			List<String> excludeList) {
-		if ("locations".equals(filter.getNodeName())) {
-			filters.add(
-					new org.springframework.boot.loader.tools.layer.application.LocationFilter(includeList, excludeList));
-		}
+		return contents;
 	}
 
 	private List<String> getPatterns(Element element, String key) {
@@ -150,20 +138,16 @@ public class CustomLayersProvider {
 		return values;
 	}
 
-	private List<Layer> getLayers(Element element) {
-		List<Layer> layers = new ArrayList<>();
-		NodeList nl = element.getChildNodes();
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node node = nl.item(i);
-			if (node instanceof Element) {
-				Element ele = (Element) node;
-				String nodeName = ele.getNodeName();
-				if ("layer".equals(nodeName)) {
-					layers.add(new Layer(ele.getTextContent()));
-				}
-			}
-		}
-		return layers;
+	interface StrategyFactory<E, T> {
+
+		T getStrategy(String layer, List<E> filters);
+
+	}
+
+	interface FilterFactory<E> {
+
+		E getFilter(List<String> includes, List<String> excludes);
+
 	}
 
 }
