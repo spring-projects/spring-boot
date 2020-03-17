@@ -192,14 +192,24 @@ public class CouchbaseProperties {
 	public static class Timeouts {
 
 		/**
-		 * Bucket connect timeouts.
+		 * Bucket connect timeout.
 		 */
 		private Duration connect = Duration.ofSeconds(10);
 
 		/**
-		 * operations performed on a specific key timeout.
+		 * Bucket disconnect timeout.
+		 */
+		private Duration disconnect = Duration.ofSeconds(10);
+
+		/**
+		 * Timeout for operations on a specific key-value.
 		 */
 		private Duration keyValue = Duration.ofMillis(2500);
+
+		/**
+		 * Timeout for operations on a specific key-value with a durability level.
+		 */
+		private Duration keyValueDurable = Duration.ofSeconds(10);
 
 		/**
 		 * N1QL query operations timeout.
@@ -211,6 +221,21 @@ public class CouchbaseProperties {
 		 */
 		private Duration view = Duration.ofSeconds(75);
 
+		/**
+		 * Timeout for the search service.
+		 */
+		private Duration search = Duration.ofSeconds(75);
+
+		/**
+		 * Timeout for the analytics service.
+		 */
+		private Duration analytics = Duration.ofSeconds(75);
+
+		/**
+		 * Timeout for the management operations.
+		 */
+		private Duration management = Duration.ofSeconds(75);
+
 		public Duration getConnect() {
 			return this.connect;
 		}
@@ -219,12 +244,28 @@ public class CouchbaseProperties {
 			this.connect = connect;
 		}
 
+		public Duration getDisconnect() {
+			return this.disconnect;
+		}
+
+		public void setDisconnect(Duration disconnect) {
+			this.disconnect = disconnect;
+		}
+
 		public Duration getKeyValue() {
 			return this.keyValue;
 		}
 
 		public void setKeyValue(Duration keyValue) {
 			this.keyValue = keyValue;
+		}
+
+		public Duration getKeyValueDurable() {
+			return this.keyValueDurable;
+		}
+
+		public void setKeyValueDurable(Duration keyValueDurable) {
+			this.keyValueDurable = keyValueDurable;
 		}
 
 		public Duration getQuery() {
@@ -241,6 +282,30 @@ public class CouchbaseProperties {
 
 		public void setView(Duration view) {
 			this.view = view;
+		}
+
+		public Duration getSearch() {
+			return this.search;
+		}
+
+		public void setSearch(Duration search) {
+			this.search = search;
+		}
+
+		public Duration getAnalytics() {
+			return this.analytics;
+		}
+
+		public void setAnalytics(Duration analytics) {
+			this.analytics = analytics;
+		}
+
+		public Duration getManagement() {
+			return this.management;
+		}
+
+		public void setManagement(Duration management) {
+			this.management = management;
 		}
 
 	}

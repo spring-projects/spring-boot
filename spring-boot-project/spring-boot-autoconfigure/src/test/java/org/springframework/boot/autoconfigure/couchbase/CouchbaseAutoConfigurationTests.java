@@ -76,11 +76,19 @@ class CouchbaseAutoConfigurationTests {
 		testClusterEnvironment((env) -> {
 			TimeoutConfig timeoutConfig = env.timeoutConfig();
 			assertThat(timeoutConfig.connectTimeout()).isEqualTo(Duration.ofSeconds(1));
+			assertThat(timeoutConfig.disconnectTimeout()).isEqualTo(Duration.ofSeconds(2));
 			assertThat(timeoutConfig.kvTimeout()).isEqualTo(Duration.ofMillis(500));
+			assertThat(timeoutConfig.kvDurableTimeout()).isEqualTo(Duration.ofMillis(750));
 			assertThat(timeoutConfig.queryTimeout()).isEqualTo(Duration.ofSeconds(3));
 			assertThat(timeoutConfig.viewTimeout()).isEqualTo(Duration.ofSeconds(4));
-		}, "spring.couchbase.env.timeouts.connect=1s", "spring.couchbase.env.timeouts.key-value=500ms",
-				"spring.couchbase.env.timeouts.query=3s", "spring.couchbase.env.timeouts.view=4s");
+			assertThat(timeoutConfig.searchTimeout()).isEqualTo(Duration.ofSeconds(5));
+			assertThat(timeoutConfig.analyticsTimeout()).isEqualTo(Duration.ofSeconds(6));
+			assertThat(timeoutConfig.managementTimeout()).isEqualTo(Duration.ofSeconds(7));
+		}, "spring.couchbase.env.timeouts.connect=1s", "spring.couchbase.env.timeouts.disconnect=2s",
+				"spring.couchbase.env.timeouts.key-value=500ms",
+				"spring.couchbase.env.timeouts.key-value-durable=750ms", "spring.couchbase.env.timeouts.query=3s",
+				"spring.couchbase.env.timeouts.view=4s", "spring.couchbase.env.timeouts.search=5s",
+				"spring.couchbase.env.timeouts.analytics=6s", "spring.couchbase.env.timeouts.management=7s");
 	}
 
 	@Test

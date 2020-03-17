@@ -44,9 +44,14 @@ class CouchbasePropertiesTests {
 	void timeoutsHaveConsistentDefaults() {
 		Timeouts timeouts = new CouchbaseProperties().getEnv().getTimeouts();
 		assertThat(timeouts.getConnect()).isEqualTo(TimeoutConfig.DEFAULT_CONNECT_TIMEOUT);
+		assertThat(timeouts.getDisconnect()).isEqualTo(TimeoutConfig.DEFAULT_DISCONNECT_TIMEOUT);
 		assertThat(timeouts.getKeyValue()).isEqualTo(TimeoutConfig.DEFAULT_KV_TIMEOUT);
+		assertThat(timeouts.getKeyValueDurable()).isEqualTo(TimeoutConfig.DEFAULT_KV_DURABLE_TIMEOUT);
 		assertThat(timeouts.getQuery()).isEqualTo(TimeoutConfig.DEFAULT_QUERY_TIMEOUT);
 		assertThat(timeouts.getView()).isEqualTo(TimeoutConfig.DEFAULT_VIEW_TIMEOUT);
+		assertThat(timeouts.getSearch()).isEqualTo(TimeoutConfig.DEFAULT_SEARCH_TIMEOUT);
+		assertThat(timeouts.getAnalytics()).isEqualTo(TimeoutConfig.DEFAULT_ANALYTICS_TIMEOUT);
+		assertThat(timeouts.getManagement()).isEqualTo(TimeoutConfig.DEFAULT_MANAGEMENT_TIMEOUT);
 	}
 
 }

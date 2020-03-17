@@ -75,8 +75,11 @@ public class CouchbaseAutoConfiguration {
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = properties.getEnv().getTimeouts();
-		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).queryTimeout(timeouts.getQuery())
-				.viewTimeout(timeouts.getView()).connectTimeout(timeouts.getConnect()));
+		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).analyticsTimeout(timeouts.getAnalytics())
+				.kvDurableTimeout(timeouts.getKeyValueDurable()).queryTimeout(timeouts.getQuery())
+				.viewTimeout(timeouts.getView()).searchTimeout(timeouts.getSearch())
+				.managementTimeout(timeouts.getManagement()).connectTimeout(timeouts.getConnect())
+				.disconnectTimeout(timeouts.getDisconnect()));
 		CouchbaseProperties.Io io = properties.getEnv().getIo();
 		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints()).numKvConnections(io.getMinEndpoints())
 				.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
