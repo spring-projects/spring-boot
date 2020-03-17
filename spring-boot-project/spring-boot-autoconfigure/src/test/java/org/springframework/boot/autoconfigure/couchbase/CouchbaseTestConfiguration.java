@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseBucket;
-import com.couchbase.client.java.cluster.ClusterInfo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,23 +29,13 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-public class CouchbaseTestConfiguration {
+class CouchbaseTestConfiguration {
 
 	private final Cluster cluster = mock(Cluster.class);
 
 	@Bean
-	public Cluster couchbaseCluster() {
+	Cluster couchbaseCluster() {
 		return this.cluster;
-	}
-
-	@Bean
-	public ClusterInfo couchbaseClusterInfo() {
-		return mock(ClusterInfo.class);
-	}
-
-	@Bean
-	public Bucket couchbaseClient() {
-		return mock(CouchbaseBucket.class);
 	}
 
 }

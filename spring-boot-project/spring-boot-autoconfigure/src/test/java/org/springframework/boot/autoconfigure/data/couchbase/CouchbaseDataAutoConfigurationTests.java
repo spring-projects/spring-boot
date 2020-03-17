@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfiguration;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -40,8 +39,6 @@ import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMappe
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
-import org.springframework.data.couchbase.core.query.Consistency;
-import org.springframework.data.couchbase.repository.support.IndexManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,36 +65,6 @@ class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	void autoIndexIsDisabledByDefault() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class).run((context) -> {
-			IndexManager indexManager = context.getBean(IndexManager.class);
-			assertThat(indexManager.isIgnoreViews()).isTrue();
-			assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
-			assertThat(indexManager.isIgnoreN1qlSecondary()).isTrue();
-		});
-	}
-
-	@Test
-	void enableAutoIndex() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.auto-index=true").run((context) -> {
-					IndexManager indexManager = context.getBean(IndexManager.class);
-					assertThat(indexManager.isIgnoreViews()).isFalse();
-					assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
-					assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
-				});
-	}
-
-	@Test
-	void changeConsistency() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.consistency=eventually-consistent").run((context) -> {
-					CouchbaseTemplate couchbaseTemplate = context.getBean(CouchbaseTemplate.class);
-					assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
-				});
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
 	void entityScanShouldSetInitialEntitySet() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
@@ -110,14 +77,14 @@ class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	void typeKeyDefault() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
 						.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
 	}
 
 	@Test
 	void typeKeyCanBeCustomized() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
 				.withPropertyValues("spring.data.couchbase.type-key=_custom")
 				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
 						.isEqualTo("_custom"));
@@ -134,7 +101,7 @@ class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class CustomConversionsConfig {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
@@ -146,7 +113,7 @@ class CouchbaseDataAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class EntityScanConfig {
 
 	}

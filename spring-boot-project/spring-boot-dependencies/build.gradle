@@ -215,14 +215,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Cache Client", "2.1.0") {
-		group("com.couchbase.client") {
-			modules = [
-				"couchbase-spring-cache"
-			]
-		}
-	}
-	library("Couchbase Client", "2.7.13") {
+	library("Couchbase Client", "3.0.2") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -1616,7 +1609,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Releasetrain", "Neumann-M4") {
+	library("Spring Data Releasetrain", "Neumann-BUILD-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-releasetrain"

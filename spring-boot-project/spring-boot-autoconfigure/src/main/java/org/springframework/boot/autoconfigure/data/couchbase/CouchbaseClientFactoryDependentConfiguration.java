@@ -22,31 +22,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.CouchbaseClientFactory;
 import org.springframework.data.couchbase.config.BeanNames;
-import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
+import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
-import org.springframework.data.couchbase.repository.config.ReactiveRepositoryOperationsMapping;
+import org.springframework.data.couchbase.repository.config.RepositoryOperationsMapping;
 
 /**
- * Configuration for Spring Data's couchbase reactive support.
+ * Configuration for Couchbase-related beans that depend on a
+ * {@link CouchbaseClientFactory}.
  *
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(CouchbaseClientFactory.class)
-class CouchbaseReactiveDataConfiguration {
+class CouchbaseClientFactoryDependentConfiguration {
 
-	@Bean(name = BeanNames.REACTIVE_COUCHBASE_TEMPLATE)
-	@ConditionalOnMissingBean(name = BeanNames.REACTIVE_COUCHBASE_TEMPLATE)
-	ReactiveCouchbaseTemplate reactiveCouchbaseTemplate(CouchbaseClientFactory couchbaseClientFactory,
+	@Bean(name = BeanNames.COUCHBASE_TEMPLATE)
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_TEMPLATE)
+	CouchbaseTemplate couchbaseTemplate(CouchbaseClientFactory couchbaseClientFactory,
 			MappingCouchbaseConverter mappingCouchbaseConverter) {
-		return new ReactiveCouchbaseTemplate(couchbaseClientFactory, mappingCouchbaseConverter);
+		return new CouchbaseTemplate(couchbaseClientFactory, mappingCouchbaseConverter);
 	}
 
-	@Bean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
-	@ConditionalOnMissingBean(name = BeanNames.REACTIVE_COUCHBASE_OPERATIONS_MAPPING)
-	ReactiveRepositoryOperationsMapping reactiveCouchbaseRepositoryOperationsMapping(
-			ReactiveCouchbaseTemplate reactiveCouchbaseTemplate) {
-		return new ReactiveRepositoryOperationsMapping(reactiveCouchbaseTemplate);
+	@Bean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
+	RepositoryOperationsMapping couchbaseRepositoryOperationsMapping(CouchbaseTemplate couchbaseTemplate) {
+		return new RepositoryOperationsMapping(couchbaseTemplate);
 	}
 
 }

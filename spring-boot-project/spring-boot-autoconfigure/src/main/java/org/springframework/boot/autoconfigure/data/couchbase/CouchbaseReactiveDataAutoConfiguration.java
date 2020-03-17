@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -34,7 +34,7 @@ import org.springframework.data.couchbase.repository.ReactiveCouchbaseRepository
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ Bucket.class, ReactiveCouchbaseRepository.class, Flux.class })
+@ConditionalOnClass({ Cluster.class, ReactiveCouchbaseRepository.class, Flux.class })
 @AutoConfigureAfter(CouchbaseDataAutoConfiguration.class)
 @Import(CouchbaseReactiveDataConfiguration.class)
 public class CouchbaseReactiveDataAutoConfiguration {

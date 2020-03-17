@@ -4473,20 +4473,18 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 
 [[boot-features-connecting-to-couchbase]]
 ==== Connecting to Couchbase
-You can get a `Bucket` and `Cluster` by adding the Couchbase SDK and some configuration.
+You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
-Generally, you provide the bootstrap hosts, bucket name, and password, as shown in the following example:
+Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
-	spring.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
-	spring.couchbase.bucket.name=my-bucket
-	spring.couchbase.bucket.password=secret
+	spring.couchbase.connection-string=couchbase://192.168.1.123
+	spring.couchbase.username=user
+	spring.couchbase.password=secret
 ----
 
-TIP: You need to provide _at least_ the bootstrap host(s), in which case the bucket name is `default` and the password is an empty String.
-
-It is also possible to customize some of the `CouchbaseEnvironment` settings.
+It is also possible to customize some of the `ClusterEnvironment` settings.
 For instance, the following configuration changes the timeout to use to open a new `Bucket` and enables SSL support:
 
 [source,properties,indent=0,configprops]
@@ -4497,18 +4495,24 @@ For instance, the following configuration changes the timeout to use to open a n
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
-To take more control, one or more `CouchbaseEnvironmentBuilderCustomizer` beans can be used.
+To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans can be used.
 
 
 
 [[boot-features-spring-data-couchbase-repositories]]
 ==== Spring Data Couchbase Repositories
 Spring Data includes repository support for Couchbase.
-For complete details of Spring Data Couchbase, refer to the https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
+For complete details of Spring Data Couchbase, refer to the {spring-data-couchbase-docs}[reference documentation].
 
-You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a _default_ `CouchbaseConfigurer` is available (which happens when you enable Couchbase support, as explained earlier).
+You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
+This happens when a `Cluster` is availabe, as described above, and a bucket name as been specified:
 
-The following examples shows how to inject a Couchbase bean:
+[source,properties,indent=0,configprops]
+----
+	spring.data.couchbase.bucket-name=my-bucket
+----
+
+The following examples shows how to inject a `CouchbaseTemplate` bean:
 
 [source,java,indent=0]
 ----
@@ -4529,9 +4533,9 @@ The following examples shows how to inject a Couchbase bean:
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
 
-* A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
-* An `IndexManager` `@Bean` with a name of `couchbaseIndexManager`.
+* A `CouchbaseMappingContext` `@Bean` with a name of `couchbaseMappingContext`.
 * A `CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
+* A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
@@ -4550,8 +4554,6 @@ For instance, you can customize the converters to use, as follows:
 
 	}
 ----
-
-TIP: If you want to fully bypass the auto-configuration for Spring Data Couchbase, provide your own implementation of `org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`.
 
 
 

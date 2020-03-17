@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
  * Configuration properties for Spring Data Couchbase.
@@ -35,9 +34,14 @@ public class CouchbaseDataProperties {
 	private boolean autoIndex;
 
 	/**
-	 * Consistency to apply by default on generated queries.
+	 * Name of the bucket to connect to.
 	 */
-	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
+	private String bucketName;
+
+	/**
+	 * Name of the scope used for all collection access.
+	 */
+	private String scopeName;
 
 	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
@@ -58,12 +62,20 @@ public class CouchbaseDataProperties {
 		this.autoIndex = autoIndex;
 	}
 
-	public Consistency getConsistency() {
-		return this.consistency;
+	public String getBucketName() {
+		return this.bucketName;
 	}
 
-	public void setConsistency(Consistency consistency) {
-		this.consistency = consistency;
+	public void setBucketName(String bucketName) {
+		this.bucketName = bucketName;
+	}
+
+	public String getScopeName() {
+		return this.scopeName;
+	}
+
+	public void setScopeName(String scopeName) {
+		this.scopeName = scopeName;
 	}
 
 	public Class<?> getFieldNamingStrategy() {

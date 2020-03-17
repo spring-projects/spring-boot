@@ -18,28 +18,20 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Collections;
 
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.cluster.ClusterInfo;
-
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.data.couchbase.config.BeanNames;
-import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
 import org.springframework.data.couchbase.core.convert.translation.JacksonTranslationService;
 import org.springframework.data.couchbase.core.convert.translation.TranslationService;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.Document;
-import org.springframework.data.couchbase.repository.config.RepositoryOperationsMapping;
-import org.springframework.data.couchbase.repository.support.IndexManager;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 
 /**
@@ -50,8 +42,8 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 @Configuration(proxyBeanMethods = false)
 class CouchbaseDataConfiguration {
 
-	@Bean(name = BeanNames.COUCHBASE_MAPPING_CONVERTER)
-	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONVERTER)
+	@Bean
+	@ConditionalOnMissingBean
 	MappingCouchbaseConverter couchbaseMappingConverter(CouchbaseDataProperties properties,
 			CouchbaseMappingContext couchbaseMappingContext, CouchbaseCustomConversions couchbaseCustomConversions) {
 		MappingCouchbaseConverter converter = new MappingCouchbaseConverter(couchbaseMappingContext,
@@ -60,8 +52,8 @@ class CouchbaseDataConfiguration {
 		return converter;
 	}
 
-	@Bean(name = BeanNames.COUCHBASE_TRANSLATION_SERVICE)
-	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_TRANSLATION_SERVICE)
+	@Bean
+	@ConditionalOnMissingBean
 	TranslationService couchbaseTranslationService() {
 		return new JacksonTranslationService();
 	}
@@ -80,6 +72,7 @@ class CouchbaseDataConfiguration {
 			mappingContext
 					.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(fieldNamingStrategy));
 		}
+		mappingContext.setAutoIndexCreation(properties.isAutoIndex());
 		return mappingContext;
 	}
 
@@ -87,33 +80,6 @@ class CouchbaseDataConfiguration {
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	CouchbaseCustomConversions couchbaseCustomConversions() {
 		return new CouchbaseCustomConversions(Collections.emptyList());
-	}
-
-	@Bean(name = BeanNames.COUCHBASE_INDEX_MANAGER)
-	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_INDEX_MANAGER)
-	IndexManager indexManager(CouchbaseDataProperties properties) {
-		if (properties.isAutoIndex()) {
-			return new IndexManager(true, true, true);
-		}
-		return new IndexManager(false, false, false);
-	}
-
-	@Bean(name = BeanNames.COUCHBASE_TEMPLATE)
-	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_TEMPLATE)
-	@ConditionalOnBean({ ClusterInfo.class, Bucket.class })
-	CouchbaseTemplate couchbaseTemplate(CouchbaseDataProperties properties, ClusterInfo clusterInfo, Bucket bucket,
-			MappingCouchbaseConverter mappingCouchbaseConverter, TranslationService translationService) {
-		CouchbaseTemplate template = new CouchbaseTemplate(clusterInfo, bucket, mappingCouchbaseConverter,
-				translationService);
-		template.setDefaultConsistency(properties.getConsistency());
-		return template;
-	}
-
-	@Bean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
-	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
-	@ConditionalOnSingleCandidate(CouchbaseTemplate.class)
-	RepositoryOperationsMapping repositoryOperationsMapping(CouchbaseTemplate couchbaseTemplate) {
-		return new RepositoryOperationsMapping(couchbaseTemplate);
 	}
 
 }

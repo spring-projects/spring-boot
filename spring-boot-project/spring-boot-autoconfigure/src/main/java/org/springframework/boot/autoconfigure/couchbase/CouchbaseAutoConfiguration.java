@@ -16,28 +16,30 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import com.couchbase.client.core.env.KeyValueServiceConfig;
-import com.couchbase.client.core.env.QueryServiceConfig;
-import com.couchbase.client.core.env.ViewServiceConfig;
-import com.couchbase.client.java.Bucket;
+import java.net.URL;
+import java.security.KeyStore;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+
+import com.couchbase.client.core.env.IoConfig;
+import com.couchbase.client.core.env.SecurityConfig;
+import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseBucket;
-import com.couchbase.client.java.CouchbaseCluster;
-import com.couchbase.client.java.cluster.ClusterInfo;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
-import com.couchbase.client.java.env.DefaultCouchbaseEnvironment.Builder;
+import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.env.ClusterEnvironment.Builder;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.util.ResourceUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Couchbase.
@@ -48,106 +50,62 @@ import org.springframework.context.annotation.DependsOn;
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class })
-@Conditional(OnBootstrapHostsCondition.class)
+@ConditionalOnClass(Cluster.class)
+@ConditionalOnProperty("spring.couchbase.connection-string")
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(CouchbaseEnvironment.class)
-	public DefaultCouchbaseEnvironment couchbaseEnvironment(CouchbaseProperties properties,
-			ObjectProvider<CouchbaseEnvironmentBuilderCustomizer> customizers) {
+	@ConditionalOnMissingBean
+	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseProperties properties,
+			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers) {
 		Builder builder = initializeEnvironmentBuilder(properties);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(Cluster.class)
-	public CouchbaseCluster couchbaseCluster(CouchbaseProperties properties,
-			CouchbaseEnvironment couchbaseEnvironment) {
-		CouchbaseCluster couchbaseCluster = CouchbaseCluster.create(couchbaseEnvironment,
-				properties.getBootstrapHosts());
-		if (isRoleBasedAccessControlEnabled(properties)) {
-			return couchbaseCluster.authenticate(properties.getUsername(), properties.getPassword());
-		}
-		return couchbaseCluster;
-	}
-
-	@Bean
+	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
-	@DependsOn("couchbaseClient")
-	public ClusterInfo couchbaseClusterInfo(CouchbaseProperties properties, Cluster couchbaseCluster) {
-		if (isRoleBasedAccessControlEnabled(properties)) {
-			return couchbaseCluster.clusterManager().info();
-		}
-		return couchbaseCluster.clusterManager(properties.getBucket().getName(), properties.getBucket().getPassword())
-				.info();
+	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment) {
+		ClusterOptions options = ClusterOptions.clusterOptions(properties.getUsername(), properties.getPassword())
+				.environment(couchbaseClusterEnvironment);
+		return Cluster.connect(properties.getConnectionString(), options);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public Bucket couchbaseClient(CouchbaseProperties properties, Cluster couchbaseCluster) {
-		if (isRoleBasedAccessControlEnabled(properties)) {
-			return couchbaseCluster.openBucket(properties.getBucket().getName());
-		}
-		return couchbaseCluster.openBucket(properties.getBucket().getName(), properties.getBucket().getPassword());
-	}
-
-	private boolean isRoleBasedAccessControlEnabled(CouchbaseProperties properties) {
-		return properties.getUsername() != null && properties.getPassword() != null;
-	}
-
-	private DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
-		CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
-		CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
-		CouchbaseProperties.Bootstrap bootstrap = properties.getEnv().getBootstrap();
-		DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder();
-		if (bootstrap.getHttpDirectPort() != null) {
-			builder.bootstrapHttpDirectPort(bootstrap.getHttpDirectPort());
-		}
-		if (bootstrap.getHttpSslPort() != null) {
-			builder.bootstrapHttpSslPort(bootstrap.getHttpSslPort());
-		}
-		if (timeouts.getConnect() != null) {
-			builder = builder.connectTimeout(timeouts.getConnect().toMillis());
-		}
-		builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(endpoints.getKeyValue()));
-		if (timeouts.getKeyValue() != null) {
-			builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
-		}
-		if (timeouts.getQuery() != null) {
-			builder = builder.queryTimeout(timeouts.getQuery().toMillis());
-			builder = builder.queryServiceConfig(getQueryServiceConfig(endpoints));
-			builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
-		}
-		if (timeouts.getSocketConnect() != null) {
-			builder = builder.socketConnectTimeout((int) timeouts.getSocketConnect().toMillis());
-		}
-		if (timeouts.getView() != null) {
-			builder = builder.viewTimeout(timeouts.getView().toMillis());
-		}
-		CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
-		if (ssl.getEnabled()) {
-			builder = builder.sslEnabled(true);
-			if (ssl.getKeyStore() != null) {
-				builder = builder.sslKeystoreFile(ssl.getKeyStore());
-			}
-			if (ssl.getKeyStorePassword() != null) {
-				builder = builder.sslKeystorePassword(ssl.getKeyStorePassword());
-			}
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
+		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
+		Timeouts timeouts = properties.getEnv().getTimeouts();
+		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).queryTimeout(timeouts.getQuery())
+				.viewTimeout(timeouts.getView()).connectTimeout(timeouts.getConnect()));
+		CouchbaseProperties.Io io = properties.getEnv().getIo();
+		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints()).numKvConnections(io.getMinEndpoints())
+				.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
+		if (properties.getEnv().getSsl().getEnabled()) {
+			builder.securityConfig(SecurityConfig.enableTls(true)
+					.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
 		}
 		return builder;
 	}
 
-	private QueryServiceConfig getQueryServiceConfig(Endpoints endpoints) {
-		return QueryServiceConfig.create(endpoints.getQueryservice().getMinEndpoints(),
-				endpoints.getQueryservice().getMaxEndpoints());
+	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl) {
+		String resource = ssl.getKeyStore();
+		try {
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory
+					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			KeyStore keyStore = loadKeyStore(resource, ssl.getKeyStorePassword());
+			trustManagerFactory.init(keyStore);
+			return trustManagerFactory;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not load Couchbase key store '" + resource + "'", ex);
+		}
 	}
 
-	private ViewServiceConfig getViewServiceConfig(Endpoints endpoints) {
-		return ViewServiceConfig.create(endpoints.getViewservice().getMinEndpoints(),
-				endpoints.getViewservice().getMaxEndpoints());
+	private KeyStore loadKeyStore(String resource, String keyStorePassword) throws Exception {
+		KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+		URL url = ResourceUtils.getURL(resource);
+		store.load(url.openStream(), (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		return store;
 	}
 
 }

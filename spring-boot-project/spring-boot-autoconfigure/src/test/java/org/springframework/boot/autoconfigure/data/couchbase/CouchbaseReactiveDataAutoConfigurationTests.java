@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfiguration;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -34,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.couchbase.config.BeanNames;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseTemplate;
+import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
@@ -56,13 +55,12 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 
 	@Test
 	void disabledIfCouchbaseIsNotConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(RxJavaCouchbaseTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCouchbaseTemplate.class));
 	}
 
 	@Test
 	void validatorIsPresent() {
-		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ValidatingCouchbaseEventListener.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ValidatingCouchbaseEventListener.class));
 	}
 
 	@Test
@@ -79,7 +77,7 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 	@Test
 	void customConversions() {
 		this.contextRunner.withUserConfiguration(CustomConversionsConfig.class).run((context) -> {
-			RxJavaCouchbaseTemplate template = context.getBean(RxJavaCouchbaseTemplate.class);
+			ReactiveCouchbaseTemplate template = context.getBean(ReactiveCouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
 							.isTrue();
@@ -87,7 +85,7 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class CustomConversionsConfig {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
@@ -99,7 +97,7 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class EntityScanConfig {
 
 	}
