@@ -44,7 +44,7 @@ class IndexedLayers implements Layers {
 
 	private static final String SPRING_BOOT_APPLICATION_LAYER = "springbootapplication";
 
-	private static final Pattern LAYER_PATTERN = Pattern.compile("^BOOT-INF\\/layers\\/([a-zA-Z0-9-]+)\\/.*$");
+	private static final Pattern LAYER_PATTERN = Pattern.compile("^BOOT-INF\\/layers\\/([a-zA-Z0-9-]+)\\/(.*$)");
 
 	private List<String> layers;
 
@@ -73,6 +73,18 @@ class IndexedLayers implements Layers {
 			return layer;
 		}
 		return this.layers.contains(APPLICATION_LAYER) ? APPLICATION_LAYER : SPRING_BOOT_APPLICATION_LAYER;
+	}
+	
+	@Override
+	public String getOriginalLocation(ZipEntry entry) {
+		String name = entry.getName();
+		Matcher matcher = LAYER_PATTERN.matcher(name);
+		if (matcher.matches()) {
+			String layer = matcher.group(1);
+			Assert.state(this.layers.contains(layer), () -> "Unexpected layer '" + layer + "'");
+			return "BOOT-INF/" + matcher.group(2);
+		}
+		return name;
 	}
 
 	/**

@@ -70,9 +70,9 @@ class ExtractCommandTests {
 	void runExtractsLayers() throws Exception {
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("a", "b", "c");
-		assertThat(new File(this.extract, "a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "b/b/b.jar")).exists();
-		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "a/a.jar")).exists();
+		assertThat(new File(this.extract, "b/b.jar")).exists();
+		assertThat(new File(this.extract, "c/c.jar")).exists();
 	}
 
 	@Test
@@ -81,17 +81,17 @@ class ExtractCommandTests {
 		this.command.run(Collections.singletonMap(ExtractCommand.DESTINATION_OPTION, out.getAbsolutePath()),
 				Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("out");
-		assertThat(new File(this.extract, "out/a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "out/b/b/b.jar")).exists();
-		assertThat(new File(this.extract, "out/c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "out/a/a.jar")).exists();
+		assertThat(new File(this.extract, "out/b/b.jar")).exists();
+		assertThat(new File(this.extract, "out/c/c.jar")).exists();
 	}
 
 	@Test
 	void runWhenHasLayerParamsExtractsLimitedLayers() {
 		this.command.run(Collections.emptyMap(), Arrays.asList("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
-		assertThat(new File(this.extract, "a/a/a.jar")).exists();
-		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "a/a.jar")).exists();
+		assertThat(new File(this.extract, "c/c.jar")).exists();
 	}
 
 	private File createJarFile(String name) throws IOException {
@@ -131,6 +131,11 @@ class ExtractCommandTests {
 				return "b";
 			}
 			return "c";
+		}
+
+		@Override
+		public String getOriginalLocation(ZipEntry entry) {
+			return entry.getName().substring(2);
 		}
 
 	}

@@ -83,7 +83,7 @@ class ExtractCommand extends Command {
 	}
 
 	private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
-		String path = StringUtils.cleanPath(entry.getName());
+		String path = StringUtils.cleanPath(this.layers.getOriginalLocation(entry));
 		File file = new File(destination, path);
 		if (file.getAbsolutePath().startsWith(destination.getAbsolutePath())) {
 			mkParentDirs(file);

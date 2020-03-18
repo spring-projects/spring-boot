@@ -41,6 +41,13 @@ interface Layers extends Iterable<String> {
 	 * @return the layer that the entry is in
 	 */
 	String getLayer(ZipEntry entry);
+	
+	/**
+	 * Returns the original, unlayered location of the given entry.
+	 * @param entry the entry for which the original location is required
+	 * @return the original location
+	 */
+	String getOriginalLocation(ZipEntry entry);
 
 	/**
 	 * Return a {@link Layers} instance for the currently running application.
