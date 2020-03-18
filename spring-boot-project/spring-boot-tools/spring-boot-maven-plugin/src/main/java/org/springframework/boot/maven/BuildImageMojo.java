@@ -102,14 +102,14 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private Image image;
 
 	/**
-	 * Alias for {@link Image#name to support configuration via command-line property.
+	 * Alias for {@link Image#name} to support configuration via command-line property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
 	String imageName;
 
 	/**
-	 * Alias for {@link Image#builder to support configuration via command-line property.
+	 * Alias for {@link Image#builder} to support configuration via command-line property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
