@@ -75,24 +75,6 @@ class IndexedLayersTests {
 		IndexedLayers layers = new IndexedLayers("test");
 		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("springbootapplication");
 	}
-	
-	@Test
-	void getOriginalLocationWithLibJarReturnsBootInfLibLocation() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers.getOriginalLocation(mockEntry("BOOT-INF/layers/test/lib/file.jar"))).isEqualTo("BOOT-INF/lib/file.jar");
-	}
-	
-	@Test
-	void getOriginalLocationWithClassesEntryReturnsBootInfClassesLocation() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers.getOriginalLocation(mockEntry("BOOT-INF/layers/test/classes/com/example/Test.class"))).isEqualTo("BOOT-INF/classes/com/example/Test.class");
-	}
-	
-	@Test
-	void getOriginalLocationWhenDoesNotMatchLayerPatternsReturnsEntryLocationAsIs() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers.getOriginalLocation(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("META-INF/MANIFEST.MF");
-	}
 
 	private ZipEntry mockEntry(String name) {
 		ZipEntry entry = mock(ZipEntry.class);
