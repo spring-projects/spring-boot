@@ -74,7 +74,7 @@ class IndexedLayers implements Layers {
 		}
 		return this.layers.contains(APPLICATION_LAYER) ? APPLICATION_LAYER : SPRING_BOOT_APPLICATION_LAYER;
 	}
-	
+
 	@Override
 	public String getOriginalLocation(ZipEntry entry) {
 		String name = entry.getName();
