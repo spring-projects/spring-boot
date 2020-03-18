@@ -122,7 +122,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void whenJarIsLayeredWithCustomStrategiesThenContentsAreMovedToLayerDirectories() throws IOException {
 		File jar = createLayeredJar((configuration) -> {
-			configuration.layers("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
+			configuration.layersOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
 			configuration.libraries(createLibraryStrategy("my-snapshot-deps", "com.example:*:*.SNAPSHOT"),
 					createLibraryStrategy("my-internal-deps", "com.example:*:*"),
 					createLibraryStrategy("my-deps", "*:*"));

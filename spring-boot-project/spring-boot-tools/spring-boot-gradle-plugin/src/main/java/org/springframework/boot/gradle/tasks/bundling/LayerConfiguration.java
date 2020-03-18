@@ -44,7 +44,7 @@ public class LayerConfiguration {
 
 	private boolean includeLayerTools = true;
 
-	private List<String> layerNames = new ArrayList<>();
+	private List<String> layersOrder = new ArrayList<>();
 
 	private List<ResourceStrategy> resourceStrategies = new ArrayList<>();
 
@@ -66,16 +66,16 @@ public class LayerConfiguration {
 	}
 
 	@Input
-	public List<String> getLayers() {
-		return this.layerNames;
+	public List<String> getLayersOrder() {
+		return this.layersOrder;
 	}
 
-	public void layers(String... layers) {
-		this.layerNames = Arrays.asList(layers);
+	public void layersOrder(String... layers) {
+		this.layersOrder = Arrays.asList(layers);
 	}
 
-	public void layers(List<String> layers) {
-		this.layerNames = layers;
+	public void layersOrder(List<String> layers) {
+		this.layersOrder = layers;
 	}
 
 	@Input
@@ -84,10 +84,12 @@ public class LayerConfiguration {
 	}
 
 	public void classes(ResourceStrategy... resourceStrategies) {
+		assertLayersOrderConfigured();
 		this.resourceStrategies = Arrays.asList(resourceStrategies);
 	}
 
 	public void classes(Action<LayerConfiguration> config) {
+		assertLayersOrderConfigured();
 		this.strategySpec = StrategySpec.forResources();
 		config.execute(this);
 	}
@@ -98,12 +100,18 @@ public class LayerConfiguration {
 	}
 
 	public void libraries(LibraryStrategy... strategies) {
+		assertLayersOrderConfigured();
 		this.libraryStrategies = Arrays.asList(strategies);
 	}
 
 	public void libraries(Action<LayerConfiguration> configure) {
+		assertLayersOrderConfigured();
 		this.strategySpec = StrategySpec.forLibraries();
 		configure.execute(this);
+	}
+
+	private void assertLayersOrderConfigured() {
+		Assert.state(!this.layersOrder.isEmpty(), "'layersOrder' must be configured before filters can be applied.");
 	}
 
 	public void layerContent(String layerName, Action<LayerConfiguration> config) {
