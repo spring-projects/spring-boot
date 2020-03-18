@@ -410,7 +410,7 @@ jobs:
   plan:
     - get: spring-boot-jdk14-ci-image
     - get: git-repo
-      trigger: false
+      trigger: true
     - put: repo-status-jdk14-build
       params: { state: "pending", commit: "git-repo" }
     - do:

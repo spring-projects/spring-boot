@@ -14,7 +14,7 @@ case "$JDK_VERSION" in
 		 ISSUE_TITLE="Upgrade Java 13 version in CI image"
 	;;
 	java14)
-		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/14/ea"
+		 BASE_URL="https://api.adoptopenjdk.net/v3/assets/feature_releases/14"
 		 ISSUE_TITLE="Upgrade Java 14 version in CI image"
 	;;
 	*)
@@ -22,7 +22,7 @@ case "$JDK_VERSION" in
 		exit 1;
 esac
 
-response=$( curl -s ${BASE_URL}\?architecture\=x64\&heap_size\=normal\&image_type\=jdk\&jvm_impl\=hotspot\&os\=linux\&sort_order\=DESC\&vendor\=adoptopenjdk )
+response=$( curl -s ${BASE_URL}\/ga\?architecture\=x64\&heap_size\=normal\&image_type\=jdk\&jvm_impl\=hotspot\&os\=linux\&sort_order\=DESC\&vendor\=adoptopenjdk )
 latest=$( jq -r '.[0].binaries[0].package.link' <<< "$response" )
 
 current=$( git-repo/ci/images/get-jdk-url.sh ${JDK_VERSION} )
