@@ -452,16 +452,24 @@ jobs:
     - put: repo-status-jdk14-build
       params: { state: "pending", commit: "git-repo" }
     - do:
-      - task: build-project
-        privileged: true
-        timeout: ((task-timeout))
-        image: spring-boot-jdk14-ci-image
-        file: git-repo/ci/tasks/build-project.yml
-        params:
-          BRANCH: ((branch))
-          GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-          GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+        - task: build-project
+          privileged: true
+          timeout: ((task-timeout))
+          image: spring-boot-jdk14-ci-image
+          file: git-repo/ci/tasks/build-project.yml
+        - in_parallel:
+            - task: build-smoke-tests
+              timeout: ((task-timeout))
+              image: spring-boot-jdk14-ci-image
+              file: git-repo/ci/tasks/build-smoke-tests.yml
+            - task: build-integration-tests
+              timeout: ((task-timeout))
+              image: spring-boot-jdk14-ci-image
+              file: git-repo/ci/tasks/build-integration-tests.yml
+            - task: build-deployment-tests
+              timeout: ((task-timeout))
+              image: spring-boot-jdk14-ci-image
+              file: git-repo/ci/tasks/build-deployment-tests.yml
       on_failure:
         do:
           - put: repo-status-jdk14-build
