@@ -29,6 +29,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
@@ -107,6 +108,7 @@ public class BootBuildImage extends DefaultTask {
 	 * Sets the name of the image that will be built.
 	 * @param imageName name of the image
 	 */
+	@Option(option = "imageName", description = "The name of the image to generate")
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
 	}
@@ -126,6 +128,7 @@ public class BootBuildImage extends DefaultTask {
 	 * Sets the builder that will be used to build the image.
 	 * @param builder the builder
 	 */
+	@Option(option = "builder", description = "The name of the builder image to use")
 	public void setBuilder(String builder) {
 		this.builder = builder;
 	}
