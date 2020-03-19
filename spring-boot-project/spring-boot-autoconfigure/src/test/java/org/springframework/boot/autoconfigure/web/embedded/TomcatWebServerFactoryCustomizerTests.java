@@ -345,8 +345,8 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	void testCustomizeMinSpareThreads() {
-		bind("server.tomcat.min-spare-threads=10");
-		assertThat(this.serverProperties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+		bind("server.tomcat.threads.min-spare=10");
+		assertThat(this.serverProperties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
 	@Test
