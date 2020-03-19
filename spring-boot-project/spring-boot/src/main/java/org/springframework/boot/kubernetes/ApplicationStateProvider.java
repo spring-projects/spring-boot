@@ -16,9 +16,6 @@
 
 package org.springframework.boot.kubernetes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -34,8 +31,6 @@ import org.springframework.context.ApplicationListener;
  * @since 2.3.0
  */
 public class ApplicationStateProvider implements ApplicationListener<ApplicationEvent> {
-
-	private static final Log logger = LogFactory.getLog(ApplicationStateProvider.class);
 
 	private LivenessState livenessState;
 
@@ -63,12 +58,10 @@ public class ApplicationStateProvider implements ApplicationListener<Application
 		if (event instanceof LivenessStateChangedEvent) {
 			LivenessStateChangedEvent livenessEvent = (LivenessStateChangedEvent) event;
 			this.livenessState = livenessEvent.getLivenessState();
-			logger.info("Application State is now " + this.livenessState.toString());
 		}
 		else if (event instanceof ReadinessStateChangedEvent) {
 			ReadinessStateChangedEvent readinessEvent = (ReadinessStateChangedEvent) event;
 			this.readinessState = readinessEvent.getReadinessState();
-			logger.info("Application State is now " + this.readinessState.toString());
 		}
 	}
 

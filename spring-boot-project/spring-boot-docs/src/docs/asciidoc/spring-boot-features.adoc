@@ -6039,7 +6039,7 @@ The "Readiness" state of an application tells whether the application is ready t
 A failing "Readiness" state tells Kubernetes that it should not route traffic to the application for now.
 This typically happens during startup, while `CommandLineRunner` and `ApplicationRunner` components are being processed, or at any time if the application decides that it's too busy for additional traffic.
 
-An application is considered live as soon as the `ApplicationReadyEvent` has been published, see <<boot-features-application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
+An application is considered ready as soon as the `ApplicationReadyEvent` has been published, see <<boot-features-application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
 
 TIP: Tasks expected to run during startup should be executed by `CommandLineRunner` and `ApplicationRunner` components instead of using Spring component lifecycle callbacks such as `@PostConstruct`.
 

@@ -893,6 +893,10 @@ In case your application needs to rely on a specific subset of health checks for
 	management.endpoint.health.group.readiness.include=readinessProbe,customCheck
 ----
 
+WARNING: In general, "Liveness" and "Readiness" probes should avoid being based on external checks, such as <<production-ready-features.adoc#production-ready-health, external Health checks>>.
+If an external system fails (e.g. a database, a Web API, an external cache), Kubernetes would react by restarting application instances or spinning up many new instances.
+You should carefully consider external checks and how the platform should handle such failures.
+
 WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a Probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
 
