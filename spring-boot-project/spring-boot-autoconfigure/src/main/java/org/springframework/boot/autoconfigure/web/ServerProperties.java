@@ -1146,7 +1146,7 @@ public class ServerProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.maxQueueCapacity")
+		@DeprecatedConfigurationProperty(replacement = "server.jetty.threads.max-queue-capacity")
 		public Integer getMaxQueueCapacity() {
 			return this.getThreads().getMaxQueueCapacity();
 		}

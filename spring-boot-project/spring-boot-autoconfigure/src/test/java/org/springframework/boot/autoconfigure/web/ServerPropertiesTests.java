@@ -219,9 +219,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeTomcatMaxThreadsDeprecated() {
 		bind("server.tomcat.maxThreads", "10");
-		assertThat(this.properties.getTomcat().getMaxThreads()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getTomcat().getThreads().getMax()).isEqualTo(10);
 	}
 
@@ -235,9 +232,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeTomcatMinSpareThreadsDeprecated() {
 		bind("server.tomcat.min-spare-threads", "10");
-		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
@@ -251,9 +245,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyAcceptorsDeprecated() {
 		bind("server.jetty.acceptors", "10");
-		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getAcceptors()).isEqualTo(10);
 	}
 
@@ -268,8 +259,6 @@ class ServerPropertiesTests {
 	void testCustomizeJettySelectorsDeprecated() {
 		bind("server.jetty.selectors", "10");
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getSelectors()).isEqualTo(10);
 	}
 
@@ -283,9 +272,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyMaxThreadsDeprecated() {
 		bind("server.jetty.maxThreads", "10");
-		assertThat(this.properties.getJetty().getMaxThreads()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(10);
 	}
 
@@ -299,9 +285,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyMinThreadsDeprecated() {
 		bind("server.jetty.minThreads", "10");
-		assertThat(this.properties.getJetty().getMinThreads()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(10);
 	}
 
@@ -315,9 +298,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyIdleTimeoutDeprecated() {
 		bind("server.jetty.thread-idle-timeout", "10s");
-		assertThat(this.properties.getJetty().getThreadIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getIdleTimeout()).hasSeconds(10);
 	}
 
@@ -331,9 +311,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeJettyMaxQueueCapacityDeprecated() {
 		bind("server.jetty.max-queue-capacity", "5150");
-		assertThat(this.properties.getJetty().getMaxQueueCapacity()).isEqualTo(5150);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getJetty().getThreads().getMaxQueueCapacity()).isEqualTo(5150);
 	}
 
@@ -361,9 +338,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeUndertowIoThreadsDeprecated() {
 		bind("server.undertow.ioThreads", "4");
-		assertThat(this.properties.getUndertow().getIoThreads()).isEqualTo(4);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getUndertow().getThreads().getIo()).isEqualTo(4);
 	}
 
@@ -377,9 +351,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeUndertowWorkerThreadsDeprecated() {
 		bind("server.undertow.workerThreads", "10");
-		assertThat(this.properties.getUndertow().getWorkerThreads()).isEqualTo(10);
-		// Verify they are locked on same backing props to avoid further downstream
-		// deprecated testing
 		assertThat(this.properties.getUndertow().getThreads().getWorker()).isEqualTo(10);
 	}
 

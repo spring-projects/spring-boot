@@ -76,8 +76,8 @@ public class JettyWebServerFactoryCustomizer
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Jetty jettyProperties = properties.getJetty();
-		ServerProperties.Jetty.Threads threadProperties = jettyProperties.getThreads();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
+		ServerProperties.Jetty.Threads threadProperties = jettyProperties.getThreads();
 		factory.setThreadPool(determineThreadPool(jettyProperties.getThreads()));
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(threadProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
@@ -142,12 +142,12 @@ public class JettyWebServerFactoryCustomizer
 		});
 	}
 
-	private ThreadPool determineThreadPool(ServerProperties.Jetty.Threads threadProperties) {
-		BlockingQueue<Runnable> queue = determineBlockingQueue(threadProperties.getMaxQueueCapacity());
-		int maxThreadCount = (threadProperties.getMax() > 0) ? threadProperties.getMax() : 200;
-		int minThreadCount = (threadProperties.getMin() > 0) ? threadProperties.getMin() : 8;
-		int threadIdleTimeout = (threadProperties.getIdleTimeout() != null)
-				? (int) threadProperties.getIdleTimeout().toMillis() : 60000;
+	private ThreadPool determineThreadPool(ServerProperties.Jetty.Threads properties) {
+		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
+		int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
+		int minThreadCount = (properties.getMin() > 0) ? properties.getMin() : 8;
+		int threadIdleTimeout = (properties.getIdleTimeout() != null) ? (int) properties.getIdleTimeout().toMillis()
+				: 60000;
 		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
 	}
 
