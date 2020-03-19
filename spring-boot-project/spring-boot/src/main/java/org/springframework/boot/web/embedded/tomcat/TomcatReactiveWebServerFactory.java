@@ -79,13 +79,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	private int backgroundProcessorDelay;
 
 	/**
-	 * Create a new {@link TomcatServletWebServerFactory} instance.
+	 * Create a new {@link TomcatReactiveWebServerFactory} instance.
 	 */
 	public TomcatReactiveWebServerFactory() {
 	}
 
 	/**
-	 * Create a new {@link TomcatServletWebServerFactory} that listens for requests using
+	 * Create a new {@link TomcatReactiveWebServerFactory} that listens for requests using
 	 * the specified port.
 	 * @param port the port to listen on
 	 */
