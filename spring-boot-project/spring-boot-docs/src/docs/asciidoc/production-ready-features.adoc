@@ -647,7 +647,7 @@ If no `HealthIndicator` returns a status that is known to the `StatusAggregator`
 TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
 
 
-
+[[production-ready-health-indicators]]
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
 
@@ -678,6 +678,12 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 | {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
+
+| {spring-boot-actuator-module-code}/kubernetes/LivenessProbeHealthIndicator.java[`LivenessProbeHealthIndicator`]
+| Exposes the "Liveness" application state.
+
+| {spring-boot-actuator-module-code}/kubernetes/ReadinessProbeHealthIndicator.java[`ReadinessProbeHealthIndicator`]
+| Exposes the "Readiness" application state.
 
 | {spring-boot-actuator-module-code}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
 | Checks that an LDAP server is up.
@@ -835,10 +841,9 @@ TIP: If necessary, reactive indicators replace the regular ones.
 Also, any `HealthIndicator` that is not handled explicitly is wrapped automatically.
 
 
-
+[[production-ready-health-groups]]
 ==== Health Groups
 It's sometimes useful to organize health indicators into groups that can be used for different purposes.
-For example, if you deploy your application to Kubernetes, you may want one different sets of health indicators for your "`liveness`" and "`readiness`" probes.
 
 To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
@@ -863,6 +868,35 @@ It's also possible to override the `show-details` and `roles` properties if requ
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
+
+
+[[production-ready-kubernetes-probes]]
+=== Kubernetes Probes
+Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
+Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet will call those probes and react to the result.
+
+When deployed in a Kubernetes environment, Spring Boot will manage your <<spring-boot-features.adoc#boot-features-kubernetes-application-state,Kubernetes Application State>>.
+Spring Boot Actuator will gather the "Liveness" and "Readiness" information using <<production-ready-health-indicators,Health Indicators>>
+and expose them as HTTP Probes using <<production-ready-health-groups, Health Groups>>.
+You can then point your Kubernetes `"livenessProbe"` to `"/actuator/health/liveness"` and `"readinessProbe"` to `"/actuator/health/readiness"`.
+
+If your application context startup can be longer than the configured `"livenessProbe"` timeout, configuring a `"startupProbe"` can solve startup issues.
+
+TIP: Application should perform long-running startup tasks with `ApplicationRunners`; in this case, you don't necessarily need a `"startupProbe"` as such tasks are performed after the "Liveness" state is marked as successful.
+The application won't receive traffic until tasks are finished - only then the `"readinessProbe"` will be successful.
+
+As explained in the <<spring-boot-features.adoc#boot-features-kubernetes-application-state,Kubernetes Application State section>>, depending on external systems for defining the "Liveness" state might result in cascading failures.
+In case your application needs to rely on a specific subset of health checks for "Liveness" or "Readiness", you should consider configuring <<production-ready-health-groups, Health Groups>> manually:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.readiness.include=readinessProbe,customCheck
+----
+
+WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
+In this case, a Probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
+
+You'll find more information in the <<deployment.adoc#cloud-deployment-kubernetes, deploying on Kubernetes>> section.
 
 
 

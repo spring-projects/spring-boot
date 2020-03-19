@@ -63,6 +63,7 @@ org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
+org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
@@ -84,11 +85,11 @@ org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration,\
-org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration,\
 org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration,\
+org.springframework.boot.autoconfigure.kubernetes.ApplicationStateAutoConfiguration,\
 org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration,\
 org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\

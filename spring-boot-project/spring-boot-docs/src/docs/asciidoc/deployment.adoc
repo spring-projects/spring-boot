@@ -181,6 +181,11 @@ See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.
 
 TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
+[[cloud-deployment-kubernetes]]
+=== Kubernetes
+Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
+
+Spring Boot helps you to <<spring-boot-features.adoc#boot-features-kubernetes-application-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
 
 
 [[cloud-deployment-heroku]]
@@ -254,10 +259,7 @@ For more details, refer to https://devcenter.heroku.com/articles/deploying-sprin
 
 [[cloud-deployment-openshift]]
 === OpenShift
-https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of the Kubernetes container orchestration platform.
-Similarly to Kubernetes, OpenShift has many options for installing Spring Boot based applications.
-
-OpenShift has many resources describing how to deploy Spring Boot applications, including:
+https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
 * https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]

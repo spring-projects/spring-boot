@@ -29,6 +29,7 @@ org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpo
 org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jms.JmsHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.kubernetes.ProbesHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration,\
