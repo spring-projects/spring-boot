@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
 import org.springframework.boot.actuate.health.Health;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
+import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.NamedContributor;
@@ -66,8 +68,11 @@ class HealthEndpointConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	HealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
-			HealthEndpointProperties properties) {
-		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
+			HealthEndpointProperties properties, ObjectProvider<HealthEndpointGroupsRegistryCustomizer> customizers) {
+		AutoConfiguredHealthEndpointGroupsRegistry registry = new AutoConfiguredHealthEndpointGroupsRegistry(
+				applicationContext, properties);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(registry));
+		return registry.toGroups();
 	}
 
 	@Bean
