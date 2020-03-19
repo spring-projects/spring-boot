@@ -389,7 +389,7 @@
 		<profile>
 			<id>java13</id>
 			<activation>
-				<jdk>13</jdk>
+				<jdk>[13,)</jdk>
 			</activation>
 			<properties>
 				<gradle.task>assemble</gradle.task>
