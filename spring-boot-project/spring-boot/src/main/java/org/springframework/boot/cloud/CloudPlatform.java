@@ -143,7 +143,7 @@ public enum CloudPlatform {
 	}
 
 	/**
-	 * Determines is the platform is auto-detected by looking ofr platform-specific
+	 * Determines if the platform is auto-detected by looking for platform-specific
 	 * environment variables.
 	 * @param environment the environment
 	 * @return if the platform is auto-detected.
@@ -160,7 +160,7 @@ public enum CloudPlatform {
 	}
 
 	/**
-	 * Returns the active {@link CloudPlatform} or {@code null} if one cannot be deduced.
+	 * Returns the active {@link CloudPlatform} or {@code null} if one is not active.
 	 * @param environment the environment
 	 * @return the {@link CloudPlatform} or {@code null}
 	 */
