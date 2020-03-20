@@ -566,7 +566,7 @@ bom {
 			]
 		}
 	}
-	library("InfluxDB Java", "2.17") {
+	library("InfluxDB Java", "2.17") { // Maybe we can refactor InfluxDbProperties.java when update it.
 		group("org.influxdb") {
 			modules = [
 				"influxdb-java"
@@ -1295,18 +1295,10 @@ bom {
 			]
 		}
 	}
-	library("OkHttp3", "3.14.7") {
+	library("OkHttp", "4.4.1") {
 		group("com.squareup.okhttp3") {
-			modules = [
-				"logging-interceptor",
-				"mockwebserver",
-				"okcurl",
-				"okhttp",
-				"okhttp-dnsoverhttps",
-				"okhttp-sse",
-				"okhttp-testing-support",
-				"okhttp-tls",
-				"okhttp-urlconnection"
+			imports = [
+				"okhttp-bom"
 			]
 		}
 	}

@@ -36,12 +36,16 @@ public class InfluxDbProperties {
 	/**
 	 * Login user.
 	 */
-	private String user;
+	// null value leads invalid basic auth setup and RuntimeException until
+	// https://github.com/influxdata/influxdb-java/pull/644 released.
+	private String user = "";
 
 	/**
 	 * Login password.
 	 */
-	private String password;
+	// null value leads invalid basic auth setup and RuntimeException until
+	// https://github.com/influxdata/influxdb-java/pull/644 released.
+	private String password = "";
 
 	public String getUrl() {
 		return this.url;
