@@ -17,16 +17,17 @@
 package org.springframework.boot.actuate.autoconfigure.kubernetes;
 
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.availability.LivenessProbeHealthIndicator;
+import org.springframework.boot.actuate.availability.ReadinessProbeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
-import org.springframework.boot.actuate.kubernetes.LivenessProbeHealthIndicator;
 import org.springframework.boot.actuate.kubernetes.ProbesHealthEndpointGroupsRegistrar;
-import org.springframework.boot.actuate.kubernetes.ReadinessProbeHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
-import org.springframework.boot.autoconfigure.kubernetes.ApplicationStateAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.availability.ApplicationAvailabilityProvider;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.kubernetes.ApplicationStateProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,21 +40,23 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
-@AutoConfigureAfter(ApplicationStateAutoConfiguration.class)
+@AutoConfigureAfter(ApplicationAvailabilityAutoConfiguration.class)
 public class ProbesHealthContributorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("livenessProbe")
+	@ConditionalOnMissingBean
 	public LivenessProbeHealthIndicator livenessProbeHealthIndicator(
-			ApplicationStateProvider applicationStateProvider) {
-		return new LivenessProbeHealthIndicator(applicationStateProvider);
+			ApplicationAvailabilityProvider applicationAvailabilityProvider) {
+		return new LivenessProbeHealthIndicator(applicationAvailabilityProvider);
 	}
 
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("readinessProbe")
+	@ConditionalOnMissingBean
 	public ReadinessProbeHealthIndicator readinessProbeHealthIndicator(
-			ApplicationStateProvider applicationStateProvider) {
-		return new ReadinessProbeHealthIndicator(applicationStateProvider);
+			ApplicationAvailabilityProvider applicationAvailabilityProvider) {
+		return new ReadinessProbeHealthIndicator(applicationAvailabilityProvider);
 	}
 
 	@Bean

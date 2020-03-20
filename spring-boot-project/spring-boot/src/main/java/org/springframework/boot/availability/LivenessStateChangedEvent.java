@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import org.springframework.context.ApplicationEvent;
 
@@ -38,6 +38,16 @@ public class LivenessStateChangedEvent extends ApplicationEvent {
 
 	public LivenessState getLivenessState() {
 		return (LivenessState) getSource();
+	}
+
+	/**
+	 * Create a new {@code ApplicationEvent} signaling that the {@link LivenessState} is
+	 * live.
+	 * @param cause the cause of the live internal state of the application
+	 * @return the application event
+	 */
+	public static LivenessStateChangedEvent live(String cause) {
+		return new LivenessStateChangedEvent(LivenessState.live(), cause);
 	}
 
 	/**

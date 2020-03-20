@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for Kubernetes deployment environments.
+ * Auto-configuration for application availability features.
  */
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.autoconfigure.availability;

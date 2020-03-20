@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 /**
- * Holds the application state, when deployed in a Kubernetes environment.
+ * Holds the availability state of the application.
  * <p>
  * Other application components can get the current state information from the
- * {@code ApplicationStateProvider}, or publish application evens such as
+ * {@code ApplicationAvailabilityProvider}, or publish application evens such as
  * {@link ReadinessStateChangedEvent} and {@link LivenessStateChangedEvent} to update the
  * state of the application.
  *
  * @author Brian Clozel
  * @since 2.3.0
  */
-public class ApplicationStateProvider implements ApplicationListener<ApplicationEvent> {
+public class ApplicationAvailabilityProvider implements ApplicationListener<ApplicationEvent> {
 
 	private LivenessState livenessState;
 
 	private ReadinessState readinessState;
 
-	public ApplicationStateProvider() {
-		this(LivenessState.broken(), ReadinessState.busy());
+	public ApplicationAvailabilityProvider() {
+		this(LivenessState.broken(), ReadinessState.unready());
 	}
 
-	public ApplicationStateProvider(LivenessState livenessState, ReadinessState readinessState) {
+	public ApplicationAvailabilityProvider(LivenessState livenessState, ReadinessState readinessState) {
 		this.livenessState = livenessState;
 		this.readinessState = readinessState;
 	}

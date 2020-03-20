@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kubernetes;
+package org.springframework.boot.autoconfigure.availability;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
-import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.kubernetes.ApplicationStateProvider;
-import org.springframework.boot.kubernetes.SpringApplicationEventListener;
+import org.springframework.boot.availability.ApplicationAvailabilityProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration} for
- * {@link ApplicationStateProvider}.
+ * {@link ApplicationAvailabilityProvider}.
  *
  * @author Brian Clozel
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
-public class ApplicationStateAutoConfiguration {
+public class ApplicationAvailabilityAutoConfiguration {
 
 	@Bean
-	public ApplicationStateProvider applicationStateProvider() {
-		return new ApplicationStateProvider();
-	}
-
-	@Bean
-	public SpringApplicationEventListener springApplicationEventListener() {
-		return new SpringApplicationEventListener();
+	public ApplicationAvailabilityProvider applicationAvailabilityProvider() {
+		return new ApplicationAvailabilityProvider();
 	}
 
 }

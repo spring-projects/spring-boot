@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import java.util.Objects;
 
 /**
- * "Liveness" state of the application, when deployed on Kubernetes.
+ * "Liveness" state of the application.
  * <p>
  * An application is considered live when it's running with a correct internal state.
  * "Liveness" failure means that the internal state of the application is broken and we

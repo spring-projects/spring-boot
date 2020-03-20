@@ -19,33 +19,25 @@ package org.springframework.boot.autoconfigure.kubernetes;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.kubernetes.ApplicationStateProvider;
-import org.springframework.boot.kubernetes.SpringApplicationEventListener;
+import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
+import org.springframework.boot.availability.ApplicationAvailabilityProvider;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ApplicationStateAutoConfiguration}
+ * Tests for {@link ApplicationAvailabilityAutoConfiguration}
  *
  * @author Brian Clozel
  */
-class ApplicationStateAutoConfigurationTests {
+class ApplicationAvailabilityAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationStateAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class));
 
 	@Test
-	void disabledWhenNotDeployedOnKubernetes() {
-		this.contextRunner.run(((context) -> assertThat(context).doesNotHaveBean(ApplicationStateProvider.class)
-				.doesNotHaveBean(SpringApplicationEventListener.class)));
-	}
-
-	@Test
-	void enabledWhenDeployedOnKubernetes() {
-		this.contextRunner.withPropertyValues("spring.main.cloud-platform:kubernetes")
-				.run(((context) -> assertThat(context).hasSingleBean(ApplicationStateProvider.class)
-						.hasSingleBean(SpringApplicationEventListener.class)));
+	void providerIsPresent() {
+		this.contextRunner.run(((context) -> assertThat(context).hasSingleBean(ApplicationAvailabilityProvider.class)));
 	}
 
 }

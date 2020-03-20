@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.kubernetes;
+package org.springframework.boot.actuate.availability;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.kubernetes.ApplicationStateProvider;
-import org.springframework.boot.kubernetes.LivenessState;
+import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ReadinessState;
 
 /**
- * A {@link HealthIndicator} that checks the {@link LivenessState} of the application.
+ * A {@link HealthIndicator} that checks the {@link ReadinessState} of the application.
  *
  * @author Brian Clozel
  * @since 2.3.0
  */
-public class LivenessProbeHealthIndicator extends AbstractHealthIndicator {
+public class ReadinessProbeHealthIndicator extends AbstractHealthIndicator {
 
-	private final ApplicationStateProvider applicationStateProvider;
+	private final ApplicationAvailabilityProvider applicationAvailabilityProvider;
 
-	public LivenessProbeHealthIndicator(ApplicationStateProvider applicationStateProvider) {
-		this.applicationStateProvider = applicationStateProvider;
+	public ReadinessProbeHealthIndicator(ApplicationAvailabilityProvider applicationAvailabilityProvider) {
+		this.applicationAvailabilityProvider = applicationAvailabilityProvider;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		if (LivenessState.live().equals(this.applicationStateProvider.getLivenessState())) {
+		if (ReadinessState.ready().equals(this.applicationAvailabilityProvider.getReadinessState())) {
 			builder.up();
 		}
 		else {
-			builder.down();
+			builder.outOfService();
 		}
 	}
 

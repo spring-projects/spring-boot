@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import java.util.Objects;
 
 /**
- * "Readiness" state of the application, when deployed on Kubernetes.
+ * "Readiness" state of the application.
  * <p>
  * An application is considered ready when it's {@link LivenessState live} and willing to
  * accept traffic. "Readiness" failure means that the application is not able to accept
@@ -66,8 +66,8 @@ public final class ReadinessState {
 		return new ReadinessState(Availability.READY);
 	}
 
-	public static ReadinessState busy() {
-		return new ReadinessState(Availability.BUSY);
+	public static ReadinessState unready() {
+		return new ReadinessState(Availability.UNREADY);
 	}
 
 	public enum Availability {
@@ -75,7 +75,7 @@ public final class ReadinessState {
 		/**
 		 * The application is not willing to receive traffic.
 		 */
-		BUSY,
+		UNREADY,
 		/**
 		 * The application is ready to receive traffic.
 		 */

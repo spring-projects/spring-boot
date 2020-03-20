@@ -184,8 +184,27 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 [[cloud-deployment-kubernetes]]
 === Kubernetes
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
+You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
 
-Spring Boot helps you to <<spring-boot-features.adoc#boot-features-kubernetes-application-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-availability-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+
+[[cloud-deployment-kubernetes-container-lifecycle]]
+==== Kubernetes Container Lifecycle
+When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
+Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
+
+You can configure a sleep execution in a pre-stop hook to avoid requests being routed to a pod that has already begun shutting down.
+This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
+
+[source,yml,indent=0]
+----
+lifecycle:
+  preStop:
+    exec:
+      command: ["sh", "-c", "sleep 10"]
+----
+
+Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
 
 
 [[cloud-deployment-heroku]]

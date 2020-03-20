@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ApplicationStateProvider}
+ * Tests for {@link ApplicationAvailabilityProvider}
  *
  * @author Brian Clozel
  */
-class ApplicationStateProviderTests {
+class ApplicationAvailabilityProviderTests {
 
 	@Test
 	void initialStateShouldBeFailures() {
-		ApplicationStateProvider stateProvider = new ApplicationStateProvider();
+		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
 		assertThat(stateProvider.getLivenessState()).isEqualTo(LivenessState.broken());
-		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.busy());
+		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.unready());
 	}
 
 	@Test
 	void updateLivenessState() {
-		ApplicationStateProvider stateProvider = new ApplicationStateProvider();
+		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
 		LivenessState livenessState = LivenessState.live();
 		stateProvider.onApplicationEvent(new LivenessStateChangedEvent(livenessState, "Startup complete"));
 		assertThat(stateProvider.getLivenessState()).isEqualTo(livenessState);
@@ -44,7 +44,7 @@ class ApplicationStateProviderTests {
 
 	@Test
 	void updateReadiessState() {
-		ApplicationStateProvider stateProvider = new ApplicationStateProvider();
+		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
 		stateProvider.onApplicationEvent(ReadinessStateChangedEvent.ready());
 		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.ready());
 	}

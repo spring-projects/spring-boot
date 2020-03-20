@@ -14,46 +14,46 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.kubernetes;
+package org.springframework.boot.actuate.availability;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.kubernetes.ApplicationStateProvider;
-import org.springframework.boot.kubernetes.ReadinessState;
+import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.LivenessState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReadinessProbeHealthIndicator}
+ * Tests for {@link LivenessProbeHealthIndicator}
  *
  * @author Brian Clozel
  */
-class ReadinessProbeHealthIndicatorTests {
+class LivenessProbeHealthIndicatorTests {
 
-	private ApplicationStateProvider stateProvider;
+	private ApplicationAvailabilityProvider stateProvider;
 
-	private ReadinessProbeHealthIndicator healthIndicator;
+	private LivenessProbeHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
-		this.stateProvider = mock(ApplicationStateProvider.class);
-		this.healthIndicator = new ReadinessProbeHealthIndicator(this.stateProvider);
+		this.stateProvider = mock(ApplicationAvailabilityProvider.class);
+		this.healthIndicator = new LivenessProbeHealthIndicator(this.stateProvider);
 	}
 
 	@Test
-	void readinessIsReady() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.ready());
+	void livenessIsLive() {
+		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.live());
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
-	void readinessIsBusy() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.busy());
-		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+	void livenessIsBroken() {
+		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.broken());
+		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 
 }

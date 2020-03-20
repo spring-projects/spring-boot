@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kubernetes;
+package org.springframework.boot.availability;
 
 import org.springframework.context.ApplicationEvent;
 
@@ -48,11 +48,11 @@ public class ReadinessStateChangedEvent extends ApplicationEvent {
 
 	/**
 	 * Create a new {@code ApplicationEvent} signaling that the {@link ReadinessState} is
-	 * busy.
+	 * unready.
 	 * @return the application event
 	 */
-	public static ReadinessStateChangedEvent busy() {
-		return new ReadinessStateChangedEvent(ReadinessState.busy());
+	public static ReadinessStateChangedEvent unready() {
+		return new ReadinessStateChangedEvent(ReadinessState.unready());
 	}
 
 }

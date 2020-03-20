@@ -21,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.availability.LivenessStateChangedEvent;
+import org.springframework.boot.availability.ReadinessStateChangedEvent;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,6 +43,7 @@ import org.springframework.util.ErrorHandler;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Brian Clozel
  * @since 1.0.0
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
@@ -96,11 +99,13 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	@Override
 	public void started(ConfigurableApplicationContext context) {
 		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context));
+		context.publishEvent(LivenessStateChangedEvent.live("Application started"));
 	}
 
 	@Override
 	public void running(ConfigurableApplicationContext context) {
 		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context));
+		context.publishEvent(ReadinessStateChangedEvent.ready());
 	}
 
 	@Override
