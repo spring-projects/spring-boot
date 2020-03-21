@@ -407,16 +407,14 @@ public class SpringApplication {
 		return context;
 	}
 
-	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments) {
+	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments) {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
-			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
-					deduceEnvironmentClass());
+			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment, deduceEnvironmentClass());
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
