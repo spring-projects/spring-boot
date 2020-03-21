@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,22 @@ public interface Layout {
 	 * Returns the destination path for a given library.
 	 * @param libraryName the name of the library (excluding any path)
 	 * @param scope the scope of the library
+	 * @return the location of the library relative to the root of the archive (should end
+	 * with '/') or {@code null} if the library should not be included.
+	 */
+	default String getLibraryLocation(String libraryName, LibraryScope scope) {
+		return getLibraryDestination(libraryName, scope);
+	}
+
+	/**
+	 * Returns the destination path for a given library.
+	 * @param libraryName the name of the library (excluding any path)
+	 * @param scope the scope of the library
 	 * @return the destination relative to the root of the archive (should end with '/')
 	 * or {@code null} if the library should not be included.
+	 * @deprecated since 2.3.0 in favor of {@link #getLibraryLocation}
 	 */
+	@Deprecated
 	String getLibraryDestination(String libraryName, LibraryScope scope);
 
 	/**

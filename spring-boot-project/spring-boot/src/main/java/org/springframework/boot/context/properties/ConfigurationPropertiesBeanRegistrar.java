@@ -13,45 +13,87 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.context.properties;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.MultiValueMap;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} for configuration properties support.
+ * Delegate used by {@link EnableConfigurationPropertiesRegistrar} and
+ * {@link ConfigurationPropertiesScanRegistrar} to register a bean definition for a
+ * {@link ConfigurationProperties @ConfigurationProperties} class.
  *
- * @author Dave Syer
- * @author Christian Dupuis
- * @author Stephane Nicoll
+ * @author Madhura Bhave
+ * @author Phillip Webb
  */
-class ConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
+final class ConfigurationPropertiesBeanRegistrar {
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) registry;
-		getTypes(metadata).forEach(
-				(type) -> ConfigurationPropertiesBeanDefinitionRegistrar.register(registry, beanFactory, type));
+	private final BeanDefinitionRegistry registry;
+
+	private final BeanFactory beanFactory;
+
+	ConfigurationPropertiesBeanRegistrar(BeanDefinitionRegistry registry) {
+		this.registry = registry;
+		this.beanFactory = (BeanFactory) this.registry;
 	}
 
-	private List<Class<?>> getTypes(AnnotationMetadata metadata) {
-		MultiValueMap<String, Object> attributes = metadata
-				.getAllAnnotationAttributes(EnableConfigurationProperties.class.getName(), false);
-		return collectClasses((attributes != null) ? attributes.get("value") : Collections.emptyList());
+	void register(Class<?> type) {
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
+				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
+		register(type, annotation);
 	}
 
-	private List<Class<?>> collectClasses(List<?> values) {
-		return values.stream().flatMap((value) -> Arrays.stream((Class<?>[]) value))
-				.filter((type) -> void.class != type).collect(Collectors.toList());
+	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
+		String name = getName(type, annotation);
+		if (!containsBeanDefinition(name)) {
+			registerBeanDefinition(name, type, annotation);
+		}
+	}
+
+	private String getName(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
+		String prefix = annotation.isPresent() ? annotation.getString("prefix") : "";
+		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName() : type.getName());
+	}
+
+	private boolean containsBeanDefinition(String name) {
+		return containsBeanDefinition(this.beanFactory, name);
+	}
+
+	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
+		if (beanFactory instanceof ListableBeanFactory
+				&& ((ListableBeanFactory) beanFactory).containsBeanDefinition(name)) {
+			return true;
+		}
+		if (beanFactory instanceof HierarchicalBeanFactory) {
+			return containsBeanDefinition(((HierarchicalBeanFactory) beanFactory).getParentBeanFactory(), name);
+		}
+		return false;
+	}
+
+	private void registerBeanDefinition(String beanName, Class<?> type,
+			MergedAnnotation<ConfigurationProperties> annotation) {
+		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
+				+ " annotation found on  '" + type.getName() + "'.");
+		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
+	}
+
+	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+		if (BindMethod.forType(type) == BindMethod.VALUE_OBJECT) {
+			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
+		}
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(type);
+		return definition;
 	}
 
 }

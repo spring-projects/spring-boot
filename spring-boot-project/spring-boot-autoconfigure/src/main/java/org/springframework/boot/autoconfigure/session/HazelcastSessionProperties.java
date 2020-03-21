@@ -35,7 +35,8 @@ public class HazelcastSessionProperties {
 	private String mapName = "spring:session:sessions";
 
 	/**
-	 * Sessions flush mode.
+	 * Sessions flush mode. Determines when session changes are written to the session
+	 * store.
 	 */
 	private FlushMode flushMode = FlushMode.ON_SAVE;
 

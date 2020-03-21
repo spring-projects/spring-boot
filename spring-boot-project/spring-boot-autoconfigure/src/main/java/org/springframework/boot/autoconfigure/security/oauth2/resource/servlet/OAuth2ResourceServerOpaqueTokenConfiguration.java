@@ -24,13 +24,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.oauth2.server.resource.introspection.NimbusOAuth2TokenIntrospectionClient;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
+import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
- * Configures a {@link OAuth2TokenIntrospectionClient} when a token introspection endpoint
- * is available. Also configures a {@link WebSecurityConfigurerAdapter} if a
- * {@link OAuth2TokenIntrospectionClient} bean is found.
+ * Configures a {@link OpaqueTokenIntrospector} when a token introspection endpoint is
+ * available. Also configures a {@link WebSecurityConfigurerAdapter} if a
+ * {@link OpaqueTokenIntrospector} bean is found.
  *
  * @author Madhura Bhave
  */
@@ -38,15 +38,15 @@ import org.springframework.security.oauth2.server.resource.introspection.OAuth2T
 class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(OAuth2TokenIntrospectionClient.class)
+	@ConditionalOnMissingBean(OpaqueTokenIntrospector.class)
 	static class OpaqueTokenIntrospectionClientConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
-		NimbusOAuth2TokenIntrospectionClient oAuth2TokenIntrospectionClient(OAuth2ResourceServerProperties properties) {
+		NimbusOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
-			return new NimbusOAuth2TokenIntrospectionClient(opaqueToken.getIntrospectionUri(),
-					opaqueToken.getClientId(), opaqueToken.getClientSecret());
+			return new NimbusOpaqueTokenIntrospector(opaqueToken.getIntrospectionUri(), opaqueToken.getClientId(),
+					opaqueToken.getClientSecret());
 		}
 
 	}
@@ -56,14 +56,16 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 	static class OAuth2WebSecurityConfigurerAdapter {
 
 		@Bean
-		@ConditionalOnBean(OAuth2TokenIntrospectionClient.class)
+		@ConditionalOnBean(OpaqueTokenIntrospector.class)
 		WebSecurityConfigurerAdapter opaqueTokenWebSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
+
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
-							.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+					http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+					http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 				}
+
 			};
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -110,28 +109,6 @@ public class MetricsProperties {
 				return this.request;
 			}
 
-			/**
-			 * Return the name of the metric for client requests.
-			 * @return request metric name
-			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
-			 */
-			@Deprecated
-			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.client.request.metric-name")
-			public String getRequestsMetricName() {
-				return this.request.getMetricName();
-			}
-
-			/**
-			 * Set the name of the metric for client requests.
-			 * @param requestsMetricName request metric name
-			 * @deprecated since 2.2.0 in favor of
-			 * {@link ClientRequest#setMetricName(String)}
-			 */
-			@Deprecated
-			public void setRequestsMetricName(String requestsMetricName) {
-				this.request.setMetricName(requestsMetricName);
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
@@ -184,50 +161,6 @@ public class MetricsProperties {
 				return this.request;
 			}
 
-			/**
-			 * Return whether server requests should be automatically timed.
-			 * @return {@code true} if server request should be automatically timed
-			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
-			 */
-			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.autotime.enabled")
-			@Deprecated
-			public boolean isAutoTimeRequests() {
-				return this.request.getAutotime().isEnabled();
-			}
-
-			/**
-			 * Set whether server requests should be automatically timed.
-			 * @param autoTimeRequests whether server requests should be automatically
-			 * timed
-			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
-			 */
-			@Deprecated
-			public void setAutoTimeRequests(boolean autoTimeRequests) {
-				this.request.getAutotime().setEnabled(autoTimeRequests);
-			}
-
-			/**
-			 * Return name of the metric for server requests.
-			 * @return request metric name
-			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
-			 */
-			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.metric-name")
-			@Deprecated
-			public String getRequestsMetricName() {
-				return this.request.getMetricName();
-			}
-
-			/**
-			 * Set the name of the metric for server requests.
-			 * @param requestsMetricName request metric name
-			 * @deprecated since 2.2.0 in favor of
-			 * {@link ServerRequest#setMetricName(String)}
-			 */
-			@Deprecated
-			public void setRequestsMetricName(String requestsMetricName) {
-				this.request.setMetricName(requestsMetricName);
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
@@ -242,6 +175,11 @@ public class MetricsProperties {
 				 * Name of the metric for received requests.
 				 */
 				private String metricName = "http.server.requests";
+
+				/**
+				 * Whether the trailing slash should be ignored when recording metrics.
+				 */
+				private boolean ignoreTrailingSlash = true;
 
 				/**
 				 * Auto-timed request settings.
@@ -259,6 +197,14 @@ public class MetricsProperties {
 
 				public void setMetricName(String metricName) {
 					this.metricName = metricName;
+				}
+
+				public boolean isIgnoreTrailingSlash() {
+					return this.ignoreTrailingSlash;
+				}
+
+				public void setIgnoreTrailingSlash(boolean ignoreTrailingSlash) {
+					this.ignoreTrailingSlash = ignoreTrailingSlash;
 				}
 
 			}

@@ -73,6 +73,11 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 		}
 	}
 
+	@Test
+	void postProcessorHasADefaultOrderOfZero() {
+		assertThat(new FooDependsOnBarTypePostProcessor().getOrder()).isEqualTo(0);
+	}
+
 	private void assertThatFooDependsOnBar(AssertableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		assertThat(getBeanDefinition("foo", beanFactory).getDependsOn()).containsExactly("bar", "barFactoryBean");

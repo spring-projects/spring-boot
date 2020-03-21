@@ -58,14 +58,12 @@ public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-		// @formatter:off
-		http.authorizeExchange((exchanges) ->
-				exchanges
-					.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll()
-					.anyExchange().authenticated())
-			.httpBasic(Customizer.withDefaults())
-			.formLogin(Customizer.withDefaults());
-		// @formatter:on
+		http.authorizeExchange((exchanges) -> {
+			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
+			exchanges.anyExchange().authenticated();
+		});
+		http.httpBasic(Customizer.withDefaults());
+		http.formLogin(Customizer.withDefaults());
 		return http.build();
 	}
 

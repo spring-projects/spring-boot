@@ -130,7 +130,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		Throwable error = getError(webRequest);
 		if (error != null) {
 			while (error instanceof ServletException && error.getCause() != null) {
-				error = ((ServletException) error).getCause();
+				error = error.getCause();
 			}
 			if (this.includeException) {
 				errorAttributes.put("exception", error.getClass().getName());

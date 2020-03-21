@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -47,6 +48,12 @@ class EndpointIdTests {
 	@Test
 	void ofWhenContainsSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo/bar"))
+				.withMessage("Value must only contain valid chars");
+	}
+
+	@Test
+	void ofWhenContainsBackslashThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo\\bar"))
 				.withMessage("Value must only contain valid chars");
 	}
 
@@ -90,6 +97,16 @@ class EndpointIdTests {
 		EndpointId.of("foo-bar");
 		assertThat(output)
 				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
+	}
+
+	@Test
+	void ofWhenMigratingLegacyNameRemovesDots(CapturedOutput output) {
+		EndpointId.resetLoggedWarnings();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.endpoints.migrate-legacy-ids", "true");
+		EndpointId endpointId = EndpointId.of(environment, "foo.bar");
+		assertThat(endpointId.toString()).isEqualTo("foobar");
+		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test

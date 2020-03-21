@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::layered[]
+bootJar {
+	layers {
+		includeLayerTools = false
+	}
+}
+// end::layered[]

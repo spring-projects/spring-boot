@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.Session;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,11 +44,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @ContextConfiguration(initializers = DataNeo4jTestIntegrationTests.Initializer.class)
 @DataNeo4jTest
-@DisabledWithoutDockerTestcontainers
+@Testcontainers(disabledWithoutDocker = true)
 class DataNeo4jTestIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withAdminPassword(null);
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
 	private Session session;

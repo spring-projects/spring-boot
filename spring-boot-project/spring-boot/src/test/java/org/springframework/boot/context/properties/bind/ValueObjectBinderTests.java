@@ -15,9 +15,11 @@
  */
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
@@ -25,9 +27,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.core.ResolvableType;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ValueObjectBinder}.
@@ -91,6 +96,19 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		boolean bound = this.binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).isBound();
 		assertThat(bound).isFalse();
+	}
+
+	@Test
+	void bindToClassWithMultipleConstructorsAndFilterShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.int-value", "12");
+		this.sources.add(source);
+		Constructor<?>[] constructors = MultipleConstructorsBean.class.getDeclaredConstructors();
+		Constructor<?> constructor = (constructors[0].getParameterCount() == 1) ? constructors[0] : constructors[1];
+		Binder binder = new Binder(this.sources, null, null, null, null,
+				(bindable, isNestedConstructorBinding) -> constructor);
+		MultipleConstructorsBean bound = binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).get();
+		assertThat(bound.getIntValue()).isEqualTo(12);
 	}
 
 	@Test
@@ -207,6 +225,33 @@ class ValueObjectBinderTests {
 		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
 	}
 
+	@Test
+	void bindWhenAllPropertiesBoundShouldClearConfigurationProperty() { // gh-18704
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "hello");
+		this.sources.add(source);
+		Bindable<ValidatingConstructorBean> target = Bindable.of(ValidatingConstructorBean.class);
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
+				.satisfies(this::noConfigurationProperty);
+	}
+
+	@Test
+	void bindToClassShouldBindWithGenerics() {
+		// gh-19156
+		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class, String.class, String.class);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value.bar", "baz");
+		this.sources.add(source);
+		GenericValue<Map<String, String>> bean = this.binder.bind("foo", Bindable
+				.<GenericValue<Map<String, String>>>of(ResolvableType.forClassWithGenerics(GenericValue.class, type)))
+				.get();
+		assertThat(bean.getValue().get("bar")).isEqualTo("baz");
+	}
+
+	private void noConfigurationProperty(BindException ex) {
+		assertThat(ex.getProperty()).isNull();
+	}
+
 	static class ExampleValueBean {
 
 		private final int intValue;
@@ -258,14 +303,20 @@ class ValueObjectBinderTests {
 
 	}
 
-	@SuppressWarnings("unused")
 	static class MultipleConstructorsBean {
+
+		private final int intValue;
 
 		MultipleConstructorsBean(int intValue) {
 			this(intValue, 23L, "hello");
 		}
 
 		MultipleConstructorsBean(int intValue, long longValue, String stringValue) {
+			this.intValue = intValue;
+		}
+
+		int getIntValue() {
+			return this.intValue;
 		}
 
 	}
@@ -390,6 +441,42 @@ class ValueObjectBinderTests {
 
 		String getProperty() {
 			return this.property;
+		}
+
+	}
+
+	static class ValidatingConstructorBean {
+
+		private final String foo;
+
+		private final String bar;
+
+		ValidatingConstructorBean(String foo, String bar) {
+			Assert.notNull(foo, "Foo must not be null");
+			this.foo = foo;
+			this.bar = bar;
+		}
+
+		String getFoo() {
+			return this.foo;
+		}
+
+		String getBar() {
+			return this.bar;
+		}
+
+	}
+
+	static class GenericValue<T> {
+
+		private final T value;
+
+		GenericValue(T value) {
+			this.value = value;
+		}
+
+		T getValue() {
+			return this.value;
 		}
 
 	}

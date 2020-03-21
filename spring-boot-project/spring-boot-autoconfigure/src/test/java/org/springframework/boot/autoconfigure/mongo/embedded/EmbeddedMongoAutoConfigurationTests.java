@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -96,7 +97,7 @@ class EmbeddedMongoAutoConfigurationTests {
 			features.add(Feature.ONLY_WINDOWS_2008_SERVER);
 		}
 		load("spring.mongodb.embedded.features="
-				+ String.join(", ", features.stream().map(Feature::name).collect(Collectors.toList())));
+				+ features.stream().map(Feature::name).collect(Collectors.joining(", ")));
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
 				.containsExactlyElementsOf(features);
 	}
@@ -236,11 +237,8 @@ class EmbeddedMongoAutoConfigurationTests {
 		return File.separatorChar == '\\';
 	}
 
-	@SuppressWarnings("deprecation")
 	private int getPort(MongoClient client) {
-		// At some point we'll probably need to use reflection to find the address but for
-		// now, we can use the deprecated getAddress method.
-		return client.getAddress().getPort();
+		return client.getClusterDescription().getClusterSettings().getHosts().get(0).getPort();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -248,7 +246,7 @@ class EmbeddedMongoAutoConfigurationTests {
 
 		@Bean
 		MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
-			return new MongoClient("localhost", port);
+			return MongoClients.create("mongodb://localhost:" + port);
 		}
 
 	}

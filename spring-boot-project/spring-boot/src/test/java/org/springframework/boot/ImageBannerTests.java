@@ -18,11 +18,13 @@ package org.springframework.boot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.ansi.Ansi8BitColor;
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
@@ -165,7 +167,25 @@ class ImageBannerTests {
 		int frames = 138;
 		int linesPerFrame = 36;
 		assertThat(banner).contains("\r");
-		assertThat(lines.length).isEqualTo(frames * linesPerFrame - 1);
+		assertThat(lines).hasSize(frames * linesPerFrame - 1);
+	}
+
+	@Test
+	void printBannerWhenBitDepthIs8ShouldUseColors() {
+		String banner = printBanner("colors.gif", "spring.banner.image.bitdepth=8");
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(124)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(130)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(19)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(127)));
+		assertThat(banner).contains(AnsiOutput.encode(Ansi8BitColor.foreground(37)));
+	}
+
+	@Test
+	void printBannerWhenPixelModeIsBlockShouldRenderBlocks() {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("gradient.gif", "spring.banner.image.width=6", "spring.banner.image.margin=0",
+				"spring.banner.image.pixelmode=block");
+		assertThat(banner).inHexadecimal().contains("\u2588\u2593\u2592\u2591 ");
 	}
 
 	private int getBannerHeight(String banner) {
@@ -185,8 +205,13 @@ class ImageBannerTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, properties);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		banner.printBanner(environment, getClass(), new PrintStream(out));
-		return out.toString();
+		try {
+			banner.printBanner(environment, getClass(), new PrintStream(out, false, "UTF-8"));
+			return out.toString("UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }

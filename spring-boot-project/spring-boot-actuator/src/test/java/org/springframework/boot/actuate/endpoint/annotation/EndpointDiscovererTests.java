@@ -44,6 +44,8 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.FixedValue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -207,7 +209,8 @@ class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
 			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"),
+					EndpointId.of("specialized-superclass"));
 		});
 	}
 
@@ -237,11 +240,20 @@ class EndpointDiscovererTests {
 	}
 
 	@Test
+	void getEndpointsWhenHasProxiedEndpointShouldReturnEndpoint() {
+		load(ProxiedSpecializedEndpointsConfiguration.class, (context) -> {
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
+		});
+	}
+
+	@Test
 	void getEndpointsShouldApplyFilters() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
 				EndpointId id = endpoint.getEndpointId();
-				return !id.equals(EndpointId.of("specialized"));
+				return !id.equals(EndpointId.of("specialized")) && !id.equals(EndpointId.of("specialized-superclass"));
 			};
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context,
 					Collections.singleton(filter));
@@ -328,6 +340,19 @@ class EndpointDiscovererTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class ProxiedSpecializedTestEndpointConfiguration {
+
+		@Bean
+		SpecializedExtension specializedExtension() {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(SpecializedExtension.class);
+			enhancer.setCallback((FixedValue) () -> null);
+			return (SpecializedExtension) enhancer.create();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TestEndpointConfiguration {
 
 		@Bean
@@ -377,13 +402,19 @@ class EndpointDiscovererTests {
 
 	}
 
-	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, SpecializedExtension.class })
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, SpecializedSuperclassTestEndpoint.class,
+			SpecializedExtension.class })
 	static class SpecializedEndpointsConfiguration {
 
 	}
 
 	@Import({ TestEndpoint.class, SubSpecializedTestEndpoint.class, SpecializedExtension.class })
 	static class SubSpecializedEndpointsConfiguration {
+
+	}
+
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, ProxiedSpecializedTestEndpointConfiguration.class })
+	static class ProxiedSpecializedEndpointsConfiguration {
 
 	}
 
@@ -457,6 +488,20 @@ class EndpointDiscovererTests {
 
 	@SpecializedEndpoint(id = "specialized")
 	static class SpecializedTestEndpoint {
+
+		@ReadOperation
+		Object getAll() {
+			return null;
+		}
+
+	}
+
+	@SpecializedEndpoint(id = "specialized-superclass")
+	static class AbstractFilteredEndpoint {
+
+	}
+
+	static class SpecializedSuperclassTestEndpoint extends AbstractFilteredEndpoint {
 
 		@ReadOperation
 		Object getAll() {

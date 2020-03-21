@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,14 +65,26 @@ public class FlywayProperties {
 	private int connectRetries;
 
 	/**
+	 * Default schema name managed by Flyway (case-sensitive).
+	 */
+	private String defaultSchema;
+
+	/**
 	 * Scheme names managed by Flyway (case-sensitive).
 	 */
 	private List<String> schemas = new ArrayList<>();
 
 	/**
-	 * Name of the schema schema history table that will be used by Flyway.
+	 * Name of the schema history table that will be used by Flyway.
 	 */
 	private String table = "flyway_schema_history";
+
+	/**
+	 * Tablespace in which the schema history table is created. Ignored when using a
+	 * database that does not support tablespaces. Defaults to the default tablespace of
+	 * the connection used by Flyway.
+	 */
+	private String tablespace;
 
 	/**
 	 * Description to tag an existing schema with when applying a baseline.
@@ -219,6 +231,12 @@ public class FlywayProperties {
 	private boolean skipDefaultResolvers;
 
 	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
+
+	/**
 	 * Whether to automatically call validate when performing a migration.
 	 */
 	private boolean validateOnMigrate = true;
@@ -251,6 +269,12 @@ public class FlywayProperties {
 	 * Flyway Enterprise.
 	 */
 	private Boolean oracleSqlplus;
+
+	/**
+	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
+	 * SQL*Plus statement is encountered. Requires Flyway Pro or Flyway Enterprise.
+	 */
+	private Boolean oracleSqlplusWarn;
 
 	/**
 	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
@@ -303,6 +327,14 @@ public class FlywayProperties {
 		this.connectRetries = connectRetries;
 	}
 
+	public String getDefaultSchema() {
+		return this.defaultSchema;
+	}
+
+	public void setDefaultSchema(String defaultSchema) {
+		this.defaultSchema = defaultSchema;
+	}
+
 	public List<String> getSchemas() {
 		return this.schemas;
 	}
@@ -317,6 +349,14 @@ public class FlywayProperties {
 
 	public void setTable(String table) {
 		this.table = table;
+	}
+
+	public String getTablespace() {
+		return this.tablespace;
+	}
+
+	public void setTablespace(String tablespace) {
+		this.tablespace = tablespace;
 	}
 
 	public String getBaselineDescription() {
@@ -547,6 +587,14 @@ public class FlywayProperties {
 		this.skipDefaultResolvers = skipDefaultResolvers;
 	}
 
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
+	}
+
 	public boolean isValidateOnMigrate() {
 		return this.validateOnMigrate;
 	}
@@ -593,6 +641,14 @@ public class FlywayProperties {
 
 	public void setOracleSqlplus(Boolean oracleSqlplus) {
 		this.oracleSqlplus = oracleSqlplus;
+	}
+
+	public Boolean getOracleSqlplusWarn() {
+		return this.oracleSqlplusWarn;
+	}
+
+	public void setOracleSqlplusWarn(Boolean oracleSqlplusWarn) {
+		this.oracleSqlplusWarn = oracleSqlplusWarn;
 	}
 
 	public Boolean getStream() {

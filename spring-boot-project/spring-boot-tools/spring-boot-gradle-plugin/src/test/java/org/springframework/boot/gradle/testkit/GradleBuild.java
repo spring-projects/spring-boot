@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,21 +27,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.Versioned;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.sun.jna.Platform;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.http.HttpRequest;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.util.GradleVersion;
 import org.jetbrains.kotlin.cli.common.PropertiesKt;
 import org.jetbrains.kotlin.compilerRunner.KotlinLogger;
+import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
 
 import org.springframework.asm.ClassVisitor;
+import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A {@code GradleBuild} is used to run a Gradle build using {@link GradleRunner}.
@@ -57,6 +69,8 @@ public class GradleBuild {
 	private String script;
 
 	private String gradleVersion;
+
+	private GradleVersion expectDeprecationWarnings;
 
 	public GradleBuild() {
 		this(Dsl.GROOVY);
@@ -80,13 +94,20 @@ public class GradleBuild {
 	}
 
 	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin"), new File("build/classes/java/main"), new File("build/resources/main"),
-				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
+		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
+				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
+				new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
 				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinCompilerClient.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
-				new File(pathOfJarContaining(ArchiveEntry.class)));
+				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
+				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
+				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
+				new File(pathOfJarContaining(Versioned.class)),
+				new File(pathOfJarContaining(ParameterNamesModule.class)),
+				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
@@ -98,9 +119,19 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild expectDeprecationWarningsWithAtLeastVersion(String gradleVersion) {
+		this.expectDeprecationWarnings = GradleVersion.version(gradleVersion);
+		return this;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
-			return prepareRunner(arguments).build();
+			BuildResult result = prepareRunner(arguments).build();
+			if (this.gradleVersion != null && this.expectDeprecationWarnings != null
+					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0) {
+				assertThat(result.getOutput()).doesNotContain("Deprecated").doesNotContain("deprecated");
+			}
+			return result;
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -131,9 +162,6 @@ public class GradleBuild {
 		}
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
-		}
-		else if (this.dsl == Dsl.KOTLIN) {
-			gradleRunner.withGradleVersion("4.10.3");
 		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());

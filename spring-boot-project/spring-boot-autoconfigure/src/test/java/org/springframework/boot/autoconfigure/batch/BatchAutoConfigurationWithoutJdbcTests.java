@@ -49,7 +49,7 @@ class BatchAutoConfigurationWithoutJdbcTests {
 	@Test
 	void whenThereIsNoJdbcOnTheClasspathThenComponentsAreStillAutoConfigured() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(JobLauncherCommandLineRunner.class);
+			assertThat(context).hasSingleBean(JobLauncherApplicationRunner.class);
 			assertThat(context).hasSingleBean(JobExecutionExitCodeGenerator.class);
 			assertThat(context).hasSingleBean(SimpleJobOperator.class);
 		});

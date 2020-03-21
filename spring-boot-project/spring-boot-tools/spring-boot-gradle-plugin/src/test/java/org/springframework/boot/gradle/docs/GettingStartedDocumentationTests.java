@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
  * @author Jean-Baptiste Nizet
  */
 @ExtendWith(GradleMultiDslExtension.class)
-public class GettingStartedDocumentationTests {
+class GettingStartedDocumentationTests {
 
 	GradleBuild gradleBuild;
 
@@ -37,8 +37,8 @@ public class GettingStartedDocumentationTests {
 	// jar won't be there
 
 	@TestTemplate
-	public void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins").build("verify");
+	void typicalPluginsAppliesExceptedPlugins() {
+		this.gradleBuild.script("src/docs/gradle/getting-started/typical-plugins").build("verify");
 	}
 
 }

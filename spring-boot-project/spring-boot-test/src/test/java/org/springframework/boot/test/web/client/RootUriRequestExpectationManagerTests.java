@@ -142,7 +142,7 @@ class RootUriRequestExpectationManagerTests {
 		RequestExpectationManager actual = RootUriRequestExpectationManager.forRestTemplate(restTemplate,
 				this.delegate);
 		assertThat(actual).isInstanceOf(RootUriRequestExpectationManager.class);
-		assertThat(actual).extracting("rootUri").containsExactly(this.uri);
+		assertThat(actual).extracting("rootUri").isEqualTo(this.uri);
 	}
 
 	@Test

@@ -2,5 +2,12 @@
 platform: windows
 inputs:
 - name: git-repo
+params:
+  BRANCH:
+  CI: true
+  GRADLE_ENTERPRISE_ACCESS_KEY:
+  GRADLE_ENTERPRISE_CACHE_USERNAME:
+  GRADLE_ENTERPRISE_CACHE_PASSWORD:
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
 run:
   path: git-repo/ci/scripts/build-project-windows.bat

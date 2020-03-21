@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,19 @@
 
 package org.springframework.boot.context.properties;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.PropertySources;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.util.Assert;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -53,19 +49,11 @@ public class ConfigurationPropertiesBindingPostProcessor
 	 */
 	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class.getName();
 
-	/**
-	 * The bean name of the configuration properties validator.
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link ConfigurationPropertiesBindingPostProcessorRegistrar#VALIDATOR_BEAN_NAME}
-	 */
-	@Deprecated
-	public static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME;
-
-	private ConfigurationBeanFactoryMetadata beanFactoryMetadata;
-
 	private ApplicationContext applicationContext;
 
-	private ConfigurationPropertiesBinder configurationPropertiesBinder;
+	private BeanDefinitionRegistry registry;
+
+	private ConfigurationPropertiesBinder binder;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -76,10 +64,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 	public void afterPropertiesSet() throws Exception {
 		// We can't use constructor injection of the application context because
 		// it causes eager factory bean initialization
-		this.beanFactoryMetadata = this.applicationContext.getBean(ConfigurationBeanFactoryMetadata.BEAN_NAME,
-				ConfigurationBeanFactoryMetadata.class);
-		this.configurationPropertiesBinder = this.applicationContext.getBean(ConfigurationPropertiesBinder.BEAN_NAME,
-				ConfigurationPropertiesBinder.class);
+		this.registry = (BeanDefinitionRegistry) this.applicationContext.getAutowireCapableBeanFactory();
+		this.binder = ConfigurationPropertiesBinder.get(this.applicationContext);
 	}
 
 	@Override
@@ -89,51 +75,44 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		ConfigurationProperties annotation = getAnnotation(bean, beanName, ConfigurationProperties.class);
-		if (annotation != null && !hasBeenBound(beanName)) {
-			bind(bean, beanName, annotation);
-		}
+		bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
 		return bean;
 	}
 
-	private boolean hasBeenBound(String beanName) {
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) this.applicationContext
-				.getAutowireCapableBeanFactory();
-		if (registry.containsBeanDefinition(beanName)) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
-			return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
+	private void bind(ConfigurationPropertiesBean bean) {
+		if (bean == null || hasBoundValueObject(bean.getName())) {
+			return;
 		}
-		return false;
-	}
-
-	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
-		ResolvableType type = getBeanType(bean, beanName);
-		Validated validated = getAnnotation(bean, beanName, Validated.class);
-		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-				: new Annotation[] { annotation };
-		Bindable<?> target = Bindable.of(type).withExistingValue(bean).withAnnotations(annotations);
+		Assert.state(bean.getBindMethod() == BindMethod.JAVA_BEAN, "Cannot bind @ConfigurationProperties for bean '"
+				+ bean.getName() + "'. Ensure that @ConstructorBinding has not been applied to regular bean");
 		try {
-			this.configurationPropertiesBinder.bind(target);
+			this.binder.bind(bean);
 		}
 		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(beanName, bean.getClass(), annotation, ex);
+			throw new ConfigurationPropertiesBindException(bean, ex);
 		}
 	}
 
-	private ResolvableType getBeanType(Object bean, String beanName) {
-		Method factoryMethod = this.beanFactoryMetadata.findFactoryMethod(beanName);
-		if (factoryMethod != null) {
-			return ResolvableType.forMethodReturnType(factoryMethod);
-		}
-		return ResolvableType.forClass(bean.getClass());
+	private boolean hasBoundValueObject(String beanName) {
+		return this.registry.containsBeanDefinition(beanName) && this.registry
+				.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
 	}
 
-	private <A extends Annotation> A getAnnotation(Object bean, String beanName, Class<A> type) {
-		A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
-		if (annotation == null) {
-			annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);
+	/**
+	 * Register a {@link ConfigurationPropertiesBindingPostProcessor} bean if one is not
+	 * already registered.
+	 * @param registry the bean definition registry
+	 * @since 2.2.0
+	 */
+	public static void register(BeanDefinitionRegistry registry) {
+		Assert.notNull(registry, "Registry must not be null");
+		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
-		return annotation;
+		ConfigurationPropertiesBinder.register(registry);
 	}
 
 }

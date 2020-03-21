@@ -155,7 +155,7 @@ class SpringApplicationBuilderTests {
 		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		this.context = application.run();
-		assertThat(((SpyApplicationContext) this.context).getClassLoader()).isEqualTo(classLoader);
+		assertThat(this.context.getClassLoader()).isEqualTo(classLoader);
 	}
 
 	@Test
@@ -240,7 +240,7 @@ class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.web(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(4);
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Test
@@ -248,7 +248,7 @@ class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.child(ChildConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(5);
+		assertThat(application.application().getInitializers()).hasSize(6);
 	}
 
 	@Test
@@ -257,7 +257,7 @@ class SpringApplicationBuilderTests {
 				.web(WebApplicationType.NONE).initializers((ConfigurableApplicationContext applicationContext) -> {
 				});
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(5);
+		assertThat(application.application().getInitializers()).hasSize(6);
 	}
 
 	@Test

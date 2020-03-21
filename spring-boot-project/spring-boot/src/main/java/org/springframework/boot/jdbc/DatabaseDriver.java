@@ -126,7 +126,6 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
-
 		}
 
 	},
@@ -195,6 +194,18 @@ public enum DatabaseDriver {
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
+		}
+
+	},
+
+	/**
+	 * Testcontainers.
+	 */
+	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("tc");
 		}
 
 	};

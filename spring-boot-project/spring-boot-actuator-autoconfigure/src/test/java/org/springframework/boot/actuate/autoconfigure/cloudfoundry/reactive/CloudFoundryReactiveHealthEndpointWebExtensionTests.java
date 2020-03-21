@@ -22,9 +22,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
+import org.springframework.boot.actuate.health.CompositeHealth;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthComponent;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -53,16 +58,28 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 					ReactiveCloudFoundryActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,
 					WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-					ReactiveCloudFoundryActuatorAutoConfiguration.class));
+					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					ReactiveCloudFoundryActuatorAutoConfiguration.class))
+			.withUserConfiguration(TestHealthIndicator.class);
 
 	@Test
-	void healthDetailsAlwaysPresent() {
+	void healthComponentsAlwaysPresent() {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 					.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-			assertThat(extension.health().block(Duration.ofSeconds(30)).getBody().getDetails()).isNotEmpty();
+			HealthComponent body = extension.health(ApiVersion.V3).block(Duration.ofSeconds(30)).getBody();
+			HealthComponent health = ((CompositeHealth) body).getComponents().entrySet().iterator().next().getValue();
+			assertThat(((Health) health).getDetails()).containsEntry("spring", "boot");
 		});
+	}
+
+	private static class TestHealthIndicator implements HealthIndicator {
+
+		@Override
+		public Health health() {
+			return Health.up().withDetail("spring", "boot").build();
+		}
+
 	}
 
 }

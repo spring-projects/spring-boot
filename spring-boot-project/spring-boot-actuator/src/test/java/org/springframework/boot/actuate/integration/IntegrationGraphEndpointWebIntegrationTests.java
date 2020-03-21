@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class IntegrationGraphEndpointWebIntegrationTests {
 	void graph(WebTestClient client) {
 		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
-				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.0f)
+				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.2f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 

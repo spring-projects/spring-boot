@@ -49,7 +49,7 @@ class SampleWebClientTests {
 		assertThat(headers.getLocation()).hasHost("other.example.com");
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean

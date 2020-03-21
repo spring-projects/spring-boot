@@ -41,7 +41,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -91,7 +91,7 @@ class DispatcherTests {
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
 		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
-		verifyZeroInteractions(handler);
+		verifyNoInteractions(handler);
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 

@@ -1,0 +1,15 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot secure Jersey smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jersey"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+	implementation("org.jolokia:jolokia-core")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
@@ -38,21 +40,24 @@ class SpringBootPluginIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
+	@DisabledForJreRange(min = JRE.JAVA_14)
 	@Test
 	void failFastWithVersionOfGradleLowerThanRequired() {
-		BuildResult result = this.gradleBuild.gradleVersion("4.9").buildAndFail();
+		BuildResult result = this.gradleBuild.gradleVersion("5.5.1").buildAndFail();
 		assertThat(result.getOutput())
-				.contains("Spring Boot plugin requires Gradle 4.10 or later. The current version is Gradle 4.9");
+				.contains("Spring Boot plugin requires Gradle 5.6 or later. The current version is Gradle 5.5.1");
 	}
 
+	@DisabledForJreRange(min = JRE.JAVA_13)
 	@Test
 	void succeedWithVersionOfGradleHigherThanRequired() {
-		this.gradleBuild.gradleVersion("4.10.1").build();
+		this.gradleBuild.gradleVersion("5.6.1").build();
 	}
 
+	@DisabledForJreRange(min = JRE.JAVA_13)
 	@Test
 	void succeedWithVersionOfGradleMatchingWhatIsRequired() {
-		this.gradleBuild.gradleVersion("4.10").build();
+		this.gradleBuild.gradleVersion("5.6").build();
 	}
 
 	@Test

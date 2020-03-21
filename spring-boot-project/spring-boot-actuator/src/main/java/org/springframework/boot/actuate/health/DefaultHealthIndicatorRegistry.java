@@ -28,7 +28,9 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 2.2.0 in favor of {@link DefaultContributorRegistry}
  */
+@Deprecated
 public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 
 	private final Object monitor = new Object();

@@ -37,6 +37,9 @@ do as they were designed before this was clarified.
 | https://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
 
+| https://line.github.io/armeria/[Armeria]
+| https://github.com/line/armeria/
+
 | https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
 
@@ -72,6 +75,9 @@ do as they were designed before this was clarified.
 
 | Elegant Error Handling for Spring Boot
 | https://github.com/alimate/errors-spring-boot-starter
+
+| https://elide.io/[Elide]
+| https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
 
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
@@ -136,6 +142,9 @@ do as they were designed before this was clarified.
 | https://developer.nexmo.com/[Nexmo]
 | https://github.com/nexmo/nexmo-spring-boot-starter
 
+| https://funthomas424242.github.io/nitrite-spring-boot-starter/[Nitrite Database]
+| https://github.com/FunThomas424242/nitrite-spring-boot-starter
+
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
@@ -145,8 +154,14 @@ do as they were designed before this was clarified.
 | https://developer.okta.com/[Okta]
 | https://github.com/okta/okta-spring-boot
 
+| https://www.optaplanner.org/[OptaPlanner]
+| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-integration/optaplanner-spring-boot-starter
+
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
+
+| https://pebbletemplates.io/[Pebble Templates]
+| https://github.com/PebbleTemplates/pebble
 
 | https://picocli.info/[picocli]
 | https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
@@ -191,7 +206,7 @@ do as they were designed before this was clarified.
 | https://github.com/Catalysts/structurizr-extensions
 
 | https://vaadin.com/[Vaadin]
-| https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
+| https://github.com/vaadin/platform/tree/master/vaadin-spring-boot-starter
 
 | https://github.com/valiktor/valiktor[Valiktor]
 | https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter

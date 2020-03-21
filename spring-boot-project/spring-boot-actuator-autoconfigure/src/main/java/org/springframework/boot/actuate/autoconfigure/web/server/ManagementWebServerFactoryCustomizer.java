@@ -28,7 +28,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -107,7 +106,6 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 		}
 		factory.setServerHeader(serverProperties.getServerHeader());
 		factory.setAddress(managementServerProperties.getAddress());
-		factory.addErrorPages(new ErrorPage(serverProperties.getError().getPath()));
 	}
 
 }

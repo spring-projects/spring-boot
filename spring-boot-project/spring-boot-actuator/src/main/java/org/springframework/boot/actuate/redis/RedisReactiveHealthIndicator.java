@@ -40,6 +40,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
 	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
+		super("Redis health check failed");
 		this.connectionFactory = connectionFactory;
 	}
 
@@ -55,7 +56,8 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Mono<ReactiveRedisConnection> getConnection() {
-		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection).subscribeOn(Schedulers.parallel());
+		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
+				.subscribeOn(Schedulers.boundedElastic());
 	}
 
 	private Health up(Health.Builder builder, Properties info) {

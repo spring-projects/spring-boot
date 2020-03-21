@@ -101,7 +101,7 @@ abstract class PropertyDescriptor<S extends Element> {
 
 	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
 		boolean deprecated = environment.isDeprecated(getGetter()) || environment.isDeprecated(getSetter())
-				|| environment.isDeprecated(getFactoryMethod());
+				|| environment.isDeprecated(getField()) || environment.isDeprecated(getFactoryMethod());
 		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 

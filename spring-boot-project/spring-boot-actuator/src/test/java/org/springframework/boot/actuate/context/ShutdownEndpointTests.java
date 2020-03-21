@@ -97,8 +97,7 @@ class ShutdownEndpointTests {
 
 		@Bean
 		ShutdownEndpoint endpoint() {
-			ShutdownEndpoint endpoint = new ShutdownEndpoint();
-			return endpoint;
+			return new ShutdownEndpoint();
 		}
 
 		@Bean

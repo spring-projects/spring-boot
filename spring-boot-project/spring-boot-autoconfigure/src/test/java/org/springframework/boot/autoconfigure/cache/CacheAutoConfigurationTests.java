@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.bucket.BucketManager;
-import com.couchbase.client.spring.cache.CouchbaseCache;
-import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.hazelcast.cache.HazelcastCachingProvider;
@@ -66,6 +62,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.couchbase.CouchbaseClientFactory;
+import org.springframework.data.couchbase.cache.CouchbaseCache;
+import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -220,8 +219,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 					Cache cache = cacheManager.getCache("foo");
 					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
-					assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(context.getBean("bucket"));
+					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(0);
 				});
 	}
 
@@ -235,8 +233,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 					Cache cache = cacheManager.getCache("foo");
 					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2);
-					assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(context.getBean("bucket"));
+					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(2);
 				});
 	}
 
@@ -252,7 +249,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
 					assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(15));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues()).isFalse();
-					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName")).isEqualTo("prefix");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("MyCache")).isEqualTo("prefixMyCache::");
 					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
@@ -267,7 +264,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).isEmpty();
 					RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
 					assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(30));
-					assertThat(redisCacheConfiguration.getKeyPrefixFor("")).isEqualTo("bar");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("")).isEqualTo("bar::");
 				});
 	}
 
@@ -725,11 +722,8 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	static class CouchbaseCacheConfiguration {
 
 		@Bean
-		Bucket bucket() {
-			BucketManager bucketManager = mock(BucketManager.class);
-			Bucket bucket = mock(Bucket.class);
-			given(bucket.bucketManager()).willReturn(bucketManager);
-			return bucket;
+		CouchbaseClientFactory couchbaseClientFactory() {
+			return mock(CouchbaseClientFactory.class);
 		}
 
 	}
@@ -758,7 +752,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		@Bean
 		org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
 			return org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig()
-					.entryTtl(java.time.Duration.ofSeconds(30)).prefixKeysWith("bar");
+					.entryTtl(java.time.Duration.ofSeconds(30)).prefixCacheNameWith("bar");
 		}
 
 	}

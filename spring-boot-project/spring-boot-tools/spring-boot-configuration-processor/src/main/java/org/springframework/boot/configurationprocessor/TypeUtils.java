@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
 
 /**
  * Type Utilities.
@@ -155,7 +154,7 @@ class TypeUtils {
 		if (((TypeElement) this.types.asElement(type)).getQualifiedName().contentEquals(Collection.class.getName())) {
 			DeclaredType declaredType = (DeclaredType) type;
 			// raw type, just "Collection"
-			if (declaredType.getTypeArguments().size() == 0) {
+			if (declaredType.getTypeArguments().isEmpty()) {
 				return this.types.getDeclaredType(this.env.getElementUtils().getTypeElement(Object.class.getName()));
 			}
 			// return type argument to Collection<...>
@@ -232,24 +231,18 @@ class TypeUtils {
 	}
 
 	private void process(TypeDescriptor descriptor, TypeMirror type) {
-		try {
-			if (type.getKind() == TypeKind.DECLARED) {
-				DeclaredType declaredType = (DeclaredType) type;
-				DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
-						.getTypeElement(this.types.asElement(type).toString()).asType();
-				List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
-				for (int i = 0; i < arguments.size(); i++) {
-					TypeMirror specificType = arguments.get(i);
-					TypeMirror signatureType = freshType.getTypeArguments().get(i);
-					descriptor.registerIfNecessary(signatureType, specificType);
-				}
-				TypeElement element = (TypeElement) this.types.asElement(type);
-				process(descriptor, element.getSuperclass());
+		if (type.getKind() == TypeKind.DECLARED) {
+			DeclaredType declaredType = (DeclaredType) type;
+			DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
+					.getTypeElement(this.types.asElement(type).toString()).asType();
+			List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
+			for (int i = 0; i < arguments.size(); i++) {
+				TypeMirror specificType = arguments.get(i);
+				TypeMirror signatureType = freshType.getTypeArguments().get(i);
+				descriptor.registerIfNecessary(signatureType, specificType);
 			}
-		}
-		catch (Exception ex) {
-			this.env.getMessager().printMessage(Kind.WARNING, "Failed to generated type descriptor for " + type,
-					this.types.asElement(type));
+			TypeElement element = (TypeElement) this.types.asElement(type);
+			process(descriptor, element.getSuperclass());
 		}
 	}
 

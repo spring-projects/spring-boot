@@ -160,7 +160,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 
 	private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
-		return (value != null) ? Boolean.parseBoolean(value) : false;
+		return Boolean.parseBoolean(value);
 	}
 
 	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {

@@ -97,7 +97,7 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 
 	/**
 	 * Slightly faster variant of {@link ClassUtils#forName(String, ClassLoader)} that
-	 * doesn't deal with primitives, arrays or innter types.
+	 * doesn't deal with primitives, arrays or inner types.
 	 * @param className the class name to resolve
 	 * @param classLoader the class loader to use
 	 * @return a resolved class
@@ -105,10 +105,9 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 	 */
 	protected static Class<?> resolve(String className, ClassLoader classLoader) throws ClassNotFoundException {
 		if (classLoader != null) {
-			return classLoader.loadClass(className);
+			return Class.forName(className, false, classLoader);
 		}
 		return Class.forName(className);
-
 	}
 
 	protected enum ClassNameFilter {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,19 +93,44 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setConnectionTimeoutAsZero() {
-		setupConnectionTimeout(Duration.ZERO);
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(false);
+	}
+
+	@Test
+	void setServerConnectionTimeoutAsZero() {
+		setupServerConnectionTimeout(Duration.ZERO);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, null);
 	}
 
 	@Test
-	void setConnectionTimeoutAsMinusOne() {
-		setupConnectionTimeout(Duration.ofNanos(-1));
+	void setServerConnectionTimeoutAsMinusOne() {
+		setupServerConnectionTimeout(Duration.ofNanos(-1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 0);
+	}
+
+	@Test
+	void setServerConnectionTimeout() {
+		setupServerConnectionTimeout(Duration.ofSeconds(1));
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verifyConnectionTimeout(factory, 1000);
 	}
 
 	@Test
@@ -131,10 +156,16 @@ class NettyWebServerFactoryCustomizerTests {
 		assertThat(options).containsEntry(ChannelOption.CONNECT_TIMEOUT_MILLIS, expected);
 	}
 
-	private void setupConnectionTimeout(Duration connectionTimeout) {
+	private void setupServerConnectionTimeout(Duration connectionTimeout) {
 		this.serverProperties.setUseForwardHeaders(null);
 		this.serverProperties.setMaxHttpHeaderSize(null);
 		this.serverProperties.setConnectionTimeout(connectionTimeout);
+	}
+
+	private void setupConnectionTimeout(Duration connectionTimeout) {
+		this.serverProperties.setUseForwardHeaders(null);
+		this.serverProperties.setMaxHttpHeaderSize(null);
+		this.serverProperties.getNetty().setConnectionTimeout(connectionTimeout);
 	}
 
 }

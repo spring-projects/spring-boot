@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,11 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Builds a Spring Boot application using Maven. To use this class, the {@code maven.home}
- * system property must be set.
+ * Builds a Spring Boot application using Maven.
  *
  * @author Andy Wilkinson
  */
@@ -98,6 +96,12 @@ class ApplicationBuilder {
 			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
 			resourcesJarStream.write("nested".getBytes());
 			resourcesJarStream.closeEntry();
+			if (!isWindows()) {
+				resourcesJarStream.putNextEntry(
+						new ZipEntry("META-INF/resources/nested-reserved-!#$%&()*+,:=?@[]-meta-inf-resource.txt"));
+				resourcesJarStream.write("encoded-name".getBytes());
+				resourcesJarStream.closeEntry();
+			}
 			return resourcesJar;
 		}
 	}
@@ -115,12 +119,9 @@ class ApplicationBuilder {
 	}
 
 	private File writeSettingsXml(File appFolder) throws IOException {
-		String repository = System.getProperty("repository");
-		if (!StringUtils.hasText(repository)) {
-			return null;
-		}
 		Map<String, Object> context = new HashMap<>();
-		context.put("repository", repository);
+		context.put("repository", new File("build/test-repository").toURI().toURL());
+		context.put("localRepository", new File("build/local-m2-repository").getAbsolutePath());
 		File settingsXml = new File(appFolder, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
 				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
@@ -154,8 +155,14 @@ class ApplicationBuilder {
 		if (settingsXml != null) {
 			invocation.setUserSettingsFile(settingsXml);
 		}
-		InvocationResult execute = new DefaultInvoker().execute(invocation);
+		DefaultInvoker invoker = new DefaultInvoker();
+		invoker.setMavenHome(new File("build/maven-binaries/apache-maven-3.6.2"));
+		InvocationResult execute = invoker.execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);
+	}
+
+	private boolean isWindows() {
+		return File.separatorChar == '\\';
 	}
 
 }

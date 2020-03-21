@@ -15,7 +15,11 @@
  */
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,6 +30,8 @@ import javax.servlet.http.HttpServlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.SpringBootMockMvcBuilderCustomizer.DeferredLinesWriter;
+import org.springframework.boot.test.autoconfigure.web.servlet.SpringBootMockMvcBuilderCustomizer.LinesWriter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +69,52 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		Filter otherTestFilter = registrationBean.getFilter();
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils.getField(builder, "filters");
 		assertThat(filters).containsExactlyInAnyOrder(testFilter, otherTestFilter);
+	}
+
+	@Test
+	void whenCalledInParallelDeferredLinesWriterSeparatesOutputByThread() throws Exception {
+		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+		MockServletContext servletContext = new MockServletContext();
+		context.setServletContext(servletContext);
+		context.register(ServletConfiguration.class, FilterConfiguration.class);
+		context.refresh();
+
+		CapturingLinesWriter delegate = new CapturingLinesWriter();
+		new DeferredLinesWriter(context, delegate);
+		CountDownLatch latch = new CountDownLatch(10);
+		for (int i = 0; i < 10; i++) {
+			Thread thread = new Thread(() -> {
+				for (int j = 0; j < 1000; j++) {
+					DeferredLinesWriter writer = DeferredLinesWriter.get(context);
+					writer.write(Arrays.asList("1", "2", "3", "4", "5"));
+					writer.writeDeferredResult();
+					writer.clear();
+				}
+				latch.countDown();
+			});
+			thread.start();
+		}
+		latch.await(60, TimeUnit.SECONDS);
+
+		assertThat(delegate.allWritten).hasSize(10000);
+		assertThat(delegate.allWritten)
+				.allSatisfy((written) -> assertThat(written).containsExactly("1", "2", "3", "4", "5"));
+	}
+
+	private static final class CapturingLinesWriter implements LinesWriter {
+
+		List<List<String>> allWritten = new ArrayList<>();
+
+		private final Object monitor = new Object();
+
+		@Override
+		public void write(List<String> lines) {
+			List<String> written = new ArrayList<>(lines);
+			synchronized (this.monitor) {
+				this.allWritten.add(written);
+			}
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

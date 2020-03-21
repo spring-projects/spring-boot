@@ -44,10 +44,10 @@ public interface Origin {
 			return (Origin) source;
 		}
 		Origin origin = null;
-		if (source != null && source instanceof OriginProvider) {
+		if (source instanceof OriginProvider) {
 			origin = ((OriginProvider) source).getOrigin();
 		}
-		if (origin == null && source != null && source instanceof Throwable) {
+		if (origin == null && source instanceof Throwable) {
 			return from(((Throwable) source).getCause());
 		}
 		return origin;

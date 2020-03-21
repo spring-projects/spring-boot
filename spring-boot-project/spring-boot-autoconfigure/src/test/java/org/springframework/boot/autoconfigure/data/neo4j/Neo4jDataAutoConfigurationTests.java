@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class Neo4jDataAutoConfigurationTests {
 			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
 			assertThat(context).hasSingleBean(SessionFactory.class);
 			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
-			assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
+			assertThat(context).doesNotHaveBean(OpenSessionInViewInterceptor.class);
 			assertThat(context).doesNotHaveBean(BookmarkManager.class);
 		});
 	}
@@ -96,6 +96,16 @@ class Neo4jDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(org.neo4j.ogm.config.Configuration.class);
 			assertThat(context).hasSingleBean(SessionFactory.class);
+		});
+	}
+
+	@Test
+	void customSessionFactoryShouldNotDisableOtherDefaults() {
+		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
+			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context.getBean(SessionFactory.class)).isSameAs(context.getBean("customSessionFactory"));
+			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
+			assertThat(context).doesNotHaveBean(OpenSessionInViewInterceptor.class);
 		});
 	}
 
@@ -126,9 +136,9 @@ class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	void openSessionInViewInterceptorCanBeDisabled() {
-		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(OpenSessionInViewInterceptor.class));
+	void openSessionInViewInterceptorCanBeEnabled() {
+		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:true")
+				.run((context) -> assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class));
 	}
 
 	@Test

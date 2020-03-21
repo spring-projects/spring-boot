@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import reactor.netty.resources.LoopResources;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -55,6 +56,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private ReactorResourceFactory resourceFactory;
 
+	private Shutdown shutdown;
+
 	public NettyReactiveWebServerFactory() {
 	}
 
@@ -66,7 +69,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
-		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
+		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout,
+				(this.shutdown == null) ? null : this.shutdown.getGracePeriod());
 		webServer.setRouteProviders(this.routeProviders);
 		return webServer;
 	}
@@ -100,7 +104,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the the
+	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the
 	 * handler for the Spring application.
 	 * @param routeProviders the route providers to add
 	 */
@@ -136,6 +140,16 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.resourceFactory = resourceFactory;
 	}
 
+	@Override
+	public void setShutdown(Shutdown shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	@Override
+	public Shutdown getShutdown() {
+		return this.shutdown;
+	}
+
 	private HttpServer createHttpServer() {
 		HttpServer server = HttpServer.create();
 		if (this.resourceFactory != null) {
@@ -161,13 +175,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpProtocol[] listProtocols() {
-		if (getHttp2() != null && getHttp2().isEnabled()) {
-			if (getSsl() != null && getSsl().isEnabled()) {
-				return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
-			}
-			else {
-				return new HttpProtocol[] { HttpProtocol.H2C, HttpProtocol.HTTP11 };
-			}
+		if (getHttp2() != null && getHttp2().isEnabled() && getSsl() != null && getSsl().isEnabled()) {
+			return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
 		}
 		return new HttpProtocol[] { HttpProtocol.HTTP11 };
 	}

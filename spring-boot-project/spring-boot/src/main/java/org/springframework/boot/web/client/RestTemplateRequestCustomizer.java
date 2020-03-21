@@ -17,6 +17,7 @@
 package org.springframework.boot.web.client;
 
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestInitializer;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -28,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @since 2.2.0
  * @see RestTemplateBuilder
+ * @see ClientHttpRequestInitializer
  */
 @FunctionalInterface
 public interface RestTemplateRequestCustomizer<T extends ClientHttpRequest> {

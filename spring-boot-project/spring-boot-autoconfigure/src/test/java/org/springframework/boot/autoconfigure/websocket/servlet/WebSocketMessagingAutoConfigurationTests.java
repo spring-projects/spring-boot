@@ -92,7 +92,9 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@AfterEach
 	void tearDown() {
-		this.context.close();
+		if (this.context.isActive()) {
+			this.context.close();
+		}
 		this.sockJsClient.stop();
 	}
 

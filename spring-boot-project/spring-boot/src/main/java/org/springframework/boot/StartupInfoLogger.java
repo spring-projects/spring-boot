@@ -87,7 +87,7 @@ class StartupInfoLogger {
 		message.append("Started ");
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(stopWatch.getTotalTimeSeconds());
+		message.append(stopWatch.getTotalTimeMillis() / 1000.0);
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
@@ -112,21 +112,24 @@ class StartupInfoLogger {
 		long startTime = System.currentTimeMillis();
 		append(message, "on ", () -> InetAddress.getLocalHost().getHostName());
 		long resolveTime = System.currentTimeMillis() - startTime;
-		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD && logger.isWarnEnabled()) {
-			StringBuilder warning = new StringBuilder();
-			warning.append("InetAddress.getLocalHost().getHostName() took ");
-			warning.append(resolveTime);
-			warning.append(" milliseconds to respond.");
-			warning.append(" Please verify your network configuration");
-			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-				warning.append(" (macOS machines may need to add entries to /etc/hosts)");
-			}
-			logger.warn(warning.append("."));
+		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD) {
+			logger.warn(LogMessage.of(() -> {
+				StringBuilder warning = new StringBuilder();
+				warning.append("InetAddress.getLocalHost().getHostName() took ");
+				warning.append(resolveTime);
+				warning.append(" milliseconds to respond.");
+				warning.append(" Please verify your network configuration");
+				if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+					warning.append(" (macOS machines may need to add entries to /etc/hosts)");
+				}
+				warning.append(".");
+				return warning;
+			}));
 		}
 	}
 
 	private void appendPid(StringBuilder message) {
-		append(message, "with PID ", () -> new ApplicationPid());
+		append(message, "with PID ", ApplicationPid::new);
 	}
 
 	private void appendContext(StringBuilder message) {

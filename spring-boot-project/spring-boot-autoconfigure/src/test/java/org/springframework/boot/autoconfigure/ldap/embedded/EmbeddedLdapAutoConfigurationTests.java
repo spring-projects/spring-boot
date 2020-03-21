@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class EmbeddedLdapAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(EmbeddedLdapAutoConfiguration.class));
 
 	@Test
@@ -108,7 +111,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	void testQueryEmbeddedLdap() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
 				.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class)).run((context) -> {
-					assertThat(context.getBeanNamesForType(LdapTemplate.class).length).isEqualTo(1);
+					assertThat(context).hasSingleBean(LdapTemplate.class);
 					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
 					assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org")).hasSize(4);
 				});
@@ -143,6 +146,35 @@ class EmbeddedLdapAutoConfigurationTests {
 					InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 					assertThat(server.countEntriesBelow("ou=company1,c=Sweden,dc=spring,dc=org")).isEqualTo(5);
 					assertThat(server.countEntriesBelow("c=Sweden,dc=pivotal,dc=io")).isEqualTo(2);
+				});
+	}
+
+	@Test
+	void ldapContextSourceWithCredentialsIsCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+				"spring.ldap.embedded.credential.username:uid=root", "spring.ldap.embedded.credential.password:boot")
+				.run((context) -> {
+					LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
+					assertThat(ldapContextSource.getUrls()).isNotEmpty();
+					assertThat(ldapContextSource.getUserDn()).isEqualTo("uid=root");
+				});
+	}
+
+	@Test
+	void ldapContextSourceWithoutCredentialsIsCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org").run((context) -> {
+			LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
+			assertThat(ldapContextSource.getUrls()).isNotEmpty();
+			assertThat(ldapContextSource.getUserDn()).isEmpty();
+		});
+	}
+
+	@Test
+	void ldapContextWithoutSpringLdapIsNotCreated() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.withClassLoader(new FilteredClassLoader(ContextSource.class)).run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context).doesNotHaveBean(LdapContextSource.class);
 				});
 	}
 

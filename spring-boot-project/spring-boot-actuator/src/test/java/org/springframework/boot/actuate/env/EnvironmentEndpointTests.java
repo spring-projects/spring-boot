@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author HaiTao Zhang
+ * @author Chris Bono
  */
 class EnvironmentEndpointTests {
 
@@ -242,6 +244,26 @@ class EnvironmentEndpointTests {
 		assertThat(sources.keySet()).containsExactly("two", "one");
 		assertThat(sources.get("one").getProperties().get("a").getValue()).isEqualTo("alpha");
 		assertThat(sources.get("two").getProperties().get("a").getValue()).isEqualTo("apple");
+	}
+
+	@Test
+	void uriPropertyWithSensitiveInfo() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestPropertyValues.of("sensitive.uri=http://user:password@localhost:8080").applyTo(environment);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("sensitive.uri");
+		assertThat(descriptor.getProperty().getValue()).isEqualTo("http://user:******@localhost:8080");
+	}
+
+	@Test
+	void addressesPropertyWithMultipleEntriesEachWithSensitiveInfo() {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		TestPropertyValues
+				.of("sensitive.addresses=http://user:password@localhost:8080,http://user2:password2@localhost:8082")
+				.applyTo(environment);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment)
+				.environmentEntry("sensitive.addresses");
+		assertThat(descriptor.getProperty().getValue())
+				.isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082");
 	}
 
 	private static ConfigurableEnvironment emptyEnvironment() {

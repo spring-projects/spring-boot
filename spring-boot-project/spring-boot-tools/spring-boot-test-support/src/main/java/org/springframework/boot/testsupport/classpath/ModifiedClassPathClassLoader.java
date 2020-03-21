@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -50,6 +51,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -59,6 +61,8 @@ import org.springframework.util.StringUtils;
  * @author Christoph Dreis
  */
 final class ModifiedClassPathClassLoader extends URLClassLoader {
+
+	private static final Map<Class<?>, ModifiedClassPathClassLoader> cache = new ConcurrentReferenceHashMap<>();
 
 	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern.compile(".*classpath(\\d+)?\\.jar");
 
@@ -72,12 +76,16 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
 		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")) {
-			return this.junitLoader.loadClass(name);
+			return Class.forName(name, false, this.junitLoader);
 		}
 		return super.loadClass(name);
 	}
 
 	static ModifiedClassPathClassLoader get(Class<?> testClass) {
+		return cache.computeIfAbsent(testClass, ModifiedClassPathClassLoader::compute);
+	}
+
+	private static ModifiedClassPathClassLoader compute(Class<?> testClass) {
 		ClassLoader classLoader = testClass.getClassLoader();
 		return new ModifiedClassPathClassLoader(processUrls(extractUrls(classLoader), testClass),
 				classLoader.getParent(), classLoader);
@@ -161,11 +169,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static URL[] processUrls(URL[] urls, Class<?> testClass) {
-		MergedAnnotations annotations = MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.EXHAUSTIVE);
+		MergedAnnotations annotations = MergedAnnotations.from(testClass,
+				MergedAnnotations.SearchStrategy.TYPE_HIERARCHY);
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(annotations.get(ClassPathExclusions.class));
-		List<URL> processedUrls = new ArrayList<>();
 		List<URL> additionalUrls = getAdditionalUrls(annotations.get(ClassPathOverrides.class));
-		processedUrls.addAll(additionalUrls);
+		List<URL> processedUrls = new ArrayList<>(additionalUrls);
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
 				processedUrls.add(url);
@@ -204,7 +212,6 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		}
 		catch (Exception ignored) {
 			return Collections.emptyList();
-
 		}
 	}
 

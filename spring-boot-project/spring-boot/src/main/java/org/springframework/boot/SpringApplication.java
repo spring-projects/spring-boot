@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -411,6 +411,7 @@ public class SpringApplication {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
+		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
@@ -462,7 +463,7 @@ public class SpringApplication {
 	}
 
 	private void refreshContext(ConfigurableApplicationContext context) {
-		refresh(context);
+		refresh((ApplicationContext) context);
 		if (this.registerShutdownHook) {
 			try {
 				context.registerShutdownHook();
@@ -833,10 +834,21 @@ public class SpringApplication {
 	/**
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #refresh(ConfigurableApplicationContext)}
 	 */
+	@Deprecated
 	protected void refresh(ApplicationContext applicationContext) {
-		Assert.isInstanceOf(AbstractApplicationContext.class, applicationContext);
-		((AbstractApplicationContext) applicationContext).refresh();
+		Assert.isInstanceOf(ConfigurableApplicationContext.class, applicationContext);
+		refresh((ConfigurableApplicationContext) applicationContext);
+	}
+
+	/**
+	 * Refresh the underlying {@link ApplicationContext}.
+	 * @param applicationContext the application context to refresh
+	 */
+	protected void refresh(ConfigurableApplicationContext applicationContext) {
+		applicationContext.refresh();
 	}
 
 	/**

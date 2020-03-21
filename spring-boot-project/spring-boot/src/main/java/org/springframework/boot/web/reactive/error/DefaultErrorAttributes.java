@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -84,7 +85,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
-				.from(error.getClass(), SearchStrategy.EXHAUSTIVE).get(ResponseStatus.class);
+				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
@@ -108,7 +109,11 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		return responseStatusAnnotation.getValue("reason", String.class).orElseGet(error::getMessage);
+		String reason = responseStatusAnnotation.getValue("reason", String.class).orElse("");
+		if (StringUtils.hasText(reason)) {
+			return reason;
+		}
+		return (error.getMessage() != null) ? error.getMessage() : "";
 	}
 
 	private Throwable determineException(Throwable error) {

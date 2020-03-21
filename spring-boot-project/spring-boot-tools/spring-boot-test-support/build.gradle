@@ -1,0 +1,39 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.internal-dependency-management"
+}
+
+description = "Spring Boot Testing Support"
+
+dependencies {
+	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
+
+	compileOnly("com.datastax.oss:java-driver-core")
+	compileOnly("javax.servlet:javax.servlet-api")
+	compileOnly("junit:junit")
+	compileOnly("org.junit.jupiter:junit-jupiter")
+	compileOnly("org.junit.platform:junit-platform-engine")
+	compileOnly("org.mockito:mockito-core")
+	compileOnly("org.neo4j:neo4j-ogm-core")
+	compileOnly("org.springframework:spring-context")
+	compileOnly("org.springframework.data:spring-data-redis")
+	compileOnly("org.testcontainers:testcontainers")
+
+	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
+	implementation("org.apache.maven.resolver:maven-resolver-impl")
+	implementation("org.apache.maven:maven-resolver-provider")
+	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
+	implementation("org.assertj:assertj-core")
+	implementation("org.hamcrest:hamcrest-core")
+	implementation("org.hamcrest:hamcrest-library")
+	implementation("org.springframework:spring-core")
+
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.springframework:spring-context")
+
+	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}

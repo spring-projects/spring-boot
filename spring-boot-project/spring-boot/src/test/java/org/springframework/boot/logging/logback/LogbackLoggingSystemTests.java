@@ -68,6 +68,7 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  * @author Vedran Pavic
  * @author Robert Thornton
+ * @author Eddú Meléndez
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
@@ -535,6 +536,20 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("logback.debug");
 		}
+	}
+
+	@Test
+	void testRollingFileNameProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		String rollingFile = "my.log.%d{yyyyMMdd}.%i.gz";
+		environment.setProperty("logging.pattern.rolling-file-name", rollingFile);
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(environment);
+		File file = new File(tmpDir(), "my.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
+		assertThat(getRollingPolicy().getFileNamePattern()).isEqualTo(rollingFile);
 	}
 
 	private static Logger getRootLogger() {

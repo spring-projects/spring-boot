@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HumioPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void defaultValuesAreConsistent() {
 		HumioProperties properties = new HumioProperties();
 		HumioConfig config = (key) -> null;

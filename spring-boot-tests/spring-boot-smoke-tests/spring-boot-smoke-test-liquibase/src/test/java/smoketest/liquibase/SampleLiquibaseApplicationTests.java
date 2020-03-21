@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 package smoketest.liquibase;
 
 import java.net.ConnectException;
+import java.util.Locale;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -29,6 +32,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(OutputCaptureExtension.class)
 class SampleLiquibaseApplicationTests {
+
+	private Locale defaultLocale;
+
+	@BeforeEach
+	void init() throws SecurityException {
+		this.defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.ENGLISH);
+	}
+
+	@AfterEach
+	void restoreLocale() {
+		Locale.setDefault(this.defaultLocale);
+	}
 
 	@Test
 	void testDefaultSettings(CapturedOutput output) throws Exception {

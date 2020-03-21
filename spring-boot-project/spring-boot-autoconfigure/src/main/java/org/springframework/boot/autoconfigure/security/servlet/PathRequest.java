@@ -23,8 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Factory that can be used to create a {@link RequestMatcher} for commonly used paths.
@@ -67,6 +69,11 @@ public final class PathRequest {
 
 		private H2ConsoleRequestMatcher() {
 			super(H2ConsoleProperties.class);
+		}
+
+		@Override
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
+			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,33 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint}.
@@ -46,194 +50,284 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author HaiTao Zhang
+ * @author Chris Bono
  */
+@SuppressWarnings("unchecked")
 class ConfigurationPropertiesReportEndpointTests {
 
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(EndpointConfig.class);
+
 	@Test
-	void configurationPropertiesAreReturned() {
-		load((context, properties) -> {
-			assertThat(properties.getBeans().size()).isGreaterThan(0);
-			ConfigurationPropertiesBeanDescriptor nestedProperties = properties.getBeans().get("testProperties");
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.getPrefix()).isEqualTo("test");
-			assertThat(nestedProperties.getProperties()).isNotEmpty();
-		});
+	void descriptorWithJavaBeanBindMethodDetectsRelevantProperties() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
 	}
 
 	@Test
-	void entriesWithNullValuesAreNotIncluded() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties).doesNotContainKey("nullValue");
-		});
+	void descriptorWithValueObjectBindMethodDetectsRelevantProperties() {
+		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class).run(assertProperties(
+				"immutable",
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
 	}
 
 	@Test
-	void defaultKeySanitization() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
-		});
+	void descriptorWithValueObjectBindMethodUseDedicatedConstructor() {
+		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class).run(assertProperties(
+				"multiconstructor", (properties) -> assertThat(properties).containsOnly(entry("name", "test"))));
 	}
 
 	@Test
-	void customKeySanitization() {
-		load("property", (context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
-		});
+	void descriptorWithValueObjectBindMethodHandleNestedType() {
+		this.contextRunner.withPropertyValues("immutablenested.nested.name=nested", "immutablenested.nested.counter=42")
+				.withUserConfiguration(ImmutableNestedPropertiesConfiguration.class)
+				.run(assertProperties("immutablenested", (properties) -> {
+					assertThat(properties).containsOnlyKeys("name", "nested");
+					Map<String, Object> nested = (Map<String, Object>) properties.get("nested");
+					assertThat(nested).containsOnly(entry("name", "nested"), entry("counter", 42));
+				}, (inputs) -> {
+					Map<String, Object> nested = (Map<String, Object>) inputs.get("nested");
+					Map<String, Object> name = (Map<String, Object>) nested.get("name");
+					Map<String, Object> counter = (Map<String, Object>) nested.get("counter");
+					assertThat(name.get("value")).isEqualTo("nested");
+					assertThat(name.get("origin"))
+							.isEqualTo("\"immutablenested.nested.name\" from property source \"test\"");
+					assertThat(counter.get("origin"))
+							.isEqualTo("\"immutablenested.nested.counter\" from property source \"test\"");
+					assertThat(counter.get("value")).isEqualTo("42");
+				}));
 	}
 
 	@Test
-	void customPatternKeySanitization() {
-		load(".*pass.*", (context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
-		});
+	void descriptorWithSimpleList() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.simpleList=a,b").run(assertProperties("sensible", (properties) -> {
+					assertThat(properties.get("simpleList")).isInstanceOf(List.class);
+					List<String> list = (List<String>) properties.get("simpleList");
+					assertThat(list).hasSize(2);
+					assertThat(list.get(0)).isEqualTo("a");
+					assertThat(list.get(1)).isEqualTo("b");
+				}, (inputs) -> {
+					List<Object> list = (List<Object>) inputs.get("simpleList");
+					assertThat(list).hasSize(2);
+					Map<String, String> item = (Map<String, String>) list.get(0);
+					String origin = item.get("origin");
+					String value = item.get("value");
+					assertThat(value).isEqualTo("a,b");
+					assertThat(origin).isEqualTo("\"sensible.simpleList\" from property source \"test\"");
+				}));
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void keySanitizationWithCustomPatternUsingCompositeKeys() {
-		// gh-4415
-		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"), (context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties).isNotNull();
-			Map<String, Object> secrets = (Map<String, Object>) nestedProperties.get("secrets");
-			Map<String, Object> hidden = (Map<String, Object>) nestedProperties.get("hidden");
-			assertThat(secrets.get("mine")).isEqualTo("******");
-			assertThat(secrets.get("yours")).isEqualTo("******");
-			assertThat(hidden.get("mine")).isEqualTo("******");
-		});
+	void descriptorDoesNotIncludePropertyWithNullValue() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> assertThat(properties).doesNotContainKey("nullValue")));
 	}
 
 	@Test
-	void nonCamelCaseProperty() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("myURL")).isEqualTo("https://example.com");
-		});
+	void descriptorWithDurationProperty() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
+				(properties) -> assertThat(properties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString())));
 	}
 
 	@Test
-	void simpleBoolean() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("simpleBoolean")).isEqualTo(true);
-		});
+	void descriptorWithNonCamelCaseProperty() {
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
+				"mixedcase", (properties) -> assertThat(properties.get("myURL")).isEqualTo("https://example.com")));
 	}
 
 	@Test
-	void mixedBoolean() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
-		});
+	void descriptorWithMixedCaseProperty() {
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
+				"mixedcase", (properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
 	}
 
 	@Test
-	void mixedCase() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("mIxedCase")).isEqualTo("mixed");
-		});
+	void descriptorWithSingleLetterProperty() {
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
+				.run(assertProperties("mixedcase", (properties) -> assertThat(properties.get("z")).isEqualTo("zzz")));
 	}
 
 	@Test
-	void duration() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString());
-		});
+	void descriptorWithSimpleBooleanProperty() {
+		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
+				(properties) -> assertThat(properties.get("simpleBoolean")).isEqualTo(true)));
 	}
 
 	@Test
-	void singleLetterProperty() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("z")).isEqualTo("zzz");
-		});
+	void descriptorWithMixedBooleanProperty() {
+		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
+				(properties) -> assertThat(properties.get("mixedBoolean")).isEqualTo(true)));
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void listsAreSanitized() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
-			List<Object> list = (List<Object>) nestedProperties.get("listItems");
-			assertThat(list).hasSize(1);
-			Map<String, Object> item = (Map<String, Object>) list.get(0);
-			assertThat(item.get("somePassword")).isEqualTo("******");
-		});
+	void sanitizeWithDefaultSettings() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+				}));
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	void sanitizeWithCustomKey() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.withPropertyValues("test.keys-to-sanitize=property").run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("123456");
+					assertThat(properties.get("myTestProperty")).isEqualTo("******");
+				}));
+	}
+
+	@Test
+	void sanitizeWithCustomKeyPattern() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.withPropertyValues("test.keys-to-sanitize=.*pass.*").run(assertProperties("test", (properties) -> {
+					assertThat(properties.get("dbPassword")).isEqualTo("******");
+					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+				}));
+	}
+
+	@Test
+	void sanitizeWithCustomPatternUsingCompositeKeys() {
+		this.contextRunner.withUserConfiguration(Gh4415PropertiesConfiguration.class)
+				.withPropertyValues("test.keys-to-sanitize=.*\\.secrets\\..*,.*\\.hidden\\..*")
+				.run(assertProperties("gh4415", (properties) -> {
+					Map<String, Object> secrets = (Map<String, Object>) properties.get("secrets");
+					Map<String, Object> hidden = (Map<String, Object>) properties.get("hidden");
+					assertThat(secrets.get("mine")).isEqualTo("******");
+					assertThat(secrets.get("yours")).isEqualTo("******");
+					assertThat(hidden.get("mine")).isEqualTo("******");
+				}));
+	}
+
+	@Test
+	void sanitizeUriWithSensitiveInfo() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.sensitiveUri=http://user:password@localhost:8080")
+				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("sensitiveUri"))
+						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
+							Map<String, Object> sensitiveUri = (Map<String, Object>) inputs.get("sensitiveUri");
+							assertThat(sensitiveUri.get("value")).isEqualTo("http://user:******@localhost:8080");
+							assertThat(sensitiveUri.get("origin"))
+									.isEqualTo("\"sensible.sensitiveUri\" from property source \"test\"");
+						}));
+	}
+
+	@Test
+	void sanitizeUriWithNoPassword() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.noPasswordUri=http://user:@localhost:8080")
+				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("noPasswordUri"))
+						.isEqualTo("http://user:******@localhost:8080"), (inputs) -> {
+							Map<String, Object> noPasswordUri = (Map<String, Object>) inputs.get("noPasswordUri");
+							assertThat(noPasswordUri.get("value")).isEqualTo("http://user:******@localhost:8080");
+							assertThat(noPasswordUri.get("origin"))
+									.isEqualTo("\"sensible.noPasswordUri\" from property source \"test\"");
+						}));
+	}
+
+	@Test
+	void sanitizeAddressesFieldContainingMultipleRawSensitiveUris() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.run(assertProperties("sensible", (properties) -> assertThat(properties.get("rawSensitiveAddresses"))
+						.isEqualTo("http://user:******@localhost:8080,http://user2:******@localhost:8082")));
+	}
+
+	@Test
+	void sanitizeLists() {
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.listItems[0].some-password=password")
+				.run(assertProperties("sensible", (properties) -> {
+					assertThat(properties.get("listItems")).isInstanceOf(List.class);
+					List<Object> list = (List<Object>) properties.get("listItems");
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					assertThat(item.get("somePassword")).isEqualTo("******");
+				}, (inputs) -> {
+					List<Object> list = (List<Object>) inputs.get("listItems");
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
+					assertThat(somePassword.get("value")).isEqualTo("******");
+					assertThat(somePassword.get("origin"))
+							.isEqualTo("\"sensible.listItems[0].some-password\" from property source \"test\"");
+				}));
+	}
+
+	@Test
 	void listsOfListsAreSanitized() {
-		load((context, properties) -> {
-			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
-			assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
-			List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties.get("listOfListItems");
-			assertThat(listOfLists).hasSize(1);
-			List<Object> list = listOfLists.get(0);
-			assertThat(list).hasSize(1);
-			Map<String, Object> item = (Map<String, Object>) list.get(0);
-			assertThat(item.get("somePassword")).isEqualTo("******");
+		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
+				.withPropertyValues("sensible.listOfListItems[0][0].some-password=password")
+				.run(assertProperties("sensible", (properties) -> {
+					assertThat(properties.get("listOfListItems")).isInstanceOf(List.class);
+					List<List<Object>> listOfLists = (List<List<Object>>) properties.get("listOfListItems");
+					assertThat(listOfLists).hasSize(1);
+					List<Object> list = listOfLists.get(0);
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					assertThat(item.get("somePassword")).isEqualTo("******");
+				}, (inputs) -> {
+					assertThat(inputs.get("listOfListItems")).isInstanceOf(List.class);
+					List<List<Object>> listOfLists = (List<List<Object>>) inputs.get("listOfListItems");
+					assertThat(listOfLists).hasSize(1);
+					List<Object> list = listOfLists.get(0);
+					assertThat(list).hasSize(1);
+					Map<String, Object> item = (Map<String, Object>) list.get(0);
+					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
+					assertThat(somePassword.get("value")).isEqualTo("******");
+					assertThat(somePassword.get("origin")).isEqualTo(
+							"\"sensible.listOfListItems[0][0].some-password\" from property source \"test\"");
+				}));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertProperties(String prefix,
+			Consumer<Map<String, Object>> properties) {
+		return assertProperties(prefix, properties, (inputs) -> {
 		});
 	}
 
-	private void load(BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
-		load(Collections.emptyList(), properties);
-	}
-
-	private void load(String keyToSanitize, BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
-		load(Collections.singletonList(keyToSanitize), properties);
-	}
-
-	private void load(List<String> keysToSanitize,
-			BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class);
-		contextRunner.run((context) -> {
+	private ContextConsumer<AssertableApplicationContext> assertProperties(String prefix,
+			Consumer<Map<String, Object>> properties, Consumer<Map<String, Object>> inputs) {
+		return (context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			if (!CollectionUtils.isEmpty(keysToSanitize)) {
-				endpoint.setKeysToSanitize(StringUtils.toStringArray(keysToSanitize));
+			ContextConfigurationProperties allProperties = endpoint.configurationProperties().getContexts()
+					.get(context.getId());
+			Optional<String> key = allProperties.getBeans().keySet().stream()
+					.filter((id) -> findIdFromPrefix(prefix, id)).findAny();
+			assertThat(key).describedAs("No configuration properties with prefix '%s' found", prefix).isPresent();
+			ConfigurationPropertiesBeanDescriptor descriptor = allProperties.getBeans().get(key.get());
+			assertThat(descriptor.getPrefix()).isEqualTo(prefix);
+			properties.accept(descriptor.getProperties());
+			inputs.accept(descriptor.getInputs());
+		};
+	}
+
+	private boolean findIdFromPrefix(String prefix, String id) {
+		int separator = id.indexOf("-");
+		String candidate = (separator != -1) ? id.substring(0, separator) : id;
+		return prefix.equals(candidate);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EndpointConfig {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint(Environment environment) {
+			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
+			String[] keys = environment.getProperty("test.keys-to-sanitize", String[].class);
+			if (keys != null) {
+				endpoint.setKeysToSanitize(keys);
 			}
-			properties.accept(context, endpoint.configurationProperties().getContexts().get(context.getId()));
-		});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties
-	static class Parent {
-
-		@Bean
-		TestProperties testProperties() {
-			return new TestProperties();
+			return endpoint;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties
-	static class Config {
-
-		@Bean
-		ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
-		}
-
-		@Bean
-		TestProperties testProperties() {
-			return new TestProperties();
-		}
+	@EnableConfigurationProperties(TestProperties.class)
+	static class TestPropertiesConfiguration {
 
 	}
 
@@ -244,34 +338,11 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private String myTestProperty = "654321";
 
-		private String myURL = "https://example.com";
-
-		private boolean simpleBoolean = true;
-
-		private Boolean mixedBoolean = true;
-
-		private String mIxedCase = "mixed";
-
-		private String z = "zzz";
-
-		private Map<String, Object> secrets = new HashMap<>();
-
-		private Hidden hidden = new Hidden();
-
-		private List<ListItem> listItems = new ArrayList<>();
-
-		private List<List<ListItem>> listOfListItems = new ArrayList<>();
-
 		private String nullValue = null;
 
 		private Duration duration = Duration.ofSeconds(10);
 
-		TestProperties() {
-			this.secrets.put("mine", "myPrivateThing");
-			this.secrets.put("yours", "yourPrivateThing");
-			this.listItems.add(new ListItem());
-			this.listOfListItems.add(Arrays.asList(new ListItem()));
-		}
+		private String ignored = "dummy";
 
 		public String getDbPassword() {
 			return this.dbPassword;
@@ -287,78 +358,6 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public void setMyTestProperty(String myTestProperty) {
 			this.myTestProperty = myTestProperty;
-		}
-
-		public String getMyURL() {
-			return this.myURL;
-		}
-
-		public void setMyURL(String myURL) {
-			this.myURL = myURL;
-		}
-
-		public boolean isSimpleBoolean() {
-			return this.simpleBoolean;
-		}
-
-		public void setSimpleBoolean(boolean simpleBoolean) {
-			this.simpleBoolean = simpleBoolean;
-		}
-
-		public boolean isMixedBoolean() {
-			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
-		}
-
-		public void setMixedBoolean(Boolean mixedBoolean) {
-			this.mixedBoolean = mixedBoolean;
-		}
-
-		public String getmIxedCase() {
-			return this.mIxedCase;
-		}
-
-		public void setmIxedCase(String mIxedCase) {
-			this.mIxedCase = mIxedCase;
-		}
-
-		public String getZ() {
-			return this.z;
-		}
-
-		public void setZ(String z) {
-			this.z = z;
-		}
-
-		public Map<String, Object> getSecrets() {
-			return this.secrets;
-		}
-
-		public void setSecrets(Map<String, Object> secrets) {
-			this.secrets = secrets;
-		}
-
-		public Hidden getHidden() {
-			return this.hidden;
-		}
-
-		public void setHidden(Hidden hidden) {
-			this.hidden = hidden;
-		}
-
-		public List<ListItem> getListItems() {
-			return this.listItems;
-		}
-
-		public void setListItems(List<ListItem> listItems) {
-			this.listItems = listItems;
-		}
-
-		public List<List<ListItem>> getListOfListItems() {
-			return this.listOfListItems;
-		}
-
-		public void setListOfListItems(List<List<ListItem>> listOfListItems) {
-			this.listOfListItems = listOfListItems;
 		}
 
 		public String getNullValue() {
@@ -377,6 +376,254 @@ class ConfigurationPropertiesReportEndpointTests {
 			this.duration = duration;
 		}
 
+		public String getIgnored() {
+			return this.ignored;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ImmutableProperties.class)
+	static class ImmutablePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(prefix = "immutable")
+	@ConstructorBinding
+	public static class ImmutableProperties {
+
+		private final String dbPassword;
+
+		private final String myTestProperty;
+
+		private final String nullValue;
+
+		private final Duration duration;
+
+		private final String ignored;
+
+		ImmutableProperties(@DefaultValue("123456") String dbPassword, @DefaultValue("654321") String myTestProperty,
+				String nullValue, @DefaultValue("10s") Duration duration) {
+			this.dbPassword = dbPassword;
+			this.myTestProperty = myTestProperty;
+			this.nullValue = nullValue;
+			this.duration = duration;
+			this.ignored = "dummy";
+		}
+
+		public String getDbPassword() {
+			return this.dbPassword;
+		}
+
+		public String getMyTestProperty() {
+			return this.myTestProperty;
+		}
+
+		public String getNullValue() {
+			return this.nullValue;
+		}
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public String getIgnored() {
+			return this.ignored;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(MultiConstructorProperties.class)
+	static class MultiConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(prefix = "multiconstructor")
+	@ConstructorBinding
+	public static class MultiConstructorProperties {
+
+		private final String name;
+
+		private final int counter;
+
+		MultiConstructorProperties(String name, int counter) {
+			this.name = name;
+			this.counter = counter;
+		}
+
+		@ConstructorBinding
+		MultiConstructorProperties(@DefaultValue("test") String name) {
+			this.name = name;
+			this.counter = 42;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public int getCounter() {
+			return this.counter;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ImmutableNestedProperties.class)
+	static class ImmutableNestedPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("immutablenested")
+	@ConstructorBinding
+	public static class ImmutableNestedProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		ImmutableNestedProperties(@DefaultValue("parent") String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
+		public static class Nested {
+
+			private final String name;
+
+			private final int counter;
+
+			Nested(String name, int counter) {
+				this.name = name;
+				this.counter = counter;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public int getCounter() {
+				return this.counter;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(MixedCaseProperties.class)
+	static class MixedCasePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("mixedcase")
+	public static class MixedCaseProperties {
+
+		private String myURL = "https://example.com";
+
+		private String mIxedCase = "mixed";
+
+		private String z = "zzz";
+
+		public String getMyURL() {
+			return this.myURL;
+		}
+
+		public void setMyURL(String myURL) {
+			this.myURL = myURL;
+		}
+
+		public String getmIxedCase() {
+			return this.mIxedCase;
+		}
+
+		public void setmIxedCase(String mIxedCase) {
+			this.mIxedCase = mIxedCase;
+		}
+
+		public String getZ() {
+			return this.z;
+		}
+
+		public void setZ(String z) {
+			this.z = z;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(BooleanProperties.class)
+	static class BooleanPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("boolean")
+	public static class BooleanProperties {
+
+		private boolean simpleBoolean = true;
+
+		private Boolean mixedBoolean = true;
+
+		public boolean isSimpleBoolean() {
+			return this.simpleBoolean;
+		}
+
+		public void setSimpleBoolean(boolean simpleBoolean) {
+			this.simpleBoolean = simpleBoolean;
+		}
+
+		public boolean isMixedBoolean() {
+			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
+		}
+
+		public void setMixedBoolean(Boolean mixedBoolean) {
+			this.mixedBoolean = mixedBoolean;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(Gh4415Properties.class)
+	static class Gh4415PropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("gh4415")
+	public static class Gh4415Properties {
+
+		private Hidden hidden = new Hidden();
+
+		private Map<String, Object> secrets = new HashMap<>();
+
+		Gh4415Properties() {
+			this.secrets.put("mine", "myPrivateThing");
+			this.secrets.put("yours", "yourPrivateThing");
+		}
+
+		public Hidden getHidden() {
+			return this.hidden;
+		}
+
+		public void setHidden(Hidden hidden) {
+			this.hidden = hidden;
+		}
+
+		public Map<String, Object> getSecrets() {
+			return this.secrets;
+		}
+
+		public void setSecrets(Map<String, Object> secrets) {
+			this.secrets = secrets;
+		}
+
 		public static class Hidden {
 
 			private String mine = "mySecret";
@@ -389,6 +636,78 @@ class ConfigurationPropertiesReportEndpointTests {
 				this.mine = mine;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(SensibleProperties.class)
+	static class SensiblePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("sensible")
+	public static class SensibleProperties {
+
+		private URI sensitiveUri = URI.create("http://user:password@localhost:8080");
+
+		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
+
+		private List<String> simpleList = new ArrayList<>();
+
+		private String rawSensitiveAddresses = "http://user:password@localhost:8080,http://user2:password2@localhost:8082";
+
+		private List<ListItem> listItems = new ArrayList<>();
+
+		private List<List<ListItem>> listOfListItems = new ArrayList<>();
+
+		SensibleProperties() {
+			this.listItems.add(new ListItem());
+			this.listOfListItems.add(Collections.singletonList(new ListItem()));
+		}
+
+		public void setSensitiveUri(URI sensitiveUri) {
+			this.sensitiveUri = sensitiveUri;
+		}
+
+		public URI getSensitiveUri() {
+			return this.sensitiveUri;
+		}
+
+		public void setNoPasswordUri(URI noPasswordUri) {
+			this.noPasswordUri = noPasswordUri;
+		}
+
+		public URI getNoPasswordUri() {
+			return this.noPasswordUri;
+		}
+
+		public String getRawSensitiveAddresses() {
+			return this.rawSensitiveAddresses;
+		}
+
+		public void setRawSensitiveAddresses(final String rawSensitiveAddresses) {
+			this.rawSensitiveAddresses = rawSensitiveAddresses;
+		}
+
+		public List<ListItem> getListItems() {
+			return this.listItems;
+		}
+
+		public void setListItems(List<ListItem> listItems) {
+			this.listItems = listItems;
+		}
+
+		public List<List<ListItem>> getListOfListItems() {
+			return this.listOfListItems;
+		}
+
+		public void setListOfListItems(List<List<ListItem>> listOfListItems) {
+			this.listOfListItems = listOfListItems;
+		}
+
+		public List<String> getSimpleList() {
+			return this.simpleList;
 		}
 
 		public static class ListItem {

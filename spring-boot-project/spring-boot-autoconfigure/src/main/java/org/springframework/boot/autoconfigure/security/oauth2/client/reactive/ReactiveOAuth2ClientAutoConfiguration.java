@@ -15,34 +15,21 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.client.reactive;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security's Reactive
@@ -56,33 +43,9 @@ import org.springframework.security.oauth2.client.web.server.ServerOAuth2Authori
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 @Conditional(ReactiveOAuth2ClientAutoConfiguration.NonServletApplicationCondition.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ClientRegistration.class })
+@Import({ ReactiveOAuth2ClientConfigurations.ReactiveClientRegistrationRepositoryConfiguration.class,
+		ReactiveOAuth2ClientConfigurations.ReactiveOAuth2ClientConfiguration.class })
 public class ReactiveOAuth2ClientAutoConfiguration {
-
-	@Bean
-	@Conditional(ClientsConfiguredCondition.class)
-	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
-	public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(
-			OAuth2ClientProperties properties) {
-		List<ClientRegistration> registrations = new ArrayList<>(
-				OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
-		return new InMemoryReactiveClientRegistrationRepository(registrations);
-	}
-
-	@Bean
-	@ConditionalOnBean(ReactiveClientRegistrationRepository.class)
-	@ConditionalOnMissingBean
-	public ReactiveOAuth2AuthorizedClientService authorizedClientService(
-			ReactiveClientRegistrationRepository clientRegistrationRepository) {
-		return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
-	}
-
-	@Bean
-	@ConditionalOnBean(ReactiveOAuth2AuthorizedClientService.class)
-	@ConditionalOnMissingBean
-	public ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
-			ReactiveOAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
-	}
 
 	static class NonServletApplicationCondition extends NoneNestedConditions {
 

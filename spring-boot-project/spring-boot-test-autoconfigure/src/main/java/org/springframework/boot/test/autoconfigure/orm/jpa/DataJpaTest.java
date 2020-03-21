@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical JPA test. Can be used when a test focuses <strong>only</strong> on JPA
- * components.
+ * Annotation for a JPA test that focuses <strong>only</strong> on JPA components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to JPA tests.
@@ -58,9 +57,13 @@ import org.springframework.transaction.annotation.Transactional;
  * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
  * annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 1.4.0
  * @see AutoConfigureDataJpa
  * @see AutoConfigureTestDatabase
@@ -97,6 +100,14 @@ public @interface DataJpaTest {
 	 */
 	@PropertyMapping("spring.jpa.show-sql")
 	boolean showSql() default true;
+
+	/**
+	 * The {@link BootstrapMode} for the test repository support. Defaults to
+	 * {@link BootstrapMode#LAZY}.
+	 * @return the {@link BootstrapMode} to use for testing the repository
+	 */
+	@PropertyMapping("spring.data.jpa.repositories.bootstrap-mode")
+	BootstrapMode bootstrapMode() default BootstrapMode.LAZY;
 
 	/**
 	 * Determines if default filtering should be used with

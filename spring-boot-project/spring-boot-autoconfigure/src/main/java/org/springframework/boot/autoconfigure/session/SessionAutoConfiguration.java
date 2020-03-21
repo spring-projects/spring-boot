@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,8 +134,8 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Customization log for {@link SpringSessionRememberMeServices} that is only
-	 * instantiated when Spring Security is on the classpath.
+	 * Customization for {@link SpringSessionRememberMeServices} that is only instantiated
+	 * when Spring Security is on the classpath.
 	 */
 	static class RememberMeServicesCookieSerializerCustomizer {
 
@@ -242,7 +242,7 @@ public class SessionAutoConfiguration {
 
 		private void addCandidateIfAvailable(List<Class<?>> candidates, String type) {
 			try {
-				Class<?> candidate = this.classLoader.loadClass(type);
+				Class<?> candidate = Class.forName(type, false, this.classLoader);
 				if (candidate != null) {
 					candidates.add(candidate);
 				}
@@ -264,10 +264,10 @@ public class SessionAutoConfiguration {
 		ServletSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.hazelcast.HazelcastSessionRepository",
-							"org.springframework.session.jdbc.JdbcOperationsSessionRepository",
-							"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
-							"org.springframework.session.data.redis.RedisOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.hazelcast.HazelcastIndexedSessionRepository",
+							"org.springframework.session.jdbc.JdbcIndexedSessionRepository",
+							"org.springframework.session.data.mongo.MongoIndexedSessionRepository",
+							"org.springframework.session.data.redis.RedisIndexedSessionRepository"));
 		}
 
 	}
@@ -282,8 +282,8 @@ public class SessionAutoConfiguration {
 		ReactiveSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
 			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository",
-							"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
+					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisSessionRepository",
+							"org.springframework.session.data.mongo.ReactiveMongoSessionRepository"));
 		}
 
 	}

@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigureprocessor;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +28,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -51,8 +54,7 @@ import javax.tools.StandardLocation;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
-		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
@@ -67,7 +69,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private final Map<String, ValueExtractor> valueExtractors;
 
-	private final Properties properties = new Properties();
+	private final Map<String, String> properties = new TreeMap<>();
 
 	public AutoConfigureAnnotationProcessor() {
 		Map<String, String> annotations = new LinkedHashMap<>();
@@ -79,7 +81,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {
-		annotations.put("Configuration", "org.springframework.context.annotation.Configuration");
 		annotations.put("ConditionalOnClass", "org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
 		annotations.put("ConditionalOnBean", "org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		annotations.put("ConditionalOnSingleCandidate",
@@ -92,7 +93,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
-		attributes.put("Configuration", ValueExtractor.allFrom("value"));
 		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
 		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
 		attributes.put("ConditionalOnSingleCandidate", new OnBeanConditionValueExtractor());
@@ -180,10 +180,15 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private void writeProperties() throws IOException {
 		if (!this.properties.isEmpty()) {
-			FileObject file = this.processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "",
-					PROPERTIES_PATH);
-			try (OutputStream outputStream = file.openOutputStream()) {
-				this.properties.store(outputStream, null);
+			Filer filer = this.processingEnv.getFiler();
+			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+			try (Writer writer = new OutputStreamWriter(file.openOutputStream(), StandardCharsets.UTF_8)) {
+				for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+					writer.append(entry.getKey());
+					writer.append("=");
+					writer.append(entry.getValue());
+					writer.append(System.lineSeparator());
+				}
 			}
 		}
 	}

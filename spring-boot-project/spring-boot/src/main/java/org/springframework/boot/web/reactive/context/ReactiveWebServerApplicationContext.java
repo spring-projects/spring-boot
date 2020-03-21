@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.availability.ReadinessStateChangedEvent;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
@@ -111,19 +112,6 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		return getBeanFactory().getBean(factoryBeanName, ReactiveWebServerFactory.class);
 	}
 
-	/**
-	 * Return the {@link ReactiveWebServerFactory} that should be used to create the
-	 * reactive web server. By default this method searches for a suitable bean in the
-	 * context itself.
-	 * @return a {@link ReactiveWebServerFactory} (never {@code null})
-	 * @deprecated since 2.2.0 in favor of {@link #getWebServerFactoryBeanName()} and
-	 * {@link #getWebServerFactory(String)}
-	 */
-	@Deprecated
-	protected ReactiveWebServerFactory getWebServerFactory() {
-		return getWebServerFactory(getWebServerFactoryBeanName());
-	}
-
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
@@ -157,6 +145,16 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 							+ StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
 		return getBeanFactory().getBean(beanNames[0], HttpHandler.class);
+	}
+
+	@Override
+	protected void doClose() {
+		publishEvent(ReadinessStateChangedEvent.unready());
+		WebServer webServer = getWebServer();
+		if (webServer != null) {
+			webServer.shutDownGracefully();
+		}
+		super.doClose();
 	}
 
 	@Override

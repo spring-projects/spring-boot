@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class FileSystemWatcher {
 	 */
 	public void addSourceFolder(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
-		Assert.isTrue(!folder.isFile(), "Folder '" + folder + "' must not be a file");
+		Assert.isTrue(!folder.isFile(), () -> "Folder '" + folder + "' must not be a file");
 		synchronized (this.monitor) {
 			checkNotStarted();
 			this.folders.put(folder, null);
@@ -154,8 +154,7 @@ public class FileSystemWatcher {
 		synchronized (this.monitor) {
 			saveInitialSnapshots();
 			if (this.watchThread == null) {
-				Map<File, FolderSnapshot> localFolders = new HashMap<>();
-				localFolders.putAll(this.folders);
+				Map<File, FolderSnapshot> localFolders = new HashMap<>(this.folders);
 				this.watchThread = new Thread(new Watcher(this.remainingScans, new ArrayList<>(this.listeners),
 						this.triggerFilter, this.pollInterval, this.quietPeriod, localFolders));
 				this.watchThread.setName("File Watcher");
@@ -166,9 +165,7 @@ public class FileSystemWatcher {
 	}
 
 	private void saveInitialSnapshots() {
-		for (File folder : this.folders.keySet()) {
-			this.folders.put(folder, new FolderSnapshot(folder));
-		}
+		this.folders.replaceAll((f, v) -> new FolderSnapshot(f));
 	}
 
 	/**

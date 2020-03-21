@@ -44,7 +44,7 @@ class WebMvcTestServletFilterRegistrationDisabledIntegrationTests {
 		this.mvc.perform(get("/one")).andExpect(header().string("x-test", (String) null));
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class DisabledRegistrationConfiguration {
 
 		@Bean

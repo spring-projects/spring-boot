@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
-import org.springframework.boot.autoconfigure.condition.BeanTypeRegistry.TypeExtractor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -56,6 +55,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -73,8 +73,6 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
-
-	private static final TypeExtractor RESOLVING_EXTRACTOR = ResolvableType::resolve;
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -158,7 +156,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		Set<Class<?>> parameterizedContainers = spec.getParameterizedContainers();
 		if (spec.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
-			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent, "Unable to use SearchStrategy.PARENTS");
+			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
+					"Unable to use SearchStrategy.ANCESTORS");
 			beanFactory = (ConfigurableListableBeanFactory) parent;
 		}
 		MatchResult result = new MatchResult();
@@ -228,8 +227,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
 			Class<?> type, Set<Class<?>> parameterizedContainers, Set<String> result) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		result = addAll(result, registry.getNamesForType(type, getTypeExtractor(parameterizedContainers)));
+		result = addAll(result, beanFactory.getBeanNamesForType(type, true, false));
+		for (Class<?> container : parameterizedContainers) {
+			ResolvableType generic = ResolvableType.forClassWithGenerics(container, type);
+			result = addAll(result, beanFactory.getBeanNamesForType(generic, true, false));
+		}
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
@@ -261,8 +263,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private Set<String> collectBeanNamesForAnnotation(ListableBeanFactory beanFactory,
 			Class<? extends Annotation> annotationType, boolean considerHierarchy, Set<String> result) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		result = addAll(result, registry.getNamesForAnnotation(annotationType));
+		result = addAll(result, beanFactory.getBeanNamesForAnnotation(annotationType));
 		if (considerHierarchy) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
@@ -279,15 +280,6 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return beanFactory.containsBean(beanName);
 		}
 		return beanFactory.containsLocalBean(beanName);
-	}
-
-	private Set<String> addAll(Set<String> result, Collection<String> additional) {
-		if (CollectionUtils.isEmpty(additional)) {
-			return result;
-		}
-		result = (result != null) ? result : new LinkedHashSet<>();
-		result.addAll(additional);
-		return result;
 	}
 
 	private String createOnBeanNoMatchReason(MatchResult matchResult) {
@@ -370,26 +362,22 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
-	private TypeExtractor getTypeExtractor(Set<Class<?>> parameterizedContainers) {
-		if (parameterizedContainers.isEmpty()) {
-			return RESOLVING_EXTRACTOR;
+	private static Set<String> addAll(Set<String> result, Collection<String> additional) {
+		if (CollectionUtils.isEmpty(additional)) {
+			return result;
 		}
-		return (type) -> {
-			Class<?> resolved = RESOLVING_EXTRACTOR.getBeanType(type);
-			if (isParameterizedContainer(resolved, parameterizedContainers)) {
-				resolved = type.getGeneric().resolve();
-			}
-			return resolved;
-		};
+		result = (result != null) ? result : new LinkedHashSet<>();
+		result.addAll(additional);
+		return result;
 	}
 
-	private boolean isParameterizedContainer(Class<?> type, Set<Class<?>> parameterizedContainers) {
-		for (Class<?> parameterizedContainer : parameterizedContainers) {
-			if (parameterizedContainer.isAssignableFrom(type)) {
-				return true;
-			}
+	private static Set<String> addAll(Set<String> result, String[] additional) {
+		if (ObjectUtils.isEmpty(additional)) {
+			return result;
 		}
-		return false;
+		result = (result != null) ? result : new LinkedHashSet<>();
+		Collections.addAll(result, additional);
+		return result;
 	}
 
 	/**
@@ -399,7 +387,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private final ClassLoader classLoader;
 
-		private final Class<?> annotationType;
+		private final Class<? extends Annotation> annotationType;
 
 		private final Set<String> names;
 
@@ -464,9 +452,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		private void merge(Set<String> result, String... additional) {
-			for (String addition : additional) {
-				result.add(addition);
-			}
+			Collections.addAll(result, additional);
 		}
 
 		private Set<Class<?>> resolveWhenPossible(Set<String> classNames) {
@@ -566,7 +552,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		private boolean isBeanMethod(Method method) {
-			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 					.isPresent(Bean.class);
 		}
 
@@ -595,11 +581,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		ConditionMessage.Builder message() {
-			return ConditionMessage.forCondition(ConditionalOnBean.class, this);
+			return ConditionMessage.forCondition(this.annotationType, this);
 		}
 
 		ConditionMessage.Builder message(ConditionMessage message) {
-			return message.andCondition(ConditionalOnBean.class, this);
+			return message.andCondition(this.annotationType, this);
 		}
 
 		@Override
@@ -612,17 +598,19 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			if (hasNames) {
 				string.append("names: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.names));
-				string.append(hasTypes ? "" : "; ");
+				string.append(hasTypes ? " " : "; ");
 			}
 			if (hasTypes) {
 				string.append("types: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.types));
+				string.append(hasIgnoredTypes ? " " : "; ");
 			}
 			if (hasIgnoredTypes) {
 				string.append("ignored: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.ignoredTypes));
+				string.append("; ");
 			}
-			string.append("; SearchStrategy: ");
+			string.append("SearchStrategy: ");
 			string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
 			string.append(")");
 			return string.toString();

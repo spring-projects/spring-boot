@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.regex.Pattern;
+
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -45,17 +49,7 @@ public final class WebFluxTags {
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
-	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
-
-	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
-
-	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
-
-	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
-
-	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
-
-	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
+	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
 
 	private WebFluxTags() {
 	}
@@ -96,9 +90,27 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
+		return uri(exchange, false);
+	}
+
+	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code exchange}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
+	 * @param exchange the exchange
+	 * @param ignoreTrailingSlash whether to ignore the trailing slash
+	 * @return the uri tag derived from the exchange
+	 */
+	public static Tag uri(ServerWebExchange exchange, boolean ignoreTrailingSlash) {
 		PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (pathPattern != null) {
-			return Tag.of("uri", pathPattern.getPatternString());
+			String patternString = pathPattern.getPatternString();
+			if (ignoreTrailingSlash) {
+				patternString = TRAILING_SLASH_PATTERN.matcher(patternString).replaceAll("");
+			}
+			return Tag.of("uri", patternString);
 		}
 		HttpStatus status = exchange.getResponse().getStatusCode();
 		if (status != null) {
@@ -144,23 +156,19 @@ public final class WebFluxTags {
 	 * @since 2.1.0
 	 */
 	public static Tag outcome(ServerWebExchange exchange) {
-		HttpStatus status = exchange.getResponse().getStatusCode();
-		if (status != null) {
-			if (status.is1xxInformational()) {
-				return OUTCOME_INFORMATIONAL;
-			}
-			if (status.is2xxSuccessful()) {
-				return OUTCOME_SUCCESS;
-			}
-			if (status.is3xxRedirection()) {
-				return OUTCOME_REDIRECTION;
-			}
-			if (status.is4xxClientError()) {
-				return OUTCOME_CLIENT_ERROR;
-			}
-			return OUTCOME_SERVER_ERROR;
+		Integer statusCode = extractStatusCode(exchange);
+		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode) : Outcome.SUCCESS;
+		return outcome.asTag();
+	}
+
+	private static Integer extractStatusCode(ServerWebExchange exchange) {
+		ServerHttpResponse response = exchange.getResponse();
+		Integer statusCode = response.getRawStatusCode();
+		if (statusCode != null) {
+			return statusCode;
 		}
-		return OUTCOME_UNKNOWN;
+		HttpStatus status = response.getStatusCode();
+		return (status != null) ? status.value() : null;
 	}
 
 }

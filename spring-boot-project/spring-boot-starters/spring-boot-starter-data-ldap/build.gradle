@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Data LDAP"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework.data:spring-data-ldap")
+}

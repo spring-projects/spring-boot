@@ -13,7 +13,7 @@ reproduces the problem.
 == Stack Overflow
 The Spring Boot community monitors the
 https://stackoverflow.com/tags/spring-boot[`spring-boot`] tag on Stack Overflow. Before
-asking a question, please familiar yourself with Stack Overflow's
+asking a question, please familiarize yourself with Stack Overflow's
 https://stackoverflow.com/help/how-to-ask[advice on how to ask a good question].
 
 == Gitter

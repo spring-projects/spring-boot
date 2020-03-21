@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ import org.springframework.web.util.NestedServletException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -186,7 +187,7 @@ class WebMvcMetricsFilterTests {
 	void streamingError() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/streamingError")).andExpect(request().asyncStarted())
 				.andReturn();
-		assertThatCode(() -> this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk()));
+		assertThatIOException().isThrownBy(() -> this.mvc.perform(asyncDispatch(result)).andReturn());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "IOException").timer().count())
 				.isEqualTo(1L);
 	}
@@ -288,6 +289,14 @@ class WebMvcMetricsFilterTests {
 		assertThat(this.prometheusRegistry.scrape()).contains("le=\"30.0\"");
 	}
 
+	@Test
+	void trailingSlashShouldNotRecordDuplicateMetrics() throws Exception {
+		this.mvc.perform(get("/api/c1/simple/10")).andExpect(status().isOk());
+		this.mvc.perform(get("/api/c1/simple/10/")).andExpect(status().isOk());
+		assertThat(this.registry.get("http.server.requests").tags("status", "200", "uri", "/api/c1/simple/{id}").timer()
+				.count()).isEqualTo(2);
+	}
+
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Timed(percentiles = 0.95)
@@ -355,7 +364,7 @@ class WebMvcMetricsFilterTests {
 
 		@Bean
 		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(true), "http.server.requests",
 					AutoTimer.ENABLED);
 		}
 
@@ -376,6 +385,11 @@ class WebMvcMetricsFilterTests {
 		@Timed(extraTags = { "public", "true" })
 		@GetMapping("/{id}")
 		String successfulWithExtraTags(@PathVariable Long id) {
+			return id.toString();
+		}
+
+		@GetMapping("/simple/{id}")
+		String simpleMapping(@PathVariable Long id) {
 			return id.toString();
 		}
 

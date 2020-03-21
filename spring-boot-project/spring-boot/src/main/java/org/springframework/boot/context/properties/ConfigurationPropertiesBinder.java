@@ -23,10 +23,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BoundPropertiesTrackingBindHandler;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.IgnoreTopLevelConverterNotFoundBindHandler;
@@ -40,80 +46,67 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
-import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Internal class by the {@link ConfigurationPropertiesBindingPostProcessor} to handle the
- * actual {@link ConfigurationProperties @ConfigurationProperties} binding.
+ * Internal class used by the {@link ConfigurationPropertiesBindingPostProcessor} to
+ * handle the actual {@link ConfigurationProperties @ConfigurationProperties} binding.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class ConfigurationPropertiesBinder implements ApplicationContextAware {
+class ConfigurationPropertiesBinder {
 
-	/**
-	 * The bean name that this binder is registered with.
-	 */
-	static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
+	private static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
-	private final String validatorBeanName;
+	private static final String FACTORY_BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinderFactory";
 
-	private ApplicationContext applicationContext;
+	private static final String VALIDATOR_BEAN_NAME = EnableConfigurationProperties.VALIDATOR_BEAN_NAME;
 
-	private PropertySources propertySources;
+	private final ApplicationContext applicationContext;
 
-	private Validator configurationPropertiesValidator;
+	private final PropertySources propertySources;
 
-	private boolean jsr303Present;
+	private final Validator configurationPropertiesValidator;
+
+	private final boolean jsr303Present;
 
 	private volatile Validator jsr303Validator;
 
 	private volatile Binder binder;
 
-	ConfigurationPropertiesBinder(String validatorBeanName) {
-		this.validatorBeanName = validatorBeanName;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
-		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,
-				this.validatorBeanName);
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext);
 		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
-	<T> BindResult<T> bind(Bindable<T> target) {
-		ConfigurationProperties annotation = getAnnotation(target);
+	BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
+		Bindable<?> target = propertiesBean.asBindTarget();
+		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	<T> T bindOrCreate(Bindable<T> target) {
-		ConfigurationProperties annotation = getAnnotation(target);
+	Object bindOrCreate(ConfigurationPropertiesBean propertiesBean) {
+		Bindable<?> target = propertiesBean.asBindTarget();
+		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
 	}
 
-	private <T> ConfigurationProperties getAnnotation(Bindable<?> target) {
-		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
-		return annotation;
-	}
-
-	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
-			String validatorBeanName) {
-		if (applicationContext.containsBean(validatorBeanName)) {
-			return applicationContext.getBean(validatorBeanName, Validator.class);
+	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
+		if (applicationContext.containsBean(VALIDATOR_BEAN_NAME)) {
+			return applicationContext.getBean(VALIDATOR_BEAN_NAME, Validator.class);
 		}
 		return null;
 	}
 
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		BindHandler handler = getHandler();
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -128,6 +121,13 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			handler = advisor.apply(handler);
 		}
 		return handler;
+	}
+
+	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
+		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
+		return (bound != null)
+				? new IgnoreTopLevelConverterNotFoundBindHandler(new BoundPropertiesTrackingBindHandler(bound::add))
+				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 
 	private List<Validator> getValidators(Bindable<?> target) {
@@ -159,7 +159,8 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
-					getConversionService(), getPropertyEditorInitializer());
+					getConversionService(), getPropertyEditorInitializer(), null,
+					ConfigurationPropertiesBindConstructorProvider.INSTANCE);
 		}
 		return this.binder;
 	}
@@ -181,6 +182,48 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
+	}
+
+	static void register(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBinder.Factory.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
+		}
+		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBinder.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			definition.setFactoryBeanName(FACTORY_BEAN_NAME);
+			definition.setFactoryMethodName("create");
+			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+		}
+	}
+
+	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
+		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
+	}
+
+	/**
+	 * Factory bean used to create the {@link ConfigurationPropertiesBinder}. The bean
+	 * needs to be {@link ApplicationContextAware} since we can't directly inject an
+	 * {@link ApplicationContext} into the constructor without causing eager
+	 * {@link FactoryBean} initialization.
+	 */
+	static class Factory implements ApplicationContextAware {
+
+		private ApplicationContext applicationContext;
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			this.applicationContext = applicationContext;
+		}
+
+		ConfigurationPropertiesBinder create() {
+			return new ConfigurationPropertiesBinder(this.applicationContext);
+		}
+
 	}
 
 }

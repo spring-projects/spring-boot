@@ -276,16 +276,13 @@ class BeanDefinitionLoader {
 	private boolean isComponent(Class<?> type) {
 		// This has to be a bit of a guess. The only way to be sure that this type is
 		// eligible is to make a bean definition out of it and try to instantiate it.
-		if (MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE).isPresent(Component.class)) {
+		if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
 			return true;
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass() || type.getConstructors() == null
-				|| type.getConstructors().length == 0) {
-			return false;
-		}
-		return true;
+		return !type.getName().matches(".*\\$_.*closure.*") && !type.isAnonymousClass()
+				&& type.getConstructors() != null && type.getConstructors().length != 0;
 	}
 
 	/**

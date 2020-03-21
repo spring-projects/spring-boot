@@ -44,9 +44,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DatabaseDriverClassNameTests {
 
-	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections.unmodifiableSet(
-			EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.DB2, DatabaseDriver.DB2_AS400,
-					DatabaseDriver.INFORMIX, DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
+	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
+			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
+					DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
 
 	@ParameterizedTest(name = "{0} {2}")
 	@MethodSource
@@ -62,6 +62,10 @@ class DatabaseDriverClassNameTests {
 		for (String name : classReader.getInterfaces()) {
 			interfaceNames.add(name);
 			interfaceNames.addAll(getInterfaceNames(name));
+		}
+		String superName = classReader.getSuperName();
+		if (superName != null) {
+			interfaceNames.addAll(getInterfaceNames(superName));
 		}
 		return interfaceNames;
 	}

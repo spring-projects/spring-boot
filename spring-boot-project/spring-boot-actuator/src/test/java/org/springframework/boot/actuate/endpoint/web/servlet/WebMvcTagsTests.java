@@ -137,10 +137,24 @@ class WebMvcTagsTests {
 	}
 
 	@Test
+	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
+		this.response.setStatus(490);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
 	void outcomeTagIsServerErrorWhenResponseIs5xx() {
 		this.response.setStatus(500);
 		Tag tag = WebMvcTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
+		this.response.setStatus(701);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 }

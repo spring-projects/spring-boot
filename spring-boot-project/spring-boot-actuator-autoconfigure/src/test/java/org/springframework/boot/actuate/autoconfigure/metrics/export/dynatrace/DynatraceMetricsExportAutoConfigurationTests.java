@@ -116,16 +116,16 @@ class DynatraceMetricsExportAutoConfigurationTests {
 		@Bean
 		DynatraceConfig customConfig() {
 			return (key) -> {
-				if ("dynatrace.uri".equals(key)) {
+				switch (key) {
+				case "dynatrace.uri":
 					return "https://dynatrace.example.com";
-				}
-				if ("dynatrace.apiToken".equals(key)) {
+				case "dynatrace.apiToken":
 					return "abcde";
-				}
-				if ("dynatrace.deviceId".equals(key)) {
+				case "dynatrace.deviceId":
 					return "test";
+				default:
+					return null;
 				}
-				return null;
 			};
 		}
 

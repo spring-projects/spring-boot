@@ -33,6 +33,7 @@ import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -56,6 +57,7 @@ class RSocketStrategiesAutoConfigurationTests {
 					.hasAtLeastOneElementOfType(Jackson2JsonDecoder.class);
 			assertThat(strategies.encoders()).hasAtLeastOneElementOfType(Jackson2CborEncoder.class)
 					.hasAtLeastOneElementOfType(Jackson2JsonEncoder.class);
+			assertThat(strategies.routeMatcher()).isInstanceOf(PathPatternRouteMatcher.class);
 		});
 	}
 

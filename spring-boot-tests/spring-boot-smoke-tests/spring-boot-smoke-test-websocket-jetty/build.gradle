@@ -1,0 +1,15 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot WebSocket Jetty smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-websocket")) {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

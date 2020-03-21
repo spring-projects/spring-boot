@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -51,7 +52,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-
 class RSocketWebSocketNettyRouteProviderTests {
 
 	@Test
@@ -76,6 +76,7 @@ class RSocketWebSocketNettyRouteProviderTests {
 					WebTestClient client = createWebTestClient(serverContext.getWebServer());
 					client.get().uri("/protocol").exchange().expectStatus().isOk().expectBody().jsonPath("name",
 							"http");
+					assertThat(WebConfiguration.processorCallCount).isEqualTo(1);
 				});
 	}
 
@@ -93,6 +94,8 @@ class RSocketWebSocketNettyRouteProviderTests {
 	@Configuration(proxyBeanMethods = false)
 	static class WebConfiguration {
 
+		static int processorCallCount = 0;
+
 		@Bean
 		WebController webController() {
 			return new WebController();
@@ -103,6 +106,14 @@ class RSocketWebSocketNettyRouteProviderTests {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
+		}
+
+		@Bean
+		ServerRSocketFactoryProcessor myRSocketFactoryProcessor() {
+			return (server) -> {
+				processorCallCount++;
+				return server;
+			};
 		}
 
 	}

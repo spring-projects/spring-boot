@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Test;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
@@ -278,7 +276,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
 				.withUserConfiguration(NettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
-				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO)).run((context) -> {
+				.run((context) -> {
 					NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
 					assertThat(factory.getServerCustomizers()).hasSize(1);
 				});

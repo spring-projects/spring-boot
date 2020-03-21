@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -33,6 +35,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class EndpointMediaTypesTests {
 
 	@Test
+	void defaultReturnsExpectedProducedAndConsumedTypes() {
+		assertThat(EndpointMediaTypes.DEFAULT.getProduced()).containsExactly(ActuatorMediaType.V3_JSON,
+				ActuatorMediaType.V2_JSON, "application/json");
+		assertThat(EndpointMediaTypes.DEFAULT.getConsumed()).containsExactly(ActuatorMediaType.V3_JSON,
+				ActuatorMediaType.V2_JSON, "application/json");
+	}
+
+	@Test
 	void createWhenProducedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
 				.withMessageContaining("Produced must not be null");
@@ -42,6 +52,13 @@ class EndpointMediaTypesTests {
 	void createWhenConsumedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
 				.withMessageContaining("Consumed must not be null");
+	}
+
+	@Test
+	void createFromProducedAndConsumedUsesSameListForBoth() {
+		EndpointMediaTypes types = new EndpointMediaTypes("spring/framework", "spring/boot");
+		assertThat(types.getProduced()).containsExactly("spring/framework", "spring/boot");
+		assertThat(types.getConsumed()).containsExactly("spring/framework", "spring/boot");
 	}
 
 	@Test

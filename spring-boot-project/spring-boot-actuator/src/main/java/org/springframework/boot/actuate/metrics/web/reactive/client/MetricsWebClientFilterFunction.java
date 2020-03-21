@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,20 +49,6 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	private final String metricName;
 
 	private final AutoTimer autoTimer;
-
-	/**
-	 * Create a new {@code MetricsWebClientFilterFunction}.
-	 * @param meterRegistry the registry to which metrics are recorded
-	 * @param tagProvider provider for metrics tags
-	 * @param metricName name of the metric to record
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsWebClientFilterFunction(MeterRegistry, WebClientExchangeTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
-			String metricName) {
-		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
-	}
 
 	/**
 	 * Create a new {@code MetricsWebClientFilterFunction}.

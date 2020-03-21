@@ -74,7 +74,6 @@ class ExplodedArchiveTests {
 	private void createArchive(String folderName) throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
-
 		this.rootFolder = (StringUtils.hasText(folderName) ? new File(this.tempDir, folderName)
 				: new File(this.tempDir, UUID.randomUUID().toString()));
 		JarFile jarFile = new JarFile(file);
@@ -102,7 +101,7 @@ class ExplodedArchiveTests {
 	@Test
 	void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(12);
+		assertThat(entries).hasSize(12);
 	}
 
 	@Test
@@ -121,7 +120,7 @@ class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString()).isEqualTo(this.rootFolder.toURI() + "nested.jar");
-		((JarFileArchive) nested).close();
+		nested.close();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,27 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.net.ConnectException;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -37,6 +49,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link NettyReactiveWebServerFactory}.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  */
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -81,6 +94,57 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		NettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
+		Mono<String> result = testSslWithAlias("test-alias");
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
+		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		NettyReactiveWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		webClient.get().retrieve().toBodilessEntity().subscribe();
+		blockingHandler.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<Throwable> errorReference = new AtomicReference<>();
+		webClient.get().retrieve().toBodilessEntity().doOnError(errorReference::set).subscribe();
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingHandler.completeOne();
+		this.webServer.stop();
+		assertThat(errorReference.get()).hasCauseInstanceOf(ConnectException.class);
+	}
+
+	protected Mono<String> testSslWithAlias(String alias) {
+		String keyStore = "classpath:test.jks";
+		String keyPassword = "password";
+		NettyReactiveWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyAlias(alias);
+		factory.setSsl(ssl);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
+		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(connector).build();
+		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
+				.exchange().flatMap((response) -> response.bodyToMono(String.class));
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((NettyWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

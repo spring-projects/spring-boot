@@ -149,6 +149,16 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Test
+	void webServerWithNonAbsoluteMultipartLocationUndertowConfiguration() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(
+				WebServerWithNonAbsolutePathUndertow.class, BaseConfiguration.class);
+		this.context.getBean(MultipartConfigElement.class);
+		verifyServletWorks();
+		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
+				.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+	}
+
+	@Test
 	void webServerWithMultipartConfigDisabled() {
 		testWebServerWithCustomMultipartConfigEnabledSetting("false", 0);
 	}
@@ -351,6 +361,27 @@ class MultipartAutoConfigurationTests {
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
 			return new MultipartConfigElement("");
+		}
+
+		@Bean
+		UndertowServletWebServerFactory webServerFactory() {
+			return new UndertowServletWebServerFactory();
+		}
+
+		@Bean
+		WebController webController() {
+			return new WebController();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebMvc
+	static class WebServerWithNonAbsolutePathUndertow {
+
+		@Bean
+		MultipartConfigElement multipartConfigElement() {
+			return new MultipartConfigElement("test/not-absolute");
 		}
 
 		@Bean

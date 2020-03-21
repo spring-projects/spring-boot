@@ -140,7 +140,8 @@ class DefaultLogbackConfiguration {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
 		rollingPolicy.setCleanHistoryOnStart(
 				this.patterns.getProperty("logging.file.clean-history-on-start", Boolean.class, false));
-		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
+		rollingPolicy.setFileNamePattern(
+				this.patterns.getProperty("logging.pattern.rolling-file-name", logFile + ".%d{yyyy-MM-dd}.%i.gz"));
 		setMaxFileSize(rollingPolicy, getDataSize("logging.file.max-size", MAX_FILE_SIZE));
 		rollingPolicy
 				.setMaxHistory(this.patterns.getProperty("logging.file.max-history", Integer.class, MAX_FILE_HISTORY));

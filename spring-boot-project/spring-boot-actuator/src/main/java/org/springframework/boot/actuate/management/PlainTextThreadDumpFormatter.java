@@ -23,8 +23,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,8 +47,8 @@ class PlainTextThreadDumpFormatter {
 	}
 
 	private void writePreamble(PrintWriter writer) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		writer.println(dateFormat.format(new Date()));
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		writer.println(dateFormat.format(LocalDateTime.now()));
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 		writer.printf("Full thread dump %s (%s %s):%n", runtime.getVmName(), runtime.getVmVersion(),
 				System.getProperty("java.vm.info"));
@@ -83,9 +83,7 @@ class PlainTextThreadDumpFormatter {
 		LockInfo lockInfo = info.getLockInfo();
 		if (firstElement && lockInfo != null) {
 			if (element.getClassName().equals(Object.class.getName()) && element.getMethodName().equals("wait")) {
-				if (lockInfo != null) {
-					writer.printf("\t- waiting on %s%n", format(lockInfo));
-				}
+				writer.printf("\t- waiting on %s%n", format(lockInfo));
 			}
 			else {
 				String lockOwner = info.getLockOwnerName();

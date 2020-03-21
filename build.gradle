@@ -1,0 +1,23 @@
+plugins {
+	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
+}
+
+description = "Spring Boot Build"
+
+allprojects {
+	group "org.springframework.boot"
+
+	repositories {
+		mavenCentral()
+		if (!version.endsWith('RELEASE')) {
+			maven { url "https://repo.spring.io/milestone" }
+		}
+		if (version.endsWith('BUILD-SNAPSHOT')) {
+			maven { url "https://repo.spring.io/snapshot" }
+		}
+	}
+
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 60, "minutes"
+	}
+}

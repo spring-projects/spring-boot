@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,20 +36,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jean-Baptiste Nizet
  */
 @ExtendWith(GradleMultiDslExtension.class)
-public class IntegratingWithActuatorDocumentationTests {
+class IntegratingWithActuatorDocumentationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void basicBuildInfo() throws IOException {
-		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-basic").build("bootBuildInfo");
+	void basicBuildInfo() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-basic").build("bootBuildInfo");
 		assertThat(new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties"))
 				.isFile();
 	}
 
 	@TestTemplate
-	public void buildInfoCustomValues() throws IOException {
-		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-custom-values")
+	void buildInfoCustomValues() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-custom-values")
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
@@ -61,8 +61,8 @@ public class IntegratingWithActuatorDocumentationTests {
 	}
 
 	@TestTemplate
-	public void buildInfoAdditional() throws IOException {
-		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-additional")
+	void buildInfoAdditional() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-additional")
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();

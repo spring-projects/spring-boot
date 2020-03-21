@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +50,12 @@ class ActiveMQAutoConfigurationTests {
 	@Test
 	void brokerIsEmbeddedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
-			CachingConnectionFactory cachingConnectionFactory = context.getBean(CachingConnectionFactory.class);
-			assertThat(cachingConnectionFactory.getTargetConnectionFactory())
-					.isInstanceOf(ActiveMQConnectionFactory.class);
-			assertThat(
-					((ActiveMQConnectionFactory) cachingConnectionFactory.getTargetConnectionFactory()).getBrokerURL())
-							.isEqualTo("vm://localhost?broker.persistent=false");
+			assertThat(context).hasSingleBean(CachingConnectionFactory.class).hasBean("jmsConnectionFactory");
+			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+			assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
+			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
+			assertThat(((ActiveMQConnectionFactory) connectionFactory.getTargetConnectionFactory()).getBrokerURL())
+					.isEqualTo("vm://localhost?broker.persistent=false");
 		});
 	}
 
@@ -69,9 +68,10 @@ class ActiveMQAutoConfigurationTests {
 	@Test
 	void connectionFactoryIsCachedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ConnectionFactory.class);
-			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+			assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(CachingConnectionFactory.class)
+					.hasBean("jmsConnectionFactory");
 			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+			assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
 			assertThat(connectionFactory.isCacheConsumers()).isFalse();
 			assertThat(connectionFactory.isCacheProducers()).isTrue();
@@ -85,9 +85,10 @@ class ActiveMQAutoConfigurationTests {
 				.withPropertyValues("spring.jms.cache.consumers=true", "spring.jms.cache.producers=false",
 						"spring.jms.cache.session-cache-size=10")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ConnectionFactory.class);
-					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(CachingConnectionFactory.class).hasBean("jmsConnectionFactory");
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					assertThat(connectionFactory.isCacheConsumers()).isTrue();
 					assertThat(connectionFactory.isCacheProducers()).isFalse();
 					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(10);
@@ -98,8 +99,10 @@ class ActiveMQAutoConfigurationTests {
 	void connectionFactoryCachingCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.jms.cache.enabled=false").run((context) -> {
-					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class)).hasSize(1);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(ActiveMQConnectionFactory.class).hasBean("jmsConnectionFactory");
 					ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					ActiveMQConnectionFactory defaultFactory = new ActiveMQConnectionFactory(
 							"vm://localhost?broker.persistent=false");
 					assertThat(connectionFactory.getUserName()).isEqualTo(defaultFactory.getUserName());
@@ -123,8 +126,10 @@ class ActiveMQAutoConfigurationTests {
 						"spring.activemq.nonBlockingRedelivery=true", "spring.activemq.sendTimeout=1000",
 						"spring.activemq.packages.trust-all=false", "spring.activemq.packages.trusted=com.example.acme")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class)).hasSize(1);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(ActiveMQConnectionFactory.class).hasBean("jmsConnectionFactory");
 					ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					assertThat(connectionFactory.getUserName()).isEqualTo("foo");
 					assertThat(connectionFactory.getPassword()).isEqualTo("bar");
 					assertThat(connectionFactory.getCloseTimeout()).isEqualTo(500);
@@ -139,8 +144,10 @@ class ActiveMQAutoConfigurationTests {
 	void defaultPoolConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled=true").run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(JmsPoolConnectionFactory.class).hasBean("jmsConnectionFactory");
 					JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					JmsPoolConnectionFactory defaultFactory = new JmsPoolConnectionFactory();
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
 							.isEqualTo(defaultFactory.isBlockIfSessionPoolIsFull());
@@ -167,8 +174,10 @@ class ActiveMQAutoConfigurationTests {
 						"spring.activemq.pool.timeBetweenExpirationCheck=2048",
 						"spring.activemq.pool.useAnonymousProducers=false")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class)).hasSize(1);
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(JmsPoolConnectionFactory.class).hasBean("jmsConnectionFactory");
 					JmsPoolConnectionFactory connectionFactory = context.getBean(JmsPoolConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isFalse();
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout()).isEqualTo(64);
 					assertThat(connectionFactory.getConnectionIdleTimeout()).isEqualTo(512);
@@ -183,7 +192,10 @@ class ActiveMQAutoConfigurationTests {
 	void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.activemq.pool.enabled:true").run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(JmsPoolConnectionFactory.class).hasBean("jmsConnectionFactory");
 					ConnectionFactory factory = context.getBean(ConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(factory);
 					assertThat(factory).isInstanceOf(JmsPoolConnectionFactory.class);
 					context.getSourceApplicationContext().close();
 					assertThat(factory.createConnection()).isNull();
@@ -194,14 +206,20 @@ class ActiveMQAutoConfigurationTests {
 	void cachingConnectionFactoryNotOnTheClasspathThenSimpleConnectionFactoryAutoConfigured() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
 				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=false")
-				.run((context) -> assertThat(context).hasSingleBean(ActiveMQConnectionFactory.class));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class)
+							.hasSingleBean(ActiveMQConnectionFactory.class).hasBean("jmsConnectionFactory");
+					ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+					assertThat(context.getBean("jmsConnectionFactory")).isSameAs(connectionFactory);
+				});
 	}
 
 	@Test
 	void cachingConnectionFactoryNotOnTheClasspathAndCacheEnabledThenSimpleConnectionFactoryNotConfigured() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
 				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=true")
-				.run((context) -> assertThat(context).doesNotHaveBean(ActiveMQConnectionFactory.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ConnectionFactory.class)
+						.doesNotHaveBean(ActiveMQConnectionFactory.class).doesNotHaveBean("jmsConnectionFactory"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -65,10 +65,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedTomcat {
+	static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatServletWebServerFactory(
+		TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
@@ -90,10 +90,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class, WebAppContext.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedJetty {
+	static class EmbeddedJetty {
 
 		@Bean
-		public JettyServletWebServerFactory JettyServletWebServerFactory(
+		JettyServletWebServerFactory JettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
@@ -108,10 +108,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedUndertow {
+	static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowServletWebServerFactory undertowServletWebServerFactory(
+		UndertowServletWebServerFactory undertowServletWebServerFactory(
 				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();

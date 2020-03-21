@@ -47,7 +47,6 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 			return "none";
 		}
 		return "create-drop";
-
 	}
 
 	@Override

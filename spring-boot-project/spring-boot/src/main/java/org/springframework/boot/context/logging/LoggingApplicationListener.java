@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.springframework.boot.context.logging;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +36,8 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerGroup;
+import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -48,9 +50,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -83,6 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
  */
@@ -95,8 +98,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final Bindable<Map<String, LogLevel>> STRING_LOGLEVEL_MAP = Bindable.mapOf(String.class,
 			LogLevel.class);
 
-	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable.mapOf(String.class,
-			String[].class);
+	private static final Bindable<Map<String, List<String>>> STRING_STRINGS_MAP = Bindable
+			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class).asMap());
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -123,8 +126,15 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * The name of the {@link LogFile} bean.
+	 * @since 2.2.0
 	 */
-	public static final String LOGFILE_BEAN_NAME = "springBootLogFile";
+	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
+
+	/**
+	 * The name of the{@link LoggerGroups} bean.
+	 * @since 2.2.0
+	 */
+	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
 
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
@@ -140,7 +150,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		DEFAULT_GROUP_LOGGERS = Collections.unmodifiableMap(loggers);
 	}
 
-	private static final Map<LogLevel, List<String>> LOG_LEVEL_LOGGERS;
+	private static final Map<LogLevel, List<String>> SPRING_BOOT_LOGGING_LOGGERS;
 	static {
 		MultiValueMap<LogLevel, String> loggers = new LinkedMultiValueMap<>();
 		loggers.add(LogLevel.DEBUG, "sql");
@@ -151,7 +161,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		loggers.add(LogLevel.TRACE, "org.apache.catalina");
 		loggers.add(LogLevel.TRACE, "org.eclipse.jetty");
 		loggers.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
-		LOG_LEVEL_LOGGERS = Collections.unmodifiableMap(loggers);
+		SPRING_BOOT_LOGGING_LOGGERS = Collections.unmodifiableMap(loggers);
 	}
 
 	private static final Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
@@ -167,6 +177,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private LoggingSystem loggingSystem;
 
 	private LogFile logFile;
+
+	private LoggerGroups loggerGroups;
 
 	private int order = DEFAULT_ORDER;
 
@@ -232,8 +244,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
-		if (this.logFile != null && !beanFactory.containsBean(LOGFILE_BEAN_NAME)) {
-			beanFactory.registerSingleton(LOGFILE_BEAN_NAME, this.logFile);
+		if (this.logFile != null && !beanFactory.containsBean(LOG_FILE_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOG_FILE_BEAN_NAME, this.logFile);
+		}
+		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGER_GROUPS_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
 	}
 
@@ -261,6 +276,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (this.logFile != null) {
 			this.logFile.applyToSystemProperties();
 		}
+		this.loggerGroups = new LoggerGroups(DEFAULT_GROUP_LOGGERS);
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
@@ -308,65 +324,68 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment, LoggingSystem system) {
+		bindLoggerGroups(environment);
 		if (this.springBootLogging != null) {
-			initializeLogLevel(system, this.springBootLogging);
+			initializeSpringBootLogging(system, this.springBootLogging);
 		}
 		setLogLevels(system, environment);
 	}
 
-	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
-		LOG_LEVEL_LOGGERS.getOrDefault(level, Collections.emptyList())
-				.forEach((logger) -> initializeLogLevel(system, level, logger));
+	private void bindLoggerGroups(ConfigurableEnvironment environment) {
+		if (this.loggerGroups != null) {
+			Binder binder = Binder.get(environment);
+			binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP).ifBound(this.loggerGroups::putAll);
+		}
 	}
 
-	private void initializeLogLevel(LoggingSystem system, LogLevel level, String logger) {
-		List<String> groupLoggers = DEFAULT_GROUP_LOGGERS.get(logger);
-		if (groupLoggers == null) {
-			system.setLogLevel(logger, level);
-			return;
-		}
-		groupLoggers.forEach((groupLogger) -> system.setLogLevel(groupLogger, level));
+	/**
+	 * Initialize loggers based on the {@link #setSpringBootLogging(LogLevel)
+	 * springBootLogging} setting. By default this implementation will pick an appropriate
+	 * set of loggers to configure based on the level.
+	 * @param system the logging system
+	 * @param springBootLogging the spring boot logging level requested
+	 * @since 2.2.0
+	 */
+	protected void initializeSpringBootLogging(LoggingSystem system, LogLevel springBootLogging) {
+		BiConsumer<String, LogLevel> configurer = getLogLevelConfigurer(system);
+		SPRING_BOOT_LOGGING_LOGGERS.getOrDefault(springBootLogging, Collections.emptyList())
+				.forEach((name) -> configureLogLevel(name, springBootLogging, configurer));
 	}
 
-	protected void setLogLevels(LoggingSystem system, Environment environment) {
-		if (!(environment instanceof ConfigurableEnvironment)) {
-			return;
-		}
+	/**
+	 * Set logging levels based on relevant {@link Environment} properties.
+	 * @param system the logging system
+	 * @param environment the environment
+	 * @since 2.2.0
+	 */
+	protected void setLogLevels(LoggingSystem system, ConfigurableEnvironment environment) {
+		BiConsumer<String, LogLevel> customizer = getLogLevelConfigurer(system);
 		Binder binder = Binder.get(environment);
-		Map<String, String[]> groups = getGroups();
-		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
 		Map<String, LogLevel> levels = binder.bind(LOGGING_LEVEL, STRING_LOGLEVEL_MAP).orElseGet(Collections::emptyMap);
-		levels.forEach((name, level) -> {
-			String[] groupedNames = groups.get(name);
-			if (ObjectUtils.isEmpty(groupedNames)) {
-				setLogLevel(system, name, level);
+		levels.forEach((name, level) -> configureLogLevel(name, level, customizer));
+	}
+
+	private void configureLogLevel(String name, LogLevel level, BiConsumer<String, LogLevel> configurer) {
+		if (this.loggerGroups != null) {
+			LoggerGroup group = this.loggerGroups.get(name);
+			if (group != null && group.hasMembers()) {
+				group.configureLogLevel(level, configurer);
+				return;
 			}
-			else {
-				setLogLevel(system, groupedNames, level);
+		}
+		configurer.accept(name, level);
+	}
+
+	private BiConsumer<String, LogLevel> getLogLevelConfigurer(LoggingSystem system) {
+		return (name, level) -> {
+			try {
+				name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
+				system.setLogLevel(name, level);
 			}
-		});
-	}
-
-	private Map<String, String[]> getGroups() {
-		Map<String, String[]> groups = new LinkedHashMap<>();
-		DEFAULT_GROUP_LOGGERS.forEach((name, loggers) -> groups.put(name, StringUtils.toStringArray(loggers)));
-		return groups;
-	}
-
-	private void setLogLevel(LoggingSystem system, String[] names, LogLevel level) {
-		for (String name : names) {
-			setLogLevel(system, name, level);
-		}
-	}
-
-	private void setLogLevel(LoggingSystem system, String name, LogLevel level) {
-		try {
-			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
-			system.setLogLevel(name, level);
-		}
-		catch (RuntimeException ex) {
-			this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
-		}
+			catch (RuntimeException ex) {
+				this.logger.error(LogMessage.format("Cannot set level '%s' for '%s'", level, name));
+			}
+		};
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {

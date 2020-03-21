@@ -28,6 +28,7 @@ import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 
 import org.springframework.boot.web.server.Compression;
+import org.springframework.util.InvalidMimeTypeException;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ObjectUtils;
@@ -73,8 +74,13 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 			if (StringUtils.isEmpty(contentType)) {
 				return false;
 			}
-			MimeType contentMimeType = MimeTypeUtils.parseMimeType(contentType);
-			return mimeTypes.stream().anyMatch((candidate) -> candidate.isCompatibleWith(contentMimeType));
+			try {
+				MimeType contentMimeType = MimeTypeUtils.parseMimeType(contentType);
+				return mimeTypes.stream().anyMatch((candidate) -> candidate.isCompatibleWith(contentMimeType));
+			}
+			catch (InvalidMimeTypeException ex) {
+				return false;
+			}
 		};
 	}
 

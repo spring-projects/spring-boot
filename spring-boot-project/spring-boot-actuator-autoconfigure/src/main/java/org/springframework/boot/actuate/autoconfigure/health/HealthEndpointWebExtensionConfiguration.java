@@ -16,83 +16,34 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.HealthAggregator;
+import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.HealthWebEndpointResponseMapper;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for health endpoint web extensions.
+ * Configuration for {@link HealthEndpoint} web extensions.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @see HealthEndpointAutoConfiguration
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(HealthIndicatorProperties.class)
-@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
+@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnBean(HealthEndpoint.class)
 class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
+	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnMissingBean
-	HealthStatusHttpMapper createHealthStatusHttpMapper(HealthIndicatorProperties healthIndicatorProperties) {
-		HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
-		if (healthIndicatorProperties.getHttpMapping() != null) {
-			statusHttpMapper.addStatusMapping(healthIndicatorProperties.getHttpMapping());
-		}
-		return statusHttpMapper;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper,
-			HealthEndpointProperties properties) {
-		return new HealthWebEndpointResponseMapper(statusHttpMapper, properties.getShowDetails(),
-				properties.getRoles());
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnSingleCandidate(ReactiveHealthIndicatorRegistry.class)
-	static class ReactiveWebHealthConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnBean(HealthEndpoint.class)
-		ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-				ObjectProvider<HealthAggregator> healthAggregator, ReactiveHealthIndicatorRegistry registry,
-				HealthWebEndpointResponseMapper responseMapper) {
-			return new ReactiveHealthEndpointWebExtension(new CompositeReactiveHealthIndicator(
-					healthAggregator.getIfAvailable(OrderedHealthAggregator::new), registry), responseMapper);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	static class ServletWebHealthConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnBean(HealthEndpoint.class)
-		HealthEndpointWebExtension healthEndpointWebExtension(HealthEndpoint healthEndpoint,
-				HealthWebEndpointResponseMapper responseMapper) {
-			return new HealthEndpointWebExtension(healthEndpoint, responseMapper);
-		}
-
+	HealthEndpointWebExtension healthEndpointWebExtension(HealthContributorRegistry healthContributorRegistry,
+			HealthEndpointGroups groups) {
+		return new HealthEndpointWebExtension(healthContributorRegistry, groups);
 	}
 
 }

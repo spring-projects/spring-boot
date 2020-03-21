@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ package org.springframework.boot.context.properties.bind;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @since 2.2.3
  * @see DataObjectBinder
  */
-abstract class DataObjectPropertyName {
+public abstract class DataObjectPropertyName {
 
 	private DataObjectPropertyName() {
 	}
@@ -33,7 +34,7 @@ abstract class DataObjectPropertyName {
 	 * @param name the source name
 	 * @return the dashed from
 	 */
-	static String toDashedForm(String name) {
+	public static String toDashedForm(String name) {
 		StringBuilder result = new StringBuilder();
 		String replaced = name.replace('_', '-');
 		for (int i = 0; i < replaced.length(); i++) {

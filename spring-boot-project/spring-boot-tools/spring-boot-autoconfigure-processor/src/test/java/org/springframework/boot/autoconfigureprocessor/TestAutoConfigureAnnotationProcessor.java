@@ -29,11 +29,10 @@ import javax.annotation.processing.SupportedAnnotationTypes;
  *
  * @author Madhura Bhave
  */
-@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigureprocessor.TestConfiguration",
-		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
-		"org.springframework.boot.autoconfigure.condition.TestConditionalOnBean",
-		"org.springframework.boot.autoconfigure.condition.TestConditionalOnSingleCandidate",
-		"org.springframework.boot.autoconfigure.condition.TestConditionalOnWebApplication",
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
+		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnBean",
+		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnSingleCandidate",
+		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
@@ -47,7 +46,6 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 
 	@Override
 	protected void addAnnotations(Map<String, String> annotations) {
-		put(annotations, "Configuration", TestConfiguration.class);
 		put(annotations, "ConditionalOnClass", TestConditionalOnClass.class);
 		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
 		put(annotations, "ConditionalOnSingleCandidate", TestConditionalOnSingleCandidate.class);
@@ -62,7 +60,7 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 	}
 
 	public Properties getWrittenProperties() throws IOException {
-		File file = new File(this.outputLocation, PROPERTIES_PATH);
+		File file = getWrittenFile();
 		if (!file.exists()) {
 			return null;
 		}
@@ -71,6 +69,10 @@ public class TestAutoConfigureAnnotationProcessor extends AutoConfigureAnnotatio
 			properties.load(inputStream);
 			return properties;
 		}
+	}
+
+	public File getWrittenFile() {
+		return new File(this.outputLocation, PROPERTIES_PATH);
 	}
 
 }

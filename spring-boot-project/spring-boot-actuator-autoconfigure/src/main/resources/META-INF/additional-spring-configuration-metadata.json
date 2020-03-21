@@ -29,6 +29,15 @@
       "defaultValue": "never"
     },
     {
+      "name": "management.endpoint.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
@@ -129,6 +138,12 @@
       "name": "management.health.mongo.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable MongoDB health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.ping.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable ping health check.",
       "defaultValue": true
     },
     {
@@ -1801,76 +1816,6 @@
     }
   ],
   "hints": [
-    {
-      "name": "management.endpoints.web.path-mapping.keys",
-      "values": [
-        {
-          "value": "auditevents"
-        },
-        {
-          "value": "beans"
-        },
-        {
-          "value": "conditions"
-        },
-        {
-          "value": "configprops"
-        },
-        {
-          "value": "env"
-        },
-        {
-          "value": "flyway"
-        },
-        {
-          "value": "health"
-        },
-        {
-          "value": "heapdump"
-        },
-        {
-          "value": "httptrace"
-        },
-        {
-          "value": "info"
-        },
-        {
-          "value": "liquibase"
-        },
-        {
-          "value": "logfile"
-        },
-        {
-          "value": "loggers"
-        },
-        {
-          "value": "mappings"
-        },
-        {
-          "value": "metrics"
-        },
-        {
-          "value": "prometheus"
-        },
-        {
-          "value": "scheduledtasks"
-        },
-        {
-          "value": "sessions"
-        },
-        {
-          "value": "shutdown"
-        },
-        {
-          "value": "threaddump"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
     {
       "name": "management.endpoints.web.cors.allowed-headers",
       "values": [

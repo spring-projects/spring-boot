@@ -16,10 +16,13 @@
 
 package org.springframework.boot.env;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
@@ -64,6 +67,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
+
+	private static final Set<String> SERVLET_ENVIRONMENT_PROPERTY_SOURCES = new LinkedHashSet<>(
+			Arrays.asList(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME,
+					StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
+					StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
 
 	/**
 	 * The default order for the processor.
@@ -141,10 +149,13 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	private String findPropertySource(MutablePropertySources sources) {
-		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)
-				&& sources.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
-			return StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME;
-
+		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)) {
+			PropertySource<?> servletPropertySource = sources.stream()
+					.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName())).findFirst()
+					.orElse(null);
+			if (servletPropertySource != null) {
+				return servletPropertySource.getName();
+			}
 		}
 		return StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
 	}
@@ -193,7 +204,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 		static JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
-				if (value != null && value instanceof String && StringUtils.hasLength((String) value)) {
+				if (value instanceof String && StringUtils.hasLength((String) value)) {
 					return new JsonPropertyValue(propertySource, candidate, (String) value);
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
+		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo.nested");
 		assertThat(cause.getMessage()).contains("nested.age");
 		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}
@@ -193,13 +193,29 @@ class ValidationBindHandlerTests {
 				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageContaining("years"));
 	}
 
+	@Test
+	void validationErrorsForCamelCaseFieldsShouldContainRejectedValue() {
+		this.sources.add(new MockConfigurationPropertySource("foo.inner.person-age", 2));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
+				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleCamelCase.class), this.handler));
+		assertThat(cause.getMessage()).contains("rejected value [2]");
+	}
+
+	@Test
+	void validationShouldBeSkippedIfPreviousValidationErrorPresent() {
+		this.sources.add(new MockConfigurationPropertySource("foo.inner.person-age", 2));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
+				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleCamelCase.class), this.handler));
+		FieldError fieldError = (FieldError) cause.getValidationErrors().getAllErrors().get(0);
+		assertThat(fieldError.getField()).isEqualTo("personAge");
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
 		}
 		catch (BindException ex) {
-			BindValidationException cause = (BindValidationException) ex.getCause();
-			return cause;
+			return (BindValidationException) ex.getCause();
 		}
 		throw new IllegalStateException("Did not throw");
 	}
@@ -302,6 +318,33 @@ class ValidationBindHandlerTests {
 
 		void setAddress(String address) {
 			this.address = address;
+		}
+
+	}
+
+	@Validated
+	static class ExampleCamelCase {
+
+		@Valid
+		private InnerProperties inner = new InnerProperties();
+
+		InnerProperties getInner() {
+			return this.inner;
+		}
+
+		static class InnerProperties {
+
+			@Min(5)
+			private int personAge;
+
+			int getPersonAge() {
+				return this.personAge;
+			}
+
+			void setPersonAge(int personAge) {
+				this.personAge = personAge;
+			}
+
 		}
 
 	}

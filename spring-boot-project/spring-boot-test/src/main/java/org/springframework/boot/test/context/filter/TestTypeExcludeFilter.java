@@ -33,7 +33,8 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 class TestTypeExcludeFilter extends TypeExcludeFilter {
 
 	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith",
-			"org.junit.jupiter.api.extension.ExtendWith", "org.testng.annotations.Test" };
+			"org.junit.jupiter.api.extension.ExtendWith", "org.junit.platform.commons.annotation.Testable",
+			"org.testng.annotations.Test" };
 
 	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
 			"org.junit.platform.commons.annotation.Testable", "org.testng.annotations.Test" };

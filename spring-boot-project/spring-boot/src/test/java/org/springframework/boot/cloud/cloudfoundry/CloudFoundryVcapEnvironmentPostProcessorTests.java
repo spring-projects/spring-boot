@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(this.context.getEnvironment().getProperty("vcap.application.instance_id"))
-				.isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
+		assertThat(getProperty("vcap.application.instance_id")).isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
 	}
 
 	@Test
@@ -59,7 +58,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"VCAP_APPLICATION={\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(this.context.getEnvironment().getProperty("vcap.application.uris[0]")).isEqualTo("foo.cfapps.io");
+		assertThat(getProperty("vcap.application.uris[0]")).isEqualTo("foo.cfapps.io");
 	}
 
 	@Test

@@ -18,16 +18,19 @@ package org.springframework.boot.autoconfigure.ldap;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
@@ -44,14 +47,18 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment) {
+	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment,
+			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
-		source.setUserDn(properties.getUsername());
-		source.setPassword(properties.getPassword());
-		source.setAnonymousReadOnly(properties.getAnonymousReadOnly());
-		source.setBase(properties.getBase());
-		source.setUrls(properties.determineUrls(environment));
-		source.setBaseEnvironmentProperties(Collections.unmodifiableMap(properties.getBaseEnvironment()));
+		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
+		propertyMapper.from(properties.getPassword()).to(source::setPassword);
+		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
+		propertyMapper.from(properties.getBase()).to(source::setBase);
+		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
+		propertyMapper.from(properties.getBaseEnvironment()).to(
+				(baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}
 

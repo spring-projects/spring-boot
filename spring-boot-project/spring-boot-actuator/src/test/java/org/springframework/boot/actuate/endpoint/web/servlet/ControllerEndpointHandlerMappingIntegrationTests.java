@@ -79,7 +79,7 @@ class ControllerEndpointHandlerMappingIntegrationTests {
 	@Test
 	void post() {
 		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post().uri("/actuator/example/two")
-				.body(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
+				.bodyValue(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
 				.valueEquals(HttpHeaders.LOCATION, "/example/test")));
 	}
 

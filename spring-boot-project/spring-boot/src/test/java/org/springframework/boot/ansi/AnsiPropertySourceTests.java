@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AnsiPropertySource}.
  *
  * @author Phillip Webb
+ * @author Toshiaki Maki
  */
 class AnsiPropertySourceTests {
 
@@ -45,11 +46,13 @@ class AnsiPropertySourceTests {
 	@Test
 	void getAnsiColor() {
 		assertThat(this.source.getProperty("AnsiColor.RED")).isEqualTo(AnsiColor.RED);
+		assertThat(this.source.getProperty("AnsiColor.100")).isEqualTo(Ansi8BitColor.foreground(100));
 	}
 
 	@Test
 	void getAnsiBackground() {
 		assertThat(this.source.getProperty("AnsiBackground.GREEN")).isEqualTo(AnsiBackground.GREEN);
+		assertThat(this.source.getProperty("AnsiBackground.100")).isEqualTo(Ansi8BitColor.background(100));
 	}
 
 	@Test
@@ -69,6 +72,8 @@ class AnsiPropertySourceTests {
 		AnsiOutput.setEnabled(Enabled.ALWAYS);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
 		assertThat(source.getProperty("Ansi.RED")).isEqualTo("\033[31m");
+		assertThat(source.getProperty("AnsiColor.100")).isEqualTo("\033[38;5;100m");
+		assertThat(source.getProperty("AnsiBackground.100")).isEqualTo("\033[48;5;100m");
 	}
 
 	@Test
@@ -76,6 +81,8 @@ class AnsiPropertySourceTests {
 		AnsiOutput.setEnabled(Enabled.NEVER);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
 		assertThat(source.getProperty("Ansi.RED")).isEqualTo("");
+		assertThat(source.getProperty("AnsiColor.100")).isEqualTo("");
+		assertThat(source.getProperty("AnsiBackground.100")).isEqualTo("");
 	}
 
 }

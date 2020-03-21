@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
-		int port = (getPort() >= 0) ? getPort() : 0;
+		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		configureWebAppContext(context, initializers);
@@ -327,9 +327,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			ServletContextInitializer... initializers) {
 		List<Configuration> configurations = new ArrayList<>();
 		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
-		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
+		configurations.addAll(getConfigurations());
 		return configurations.toArray(new Configuration[0]);
 	}
 
@@ -342,8 +342,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				ErrorHandler errorHandler = context.getErrorHandler();
-				context.setErrorHandler(new JettyEmbeddedErrorHandler(errorHandler));
+				JettyEmbeddedErrorHandler errorHandler = new JettyEmbeddedErrorHandler();
+				context.setErrorHandler(errorHandler);
 				addJettyErrorPages(errorHandler, getErrorPages());
 			}
 
@@ -398,7 +398,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @return a new {@link JettyWebServer} instance
 	 */
 	protected JettyWebServer getJettyWebServer(Server server) {
-		return new JettyWebServer(server, getPort() >= 0);
+		return new JettyWebServer(server, getPort() >= 0, getShutdown().getGracePeriod());
 	}
 
 	@Override
@@ -484,11 +484,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return this.threadPool;
 	}
 
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
+	@Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -521,7 +517,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 
 		@Override
-		public Resource addPath(String path) throws IOException, MalformedURLException {
+		public Resource addPath(String path) throws IOException {
 			if (path.startsWith("/org/springframework/boot")) {
 				return null;
 			}

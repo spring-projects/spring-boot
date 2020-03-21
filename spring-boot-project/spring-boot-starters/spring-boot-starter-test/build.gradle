@@ -1,0 +1,28 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for testing Spring Boot applications with libraries including JUnit, Hamcrest and Mockito"
+
+dependencies {
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-test"))
+	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))
+	api("com.jayway.jsonpath:json-path")
+	api("jakarta.xml.bind:jakarta.xml.bind-api")
+	api("org.assertj:assertj-core")
+	api("org.hamcrest:hamcrest")
+	api("org.junit.jupiter:junit-jupiter")
+	api("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+	api("org.mockito:mockito-core")
+	api("org.mockito:mockito-junit-jupiter")
+	api("org.skyscreamer:jsonassert")
+	api("org.springframework:spring-core")
+	api("org.springframework:spring-test")
+	api("org.xmlunit:xmlunit-core") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+}

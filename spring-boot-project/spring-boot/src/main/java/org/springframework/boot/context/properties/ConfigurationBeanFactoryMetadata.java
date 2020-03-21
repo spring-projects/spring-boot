@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,12 +33,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * Utility class to memorize {@code @Bean} definition meta data during initialization of
+ * Utility class to memorize {@code @Bean} definition metadata during initialization of
  * the bean factory.
  *
  * @author Dave Syer
  * @since 1.1.0
+ * @deprecated since 2.2.0 in favor of {@link ConfigurationPropertiesBean}
  */
+@Deprecated
 public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware {
 
 	/**
@@ -75,6 +79,15 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
+	}
+
+	static void register(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationBeanFactoryMetadata.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(ConfigurationBeanFactoryMetadata.BEAN_NAME, definition);
+		}
 	}
 
 }

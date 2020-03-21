@@ -82,7 +82,7 @@ class AtomikosJtaConfiguration {
 	}
 
 	@Bean(initMethod = "init", destroyMethod = "close")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(TransactionManager.class)
 	UserTransactionManager atomikosTransactionManager(UserTransactionService userTransactionService) throws Exception {
 		UserTransactionManager manager = new UserTransactionManager();
 		manager.setStartupTransactionService(false);

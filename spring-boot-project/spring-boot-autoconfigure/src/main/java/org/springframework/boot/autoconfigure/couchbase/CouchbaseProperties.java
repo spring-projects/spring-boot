@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
-import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -28,36 +27,36 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Yulin Qin
+ * @author Brian Clozel
+ * @author Michael Nitschinger
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
 public class CouchbaseProperties {
 
 	/**
-	 * Couchbase nodes (host or IP address) to bootstrap from.
+	 * Connection string used to locate the Couchbase cluster.
 	 */
-	private List<String> bootstrapHosts;
+	private String connectionString;
 
 	/**
-	 * Cluster username when using role based access.
+	 * Cluster username.
 	 */
 	private String username;
 
 	/**
-	 * Cluster password when using role based access.
+	 * Cluster password.
 	 */
 	private String password;
 
-	private final Bucket bucket = new Bucket();
-
 	private final Env env = new Env();
 
-	public List<String> getBootstrapHosts() {
-		return this.bootstrapHosts;
+	public String getConnectionString() {
+		return this.connectionString;
 	}
 
-	public void setBootstrapHosts(List<String> bootstrapHosts) {
-		this.bootstrapHosts = bootstrapHosts;
+	public void setConnectionString(String connectionString) {
+		this.connectionString = connectionString;
 	}
 
 	public String getUsername() {
@@ -76,54 +75,20 @@ public class CouchbaseProperties {
 		this.password = password;
 	}
 
-	public Bucket getBucket() {
-		return this.bucket;
-	}
-
 	public Env getEnv() {
 		return this.env;
 	}
 
-	public static class Bucket {
-
-		/**
-		 * Name of the bucket to connect to.
-		 */
-		private String name = "default";
-
-		/**
-		 * Password of the bucket.
-		 */
-		private String password = "";
-
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getPassword() {
-			return this.password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-	}
-
 	public static class Env {
 
-		private final Endpoints endpoints = new Endpoints();
+		private final Io io = new Io();
 
 		private final Ssl ssl = new Ssl();
 
 		private final Timeouts timeouts = new Timeouts();
 
-		public Endpoints getEndpoints() {
-			return this.endpoints;
+		public Io getIo() {
+			return this.io;
 		}
 
 		public Ssl getSsl() {
@@ -136,67 +101,46 @@ public class CouchbaseProperties {
 
 	}
 
-	public static class Endpoints {
+	public static class Io {
 
 		/**
-		 * Number of sockets per node against the key/value service.
+		 * Minimum number of sockets per node.
 		 */
-		private int keyValue = 1;
+		private int minEndpoints = 1;
 
 		/**
-		 * Query (N1QL) service configuration.
+		 * Maximum number of sockets per node.
 		 */
-		private final CouchbaseService queryservice = new CouchbaseService();
+		private int maxEndpoints = 12;
 
 		/**
-		 * View service configuration.
+		 * Length of time an HTTP connection may remain idle before it is closed and
+		 * removed from the pool.
 		 */
-		private final CouchbaseService viewservice = new CouchbaseService();
+		private Duration idleHttpConnectionTimeout = Duration.ofSeconds(30);
 
-		public int getKeyValue() {
-			return this.keyValue;
+		public int getMinEndpoints() {
+			return this.minEndpoints;
 		}
 
-		public void setKeyValue(int keyValue) {
-			this.keyValue = keyValue;
+		public void setMinEndpoints(int minEndpoints) {
+			this.minEndpoints = minEndpoints;
 		}
 
-		public CouchbaseService getQueryservice() {
-			return this.queryservice;
+		public int getMaxEndpoints() {
+			return this.maxEndpoints;
 		}
 
-		public CouchbaseService getViewservice() {
-			return this.viewservice;
+		public void setMaxEndpoints(int maxEndpoints) {
+			this.maxEndpoints = maxEndpoints;
 		}
 
-		public static class CouchbaseService {
+		public Duration getIdleHttpConnectionTimeout() {
+			return this.idleHttpConnectionTimeout;
+		}
 
-			/**
-			 * Minimum number of sockets per node.
-			 */
-			private int minEndpoints = 1;
-
-			/**
-			 * Maximum number of sockets per node.
-			 */
-			private int maxEndpoints = 1;
-
-			public int getMinEndpoints() {
-				return this.minEndpoints;
-			}
-
-			public void setMinEndpoints(int minEndpoints) {
-				this.minEndpoints = minEndpoints;
-			}
-
-			public int getMaxEndpoints() {
-				return this.maxEndpoints;
-			}
-
-			public void setMaxEndpoints(int maxEndpoints) {
-				this.maxEndpoints = maxEndpoints;
-			}
-
+		public void setIdleHttpConnectionTimeout(Duration idleHttpConnectionTimeout) {
+			this.idleHttpConnectionTimeout = idleHttpConnectionTimeout;
 		}
 
 	}
@@ -248,29 +192,49 @@ public class CouchbaseProperties {
 	public static class Timeouts {
 
 		/**
-		 * Bucket connections timeouts.
+		 * Bucket connect timeout.
 		 */
-		private Duration connect = Duration.ofMillis(5000);
+		private Duration connect = Duration.ofSeconds(10);
 
 		/**
-		 * Blocking operations performed on a specific key timeout.
+		 * Bucket disconnect timeout.
+		 */
+		private Duration disconnect = Duration.ofSeconds(10);
+
+		/**
+		 * Timeout for operations on a specific key-value.
 		 */
 		private Duration keyValue = Duration.ofMillis(2500);
 
 		/**
-		 * N1QL query operations timeout.
+		 * Timeout for operations on a specific key-value with a durability level.
 		 */
-		private Duration query = Duration.ofMillis(7500);
+		private Duration keyValueDurable = Duration.ofSeconds(10);
 
 		/**
-		 * Socket connect connections timeout.
+		 * N1QL query operations timeout.
 		 */
-		private Duration socketConnect = Duration.ofMillis(1000);
+		private Duration query = Duration.ofSeconds(75);
 
 		/**
 		 * Regular and geospatial view operations timeout.
 		 */
-		private Duration view = Duration.ofMillis(7500);
+		private Duration view = Duration.ofSeconds(75);
+
+		/**
+		 * Timeout for the search service.
+		 */
+		private Duration search = Duration.ofSeconds(75);
+
+		/**
+		 * Timeout for the analytics service.
+		 */
+		private Duration analytics = Duration.ofSeconds(75);
+
+		/**
+		 * Timeout for the management operations.
+		 */
+		private Duration management = Duration.ofSeconds(75);
 
 		public Duration getConnect() {
 			return this.connect;
@@ -278,6 +242,14 @@ public class CouchbaseProperties {
 
 		public void setConnect(Duration connect) {
 			this.connect = connect;
+		}
+
+		public Duration getDisconnect() {
+			return this.disconnect;
+		}
+
+		public void setDisconnect(Duration disconnect) {
+			this.disconnect = disconnect;
 		}
 
 		public Duration getKeyValue() {
@@ -288,6 +260,14 @@ public class CouchbaseProperties {
 			this.keyValue = keyValue;
 		}
 
+		public Duration getKeyValueDurable() {
+			return this.keyValueDurable;
+		}
+
+		public void setKeyValueDurable(Duration keyValueDurable) {
+			this.keyValueDurable = keyValueDurable;
+		}
+
 		public Duration getQuery() {
 			return this.query;
 		}
@@ -296,20 +276,36 @@ public class CouchbaseProperties {
 			this.query = query;
 		}
 
-		public Duration getSocketConnect() {
-			return this.socketConnect;
-		}
-
-		public void setSocketConnect(Duration socketConnect) {
-			this.socketConnect = socketConnect;
-		}
-
 		public Duration getView() {
 			return this.view;
 		}
 
 		public void setView(Duration view) {
 			this.view = view;
+		}
+
+		public Duration getSearch() {
+			return this.search;
+		}
+
+		public void setSearch(Duration search) {
+			this.search = search;
+		}
+
+		public Duration getAnalytics() {
+			return this.analytics;
+		}
+
+		public void setAnalytics(Duration analytics) {
+			this.analytics = analytics;
+		}
+
+		public Duration getManagement() {
+			return this.management;
+		}
+
+		public void setManagement(Duration management) {
+			this.management = management;
 		}
 
 	}

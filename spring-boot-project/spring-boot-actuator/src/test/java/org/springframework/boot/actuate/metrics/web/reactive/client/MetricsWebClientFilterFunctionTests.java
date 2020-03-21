@@ -72,7 +72,7 @@ class MetricsWebClientFilterFunctionTests {
 	void filterShouldRecordTimer() {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
-		given(this.response.statusCode()).willReturn(HttpStatus.OK);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200").timer().count()).isEqualTo(1);
@@ -83,7 +83,7 @@ class MetricsWebClientFilterFunctionTests {
 		ClientRequest request = ClientRequest
 				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
-		given(this.response.statusCode()).willReturn(HttpStatus.OK);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
 		this.filterFunction.filter(request, this.exchange).block(Duration.ofSeconds(30));
 		assertThat(this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/{project}", "status", "200").timer().count()).isEqualTo(1);

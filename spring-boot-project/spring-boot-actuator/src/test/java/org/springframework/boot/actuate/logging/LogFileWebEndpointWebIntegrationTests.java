@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.logging.LogFile;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -41,17 +40,13 @@ import org.springframework.util.FileCopyUtils;
  */
 class LogFileWebEndpointWebIntegrationTests {
 
-	private ConfigurableApplicationContext context;
-
 	private WebTestClient client;
 
 	private static File tempFile;
 
 	@BeforeEach
-	void setUp(WebTestClient client, ConfigurableApplicationContext context) {
+	void setUp(WebTestClient client) {
 		this.client = client;
-		this.context = context;
-
 	}
 
 	@BeforeAll
@@ -79,7 +74,7 @@ class LogFileWebEndpointWebIntegrationTests {
 			File logFile = new File(tempFile, "test.log");
 			FileCopyUtils.copy("--TEST--".getBytes(), logFile);
 			MockEnvironment environment = new MockEnvironment();
-			environment.setProperty("logging.file", logFile.getAbsolutePath());
+			environment.setProperty("logging.file.name", logFile.getAbsolutePath());
 			return new LogFileWebEndpoint(LogFile.get(environment), null);
 		}
 

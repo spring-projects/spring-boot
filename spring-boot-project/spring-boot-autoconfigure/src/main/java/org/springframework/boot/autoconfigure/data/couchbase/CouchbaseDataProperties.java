@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
  * Configuration properties for Spring Data Couchbase.
@@ -35,9 +34,25 @@ public class CouchbaseDataProperties {
 	private boolean autoIndex;
 
 	/**
-	 * Consistency to apply by default on generated queries.
+	 * Name of the bucket to connect to.
 	 */
-	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
+	private String bucketName;
+
+	/**
+	 * Name of the scope used for all collection access.
+	 */
+	private String scopeName;
+
+	/**
+	 * Fully qualified name of the FieldNamingStrategy to use.
+	 */
+	private Class<?> fieldNamingStrategy;
+
+	/**
+	 * Name of the field that stores the type information for complex types when using
+	 * "MappingCouchbaseConverter".
+	 */
+	private String typeKey = "_class";
 
 	public boolean isAutoIndex() {
 		return this.autoIndex;
@@ -47,12 +62,36 @@ public class CouchbaseDataProperties {
 		this.autoIndex = autoIndex;
 	}
 
-	public Consistency getConsistency() {
-		return this.consistency;
+	public String getBucketName() {
+		return this.bucketName;
 	}
 
-	public void setConsistency(Consistency consistency) {
-		this.consistency = consistency;
+	public void setBucketName(String bucketName) {
+		this.bucketName = bucketName;
+	}
+
+	public String getScopeName() {
+		return this.scopeName;
+	}
+
+	public void setScopeName(String scopeName) {
+		this.scopeName = scopeName;
+	}
+
+	public Class<?> getFieldNamingStrategy() {
+		return this.fieldNamingStrategy;
+	}
+
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+		this.fieldNamingStrategy = fieldNamingStrategy;
+	}
+
+	public String getTypeKey() {
+		return this.typeKey;
+	}
+
+	public void setTypeKey(String typeKey) {
+		this.typeKey = typeKey;
 	}
 
 }

@@ -104,7 +104,6 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return new LoggingLinesWriter();
 		}
 		return new SystemLinesWriter(this.print);
-
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
@@ -226,7 +225,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		private final LinesWriter delegate;
 
-		private final List<String> lines = new ArrayList<>();
+		private final ThreadLocal<List<String>> lines = ThreadLocal.withInitial(ArrayList::new);
 
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,
@@ -237,11 +236,11 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		@Override
 		public void write(List<String> lines) {
-			this.lines.addAll(lines);
+			this.lines.get().addAll(lines);
 		}
 
 		void writeDeferredResult() {
-			this.delegate.write(this.lines);
+			this.delegate.write(this.lines.get());
 		}
 
 		static DeferredLinesWriter get(ApplicationContext applicationContext) {
@@ -254,7 +253,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 
 		void clear() {
-			this.lines.clear();
+			this.lines.get().clear();
 		}
 
 	}

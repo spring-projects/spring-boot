@@ -19,11 +19,13 @@ package org.springframework.boot.context.embedded;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,29 +41,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @EmbeddedServletContainerTest(packaging = "war",
 		launchers = { BootRunApplicationLauncher.class, IdeApplicationLauncher.class })
-public class EmbeddedServletContainerWarDevelopmentIntegrationTests {
+class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 
 	@TestTemplate
-	public void metaInfResourceFromDependencyIsAvailableViaHttp(RestTemplate rest) {
+	void metaInfResourceFromDependencyIsAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	public void metaInfResourceFromDependencyIsAvailableViaServletContext(RestTemplate rest) {
+	@DisabledOnOs(OS.WINDOWS)
+	void metaInfResourceFromDependencyWithNameThatContainsReservedCharactersIsAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity(
+				"/nested-reserved-%21%23%24%25%26%28%29%2A%2B%2C%3A%3D%3F%40%5B%5D-meta-inf-resource.txt",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("encoded-name");
+	}
+
+	@TestTemplate
+	void metaInfResourceFromDependencyIsAvailableViaServletContext(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	public void webappResourcesAreAvailableViaHttp(RestTemplate rest) {
+	void webappResourcesAreAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/webapp-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@TestTemplate
-	public void loaderClassesAreNotAvailableViaResourcePaths(RestTemplate rest) {
+	void loaderClassesAreNotAvailableViaResourcePaths(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
@@ -72,13 +84,8 @@ public class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 		if (input == null) {
 			return Collections.emptyList();
 		}
-		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new StringReader(input))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-			return lines;
+			return reader.lines().collect(Collectors.toList());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to read lines from input '" + input + "'");

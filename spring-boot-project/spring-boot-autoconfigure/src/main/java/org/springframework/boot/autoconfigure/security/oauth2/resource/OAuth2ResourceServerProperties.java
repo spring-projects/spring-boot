@@ -82,7 +82,8 @@ public class OAuth2ResourceServerProperties {
 		private String jwsAlgorithm = "RS256";
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
 

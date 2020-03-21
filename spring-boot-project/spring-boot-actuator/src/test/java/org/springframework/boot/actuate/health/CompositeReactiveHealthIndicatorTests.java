@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class CompositeReactiveHealthIndicatorTests {
 
 	private static final Health UNKNOWN_HEALTH = Health.unknown().withDetail("detail", "value").build();

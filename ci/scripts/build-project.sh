@@ -5,6 +5,5 @@ source $(dirname $0)/common.sh
 repository=$(pwd)/distribution-repository
 
 pushd git-repo > /dev/null
-run_maven -N clean verify
-run_maven -f spring-boot-project/pom.xml clean deploy -U -Dfull -DaltDeploymentRepository=distribution::default::file://${repository}
+./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --max-workers=4 -PdeploymentRepository=${repository} build publishAllPublicationsToDeploymentRepository
 popd > /dev/null

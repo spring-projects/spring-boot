@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("deprecation")
 class HealthIndicatorReactiveAdapterTests {
 
 	@Test
@@ -43,7 +46,7 @@ class HealthIndicatorReactiveAdapterTests {
 		HealthIndicator delegate = mock(HealthIndicator.class);
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
 		given(delegate.health()).willThrow(new IllegalStateException("Expected"));
-		StepVerifier.create(adapter.health()).expectError(IllegalStateException.class);
+		StepVerifier.create(adapter.health()).expectError(IllegalStateException.class).verify(Duration.ofSeconds(10));
 	}
 
 	@Test

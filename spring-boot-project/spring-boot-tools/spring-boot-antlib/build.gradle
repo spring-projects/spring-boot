@@ -1,0 +1,77 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
+}
+
+description = "Spring Boot Antlib"
+
+ext {
+	antVersion = "1.10.7"
+}
+
+configurations {
+	antUnit
+	antIvy
+}
+
+dependencies {
+	antUnit "org.apache.ant:ant-antunit:1.3"
+	antIvy "org.apache.ivy:ivy:2.5.0"
+
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+	compileOnly("org.apache.ant:ant:${antVersion}")
+
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("org.springframework:spring-core")
+}
+
+task copyIntegrationTestSources(type: Copy) {
+	from file("src/it")
+	into "${buildDir}/it"
+}
+
+processResources {
+	eachFile {
+		filter { it.replace('${spring-boot.version}', project.version) }
+	}
+}
+
+task integrationTest {
+	dependsOn copyIntegrationTestSources, jar
+	def resultsDir = file("${buildDir}/test-results/integrationTest")
+	inputs.dir file("src/it")
+	inputs.files sourceSets.main.runtimeClasspath
+	outputs.dirs resultsDir
+	doLast {
+		ant.with {
+			taskdef(resource: "org/apache/ant/antunit/antlib.xml",
+					classpath: configurations.antUnit.asPath)
+			taskdef(resource: "org/apache/ivy/ant/antlib.xml",
+					classpath: configurations.antIvy.asPath)
+			taskdef(resource: "org/springframework/boot/ant/antlib.xml",
+					classpath: sourceSets.main.runtimeClasspath.asPath,
+					uri: "antlib:org.springframework.boot.ant")
+			ant.property(name: "ivy.class.path", value: configurations.antIvy.asPath)
+			ant.property(name: "antunit.class.path", value: configurations.antUnit.asPath)
+			antunit {
+				propertyset {
+					ant.propertyref(name: "build.compiler")
+					ant.propertyref(name: "antunit.class.path")
+					ant.propertyref(name: "ivy.class.path")
+				}
+				plainlistener()
+				file("${buildDir}/test-results/integrationTest").mkdirs()
+				xmllistener(toDir: resultsDir)
+				fileset(dir: "${buildDir}/it", includes: "**/build.xml")
+			}
+		}
+	}
+}
+
+check {
+	dependsOn integrationTest
+}

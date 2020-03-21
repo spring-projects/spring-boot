@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,29 +21,31 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
+import javax.servlet.ServletRegistration.Dynamic;
 
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
+import org.apache.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.ErrorPage;
-import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -53,6 +55,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -174,6 +177,34 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
+	@Test
+	void whenServerIsShuttingDownGracefullyThenRequestsAreRejectedWithServiceUnavailable() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Shutdown shutdown = new Shutdown();
+		shutdown.setGracePeriod(Duration.ofSeconds(5));
+		factory.setShutdown(shutdown);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		Future<Object> rejectedRequest = initiateGetRequest(port, "/");
+		assertThat(shutdownResult.get()).isEqualTo(false);
+		blockingServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		this.webServer.stop();
+		Object requestResult = rejectedRequest.get();
+		assertThat(requestResult).isInstanceOf(HttpResponse.class);
+		assertThat(((HttpResponse) requestResult).getStatusLine().getStatusCode())
+				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
+	}
+
 	private void testAccessLog(String prefix, String suffix, String expectedFile)
 			throws IOException, URISyntaxException, InterruptedException {
 		UndertowServletWebServerFactory factory = getFactory();
@@ -238,11 +269,8 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		return null; // Undertow does not support JSPs
 	}
 
-	private void awaitFile(File file) throws InterruptedException {
-		long end = System.currentTimeMillis() + 10000;
-		while (!file.exists() && System.currentTimeMillis() < end) {
-			Thread.sleep(100);
-		}
+	private void awaitFile(File file) {
+		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(file::exists, is(true));
 	}
 
 	private ServletContainer getServletContainerFromNewFactory() {
@@ -259,15 +287,6 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	protected Map<String, String> getActualMimeMappings() {
 		return ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
 				.getMimeExtensionMappings();
-	}
-
-	@Override
-	protected Collection<Mapping> getExpectedMimeMappings() {
-		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
-		// extension so it has a mapping for "z" and "Z".
-		Set<Mapping> expectedMappings = new HashSet<>(super.getExpectedMimeMappings());
-		expectedMappings.add(new Mapping("Z", "application/x-compress"));
-		return expectedMappings;
 	}
 
 	@Override
@@ -289,6 +308,11 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Override
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
 		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((UndertowServletWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

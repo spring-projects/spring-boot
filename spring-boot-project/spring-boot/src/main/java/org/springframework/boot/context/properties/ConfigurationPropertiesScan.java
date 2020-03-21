@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
 
 /**
  * Configures the base packages used when scanning for
@@ -30,6 +31,9 @@ import org.springframework.core.annotation.AliasFor;
  * {@link #basePackageClasses()}, {@link #basePackages()} or its alias {@link #value()}
  * may be specified to define specific packages to scan. If specific packages are not
  * defined scanning will occur from the package of the class with this annotation.
+ * <p>
+ * Note: Classes annotated or meta-annotated with {@link Component @Component} will not be
+ * picked up by this annotation.
  *
  * @author Madhura Bhave
  * @since 2.2.0
@@ -38,6 +42,7 @@ import org.springframework.core.annotation.AliasFor;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(ConfigurationPropertiesScanRegistrar.class)
+@EnableConfigurationProperties
 public @interface ConfigurationPropertiesScan {
 
 	/**

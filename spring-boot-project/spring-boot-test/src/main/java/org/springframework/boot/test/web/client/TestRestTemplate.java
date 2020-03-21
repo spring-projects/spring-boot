@@ -615,7 +615,6 @@ public class TestRestTemplate {
 	 */
 	public <T> T patchForObject(URI url, Object request, Class<T> responseType) throws RestClientException {
 		return this.restTemplate.patchForObject(applyRootUriIfNecessary(url), request, responseType);
-
 	}
 
 	/**

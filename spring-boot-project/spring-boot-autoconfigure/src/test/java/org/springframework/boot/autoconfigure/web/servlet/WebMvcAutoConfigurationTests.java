@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,7 +196,7 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void resourceHandlerMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
-				.run((context) -> assertThat(getResourceMappingLocations(context)).hasSize(1));
+				.run((context) -> assertThat(getResourceMappingLocations(context)).hasSize(0));
 	}
 
 	@Test
@@ -355,14 +355,14 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void ignoreDefaultModelOnRedirectIsTrue() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-				.extracting("ignoreDefaultModelOnRedirect").containsExactly(true));
+				.extracting("ignoreDefaultModelOnRedirect").isEqualTo(true));
 	}
 
 	@Test
 	void overrideIgnoreDefaultModelOnRedirect() {
 		this.contextRunner.withPropertyValues("spring.mvc.ignore-default-model-on-redirect:false")
 				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-						.extracting("ignoreDefaultModelOnRedirect").containsExactly(false));
+						.extracting("ignoreDefaultModelOnRedirect").isEqualTo(false));
 	}
 
 	@Test
@@ -379,29 +379,16 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void faviconMapping() {
-		this.contextRunner
-				.run((context) -> assertThat(getResourceMappingLocations(context).get("/favicon.ico")).hasSize(1));
-	}
-
-	@Test
-	void faviconMappingDisabled() {
-		this.contextRunner.withPropertyValues("spring.mvc.favicon.enabled:false")
-				.run((context) -> assertThat(getResourceMappingLocations(context).get("/favicon.ico")).isNull());
-	}
-
-	@Test
 	void defaultAsyncRequestTimeout() {
-		this.contextRunner.run((context) -> assertThat(ReflectionTestUtils
-				.getField(context.getBean(RequestMappingHandlerAdapter.class), "asyncRequestTimeout")).isNull());
+		this.contextRunner.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("asyncRequestTimeout").isNull());
 	}
 
 	@Test
 	void customAsyncRequestTimeout() {
 		this.contextRunner.withPropertyValues("spring.mvc.async.request-timeout:12345")
-				.run((context) -> assertThat(ReflectionTestUtils
-						.getField(context.getBean(RequestMappingHandlerAdapter.class), "asyncRequestTimeout"))
-								.isEqualTo(12345L));
+				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+						.extracting("asyncRequestTimeout").isEqualTo(12345L));
 	}
 
 	@Test
@@ -409,8 +396,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isSameAs(context.getBean("applicationTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isSameAs(context.getBean("applicationTaskExecutor"));
 				});
 	}
 
@@ -419,8 +406,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isNotSameAs(context.getBean("applicationTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isNotSameAs(context.getBean("applicationTaskExecutor"));
 				});
 	}
 
@@ -428,9 +415,9 @@ class WebMvcAutoConfigurationTests {
 	void asyncTaskExecutorWithMvcConfigurerCanOverrideExecutor() {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
-				.run((context) -> assertThat(ReflectionTestUtils
-						.getField(context.getBean(RequestMappingHandlerAdapter.class), "taskExecutor"))
-								.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
+				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+						.extracting("taskExecutor")
+						.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
 	}
 
 	@Test
@@ -438,8 +425,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
 					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(RequestMappingHandlerAdapter.class),
-							"taskExecutor")).isNotSameAs(context.getBean("customTaskExecutor"));
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
+							.isNotSameAs(context.getBean("customTaskExecutor"));
 				});
 	}
 
@@ -576,13 +563,29 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void validatorWithConfigurerShouldUseSpringValidator() {
+	void validatorWithConfigurerAloneShouldUseSpringValidator() {
 		this.contextRunner.withUserConfiguration(MvcValidator.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(ValidatorFactory.class);
 			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
 			assertThat(context).getBeanNames(Validator.class).containsOnly("mvcValidator");
-			assertThat(context.getBean("mvcValidator")).isSameAs(context.getBean(MvcValidator.class).validator);
+			Validator expectedValidator = context.getBean(MvcValidator.class).validator;
+			assertThat(context.getBean("mvcValidator")).isSameAs(expectedValidator);
+			assertThat(context.getBean(RequestMappingHandlerAdapter.class).getWebBindingInitializer())
+					.hasFieldOrPropertyWithValue("validator", expectedValidator);
 		});
+	}
+
+	@Test
+	void validatorWithConfigurerShouldUseSpringValidator() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+				.withUserConfiguration(MvcValidator.class).run((context) -> {
+					assertThat(context).getBeanNames(javax.validation.Validator.class).containsOnly("defaultValidator");
+					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
+					Validator expectedValidator = context.getBean(MvcValidator.class).validator;
+					assertThat(context.getBean("mvcValidator")).isSameAs(expectedValidator);
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class).getWebBindingInitializer())
+							.hasFieldOrPropertyWithValue("validator", expectedValidator);
+				});
 	}
 
 	@Test
@@ -639,8 +642,7 @@ class WebMvcAutoConfigurationTests {
 					Validator validator = context.getBean(Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 					Validator target = ((ValidatorAdapter) validator).getTarget();
-					assertThat(ReflectionTestUtils.getField(target, "targetValidator"))
-							.isSameAs(context.getBean("customJsr303Validator"));
+					assertThat(target).extracting("targetValidator").isSameAs(context.getBean("customJsr303Validator"));
 				});
 	}
 
@@ -657,14 +659,12 @@ class WebMvcAutoConfigurationTests {
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(3);
+		assertThat(handlerMap).hasSize(2);
 		for (Entry<String, Object> entry : handlerMap.entrySet()) {
-			if (!entry.getKey().equals("/favicon.ico")) {
-				Object handler = entry.getValue();
-				if (handler instanceof ResourceHttpRequestHandler) {
-					assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(5);
-					assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).isNull();
-				}
+			Object handler = entry.getValue();
+			if (handler instanceof ResourceHttpRequestHandler) {
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(5);
+				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).isNull();
 			}
 		}
 	}
@@ -781,7 +781,7 @@ class WebMvcAutoConfigurationTests {
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(3);
+		assertThat(handlerMap).hasSize(2);
 		for (Object handler : handlerMap.keySet()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(-1);
@@ -792,7 +792,12 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
-		return getMappingLocations(context.getBean("resourceHandlerMapping", HandlerMapping.class));
+		Object bean = context.getBean("resourceHandlerMapping");
+		if (bean instanceof HandlerMapping) {
+			return getMappingLocations(context.getBean("resourceHandlerMapping", HandlerMapping.class));
+		}
+		assertThat(bean.toString()).isEqualTo("null");
+		return Collections.emptyMap();
 	}
 
 	protected List<ResourceResolver> getResourceResolvers(ApplicationContext context, String mapping) {
@@ -912,7 +917,6 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		ConfigurableWebBindingInitializer customConfigurableWebBindingInitializer() {
 			return new CustomWebBindingInitializer();
-
 		}
 
 	}

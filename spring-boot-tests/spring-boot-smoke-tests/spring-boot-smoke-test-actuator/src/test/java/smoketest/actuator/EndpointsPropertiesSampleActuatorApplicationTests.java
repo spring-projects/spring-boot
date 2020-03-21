@@ -44,11 +44,9 @@ class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Test
 	void testCustomErrorPath() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/oops",
-				Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/oops", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("error")).isEqualTo("None");
 		assertThat(body.get("status")).isEqualTo(999);
@@ -56,15 +54,16 @@ class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Test
 	void testCustomContextPath() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
 				.getForEntity("/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).contains("\"hello\":\"world\"");
 	}
 
-	private String getPassword() {
-		return "password";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
+		return (ResponseEntity) entity;
 	}
 
 }

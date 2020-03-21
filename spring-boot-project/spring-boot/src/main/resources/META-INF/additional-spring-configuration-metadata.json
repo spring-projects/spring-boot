@@ -48,6 +48,18 @@
       "defaultValue": false
     },
     {
+      "name": "spring.banner.image.bitdepth",
+      "type": "java.lang.Integer",
+      "description": "The bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
+      "defaultValue": 4
+    },
+    {
+      "name": "spring.banner.image.pixelmode",
+      "type": "org.springframework.boot.ImageBanner$PixelMode",
+      "description": "The pixel mode to use when rendering the image.",
+      "defaultValue": "TEXT"
+    },
+    {
       "name": "debug",
       "type": "java.lang.Boolean",
       "description": "Enable debug logs.",
@@ -66,15 +78,6 @@
       "description": "Conversion word used when logging exceptions.",
       "defaultValue": "%wEx",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
-    },
-    {
-      "name": "logging.file",
-      "type": "java.lang.String",
-      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "deprecation": {
-        "replacement": "logging.file.name"
-      }
     },
     {
       "name": "logging.file.clean-history-on-start",
@@ -129,15 +132,6 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
-      "name": "logging.path",
-      "type": "java.lang.String",
-      "description": "Location of the log file. For instance, `/var/log`.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "deprecation": {
-        "replacement": "logging.file.path"
-      }
-    },
-    {
       "name": "logging.pattern.console",
       "type": "java.lang.String",
       "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
@@ -164,6 +158,13 @@
       "description": "Appender pattern for log level. Supported only with the default Logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "%5p"
+    },
+    {
+      "name": "logging.pattern.rolling-file-name",
+      "type": "java.lang.String",
+      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
     },
     {
       "name": "logging.register-shutdown-hook",
@@ -640,11 +641,30 @@
       "defaultValue": "console"
     },
     {
+      "name": "spring.main.cloud-platform",
+      "type": "org.springframework.boot.cloud.CloudPlatform",
+      "description": "Override the Cloud Platform auto-detection."
+    },
+    {
       "name": "spring.main.lazy-initialization",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Whether initialization should be performed lazily.",
       "defaultValue": false
+    },
+    {
+      "name": "spring.main.log-startup-info",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether to log information about the application when it starts.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.main.register-shutdown-hook",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether the application should have a shutdown hook registered.",
+      "defaultValue": true
     },
     {
       "name": "spring.main.show-banner",
@@ -797,6 +817,24 @@
       "defaultValue": "classpath:banner.txt",
       "deprecation": {
         "replacement": "spring.banner.location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "logging.file",
+      "type": "java.lang.String",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
+      "deprecation": {
+        "replacement": "logging.file.name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "logging.path",
+      "type": "java.lang.String",
+      "description": "Location of the log file. For instance, `/var/log`.",
+      "deprecation": {
+        "replacement": "logging.file.path",
         "level": "error"
       }
     },

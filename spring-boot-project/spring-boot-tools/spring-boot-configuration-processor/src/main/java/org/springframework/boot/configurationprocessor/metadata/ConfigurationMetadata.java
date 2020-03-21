@@ -165,7 +165,7 @@ public class ConfigurationMetadata {
 		if (o1 == o2) {
 			return true;
 		}
-		return o1 != null && o2 != null && o1.equals(o2);
+		return o1 != null && o1.equals(o2);
 	}
 
 	public static String nestedPrefix(String prefix, String name) {

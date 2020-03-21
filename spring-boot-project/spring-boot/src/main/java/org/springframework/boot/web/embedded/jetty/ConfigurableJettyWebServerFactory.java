@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -35,6 +36,13 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	 * @param acceptors the number of acceptor threads to use
 	 */
 	void setAcceptors(int acceptors);
+
+	/**
+	 * Set the {@link ThreadPool} that should be used by the {@link Server}. If set to
+	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
+	 * @param threadPool the ThreadPool to be used
+	 */
+	void setThreadPool(ThreadPool threadPool);
 
 	/**
 	 * Set the number of selector threads to use.

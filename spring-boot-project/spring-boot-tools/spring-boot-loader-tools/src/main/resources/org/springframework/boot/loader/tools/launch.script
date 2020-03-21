@@ -128,6 +128,21 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
+# Run as user specified in RUN_AS_USER
+if [[ -n "$RUN_AS_USER" ]]; then
+    if ! [[ "$action" =~ ^(status|run)$ ]]; then
+        id -u "$RUN_AS_USER" || {
+            echoRed "Cannot run as '$RUN_AS_USER': no such user"
+            exit 2
+        }
+        [[ $(id -u) == 0 ]] || {
+            echoRed "Cannot run as '$RUN_AS_USER': current user is not root"
+            exit 4
+        }
+    fi
+    run_user="$RUN_AS_USER"
+fi
+
 # Issue a warning if the application will run as root
 [[ $(id -u ${run_user}) == "0" ]] && { echoYellow "Application is running as root (UID 0). This is considered insecure."; }
 

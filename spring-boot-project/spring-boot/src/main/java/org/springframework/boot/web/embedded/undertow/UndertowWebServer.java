@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -59,6 +61,8 @@ public class UndertowWebServer implements WebServer {
 
 	private final Closeable closeable;
 
+	private final GracefulShutdown gracefulShutdown;
+
 	private Undertow undertow;
 
 	private volatile boolean started = false;
@@ -80,9 +84,23 @@ public class UndertowWebServer implements WebServer {
 	 * @since 2.0.4
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
+		this(builder, autoStart, closeable, new ImmediateGracefulShutdown());
+	}
+
+	/**
+	 * Create a new {@link UndertowWebServer} instance.
+	 * @param builder the builder
+	 * @param autoStart if the server should be started
+	 * @param closeable called when the server is stopped
+	 * @param gracefulShutdown handler for graceful shutdown
+	 * @since 2.3.0
+	 */
+	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable,
+			GracefulShutdown gracefulShutdown) {
 		this.builder = builder;
 		this.autoStart = autoStart;
 		this.closeable = closeable;
+		this.gracefulShutdown = gracefulShutdown;
 	}
 
 	@Override
@@ -245,6 +263,15 @@ public class UndertowWebServer implements WebServer {
 		return ports.get(0).getNumber();
 	}
 
+	@Override
+	public boolean shutDownGracefully() {
+		return (this.gracefulShutdown != null) ? this.gracefulShutdown.shutDownGracefully() : false;
+	}
+
+	boolean inGracefulShutdown() {
+		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
+	}
+
 	/**
 	 * An active Undertow port.
 	 */
@@ -275,10 +302,7 @@ public class UndertowWebServer implements WebServer {
 				return false;
 			}
 			UndertowWebServer.Port other = (UndertowWebServer.Port) obj;
-			if (this.number != other.number) {
-				return false;
-			}
-			return true;
+			return this.number == other.number;
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,10 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +30,7 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import org.xnio.OptionMap;
@@ -40,6 +40,8 @@ import org.xnio.XnioWorker;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 import org.springframework.util.Assert;
@@ -54,9 +56,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		implements ConfigurableUndertowWebServerFactory {
 
 	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
-
-	@Deprecated
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
 	private Integer bufferSize;
 
@@ -98,8 +97,29 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	@Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = createBuilder(getPort());
-		Closeable closeable = configureHandler(builder, httpHandler);
-		return new UndertowWebServer(builder, getPort() >= 0, closeable);
+		HttpHandler handler = new UndertowHttpHandlerAdapter(httpHandler);
+		if (this.useForwardHeaders) {
+			handler = Handlers.proxyPeerAddress(handler);
+		}
+		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
+		Closeable closeable = null;
+		GracefulShutdown gracefulShutdown = null;
+		if (isAccessLogEnabled()) {
+			AccessLogHandlerConfiguration accessLogHandlerConfiguration = configureAccessLogHandler(builder, handler);
+			closeable = accessLogHandlerConfiguration.closeable;
+			handler = accessLogHandlerConfiguration.accessLogHandler;
+		}
+		GracefulShutdownHandler gracefulShutdownHandler = Handlers.gracefulShutdown(handler);
+		Duration gracePeriod = getShutdown().getGracePeriod();
+		if (gracePeriod != null) {
+			gracefulShutdown = new UndertowGracefulShutdown(gracefulShutdownHandler, gracePeriod);
+			handler = gracefulShutdownHandler;
+		}
+		else {
+			gracefulShutdown = new ImmediateGracefulShutdown();
+		}
+		builder.setHandler(handler);
+		return new UndertowWebServer(builder, getPort() >= 0, closeable, gracefulShutdown);
 	}
 
 	private Undertow.Builder createBuilder(int port) {
@@ -128,24 +148,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return builder;
 	}
 
-	private Closeable configureHandler(Undertow.Builder builder,
-			org.springframework.http.server.reactive.HttpHandler httpHandler) {
-		HttpHandler handler = new UndertowHttpHandlerAdapter(httpHandler);
-		if (this.useForwardHeaders) {
-			handler = Handlers.proxyPeerAddress(handler);
-		}
-		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
-		Closeable closeable = null;
-		if (isAccessLogEnabled()) {
-			closeable = configureAccessLogHandler(builder, handler);
-		}
-		else {
-			builder.setHandler(handler);
-		}
-		return closeable;
-	}
-
-	private Closeable configureAccessLogHandler(Undertow.Builder builder, HttpHandler handler) {
+	private AccessLogHandlerConfiguration configureAccessLogHandler(Undertow.Builder builder, HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
@@ -153,9 +156,9 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(worker, this.accessLogDirectory,
 					prefix, this.accessLogSuffix, this.accessLogRotate);
 			String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern : "common");
-			builder.setHandler(
-					new AccessLogHandler(handler, accessLogReceiver, formatString, Undertow.class.getClassLoader()));
-			return () -> {
+			AccessLogHandler accessLogHandler = new AccessLogHandler(handler, accessLogReceiver, formatString,
+					Undertow.class.getClassLoader());
+			return new AccessLogHandlerConfiguration(accessLogHandler, () -> {
 				try {
 					accessLogReceiver.close();
 					worker.shutdown();
@@ -167,7 +170,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
-			};
+			});
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
@@ -292,6 +295,19 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	private static final class AccessLogHandlerConfiguration {
+
+		private final AccessLogHandler accessLogHandler;
+
+		private final Closeable closeable;
+
+		private AccessLogHandlerConfiguration(AccessLogHandler accessLogHandler, Closeable closeable) {
+			this.accessLogHandler = accessLogHandler;
+			this.closeable = closeable;
+		}
+
 	}
 
 }

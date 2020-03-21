@@ -34,17 +34,6 @@
 
 			<local name="spring-boot.version" />
 
-			<loadproperties prefix="spring-boot">
-				<javaresource
-					name="META-INF/maven/org.springframework.boot/spring-boot-antlib/pom.properties"
-					loaderref="spring.boot.antlib.loader" />
-				<filterchain>
-					<linecontainsregexp>
-						<regexp pattern="^version=" />
-					</linecontainsregexp>
-				</filterchain>
-			</loadproperties>
-
 			<local name="destdir" />
 			<dirname file="@{destfile}" property="destdir" />
 

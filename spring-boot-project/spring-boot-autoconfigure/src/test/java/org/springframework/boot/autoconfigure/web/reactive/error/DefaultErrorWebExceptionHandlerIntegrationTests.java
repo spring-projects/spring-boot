@@ -111,7 +111,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	void bindingResultError() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
-			client.post().uri("/bind").contentType(MediaType.APPLICATION_JSON).body("{}").exchange().expectStatus()
+			client.post().uri("/bind").contentType(MediaType.APPLICATION_JSON).bodyValue("{}").exchange().expectStatus()
 					.isBadRequest().expectBody().jsonPath("status").isEqualTo("400").jsonPath("error")
 					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path").isEqualTo(("/bind"))
 					.jsonPath("exception").doesNotExist().jsonPath("errors").isArray().jsonPath("message").isNotEmpty()
@@ -218,7 +218,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
 					.isThrownBy(() -> client.get().uri("/commit").exchange().expectStatus())
-					.withCauseInstanceOf(IllegalStateException.class).withMessageContaining("already committed!");
+					.withCauseInstanceOf(IllegalStateException.class)
+					.withMessageContaining("Error occurred after response was completed");
 		});
 	}
 

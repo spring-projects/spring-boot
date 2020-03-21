@@ -63,7 +63,7 @@ class ArtemisEmbeddedConfigurationFactory {
 		TransportConfiguration transportConfiguration = new TransportConfiguration(InVMAcceptorFactory.class.getName(),
 				this.properties.generateTransportParameters());
 		configuration.getAcceptorConfigurations().add(transportConfiguration);
-		if (this.properties.isDefaultClusterPassword()) {
+		if (this.properties.isDefaultClusterPassword() && logger.isDebugEnabled()) {
 			logger.debug("Using default Artemis cluster password: " + this.properties.getClusterPassword());
 		}
 		configuration.setClusterPassword(this.properties.getClusterPassword());

@@ -46,7 +46,6 @@ public class UnboundElementsSourceFilter implements Function<ConfigurationProper
 		if (underlyingSource instanceof PropertySource) {
 			String name = ((PropertySource<?>) underlyingSource).getName();
 			return !BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
-
 		}
 		return true;
 	}

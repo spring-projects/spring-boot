@@ -80,7 +80,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
-				Builder builder = ClientRegistrations.fromOidcIssuerLocation(issuer).registrationId(registrationId);
+				Builder builder = ClientRegistrations.fromIssuerLocation(issuer).registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
 		}

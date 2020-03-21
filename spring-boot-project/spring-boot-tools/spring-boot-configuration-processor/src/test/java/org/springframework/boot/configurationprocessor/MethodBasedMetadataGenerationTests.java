@@ -24,7 +24,11 @@ import org.springframework.boot.configurationsample.method.DeprecatedMethodConfi
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
-import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.method.PackagePrivateMethodConfig;
+import org.springframework.boot.configurationsample.method.PrivateMethodConfig;
+import org.springframework.boot.configurationsample.method.ProtectedMethodConfig;
+import org.springframework.boot.configurationsample.method.PublicMethodConfig;
+import org.springframework.boot.configurationsample.method.SingleConstructorMethodConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,13 +40,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	void simpleMethodConfig() {
-		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
-		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
+	void publicMethodConfig() {
+		methodConfig(PublicMethodConfig.class, PublicMethodConfig.Foo.class);
+	}
+
+	@Test
+	void protectedMethodConfig() {
+		methodConfig(ProtectedMethodConfig.class, ProtectedMethodConfig.Foo.class);
+	}
+
+	@Test
+	void packagePrivateMethodConfig() {
+		methodConfig(PackagePrivateMethodConfig.class, PackagePrivateMethodConfig.Foo.class);
+	}
+
+	private void methodConfig(Class<?> config, Class<?> properties) {
+		ConfigurationMetadata metadata = compile(config);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(config));
+		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class).fromSource(properties));
 		assertThat(metadata)
-				.has(Metadata.withProperty("foo.name", String.class).fromSource(SimpleMethodConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
-				.fromSource(SimpleMethodConfig.Foo.class));
+				.has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false).fromSource(properties));
+	}
+
+	@Test
+	void privateMethodConfig() {
+		ConfigurationMetadata metadata = compile(PrivateMethodConfig.class);
+		assertThat(metadata).doesNotHave(Metadata.withGroup("foo"));
 	}
 
 	@Test
@@ -62,6 +85,17 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 				.fromSource(MethodAndClassConfig.Foo.class));
 		assertThat(metadata)
 				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
+	}
+
+	@Test
+	void singleConstructorMethodConfig() {
+		ConfigurationMetadata metadata = compile(SingleConstructorMethodConfig.class);
+		assertThat(metadata).doesNotHave(Metadata.withProperty("foo.my-service", Object.class)
+				.fromSource(SingleConstructorMethodConfig.Foo.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("foo.name", String.class).fromSource(SingleConstructorMethodConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(SingleConstructorMethodConfig.Foo.class));
 	}
 
 	@Test

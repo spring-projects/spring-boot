@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource
+import org.springframework.core.ResolvableType
 
 /**
  * Tests for `ConstructorParametersBinder`.
@@ -173,6 +174,19 @@ class KotlinConstructorParametersBinderTests {
 		assertThat(bean.enumValue).isEqualTo(ExampleEnum.FOO_BAR)
 	}
 
+	@Test
+	fun `Bind to data class with generics`() {
+		val source = MockConfigurationPropertySource()
+		source.put("foo.value.bar", "baz")
+		val binder = Binder(source)
+		val type = ResolvableType.forClassWithGenerics(Map::class.java, String::class.java,
+				String::class.java)
+		val bean = binder.bind("foo", Bindable
+				.of<GenericValue<Map<String, String>>>(ResolvableType.forClassWithGenerics(GenericValue::class.java, type)))
+				.get()
+		assertThat(bean.value.get("bar")).isEqualTo("baz");
+	}
+
 	class ExampleValueBean(val intValue: Int?, val longValue: Long?,
 						   val booleanValue: Boolean?, val stringValue: String?,
 						   val enumValue: ExampleEnum?)
@@ -213,5 +227,9 @@ class KotlinConstructorParametersBinderTests {
 									val booleanValue: Boolean = false,
 									val stringValue: String = "my data",
 									val enumValue: ExampleEnum = ExampleEnum.BAR_BAZ)
+
+	data class GenericValue<T>(
+		val value: T
+	)
 
 }

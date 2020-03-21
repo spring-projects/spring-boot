@@ -590,7 +590,6 @@ class WebEndpointDiscovererTests {
 		@WriteOperation(produces = { "a/b", "c/d" })
 		String write() {
 			return "write";
-
 		}
 
 		@DeleteOperation(produces = "text/plain")

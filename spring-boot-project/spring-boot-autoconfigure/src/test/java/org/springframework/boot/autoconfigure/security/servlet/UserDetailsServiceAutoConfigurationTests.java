@@ -42,6 +42,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link UserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 @ExtendWith(OutputCaptureExtension.class)
 class UserDetailsServiceAutoConfigurationTests {
@@ -96,6 +99,22 @@ class UserDetailsServiceAutoConfigurationTests {
 			assertThat(output).doesNotContain("Using generated security password: ");
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(provider.authenticate(token)).isNotNull();
+		});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfResourceServerWithOpaqueIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfigWithIntrospectionClient.class).run((context) -> {
+			assertThat(context).hasSingleBean(OpaqueTokenIntrospector.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
+		});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfResourceServerWithJWTIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfigWithJwtDecoder.class).run((context) -> {
+			assertThat(context).hasSingleBean(JwtDecoder.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
 		});
 	}
 
@@ -204,6 +223,28 @@ class UserDetailsServiceAutoConfigurationTests {
 		@Bean
 		ClientRegistrationRepository clientRegistrationRepository() {
 			return mock(ClientRegistrationRepository.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestSecurityConfiguration.class)
+	static class TestConfigWithJwtDecoder {
+
+		@Bean
+		JwtDecoder jwtDecoder() {
+			return mock(JwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestSecurityConfiguration.class)
+	static class TestConfigWithIntrospectionClient {
+
+		@Bean
+		OpaqueTokenIntrospector introspectionClient() {
+			return mock(OpaqueTokenIntrospector.class);
 		}
 
 	}

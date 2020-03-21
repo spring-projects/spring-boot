@@ -1,0 +1,24 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot JUnit Vintage smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}
+
+test {
+	testLogging {
+		afterSuite { description, result ->
+			if (!description.parent) {
+				if (!result.testCount) {
+					throw new GradleException("No tests were executed")
+				}
+			}
+	 	}
+	}
+}

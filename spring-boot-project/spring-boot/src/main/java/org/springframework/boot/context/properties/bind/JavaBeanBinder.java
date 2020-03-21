@@ -42,6 +42,8 @@ import org.springframework.core.ResolvableType;
  */
 class JavaBeanBinder implements DataObjectBinder {
 
+	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
+
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder) {
@@ -51,7 +53,7 @@ class JavaBeanBinder implements DataObjectBinder {
 			return null;
 		}
 		BeanSupplier<T> beanSupplier = bean.getSupplier(target);
-		boolean bound = bind(propertyBinder, bean, beanSupplier);
+		boolean bound = bind(propertyBinder, bean, beanSupplier, context);
 		return (bound ? beanSupplier.get() : null);
 	}
 
@@ -71,10 +73,12 @@ class JavaBeanBinder implements DataObjectBinder {
 		return false;
 	}
 
-	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
+	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier,
+			Context context) {
 		boolean bound = false;
 		for (BeanProperty beanProperty : bean.getProperties().values()) {
 			bound |= bind(beanSupplier, propertyBinder, beanProperty);
+			context.clearConfigurationProperty();
 		}
 		return bound;
 	}

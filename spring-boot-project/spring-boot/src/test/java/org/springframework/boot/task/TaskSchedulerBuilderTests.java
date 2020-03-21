@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link TaskSchedulerBuilder}.
@@ -54,8 +54,9 @@ class TaskSchedulerBuilderTests {
 
 	@Test
 	void awaitTerminationPeriodShouldApply() {
-		ThreadPoolTaskScheduler executor = this.builder.awaitTerminationPeriod(Duration.ofMinutes(1)).build();
-		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 60);
+		Duration period = Duration.ofMinutes(1);
+		ThreadPoolTaskScheduler executor = this.builder.awaitTerminationPeriod(period).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationMillis", period.toMillis());
 	}
 
 	@Test
@@ -101,7 +102,7 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyZeroInteractions(customizer1);
+		verifyNoInteractions(customizer1);
 		verify(customizer2).customize(scheduler);
 	}
 

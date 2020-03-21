@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link BindResult}.
@@ -100,7 +100,7 @@ class BindResultTests {
 	void ifBoundWhenHasNoValueShouldNotCallConsumer() {
 		BindResult<String> result = BindResult.of(null);
 		result.ifBound(this.consumer);
-		verifyZeroInteractions(this.consumer);
+		verifyNoInteractions(this.consumer);
 	}
 
 	@Test
@@ -121,7 +121,7 @@ class BindResultTests {
 	void mapWhenHasNoValueShouldNotCallMapper() {
 		BindResult<String> result = BindResult.of(null);
 		result.map(this.mapper);
-		verifyZeroInteractions(this.mapper);
+		verifyNoInteractions(this.mapper);
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class BindResultTests {
 	void orElseGetWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("foo");
-		verifyZeroInteractions(this.supplier);
+		verifyNoInteractions(this.supplier);
 	}
 
 	@Test
@@ -148,29 +148,6 @@ class BindResultTests {
 		BindResult<String> result = BindResult.of(null);
 		given(this.supplier.get()).willReturn("bar");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("bar");
-	}
-
-	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void orElseCreateWhenTypeIsNullShouldThrowException() {
-		BindResult<String> result = BindResult.of("foo");
-		assertThatIllegalArgumentException().isThrownBy(() -> result.orElseCreate(null))
-				.withMessageContaining("Type must not be null");
-	}
-
-	@Test
-	@Deprecated
-	void orElseCreateWhenHasValueShouldReturnValue() {
-		BindResult<ExampleBean> result = BindResult.of(new ExampleBean("foo"));
-		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("foo");
-	}
-
-	@Test
-	@Deprecated
-	void orElseCreateWhenHasValueNoShouldReturnCreatedValue() {
-		BindResult<ExampleBean> result = BindResult.of(null);
-		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("new");
 	}
 
 	@Test

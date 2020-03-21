@@ -80,6 +80,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
+			getContext().setConfigurationProperty(property);
 			bindValue(target, collection.get(), aggregateType, elementType, property.getValue());
 		}
 		else {

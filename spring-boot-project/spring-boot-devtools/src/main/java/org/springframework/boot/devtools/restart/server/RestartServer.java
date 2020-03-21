@@ -144,7 +144,6 @@ public class RestartServer {
 			classLoader = classLoader.getParent();
 		}
 		return urls;
-
 	}
 
 	private void updateTimeStamp(Iterable<URL> urls) {

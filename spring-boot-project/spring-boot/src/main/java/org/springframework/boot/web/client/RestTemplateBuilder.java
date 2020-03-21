@@ -154,7 +154,10 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Set a root URL that should be applied to each request that starts with {@code '/'}.
-	 * See {@link RootUriTemplateHandler} for details.
+	 * Since this works by adding a {@link UriTemplateHandler} to the
+	 * {@link RestTemplate}, the root URL will only apply when {@code String} variants of
+	 * the {@link RestTemplate} methods are used for specifying the request URL. See
+	 * {@link RootUriTemplateHandler} for details.
 	 * @param rootUri the root URI or {@code null}
 	 * @return a new builder instance
 	 */
@@ -612,7 +615,7 @@ public class RestTemplateBuilder {
 		if (requestFactory != null) {
 			restTemplate.setRequestFactory(requestFactory);
 		}
-		addClientHttpRequestFactoryWrapper(restTemplate);
+		addClientHttpRequestInitializer(restTemplate);
 		if (!CollectionUtils.isEmpty(this.messageConverters)) {
 			restTemplate.setMessageConverters(new ArrayList<>(this.messageConverters));
 		}
@@ -656,24 +659,12 @@ public class RestTemplateBuilder {
 		return requestFactory;
 	}
 
-	private void addClientHttpRequestFactoryWrapper(RestTemplate restTemplate) {
+	private void addClientHttpRequestInitializer(RestTemplate restTemplate) {
 		if (this.basicAuthentication == null && this.defaultHeaders.isEmpty() && this.requestCustomizers.isEmpty()) {
 			return;
 		}
-		List<ClientHttpRequestInterceptor> interceptors = null;
-		if (!restTemplate.getInterceptors().isEmpty()) {
-			// Stash and clear the interceptors so we can access the real factory
-			interceptors = new ArrayList<>(restTemplate.getInterceptors());
-			restTemplate.getInterceptors().clear();
-		}
-		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
-		ClientHttpRequestFactory wrapper = new RestTemplateBuilderClientHttpRequestFactoryWrapper(requestFactory,
-				this.basicAuthentication, this.defaultHeaders, this.requestCustomizers);
-		restTemplate.setRequestFactory(wrapper);
-		// Restore the original interceptors
-		if (interceptors != null) {
-			restTemplate.getInterceptors().addAll(interceptors);
-		}
+		restTemplate.getClientHttpRequestInitializers().add(new RestTemplateBuilderClientHttpRequestInitializer(
+				this.basicAuthentication, this.defaultHeaders, this.requestCustomizers));
 	}
 
 	@SuppressWarnings("unchecked")

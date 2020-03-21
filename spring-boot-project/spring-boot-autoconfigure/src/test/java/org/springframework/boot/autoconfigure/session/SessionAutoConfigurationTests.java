@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -98,8 +97,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner
 				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.servlet.session.timeout=1", "spring.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout())
-						.isEqualTo(Duration.ofSeconds(3)));
+				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
 	}
 
 	@Test
@@ -107,8 +105,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner
 				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.servlet.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout())
-						.isEqualTo(Duration.ofSeconds(3)));
+				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
 	}
 
 	@SuppressWarnings("unchecked")

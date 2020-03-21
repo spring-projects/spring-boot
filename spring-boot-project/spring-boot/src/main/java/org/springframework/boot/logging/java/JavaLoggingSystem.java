@@ -168,7 +168,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		this.configuredLoggers.clear();
 	}
 
-	private final class ShutdownHandler implements Runnable {
+	private static final class ShutdownHandler implements Runnable {
 
 		@Override
 		public void run() {

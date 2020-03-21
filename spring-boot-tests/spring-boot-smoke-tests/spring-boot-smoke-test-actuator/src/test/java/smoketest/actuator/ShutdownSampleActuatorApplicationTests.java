@@ -47,11 +47,9 @@ class ShutdownSampleActuatorApplicationTests {
 
 	@Test
 	void testHome() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
-				Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("message")).isEqualTo("Hello Phil");
 	}
@@ -59,17 +57,15 @@ class ShutdownSampleActuatorApplicationTests {
 	@Test
 	@DirtiesContext
 	void testShutdown() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
-				.postForEntity("/actuator/shutdown", null, Map.class);
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.withBasicAuth("user", "password")
+				.postForEntity("/actuator/shutdown", null, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(((String) body.get("message"))).contains("Shutting down");
+		assertThat(((String) entity.getBody().get("message"))).contains("Shutting down");
 	}
 
-	private String getPassword() {
-		return "password";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <K, V> ResponseEntity<Map<K, V>> asMapEntity(ResponseEntity<Map> entity) {
+		return (ResponseEntity) entity;
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -113,14 +114,24 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
-		HttpStatus errorStatus = getHttpStatus(error);
+		int errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
-		return Flux
-				.just("error/" + errorStatus.value(), "error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
+		return Flux.just(getData(errorStatus).toArray(new String[] {}))
 				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
 				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
 						? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
 				.next();
+	}
+
+	private List<String> getData(int errorStatus) {
+		List<String> data = new ArrayList<>();
+		data.add("error/" + errorStatus);
+		HttpStatus.Series series = HttpStatus.Series.resolve(errorStatus);
+		if (series != null) {
+			data.add("error/" + SERIES_VIEWS.get(series));
+		}
+		data.add("error/error");
+		return data;
 	}
 
 	/**
@@ -132,7 +143,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromObject(error));
+				.body(BodyInserters.fromValue(error));
 	}
 
 	/**
@@ -157,9 +168,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param errorAttributes the current error information
 	 * @return the error HTTP status
 	 */
-	protected HttpStatus getHttpStatus(Map<String, Object> errorAttributes) {
-		int statusCode = (int) errorAttributes.get("status");
-		return HttpStatus.valueOf(statusCode);
+	protected int getHttpStatus(Map<String, Object> errorAttributes) {
+		return (int) errorAttributes.get("status");
 	}
 
 	/**

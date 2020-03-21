@@ -20,7 +20,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.plugins.JavaApplication;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,9 +52,10 @@ class MainClassConventionTests {
 	}
 
 	@Test
-	void mainClassNameProjectPropertyIsUsed() throws Exception {
-		this.project.getExtensions().getByType(ExtraPropertiesExtension.class).set("mainClassName",
-				"com.example.MainClass");
+	void javaApplicationExtensionMainClassNameIsUsed() throws Exception {
+		this.project.getPlugins().apply(ApplicationPlugin.class);
+		JavaApplication extension = this.project.getExtensions().findByType(JavaApplication.class);
+		extension.setMainClassName("com.example.MainClass");
 		assertThat(this.convention.call()).isEqualTo("com.example.MainClass");
 	}
 
@@ -66,9 +68,10 @@ class MainClassConventionTests {
 	}
 
 	@Test
-	void springBootExtensionMainClassNameIsUsedInPreferenceToMainClassNameProjectProperty() throws Exception {
-		this.project.getExtensions().getByType(ExtraPropertiesExtension.class).set("mainClassName",
-				"com.example.ProjectPropertyMainClass");
+	void springBootExtensionMainClassNameIsUsedInPreferenceToJavaApplicationExtensionMainClassName() throws Exception {
+		this.project.getPlugins().apply(ApplicationPlugin.class);
+		JavaApplication javaApplication = this.project.getExtensions().findByType(JavaApplication.class);
+		javaApplication.setMainClassName("com.example.JavaApplicationMainClass");
 		SpringBootExtension extension = this.project.getExtensions().create("springBoot", SpringBootExtension.class,
 				this.project);
 		extension.setMainClassName("com.example.SpringBootExtensionMainClass");

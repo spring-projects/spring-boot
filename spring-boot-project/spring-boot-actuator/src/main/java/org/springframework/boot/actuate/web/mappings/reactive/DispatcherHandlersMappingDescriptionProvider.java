@@ -81,7 +81,6 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 		for (HandlerMappingDescriptionProvider<?> descriptionProvider : descriptionProviders) {
 			if (descriptionProvider.getMappingClass().isInstance(handlerMapping)) {
 				return ((HandlerMappingDescriptionProvider<T>) descriptionProvider).describe(handlerMapping).stream();
-
 			}
 		}
 		return Stream.empty();

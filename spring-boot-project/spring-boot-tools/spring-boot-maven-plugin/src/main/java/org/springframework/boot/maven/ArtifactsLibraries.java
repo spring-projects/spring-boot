@@ -31,6 +31,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
@@ -39,6 +40,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class ArtifactsLibraries implements Libraries {
@@ -78,7 +80,9 @@ public class ArtifactsLibraries implements Libraries {
 					name = artifact.getGroupId() + "-" + name;
 					this.log.debug("Renamed to: " + name);
 				}
-				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact)));
+				LibraryCoordinates coordinates = new LibraryCoordinates(artifact.getGroupId(), artifact.getArtifactId(),
+						artifact.getVersion());
+				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact), coordinates));
 			}
 		}
 	}

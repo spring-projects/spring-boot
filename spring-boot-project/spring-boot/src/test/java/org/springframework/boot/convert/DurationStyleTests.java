@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,72 +51,72 @@ class DurationStyleTests {
 
 	@Test
 	void detectAndParseWhenSimpleNanosShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10ns")).isEqualTo(Duration.ofNanos(10));
-		assertThat(DurationStyle.detectAndParse("10NS")).isEqualTo(Duration.ofNanos(10));
-		assertThat(DurationStyle.detectAndParse("+10ns")).isEqualTo(Duration.ofNanos(10));
-		assertThat(DurationStyle.detectAndParse("-10ns")).isEqualTo(Duration.ofNanos(-10));
+		assertThat(DurationStyle.detectAndParse("10ns")).hasNanos(10);
+		assertThat(DurationStyle.detectAndParse("10NS")).hasNanos(10);
+		assertThat(DurationStyle.detectAndParse("+10ns")).hasNanos(10);
+		assertThat(DurationStyle.detectAndParse("-10ns")).hasNanos(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleMicrosShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10us")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(DurationStyle.detectAndParse("10US")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(DurationStyle.detectAndParse("+10us")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(DurationStyle.detectAndParse("-10us")).isEqualTo(Duration.ofNanos(-10000));
+		assertThat(DurationStyle.detectAndParse("10us")).hasNanos(10000);
+		assertThat(DurationStyle.detectAndParse("10US")).hasNanos(10000);
+		assertThat(DurationStyle.detectAndParse("+10us")).hasNanos(10000);
+		assertThat(DurationStyle.detectAndParse("-10us")).hasNanos(-10000);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleMillisShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10ms")).isEqualTo(Duration.ofMillis(10));
-		assertThat(DurationStyle.detectAndParse("10MS")).isEqualTo(Duration.ofMillis(10));
-		assertThat(DurationStyle.detectAndParse("+10ms")).isEqualTo(Duration.ofMillis(10));
-		assertThat(DurationStyle.detectAndParse("-10ms")).isEqualTo(Duration.ofMillis(-10));
+		assertThat(DurationStyle.detectAndParse("10ms")).hasMillis(10);
+		assertThat(DurationStyle.detectAndParse("10MS")).hasMillis(10);
+		assertThat(DurationStyle.detectAndParse("+10ms")).hasMillis(10);
+		assertThat(DurationStyle.detectAndParse("-10ms")).hasMillis(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleSecondsShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10s")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(DurationStyle.detectAndParse("10S")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(DurationStyle.detectAndParse("+10s")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(DurationStyle.detectAndParse("-10s")).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(DurationStyle.detectAndParse("10s")).hasSeconds(10);
+		assertThat(DurationStyle.detectAndParse("10S")).hasSeconds(10);
+		assertThat(DurationStyle.detectAndParse("+10s")).hasSeconds(10);
+		assertThat(DurationStyle.detectAndParse("-10s")).hasSeconds(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleMinutesShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10m")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(DurationStyle.detectAndParse("10M")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(DurationStyle.detectAndParse("+10m")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(DurationStyle.detectAndParse("-10m")).isEqualTo(Duration.ofMinutes(-10));
+		assertThat(DurationStyle.detectAndParse("10m")).hasMinutes(10);
+		assertThat(DurationStyle.detectAndParse("10M")).hasMinutes(10);
+		assertThat(DurationStyle.detectAndParse("+10m")).hasMinutes(10);
+		assertThat(DurationStyle.detectAndParse("-10m")).hasMinutes(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleHoursShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10h")).isEqualTo(Duration.ofHours(10));
-		assertThat(DurationStyle.detectAndParse("10H")).isEqualTo(Duration.ofHours(10));
-		assertThat(DurationStyle.detectAndParse("+10h")).isEqualTo(Duration.ofHours(10));
-		assertThat(DurationStyle.detectAndParse("-10h")).isEqualTo(Duration.ofHours(-10));
+		assertThat(DurationStyle.detectAndParse("10h")).hasHours(10);
+		assertThat(DurationStyle.detectAndParse("10H")).hasHours(10);
+		assertThat(DurationStyle.detectAndParse("+10h")).hasHours(10);
+		assertThat(DurationStyle.detectAndParse("-10h")).hasHours(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleDaysShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10d")).isEqualTo(Duration.ofDays(10));
-		assertThat(DurationStyle.detectAndParse("10D")).isEqualTo(Duration.ofDays(10));
-		assertThat(DurationStyle.detectAndParse("+10d")).isEqualTo(Duration.ofDays(10));
-		assertThat(DurationStyle.detectAndParse("-10d")).isEqualTo(Duration.ofDays(-10));
+		assertThat(DurationStyle.detectAndParse("10d")).hasDays(10);
+		assertThat(DurationStyle.detectAndParse("10D")).hasDays(10);
+		assertThat(DurationStyle.detectAndParse("+10d")).hasDays(10);
+		assertThat(DurationStyle.detectAndParse("-10d")).hasDays(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleWithoutSuffixShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10")).isEqualTo(Duration.ofMillis(10));
-		assertThat(DurationStyle.detectAndParse("+10")).isEqualTo(Duration.ofMillis(10));
-		assertThat(DurationStyle.detectAndParse("-10")).isEqualTo(Duration.ofMillis(-10));
+		assertThat(DurationStyle.detectAndParse("10")).hasMillis(10);
+		assertThat(DurationStyle.detectAndParse("+10")).hasMillis(10);
+		assertThat(DurationStyle.detectAndParse("-10")).hasMillis(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleWithoutSuffixButWithChronoUnitShouldReturnDuration() {
-		assertThat(DurationStyle.detectAndParse("10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(DurationStyle.detectAndParse("+10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(DurationStyle.detectAndParse("-10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(DurationStyle.detectAndParse("10", ChronoUnit.SECONDS)).hasSeconds(10);
+		assertThat(DurationStyle.detectAndParse("+10", ChronoUnit.SECONDS)).hasSeconds(10);
+		assertThat(DurationStyle.detectAndParse("-10", ChronoUnit.SECONDS)).hasSeconds(-10);
 	}
 
 	@Test
@@ -191,13 +191,13 @@ class DurationStyleTests {
 
 	@Test
 	void parseSimpleShouldParse() {
-		assertThat(DurationStyle.SIMPLE.parse("10m")).isEqualTo(Duration.ofMinutes(10));
+		assertThat(DurationStyle.SIMPLE.parse("10m")).hasMinutes(10);
 	}
 
 	@Test
 	void parseSimpleWithUnitShouldUseUnitAsFallback() {
-		assertThat(DurationStyle.SIMPLE.parse("10m", ChronoUnit.SECONDS)).isEqualTo(Duration.ofMinutes(10));
-		assertThat(DurationStyle.SIMPLE.parse("10", ChronoUnit.MINUTES)).isEqualTo(Duration.ofMinutes(10));
+		assertThat(DurationStyle.SIMPLE.parse("10m", ChronoUnit.SECONDS)).hasMinutes(10);
+		assertThat(DurationStyle.SIMPLE.parse("10", ChronoUnit.MINUTES)).hasMinutes(10);
 	}
 
 	@Test
