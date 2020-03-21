@@ -107,7 +107,7 @@ public final class WebFluxTags {
 		PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (pathPattern != null) {
 			String patternString = pathPattern.getPatternString();
-			if (ignoreTrailingSlash) {
+			if (ignoreTrailingSlash && patternString.length() > 1) {
 				patternString = TRAILING_SLASH_PATTERN.matcher(patternString).replaceAll("");
 			}
 			return Tag.of("uri", patternString);
