@@ -7966,7 +7966,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 
 
 [[building-docker-images]]
-=== Building Docker Images
+== Building Docker Images
 Spring Boot applications can be containerized by packaging them into Docker images.
 A typical Spring Boot fat jar can be converted into a Docker image by adding just a few lines to a Dockerfile that can be used to build the image.
 However, there are various downsides to copying and running the fat jar as is in the docker image.
@@ -7975,7 +7975,7 @@ The other issue is that putting your application's code and all its dependencies
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
-==== Layered Jars
+=== Layered Jars
 To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports "layered jars".
 A regular fat jar that can be run with `java -jar` has the following structure:
 
@@ -8044,7 +8044,7 @@ Application code is more likely to change between builds so it is isolated in a 
 For Maven, refer to the {spring-boot-maven-plugin-docs}/#repackage-layered-jars[packaging layered jars section] for more details on creating a layered jar.
 For Gradle, refer to the {spring-boot-gradle-plugin-docs}/#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
 
-==== Writing the Dockerfile
+=== Writing the Dockerfile
 
 When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
@@ -8097,7 +8097,7 @@ You can use some combination of `unzip` and `mv` to move things to the right lay
 
 
 
-==== Buildpacks
+=== Buildpacks
 Dockerfiles are just one way to build docker images.
 Another way to build docker images is directly from your Maven or Gradle plugin, using buildpacks.
 If you’ve ever used an application platform such as Cloud Foundry or Heroku then you’ve probably used a buildpack.
