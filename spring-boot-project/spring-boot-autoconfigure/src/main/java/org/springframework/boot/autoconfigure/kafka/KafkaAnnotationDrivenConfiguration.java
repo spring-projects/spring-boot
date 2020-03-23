@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
@@ -112,9 +113,10 @@ class KafkaAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
 	ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
 			ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
-			ConsumerFactory<Object, Object> kafkaConsumerFactory) {
+			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-		configurer.configure(factory, kafkaConsumerFactory);
+		configurer.configure(factory, kafkaConsumerFactory
+				.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
 		return factory;
 	}
 
