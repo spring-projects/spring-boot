@@ -77,6 +77,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Dominic Gunn
  * @author András Deák
+ * @author Takaaki Shimbo
  */
 @ExtendWith(OutputCaptureExtension.class)
 class FlywayAutoConfigurationTests {
@@ -156,6 +157,15 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void flywayDataSourceWithoutDataSourceAutoConfiguration() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+		});
+	}
+
+	@Test
+	void flywayMultipleDataSources() {
+		this.contextRunner.withUserConfiguration(FlywayMultipleDataSourcesConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Flyway.class);
 			assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
@@ -505,6 +515,27 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FlywayMultipleDataSourcesConfiguration {
+
+		@Bean
+		DataSource mainDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:main").username("sa").build();
+		}
+
+		@Bean
+		DataSource secondlyDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:secondly").username("sa").build();
+		}
+
+		@FlywayDataSource
+		@Bean
+		DataSource flywayDataSource(DataSource mainDataSource) {
+			return mainDataSource;
 		}
 
 	}
