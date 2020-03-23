@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -476,6 +477,16 @@ public class KafkaAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	public void testConcurrentKafkaListenerContainerFactoryWithCustomConsumerFactory() {
+		this.contextRunner.withUserConfiguration(ConsumerFactoryConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(kafkaListenerContainerFactory.getConsumerFactory())
+					.isNotSameAs(context.getBean(ConsumerFactoryConfiguration.class).consumerFactory);
+		});
+	}
+
 	@Configuration
 	protected static class MessageConverterConfiguration {
 
@@ -516,6 +527,18 @@ public class KafkaAutoConfigurationTests {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
+		}
+
+	}
+
+	@Configuration
+	protected static class ConsumerFactoryConfiguration {
+
+		private final ConsumerFactory<String, Object> consumerFactory = mock(ConsumerFactory.class);
+
+		@Bean
+		public ConsumerFactory<String, Object> myConsumerFactory() {
+			return this.consumerFactory;
 		}
 
 	}
