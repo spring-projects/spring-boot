@@ -43,7 +43,7 @@ public interface HealthEndpointGroupConfigurer {
 	/**
 	 * Configure the {@link StatusAggregator} to use for this group.
 	 * <p>
-	 * If none set, this will default to the globalmy configured {@link StatusAggregator}.
+	 * If none set, this will default to the globally configured {@link StatusAggregator}.
 	 * @param statusAggregator the status aggregator
 	 * @return the configurer instance
 	 */
@@ -52,7 +52,7 @@ public interface HealthEndpointGroupConfigurer {
 	/**
 	 * Configure the {@link HttpCodeStatusMapper} to use for this group.
 	 * <p>
-	 * If none set, this will default to the globalmy configured
+	 * If none set, this will default to the globally configured
 	 * {@link HttpCodeStatusMapper}.
 	 * @param httpCodeStatusMapper the status code mapper
 	 * @return the configurer instance
@@ -60,14 +60,14 @@ public interface HealthEndpointGroupConfigurer {
 	HealthEndpointGroupConfigurer httpCodeStatusMapper(HttpCodeStatusMapper httpCodeStatusMapper);
 
 	/**
-	 * Configure the {@link Show visbility option} for showing components of this group.
+	 * Configure the {@link Show visibility option} for showing components of this group.
 	 * @param showComponents the components visibility
 	 * @return the configurer instance
 	 */
 	HealthEndpointGroupConfigurer showComponents(Show showComponents);
 
 	/**
-	 * Configure the {@link Show visbility option} for showing details of this group.
+	 * Configure the {@link Show visibility option} for showing details of this group.
 	 * @param showDetails the details visibility
 	 * @return the configurer instance
 	 */
