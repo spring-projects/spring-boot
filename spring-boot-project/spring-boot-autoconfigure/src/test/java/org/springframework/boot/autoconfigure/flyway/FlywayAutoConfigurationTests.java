@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -523,19 +523,19 @@ class FlywayAutoConfigurationTests {
 	static class FlywayMultipleDataSourcesConfiguration {
 
 		@Bean
-		DataSource mainDataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:main").username("sa").build();
+		DataSource firstDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:first").username("sa").build();
 		}
 
 		@Bean
-		DataSource secondlyDataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:secondly").username("sa").build();
+		DataSource secondDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:second").username("sa").build();
 		}
 
 		@FlywayDataSource
 		@Bean
-		DataSource flywayDataSource(DataSource mainDataSource) {
-			return mainDataSource;
+		DataSource flywayDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
 
 	}
