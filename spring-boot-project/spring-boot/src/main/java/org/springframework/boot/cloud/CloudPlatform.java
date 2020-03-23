@@ -38,7 +38,7 @@ public enum CloudPlatform {
 	CLOUD_FOUNDRY {
 
 		@Override
-		public boolean isAutoDetected(Environment environment) {
+		public boolean isActive(Environment environment) {
 			return environment.containsProperty("VCAP_APPLICATION") || environment.containsProperty("VCAP_SERVICES");
 		}
 
@@ -50,7 +50,7 @@ public enum CloudPlatform {
 	HEROKU {
 
 		@Override
-		public boolean isAutoDetected(Environment environment) {
+		public boolean isActive(Environment environment) {
 			return environment.containsProperty("DYNO");
 		}
 
@@ -62,7 +62,7 @@ public enum CloudPlatform {
 	SAP {
 
 		@Override
-		public boolean isAutoDetected(Environment environment) {
+		public boolean isActive(Environment environment) {
 			return environment.containsProperty("HC_LANDSCAPE");
 		}
 
@@ -82,14 +82,14 @@ public enum CloudPlatform {
 		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
 
 		@Override
-		public boolean isAutoDetected(Environment environment) {
+		public boolean isActive(Environment environment) {
 			if (environment instanceof ConfigurableEnvironment) {
-				return isAutoDetected((ConfigurableEnvironment) environment);
+				return isActive((ConfigurableEnvironment) environment);
 			}
 			return false;
 		}
 
-		private boolean isAutoDetected(ConfigurableEnvironment environment) {
+		private boolean isActive(ConfigurableEnvironment environment) {
 			PropertySource<?> environmentPropertySource = environment.getPropertySources()
 					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 			if (environmentPropertySource != null) {
@@ -98,13 +98,13 @@ public enum CloudPlatform {
 					return true;
 				}
 				if (environmentPropertySource instanceof EnumerablePropertySource) {
-					return isAutoDetected((EnumerablePropertySource<?>) environmentPropertySource);
+					return isActive((EnumerablePropertySource<?>) environmentPropertySource);
 				}
 			}
 			return false;
 		}
 
-		private boolean isAutoDetected(EnumerablePropertySource<?> environmentPropertySource) {
+		private boolean isActive(EnumerablePropertySource<?> environmentPropertySource) {
 			for (String propertyName : environmentPropertySource.getPropertyNames()) {
 				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
 					String serviceName = propertyName.substring(0,
@@ -124,31 +124,7 @@ public enum CloudPlatform {
 	 * @param environment the environment
 	 * @return if the platform is active.
 	 */
-	public boolean isActive(Environment environment) {
-		return isEnforced(environment) || isAutoDetected(environment);
-	}
-
-	/**
-	 * Detemines if the platform is enforced by looking at the
-	 * {@code "spring.main.cloud-platform"} configuration property.
-	 * @param environment the environment
-	 * @return if the platform is enforced
-	 */
-	public boolean isEnforced(Environment environment) {
-		String platform = environment.getProperty("spring.main.cloud-platform");
-		if (platform != null) {
-			return this.name().equalsIgnoreCase(platform);
-		}
-		return false;
-	}
-
-	/**
-	 * Determines if the platform is auto-detected by looking for platform-specific
-	 * environment variables.
-	 * @param environment the environment
-	 * @return if the platform is auto-detected.
-	 */
-	public abstract boolean isAutoDetected(Environment environment);
+	public abstract boolean isActive(Environment environment);
 
 	/**
 	 * Returns if the platform is behind a load balancer and uses
