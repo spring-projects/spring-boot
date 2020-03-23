@@ -23,7 +23,7 @@ Before you proceed, you should read the following topics:
 * <<overview-endpoint-urls>>
 * <<overview-timestamps>>
 
-
+NOTE: In order to get the correct JSON responses documented below, Jackson must be available.
 
 [[overview-endpoint-urls]]
 === URLs

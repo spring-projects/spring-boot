@@ -1001,6 +1001,8 @@ For example, `health` is exposed as `/actuator/health`.
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 If both Jersey and Spring MVC are available, Spring MVC will be used.
 
+NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
+
 
 
 [[production-ready-customizing-management-server-context-path]]
