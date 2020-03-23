@@ -51,6 +51,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -576,6 +577,16 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomConsumerFactory() {
+		this.contextRunner.withUserConfiguration(ConsumerFactoryConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(kafkaListenerContainerFactory.getConsumerFactory())
+					.isNotSameAs(context.getBean(ConsumerFactoryConfiguration.class).consumerFactory);
+		});
+	}
+
+	@Test
 	void specificSecurityProtocolOverridesCommonSecurityProtocol() {
 		this.contextRunner.withPropertyValues("spring.kafka.security.protocol=SSL",
 				"spring.kafka.admin.security.protocol=PLAINTEXT").run((context) -> {
@@ -649,6 +660,18 @@ class KafkaAutoConfigurationTests {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConsumerFactoryConfiguration {
+
+		private final ConsumerFactory<String, Object> consumerFactory = mock(ConsumerFactory.class);
+
+		@Bean
+		ConsumerFactory<String, Object> myConsumerFactory() {
+			return this.consumerFactory;
 		}
 
 	}
