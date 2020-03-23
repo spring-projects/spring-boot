@@ -876,8 +876,9 @@ Applications deployed on Kubernetes can provide information about their internal
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet will call those probes and react to the result.
 
 Spring Boot manages your <<spring-boot-features.adoc#boot-features-application-availability-state,Application Availability State>> out-of-the-box.
-If deployed in a Kubernetes environment, Actuator will gather the "Liveness" and "Readiness" information from the `ApplicationAvailabilityProvider`, create dedicated <<production-ready-health-indicators,Health Indicators>>
-and expose them as HTTP Probes using <<production-ready-health-groups, Health Groups>>.
+If deployed in a Kubernetes environment, Actuator will gather the "Liveness" and "Readiness" information from the `ApplicationAvailabilityProvider` and use that information in dedicated <<production-ready-health-indicators,Health Indicators>>: `LivenessProbeHealthIndicator` and `ReadinessProbeHealthIndicator`.
+These indicators will be shown on the global health endpoint (`"/actuator/health"`).
+They will also be exposed as separate HTTP Probes using <<production-ready-health-groups, Health Groups>>: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
 
 You can then configure your Kubernetes infrastructure with the following endpoint information:
 
