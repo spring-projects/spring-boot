@@ -71,7 +71,7 @@ public class CustomLayersProvider {
 					(StrategyFactory<LibraryFilter, LibraryStrategy>) FilteredLibraryStrategy::new,
 					CoordinateFilter::new, "coordinates"::equals));
 		}
-		if ("classes".equals(nodeName)) {
+		if ("application".equals(nodeName)) {
 			resourceStrategies.addAll(getStrategies(contents,
 					(StrategyFactory<ResourceFilter, ResourceStrategy>) FilteredResourceStrategy::new,
 					LocationFilter::new, "locations"::equals));

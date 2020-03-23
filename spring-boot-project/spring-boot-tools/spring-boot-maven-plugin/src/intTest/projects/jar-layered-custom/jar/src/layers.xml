@@ -20,7 +20,7 @@
 			</coordinates>
 		</layer-content>
 	</libraries>
-	<classes>
+	<application>
 		<layer-content layer="configuration">
 			<locations>
 				<include>**/application*.*</include>
@@ -31,5 +31,5 @@
 				<include>**</include>
 			</locations>
 		</layer-content>
-	</classes>
+	</application>
 </layers-configuration>

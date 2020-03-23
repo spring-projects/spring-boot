@@ -5,7 +5,7 @@
 	<layers>
 		<layer>my-layer</layer>
 	</layers>
-	<classes>
+	<application>
 		<layer-content layer="my-layer"/>
-	</classes>
+	</application>
 </layers-configuration>

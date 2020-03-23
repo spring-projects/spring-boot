@@ -27,7 +27,7 @@
 			</coordinates>
 		</layer-content>
 	</libraries>
-	<classes>
+	<application>
 		<layer-content layer="my-resources">
 			<locations>
 				<include>META-INF/resources/**</include>
@@ -43,5 +43,5 @@
 				<include>**</include>
 			</locations>
 		</layer-content>
-	</classes>
+	</application>
 </layers-configuration>

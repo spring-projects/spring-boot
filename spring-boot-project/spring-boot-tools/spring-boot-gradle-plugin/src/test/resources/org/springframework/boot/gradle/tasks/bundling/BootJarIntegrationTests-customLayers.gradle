@@ -12,7 +12,7 @@ bootJar {
 			layerContent("commons-dependencies") { coordinates { include "org.apache.commons:*" } }
 			layerContent("dependencies") { coordinates { include "*:*" } }
 		}
-		classes {
+		application {
 			layerContent("static") {
 				locations {
 					include "META-INF/resources/**", "resources/**"

@@ -214,7 +214,7 @@ public class BootJar extends Jar implements BootArchive {
 		else {
 			List<Layer> customLayers = this.layerConfiguration.getLayersOrder().stream().map(Layer::new)
 					.collect(Collectors.toList());
-			this.layers = new CustomLayers(customLayers, this.layerConfiguration.getClasses(),
+			this.layers = new CustomLayers(customLayers, this.layerConfiguration.getApplication(),
 					this.layerConfiguration.getLibraries());
 		}
 

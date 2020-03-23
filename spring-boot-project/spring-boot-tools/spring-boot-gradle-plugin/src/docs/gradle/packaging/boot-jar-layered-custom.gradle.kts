@@ -21,7 +21,7 @@ tasks.getByName<BootJar>("bootJar") {
 				}
 			}
 		}
-		classes {
+		application {
 			layerContent("resources") {
 				locations {
 					include("META-INF/resources/**", "resources/**")

@@ -79,16 +79,16 @@ public class LayerConfiguration {
 	}
 
 	@Input
-	public List<ResourceStrategy> getClasses() {
+	public List<ResourceStrategy> getApplication() {
 		return this.resourceStrategies;
 	}
 
-	public void classes(ResourceStrategy... resourceStrategies) {
+	public void application(ResourceStrategy... resourceStrategies) {
 		assertLayersOrderConfigured();
 		this.resourceStrategies = Arrays.asList(resourceStrategies);
 	}
 
-	public void classes(Action<LayerConfiguration> config) {
+	public void application(Action<LayerConfiguration> config) {
 		assertLayersOrderConfigured();
 		this.strategySpec = StrategySpec.forResources();
 		config.execute(this);
@@ -135,7 +135,8 @@ public class LayerConfiguration {
 	}
 
 	public void locations(Action<LayerConfiguration> config) {
-		Assert.state(this.strategySpec.isResourcesStrategy(), "The 'locations' filter must be used only with classes");
+		Assert.state(this.strategySpec.isResourcesStrategy(),
+				"The 'locations' filter must be used only with application");
 		this.strategySpec.newFilter();
 		config.execute(this);
 		this.strategySpec

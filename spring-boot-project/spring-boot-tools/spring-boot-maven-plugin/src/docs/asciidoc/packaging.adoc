@@ -164,7 +164,7 @@ The following example shows what the implicit layer configuration described abov
 			</coordinates>
 		</layer-content>
 	</libraries>
-	<classes>
+	<application>
 		<layer-content layer="resources">
 			<locations>
 				<include>META-INF/resources/**</include>
@@ -178,7 +178,7 @@ The following example shows what the implicit layer configuration described abov
 				<include>**</include>
 			</locations>
 		</layer-content>
-	</classes>
+	</application>
 </layers-configuration>
 ----
 
@@ -589,9 +589,9 @@ This allows to reuse the cache for external dependencies when an internal depend
 				</coordinates>
 			</layer-content>
 		</libraries>
-		<classes>
+		<application>
 			...
-		</classes>
+		</application>
 	</layers-configuration>
 ----
 

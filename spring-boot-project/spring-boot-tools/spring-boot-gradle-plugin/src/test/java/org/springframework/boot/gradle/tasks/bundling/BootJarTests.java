@@ -126,7 +126,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			configuration.libraries(createLibraryStrategy("my-snapshot-deps", "com.example:*:*.SNAPSHOT"),
 					createLibraryStrategy("my-internal-deps", "com.example:*:*"),
 					createLibraryStrategy("my-deps", "*:*"));
-			configuration.classes(createResourceStrategy("resources", "static/**"),
+			configuration.application(createResourceStrategy("resources", "static/**"),
 					createResourceStrategy("application", "**"));
 		});
 		List<String> entryNames = getEntryNames(jar);
