@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,6 +188,16 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasMessageContaining("class path resource [does-not-exist]")
 						.hasMessageContaining("Public key location does not exist"));
+	}
+
+	@Test
+	void autoConfigurationShouldFailIfAlgorithmIsInvalid() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=NOT_VALID")
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasMessageContaining("signatureAlgorithm cannot be null"));
 	}
 
 	@Test
