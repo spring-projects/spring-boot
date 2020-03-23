@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			DataSource dataSourceToMigrate = configureDataSource(configuration, properties, dataSourceProperties,
-					flywayDataSource.getIfAvailable(), dataSource.getIfAvailable());
+					flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
 			checkLocationExists(dataSourceToMigrate, properties, resourceLoader);
 			configureProperties(configuration, properties);
 			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());

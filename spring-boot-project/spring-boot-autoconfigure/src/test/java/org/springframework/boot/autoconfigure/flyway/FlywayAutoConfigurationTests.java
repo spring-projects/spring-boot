@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Dominic Gunn
  * @author András Deák
+ * @author Takaaki Shimbo
  */
 class FlywayAutoConfigurationTests {
 
@@ -152,6 +153,15 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void flywayDataSourceWithoutDataSourceAutoConfiguration() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Flyway.class);
+			assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+		});
+	}
+
+	@Test
+	void flywayMultipleDataSources() {
+		this.contextRunner.withUserConfiguration(FlywayMultipleDataSourcesConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Flyway.class);
 			assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
@@ -499,6 +509,27 @@ class FlywayAutoConfigurationTests {
 		@Primary
 		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+		}
+
+		@FlywayDataSource
+		@Bean
+		DataSource flywayDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FlywayMultipleDataSourcesConfiguration {
+
+		@Bean
+		DataSource firstDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:first").username("sa").build();
+		}
+
+		@Bean
+		DataSource secondDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:second").username("sa").build();
 		}
 
 		@FlywayDataSource
