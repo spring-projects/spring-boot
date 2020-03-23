@@ -8,7 +8,7 @@ plugins {
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
 	layers {
-		layersOrder("dependencies", "snapshot-dependencies", "resources", "application")
+		layersOrder("dependencies", "snapshot-dependencies", "application")
 		libraries {
 			layerContent("snapshot-dependencies") {
 				coordinates {
@@ -22,12 +22,6 @@ tasks.getByName<BootJar>("bootJar") {
 			}
 		}
 		application {
-			layerContent("resources") {
-				locations {
-					include("META-INF/resources/**", "resources/**")
-					include("static/**", "public/**")
-				}
-			}
 			layerContent("application") {
 				locations {
 					include("**")

@@ -26,7 +26,6 @@ import java.util.List;
  * <ol>
  * <li>"dependencies" - For non snapshot dependencies</li>
  * <li>"snapshot-dependencies" - For snapshot dependencies</li>
- * <li>"resources" - For static resources such as HTML files</li>
  * <li>"application" - For application classes and resources</li>
  * </ol>
  *
@@ -47,11 +46,6 @@ public abstract class StandardLayers implements Layers {
 	public static final Layer SNAPSHOT_DEPENDENCIES = new Layer("snapshot-dependencies");
 
 	/**
-	 * The resources layer.
-	 */
-	public static final Layer RESOURCES = new Layer("resources");
-
-	/**
 	 * The application layer.
 	 */
 	public static final Layer APPLICATION = new Layer("application");
@@ -61,7 +55,6 @@ public abstract class StandardLayers implements Layers {
 		List<Layer> layers = new ArrayList<>();
 		layers.add(DEPENDENCIES);
 		layers.add(SNAPSHOT_DEPENDENCIES);
-		layers.add(RESOURCES);
 		layers.add(APPLICATION);
 		LAYERS = Collections.unmodifiableList(layers);
 	}

@@ -103,7 +103,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	void whenJarIsLayeredThenLayersIndexIsPresentAndListsLayersInOrder() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(entryLines(jarFile, "BOOT-INF/layers.idx")).containsExactly("dependencies",
-					"snapshot-dependencies", "resources", "application");
+					"snapshot-dependencies", "application");
 		}
 	}
 
@@ -116,7 +116,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 				.contains("BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar")
 				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
 						"BOOT-INF/layers/application/classes/application.properties")
-				.contains("BOOT-INF/layers/resources/classes/static/test.css");
+				.contains("BOOT-INF/layers/application/classes/static/test.css");
 	}
 
 	@Test

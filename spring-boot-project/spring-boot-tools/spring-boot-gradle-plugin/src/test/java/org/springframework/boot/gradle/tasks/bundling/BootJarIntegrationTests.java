@@ -81,7 +81,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
 					.isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/example/Main.class")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/resources/classes/static/file.txt")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/static/file.txt")).isNotNull();
 		}
 	}
 
