@@ -333,4 +333,4 @@ The content of a `libraries` layer can be customized using filters to `include` 
 The format is `groupId:artifactId[:version]`.
 In the example above, any artifact whose version ends with `SNAPSHOT` is going to be included in the `snapshot-dependencies` layer.
 
-The content of a `classes` layer can be customized using filters to `included` or `exclude` based on location of the entry using Ant-style pattern matching.
+The content of a `application` layer can be customized using filters to `includ` or `exclude` based on location of the entry using Ant-style pattern matching.
