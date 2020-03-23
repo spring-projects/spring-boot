@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.kubernetes;
 
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.kubernetes.ProbesHealthContributorAutoConfiguration.KubernetesOrPropertyCondition;
 import org.springframework.boot.actuate.availability.LivenessProbeHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessProbeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
@@ -24,11 +25,14 @@ import org.springframework.boot.actuate.kubernetes.ProbesHealthEndpointGroupsReg
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.availability.ApplicationAvailabilityProvider;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -39,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
+@Conditional(KubernetesOrPropertyCondition.class)
 @AutoConfigureAfter(ApplicationAvailabilityAutoConfiguration.class)
 public class ProbesHealthContributorAutoConfiguration {
 
@@ -62,6 +66,24 @@ public class ProbesHealthContributorAutoConfiguration {
 	@Bean
 	public HealthEndpointGroupsRegistryCustomizer probesRegistryCustomizer() {
 		return new ProbesHealthEndpointGroupsRegistrar();
+	}
+
+	static class KubernetesOrPropertyCondition extends AnyNestedCondition {
+
+		KubernetesOrPropertyCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
+		static class Kubernetes {
+
+		}
+
+		@ConditionalOnProperty(prefix = "management.health.probes", name = "enabled")
+		static class ProbesIndicatorsEnabled {
+
+		}
+
 	}
 
 }

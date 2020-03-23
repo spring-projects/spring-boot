@@ -47,8 +47,8 @@ class ProbesHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	void probesConfiguredIfKubernetes() {
-		this.contextRunner.withPropertyValues("spring.main.cloud-platform=kubernetes")
+	void probesConfiguredIfProperty() {
+		this.contextRunner.withPropertyValues("management.health.probes.enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailabilityProvider.class)
 						.hasSingleBean(LivenessProbeHealthIndicator.class)
 						.hasSingleBean(ReadinessProbeHealthIndicator.class)

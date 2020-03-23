@@ -184,7 +184,7 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 [[cloud-deployment-kubernetes]]
 === Kubernetes
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
-You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
+You can override this detection with the configprop:management.health.probes.enabled[] configuration property.
 
 Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-availability-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
 
