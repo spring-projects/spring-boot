@@ -855,7 +855,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 	import org.springframework.boot.context.properties.ConfigurationProperties;
 	import org.springframework.boot.context.properties.ConstructorBinding;
-	import org.springframework.boot.context.properties.DefaultValue;
+	import org.springframework.boot.context.properties.bind.DefaultValue;
 
 	@ConstructorBinding
 	@ConfigurationProperties("acme")
