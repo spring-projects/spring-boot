@@ -180,7 +180,7 @@
 		<rxjava2.version>2.2.18</rxjava2.version>
 		<selenium.version>3.141.59</selenium.version>
 		<selenium-htmlunit.version>2.36.0</selenium-htmlunit.version>
-		<sendgrid.version>4.4.5</sendgrid.version>
+		<sendgrid.version>4.4.6</sendgrid.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<snakeyaml.version>1.25</snakeyaml.version>
