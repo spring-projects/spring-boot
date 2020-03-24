@@ -177,7 +177,7 @@
 		<rsocket.version>1.0.0-RC6</rsocket.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.2.18</rxjava2.version>
+		<rxjava2.version>2.2.19</rxjava2.version>
 		<selenium.version>3.141.59</selenium.version>
 		<selenium-htmlunit.version>2.36.0</selenium-htmlunit.version>
 		<sendgrid.version>4.4.6</sendgrid.version>
