@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.context.DriverContext;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,11 +32,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
+import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -74,8 +78,8 @@ class CassandraReactiveDataAutoConfigurationTests {
 	@Test
 	void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(mappingContext).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
+		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
+		assertThat(cassandraConverter).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	private void load(String... environment) {
@@ -99,7 +103,12 @@ class CassandraReactiveDataAutoConfigurationTests {
 
 		@Bean
 		CqlSession cqlSession() {
-			return mock(CqlSession.class);
+			CodecRegistry codecRegistry = mock(CodecRegistry.class);
+			DriverContext context = mock(DriverContext.class);
+			CqlSession cqlSession = mock(CqlSession.class);
+			when(context.getCodecRegistry()).thenReturn(codecRegistry);
+			when(cqlSession.getContext()).thenReturn(context);
+			return cqlSession;
 		}
 
 	}
