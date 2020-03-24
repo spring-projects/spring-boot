@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * Provides access to the limited set of Docker APIs needed by pack.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class DockerApi {
@@ -96,7 +97,7 @@ public class DockerApi {
 
 	private URI buildUrl(String path, String... params) {
 		try {
-			URIBuilder builder = new URIBuilder("docker://localhost/" + API_VERSION + path);
+			URIBuilder builder = new URIBuilder("/" + API_VERSION + path);
 			int param = 0;
 			while (param < params.length) {
 				builder.addParameter(params[param++], params[param++]);

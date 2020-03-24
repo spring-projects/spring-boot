@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.httpclient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,12 +22,13 @@ import java.net.UnknownHostException;
 import org.apache.http.conn.DnsResolver;
 
 /**
- * {@link DnsResolver} used by the {@link DockerHttpClientConnectionManager} to ensure
- * only the loopback address is used.
+ * {@link DnsResolver} used by the {@link LocalDockerHttpClientConnectionManager} to
+ * ensure only the loopback address is used.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class DockerDnsResolver implements DnsResolver {
+class LocalDockerDnsResolver implements DnsResolver {
 
 	private static final InetAddress[] LOOPBACK = new InetAddress[] { InetAddress.getLoopbackAddress() };
 

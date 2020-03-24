@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  * Exception throw when the Docker API fails.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class DockerException extends RuntimeException {
@@ -34,8 +35,8 @@ public class DockerException extends RuntimeException {
 
 	private final Errors errors;
 
-	DockerException(URI uri, int statusCode, String reasonPhrase, Errors errors) {
-		super(buildMessage(uri, statusCode, reasonPhrase, errors));
+	DockerException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
+		super(buildMessage(host, uri, statusCode, reasonPhrase, errors));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 		this.errors = errors;
@@ -66,10 +67,11 @@ public class DockerException extends RuntimeException {
 		return this.errors;
 	}
 
-	private static String buildMessage(URI uri, int statusCode, String reasonPhrase, Errors errors) {
+	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
+		Assert.notNull(host, "host must not be null");
 		Assert.notNull(uri, "URI must not be null");
 		StringBuilder message = new StringBuilder(
-				"Docker API call to '" + uri + "' failed with status code " + statusCode);
+				"Docker API call to '" + host + uri + "' failed with status code " + statusCode);
 		if (reasonPhrase != null && !reasonPhrase.isEmpty()) {
 			message.append(" \"" + reasonPhrase + "\"");
 		}

@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -41,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.buildpack.platform.docker.Http.Response;
+import org.springframework.boot.buildpack.platform.docker.httpclient.DockerHttpClientConnection;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +79,9 @@ class HttpClientHttpTests {
 	private InputStream content;
 
 	@Captor
+	private ArgumentCaptor<HttpHost> hostCaptor;
+
+	@Captor
 	private ArgumentCaptor<HttpUriRequest> requestCaptor;
 
 	private HttpClientHttp http;
@@ -85,11 +91,11 @@ class HttpClientHttpTests {
 	@BeforeEach
 	void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		given(this.client.execute(any())).willReturn(this.response);
+		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class))).willReturn(this.response);
 		given(this.response.getEntity()).willReturn(this.entity);
 		given(this.response.getStatusLine()).willReturn(this.statusLine);
-		this.http = new HttpClientHttp(this.client);
-		this.uri = new URI("docker://localhost/example");
+		this.http = new HttpClientHttp(new TestClientConnection(this.client));
+		this.uri = new URI("example");
 	}
 
 	@Test
@@ -97,7 +103,7 @@ class HttpClientHttpTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.get(this.uri);
-		verify(this.client).execute(this.requestCaptor.capture());
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpGet.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -110,7 +116,7 @@ class HttpClientHttpTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri);
-		verify(this.client).execute(this.requestCaptor.capture());
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -124,7 +130,7 @@ class HttpClientHttpTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy("test", StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.requestCaptor.capture());
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -144,7 +150,7 @@ class HttpClientHttpTests {
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy("test", StandardCharsets.UTF_8, out));
-		verify(this.client).execute(this.requestCaptor.capture());
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -163,7 +169,7 @@ class HttpClientHttpTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.delete(this.uri);
-		verify(this.client).execute(this.requestCaptor.capture());
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpDelete.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
@@ -188,7 +194,8 @@ class HttpClientHttpTests {
 
 	@Test
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
-		given(this.client.execute(any())).willThrow(new IOException("test IO exception"));
+		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class)))
+				.willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerException::getStatusCode)
 				.withMessageContaining("500")
@@ -199,6 +206,26 @@ class HttpClientHttpTests {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		entity.writeTo(out);
 		return new String(out.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static final class TestClientConnection implements DockerHttpClientConnection {
+
+		private final CloseableHttpClient client;
+
+		private TestClientConnection(CloseableHttpClient client) {
+			this.client = client;
+		}
+
+		@Override
+		public HttpHost getHttpHost() {
+			return HttpHost.create("docker://localhost");
+		}
+
+		@Override
+		public CloseableHttpClient getHttpClient() {
+			return this.client;
+		}
+
 	}
 
 }
