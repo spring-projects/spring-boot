@@ -8051,7 +8051,7 @@ For Gradle, refer to the {spring-boot-gradle-plugin-docs}/#packaging-layered-jar
 
 === Writing the Dockerfile
 
-When you create a layered jar, the `spring-boot-layertools` jar will be added as a dependency to your jar.
+When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 Here’s how you can launch your jar with a `layertools` jar mode:
 
