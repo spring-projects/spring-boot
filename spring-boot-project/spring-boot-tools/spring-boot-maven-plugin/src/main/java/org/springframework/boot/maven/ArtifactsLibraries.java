@@ -82,7 +82,7 @@ public class ArtifactsLibraries implements Libraries {
 				}
 				LibraryCoordinates coordinates = new LibraryCoordinates(artifact.getGroupId(), artifact.getArtifactId(),
 						artifact.getVersion());
-				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact), coordinates));
+				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact)));
 			}
 		}
 	}

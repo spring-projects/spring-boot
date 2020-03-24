@@ -150,8 +150,6 @@ class HttpClientHttp implements Http {
 
 	/**
 	 * {@link HttpEntity} to send {@link Content} content.
-	 *
-	 * @author Phillip Webb
 	 */
 	private static class WritableHttpEntity extends AbstractHttpEntity {
 

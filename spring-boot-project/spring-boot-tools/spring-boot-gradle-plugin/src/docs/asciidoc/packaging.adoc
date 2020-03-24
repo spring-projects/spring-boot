@@ -306,6 +306,8 @@ include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
 include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
 ----
 
+
+
 [[packaging-layers-configuration]]
 ===== Custom Layers configuration
 Depending on your application, you may want to tune how layers are created and add new ones.

@@ -30,7 +30,7 @@ import org.springframework.boot.loader.tools.layer.CustomLayers;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -74,14 +74,14 @@ public class CustomLayersProviderTests {
 
 	@Test
 	void getLayerResolverWhenDocumentContainsLibraryLayerWithNoFilters() {
-		assertThatIllegalArgumentException()
+		assertThatIllegalStateException()
 				.isThrownBy(() -> this.customLayersProvider.getLayers(getDocument("library-layer-no-filter.xml")))
 				.withMessage("Filters for layer-content must not be empty.");
 	}
 
 	@Test
 	void getLayerResolverWhenDocumentContainsResourceLayerWithNoFilters() {
-		assertThatIllegalArgumentException()
+		assertThatIllegalStateException()
 				.isThrownBy(() -> this.customLayersProvider.getLayers(getDocument("resource-layer-no-filter.xml")))
 				.withMessage("Filters for layer-content must not be empty.");
 	}

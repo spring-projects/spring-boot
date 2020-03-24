@@ -870,6 +870,7 @@ It's also possible to override the `show-details` and `roles` properties if requ
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
 
 
+
 [[production-ready-kubernetes-probes]]
 === Kubernetes Probes
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
@@ -905,6 +906,8 @@ The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fa
 WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a Probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
 
+
+
 [[production-ready-kubernetes-probes-external-state]]
 ==== Checking external state with Kubernetes Probes
 Actuator configures the "liveness" and "readiness" Probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
@@ -925,6 +928,7 @@ As for the "readiness" Probe, the choice of checking external systems should be 
 If the <<spring-boot-features.adoc#boot-features-application-availability-readiness,Readiness State of an application>> is unready, Kubernetes will not route traffic to that application instance.
 Some external systems might not be shared by application instances or not essential to the application (the application could have circuit breakers and fallbacks).
 Also, Kubernetes will react differently to applications being taken out of the load-balancer, depending on its https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling configuration].
+
 
 
 [[production-ready-kubernetes-probes-lifecycle]]
@@ -952,7 +956,6 @@ When a Spring Boot application starts:
 |live
 |ready
 |Startup tasks are finished. The application is receiving traffic.
-
 |===
 
 When a Spring Boot application shuts down:
@@ -975,10 +978,10 @@ When a Spring Boot application shuts down:
 |broken
 |unready
 |The application context is closed and the application cannot serve traffic.
-
 |===
 
 TIP: Check out the <<deployment.adoc#cloud-deployment-kubernetes-container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
+
 
 
 [[production-ready-application-info]]

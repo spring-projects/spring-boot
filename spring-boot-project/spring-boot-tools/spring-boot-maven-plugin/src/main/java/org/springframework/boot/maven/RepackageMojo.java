@@ -186,14 +186,16 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
 			return null;
 		}
-		long epochSeconds;
+		return FileTime.from(getOutputTimestampEpochSeconds(), TimeUnit.SECONDS);
+	}
+
+	private long getOutputTimestampEpochSeconds() {
 		try {
-			epochSeconds = Long.parseLong(this.outputTimestamp);
+			return Long.parseLong(this.outputTimestamp);
 		}
 		catch (NumberFormatException ex) {
-			epochSeconds = OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
+			return OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
 		}
-		return FileTime.from(epochSeconds, TimeUnit.SECONDS);
 	}
 
 	/**

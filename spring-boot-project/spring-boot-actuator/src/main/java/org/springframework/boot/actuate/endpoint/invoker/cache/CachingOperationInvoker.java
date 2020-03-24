@@ -182,25 +182,12 @@ public class CachingOperationInvoker implements OperationInvoker {
 			if (this == obj) {
 				return true;
 			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
 			}
 			CacheKey other = (CacheKey) obj;
-			if (this.apiVersion != other.apiVersion) {
-				return false;
-			}
-			if (this.principal == null) {
-				if (other.principal != null) {
-					return false;
-				}
-			}
-			else if (!this.principal.equals(other.principal)) {
-				return false;
-			}
-			return true;
+			return this.apiVersion.equals(other.apiVersion)
+					&& ObjectUtils.nullSafeEquals(this.principal, other.principal);
 		}
 
 		@Override
@@ -208,7 +195,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + this.apiVersion.hashCode();
-			result = prime * result + ((this.principal == null) ? 0 : this.principal.hashCode());
+			result = prime * result + ObjectUtils.nullSafeHashCode(this.principal);
 			return result;
 		}
 

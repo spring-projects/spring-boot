@@ -55,12 +55,7 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 		}
 		this.shuttingDown = true;
 		try {
-			if (this.period != null) {
-				server.disposeNow(this.period);
-			}
-			else {
-				server.disposeNow();
-			}
+			disposeNow(server);
 			logger.info("Graceful shutdown complete");
 			return true;
 		}
@@ -70,6 +65,15 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 		}
 		finally {
 			this.shuttingDown = false;
+		}
+	}
+
+	private void disposeNow(DisposableServer server) {
+		if (this.period != null) {
+			server.disposeNow(this.period);
+		}
+		else {
+			server.disposeNow();
 		}
 	}
 

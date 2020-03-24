@@ -191,10 +191,13 @@ NOTE: There are some restrictions when creating an `ApplicationContext` hierarch
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
 See the {spring-boot-module-api}/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder` Javadoc] for full details.
 
+
+
 [[boot-features-application-availability-state]]
 === Application Availability State
 When deployed on plaftorms, applications can provide information about their availability to the platform using infrastructure like https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
 Spring Boot manages this application state with the `ApplicationAvailabilityProvider` and makes it available to application components and the platform itself.
+
 
 
 [[boot-features-application-availability-liveness]]
@@ -208,6 +211,8 @@ If it did, a failing external system (a database, a Web API, an external cache) 
 The internal state of Spring Boot applications is mostly represented by the Spring application context.
 If the application context has started successfully, Spring Boot assumes that the application is in a valid state.
 An application is considered live as soon as the context has been refreshed, see <<boot-features-application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
+
+
 
 [[boot-features-application-availability-readiness]]
 ==== Readiness State

@@ -41,15 +41,14 @@ public final class LivenessState {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		LivenessState that = (LivenessState) o;
-		return this.status == that.status;
+		return this.status == ((LivenessState) obj).status;
 	}
 
 	@Override
@@ -76,6 +75,7 @@ public final class LivenessState {
 		 * The application is running and its internal state is correct.
 		 */
 		LIVE,
+
 		/**
 		 * The internal state of the application is broken.
 		 */

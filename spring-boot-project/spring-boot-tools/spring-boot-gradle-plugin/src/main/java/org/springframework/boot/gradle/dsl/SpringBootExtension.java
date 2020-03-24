@@ -24,6 +24,7 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 
@@ -91,15 +92,11 @@ public class SpringBootExtension {
 	 * @param configurer the task configurer
 	 */
 	public void buildInfo(Action<BuildInfo> configurer) {
-		TaskProvider<BuildInfo> bootBuildInfo = this.project.getTasks().register("bootBuildInfo", BuildInfo.class,
-				(task) -> {
-					task.setGroup(BasePlugin.BUILD_GROUP);
-					task.setDescription("Generates a META-INF/build-info.properties file.");
-					task.getConventionMapping().map("destinationDir",
-							() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
-				});
+		TaskContainer tasks = this.project.getTasks();
+		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
+				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo.get());
+			tasks.getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo.get());
 			this.project.afterEvaluate((evaluated) -> {
 				BuildInfoProperties properties = bootBuildInfo.get().getProperties();
 				if (properties.getArtifact() == null) {
@@ -110,6 +107,13 @@ public class SpringBootExtension {
 		if (configurer != null) {
 			configurer.execute(bootBuildInfo.get());
 		}
+	}
+
+	private void configureBuildInfoTask(BuildInfo task) {
+		task.setGroup(BasePlugin.BUILD_GROUP);
+		task.setDescription("Generates a META-INF/build-info.properties file.");
+		task.getConventionMapping().map("destinationDir",
+				() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {

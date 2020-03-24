@@ -38,7 +38,6 @@ import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -234,7 +233,7 @@ public class UndertowServletWebServer implements WebServer {
 			httpHandler = gracefulShutdownHandler;
 		}
 		else {
-			this.gracefulShutdown = new ImmediateGracefulShutdown();
+			this.gracefulShutdown = GracefulShutdown.IMMEDIATE;
 		}
 		this.builder.setHandler(httpHandler);
 		return this.builder.build();

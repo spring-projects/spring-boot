@@ -18,6 +18,7 @@ package org.springframework.boot.availability;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.util.Assert;
 
 /**
  * Holds the availability state of the application.
@@ -36,19 +37,38 @@ public class ApplicationAvailabilityProvider implements ApplicationListener<Appl
 
 	private ReadinessState readinessState;
 
+	/**
+	 * Create a new {@link ApplicationAvailabilityProvider} instance with
+	 * {@link LivenessState#broken()} and {@link ReadinessState#unready()}.
+	 */
 	public ApplicationAvailabilityProvider() {
 		this(LivenessState.broken(), ReadinessState.unready());
 	}
 
+	/**
+	 * Create a new {@link ApplicationAvailabilityProvider} with the given states.
+	 * @param livenessState the liveness state
+	 * @param readinessState the readiness state
+	 */
 	public ApplicationAvailabilityProvider(LivenessState livenessState, ReadinessState readinessState) {
+		Assert.notNull(livenessState, "LivenessState must not be null");
+		Assert.notNull(readinessState, "ReadinessState must not be null");
 		this.livenessState = livenessState;
 		this.readinessState = readinessState;
 	}
 
+	/**
+	 * Return the {@link LivenessState} of the application.
+	 * @return the liveness state
+	 */
 	public LivenessState getLivenessState() {
 		return this.livenessState;
 	}
 
+	/**
+	 * Return the {@link ReadinessState} of the application.
+	 * @return the readiness state
+	 */
 	public ReadinessState getReadinessState() {
 		return this.readinessState;
 	}

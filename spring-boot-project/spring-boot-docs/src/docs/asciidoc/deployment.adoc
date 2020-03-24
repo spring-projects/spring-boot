@@ -181,12 +181,16 @@ See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.
 
 TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
+
+
 [[cloud-deployment-kubernetes]]
 === Kubernetes
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
 You can override this detection with the configprop:management.health.probes.enabled[] configuration property.
 
 Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-availability-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+
+
 
 [[cloud-deployment-kubernetes-container-lifecycle]]
 ==== Kubernetes Container Lifecycle
@@ -205,6 +209,7 @@ lifecycle:
 ----
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+
 
 
 [[cloud-deployment-heroku]]

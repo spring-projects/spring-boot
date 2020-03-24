@@ -16,9 +16,9 @@
 
 package org.springframework.boot.loader.tools.layer.library;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
@@ -32,13 +32,32 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  */
 public class CoordinateFilter implements LibraryFilter {
 
-	private final List<String> includes = new ArrayList<>();
+	private static final String EMPTY_COORDINATES = "::";
 
-	private final List<String> excludes = new ArrayList<>();
+	private final List<Pattern> includes;
+
+	private final List<Pattern> excludes;
 
 	public CoordinateFilter(List<String> includes, List<String> excludes) {
-		this.includes.addAll(includes);
-		this.excludes.addAll(excludes);
+		this.includes = includes.stream().map(this::asPattern).collect(Collectors.toList());
+		this.excludes = excludes.stream().map(this::asPattern).collect(Collectors.toList());
+	}
+
+	private Pattern asPattern(String string) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			if (c == '.') {
+				builder.append("\\.");
+			}
+			else if (c == '*') {
+				builder.append(".*");
+			}
+			else {
+				builder.append(c);
+			}
+		}
+		return Pattern.compile(builder.toString());
 	}
 
 	@Override
@@ -51,50 +70,15 @@ public class CoordinateFilter implements LibraryFilter {
 		return isMatch(library, this.excludes);
 	}
 
-	private boolean isMatch(Library library, List<String> toMatch) {
-		StringBuilder builder = new StringBuilder();
+	private boolean isMatch(Library library, List<Pattern> patterns) {
 		LibraryCoordinates coordinates = library.getCoordinates();
-		if (coordinates != null) {
-			if (coordinates.getGroupId() != null) {
-				builder.append(coordinates.getGroupId());
-			}
-			builder.append(":");
-			if (coordinates.getArtifactId() != null) {
-				builder.append(coordinates.getArtifactId());
-			}
-			builder.append(":");
-			if (coordinates.getVersion() != null) {
-				builder.append(coordinates.getVersion());
-			}
-		}
-		else {
-			builder.append("::");
-		}
-		String input = builder.toString();
-		for (String patternString : toMatch) {
-			Pattern pattern = buildPatternForString(patternString);
+		String input = (coordinates != null) ? coordinates.toString() : EMPTY_COORDINATES;
+		for (Pattern pattern : patterns) {
 			if (pattern.matcher(input).matches()) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	private Pattern buildPatternForString(String pattern) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < pattern.length(); i++) {
-			char c = pattern.charAt(i);
-			if (c == '.') {
-				builder.append("\\.");
-			}
-			else if (c == '*') {
-				builder.append(".*");
-			}
-			else {
-				builder.append(c);
-			}
-		}
-		return Pattern.compile(builder.toString());
 	}
 
 }

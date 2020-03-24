@@ -41,15 +41,14 @@ public final class ReadinessState {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ReadinessState that = (ReadinessState) o;
-		return this.availability == that.availability;
+		return this.availability == ((ReadinessState) obj).availability;
 	}
 
 	@Override
@@ -76,6 +75,7 @@ public final class ReadinessState {
 		 * The application is not willing to receive traffic.
 		 */
 		UNREADY,
+
 		/**
 		 * The application is ready to receive traffic.
 		 */

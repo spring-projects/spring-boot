@@ -41,7 +41,6 @@ import org.xnio.XnioWorker;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 import org.springframework.util.Assert;
@@ -103,12 +102,12 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		}
 		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
 		Closeable closeable = null;
-		GracefulShutdown gracefulShutdown = null;
 		if (isAccessLogEnabled()) {
 			AccessLogHandlerConfiguration accessLogHandlerConfiguration = configureAccessLogHandler(builder, handler);
 			closeable = accessLogHandlerConfiguration.closeable;
 			handler = accessLogHandlerConfiguration.accessLogHandler;
 		}
+		GracefulShutdown gracefulShutdown = null;
 		GracefulShutdownHandler gracefulShutdownHandler = Handlers.gracefulShutdown(handler);
 		Duration gracePeriod = getShutdown().getGracePeriod();
 		if (gracePeriod != null) {
@@ -116,7 +115,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			handler = gracefulShutdownHandler;
 		}
 		else {
-			gracefulShutdown = new ImmediateGracefulShutdown();
+			gracefulShutdown = GracefulShutdown.IMMEDIATE;
 		}
 		builder.setHandler(handler);
 		return new UndertowWebServer(builder, getPort() >= 0, closeable, gracefulShutdown);

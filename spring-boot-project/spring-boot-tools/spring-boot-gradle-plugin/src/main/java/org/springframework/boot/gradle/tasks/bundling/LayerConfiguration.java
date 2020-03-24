@@ -153,12 +153,6 @@ public class LayerConfiguration {
 
 	private static final class StrategySpec {
 
-		private enum TYPE {
-
-			LIBRARIES, RESOURCES;
-
-		}
-
 		private final TYPE type;
 
 		private List<LibraryFilter> libraryFilters;
@@ -230,6 +224,12 @@ public class LayerConfiguration {
 
 		private static StrategySpec forResources() {
 			return new StrategySpec(TYPE.RESOURCES);
+		}
+
+		private enum TYPE {
+
+			LIBRARIES, RESOURCES;
+
 		}
 
 	}

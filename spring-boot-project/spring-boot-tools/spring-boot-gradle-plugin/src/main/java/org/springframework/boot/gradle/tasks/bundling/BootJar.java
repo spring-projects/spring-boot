@@ -245,7 +245,7 @@ public class BootJar extends Jar implements BootArchive {
 			String coordinates = this.coordinatesByFileName.get(details.getName());
 			LibraryCoordinates libraryCoordinates = (coordinates != null) ? new LibraryCoordinates(coordinates)
 					: new LibraryCoordinates("?:?:?");
-			return this.layers.getLayer(new Library(null, details.getFile(), null, false, libraryCoordinates));
+			return this.layers.getLayer(new Library(null, details.getFile(), null, libraryCoordinates, false));
 		}
 		if (path.startsWith("BOOT-INF/classes/")) {
 			return this.layers.getLayer(details.getSourcePath());

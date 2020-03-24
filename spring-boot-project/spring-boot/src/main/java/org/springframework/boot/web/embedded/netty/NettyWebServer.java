@@ -35,7 +35,6 @@ import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -96,7 +95,7 @@ public class NettyWebServer implements WebServer {
 		}
 		else {
 			this.httpServer = httpServer;
-			this.shutdown = new ImmediateGracefulShutdown();
+			this.shutdown = GracefulShutdown.IMMEDIATE;
 		}
 	}
 

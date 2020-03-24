@@ -65,4 +65,10 @@ class LibraryCoordinatesTests {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LibraryCoordinates("com.acme"));
 	}
 
+	@Test
+	void toStringReturnsString() {
+		assertThat(new LibraryCoordinates("com.acme:my-library:1.0.0")).hasToString("com.acme:my-library:1.0.0");
+		assertThat(new LibraryCoordinates("com.acme:my-library")).hasToString("com.acme:my-library:");
+	}
+
 }
