@@ -924,10 +924,15 @@ The "liveness" Probe should not depend on health checks for external systems.
 If the <<spring-boot-features.adoc#boot-features-application-availability-liveness,Liveness State of an application>> is broken, Kubernetes will try to solve that problem by restarting the application instance.
 This means that if an external system fails (e.g. a database, a Web API, an external cache), Kubernetes might restart all application instances and create cascading failures.
 
-As for the "readiness" Probe, the choice of checking external systems should be made carefully by the application developers.
-If the <<spring-boot-features.adoc#boot-features-application-availability-readiness,Readiness State of an application>> is unready, Kubernetes will not route traffic to that application instance.
-Some external systems might not be shared by application instances or not essential to the application (the application could have circuit breakers and fallbacks).
-Also, Kubernetes will react differently to applications being taken out of the load-balancer, depending on its https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling configuration].
+As for the "readiness" Probe, the choice of checking external systems must be made carefully by the application developers, i.e. Spring Boot does not include any additional health checks in the readiness probe.
+If the <<spring-boot-features.adoc#boot-features-application-availability-readiness,Readiness State of an application instance>> is unready, Kubernetes will not route traffic to that instance.
+Some external systems might not be shared by application instances, in which case they could quite naturally be included in a readiness probe.
+Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
+Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: include it in the readiness probe and expect that the application is taken out of service when the external service is down, or leave it out and deal with failures higher up the stack, e.g. using a circuit breaker in the caller.
+
+NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `NodePort` will not accept any incoming connections. There is no HTTP error response (503 etc.) since there is no connection. A Service with `type=LoadBalancer` might or might not accept connections, depending on the provider. A Service that has an explicit https://kubernetes.io/docs/concepts/services-networking/ingress/[Ingress] will also respond in a way that depends on the implementation - the ingress service itself will have to decide how to handle the "connection refused" from downstream. HTTP 503 is quite likely in the case of both load balancer and ingress.
+
+Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling] it may react differently to applications being taken out of the load-balancer, depending on its autoscaler configuration.
 
 
 
