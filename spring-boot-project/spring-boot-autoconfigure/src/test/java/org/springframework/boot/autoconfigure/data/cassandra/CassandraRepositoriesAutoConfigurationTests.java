@@ -20,6 +20,8 @@ import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.context.DriverContext;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -40,6 +42,7 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -105,7 +108,12 @@ class CassandraRepositoriesAutoConfigurationTests {
 
 		@Bean
 		CqlSession cqlSession() {
-			return mock(CqlSession.class);
+			CodecRegistry codecRegistry = mock(CodecRegistry.class);
+			DriverContext context = mock(DriverContext.class);
+			CqlSession cqlSession = mock(CqlSession.class);
+			when(context.getCodecRegistry()).thenReturn(codecRegistry);
+			when(cqlSession.getContext()).thenReturn(context);
+			return cqlSession;
 		}
 
 	}

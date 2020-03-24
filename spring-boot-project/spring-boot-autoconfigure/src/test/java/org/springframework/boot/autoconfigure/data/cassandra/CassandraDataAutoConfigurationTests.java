@@ -20,8 +20,11 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.context.DriverContext;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
@@ -32,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
@@ -39,6 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -78,8 +83,15 @@ class CassandraDataAutoConfigurationTests {
 	@Test
 	void userTypeResolverShouldBeSet() {
 		load();
-		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(mappingContext).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
+		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
+		assertThat(cassandraConverter).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
+	}
+
+	@Test
+	void codecRegistryShouldBeSet() {
+		load();
+		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
+		assertThat(BDDMockito.mockingDetails(cassandraConverter.getCodecRegistry()).isMock()).isTrue();
 	}
 
 	@Test
@@ -94,7 +106,6 @@ class CassandraDataAutoConfigurationTests {
 		load(CustomConversionConfig.class);
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
 		assertThat(template.getConverter().getConversionService().canConvert(Person.class, String.class)).isTrue();
-
 	}
 
 	@Test
@@ -119,7 +130,12 @@ class CassandraDataAutoConfigurationTests {
 
 		@Bean
 		CqlSession cqlSession() {
-			return mock(CqlSession.class);
+			CodecRegistry codecRegistry = mock(CodecRegistry.class);
+			DriverContext context = mock(DriverContext.class);
+			CqlSession cqlSession = mock(CqlSession.class);
+			when(context.getCodecRegistry()).thenReturn(codecRegistry);
+			when(cqlSession.getContext()).thenReturn(context);
+			return cqlSession;
 		}
 
 	}

@@ -80,8 +80,7 @@ public class CassandraDataAutoConfiguration {
 		if (!packages.isEmpty()) {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
 		}
-		context.setUserTypeResolver(new SimpleUserTypeResolver(this.session));
-		context.setCustomConversions(conversions);
+		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
 	}
 
@@ -90,7 +89,9 @@ public class CassandraDataAutoConfiguration {
 	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
 			CassandraCustomConversions conversions) {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mapping);
+		converter.setCodecRegistry(this.session.getContext().getCodecRegistry());
 		converter.setCustomConversions(conversions);
+		converter.setUserTypeResolver(new SimpleUserTypeResolver(this.session));
 		return converter;
 	}
 
