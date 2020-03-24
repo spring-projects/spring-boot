@@ -46,13 +46,13 @@ class ReadinessProbeHealthIndicatorTests {
 
 	@Test
 	void readinessIsReady() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.ready());
+		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.READY);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void readinessIsUnready() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.unready());
+		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.UNREADY);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 

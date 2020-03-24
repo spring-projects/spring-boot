@@ -16,8 +16,6 @@
 
 package org.springframework.boot.availability;
 
-import java.util.Objects;
-
 /**
  * "Readiness" state of the application.
  * <p>
@@ -28,59 +26,16 @@ import java.util.Objects;
  * @author Brian Clozel
  * @since 2.3.0
  */
-public final class ReadinessState {
+public enum ReadinessState {
 
-	private final Availability availability;
+	/**
+	 * The application is not willing to receive traffic.
+	 */
+	UNREADY,
 
-	private ReadinessState(Availability availability) {
-		this.availability = availability;
-	}
-
-	public Availability getAvailability() {
-		return this.availability;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		return this.availability == ((ReadinessState) obj).availability;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.availability);
-	}
-
-	@Override
-	public String toString() {
-		return "ReadinessState{" + "availability=" + this.availability + '}';
-	}
-
-	public static ReadinessState ready() {
-		return new ReadinessState(Availability.READY);
-	}
-
-	public static ReadinessState unready() {
-		return new ReadinessState(Availability.UNREADY);
-	}
-
-	public enum Availability {
-
-		/**
-		 * The application is not willing to receive traffic.
-		 */
-		UNREADY,
-
-		/**
-		 * The application is ready to receive traffic.
-		 */
-		READY
-
-	}
+	/**
+	 * The application is ready to receive traffic.
+	 */
+	READY
 
 }

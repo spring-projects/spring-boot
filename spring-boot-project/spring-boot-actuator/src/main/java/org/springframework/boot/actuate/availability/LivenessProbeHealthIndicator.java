@@ -38,7 +38,7 @@ public class LivenessProbeHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		if (LivenessState.live().equals(this.applicationAvailabilityProvider.getLivenessState())) {
+		if (LivenessState.LIVE.equals(this.applicationAvailabilityProvider.getLivenessState())) {
 			builder.up();
 		}
 		else {

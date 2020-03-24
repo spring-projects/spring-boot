@@ -38,7 +38,7 @@ public class ReadinessProbeHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		if (ReadinessState.ready().equals(this.applicationAvailabilityProvider.getReadinessState())) {
+		if (ReadinessState.READY.equals(this.applicationAvailabilityProvider.getReadinessState())) {
 			builder.up();
 		}
 		else {

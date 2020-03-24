@@ -39,10 +39,10 @@ public class ApplicationAvailabilityProvider implements ApplicationListener<Appl
 
 	/**
 	 * Create a new {@link ApplicationAvailabilityProvider} instance with
-	 * {@link LivenessState#broken()} and {@link ReadinessState#unready()}.
+	 * {@link LivenessState#BROKEN} and {@link ReadinessState#UNREADY}.
 	 */
 	public ApplicationAvailabilityProvider() {
-		this(LivenessState.broken(), ReadinessState.unready());
+		this(LivenessState.BROKEN, ReadinessState.UNREADY);
 	}
 
 	/**

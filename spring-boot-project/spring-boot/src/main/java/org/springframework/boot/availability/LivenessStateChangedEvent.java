@@ -47,7 +47,7 @@ public class LivenessStateChangedEvent extends ApplicationEvent {
 	 * @return the application event
 	 */
 	public static LivenessStateChangedEvent live(String cause) {
-		return new LivenessStateChangedEvent(LivenessState.live(), cause);
+		return new LivenessStateChangedEvent(LivenessState.LIVE, cause);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class LivenessStateChangedEvent extends ApplicationEvent {
 	 * @return the application event
 	 */
 	public static LivenessStateChangedEvent broken(String cause) {
-		return new LivenessStateChangedEvent(LivenessState.broken(), cause);
+		return new LivenessStateChangedEvent(LivenessState.BROKEN, cause);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class LivenessStateChangedEvent extends ApplicationEvent {
 	 * @return the application event
 	 */
 	public static LivenessStateChangedEvent broken(Throwable throwable) {
-		return new LivenessStateChangedEvent(LivenessState.broken(), throwable.getMessage());
+		return new LivenessStateChangedEvent(LivenessState.BROKEN, throwable.getMessage());
 	}
 
 }

@@ -43,7 +43,7 @@ public class ReadinessStateChangedEvent extends ApplicationEvent {
 	 * @return the application event
 	 */
 	public static ReadinessStateChangedEvent ready() {
-		return new ReadinessStateChangedEvent(ReadinessState.ready());
+		return new ReadinessStateChangedEvent(ReadinessState.READY);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class ReadinessStateChangedEvent extends ApplicationEvent {
 	 * @return the application event
 	 */
 	public static ReadinessStateChangedEvent unready() {
-		return new ReadinessStateChangedEvent(ReadinessState.unready());
+		return new ReadinessStateChangedEvent(ReadinessState.UNREADY);
 	}
 
 }

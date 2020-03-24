@@ -46,13 +46,13 @@ class LivenessProbeHealthIndicatorTests {
 
 	@Test
 	void livenessIsLive() {
-		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.live());
+		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.LIVE);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void livenessIsBroken() {
-		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.broken());
+		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.BROKEN);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 

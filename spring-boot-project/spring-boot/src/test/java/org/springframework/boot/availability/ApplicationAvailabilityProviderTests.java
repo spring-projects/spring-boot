@@ -30,14 +30,14 @@ class ApplicationAvailabilityProviderTests {
 	@Test
 	void initialStateShouldBeFailures() {
 		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
-		assertThat(stateProvider.getLivenessState()).isEqualTo(LivenessState.broken());
-		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.unready());
+		assertThat(stateProvider.getLivenessState()).isEqualTo(LivenessState.BROKEN);
+		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.UNREADY);
 	}
 
 	@Test
 	void updateLivenessState() {
 		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
-		LivenessState livenessState = LivenessState.live();
+		LivenessState livenessState = LivenessState.LIVE;
 		stateProvider.onApplicationEvent(new LivenessStateChangedEvent(livenessState, "Startup complete"));
 		assertThat(stateProvider.getLivenessState()).isEqualTo(livenessState);
 	}
@@ -46,7 +46,7 @@ class ApplicationAvailabilityProviderTests {
 	void updateReadiessState() {
 		ApplicationAvailabilityProvider stateProvider = new ApplicationAvailabilityProvider();
 		stateProvider.onApplicationEvent(ReadinessStateChangedEvent.ready());
-		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.ready());
+		assertThat(stateProvider.getReadinessState()).isEqualTo(ReadinessState.READY);
 	}
 
 }

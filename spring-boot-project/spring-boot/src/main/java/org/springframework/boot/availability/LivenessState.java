@@ -16,8 +16,6 @@
 
 package org.springframework.boot.availability;
 
-import java.util.Objects;
-
 /**
  * "Liveness" state of the application.
  * <p>
@@ -28,59 +26,16 @@ import java.util.Objects;
  * @author Brian Clozel
  * @since 2.3.0
  */
-public final class LivenessState {
+public enum LivenessState {
 
-	private final Status status;
+	/**
+	 * The application is running and its internal state is correct.
+	 */
+	LIVE,
 
-	LivenessState(Status status) {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return this.status;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		return this.status == ((LivenessState) obj).status;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.status);
-	}
-
-	@Override
-	public String toString() {
-		return "LivenessState{" + "status=" + this.status + '}';
-	}
-
-	public static LivenessState broken() {
-		return new LivenessState(Status.BROKEN);
-	}
-
-	public static LivenessState live() {
-		return new LivenessState(Status.LIVE);
-	}
-
-	public enum Status {
-
-		/**
-		 * The application is running and its internal state is correct.
-		 */
-		LIVE,
-
-		/**
-		 * The internal state of the application is broken.
-		 */
-		BROKEN
-
-	}
+	/**
+	 * The internal state of the application is broken.
+	 */
+	BROKEN
 
 }
