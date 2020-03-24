@@ -50,6 +50,13 @@ syncDocumentationSourceForAsciidoctor {
 	}
 }
 
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	doFirst {
+		def versionEl = version.split("\\.")
+		attributes "spring-boot-xsd-version": versionEl[0] + '.' + versionEl[1]
+	}
+}
+
 asciidoctor {
 	sources {
 		include "index.adoc"

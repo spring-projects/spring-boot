@@ -144,7 +144,7 @@ The following example shows what the implicit layer configuration described abov
 <layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
 					  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
-                      https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
+                      https://www.springframework.org/schema/boot/layers/layers-configuration-{spring-boot-xsd-version}.xsd">
 	<layers>
 		<layer>dependencies</layer>
 		<layer>snapshot-dependencies</layer>
@@ -554,7 +554,7 @@ This allows to reuse the cache for external dependencies when an internal depend
 	<layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
 						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 						  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
-						  https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
+						  https://www.springframework.org/schema/boot/layers/layers-configuration-{spring-boot-xsd-version}.xsd">
 		<layers>
 			<layer>application</layer>
 			<layer>resources</layer>
