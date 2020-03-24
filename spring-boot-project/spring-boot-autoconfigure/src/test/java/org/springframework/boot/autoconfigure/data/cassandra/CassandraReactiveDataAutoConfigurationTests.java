@@ -18,9 +18,6 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Set;
 
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.context.DriverContext;
-import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +26,6 @@ import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
@@ -38,8 +34,6 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraReactiveDataAutoConfiguration}.
@@ -92,25 +86,10 @@ class CassandraReactiveDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-				CassandraReactiveDataAutoConfiguration.class);
+		ctx.register(CassandraMockConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		CqlSession cqlSession() {
-			CodecRegistry codecRegistry = mock(CodecRegistry.class);
-			DriverContext context = mock(DriverContext.class);
-			CqlSession cqlSession = mock(CqlSession.class);
-			when(context.getCodecRegistry()).thenReturn(codecRegistry);
-			when(cqlSession.getContext()).thenReturn(context);
-			return cqlSession;
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

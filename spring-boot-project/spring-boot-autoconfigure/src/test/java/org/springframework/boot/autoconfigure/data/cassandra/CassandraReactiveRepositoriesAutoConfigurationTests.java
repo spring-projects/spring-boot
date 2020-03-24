@@ -18,10 +18,7 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Set;
 
-import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.context.DriverContext;
-import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -34,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.cassandra.city.ReactiveCityRe
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
@@ -42,8 +38,6 @@ import org.springframework.data.cassandra.repository.config.EnableReactiveCassan
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraReactiveRepositoriesAutoConfiguration}.
@@ -106,30 +100,15 @@ class CassandraReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		CqlSession cqlSession() {
-			CodecRegistry codecRegistry = mock(CodecRegistry.class);
-			DriverContext context = mock(DriverContext.class);
-			CqlSession cqlSession = mock(CqlSession.class);
-			when(context.getCodecRegistry()).thenReturn(codecRegistry);
-			when(cqlSession.getContext()).thenReturn(context);
-			return cqlSession;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class EmptyConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
@@ -137,7 +116,7 @@ class CassandraReactiveRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CassandraReactiveRepositoriesAutoConfigurationTests.class)
 	@EnableReactiveCassandraRepositories(basePackageClasses = ReactiveCityCassandraRepository.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class CustomizedConfiguration {
 
 	}

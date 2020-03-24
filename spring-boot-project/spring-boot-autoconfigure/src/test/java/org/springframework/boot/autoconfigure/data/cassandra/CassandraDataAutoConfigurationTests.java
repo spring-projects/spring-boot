@@ -20,11 +20,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.context.DriverContext;
-import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
@@ -43,8 +40,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraDataAutoConfiguration}.
@@ -66,7 +61,7 @@ class CassandraDataAutoConfigurationTests {
 
 	@Test
 	void templateExists() {
-		load(TestConfiguration.class);
+		load(CassandraMockConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class)).hasSize(1);
 	}
 
@@ -91,7 +86,8 @@ class CassandraDataAutoConfigurationTests {
 	void codecRegistryShouldBeSet() {
 		load();
 		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
-		assertThat(BDDMockito.mockingDetails(cassandraConverter.getCodecRegistry()).isMock()).isTrue();
+		assertThat(cassandraConverter.getCodecRegistry())
+				.isSameAs(this.context.getBean(CassandraMockConfiguration.class).codecRegistry);
 	}
 
 	@Test
@@ -120,24 +116,10 @@ class CassandraDataAutoConfigurationTests {
 		if (!ObjectUtils.isEmpty(config)) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+		ctx.register(CassandraMockConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		CqlSession cqlSession() {
-			CodecRegistry codecRegistry = mock(CodecRegistry.class);
-			DriverContext context = mock(DriverContext.class);
-			CqlSession cqlSession = mock(CqlSession.class);
-			when(context.getCodecRegistry()).thenReturn(codecRegistry);
-			when(cqlSession.getContext()).thenReturn(context);
-			return cqlSession;
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
