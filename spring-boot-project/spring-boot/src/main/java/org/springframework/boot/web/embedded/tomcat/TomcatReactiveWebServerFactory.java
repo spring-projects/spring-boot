@@ -38,7 +38,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
-import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
 import org.springframework.boot.util.LambdaSafe;
@@ -114,7 +113,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		if (this.disableMBeanRegistry) {
-			Registry.disableRegistry();
+			TomcatCompatibilityUtils.disableRegistry();
 		}
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");

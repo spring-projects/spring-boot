@@ -24,7 +24,6 @@ import java.util.Enumeration;
 import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.util.compat.JreCompat;
 
 /**
  * Extension of Tomcat's {@link ParallelWebappClassLoader} that does not consider the
@@ -40,8 +39,9 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	private static final Log logger = LogFactory.getLog(TomcatEmbeddedWebappClassLoader.class);
 
+	private static final Boolean IS_GRAAL_AVAILABLE = TomcatCompatibilityUtils.isGraalAvailable();
 	static {
-		if (!JreCompat.isGraalAvailable()) {
+		if (!IS_GRAAL_AVAILABLE) {
 			ClassLoader.registerAsParallelCapable();
 		}
 	}
@@ -65,7 +65,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		synchronized (JreCompat.isGraalAvailable() ? this : getClassLoadingLock(name)) {
+		synchronized (IS_GRAAL_AVAILABLE ? this : getClassLoadingLock(name)) {
 			Class<?> result = findExistingLoadedClass(name);
 			result = (result != null) ? result : doLoadClass(name);
 			if (result == null) {
@@ -77,7 +77,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	private Class<?> findExistingLoadedClass(String name) {
 		Class<?> resultClass = findLoadedClass0(name);
-		resultClass = (resultClass != null || JreCompat.isGraalAvailable()) ? resultClass : findLoadedClass(name);
+		resultClass = (resultClass != null || IS_GRAAL_AVAILABLE) ? resultClass : findLoadedClass(name);
 		return resultClass;
 	}
 
