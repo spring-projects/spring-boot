@@ -100,6 +100,7 @@
 		<jakarta-websocket.version>1.1.2</jakarta-websocket.version>
 		<jakarta-ws-rs.version>2.1.6</jakarta-ws-rs.version>
 		<jakarta-xml-bind.version>2.3.3</jakarta-xml-bind.version>
+		<jakarta-xml-soap.version>1.4.2</jakarta-xml-soap.version>
 		<jakarta-xml-ws.version>2.3.3</jakarta-xml-ws.version>
 		<janino.version>3.1.0</janino.version>
 		<javax-activation.version>1.2.0</javax-activation.version>
@@ -1220,6 +1221,11 @@
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
 				<version>${jakarta-xml-bind.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.soap</groupId>
+				<artifactId>jakarta.xml.soap-api</artifactId>
+				<version>${jakarta-xml-soap.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.xml.ws</groupId>
