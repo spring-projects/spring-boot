@@ -44,7 +44,7 @@ public class WebFluxProperties {
 	private String staticPathPattern = "/**";
 
 	public String getBasePath() {
-		return basePath;
+		return this.basePath;
 	}
 
 	public void setBasePath(String basePath) {
