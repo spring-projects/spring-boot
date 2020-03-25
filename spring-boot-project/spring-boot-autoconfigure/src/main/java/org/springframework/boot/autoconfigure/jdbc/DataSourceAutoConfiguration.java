@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
@@ -118,14 +117,16 @@ public class DataSourceAutoConfiguration {
 	 */
 	static class EmbeddedDatabaseCondition extends SpringBootCondition {
 
+		private static final String DATASOURCE_URL_PROPERTY = "spring.datasource.url";
+
 		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("EmbeddedDataSource");
-			String url = context.getEnvironment().getProperty("spring.datasource.url");
-			if (StringUtils.hasText(url)) {
-				return ConditionOutcome.noMatch(message.found("explicit url").items(url));
+			boolean hasDatasourceUrl = context.getEnvironment().containsProperty(DATASOURCE_URL_PROPERTY);
+			if (hasDatasourceUrl) {
+				return ConditionOutcome.noMatch(message.because(DATASOURCE_URL_PROPERTY + " is set"));
 			}
 			if (anyMatches(context, metadata, this.pooledCondition)) {
 				return ConditionOutcome.noMatch(message.foundExactly("supported pooled data source"));
