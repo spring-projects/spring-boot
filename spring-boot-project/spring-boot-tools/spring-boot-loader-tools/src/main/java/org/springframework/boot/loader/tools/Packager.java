@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -492,7 +493,9 @@ public abstract class Packager {
 			}
 			if (getLayout() instanceof RepackagingLayout) {
 				String location = ((RepackagingLayout) getLayout()).getClasspathIndexFileLocation();
-				writer.writeIndexFile(location, this.libraries.keySet());
+				List<String> names = this.libraries.keySet().stream()
+						.map((key) -> key.substring(key.lastIndexOf('/') + 1)).collect(Collectors.toList());
+				writer.writeIndexFile(location, names);
 			}
 		}
 

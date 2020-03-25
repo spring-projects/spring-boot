@@ -29,8 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,31 +43,13 @@ final class ClassPathIndexFile {
 
 	private final List<String> lines;
 
-	private final Set<String> folders;
-
 	private ClassPathIndexFile(File root, List<String> lines) {
 		this.root = root;
 		this.lines = lines;
-		this.folders = this.lines.stream().map(this::getFolder).filter(Objects::nonNull).collect(Collectors.toSet());
-	}
-
-	private String getFolder(String name) {
-		int lastSlash = name.lastIndexOf('/');
-		return (lastSlash != -1) ? name.substring(0, lastSlash) : null;
 	}
 
 	int size() {
 		return this.lines.size();
-	}
-
-	boolean containsFolder(String name) {
-		if (name == null || name.isEmpty()) {
-			return false;
-		}
-		if (name.endsWith("/")) {
-			return containsFolder(name.substring(0, name.length() - 1));
-		}
-		return this.folders.contains(name);
 	}
 
 	boolean containsEntry(String name) {

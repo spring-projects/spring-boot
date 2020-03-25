@@ -232,8 +232,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
-		assertThat(Arrays.asList(libraries)).contains("BOOT-INF/lib/" + libJarFile1.getName(),
-				"BOOT-INF/lib/" + libJarFile2.getName(), "BOOT-INF/lib/" + libJarFile3.getName());
+		assertThat(Arrays.asList(libraries)).contains(libJarFile1.getName(), libJarFile2.getName(),
+				libJarFile3.getName());
 	}
 
 	@Test
@@ -267,7 +267,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expectedJars.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
 		expectedJars.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
 		expectedJars.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly(expectedJars.toArray(new String[0]));
+		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly(libJarFile1.getName(),
+				libJarFile2.getName(), libJarFile3.getName());
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -288,8 +289,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, Libraries.NONE);
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-				.containsExactly("BOOT-INF/layers/default/lib/spring-boot-jarmode-layertools.jar");
+		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly("spring-boot-jarmode-layertools.jar");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly("default");

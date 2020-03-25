@@ -125,7 +125,8 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private File createClasspathIndex(List<String> dependencies) {
-		String content = dependencies.stream().collect(Collectors.joining("\n", "", "\n"));
+		String content = dependencies.stream().map((name) -> name.substring(name.lastIndexOf('/') + 1))
+				.collect(Collectors.joining("\n", "", "\n"));
 		File source = getProject().getResources().getText().fromString(content).asFile();
 		File indexFile = new File(source.getParentFile(), "classpath.idx");
 		source.renameTo(indexFile);
