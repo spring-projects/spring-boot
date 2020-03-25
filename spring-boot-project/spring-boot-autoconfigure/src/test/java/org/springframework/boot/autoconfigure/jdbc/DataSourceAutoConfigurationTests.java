@@ -195,6 +195,13 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
+	public void whenThereIsAUserProvidedDataSourceAnUnresolvablePlaceholderDoesNotCauseAProblem() {
+		this.contextRunner.withUserConfiguration(TestDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.url:${UNRESOLVABLE_PLACEHOLDER}")
+				.run((context) -> assertThat(context).getBean(DataSource.class).isInstanceOf(BasicDataSource.class));
+	}
+
+	@Test
 	public void testDataSourceIsInitializedEarly() {
 		this.contextRunner.withUserConfiguration(TestInitializedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.initialization-mode=always")
