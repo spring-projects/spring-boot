@@ -25,10 +25,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.jar.JarFile;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
+
+import org.springframework.boot.loader.tools.JarModeLibrary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,8 +78,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeResource();
 		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar"))
-					.isNotNull();
+			assertThat(jarFile.getEntry(jarModeLayerTools())).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
 					.isNotNull();
@@ -89,16 +91,24 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	void customLayers() throws IOException {
 		writeMainClass();
 		writeResource();
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildResult build = this.gradleBuild.build("bootJar");
+		System.out.println(build.getOutput());
+		assertThat(build.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar"))
-					.isNotNull();
+			assertThat(jarFile.getEntry(jarModeLayerTools())).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/commons-dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
 					.isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/app/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers/static/classes/static/file.txt")).isNotNull();
 		}
+	}
+
+	private String jarModeLayerTools() {
+		JarModeLibrary library = JarModeLibrary.LAYER_TOOLS;
+		String version = library.getCoordinates().getVersion();
+		String layer = (version == null || !version.contains("SNAPSHOT")) ? "dependencies" : "snapshot-dependencies";
+		return "BOOT-INF/layers/" + layer + "/lib/" + library.getName();
 	}
 
 	private void writeMainClass() {

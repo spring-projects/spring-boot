@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -648,6 +649,11 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		@Override
 		public Iterator<Layer> iterator() {
 			return this.layers.iterator();
+		}
+
+		@Override
+		public Stream<Layer> stream() {
+			return this.layers.stream();
 		}
 
 		@Override

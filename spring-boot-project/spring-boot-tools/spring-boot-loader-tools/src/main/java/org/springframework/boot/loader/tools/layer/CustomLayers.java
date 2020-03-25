@@ -19,32 +19,52 @@ package org.springframework.boot.loader.tools.layer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Layers;
 import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.layer.application.ResourceStrategy;
-import org.springframework.boot.loader.tools.layer.library.LibraryStrategy;
+import org.springframework.util.Assert;
 
 /**
- * Implementation of {@link Layers} representing user-provided layers.
+ * Custom {@link Layers} implementation where layer content is selected by the user.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
  */
 public class CustomLayers implements Layers {
 
 	private final List<Layer> layers;
 
-	private final List<ResourceStrategy> resourceStrategies;
+	private final List<ContentSelector<String>> applicationSelectors;
 
-	private final List<LibraryStrategy> libraryStrategies;
+	private final List<ContentSelector<Library>> librarySelectors;
 
-	public CustomLayers(List<Layer> layers, List<ResourceStrategy> resourceStrategies,
-			List<LibraryStrategy> libraryStrategies) {
+	public CustomLayers(List<Layer> layers, List<ContentSelector<String>> applicationSelectors,
+			List<ContentSelector<Library>> librarySelectors) {
+		Assert.notNull(layers, "Layers must not be null");
+		Assert.notNull(applicationSelectors, "ApplicationSelectors must not be null");
+		validateSelectorLayers(applicationSelectors, layers);
+		Assert.notNull(librarySelectors, "LibrarySelectors must not be null");
+		validateSelectorLayers(librarySelectors, layers);
 		this.layers = new ArrayList<>(layers);
-		this.resourceStrategies = new ArrayList<>(resourceStrategies);
-		this.libraryStrategies = new ArrayList<>(libraryStrategies);
+		this.applicationSelectors = new ArrayList<>(applicationSelectors);
+		this.librarySelectors = new ArrayList<>(librarySelectors);
+	}
+
+	private static <T> void validateSelectorLayers(List<ContentSelector<T>> selectors, List<Layer> layers) {
+		for (ContentSelector<?> selector : selectors) {
+			validateSelectorLayers(selector, layers);
+		}
+	}
+
+	private static void validateSelectorLayers(ContentSelector<?> selector, List<Layer> layers) {
+		Layer layer = selector.getLayer();
+		Assert.state(layer != null, "Missing content selector layer");
+		Assert.state(layers.contains(layer),
+				"Content selector layer '" + selector.getLayer() + "' not found in " + layers);
 	}
 
 	@Override
@@ -53,34 +73,27 @@ public class CustomLayers implements Layers {
 	}
 
 	@Override
+	public Stream<Layer> stream() {
+		return this.layers.stream();
+	}
+
+	@Override
 	public Layer getLayer(String resourceName) {
-		for (ResourceStrategy strategy : this.resourceStrategies) {
-			Layer matchingLayer = strategy.getMatchingLayer(resourceName);
-			if (matchingLayer != null) {
-				validateLayerName(matchingLayer, "Resource '" + resourceName + "'");
-				return matchingLayer;
-			}
-		}
-		throw new IllegalStateException("Resource '" + resourceName + "' did not match any layer.");
+		return selectLayer(resourceName, this.applicationSelectors, () -> "Resource '" + resourceName + "'");
 	}
 
 	@Override
 	public Layer getLayer(Library library) {
-		for (LibraryStrategy strategy : this.libraryStrategies) {
-			Layer matchingLayer = strategy.getMatchingLayer(library);
-			if (matchingLayer != null) {
-				validateLayerName(matchingLayer, "Library '" + library.getName() + "'");
-				return matchingLayer;
-			}
-		}
-		throw new IllegalStateException("Library '" + library.getName() + "' did not match any layer.");
+		return selectLayer(library, this.librarySelectors, () -> "Library '" + library.getName() + "'");
 	}
 
-	private void validateLayerName(Layer layer, String nameText) {
-		if (!this.layers.contains(layer)) {
-			throw new IllegalStateException(nameText + " matched a layer '" + layer
-					+ "' that is not included in the configured layers " + this.layers + ".");
+	private <T> Layer selectLayer(T item, List<ContentSelector<T>> selectors, Supplier<String> name) {
+		for (ContentSelector<T> selector : selectors) {
+			if (selector.contains(item)) {
+				return selector.getLayer();
+			}
 		}
+		throw new IllegalStateException(name.get() + " did not match any layer");
 	}
 
 }

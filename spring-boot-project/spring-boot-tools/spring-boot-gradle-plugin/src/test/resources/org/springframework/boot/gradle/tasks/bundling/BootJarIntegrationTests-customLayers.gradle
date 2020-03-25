@@ -5,26 +5,23 @@ plugins {
 
 bootJar {
 	mainClassName = 'com.example.Application'
-	layers {
-		layersOrder "dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"
-		libraries {
-			layerContent("snapshot-dependencies") { coordinates { include "*:*:*SNAPSHOT" } }
-			layerContent("commons-dependencies") { coordinates { include "org.apache.commons:*" } }
-			layerContent("dependencies") { coordinates { include "*:*" } }
-		}
+	layered {
 		application {
-			layerContent("static") {
-				locations {
-					include "META-INF/resources/**", "resources/**"
-					include "static/**", "public/**"
-				}
+			intoLayer("static") {
+				include "META-INF/resources/**", "resources/**", "static/**", "public/**"
 			}
-			layerContent("app") {
-				locations {
-					include "**"
-				}
-			}
+			intoLayer("app")
 		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include "*:*:*SNAPSHOT"
+			}
+			intoLayer("commons-dependencies") {
+				include "org.apache.commons:*" 
+			}
+			intoLayer("dependencies")
+		}
+		layerOrder "dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"
 	}
 }
 

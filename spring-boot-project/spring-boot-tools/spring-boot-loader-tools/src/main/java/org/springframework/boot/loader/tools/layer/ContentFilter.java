@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.loader.tools.layer;
+
 /**
- * Support for custom layers for everything in BOOT-INF/classes.
+ * Callback interface that can be used to filter layer contents.
  *
+ * @author Madhura Bhave
+ * @author Phillip Webb
+ * @param <T> the content type
+ * @since 2.3.0
  */
-package org.springframework.boot.loader.tools.layer.application;
+@FunctionalInterface
+public interface ContentFilter<T> {
+
+	/**
+	 * Return if the filter matches the specified item.
+	 * @param item the item to test
+	 * @return if the filter matches
+	 */
+	boolean matches(T item);
+
+}

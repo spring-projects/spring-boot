@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.library;
-
-import java.io.Serializable;
+package org.springframework.boot.loader.tools.layer;
 
 import org.springframework.boot.loader.tools.Layer;
-import org.springframework.boot.loader.tools.Library;
 
 /**
- * A strategy used to match a library to a layer.
+ * Strategy used by {@link CustomLayers} to select the layer of an item.
  *
+ * @param <T> the content type
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
+ * @see IncludeExcludeContentSelector
  */
-public interface LibraryStrategy extends Serializable {
+public interface ContentSelector<T> {
 
 	/**
-	 * Return a {@link Layer} for the given {@link Library}. If no matching layer is
-	 * found, {@code null} is returned.
-	 * @param library the library
-	 * @return the matching layer or {@code null}
+	 * Return the {@link Layer} that the selector represents.
+	 * @return the named layer
 	 */
-	Layer getMatchingLayer(Library library);
+	Layer getLayer();
+
+	/**
+	 * Returns {@code true} if the specified item is contained in this selection.
+	 * @param item the item to test
+	 * @return if the item is contained
+	 */
+	boolean contains(T item);
 
 }

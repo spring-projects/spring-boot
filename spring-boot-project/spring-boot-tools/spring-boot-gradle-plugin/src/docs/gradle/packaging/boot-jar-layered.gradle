@@ -9,6 +9,6 @@ bootJar {
 
 // tag::layered[]
 bootJar {
-	layers()
+	layered()
 }
 // end::layered[]

@@ -7,27 +7,17 @@ plugins {
 
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
-	layers {
-		layersOrder("dependencies", "snapshot-dependencies", "application")
-		libraries {
-			layerContent("snapshot-dependencies") {
-				coordinates {
-					include("*:*:*SNAPSHOT")
-				}
-			}
-			layerContent("dependencies") {
-				coordinates {
-					include("*:*")
-				}
-			}
-		}
+	layered {
 		application {
-			layerContent("application") {
-				locations {
-					include("**")
-				}
-			}
+			intoLayer("application")
 		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include("*:*:*SNAPSHOT")
+			}
+			intoLayer("dependencies") {
+		}
+		layersOrder("dependencies", "snapshot-dependencies", "application")
 	}
 }
 // end::layered[]

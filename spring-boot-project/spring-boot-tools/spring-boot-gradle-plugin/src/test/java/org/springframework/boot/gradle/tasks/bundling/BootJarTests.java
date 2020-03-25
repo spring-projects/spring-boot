@@ -20,9 +20,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
@@ -31,16 +30,15 @@ import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.ArtifactCollection;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
-import org.gradle.api.artifacts.component.ComponentIdentifier;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.loader.tools.layer.application.FilteredResourceStrategy;
-import org.springframework.boot.loader.tools.layer.application.LocationFilter;
-import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
-import org.springframework.boot.loader.tools.layer.library.FilteredLibraryStrategy;
+import org.springframework.boot.gradle.tasks.bundling.BootJarTests.TestBootJar;
+import org.springframework.boot.loader.tools.JarModeLibrary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -53,10 +51,10 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Scott Frederick
  */
-class BootJarTests extends AbstractBootArchiveTests<BootJar> {
+class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 
 	BootJarTests() {
-		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
+		super(TestBootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
 	}
 
 	@Test
@@ -121,13 +119,17 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	@Test
 	void whenJarIsLayeredWithCustomStrategiesThenContentsAreMovedToLayerDirectories() throws IOException {
-		File jar = createLayeredJar((configuration) -> {
-			configuration.layersOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
-			configuration.libraries(createLibraryStrategy("my-snapshot-deps", "com.example:*:*.SNAPSHOT"),
-					createLibraryStrategy("my-internal-deps", "com.example:*:*"),
-					createLibraryStrategy("my-deps", "*:*"));
-			configuration.application(createResourceStrategy("resources", "static/**"),
-					createResourceStrategy("application", "**"));
+		File jar = createLayeredJar((layered) -> {
+			layered.application((application) -> {
+				application.intoLayer("resources", (spec) -> spec.include("static/**"));
+				application.intoLayer("application");
+			});
+			layered.dependencies((dependencies) -> {
+				dependencies.intoLayer("my-snapshot-deps", (spec) -> spec.include("com.example:*:*.SNAPSHOT"));
+				dependencies.intoLayer("my-internal-deps", (spec) -> spec.include("com.example:*:*"));
+				dependencies.intoLayer("my-deps");
+			});
+			layered.layerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
 		});
 		List<String> entryNames = getEntryNames(jar);
 		assertThat(entryNames)
@@ -137,16 +139,6 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
 						"BOOT-INF/layers/application/classes/application.properties")
 				.contains("BOOT-INF/layers/resources/classes/static/test.css");
-	}
-
-	private FilteredLibraryStrategy createLibraryStrategy(String layerName, String... includes) {
-		return new FilteredLibraryStrategy(layerName,
-				Collections.singletonList(new CoordinateFilter(Arrays.asList(includes), Collections.emptyList())));
-	}
-
-	private FilteredResourceStrategy createResourceStrategy(String layerName, String... includes) {
-		return new FilteredResourceStrategy(layerName,
-				Collections.singletonList(new LocationFilter(Arrays.asList(includes), Collections.emptyList())));
 	}
 
 	@Test
@@ -172,7 +164,14 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void whenJarIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
 		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames).contains("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+		assertThat(entryNames).contains(jarModeLayerTools());
+	}
+
+	private String jarModeLayerTools() {
+		JarModeLibrary library = JarModeLibrary.LAYER_TOOLS;
+		String version = library.getCoordinates().getVersion();
+		String layer = (version == null || !version.contains("SNAPSHOT")) ? "dependencies" : "snapshot-dependencies";
+		return "BOOT-INF/layers/" + layer + "/lib/" + library.getName();
 	}
 
 	@Test
@@ -198,24 +197,24 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
-	private File createLayeredJar(Action<LayerConfiguration> action) throws IOException {
+	private File createLayeredJar() throws IOException {
+		return createLayeredJar(null);
+	}
+
+	private File createLayeredJar(Action<LayeredSpec> action) throws IOException {
 		if (action != null) {
-			getTask().layers(action);
+			getTask().layered(action);
 		}
 		else {
-			getTask().layers();
+			getTask().layered();
 		}
 		addContent();
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
-	private File createLayeredJar() throws IOException {
-		return createLayeredJar(null);
-	}
-
 	private void addContent() throws IOException {
-		BootJar bootJar = getTask();
+		TestBootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
@@ -231,32 +230,33 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		css.createNewFile();
 		bootJar.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
 				jarFile("third-library-SNAPSHOT.jar"));
-
-		Set<ResolvedArtifactResult> resolvedArtifacts = new HashSet<>();
-		resolvedArtifacts.add(mockLibraryArtifact("first-library.jar", "com.example:first-library:1.0.0"));
-		resolvedArtifacts.add(mockLibraryArtifact("second-library.jar", "com.example:second-library:1.0.0"));
-		resolvedArtifacts
-				.add(mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example:third-library:1.0.0.SNAPSHOT"));
-
-		ArtifactCollection artifacts = mock(ArtifactCollection.class);
-		given(artifacts.getArtifacts()).willReturn(resolvedArtifacts);
-
-		ResolvableDependencies deps = mock(ResolvableDependencies.class);
-		given(deps.getArtifacts()).willReturn(artifacts);
-		bootJar.resolvedDependencies(deps);
+		Set<ResolvedArtifactResult> artifacts = new LinkedHashSet<>();
+		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
+		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
+		artifacts.add(
+				mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
+		ArtifactCollection resolvedDependencies = mock(ArtifactCollection.class);
+		given(resolvedDependencies.getArtifacts()).willReturn(artifacts);
+		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
+		given(resolvableDependencies.getArtifacts()).willReturn(resolvedDependencies);
+		Configuration configuration = mock(Configuration.class);
+		given(configuration.isCanBeResolved()).willReturn(true);
+		given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		bootJar.setConfiguration(Collections.singleton(configuration));
 	}
 
-	private ResolvedArtifactResult mockLibraryArtifact(String fileName, String coordinates) {
-		ComponentIdentifier libraryId = mock(ComponentIdentifier.class);
-		given(libraryId.getDisplayName()).willReturn(coordinates);
-
+	private ResolvedArtifactResult mockLibraryArtifact(String fileName, String group, String module, String version) {
+		ModuleComponentIdentifier identifier = mock(ModuleComponentIdentifier.class);
+		given(identifier.getGroup()).willReturn(group);
+		given(identifier.getModule()).willReturn(module);
+		given(identifier.getVersion()).willReturn(version);
 		ComponentArtifactIdentifier libraryArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(libraryArtifactId.getComponentIdentifier()).willReturn(libraryId);
-
+		given(libraryArtifactId.getComponentIdentifier()).willReturn(identifier);
 		ResolvedArtifactResult libraryArtifact = mock(ResolvedArtifactResult.class);
-		given(libraryArtifact.getFile()).willReturn(new File(fileName));
+		File file = new File(this.temp, fileName).getAbsoluteFile();
+		System.out.println(file);
+		given(libraryArtifact.getFile()).willReturn(file);
 		given(libraryArtifact.getId()).willReturn(libraryArtifactId);
-
 		return libraryArtifact;
 	}
 
@@ -270,6 +270,21 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Override
 	protected void executeTask() {
 		getTask().copy();
+	}
+
+	public static class TestBootJar extends BootJar {
+
+		private Iterable<Configuration> configurations = Collections.emptySet();
+
+		@Override
+		protected Iterable<Configuration> getConfigurations() {
+			return this.configurations;
+		}
+
+		void setConfiguration(Iterable<Configuration> configurations) {
+			this.configurations = configurations;
+		}
+
 	}
 
 }

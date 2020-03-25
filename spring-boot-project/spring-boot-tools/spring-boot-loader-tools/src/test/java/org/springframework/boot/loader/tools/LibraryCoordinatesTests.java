@@ -19,56 +19,42 @@ package org.springframework.boot.loader.tools;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link LibraryCoordinates}.
  *
- * @author Scott Frederick
+ * @author Phillip Webb
  */
 class LibraryCoordinatesTests {
 
 	@Test
-	void parseCoordinatesWithAllElements() {
-		LibraryCoordinates coordinates = new LibraryCoordinates("com.acme:my-library:1.0.0");
-		assertThat(coordinates.getGroupId()).isEqualTo("com.acme");
-		assertThat(coordinates.getArtifactId()).isEqualTo("my-library");
-		assertThat(coordinates.getVersion()).isEqualTo("1.0.0");
+	void ofCreateLibraryCoordinates() {
+		LibraryCoordinates coordinates = LibraryCoordinates.of("g", "a", "v");
+		assertThat(coordinates.getGroupId()).isEqualTo("g");
+		assertThat(coordinates.getArtifactId()).isEqualTo("a");
+		assertThat(coordinates.getVersion()).isEqualTo("v");
+		assertThat(coordinates.toString()).isEqualTo("g:a:v");
 	}
 
 	@Test
-	void parseCoordinatesWithoutVersion() {
-		LibraryCoordinates coordinates = new LibraryCoordinates("com.acme:my-library");
-		assertThat(coordinates.getGroupId()).isEqualTo("com.acme");
-		assertThat(coordinates.getArtifactId()).isEqualTo("my-library");
-		assertThat(coordinates.getVersion()).isNull();
+	void toStandardNotationStringWhenCoordinatesAreNull() {
+		assertThat(LibraryCoordinates.toStandardNotationString(null)).isEqualTo("::");
 	}
 
 	@Test
-	void parseCoordinatesWithEmptyElements() {
-		LibraryCoordinates coordinates = new LibraryCoordinates(":my-library:");
-		assertThat(coordinates.getGroupId()).isEqualTo("");
-		assertThat(coordinates.getArtifactId()).isEqualTo("my-library");
-		assertThat(coordinates.getVersion()).isNull();
+	void toStandardNotationStringWhenCoordinatesElementsNull() {
+		assertThat(LibraryCoordinates.toStandardNotationString(mock(LibraryCoordinates.class))).isEqualTo("::");
 	}
 
 	@Test
-	void parseCoordinatesWithExtraElements() {
-		LibraryCoordinates coordinates = new LibraryCoordinates("com.acme:my-library:1.0.0.BUILD-SNAPSHOT:11111");
-		assertThat(coordinates.getGroupId()).isEqualTo("com.acme");
-		assertThat(coordinates.getArtifactId()).isEqualTo("my-library");
-		assertThat(coordinates.getVersion()).isEqualTo("1.0.0.BUILD-SNAPSHOT");
-	}
-
-	@Test
-	void parseCoordinatesWithoutMinimumElements() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new LibraryCoordinates("com.acme"));
-	}
-
-	@Test
-	void toStringReturnsString() {
-		assertThat(new LibraryCoordinates("com.acme:my-library:1.0.0")).hasToString("com.acme:my-library:1.0.0");
-		assertThat(new LibraryCoordinates("com.acme:my-library")).hasToString("com.acme:my-library:");
+	void toStandardNotationString() {
+		LibraryCoordinates coordinates = mock(LibraryCoordinates.class);
+		given(coordinates.getGroupId()).willReturn("a");
+		given(coordinates.getArtifactId()).willReturn("b");
+		given(coordinates.getVersion()).willReturn("c");
+		assertThat(LibraryCoordinates.toStandardNotationString(coordinates)).isEqualTo("a:b:c");
 	}
 
 }

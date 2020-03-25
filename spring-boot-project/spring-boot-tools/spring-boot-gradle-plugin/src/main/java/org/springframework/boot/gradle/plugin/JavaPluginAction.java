@@ -27,7 +27,6 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.ApplicationPlugin;
@@ -94,9 +93,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			bootJar.classpath((Callable<FileCollection>) mainSourceSet::getRuntimeClasspath);
-			Configuration runtimeClasspathConfiguration = project.getConfigurations()
-					.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
-			runtimeClasspathConfiguration.getIncoming().afterResolve(bootJar::resolvedDependencies);
 			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		});
 	}

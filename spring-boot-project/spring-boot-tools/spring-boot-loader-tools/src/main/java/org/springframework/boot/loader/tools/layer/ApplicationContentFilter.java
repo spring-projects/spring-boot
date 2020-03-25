@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.application;
+package org.springframework.boot.loader.tools.layer;
 
-import java.io.Serializable;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 
 /**
- * A filter that can tell if a resource has been included or excluded.
+ * {@link ContentFilter} that matches application items based on an Ant-style path
+ * pattern.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public interface ResourceFilter extends Serializable {
+public class ApplicationContentFilter implements ContentFilter<String> {
 
-	/**
-	 * Return true if the resource is included by the filter.
-	 * @param resourceName the resource name
-	 * @return true if the resource is included
-	 */
-	boolean isResourceIncluded(String resourceName);
+	private static final AntPathMatcher MATCHER = new AntPathMatcher();
 
-	/**
-	 * Return true if the resource is included by the filter.
-	 * @param resourceName the resource name
-	 * @return true if the resource is excluded
-	 */
-	boolean isResourceExcluded(String resourceName);
+	private final String pattern;
+
+	public ApplicationContentFilter(String pattern) {
+		Assert.hasText(pattern, "Pattern must not be empty");
+		this.pattern = pattern;
+	}
+
+	@Override
+	public boolean matches(String path) {
+		return MATCHER.match(this.pattern, path);
+	}
 
 }

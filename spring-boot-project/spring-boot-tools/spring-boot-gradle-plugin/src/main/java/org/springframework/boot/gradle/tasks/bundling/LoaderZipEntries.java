@@ -44,18 +44,18 @@ class LoaderZipEntries {
 		this.entryTime = entryTime;
 	}
 
-	Spec<FileTreeElement> writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException {
+	Spec<FileTreeElement> writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenDirectoriesSpec writtenDirectoriesSpec = new WrittenDirectoriesSpec();
 		try (ZipInputStream loaderJar = new ZipInputStream(
 				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {
-					writeDirectory(new ZipArchiveEntry(entry), zipOutputStream);
+					writeDirectory(new ZipArchiveEntry(entry), out);
 					writtenDirectoriesSpec.add(entry);
 				}
 				else if (entry.getName().endsWith(".class")) {
-					writeClass(new ZipArchiveEntry(entry), loaderJar, zipOutputStream);
+					writeClass(new ZipArchiveEntry(entry), loaderJar, out);
 				}
 				entry = loaderJar.getNextEntry();
 			}

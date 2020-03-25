@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Base class for the standard set of {@link Layers}. Defines the following layers:
@@ -62,6 +63,11 @@ public abstract class StandardLayers implements Layers {
 	@Override
 	public Iterator<Layer> iterator() {
 		return LAYERS.iterator();
+	}
+
+	@Override
+	public Stream<Layer> stream() {
+		return LAYERS.stream();
 	}
 
 }

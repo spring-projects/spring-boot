@@ -26,6 +26,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -296,8 +297,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
 					.hasEntryWithNameStartingWith("BOOT-INF/layers/dependencies/lib/jar-release")
 					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot")
-					.hasEntryWithNameStartingWith(
-							"BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+					.hasEntryWithNameStartingWith(jarModeLayerTools());
 		});
 	}
 
@@ -308,8 +308,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/layers/application/classes/")
 					.hasEntryWithNameStartingWith("BOOT-INF/layers/dependencies/lib/jar-release")
 					.hasEntryWithNameStartingWith("BOOT-INF/layers/snapshot-dependencies/lib/jar-snapshot")
-					.doesNotHaveEntryWithNameStartingWith(
-							"BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+					.doesNotHaveEntryWithNameStartingWith(jarModeLayerTools());
 		});
 	}
 
@@ -331,6 +330,13 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 		Thread.sleep(1500);
 		String secondHash = buildJarWithOutputTimestamp(mavenBuild);
 		assertThat(firstHash).isEqualTo(secondHash);
+	}
+
+	private String jarModeLayerTools() {
+		JarModeLibrary library = JarModeLibrary.LAYER_TOOLS;
+		String version = library.getCoordinates().getVersion();
+		String layer = (version == null || !version.contains("SNAPSHOT")) ? "dependencies" : "snapshot-dependencies";
+		return "BOOT-INF/layers/" + layer + "/lib/" + library.getName();
 	}
 
 	private String buildJarWithOutputTimestamp(MavenBuild mavenBuild) {

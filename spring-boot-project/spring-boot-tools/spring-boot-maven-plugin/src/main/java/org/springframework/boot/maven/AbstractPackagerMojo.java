@@ -48,6 +48,7 @@ import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Packager;
+import org.springframework.boot.loader.tools.layer.CustomLayers;
 
 /**
  * Abstract base class for classes that work with an {@link Packager}.
@@ -135,15 +136,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		}
 		if (this.layers != null && this.layers.isEnabled()) {
 			if (this.layers.getConfiguration() != null) {
-				try {
-					Document document = getDocumentIfAvailable(this.layers.getConfiguration());
-					CustomLayersProvider customLayersProvider = new CustomLayersProvider();
-					packager.setLayers(customLayersProvider.getLayers(document));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException("Failed to process custom layers configuration "
-							+ this.layers.getConfiguration().getAbsolutePath(), ex);
-				}
+				packager.setLayers(getCustomLayers(this.layers.getConfiguration()));
 			}
 			packager.setLayout(new LayeredJar());
 			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());
@@ -151,8 +144,19 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		return packager;
 	}
 
-	private Document getDocumentIfAvailable(File configurationFile) throws Exception {
-		InputSource inputSource = new InputSource(new FileInputStream(configurationFile));
+	private CustomLayers getCustomLayers(File configuration) {
+		try {
+			Document document = getDocumentIfAvailable(configuration);
+			return new CustomLayersProvider().getLayers(document);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to process custom layers configuration " + configuration.getAbsolutePath(), ex);
+		}
+	}
+
+	private Document getDocumentIfAvailable(File xmlFile) throws Exception {
+		InputSource inputSource = new InputSource(new FileInputStream(xmlFile));
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		return builder.parse(inputSource);

@@ -5,7 +5,7 @@ plugins {
 
 bootJar {
 	mainClassName = 'com.example.Application'
-	layers()
+	layered()
 }
 
 repositories {
