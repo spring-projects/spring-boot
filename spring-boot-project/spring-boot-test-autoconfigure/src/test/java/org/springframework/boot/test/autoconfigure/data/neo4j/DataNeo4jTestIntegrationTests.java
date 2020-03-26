@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,6 @@ class DataNeo4jTestIntegrationTests {
 	@Container
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication();
 
-	@DynamicPropertySource
-	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
-	}
-
 	@Autowired
 	private Session session;
 
@@ -58,6 +53,11 @@ class DataNeo4jTestIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+
+	@DynamicPropertySource
+	static void neo4jProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+	}
 
 	@Test
 	void testRepository() {

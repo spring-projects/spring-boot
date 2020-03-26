@@ -41,16 +41,16 @@ class DataRedisTestWithIncludeFilterIntegrationTests {
 	@Container
 	static final RedisContainer redis = new RedisContainer();
 
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Autowired
 	private ExampleRepository exampleRepository;
 
 	@Autowired
 	private ExampleService service;
+
+	@DynamicPropertySource
+	static void redisProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Test
 	void testService() {

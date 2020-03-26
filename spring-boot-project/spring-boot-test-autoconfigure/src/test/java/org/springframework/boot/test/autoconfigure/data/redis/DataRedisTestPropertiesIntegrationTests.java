@@ -41,13 +41,13 @@ class DataRedisTestPropertiesIntegrationTests {
 	@Container
 	static final RedisContainer redis = new RedisContainer();
 
+	@Autowired
+	private Environment environment;
+
 	@DynamicPropertySource
 	static void redisProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.redis.port", redis::getFirstMappedPort);
 	}
-
-	@Autowired
-	private Environment environment;
 
 	@Test
 	void environmentWithNewProfile() {

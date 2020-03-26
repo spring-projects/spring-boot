@@ -49,11 +49,6 @@ class DataRedisTestIntegrationTests {
 	@Container
 	static RedisContainer redis = new RedisContainer();
 
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Autowired
 	private RedisOperations<Object, Object> operations;
 
@@ -62,6 +57,11 @@ class DataRedisTestIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+
+	@DynamicPropertySource
+	static void redisProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Test
 	void testRepository() {
