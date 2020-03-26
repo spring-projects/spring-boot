@@ -46,6 +46,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  * @author HaiTao Zhang
+ * @author Anastasiia Losieva
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -77,7 +78,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
-			return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+			return NimbusReactiveJwtDecoder.withPublicKey(publicKey)
+					.signatureAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
 		}
 
 		private byte[] getKeySpec(String keyValue) {
