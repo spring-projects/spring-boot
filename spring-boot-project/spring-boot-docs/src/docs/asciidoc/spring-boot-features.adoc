@@ -2315,6 +2315,7 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 	spring.mvc.contentnegotiation.media-types.markdown=text/markdown
 ----
 
+Suffix pattern matching is deprecated and will be removed in a future release.
 If you understand the caveats and would still like your application to use suffix pattern matching, the following configuration is required:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
