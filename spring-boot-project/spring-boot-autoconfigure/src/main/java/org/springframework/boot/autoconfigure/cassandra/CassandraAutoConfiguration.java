@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
 
@@ -114,7 +116,7 @@ public class CassandraAutoConfiguration {
 		mapQueryOptions(properties, options);
 		mapSocketOptions(properties, options);
 		mapPoolingOptions(properties, options);
-		map.from(properties::getContactPoints)
+		map.from(mapContactPoints(properties))
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).to(
 				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
@@ -150,6 +152,29 @@ public class CassandraAutoConfiguration {
 				.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
 		map.from(poolProperties::getMaxQueueSize)
 				.to((maxQueueSize) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE, maxQueueSize));
+	}
+
+	private List<String> mapContactPoints(CassandraProperties properties) {
+		return properties.getContactPoints().stream()
+				.map((candidate) -> formatContactPoint(candidate, properties.getPort())).collect(Collectors.toList());
+	}
+
+	private String formatContactPoint(String candidate, int port) {
+		int i = candidate.lastIndexOf(':');
+		if (i == -1 || !isPort(() -> candidate.substring(i + 1))) {
+			return String.format("%s:%s", candidate, port);
+		}
+		return candidate;
+	}
+
+	private boolean isPort(Supplier<String> value) {
+		try {
+			int i = Integer.parseInt(value.get());
+			return i > 0 && i < 65535;
+		}
+		catch (Exception ex) {
+			return false;
+		}
 	}
 
 	private static class CassandraDriverOptions {

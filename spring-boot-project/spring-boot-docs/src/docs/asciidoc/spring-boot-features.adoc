@@ -4518,6 +4518,18 @@ Generally, you provide `keyspace-name` and `contact-points` as well the local da
 	spring.data.cassandra.local-datacenter=datacenter1
 ----
 
+If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	spring.data.cassandra.keyspace-name=mykeyspace
+	spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
+	spring.data.cassandra.local-datacenter=datacenter1
+----
+
+TIP: Those two examples are identical as the port default to `9042`.
+If you need to configure the port, use `spring.data.cassandra.port`.
+
 You can also register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer` for more advanced driver customizations.
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
 
