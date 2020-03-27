@@ -29,7 +29,7 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 13 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 14 (included).
 {spring-framework-docs}[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
