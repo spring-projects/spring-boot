@@ -179,8 +179,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	/**
-	 * Add a {@link ApplicationContextInitializer} to be
-	 * calWebMvcEndpointChildContextConfigurationTestsled when the context is created.
+	 * Add an {@link ApplicationContextInitializer} to be called when the context is
+	 * created.
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
