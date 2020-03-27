@@ -59,7 +59,7 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 	private int initializeStatusCheck() throws Exception {
 		StatusCheck statusCheck = this.statusCheck;
 		if (statusCheck != null) {
-			// Already initilized
+			// Already initialized
 			return statusCheck.getStatus(this.solrClient);
 		}
 		try {

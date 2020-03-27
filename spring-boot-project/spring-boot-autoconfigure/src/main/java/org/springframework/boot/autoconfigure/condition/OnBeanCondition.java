@@ -733,7 +733,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	/**
-	 * Exteption thrown when the bean type cannot be deduced.
+	 * Exception thrown when the bean type cannot be deduced.
 	 */
 	static final class BeanTypeDeductionException extends RuntimeException {
 

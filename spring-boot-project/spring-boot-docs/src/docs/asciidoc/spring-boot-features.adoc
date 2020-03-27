@@ -1413,7 +1413,7 @@ These are:
 
 The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated in the sample above.
 
-TIP: If you are upgrading from a previous version that is simply using `Long` to express the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongsidethe switch to `DataSize`.
+TIP: If you are upgrading from a previous version that is simply using `Long` to express the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongside the switch to `DataSize`.
 Doing so gives a transparent upgrade path while supporting a much richer format.
 
 

@@ -110,7 +110,7 @@ abstract class Command {
 	/**
 	 * Run the actual command.
 	 * @param options any options extracted from the arguments
-	 * @param parameters any parameters extracted from the arguements
+	 * @param parameters any parameters extracted from the arguments
 	 */
 	protected abstract void run(Map<Option, String> options, List<String> parameters);
 
