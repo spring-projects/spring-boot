@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.springframework.boot.actuate.cassandra;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.Statement;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,9 +32,13 @@ import org.springframework.util.Assert;
  * Cassandra data stores.
  *
  * @author Julien Dubois
+ * @author Alexandre Dutra
  * @since 2.0.0
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
+
+	private static final Statement SELECT = new SimpleStatement("SELECT release_version FROM system.local")
+			.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private CassandraOperations cassandraOperations;
 
@@ -53,9 +58,8 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Select select = QueryBuilder.select("release_version").from("system", "local");
-		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(select);
-		if (results.isExhausted()) {
+		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(SELECT);
+		if (results.isFullyFetched()) {
 			builder.up();
 			return;
 		}
