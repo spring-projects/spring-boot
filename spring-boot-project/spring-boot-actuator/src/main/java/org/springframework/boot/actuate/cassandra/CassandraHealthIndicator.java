@@ -35,8 +35,8 @@ import org.springframework.util.Assert;
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
-	private static final SimpleStatement SELECT = SimpleStatement.newInstance("SELECT release_version FROM system.local")
-			.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private CassandraOperations cassandraOperations;
 
