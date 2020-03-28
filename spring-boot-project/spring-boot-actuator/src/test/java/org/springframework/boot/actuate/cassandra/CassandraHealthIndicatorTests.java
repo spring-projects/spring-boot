@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.cassandra;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.driver.core.Statement;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
@@ -51,8 +51,8 @@ public class CassandraHealthIndicatorTests {
 		ResultSet resultSet = mock(ResultSet.class);
 		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
-		given(cqlOperations.queryForResultSet(any(Select.class))).willReturn(resultSet);
-		given(resultSet.isExhausted()).willReturn(true);
+		given(cqlOperations.queryForResultSet(any(Statement.class))).willReturn(resultSet);
+		given(resultSet.isFullyFetched()).willReturn(true);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
@@ -65,8 +65,8 @@ public class CassandraHealthIndicatorTests {
 		Row row = mock(Row.class);
 		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
-		given(cqlOperations.queryForResultSet(any(Select.class))).willReturn(resultSet);
-		given(resultSet.isExhausted()).willReturn(false);
+		given(cqlOperations.queryForResultSet(any(Statement.class))).willReturn(resultSet);
+		given(resultSet.isFullyFetched()).willReturn(false);
 		given(resultSet.one()).willReturn(row);
 		String expectedVersion = "1.0.0";
 		given(row.getString(0)).willReturn(expectedVersion);
