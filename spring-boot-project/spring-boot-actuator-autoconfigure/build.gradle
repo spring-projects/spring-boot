@@ -32,6 +32,7 @@ dependencies {
 
 	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("ch.qos.logback:logback-classic")
+	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
