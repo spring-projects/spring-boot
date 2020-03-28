@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Set;
 
-import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.cassandra.city.CityRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
@@ -40,7 +38,6 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraRepositoriesAutoConfiguration}.
@@ -101,25 +98,15 @@ class CassandraRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration {
-
-		@Bean
-		CqlSession cqlSession() {
-			return mock(CqlSession.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class EmptyConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
@@ -127,7 +114,7 @@ class CassandraRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CassandraRepositoriesAutoConfigurationTests.class)
 	@EnableCassandraRepositories(basePackageClasses = CityCassandraRepository.class)
-	@Import(TestConfiguration.class)
+	@Import(CassandraMockConfiguration.class)
 	static class CustomizedConfiguration {
 
 	}

@@ -21,9 +21,6 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigParseOptions;
-import com.typesafe.config.impl.Parseable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -79,6 +76,38 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void driverConfigLoaderWithContactPointAndNoPort() {
+		this.contextRunner
+				.withPropertyValues("spring.data.cassandra.contact-points=cluster.example.com,another.example.com:9041",
+						"spring.data.cassandra.local-datacenter=cassandra-eu1")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(configuration.getStringList(DefaultDriverOption.CONTACT_POINTS))
+							.containsOnly("cluster.example.com:9042", "another.example.com:9041");
+					assertThat(configuration.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER))
+							.isEqualTo("cassandra-eu1");
+				});
+	}
+
+	@Test
+	void driverConfigLoaderWithContactPointAndNoPortAndCustomPort() {
+		this.contextRunner
+				.withPropertyValues("spring.data.cassandra.contact-points=cluster.example.com:9041,another.example.com",
+						"spring.data.cassandra.port=9043", "spring.data.cassandra.local-datacenter=cassandra-eu1")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(configuration.getStringList(DefaultDriverOption.CONTACT_POINTS))
+							.containsOnly("cluster.example.com:9041", "another.example.com:9043");
+					assertThat(configuration.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER))
+							.isEqualTo("cassandra-eu1");
+				});
+	}
+
+	@Test
 	void driverConfigLoaderWithCustomSessionName() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.session-name=testcluster").run((context) -> {
 			assertThat(context).hasSingleBean(DriverConfigLoader.class);
@@ -98,16 +127,6 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void driverConfigLoaderApplyConsistentDefaults() {
-		this.contextRunner.run((context) -> {
-			Config defaultConfig = defaultConfig();
-			DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
-					.getDefaultProfile();
-			// TODO
-		});
-	}
-
-	@Test
 	void driverConfigLoaderCustomizePoolOptions() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
 				"spring.data.cassandra.pool.heartbeat-interval=62", "spring.data.cassandra.pool.max-queue-size=72")
@@ -118,10 +137,6 @@ class CassandraAutoConfigurationTests {
 					assertThat(config.getInt(DefaultDriverOption.HEARTBEAT_INTERVAL)).isEqualTo(62);
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
 				});
-	}
-
-	private static Config defaultConfig() {
-		return Parseable.newResources("reference.conf", ConfigParseOptions.defaults()).parse().toConfig();
 	}
 
 	@Configuration(proxyBeanMethods = false)

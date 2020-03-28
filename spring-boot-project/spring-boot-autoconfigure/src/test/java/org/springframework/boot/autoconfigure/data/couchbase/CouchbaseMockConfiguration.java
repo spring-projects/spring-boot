@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.autoconfigure.data.couchbase;
 
-import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.couchbase.CouchbaseClientFactory;
+
+import static org.mockito.Mockito.mock;
 
 /**
- * Condition to determine if {@code spring.couchbase.bootstrap-hosts} is specified.
+ * Test configuration that mocks access to Couchbase.
  *
  * @author Stephane Nicoll
- * @author Madhura Bhave
- * @author Eneias Silva
  */
-class OnBootstrapHostsCondition extends OnPropertyListCondition {
+@Configuration(proxyBeanMethods = false)
+class CouchbaseMockConfiguration {
 
-	OnBootstrapHostsCondition() {
-		super("spring.couchbase.bootstrap-hosts", () -> ConditionMessage.forCondition("Couchbase Bootstrap Hosts"));
+	@Bean
+	CouchbaseClientFactory couchbaseClientFactory() {
+		return mock(CouchbaseClientFactory.class);
 	}
 
 }

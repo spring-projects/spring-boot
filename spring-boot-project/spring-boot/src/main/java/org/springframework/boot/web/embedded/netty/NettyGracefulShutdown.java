@@ -17,19 +17,13 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.reactivestreams.Publisher;
 import reactor.netty.DisposableServer;
-import reactor.netty.http.server.HttpServerRequest;
-import reactor.netty.http.server.HttpServerResponse;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 
 /**
  * {@link GracefulShutdown} for a Reactor Netty {@link DisposableServer}.
@@ -42,17 +36,12 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 
 	private final Supplier<DisposableServer> disposableServer;
 
-	private final Duration lifecycleTimeout;
-
 	private final Duration period;
-
-	private final AtomicLong activeRequests = new AtomicLong();
 
 	private volatile boolean shuttingDown;
 
-	NettyGracefulShutdown(Supplier<DisposableServer> disposableServer, Duration lifecycleTimeout, Duration period) {
+	NettyGracefulShutdown(Supplier<DisposableServer> disposableServer, Duration period) {
 		this.disposableServer = disposableServer;
-		this.lifecycleTimeout = lifecycleTimeout;
 		this.period = period;
 	}
 
@@ -64,32 +53,14 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 		if (server == null) {
 			return false;
 		}
-		if (this.lifecycleTimeout != null) {
-			server.disposeNow(this.lifecycleTimeout);
-		}
-		else {
-			server.disposeNow();
-		}
 		this.shuttingDown = true;
-		long end = System.currentTimeMillis() + this.period.toMillis();
 		try {
-			while (this.activeRequests.get() > 0 && System.currentTimeMillis() < end) {
-				try {
-					Thread.sleep(50);
-				}
-				catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-			}
-			long activeRequests = this.activeRequests.get();
-			if (activeRequests == 0) {
-				logger.info("Graceful shutdown complete");
-				return true;
-			}
-			if (logger.isInfoEnabled()) {
-				logger.info("Grace period elapsed with " + activeRequests + " request(s) still active");
-			}
+			disposeNow(server);
+			logger.info("Graceful shutdown complete");
+			return true;
+		}
+		catch (IllegalStateException ex) {
+			logger.info("Grace period elapsed with one ore more requests still active");
 			return false;
 		}
 		finally {
@@ -97,20 +68,18 @@ final class NettyGracefulShutdown implements GracefulShutdown {
 		}
 	}
 
+	private void disposeNow(DisposableServer server) {
+		if (this.period != null) {
+			server.disposeNow(this.period);
+		}
+		else {
+			server.disposeNow();
+		}
+	}
+
 	@Override
 	public boolean isShuttingDown() {
 		return this.shuttingDown;
-	}
-
-	BiFunction<? super HttpServerRequest, ? super HttpServerResponse, ? extends Publisher<Void>> wrapHandler(
-			ReactorHttpHandlerAdapter handlerAdapter) {
-		if (this.period == null) {
-			return handlerAdapter;
-		}
-		return (request, response) -> {
-			this.activeRequests.incrementAndGet();
-			return handlerAdapter.apply(request, response).doOnTerminate(() -> this.activeRequests.decrementAndGet());
-		};
 	}
 
 }

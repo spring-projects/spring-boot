@@ -37,9 +37,9 @@ public class Library {
 
 	private final LibraryScope scope;
 
-	private final boolean unpackRequired;
-
 	private final LibraryCoordinates coordinates;
+
+	private final boolean unpackRequired;
 
 	/**
 	 * Create a new {@link Library}.
@@ -69,15 +69,24 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
-		this(name, file, scope, unpackRequired, null);
+		this(name, file, scope, null, unpackRequired);
 	}
 
-	public Library(String name, File file, LibraryScope scope, boolean unpackRequired, LibraryCoordinates coordinates) {
+	/**
+	 * Create a new {@link Library}.
+	 * @param name the name of the library as it should be written or {@code null} to use
+	 * the file name
+	 * @param file the source file
+	 * @param scope the scope of the library
+	 * @param coordinates the library coordinates or {@code null}
+	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 */
+	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired) {
 		this.name = (name != null) ? name : file.getName();
 		this.file = file;
 		this.scope = scope;
-		this.unpackRequired = unpackRequired;
 		this.coordinates = coordinates;
+		this.unpackRequired = unpackRequired;
 	}
 
 	/**
@@ -114,20 +123,20 @@ public class Library {
 	}
 
 	/**
+	 * Return the {@linkplain LibraryCoordinates coordinates} of the library.
+	 * @return the coordinates
+	 */
+	public LibraryCoordinates getCoordinates() {
+		return this.coordinates;
+	}
+
+	/**
 	 * Return if the file cannot be used directly as a nested jar and needs to be
 	 * unpacked.
 	 * @return if unpack is required
 	 */
 	public boolean isUnpackRequired() {
 		return this.unpackRequired;
-	}
-
-	/**
-	 * Return the {@linkplain LibraryCoordinates coordinates} of the library.
-	 * @return the coordinates
-	 */
-	public LibraryCoordinates getCoordinates() {
-		return this.coordinates;
 	}
 
 	long getLastModified() {

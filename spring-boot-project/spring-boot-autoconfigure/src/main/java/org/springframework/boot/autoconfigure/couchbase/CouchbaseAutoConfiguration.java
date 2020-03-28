@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,30 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseBucket;
+import java.net.URL;
+import java.security.KeyStore;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+
+import com.couchbase.client.core.env.IoConfig;
+import com.couchbase.client.core.env.SecurityConfig;
+import com.couchbase.client.core.env.TimeoutConfig;
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.env.ClusterEnvironment.Builder;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.util.ResourceUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Couchbase.
@@ -38,43 +50,65 @@ import org.springframework.context.annotation.Import;
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class })
-@Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
+@ConditionalOnClass(Cluster.class)
+@ConditionalOnProperty("spring.couchbase.connection-string")
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class,
-			type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
-	@Import(CouchbaseConfiguration.class)
-	static class DefaultCouchbaseConfiguration {
-
+	@Bean
+	@ConditionalOnMissingBean
+	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseProperties properties,
+			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers) {
+		Builder builder = initializeEnvironmentBuilder(properties);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
-	/**
-	 * Determine if Couchbase should be configured. This happens if either the
-	 * user-configuration defines a {@code CouchbaseConfigurer} or if at least the
-	 * "bootstrapHosts" property is specified.
-	 * <p>
-	 * The reason why we check for the presence of {@code CouchbaseConfigurer} is that it
-	 * might use {@link CouchbaseProperties} for its internal customization.
-	 */
-	static class CouchbaseCondition extends AnyNestedCondition {
+	@Bean(destroyMethod = "disconnect")
+	@ConditionalOnMissingBean
+	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment) {
+		ClusterOptions options = ClusterOptions.clusterOptions(properties.getUsername(), properties.getPassword())
+				.environment(couchbaseClusterEnvironment);
+		return Cluster.connect(properties.getConnectionString(), options);
+	}
 
-		CouchbaseCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
+		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
+		Timeouts timeouts = properties.getEnv().getTimeouts();
+		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).analyticsTimeout(timeouts.getAnalytics())
+				.kvDurableTimeout(timeouts.getKeyValueDurable()).queryTimeout(timeouts.getQuery())
+				.viewTimeout(timeouts.getView()).searchTimeout(timeouts.getSearch())
+				.managementTimeout(timeouts.getManagement()).connectTimeout(timeouts.getConnect())
+				.disconnectTimeout(timeouts.getDisconnect()));
+		CouchbaseProperties.Io io = properties.getEnv().getIo();
+		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints()).numKvConnections(io.getMinEndpoints())
+				.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
+		if (properties.getEnv().getSsl().getEnabled()) {
+			builder.securityConfig(SecurityConfig.enableTls(true)
+					.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
 		}
+		return builder;
+	}
 
-		@Conditional(OnBootstrapHostsCondition.class)
-		static class BootstrapHostsProperty {
-
+	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl) {
+		String resource = ssl.getKeyStore();
+		try {
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory
+					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			KeyStore keyStore = loadKeyStore(resource, ssl.getKeyStorePassword());
+			trustManagerFactory.init(keyStore);
+			return trustManagerFactory;
 		}
-
-		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
-		static class CouchbaseConfigurerAvailable {
-
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not load Couchbase key store '" + resource + "'", ex);
 		}
+	}
 
+	private KeyStore loadKeyStore(String resource, String keyStorePassword) throws Exception {
+		KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+		URL url = ResourceUtils.getURL(resource);
+		store.load(url.openStream(), (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		return store;
 	}
 
 }

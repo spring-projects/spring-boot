@@ -40,6 +40,7 @@ class SpringBootPluginIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
+	@DisabledForJreRange(min = JRE.JAVA_14)
 	@Test
 	void failFastWithVersionOfGradleLowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("5.5.1").buildAndFail();

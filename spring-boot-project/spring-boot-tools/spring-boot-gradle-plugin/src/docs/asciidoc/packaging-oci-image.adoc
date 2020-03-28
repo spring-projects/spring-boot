@@ -17,25 +17,30 @@ Task properties can be used to configure how the builder should operate on the p
 The following table summarizes the available properties and their default values:
 
 |===
-| Property | Description | Default value
+| Property | Command-line option | Description | Default value
 
 | `builder`
+| `--builder`
 | Name of the Builder image to use.
 | `cloudfoundry/cnb:0.0.53-bionic`
 
 | `imageName`
+| `--imageName`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
 | `docker.io/library/${project.artifactId}:${project.version}`
 
 | `environment`
+|
 | Environment variables that should be passed to the builder.
 |
 
 | `cleanCache`
+|
 | Whether to clean the cache before building.
 | `false`
 
 | `verboseLogging`
+|
 | Enables verbose logging of builder operations.
 | `false`
 |===

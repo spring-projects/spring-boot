@@ -329,10 +329,6 @@
       }
     },
     {
-      "name": "spring.data.couchbase.consistency",
-      "defaultValue": "read-your-own-writes"
-    },
-    {
       "name": "spring.data.couchbase.repositories.type",
       "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
       "description": "Type of Couchbase repositories to enable.",
@@ -1595,6 +1591,101 @@
       }
     },
     {
+      "name": "spring.couchbase.bootstrap-hosts",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Couchbase nodes (host or IP address) to bootstrap from.",
+      "deprecation": {
+        "replacement": "spring.couchbase.connection-string",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.bucket.name",
+      "type": "java.lang.String",
+      "description": "Name of the bucket to connect to.",
+      "deprecation": {
+        "reason": "A bucket is no longer auto-configured.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.bucket.password",
+      "type": "java.lang.String",
+      "description": "Password of the bucket.",
+      "deprecation": {
+        "reason": "A bucket is no longer auto-configured.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.bootstrap.http-direct-port",
+      "type": "java.lang.Integer",
+      "description": "Port for the HTTP bootstrap.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.bootstrap.http-ssl-port",
+      "type": "java.lang.Integer",
+      "description": "Port for the HTTPS bootstrap.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.key-value",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the key/value service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.queryservice.max-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.max-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.queryservice.min-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Minimum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.min-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.viewservice.max-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.max-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.viewservice.min-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Minimum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.min-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.timeouts.socket-connect",
+      "type": "java.time.Duration",
+      "description": "Socket connect connections timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.couchbase.env.endpoints.query",
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the query (N1QL) service.",
@@ -1650,6 +1741,14 @@
       "name": "spring.data.cassandra.read-timeout-millis",
       "type": "java.lang.Integer",
       "description": "Socket option: read time out.",
+      "deprecation": {
+        "replacement": "spring.data.cassandra.read-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.couchbase.consistency",
+      "type": "org.springframework.data.couchbase.core.query.Consistency",
       "deprecation": {
         "replacement": "spring.data.cassandra.read-timeout",
         "level": "error"

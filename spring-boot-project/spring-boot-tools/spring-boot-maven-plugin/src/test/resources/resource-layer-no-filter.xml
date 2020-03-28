@@ -1,11 +1,11 @@
 <layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
 					  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
-					  https://www.springframework.org/schema/boot/layers/layers-configuration.xsd">
+					  https://www.springframework.org/schema/boot/layers/layers-configuration-2.3.xsd">
 	<layers>
 		<layer>my-layer</layer>
 	</layers>
-	<classes>
+	<application>
 		<layer-content layer="my-layer"/>
-	</classes>
+	</application>
 </layers-configuration>

@@ -10,7 +10,7 @@ bootJar {
 // tag::layered[]
 bootJar {
 	layers {
-		layers "dependencies", "snapshot-dependencies", "resources", "application"
+		layersOrder "dependencies", "snapshot-dependencies", "application"
 		libraries {
 			layerContent("snapshot-dependencies") {
 				coordinates {
@@ -23,13 +23,7 @@ bootJar {
 				}
 			}
 		}
-		classes {
-			layerContent("resources") {
-				locations {
-					include "META-INF/resources/**", "resources/**"
-					include "static/**", "public/**"
-				}
-			}
+		application {
 			layerContent("application") {
 				locations {
 					include "**"

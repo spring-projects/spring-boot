@@ -183,6 +183,35 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 
 
 
+[[cloud-deployment-kubernetes]]
+=== Kubernetes
+Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
+You can override this detection with the configprop:management.health.probes.enabled[] configuration property.
+
+Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-availability-state,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+
+
+
+[[cloud-deployment-kubernetes-container-lifecycle]]
+==== Kubernetes Container Lifecycle
+When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
+Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
+
+You can configure a sleep execution in a pre-stop hook to avoid requests being routed to a pod that has already begun shutting down.
+This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
+
+[source,yml,indent=0]
+----
+lifecycle:
+  preStop:
+    exec:
+      command: ["sh", "-c", "sleep 10"]
+----
+
+Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+
+
+
 [[cloud-deployment-heroku]]
 === Heroku
 Heroku is another popular PaaS platform.
@@ -254,10 +283,7 @@ For more details, refer to https://devcenter.heroku.com/articles/deploying-sprin
 
 [[cloud-deployment-openshift]]
 === OpenShift
-https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of the Kubernetes container orchestration platform.
-Similarly to Kubernetes, OpenShift has many options for installing Spring Boot based applications.
-
-OpenShift has many resources describing how to deploy Spring Boot applications, including:
+https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
 * https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]

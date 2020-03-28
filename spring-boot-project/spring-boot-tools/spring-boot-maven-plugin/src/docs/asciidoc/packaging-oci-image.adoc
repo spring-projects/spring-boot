@@ -40,29 +40,34 @@ By default, the plugin chooses a builder image.
 The name of the generated image is deduced from project properties.
 
 The `image` parameter allows to configure how the builder should operate on the project.
-The following table summarizes the available properties and their default values:
+The following table summarizes the available parameters and their default values:
 
 |===
-| Property | Description | Default value
+| Parameter | Description | User property | Default value
 
 | `builder`
 | Name of the Builder image to use.
+| `spring-boot.build-image.builder`
 | `cloudfoundry/cnb:0.0.53-bionic`
 
 | `name`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
+| `spring-boot.build-image.imageName`
 | `docker.io/library/${project.artifactId}:${project.version}`
 
 | `env`
 | Environment variables that should be passed to the builder.
 |
+|
 
 | `cleanCache`
 | Whether to clean the cache before building.
+|
 | `false`
 
 | `verboseLogging`
 | Enables verbose logging of builder operations.
+|
 | `false`
 |===
 
@@ -79,7 +84,7 @@ include::goals/build-image.adoc[leveloffset=+1]
 
 [[build-image-example-custom-image-builder]]
 ==== Custom Image Builder
-If you need to customize the builder used to create the image, configure yours as shown in the following example:
+If you need to customize the builder used to create the image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -102,6 +107,13 @@ If you need to customize the builder used to create the image, configure yours a
 ----
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
+
+The builder can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image -Dspring-boot.build-image:builder=mine/java-cnb-builder
+----
 
 If the builder exposes configuration options, those can be set using the `env` attributes, as shown in the following example:
 
@@ -159,3 +171,11 @@ You can take control over the name, as shown in the following example:
 
 Note that this configuration does not provide an explicit tag so `latest` is used.
 It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.
+
+The image name can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image -Dspring-boot.build-image:imageName=example.com/library/v1
+----
+

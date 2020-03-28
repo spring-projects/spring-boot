@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -84,7 +83,7 @@ public class UndertowWebServer implements WebServer {
 	 * @since 2.0.4
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
-		this(builder, autoStart, closeable, new ImmediateGracefulShutdown());
+		this(builder, autoStart, closeable, GracefulShutdown.IMMEDIATE);
 	}
 
 	/**

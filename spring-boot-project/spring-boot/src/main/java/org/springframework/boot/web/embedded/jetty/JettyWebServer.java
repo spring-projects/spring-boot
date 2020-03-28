@@ -37,7 +37,6 @@ import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -101,18 +100,18 @@ public class JettyWebServer implements WebServer {
 		this.autoStart = autoStart;
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
-		GracefulShutdown gracefulShutdown = null;
-		if (shutdownGracePeriod != null) {
-			StatisticsHandler handler = new StatisticsHandler();
-			handler.setHandler(server.getHandler());
-			server.setHandler(handler);
-			gracefulShutdown = new JettyGracefulShutdown(server, handler::getRequestsActive, shutdownGracePeriod);
-		}
-		else {
-			gracefulShutdown = new ImmediateGracefulShutdown();
-		}
-		this.gracefulShutdown = gracefulShutdown;
+		this.gracefulShutdown = createGracefulShutdown(server, shutdownGracePeriod);
 		initialize();
+	}
+
+	private GracefulShutdown createGracefulShutdown(Server server, Duration shutdownGracePeriod) {
+		if (shutdownGracePeriod == null) {
+			return GracefulShutdown.IMMEDIATE;
+		}
+		StatisticsHandler handler = new StatisticsHandler();
+		handler.setHandler(server.getHandler());
+		server.setHandler(handler);
+		return new JettyGracefulShutdown(server, handler::getRequestsActive, shutdownGracePeriod);
 	}
 
 	private void initialize() {

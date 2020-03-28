@@ -35,6 +35,7 @@ import org.springframework.boot.loader.tools.layer.library.CoordinateFilter;
 import org.springframework.boot.loader.tools.layer.library.FilteredLibraryStrategy;
 import org.springframework.boot.loader.tools.layer.library.LibraryFilter;
 import org.springframework.boot.loader.tools.layer.library.LibraryStrategy;
+import org.springframework.util.Assert;
 
 /**
  * Produces a {@link CustomLayers} based on the given {@link Document}.
@@ -46,12 +47,12 @@ public class CustomLayersProvider {
 
 	public CustomLayers getLayers(Document document) {
 		Element root = document.getDocumentElement();
-		NodeList nl = root.getChildNodes();
+		NodeList nodes = root.getChildNodes();
 		List<Layer> layers = new ArrayList<>();
 		List<LibraryStrategy> libraryStrategies = new ArrayList<>();
 		List<ResourceStrategy> resourceStrategies = new ArrayList<>();
-		for (int i = 0; i < nl.getLength(); i++) {
-			Node node = nl.item(i);
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
 			if (node instanceof Element) {
 				processNode(layers, libraryStrategies, resourceStrategies, (Element) node);
 			}
@@ -71,7 +72,7 @@ public class CustomLayersProvider {
 					(StrategyFactory<LibraryFilter, LibraryStrategy>) FilteredLibraryStrategy::new,
 					CoordinateFilter::new, "coordinates"::equals));
 		}
-		if ("classes".equals(nodeName)) {
+		if ("application".equals(nodeName)) {
 			resourceStrategies.addAll(getStrategies(contents,
 					(StrategyFactory<ResourceFilter, ResourceStrategy>) FilteredResourceStrategy::new,
 					LocationFilter::new, "locations"::equals));
@@ -80,14 +81,13 @@ public class CustomLayersProvider {
 
 	private List<Layer> getLayers(Element element) {
 		List<Layer> layers = new ArrayList<>();
-		NodeList nodes = element.getChildNodes();
-		for (int i = 0; i < nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			if (node instanceof Element) {
-				Element ele = (Element) node;
-				String nodeName = ele.getNodeName();
-				if ("layer".equals(nodeName)) {
-					layers.add(new Layer(ele.getTextContent()));
+		NodeList childNodes = element.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node childNode = childNodes.item(i);
+			if (childNode instanceof Element) {
+				Element childElement = (Element) childNode;
+				if ("layer".equals(childElement.getNodeName())) {
+					layers.add(new Layer(childElement.getTextContent()));
 				}
 			}
 		}
@@ -98,26 +98,11 @@ public class CustomLayersProvider {
 			FilterFactory<E> filterFactory, Predicate<String> filterPredicate) {
 		List<T> contents = new ArrayList<>();
 		for (int i = 0; i < nodes.getLength(); i++) {
-			Node item = nodes.item(i);
-			if (item instanceof Element) {
-				Element element = (Element) item;
+			Node node = nodes.item(i);
+			if (node instanceof Element) {
+				Element element = (Element) node;
 				if ("layer-content".equals(element.getTagName())) {
-					NodeList filterList = item.getChildNodes();
-					if (filterList.getLength() == 0) {
-						throw new IllegalArgumentException("Filters for layer-content must not be empty.");
-					}
-					List<E> filters = new ArrayList<>();
-					for (int j = 0; j < filterList.getLength(); j++) {
-						Node filterNode = filterList.item(j);
-						if (filterNode instanceof Element) {
-							List<String> includeList = getPatterns((Element) filterNode, "include");
-							List<String> excludeList = getPatterns((Element) filterNode, "exclude");
-							if (filterPredicate.test(filterNode.getNodeName())) {
-								E filter = filterFactory.getFilter(includeList, excludeList);
-								filters.add(filter);
-							}
-						}
-					}
+					List<E> filters = getFilters(node, filterFactory, filterPredicate);
 					String layer = element.getAttribute("layer");
 					contents.add(strategyFactory.getStrategy(layer, filters));
 				}
@@ -126,16 +111,33 @@ public class CustomLayersProvider {
 		return contents;
 	}
 
-	private List<String> getPatterns(Element element, String key) {
-		NodeList patterns = element.getElementsByTagName(key);
-		List<String> values = new ArrayList<>();
-		for (int j = 0; j < patterns.getLength(); j++) {
-			Node item = patterns.item(j);
-			if (item instanceof Element) {
-				values.add(item.getTextContent());
+	private <E> List<E> getFilters(Node node, FilterFactory<E> factory, Predicate<String> predicate) {
+		NodeList childNodes = node.getChildNodes();
+		Assert.state(childNodes.getLength() > 0, "Filters for layer-content must not be empty.");
+		List<E> filters = new ArrayList<>();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node childNode = childNodes.item(i);
+			if (childNode instanceof Element) {
+				List<String> include = getPatterns((Element) childNode, "include");
+				List<String> exclude = getPatterns((Element) childNode, "exclude");
+				if (predicate.test(childNode.getNodeName())) {
+					filters.add(factory.getFilter(include, exclude));
+				}
 			}
 		}
-		return values;
+		return filters;
+	}
+
+	private List<String> getPatterns(Element element, String key) {
+		List<String> patterns = new ArrayList<>();
+		NodeList nodes = element.getElementsByTagName(key);
+		for (int j = 0; j < nodes.getLength(); j++) {
+			Node node = nodes.item(j);
+			if (node instanceof Element) {
+				patterns.add(node.getTextContent());
+			}
+		}
+		return patterns;
 	}
 
 	interface StrategyFactory<E, T> {

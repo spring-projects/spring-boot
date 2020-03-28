@@ -54,24 +54,45 @@ public final class LibraryCoordinates {
 		Assert.isTrue(elements.length >= 2, "Coordinates must contain at least 'groupId:artifactId'");
 		this.groupId = elements[0];
 		this.artifactId = elements[1];
-		if (elements.length > 2) {
-			this.version = elements[2];
-		}
-		else {
-			this.version = null;
-		}
+		this.version = (elements.length > 2) ? elements[2] : null;
 	}
 
+	/**
+	 * Return the group ID of the coordinates.
+	 * @return the group ID
+	 */
 	public String getGroupId() {
 		return this.groupId;
 	}
 
+	/**
+	 * Return the artifact ID of the coordinates.
+	 * @return the artifact ID
+	 */
 	public String getArtifactId() {
 		return this.artifactId;
 	}
 
+	/**
+	 * Return the version of the coordinates.
+	 * @return the version
+	 */
 	public String getVersion() {
 		return this.version;
+	}
+
+	/**
+	 * Return the coordinates in the form {@code groupId:artifactId:version}.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append((this.groupId != null) ? this.groupId : "");
+		builder.append(":");
+		builder.append((this.artifactId != null) ? this.artifactId : "");
+		builder.append(":");
+		builder.append((this.version != null) ? this.version : "");
+		return builder.toString();
 	}
 
 }

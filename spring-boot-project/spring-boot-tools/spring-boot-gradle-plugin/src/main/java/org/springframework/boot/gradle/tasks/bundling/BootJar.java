@@ -125,7 +125,8 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private File createClasspathIndex(List<String> dependencies) {
-		String content = dependencies.stream().collect(Collectors.joining("\n", "", "\n"));
+		String content = dependencies.stream().map((name) -> name.substring(name.lastIndexOf('/') + 1))
+				.collect(Collectors.joining("\n", "", "\n"));
 		File source = getProject().getResources().getText().fromString(content).asFile();
 		File indexFile = new File(source.getParentFile(), "classpath.idx");
 		source.renameTo(indexFile);
@@ -208,13 +209,13 @@ public class BootJar extends Jar implements BootArchive {
 			return;
 		}
 
-		if (this.layerConfiguration.getLayers() == null || this.layerConfiguration.getLayers().isEmpty()) {
+		if (this.layerConfiguration.getLayersOrder() == null || this.layerConfiguration.getLayersOrder().isEmpty()) {
 			this.layers = Layers.IMPLICIT;
 		}
 		else {
-			List<Layer> customLayers = this.layerConfiguration.getLayers().stream().map(Layer::new)
+			List<Layer> customLayers = this.layerConfiguration.getLayersOrder().stream().map(Layer::new)
 					.collect(Collectors.toList());
-			this.layers = new CustomLayers(customLayers, this.layerConfiguration.getClasses(),
+			this.layers = new CustomLayers(customLayers, this.layerConfiguration.getApplication(),
 					this.layerConfiguration.getLibraries());
 		}
 
@@ -245,7 +246,7 @@ public class BootJar extends Jar implements BootArchive {
 			String coordinates = this.coordinatesByFileName.get(details.getName());
 			LibraryCoordinates libraryCoordinates = (coordinates != null) ? new LibraryCoordinates(coordinates)
 					: new LibraryCoordinates("?:?:?");
-			return this.layers.getLayer(new Library(null, details.getFile(), null, false, libraryCoordinates));
+			return this.layers.getLayer(new Library(null, details.getFile(), null, libraryCoordinates, false));
 		}
 		if (path.startsWith("BOOT-INF/classes/")) {
 			return this.layers.getLayer(details.getSourcePath());

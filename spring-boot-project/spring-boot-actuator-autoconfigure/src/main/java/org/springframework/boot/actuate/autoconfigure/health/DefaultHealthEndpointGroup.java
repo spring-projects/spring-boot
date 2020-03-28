@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -31,12 +30,12 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Auto-configured {@link HealthEndpointGroup} backed by {@link HealthProperties}.
+ * Auto-configured {@link HealthEndpointGroup}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
+class DefaultHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Predicate<String> members;
 
@@ -51,7 +50,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	private final Collection<String> roles;
 
 	/**
-	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
+	 * Create a new {@link DefaultHealthEndpointGroup} instance.
 	 * @param members a predicate used to test for group membership
 	 * @param statusAggregator the status aggregator to use
 	 * @param httpCodeStatusMapper the HTTP code status mapper to use
@@ -59,7 +58,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param showDetails the show details setting
 	 * @param roles the roles to match
 	 */
-	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
+	DefaultHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
 			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails,
 			Collection<String> roles) {
 		this.members = members;

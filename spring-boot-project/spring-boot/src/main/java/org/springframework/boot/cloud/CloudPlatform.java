@@ -136,7 +136,7 @@ public enum CloudPlatform {
 	}
 
 	/**
-	 * Returns the active {@link CloudPlatform} or {@code null} if one cannot be deduced.
+	 * Returns the active {@link CloudPlatform} or {@code null} if one is not active.
 	 * @param environment the environment
 	 * @return the {@link CloudPlatform} or {@code null}
 	 */

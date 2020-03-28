@@ -20,10 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,14 +81,16 @@ public class UpgradeBom extends DefaultTask {
 				new MavenMetadataVersionResolver(Arrays.asList("https://repo1.maven.org/maven2/")),
 				this.bom.getUpgrade().getPolicy(), getServices().get(UserInputHandler.class))
 						.resolveUpgrades(this.bom.getLibraries());
+		Path buildFile = getProject().getBuildFile().toPath();
+		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
+		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
 		for (Upgrade upgrade : upgrades) {
 			String title = "Upgrade to " + upgrade.getLibrary().getName() + " " + upgrade.getVersion();
 			System.out.println(title);
 			try {
-				Path buildFile = getProject().getBuildFile().toPath();
-				applyChanges(upgrade, buildFile);
+				Path modified = upgradeApplicator.apply(upgrade);
 				int issueNumber = repository.openIssue(title, issueLabels, milestone);
-				if (new ProcessBuilder().command("git", "add", buildFile.toFile().getAbsolutePath()).start()
+				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath()).start()
 						.waitFor() != 0) {
 					throw new IllegalStateException("git add failed");
 				}
@@ -120,14 +119,6 @@ public class UpgradeBom extends DefaultTask {
 		catch (IOException ex) {
 			throw new InvalidUserDataException("Failed to load .bomr.properties from user home", ex);
 		}
-	}
-
-	private void applyChanges(Upgrade upgrade, Path buildFile) throws IOException {
-		String contents = new String(Files.readAllBytes(buildFile), StandardCharsets.UTF_8);
-		String modified = contents.replace(
-				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getLibrary().getVersion() + "\")",
-				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getVersion() + "\")");
-		Files.write(buildFile, modified.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 	}
 
 	private Milestone determineMilestone(GitHubRepository repository) {

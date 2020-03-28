@@ -35,15 +35,15 @@ class ImplicitLayerResolverTests {
 	@Test
 	void iteratorReturnsLayers() {
 		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SNAPSHOT_DEPENDENCIES,
-				StandardLayers.RESOURCES, StandardLayers.APPLICATION);
+				StandardLayers.APPLICATION);
 	}
 
 	@Test
-	void getLayerWhenNameInResourceLocationReturnsResourceLayer() {
-		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
+	void getLayerWhenNameInResourceLocationReturnsApplicationLayer() {
+		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
 	}
 
 	@Test

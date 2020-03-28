@@ -55,15 +55,7 @@ class JettyGracefulShutdown implements GracefulShutdown {
 		logger.info("Commencing graceful shutdown, allowing up to " + this.period.getSeconds()
 				+ "s for active requests to complete");
 		for (Connector connector : this.server.getConnectors()) {
-			try {
-				connector.shutdown().get();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			catch (ExecutionException ex) {
-				// Continue
-			}
+			shutdown(connector);
 		}
 		this.shuttingDown = true;
 		long end = System.currentTimeMillis() + this.period.toMillis();
@@ -85,6 +77,18 @@ class JettyGracefulShutdown implements GracefulShutdown {
 			logger.info("Grace period elapsed with " + activeRequests + " request(s) still active");
 		}
 		return activeRequests == 0;
+	}
+
+	private void shutdown(Connector connector) {
+		try {
+			connector.shutdown().get();
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		catch (ExecutionException ex) {
+			// Continue
+		}
 	}
 
 	@Override

@@ -74,29 +74,15 @@ class ClassPathIndexFileTests {
 	}
 
 	@Test
-	void containsFolderWhenFolderIsPresentReturnsTrue() throws Exception {
-		ClassPathIndexFile indexFile = copyAndLoadTestIndexFile();
-		assertThat(indexFile.containsFolder("BOOT-INF/layers/one/lib")).isTrue();
-		assertThat(indexFile.containsFolder("BOOT-INF/layers/one/lib/")).isTrue();
-		assertThat(indexFile.containsFolder("BOOT-INF/layers/two/lib")).isTrue();
-	}
-
-	@Test
-	void containsFolderWhenFolderIsMissingReturnsFalse() throws Exception {
-		ClassPathIndexFile indexFile = copyAndLoadTestIndexFile();
-		assertThat(indexFile.containsFolder("BOOT-INF/layers/nope/lib/")).isFalse();
-	}
-
-	@Test
 	void getUrlsReturnsUrls() throws Exception {
 		ClassPathIndexFile indexFile = copyAndLoadTestIndexFile();
 		List<URL> urls = indexFile.getUrls();
 		List<File> expected = new ArrayList<>();
-		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/a.jar"));
-		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/b.jar"));
-		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/c.jar"));
-		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/d.jar"));
-		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/e.jar"));
+		expected.add(new File(this.temp, "a.jar"));
+		expected.add(new File(this.temp, "b.jar"));
+		expected.add(new File(this.temp, "c.jar"));
+		expected.add(new File(this.temp, "d.jar"));
+		expected.add(new File(this.temp, "e.jar"));
 		assertThat(urls).containsExactly(expected.stream().map(this::toUrl).toArray(URL[]::new));
 	}
 

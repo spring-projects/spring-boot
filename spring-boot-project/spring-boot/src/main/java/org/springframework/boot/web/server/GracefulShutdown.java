@@ -25,6 +25,11 @@ package org.springframework.boot.web.server;
 public interface GracefulShutdown {
 
 	/**
+	 * A {@link GracefulShutdown} that returns immediately with no grace period.
+	 */
+	GracefulShutdown IMMEDIATE = new ImmediateGracefulShutdown();
+
+	/**
 	 * Shuts down the {@link WebServer}, returning {@code true} if activity ceased during
 	 * the grace period, otherwise {@code false}.
 	 * @return {@code true} if activity ceased during the grace period, otherwise

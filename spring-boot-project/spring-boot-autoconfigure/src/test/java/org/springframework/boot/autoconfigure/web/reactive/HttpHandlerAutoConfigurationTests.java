@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -54,6 +56,18 @@ class HttpHandlerAutoConfigurationTests {
 	void shouldConfigureHttpHandlerAnnotation() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(HttpHandler.class));
+	}
+
+	@Test
+	void shouldConfigureBasePathCompositeHandler() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.withPropertyValues("spring.webflux.base-path=/something").run((context) -> {
+					assertThat(context).hasSingleBean(HttpHandler.class);
+					HttpHandler httpHandler = context.getBean(HttpHandler.class);
+					assertThat(httpHandler).isInstanceOf(ContextPathCompositeHandler.class)
+							.extracting("handlerMap", InstanceOfAssertFactories.map(String.class, HttpHandler.class))
+							.containsKey("/something");
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)

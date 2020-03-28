@@ -50,6 +50,13 @@ syncDocumentationSourceForAsciidoctor {
 	}
 }
 
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	doFirst {
+		def versionEl = version.split("\\.")
+		attributes "spring-boot-xsd-version": versionEl[0] + '.' + versionEl[1]
+	}
+}
+
 asciidoctor {
 	sources {
 		include "index.adoc"
@@ -68,6 +75,19 @@ asciidoctorPdf {
 	}
 }
 
+javadoc {
+	options {
+		author = true
+		docTitle = "Spring Boot Maven Plugin ${project.version} API"
+		encoding = "UTF-8"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot Maven Plugin ${project.version} API"
+	}
+}
+
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	attributes	"maven-jar-plugin-version": "1.2.3",
 				"maven-failsafe-plugin-version": "1.2.3",
@@ -78,10 +98,13 @@ task zip(type: Zip) {
 	dependsOn asciidoctor, asciidoctorPdf
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
-		into "pdf"
+		into "reference/pdf"
 	}
 	from(asciidoctor.outputDir) {
-		into "html"
+		into "reference/html"
+	}
+	from(javadoc) {
+		into "api"
 	}
 }
 

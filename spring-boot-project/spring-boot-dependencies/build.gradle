@@ -215,14 +215,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Cache Client", "2.1.0") {
-		group("com.couchbase.client") {
-			modules = [
-				"couchbase-spring-cache"
-			]
-		}
-	}
-	library("Couchbase Client", "2.7.13") {
+	library("Couchbase Client", "3.0.2") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -687,6 +680,13 @@ bom {
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
+			]
+		}
+	}
+	library("Jakarta XML SOAP", "1.4.2") {
+		group("jakarta.xml.soap") {
+			modules = [
+					"jakarta.xml.soap-api"
 			]
 		}
 	}
@@ -1362,7 +1362,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Arabba-SR2") {
+	library("R2DBC Bom", "Arabba-SR3") {
 		group("io.r2dbc") {
 			imports = [
 					"r2dbc-bom"
@@ -1383,7 +1383,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "Dysprosium-SR5") {
+	library("Reactor Bom", "Dysprosium-SR6") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1616,14 +1616,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Releasetrain", "Neumann-M4") {
+	library("Spring Data Releasetrain", "Neumann-BUILD-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-releasetrain"
 			]
 		}
 	}
-	library("Spring Framework", "5.2.4.RELEASE") {
+	library("Spring Framework", "5.2.5.RELEASE") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"

@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
+import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -154,7 +155,6 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpointGroups() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").run((context) -> {
 			HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
-			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
 	}
@@ -301,6 +301,15 @@ class HealthEndpointAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveHealthIndicatorRegistry.class));
 	}
 
+	@Test
+	void runWhenHealthEndpointGroupsRegistryCustomizerAddsHealthEndpointGroup() {
+		this.contextRunner.withUserConfiguration(HealthEndpointGroupsRegistryCustomizerConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class);
+			HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+			assertThat(groups.getNames()).contains("test");
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HealthIndicatorsConfiguration {
 
@@ -416,6 +425,16 @@ class HealthEndpointAutoConfigurationTests {
 		@Bean
 		ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension() {
 			return mock(ReactiveHealthEndpointWebExtension.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HealthEndpointGroupsRegistryCustomizerConfig {
+
+		@Bean
+		HealthEndpointGroupsRegistryCustomizer customHealthEndpointGroup() {
+			return (registry) -> registry.add("test", (configurer) -> configurer.include("ping"));
 		}
 
 	}

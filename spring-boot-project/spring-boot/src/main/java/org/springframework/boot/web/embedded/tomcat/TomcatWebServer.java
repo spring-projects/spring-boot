@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -102,7 +101,7 @@ public class TomcatWebServer implements WebServer {
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
 		this.gracefulShutdown = (shutdownGracePeriod != null) ? new TomcatGracefulShutdown(tomcat, shutdownGracePeriod)
-				: new ImmediateGracefulShutdown();
+				: GracefulShutdown.IMMEDIATE;
 		initialize();
 	}
 

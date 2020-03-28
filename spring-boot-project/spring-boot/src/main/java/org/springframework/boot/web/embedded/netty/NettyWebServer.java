@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.DefaultEventExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
@@ -33,7 +35,6 @@ import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.ImmediateGracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -84,17 +85,17 @@ public class NettyWebServer implements WebServer {
 			Duration shutdownGracePeriod) {
 		Assert.notNull(httpServer, "HttpServer must not be null");
 		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
-		this.httpServer = httpServer;
 		this.lifecycleTimeout = lifecycleTimeout;
+		this.handler = handlerAdapter;
 		if (shutdownGracePeriod != null) {
+			this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));
 			NettyGracefulShutdown gracefulShutdown = new NettyGracefulShutdown(() -> this.disposableServer,
-					lifecycleTimeout, shutdownGracePeriod);
-			this.handler = gracefulShutdown.wrapHandler(handlerAdapter);
+					shutdownGracePeriod);
 			this.shutdown = gracefulShutdown;
 		}
 		else {
-			this.handler = handlerAdapter;
-			this.shutdown = new ImmediateGracefulShutdown();
+			this.httpServer = httpServer;
+			this.shutdown = GracefulShutdown.IMMEDIATE;
 		}
 	}
 

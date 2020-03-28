@@ -647,7 +647,7 @@ If no `HealthIndicator` returns a status that is known to the `StatusAggregator`
 TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
 
 
-
+[[production-ready-health-indicators]]
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
 
@@ -678,6 +678,12 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 | {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
+
+| {spring-boot-actuator-module-code}/kubernetes/LivenessProbeHealthIndicator.java[`LivenessProbeHealthIndicator`]
+| Exposes the "Liveness" application state.
+
+| {spring-boot-actuator-module-code}/kubernetes/ReadinessProbeHealthIndicator.java[`ReadinessProbeHealthIndicator`]
+| Exposes the "Readiness" application state.
 
 | {spring-boot-actuator-module-code}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
 | Checks that an LDAP server is up.
@@ -835,10 +841,9 @@ TIP: If necessary, reactive indicators replace the regular ones.
 Also, any `HealthIndicator` that is not handled explicitly is wrapped automatically.
 
 
-
+[[production-ready-health-groups]]
 ==== Health Groups
 It's sometimes useful to organize health indicators into groups that can be used for different purposes.
-For example, if you deploy your application to Kubernetes, you may want one different sets of health indicators for your "`liveness`" and "`readiness`" probes.
 
 To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
@@ -863,6 +868,124 @@ It's also possible to override the `show-details` and `roles` properties if requ
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
+
+
+
+[[production-ready-kubernetes-probes]]
+=== Kubernetes Probes
+Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
+Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet will call those probes and react to the result.
+
+Spring Boot manages your <<spring-boot-features.adoc#boot-features-application-availability-state,Application Availability State>> out-of-the-box.
+If deployed in a Kubernetes environment, Actuator will gather the "Liveness" and "Readiness" information from the `ApplicationAvailabilityProvider` and use that information in dedicated <<production-ready-health-indicators,Health Indicators>>: `LivenessProbeHealthIndicator` and `ReadinessProbeHealthIndicator`.
+These indicators will be shown on the global health endpoint (`"/actuator/health"`).
+They will also be exposed as separate HTTP Probes using <<production-ready-health-groups, Health Groups>>: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
+
+You can then configure your Kubernetes infrastructure with the following endpoint information:
+
+[source,yml,indent=0]
+----
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: liveness-port
+  failureThreshold: ...
+  periodSeconds: ...
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: liveness-port
+  failureThreshold: ...
+  periodSeconds: ...
+----
+
+NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
+The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<production-ready-features.adoc#production-ready-kubernetes-probes-lifecycle,how Probes behave during the application lifecycle>>.
+
+WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
+In this case, a Probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
+
+
+
+[[production-ready-kubernetes-probes-external-state]]
+==== Checking external state with Kubernetes Probes
+Actuator configures the "liveness" and "readiness" Probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
+You can, for example, configure additional Health Indicators:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.readiness.include=readinessProbe,customCheck
+----
+
+By default, Spring Boot does not add other Health Indicators to these groups.
+
+The "liveness" Probe should not depend on health checks for external systems.
+If the <<spring-boot-features.adoc#boot-features-application-availability-liveness,Liveness State of an application>> is broken, Kubernetes will try to solve that problem by restarting the application instance.
+This means that if an external system fails (e.g. a database, a Web API, an external cache), Kubernetes might restart all application instances and create cascading failures.
+
+As for the "readiness" Probe, the choice of checking external systems must be made carefully by the application developers, i.e. Spring Boot does not include any additional health checks in the readiness probe.
+If the <<spring-boot-features.adoc#boot-features-application-availability-readiness,Readiness State of an application instance>> is unready, Kubernetes will not route traffic to that instance.
+Some external systems might not be shared by application instances, in which case they could quite naturally be included in a readiness probe.
+Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
+Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: include it in the readiness probe and expect that the application is taken out of service when the external service is down, or leave it out and deal with failures higher up the stack, e.g. using a circuit breaker in the caller.
+
+NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `NodePort` will not accept any incoming connections. There is no HTTP error response (503 etc.) since there is no connection. A Service with `type=LoadBalancer` might or might not accept connections, depending on the provider. A Service that has an explicit https://kubernetes.io/docs/concepts/services-networking/ingress/[Ingress] will also respond in a way that depends on the implementation - the ingress service itself will have to decide how to handle the "connection refused" from downstream. HTTP 503 is quite likely in the case of both load balancer and ingress.
+
+Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling] it may react differently to applications being taken out of the load-balancer, depending on its autoscaler configuration.
+
+
+
+[[production-ready-kubernetes-probes-lifecycle]]
+==== Application lifecycle and Probes states
+An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
+Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>.
+
+When a Spring Boot application starts:
+
+[cols="3,2,2,6"]
+|===
+|Application startup phase |Liveness State |Readiness State |Notes
+
+|Starting
+|broken
+|unready
+|Kubernetes checks the "liveness" Probe and restarts the application if it takes too long.
+
+|Started
+|live
+|unready
+|The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
+
+|Ready
+|live
+|ready
+|Startup tasks are finished. The application is receiving traffic.
+|===
+
+When a Spring Boot application shuts down:
+
+[cols="3,2,2,6"]
+|===
+|Application shutdown phase |Liveness State |Readiness State |Notes
+
+|Running
+|live
+|ready
+|Shutdown has been requested.
+
+|Graceful shutdown
+|live
+|unready
+|If enabled, <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown processes in-flight requests>>.
+
+|Shutdown complete
+|broken
+|unready
+|The application context is closed and the application cannot serve traffic.
+|===
+
+TIP: Check out the <<deployment.adoc#cloud-deployment-kubernetes-container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
 
 
 
@@ -998,6 +1121,8 @@ For example, `health` is exposed as `/actuator/health`.
 
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 If both Jersey and Spring MVC are available, Spring MVC will be used.
+
+NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 

@@ -81,8 +81,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 
 	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are JAR, LAYERED_JAR, WAR, ZIP, DIR, NONE. Defaults to a guess
-	 * based on the archive type.
+	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
+	 * archive type.
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.repackage.layout")

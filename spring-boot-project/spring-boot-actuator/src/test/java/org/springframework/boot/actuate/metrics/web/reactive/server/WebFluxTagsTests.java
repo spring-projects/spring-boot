@@ -39,12 +39,13 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Michael McFadyen
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  */
 class WebFluxTagsTests {
 
 	private MockServerWebExchange exchange;
 
-	private PathPatternParser parser = new PathPatternParser();
+	private final PathPatternParser parser = new PathPatternParser();
 
 	@BeforeEach
 	void setup() {
@@ -53,10 +54,26 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring"));
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				this.parser.parse("/spring/"));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
+		assertThat(tag.getValue()).isEqualTo("/spring/");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashRemoveTrailingSlash() {
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				this.parser.parse("/spring/"));
+		Tag tag = WebFluxTags.uri(this.exchange, true);
 		assertThat(tag.getValue()).isEqualTo("/spring");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashKeepSingleSlash() {
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/"));
+		Tag tag = WebFluxTags.uri(this.exchange, true);
+		assertThat(tag.getValue()).isEqualTo("/");
 	}
 
 	@Test

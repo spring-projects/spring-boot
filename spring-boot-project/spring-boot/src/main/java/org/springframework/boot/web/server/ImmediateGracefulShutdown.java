@@ -20,9 +20,8 @@ package org.springframework.boot.web.server;
  * A {@link GracefulShutdown} that returns immediately with no grace period.
  *
  * @author Andy Wilkinson
- * @since 2.3.0
  */
-public class ImmediateGracefulShutdown implements GracefulShutdown {
+class ImmediateGracefulShutdown implements GracefulShutdown {
 
 	@Override
 	public boolean shutDownGracefully() {
