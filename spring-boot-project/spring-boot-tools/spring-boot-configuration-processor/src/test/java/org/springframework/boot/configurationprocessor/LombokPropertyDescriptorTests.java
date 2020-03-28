@@ -176,7 +176,7 @@ class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokInnerClassProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.first")
-					.hasType("org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties$Foo")
+					.hasType("org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties.Foo")
 					.hasSourceType(LombokInnerClassProperties.class).hasSourceMethod(null).hasNoDescription()
 					.isNotDeprecated();
 		});

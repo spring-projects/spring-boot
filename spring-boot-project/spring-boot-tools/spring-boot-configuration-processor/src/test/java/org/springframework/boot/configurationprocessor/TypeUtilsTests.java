@@ -51,9 +51,9 @@ class TypeUtilsTests {
 					.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
-			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
-			assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getName());
-			assertThat(typeDescriptor.resolveGeneric("C")).hasToString(Duration.class.getName());
+			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getCanonicalName());
+			assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getCanonicalName());
+			assertThat(typeDescriptor.resolveGeneric("C")).hasToString(Duration.class.getCanonicalName());
 
 		});
 	}
@@ -65,8 +65,8 @@ class TypeUtilsTests {
 					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
-			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
-			assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getName());
+			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getCanonicalName());
+			assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getCanonicalName());
 			assertThat(typeDescriptor.resolveGeneric("C")).hasToString("C");
 		});
 	}

@@ -112,7 +112,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.first")
-					.hasType("org.springframework.boot.configurationsample.immutable.ImmutableInnerClassProperties$Foo")
+					.hasType("org.springframework.boot.configurationsample.immutable.ImmutableInnerClassProperties.Foo")
 					.hasSourceType(ImmutableInnerClassProperties.class).hasSourceMethod("getFirst()").hasNoDescription()
 					.isNotDeprecated();
 		});

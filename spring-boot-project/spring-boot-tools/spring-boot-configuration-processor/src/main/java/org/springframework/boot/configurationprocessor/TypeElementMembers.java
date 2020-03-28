@@ -40,7 +40,7 @@ import javax.lang.model.util.ElementFilter;
  */
 class TypeElementMembers {
 
-	private static final String OBJECT_CLASS_NAME = Object.class.getName();
+	private static final String OBJECT_CLASS_NAME = Object.class.getCanonicalName();
 
 	private final MetadataGenerationEnvironment env;
 

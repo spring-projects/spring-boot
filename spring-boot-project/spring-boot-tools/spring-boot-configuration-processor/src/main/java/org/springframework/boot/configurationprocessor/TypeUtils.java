@@ -68,7 +68,7 @@ class TypeUtils {
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
-		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
+		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getCanonicalName(), kind));
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
@@ -95,7 +95,7 @@ class TypeUtils {
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
 		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
-		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getName());
+		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getCanonicalName());
 		try {
 			return types.getDeclaredType(typeElement, typeArgs);
 		}
@@ -199,7 +199,7 @@ class TypeUtils {
 	TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
+			return this.env.getElementUtils().getTypeElement(candidate.getCanonicalName()).asType();
 		}
 		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
 		if (primitiveKind != null) {
@@ -275,7 +275,7 @@ class TypeUtils {
 
 		private String determineQualifiedName(DeclaredType type, TypeElement enclosingElement) {
 			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$" + type.asElement().getSimpleName();
+				return getQualifiedName(enclosingElement) + "." + type.asElement().getSimpleName();
 			}
 			return getQualifiedName(type.asElement());
 		}
@@ -330,7 +330,7 @@ class TypeUtils {
 			}
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$"
+				return getQualifiedName(enclosingElement) + "."
 						+ ((DeclaredType) element.asType()).asElement().getSimpleName();
 			}
 			if (element instanceof TypeElement) {

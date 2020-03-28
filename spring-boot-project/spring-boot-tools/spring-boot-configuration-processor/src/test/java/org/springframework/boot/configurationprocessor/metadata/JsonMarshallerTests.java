@@ -38,8 +38,9 @@ class JsonMarshallerTests {
 	@Test
 	void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
-		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(), InputStream.class.getName(),
-				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d")));
+		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getCanonicalName(),
+				InputStream.class.getCanonicalName(), "sourceMethod", "desc", "x",
+				new ItemDeprecation("Deprecation comment", "b.c.d")));
 		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123, null));
 		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true, null));

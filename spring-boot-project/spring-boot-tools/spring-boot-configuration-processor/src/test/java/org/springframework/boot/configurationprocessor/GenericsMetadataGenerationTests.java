@@ -81,15 +81,15 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withGroup("generic")
 				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig"));
 		assertThat(metadata).has(Metadata.withGroup("generic.foo")
-				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig$Foo"));
+				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig.Foo"));
 		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar")
-				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig$Bar"));
+				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig.Bar"));
 		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz")
-				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig$Bar$Biz"));
+				.ofType("org.springframework.boot.configurationsample.generic.GenericConfig.Bar.Biz"));
 		assertThat(metadata).has(
 				Metadata.withProperty("generic.foo.name").ofType(String.class).fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar").ofType(
-				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.generic.GenericConfig$Bar<java.lang.Integer>>")
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.generic.GenericConfig.Bar<java.lang.Integer>>")
 				.fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-integer")
 				.ofType("java.util.Map<java.lang.String,java.lang.Integer>").fromSource(GenericConfig.Foo.class));

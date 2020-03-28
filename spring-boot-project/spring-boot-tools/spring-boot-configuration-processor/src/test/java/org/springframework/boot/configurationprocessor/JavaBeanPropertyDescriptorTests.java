@@ -152,7 +152,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.first")
-					.hasType("org.springframework.boot.configurationsample.specific.InnerClassProperties$Foo")
+					.hasType("org.springframework.boot.configurationsample.specific.InnerClassProperties.Foo")
 					.hasSourceType(InnerClassProperties.class).hasSourceMethod("getFirst()").hasNoDescription()
 					.isNotDeprecated();
 		});

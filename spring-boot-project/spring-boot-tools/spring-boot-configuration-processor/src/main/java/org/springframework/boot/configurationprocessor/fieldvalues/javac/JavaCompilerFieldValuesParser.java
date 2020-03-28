@@ -64,15 +64,15 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		static {
 			Map<String, Class<?>> types = new HashMap<>();
 			types.put("boolean", Boolean.class);
-			types.put(Boolean.class.getName(), Boolean.class);
+			types.put(Boolean.class.getCanonicalName(), Boolean.class);
 			types.put("byte", Byte.class);
-			types.put(Byte.class.getName(), Byte.class);
+			types.put(Byte.class.getCanonicalName(), Byte.class);
 			types.put("short", Short.class);
-			types.put(Short.class.getName(), Short.class);
+			types.put(Short.class.getCanonicalName(), Short.class);
 			types.put("int", Integer.class);
-			types.put(Integer.class.getName(), Integer.class);
+			types.put(Integer.class.getCanonicalName(), Integer.class);
 			types.put("long", Long.class);
-			types.put(Long.class.getName(), Long.class);
+			types.put(Long.class.getCanonicalName(), Long.class);
 			WRAPPER_TYPES = Collections.unmodifiableMap(types);
 		}
 

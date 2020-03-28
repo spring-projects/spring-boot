@@ -138,7 +138,7 @@ public final class Metadata {
 			if (this.type != null && !this.type.equals(itemMetadata.getType())) {
 				return false;
 			}
-			if (this.sourceType != null && !this.sourceType.getName().equals(itemMetadata.getSourceType())) {
+			if (this.sourceType != null && !this.sourceType.getCanonicalName().equals(itemMetadata.getSourceType())) {
 				return false;
 			}
 			if (this.sourceMethod != null && !this.sourceMethod.equals(itemMetadata.getSourceMethod())) {
@@ -164,7 +164,7 @@ public final class Metadata {
 		}
 
 		public MetadataItemCondition ofType(Class<?> dataType) {
-			return new MetadataItemCondition(this.itemType, this.name, dataType.getName(), this.sourceType,
+			return new MetadataItemCondition(this.itemType, this.name, dataType.getCanonicalName(), this.sourceType,
 					this.sourceMethod, this.description, this.defaultValue, this.deprecation);
 		}
 

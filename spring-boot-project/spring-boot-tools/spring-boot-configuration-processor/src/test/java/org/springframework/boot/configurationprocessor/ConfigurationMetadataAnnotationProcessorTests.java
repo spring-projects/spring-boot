@@ -213,7 +213,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("collection.bytes", "java.util.Collection<java.lang.Byte>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.doubles", "java.util.List<java.lang.Double>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.names-to-holders",
-				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties$Holder<java.lang.String>>"));
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties.Holder<java.lang.String>>"));
 	}
 
 	@Test
@@ -223,7 +223,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
 		assertThat(metadata).has(Metadata.withProperty("array.simple", "java.lang.String[]"));
 		assertThat(metadata).has(Metadata.withProperty("array.inner",
-				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties$Holder[]"));
+				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties.Holder[]"));
 		assertThat(metadata).has(
 				Metadata.withProperty("array.name-to-integer", "java.util.Map<java.lang.String,java.lang.Integer>[]"));
 		assertThat(metadata.getItems()).hasSize(5);

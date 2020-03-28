@@ -52,7 +52,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergingOfAdditionalProperty() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "foo", "java.lang.String",
-				AdditionalMetadata.class.getName(), null, null, null, null);
+				AdditionalMetadata.class.getCanonicalName(), null, null, null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
@@ -81,25 +81,25 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergeExistingPropertyWithSeveralCandidates() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getName(), null, null, null,
-				true, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getCanonicalName(), null, null,
+				null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class, SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
 		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.getName().equals("simple.flag"))
 				.collect(Collectors.toList());
 		assertThat(items).hasSize(2);
-		ItemMetadata matchingProperty = items.stream().filter((item) -> item.getType().equals(Boolean.class.getName()))
-				.findFirst().orElse(null);
+		ItemMetadata matchingProperty = items.stream()
+				.filter((item) -> item.getType().equals(Boolean.class.getCanonicalName())).findFirst().orElse(null);
 		assertThat(matchingProperty).isNotNull();
 		assertThat(matchingProperty.getDefaultValue()).isEqualTo(true);
-		assertThat(matchingProperty.getSourceType()).isEqualTo(SimpleProperties.class.getName());
+		assertThat(matchingProperty.getSourceType()).isEqualTo(SimpleProperties.class.getCanonicalName());
 		assertThat(matchingProperty.getDescription()).isEqualTo("A simple flag.");
 		ItemMetadata nonMatchingProperty = items.stream()
-				.filter((item) -> item.getType().equals(String.class.getName())).findFirst().orElse(null);
+				.filter((item) -> item.getType().equals(String.class.getCanonicalName())).findFirst().orElse(null);
 		assertThat(nonMatchingProperty).isNotNull();
 		assertThat(nonMatchingProperty.getDefaultValue()).isEqualTo("hello");
-		assertThat(nonMatchingProperty.getSourceType()).isEqualTo(SimpleConflictingProperties.class.getName());
+		assertThat(nonMatchingProperty.getSourceType()).isEqualTo(SimpleConflictingProperties.class.getCanonicalName());
 		assertThat(nonMatchingProperty.getDescription()).isNull();
 	}
 
@@ -132,7 +132,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				new ItemDeprecation("Don't use this.", "single.name"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getCanonicalName())
 				.fromSource(DeprecatedSingleProperty.class).withDeprecation("Don't use this.", "single.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -143,7 +143,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				new ItemDeprecation(null, null, "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getCanonicalName())
 				.fromSource(DeprecatedSingleProperty.class)
 				.withDeprecation("renamed", "singledeprecated.new-name", "error"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -210,7 +210,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
 		property.put("type", "java.lang.String");
-		property.put("sourceType", AdditionalMetadata.class.getName());
+		property.put("sourceType", AdditionalMetadata.class.getCanonicalName());
 		JSONArray properties = new JSONArray();
 		properties.put(property);
 		JSONObject additionalMetadata = new JSONObject();
