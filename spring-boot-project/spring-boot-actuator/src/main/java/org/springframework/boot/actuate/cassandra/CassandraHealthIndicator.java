@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.cassandra;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 
@@ -30,9 +31,13 @@ import org.springframework.util.Assert;
  * Cassandra data stores.
  *
  * @author Julien Dubois
+ * @author Alexandre Dutra
  * @since 2.0.0
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
+
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private CassandraOperations cassandraOperations;
 
