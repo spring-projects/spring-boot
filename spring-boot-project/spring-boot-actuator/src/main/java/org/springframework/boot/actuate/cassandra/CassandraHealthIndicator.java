@@ -57,8 +57,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		SimpleStatement select = SimpleStatement.newInstance("SELECT release_version FROM system.local");
-		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(select);
+		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(SELECT);
 		if (results.isFullyFetched()) {
 			builder.up();
 			return;
