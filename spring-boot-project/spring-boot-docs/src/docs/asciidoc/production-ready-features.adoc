@@ -764,6 +764,9 @@ For example, the following property maps `FATAL` to 503 (service unavailable):
 	management.endpoint.health.status.http-mapping.fatal=503
 ----
 
+WARNING: A custom status mapping replaces whole of the default status mappings.
+That means the above example has only one mapping to `FATAL` and any other statuses will return the http status 200 as `UNKNOWN` health status.
+
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
 
 The following table shows the default status mappings for the built-in statuses:
