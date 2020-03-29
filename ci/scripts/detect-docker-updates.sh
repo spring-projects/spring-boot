@@ -19,6 +19,10 @@ existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${
 existing_upgrade_issues=$( echo "$existing_tasks" | jq -c --arg TITLE "$ISSUE_TITLE" '.[] | select(.title==$TITLE)' )
 
 if [[ ${existing_upgrade_issues} = "" ]]; then
+	pushd git-repo > /dev/null
+	popd > /dev/null
+	git clone git-repo docker-updates-git-repo > /dev/null
+	pushd docker-updates-git-repo > /dev/null
 	# Create changes in dedicated branch
 	branch="ci-docker-$latest_version"
 	git config user.name "Spring Buildmaster" > /dev/null
