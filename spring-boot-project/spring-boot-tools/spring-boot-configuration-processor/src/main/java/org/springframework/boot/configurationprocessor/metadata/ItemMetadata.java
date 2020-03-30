@@ -121,6 +121,10 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.sourceCanonicalType;
 	}
 
+	public String getSourceCanonicalTypeFallback() {
+		return (this.sourceCanonicalType != null) ? this.sourceCanonicalType : this.sourceType;
+	}
+
 	public void setSourceCanonicalType(String sourceCanonicalType) {
 		this.sourceCanonicalType = sourceCanonicalType;
 	}

@@ -68,8 +68,12 @@ public class MetadataCollector {
 
 	private void markAsProcessed(Element element) {
 		if (element instanceof TypeElement) {
-			this.processedSourceTypes.add(this.typeUtils.getQualifiedName(element));
+			this.processedSourceTypes.add(this.typeUtils.getQualifiedCanonicalName(element));
 		}
+	}
+
+	private void markAsProcessed(ItemMetadata itemMetadata) {
+		this.processedSourceTypes.add(itemMetadata.getSourceCanonicalTypeFallback());
 	}
 
 	public void add(ItemMetadata metadata) {
@@ -93,6 +97,7 @@ public class MetadataCollector {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		for (ItemMetadata item : this.metadataItems) {
 			metadata.add(item);
+			markAsProcessed(item);
 		}
 		if (this.previousMetadata != null) {
 			List<ItemMetadata> items = this.previousMetadata.getItems();
@@ -106,8 +111,7 @@ public class MetadataCollector {
 	}
 
 	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
-		String sourceType = (itemMetadata.getSourceCanonicalType() != null) ? itemMetadata.getSourceCanonicalType()
-				: itemMetadata.getSourceType();
+		String sourceType = itemMetadata.getSourceCanonicalTypeFallback();
 		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
 	}
 
