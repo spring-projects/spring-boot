@@ -40,6 +40,8 @@ class DiskSpaceHealthIndicatorPathTests {
 
 	private static final DataSize THRESHOLD = DataSize.ofKilobytes(1);
 
+	private static final DataSize ZERO_THRESHOLD = DataSize.ofBytes(0);
+
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
 	@Mock
@@ -62,6 +64,20 @@ class DiskSpaceHealthIndicatorPathTests {
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
+		assertThat(health.getDetails().get("free")).isEqualTo(0L);
+		assertThat(health.getDetails().get("total")).isEqualTo(0L);
+		assertThat(health.getDetails().get("exists")).isEqualTo(false);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(false);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(false);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(false);
+	}
+
+	@Test
+	void diskSpaceIsDownWhenThresholdIsZero() {
+		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, ZERO_THRESHOLD);
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("threshold")).isEqualTo(ZERO_THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(0L);
 		assertThat(health.getDetails().get("total")).isEqualTo(0L);
 		assertThat(health.getDetails().get("exists")).isEqualTo(false);

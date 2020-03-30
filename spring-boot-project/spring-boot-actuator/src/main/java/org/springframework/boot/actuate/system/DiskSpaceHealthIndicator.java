@@ -59,7 +59,9 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
-		if (diskFreeInBytes >= this.threshold.toBytes()) {
+		// return value of 0L means "the abstract pathname does not name a
+		// partition" which for our purposes means it's not usable i.e DOWN
+		if (diskFreeInBytes >= this.threshold.toBytes() && diskFreeInBytes != 0L) {
 			builder.up();
 		}
 		else {
