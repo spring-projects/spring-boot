@@ -53,6 +53,8 @@ class DiskSpaceHealthIndicatorTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);
+		given(this.fileMock.canWrite()).willReturn(true);
+		given(this.fileMock.canExecute()).willReturn(true);
 		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, THRESHOLD);
 	}
 
@@ -66,6 +68,10 @@ class DiskSpaceHealthIndicatorTests {
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("exists")).isEqualTo(true);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(true);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(true);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(true);
 	}
 
 	@Test
@@ -78,6 +84,10 @@ class DiskSpaceHealthIndicatorTests {
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("exists")).isEqualTo(true);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(true);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(true);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(true);
 	}
 
 }
