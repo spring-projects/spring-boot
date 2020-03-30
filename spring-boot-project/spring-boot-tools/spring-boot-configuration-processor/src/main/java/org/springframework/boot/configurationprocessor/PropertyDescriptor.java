@@ -135,11 +135,12 @@ abstract class PropertyDescriptor<S extends Element> {
 	private ItemMetadata resolveItemMetadataProperty(String prefix, MetadataGenerationEnvironment environment) {
 		String dataType = resolveType(environment);
 		String ownerType = environment.getTypeUtils().getQualifiedName(getOwnerElement());
+		String ownerCanonicalType = environment.getTypeUtils().getQualifiedCanonicalName(getOwnerElement());
 		String description = resolveDescription(environment);
 		Object defaultValue = resolveDefaultValue(environment);
 		ItemDeprecation deprecation = resolveItemDeprecation(environment);
-		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, null, description, defaultValue,
-				deprecation);
+		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, ownerCanonicalType, null, description,
+				defaultValue, deprecation);
 	}
 
 	private ItemMetadata resolveItemMetadataGroup(String prefix, MetadataGenerationEnvironment environment) {
@@ -147,8 +148,9 @@ abstract class PropertyDescriptor<S extends Element> {
 		String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, getName());
 		String dataType = environment.getTypeUtils().getQualifiedName(propertyElement);
 		String ownerType = environment.getTypeUtils().getQualifiedName(getOwnerElement());
+		String ownerCanonicalType = environment.getTypeUtils().getQualifiedCanonicalName(getOwnerElement());
 		String sourceMethod = (getGetter() != null) ? getGetter().toString() : null;
-		return ItemMetadata.newGroup(nestedPrefix, dataType, ownerType, sourceMethod);
+		return ItemMetadata.newGroup(nestedPrefix, dataType, ownerType, ownerCanonicalType, sourceMethod);
 	}
 
 	private String resolveType(MetadataGenerationEnvironment environment) {

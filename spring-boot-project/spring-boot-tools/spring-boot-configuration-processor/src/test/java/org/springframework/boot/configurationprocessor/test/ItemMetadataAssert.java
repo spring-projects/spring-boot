@@ -77,8 +77,13 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 		return this;
 	}
 
+	public ItemMetadataAssert hasSourceCanonicalType(String type) {
+		objects.assertEqual(this.info, this.actual.getSourceCanonicalType(), type);
+		return this;
+	}
+
 	public ItemMetadataAssert hasSourceType(Class<?> type) {
-		return hasSourceType(type.getName());
+		return hasSourceType(type.getName()).hasSourceCanonicalType(type.getCanonicalName());
 	}
 
 	public ItemMetadataAssert hasSourceMethod(String type) {

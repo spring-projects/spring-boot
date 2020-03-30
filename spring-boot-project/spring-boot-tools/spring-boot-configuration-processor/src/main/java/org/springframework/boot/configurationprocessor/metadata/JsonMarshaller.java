@@ -91,11 +91,12 @@ public class JsonMarshaller {
 		String type = object.optString("type", null);
 		String description = object.optString("description", null);
 		String sourceType = object.optString("sourceType", null);
+		String sourceCanonicalType = object.optString("sourceCanonicalType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
 		Object defaultValue = readItemValue(object.opt("defaultValue"));
 		ItemDeprecation deprecation = toItemDeprecation(object);
-		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod, description, defaultValue,
-				deprecation);
+		return new ItemMetadata(itemType, name, null, type, sourceType, sourceCanonicalType, sourceMethod, description,
+				defaultValue, deprecation);
 	}
 
 	private ItemDeprecation toItemDeprecation(JSONObject object) throws Exception {

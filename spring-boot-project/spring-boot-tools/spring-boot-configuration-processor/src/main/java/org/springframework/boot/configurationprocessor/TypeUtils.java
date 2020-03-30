@@ -68,7 +68,7 @@ class TypeUtils {
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
-		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
+		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getCanonicalName(), kind));
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
@@ -95,7 +95,7 @@ class TypeUtils {
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
 		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
-		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getName());
+		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getCanonicalName());
 		try {
 			return types.getDeclaredType(typeElement, typeArgs);
 		}
@@ -121,6 +121,16 @@ class TypeUtils {
 	 */
 	String getQualifiedName(Element element) {
 		return this.typeExtractor.getQualifiedName(element);
+	}
+
+	/**
+	 * Return the qualified canonical name of the specified element.
+	 * @param element the element to handle
+	 * @return the fully qualified canonical name of the element, suitable for a call to
+	 * {@link Class#forName(String)}
+	 */
+	String getQualifiedCanonicalName(Element element) {
+		return this.typeExtractor.getQualifiedCanonicalName(element);
 	}
 
 	/**
@@ -151,11 +161,13 @@ class TypeUtils {
 	}
 
 	private TypeMirror getCollectionElementType(TypeMirror type) {
-		if (((TypeElement) this.types.asElement(type)).getQualifiedName().contentEquals(Collection.class.getName())) {
+		if (((TypeElement) this.types.asElement(type)).getQualifiedName()
+				.contentEquals(Collection.class.getCanonicalName())) {
 			DeclaredType declaredType = (DeclaredType) type;
 			// raw type, just "Collection"
 			if (declaredType.getTypeArguments().isEmpty()) {
-				return this.types.getDeclaredType(this.env.getElementUtils().getTypeElement(Object.class.getName()));
+				return this.types
+						.getDeclaredType(this.env.getElementUtils().getTypeElement(Object.class.getCanonicalName()));
 			}
 			// return type argument to Collection<...>
 			return declaredType.getTypeArguments().get(0);
@@ -199,7 +211,7 @@ class TypeUtils {
 	TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
+			return this.env.getElementUtils().getTypeElement(candidate.getCanonicalName()).asType();
 		}
 		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
 		if (primitiveKind != null) {
@@ -337,6 +349,21 @@ class TypeUtils {
 				return ((TypeElement) element).getQualifiedName().toString();
 			}
 			throw new IllegalStateException("Could not extract qualified name from " + element);
+		}
+
+		String getQualifiedCanonicalName(Element element) {
+			if (element == null) {
+				return null;
+			}
+			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
+			if (enclosingElement != null) {
+				return getQualifiedCanonicalName(enclosingElement) + "."
+						+ ((DeclaredType) element.asType()).asElement().getSimpleName();
+			}
+			if (element instanceof TypeElement) {
+				return ((TypeElement) element).getQualifiedName().toString();
+			}
+			throw new IllegalStateException("Could not extract qualified canonical name from " + element);
 		}
 
 		private TypeElement getEnclosingTypeElement(TypeMirror type) {

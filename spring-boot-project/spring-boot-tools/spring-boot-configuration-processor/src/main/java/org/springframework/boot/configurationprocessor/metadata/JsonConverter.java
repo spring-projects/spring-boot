@@ -63,6 +63,7 @@ class JsonConverter {
 		jsonObject.putOpt("type", item.getType());
 		jsonObject.putOpt("description", item.getDescription());
 		jsonObject.putOpt("sourceType", item.getSourceType());
+		jsonObject.putOpt("sourceCanonicalType", item.getSourceCanonicalType());
 		jsonObject.putOpt("sourceMethod", item.getSourceMethod());
 		Object defaultValue = item.getDefaultValue();
 		if (defaultValue != null) {

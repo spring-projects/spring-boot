@@ -52,7 +52,8 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergingOfAdditionalProperty() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "foo", "java.lang.String",
-				AdditionalMetadata.class.getName(), null, null, null, null);
+				AdditionalMetadata.class.getName(), AdditionalMetadata.class.getCanonicalName(), null, null, null,
+				null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
@@ -62,7 +63,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "simple", "java.lang.String", null, null, null, null,
-				null);
+				null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
@@ -71,7 +72,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergeExistingPropertyDefaultValue() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null, null, null, true, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null, null, null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).fromSource(SimpleProperties.class)
@@ -82,7 +83,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergeExistingPropertyWithSeveralCandidates() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getName(), null, null, null,
-				true, null);
+				null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class, SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
@@ -94,19 +95,22 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(matchingProperty).isNotNull();
 		assertThat(matchingProperty.getDefaultValue()).isEqualTo(true);
 		assertThat(matchingProperty.getSourceType()).isEqualTo(SimpleProperties.class.getName());
+		assertThat(matchingProperty.getSourceCanonicalType()).isEqualTo(SimpleProperties.class.getCanonicalName());
 		assertThat(matchingProperty.getDescription()).isEqualTo("A simple flag.");
 		ItemMetadata nonMatchingProperty = items.stream()
 				.filter((item) -> item.getType().equals(String.class.getName())).findFirst().orElse(null);
 		assertThat(nonMatchingProperty).isNotNull();
 		assertThat(nonMatchingProperty.getDefaultValue()).isEqualTo("hello");
 		assertThat(nonMatchingProperty.getSourceType()).isEqualTo(SimpleConflictingProperties.class.getName());
+		assertThat(nonMatchingProperty.getSourceCanonicalType())
+				.isEqualTo(SimpleConflictingProperties.class.getCanonicalName());
 		assertThat(nonMatchingProperty.getDescription()).isNull();
 	}
 
 	@Test
 	void mergeExistingPropertyDescription() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, "A nice comparator.",
-				null, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null,
+				"A nice comparator.", null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
@@ -116,7 +120,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergeExistingPropertyDeprecation() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null, null,
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
@@ -128,7 +132,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergeExistingPropertyDeprecationOverride() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "single.name"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
@@ -139,7 +143,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null, null,
 				new ItemDeprecation(null, null, "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
@@ -195,7 +199,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergingOfAdditionalDeprecation() throws Exception {
 		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String", null, null, null,
-				null, new ItemDeprecation("Lame name.", "simple.the-name")));
+				null, null, new ItemDeprecation("Lame name.", "simple.the-name")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.wrong-name", String.class).withDeprecation("Lame name.",
 				"simple.the-name"));
@@ -211,6 +215,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		property.put("name", "foo");
 		property.put("type", "java.lang.String");
 		property.put("sourceType", AdditionalMetadata.class.getName());
+		property.put("sourceCanonicalType", AdditionalMetadata.class.getCanonicalName());
 		JSONArray properties = new JSONArray();
 		properties.put(property);
 		JSONObject additionalMetadata = new JSONObject();

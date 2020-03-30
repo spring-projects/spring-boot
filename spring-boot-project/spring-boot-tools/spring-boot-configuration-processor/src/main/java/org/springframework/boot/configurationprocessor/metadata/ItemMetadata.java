@@ -38,18 +38,22 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private String sourceType;
 
+	private String sourceCanonicalType;
+
 	private String sourceMethod;
 
 	private Object defaultValue;
 
 	private ItemDeprecation deprecation;
 
-	ItemMetadata(ItemType itemType, String prefix, String name, String type, String sourceType, String sourceMethod,
-			String description, Object defaultValue, ItemDeprecation deprecation) {
+	ItemMetadata(ItemType itemType, String prefix, String name, String type, String sourceType,
+			String sourceCanonicalType, String sourceMethod, String description, Object defaultValue,
+			ItemDeprecation deprecation) {
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
 		this.type = type;
 		this.sourceType = sourceType;
+		this.sourceCanonicalType = sourceCanonicalType;
 		this.sourceMethod = sourceMethod;
 		this.description = description;
 		this.defaultValue = defaultValue;
@@ -113,6 +117,14 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		this.sourceType = sourceType;
 	}
 
+	public String getSourceCanonicalType() {
+		return this.sourceCanonicalType;
+	}
+
+	public void setSourceCanonicalType(String sourceCanonicalType) {
+		this.sourceCanonicalType = sourceCanonicalType;
+	}
+
 	public String getSourceMethod() {
 		return this.sourceMethod;
 	}
@@ -152,6 +164,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		result = result && nullSafeEquals(this.type, other.type);
 		result = result && nullSafeEquals(this.description, other.description);
 		result = result && nullSafeEquals(this.sourceType, other.sourceType);
+		result = result && nullSafeEquals(this.sourceCanonicalType, other.sourceCanonicalType);
 		result = result && nullSafeEquals(this.sourceMethod, other.sourceMethod);
 		result = result && nullSafeEquals(this.defaultValue, other.defaultValue);
 		result = result && nullSafeEquals(this.deprecation, other.deprecation);
@@ -165,6 +178,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		result = 31 * result + nullSafeHashCode(this.type);
 		result = 31 * result + nullSafeHashCode(this.description);
 		result = 31 * result + nullSafeHashCode(this.sourceType);
+		result = 31 * result + nullSafeHashCode(this.sourceCanonicalType);
 		result = 31 * result + nullSafeHashCode(this.sourceMethod);
 		result = 31 * result + nullSafeHashCode(this.defaultValue);
 		result = 31 * result + nullSafeHashCode(this.deprecation);
@@ -190,6 +204,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		StringBuilder string = new StringBuilder(this.name);
 		buildToStringProperty(string, "type", this.type);
 		buildToStringProperty(string, "sourceType", this.sourceType);
+		buildToStringProperty(string, "sourceCanonicalType", this.sourceCanonicalType);
 		buildToStringProperty(string, "description", this.description);
 		buildToStringProperty(string, "defaultValue", this.defaultValue);
 		buildToStringProperty(string, "deprecation", this.deprecation);
@@ -207,14 +222,17 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		return getName().compareTo(o.getName());
 	}
 
-	public static ItemMetadata newGroup(String name, String type, String sourceType, String sourceMethod) {
-		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType, sourceMethod, null, null, null);
+	public static ItemMetadata newGroup(String name, String type, String sourceType, String sourceCanonicalType,
+			String sourceMethod) {
+		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType, sourceCanonicalType, sourceMethod, null,
+				null, null);
 	}
 
 	public static ItemMetadata newProperty(String prefix, String name, String type, String sourceType,
-			String sourceMethod, String description, Object defaultValue, ItemDeprecation deprecation) {
-		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType, sourceMethod, description,
-				defaultValue, deprecation);
+			String sourceCanonicalType, String sourceMethod, String description, Object defaultValue,
+			ItemDeprecation deprecation) {
+		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType, sourceCanonicalType, sourceMethod,
+				description, defaultValue, deprecation);
 	}
 
 	public static String newItemMetadataPrefix(String prefix, String suffix) {

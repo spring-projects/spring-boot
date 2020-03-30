@@ -141,6 +141,10 @@ public final class Metadata {
 			if (this.sourceType != null && !this.sourceType.getName().equals(itemMetadata.getSourceType())) {
 				return false;
 			}
+			if (this.sourceType != null
+					&& !this.sourceType.getCanonicalName().equals(itemMetadata.getSourceCanonicalType())) {
+				return false;
+			}
 			if (this.sourceMethod != null && !this.sourceMethod.equals(itemMetadata.getSourceMethod())) {
 				return false;
 			}

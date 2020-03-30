@@ -39,13 +39,16 @@ class JsonMarshallerTests {
 	void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(), InputStream.class.getName(),
-				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d")));
-		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123, null));
-		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true, null));
-		metadata.add(ItemMetadata.newProperty("e", null, null, null, null, null, new String[] { "y", "n" }, null));
-		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null, new Boolean[] { true, false }, null));
-		metadata.add(ItemMetadata.newGroup("d", null, null, null));
+				InputStream.class.getCanonicalName(), "sourceMethod", "desc", "x",
+				new ItemDeprecation("Deprecation comment", "b.c.d")));
+		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, null, 123, null));
+		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, null, true, null));
+		metadata.add(
+				ItemMetadata.newProperty("e", null, null, null, null, null, null, new String[] { "y", "n" }, null));
+		metadata.add(
+				ItemMetadata.newProperty("f", null, null, null, null, null, null, new Boolean[] { true, false }, null));
+		metadata.add(ItemMetadata.newGroup("d", null, null, null, null));
 		metadata.add(ItemHint.newHint("a.b"));
 		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"), new ItemHint.ValueHint(456, null)));
 		metadata.add(new ItemHint("d", null,
@@ -73,12 +76,12 @@ class JsonMarshallerTests {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemHint.newHint("fff"));
 		metadata.add(ItemHint.newHint("eee"));
-		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newGroup("com.acme.bravo", "com.example.AnotherTestProperties", null, null));
-		metadata.add(ItemMetadata.newGroup("com.acme.alpha", "com.example.TestProperties", null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newGroup("com.acme.bravo", "com.example.AnotherTestProperties", null, null, null));
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", "com.example.TestProperties", null, null, null));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
@@ -91,11 +94,11 @@ class JsonMarshallerTests {
 	@Test
 	void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
-		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null,
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null, null,
 				new ItemDeprecation(null, null, "warning")));
-		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null, null, null, null,
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, null, null, null, null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, null, null, null, null, null,
 				new ItemDeprecation(null, null, "warning")));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
