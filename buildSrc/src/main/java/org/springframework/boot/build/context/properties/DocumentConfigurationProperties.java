@@ -81,8 +81,9 @@ public class DocumentConfigurationProperties extends AbstractTask {
 						"spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
 				.addOverride("spring.datasource.dbcp2", "Commons DBCP2 specific settings")
 				.addOverride("spring.datasource.tomcat", "Tomcat datasource specific settings")
-				.addOverride("spring.datasource.hikari", "Hikari specific settings").addSection("transaction")
-				.withKeyPrefixes("spring.jta", "spring.transaction").addSection("integration")
+				.addOverride("spring.datasource.hikari",
+						"Hikari specific settings bound to an instance of Hikari datasource")
+				.addSection("transaction").withKeyPrefixes("spring.jta", "spring.transaction").addSection("integration")
 				.withKeyPrefixes("spring.activemq", "spring.artemis", "spring.batch", "spring.integration",
 						"spring.jms", "spring.kafka", "spring.rabbitmq", "spring.hazelcast", "spring.webservices")
 				.addSection("actuator").withKeyPrefixes("management").addSection("devtools")
