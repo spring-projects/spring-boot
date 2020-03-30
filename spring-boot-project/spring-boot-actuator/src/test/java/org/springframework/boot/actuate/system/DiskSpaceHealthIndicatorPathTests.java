@@ -32,14 +32,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link DiskSpaceHealthIndicator}.
+ * Tests for the {@link DiskSpaceHealthIndicator} {@code path} parameter.
  *
- * @author Mattias Severson
- * @author Stephane Nicoll
+ * @author Andreas Born
  */
-class DiskSpaceHealthIndicatorTests {
+class DiskSpaceHealthIndicatorPathTests {
 
 	private static final DataSize THRESHOLD = DataSize.ofKilobytes(1);
+
+	private static final DataSize ZERO_THRESHOLD = DataSize.ofBytes(0);
 
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
@@ -51,43 +52,55 @@ class DiskSpaceHealthIndicatorTests {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		given(this.fileMock.exists()).willReturn(true);
-		given(this.fileMock.canRead()).willReturn(true);
-		given(this.fileMock.canWrite()).willReturn(true);
-		given(this.fileMock.canExecute()).willReturn(true);
+		given(this.fileMock.exists()).willReturn(false);
+		given(this.fileMock.canRead()).willReturn(false);
+		given(this.fileMock.canWrite()).willReturn(false);
+		given(this.fileMock.canExecute()).willReturn(false);
 		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, THRESHOLD);
 	}
 
 	@Test
-	void diskSpaceIsUp() {
+	void diskSpaceIsDown() {
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
+		assertThat(health.getDetails().get("free")).isEqualTo(0L);
+		assertThat(health.getDetails().get("total")).isEqualTo(0L);
+		assertThat(health.getDetails().get("exists")).isEqualTo(false);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(false);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(false);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(false);
+	}
+
+	@Test
+	void diskSpaceIsDownWhenThresholdIsZero() {
+		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, ZERO_THRESHOLD);
+		Health health = this.healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("threshold")).isEqualTo(ZERO_THRESHOLD.toBytes());
+		assertThat(health.getDetails().get("free")).isEqualTo(0L);
+		assertThat(health.getDetails().get("total")).isEqualTo(0L);
+		assertThat(health.getDetails().get("exists")).isEqualTo(false);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(false);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(false);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(false);
+	}
+
+	@Test
+	void diskSpaceIsUpWhenPathOnlyExists() {
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		given(this.fileMock.exists()).willReturn(true);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
 		assertThat(health.getDetails().get("exists")).isEqualTo(true);
-		assertThat(health.getDetails().get("canRead")).isEqualTo(true);
-		assertThat(health.getDetails().get("canWrite")).isEqualTo(true);
-		assertThat(health.getDetails().get("canExecute")).isEqualTo(true);
-	}
-
-	@Test
-	void diskSpaceIsDown() {
-		long freeSpace = THRESHOLD.toBytes() - 10;
-		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
-		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
-		Health health = this.healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
-		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
-		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
-		assertThat(health.getDetails().get("exists")).isEqualTo(true);
-		assertThat(health.getDetails().get("canRead")).isEqualTo(true);
-		assertThat(health.getDetails().get("canWrite")).isEqualTo(true);
-		assertThat(health.getDetails().get("canExecute")).isEqualTo(true);
+		assertThat(health.getDetails().get("canRead")).isEqualTo(false);
+		assertThat(health.getDetails().get("canWrite")).isEqualTo(false);
+		assertThat(health.getDetails().get("canExecute")).isEqualTo(false);
 	}
 
 }

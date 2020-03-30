@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.system;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
@@ -56,6 +58,13 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 			assertThat(context.getBean(DiskSpaceHealthIndicator.class)).hasFieldOrPropertyWithValue("threshold",
 					DataSize.ofMegabytes(20));
 		});
+	}
+
+	@Test
+	void pathIsNotRequiredToExist() {
+		String randomPath = "IDoNOTeXiST" + UUID.randomUUID().toString();
+		this.contextRunner.withPropertyValues("management.health.diskspace.path=" + randomPath)
+				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
