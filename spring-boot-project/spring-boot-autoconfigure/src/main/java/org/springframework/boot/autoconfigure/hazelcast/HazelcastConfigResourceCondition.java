@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 
@@ -35,12 +36,24 @@ import org.springframework.util.Assert;
  */
 public abstract class HazelcastConfigResourceCondition extends ResourceCondition {
 
+	private static final String HAZELCAST_JET_CONFIG_FILE = "classpath:/hazelcast-jet-default.yaml";
+
 	private final String configSystemProperty;
 
 	protected HazelcastConfigResourceCondition(String configSystemProperty, String... resourceLocations) {
 		super("Hazelcast", "spring.hazelcast.config", resourceLocations);
 		Assert.notNull(configSystemProperty, "ConfigSystemProperty must not be null");
 		this.configSystemProperty = configSystemProperty;
+	}
+
+	@Override
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		Resource resource = context.getResourceLoader().getResource(HAZELCAST_JET_CONFIG_FILE);
+		if (resource.exists()) {
+			return ConditionOutcome.noMatch(
+					startConditionMessage().because("Found Hazelcast Jet default config file on the classpath."));
+		}
+		return super.getMatchOutcome(context, metadata);
 	}
 
 	@Override
