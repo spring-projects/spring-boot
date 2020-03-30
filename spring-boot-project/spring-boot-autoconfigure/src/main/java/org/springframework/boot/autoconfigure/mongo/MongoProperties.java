@@ -59,7 +59,8 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Cannot be set with host, port and credentials.
+	 * Mongo database URI. Cannot be set with host, port, credentials and replica set
+	 * name.
 	 */
 	private String uri;
 
@@ -81,13 +82,17 @@ public class MongoProperties {
 	/**
 	 * Login user of the mongo server. Cannot be set with URI.
 	 */
-
 	private String username;
 
 	/**
 	 * Login password of the mongo server. Cannot be set with URI.
 	 */
 	private char[] password;
+
+	/**
+	 * Required replica set name for the cluster. Cannot be set with URI.
+	 */
+	private String replicaSetName;
 
 	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
@@ -142,6 +147,14 @@ public class MongoProperties {
 
 	public void setPassword(char[] password) {
 		this.password = password;
+	}
+
+	public String getReplicaSetName() {
+		return this.replicaSetName;
+	}
+
+	public void setReplicaSetName(String replicaSetName) {
+		this.replicaSetName = replicaSetName;
 	}
 
 	public Class<?> getFieldNamingStrategy() {
