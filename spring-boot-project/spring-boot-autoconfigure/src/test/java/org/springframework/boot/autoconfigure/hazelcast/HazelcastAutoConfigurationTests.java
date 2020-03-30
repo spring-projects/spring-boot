@@ -16,8 +16,12 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -45,6 +49,37 @@ class HazelcastAutoConfigurationTests {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
 			assertThat(config.getConfigurationUrl()).isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 		});
+	}
+
+	@Test
+	void testHazelcastInstanceNotCreatedWhenJetIsPresent() {
+		this.contextRunner.withClassLoader(new JetConfigClassLoader())
+				.run((context) -> assertThat(context).doesNotHaveBean(HazelcastInstance.class));
+	}
+
+	/**
+	 * A specific class loader which emulates that default Hazelcast Jet configuration
+	 * file exists on the classpath.
+	 */
+	static class JetConfigClassLoader extends ClassLoader {
+
+		JetConfigClassLoader() {
+			super(JetConfigClassLoader.class.getClassLoader());
+		}
+
+		@Nullable
+		@Override
+		public URL getResource(String name) {
+			if (name.equals("hazelcast-jet-default.yaml")) {
+				try {
+					return new URL("file://hazelcast-jet-default.yaml");
+				}
+				catch (MalformedURLException ignored) {
+				}
+			}
+			return super.getResource(name);
+		}
+
 	}
 
 }
