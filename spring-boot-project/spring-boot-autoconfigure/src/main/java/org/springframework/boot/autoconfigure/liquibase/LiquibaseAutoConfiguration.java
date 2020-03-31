@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -145,7 +146,13 @@ public class LiquibaseAutoConfiguration {
 			String url = getProperty(this.properties::getUrl, dataSourceProperties::determineUrl);
 			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
-			return DataSourceBuilder.create().url(url).username(user).password(password).build();
+			return DataSourceBuilder.create().type(determineDataSourceType()).url(url).username(user).password(password)
+					.build();
+		}
+
+		private Class<? extends DataSource> determineDataSourceType() {
+			Class<? extends DataSource> type = DataSourceBuilder.findType(null);
+			return (type != null) ? type : SimpleDriverDataSource.class;
 		}
 
 		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {

@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -54,6 +55,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +82,7 @@ class LiquibaseAutoConfigurationTests {
 				.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(Object.class), new String[0]));
 	}
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
@@ -96,6 +98,18 @@ class LiquibaseAutoConfigurationTests {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
+	}
+
+	@Test
+	void createsDataSourceWhenSpringJdbcOnlyAvailableWithNoDataSourceBeanAndLiquibaseUrl() {
+		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
+				.withClassLoader(
+						new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp2"))
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+					assertThat(((SimpleDriverDataSource) dataSource).getUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
 				}));
 	}
 
