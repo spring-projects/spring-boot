@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Simons
  */
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
@@ -48,19 +45,14 @@ class DataNeo4jTestWithIncludeFilterIntegrationTests {
 	@Autowired
 	private ExampleService service;
 
+	@DynamicPropertySource
+	static void neo4jProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+	}
+
 	@Test
 	void testService() {
 		assertThat(this.service.hasNode(ExampleGraph.class)).isFalse();
-	}
-
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
-
 	}
 
 }
