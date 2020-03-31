@@ -245,6 +245,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         ISSUE_TITLE: ((docker-upgrade-issue-title))
+      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
