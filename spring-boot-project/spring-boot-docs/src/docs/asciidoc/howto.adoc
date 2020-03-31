@@ -1937,7 +1937,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 
 [[howto-initialize-a-database-using-spring-jdbc]]
-=== Initialize a Database
+=== Initialize a Database using basic SQL scripts
 Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of `spring.datasource.platform`.
@@ -1962,6 +1962,24 @@ You can tune that behavior by setting `spring.datasource.continue-on-error`.
 
 NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
 Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
+
+
+
+[[howto-initialize-a-database-using-r2dc]]
+=== Initialize a Database Using R2DBC
+If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
+
+If you are using Spring Data R2DBC, you can initialize the database on startup using simple SQL scripts as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/r2dbc/R2dbcDatabaseInitializationExample.java[tag=configuration]
+----
+
+Alternatively, you can configure either <<howto-execute-flyway-database-migrations-on-startup,Flyway>> or <<howto-execute-liquibase-database-migrations-on-startup,Liquibase>> to configure a `DataSource` for you for the duration of the migration.
+Both these libraries offer properties to set the `url`, `username` and `password` of the database to migrate.
+
+NOTE: When choosing this option, `org.springframework:spring-jdbc` is still a required dependency.
 
 
 
