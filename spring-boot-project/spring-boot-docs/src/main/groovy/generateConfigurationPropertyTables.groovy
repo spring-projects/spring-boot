@@ -54,9 +54,9 @@ def generateConfigMetadataDocumentation() {
 						"spring.influx", "spring.mongodb", "spring.redis",
 						"spring.dao", "spring.data", "spring.datasource", "spring.jooq",
 						"spring.jdbc", "spring.jpa")
-				.addOverride("spring.datasource.dbcp2", "Commons DBCP2 specific settings")
-				.addOverride("spring.datasource.tomcat", "Tomcat datasource specific settings")
-				.addOverride("spring.datasource.hikari", "Hikari specific settings")
+				.addOverride("spring.datasource.dbcp2", "Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource")
+				.addOverride("spring.datasource.tomcat", "Tomcat datasource specific settings bound to an instance of Tomcat JDBC's DataSource")
+				.addOverride("spring.datasource.hikari", "Hikari specific settings bound to an instance of Hikari's HikariDataSource")
 				.addSection("transaction")
 				.withKeyPrefixes("spring.jta", "spring.transaction")
 				.addSection("integration")
