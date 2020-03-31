@@ -1,0 +1,13 @@
+---
+platform: linux
+inputs:
+  - name: git-repo
+outputs:
+  - name: git-repo-updated
+  - name: commit-details
+params:
+  GITHUB_REPO:
+  GITHUB_ORGANIZATION:
+  ISSUE_TITLE:
+run:
+  path: git-repo/ci/scripts/detect-docker-updates.sh
