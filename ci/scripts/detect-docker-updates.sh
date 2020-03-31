@@ -28,6 +28,7 @@ if [[ ${existing_upgrade_issues} = "" ]]; then
 	git add ci/images/get-docker-url.sh > /dev/null
 	commit_message="Upgrade to Docker $latest_version in CI"
 	git commit -m "$commit_message" > /dev/null
+	popd
 	echo ${commit_message} > commit-details/message
 else
 	echo "Pull request already exists."
