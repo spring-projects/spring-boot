@@ -54,7 +54,6 @@ public class BazProperties {
 		this.counter = counter;
 	}
 
-
 	@ConfigurationProperties("quux")
 	public static class QuuxProperties {
 

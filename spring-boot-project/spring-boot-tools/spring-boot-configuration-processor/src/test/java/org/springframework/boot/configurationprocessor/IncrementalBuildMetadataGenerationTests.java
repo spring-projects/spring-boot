@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.incremental.BazProperties;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
+import org.springframework.boot.configurationsample.incremental.BazProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBazProperties;
