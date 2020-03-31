@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package smoketest.data.r2dbc;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.apache.http.conn.DnsResolver;
+@SpringBootApplication
+public class SampleR2dbcFlywayApplication {
 
-/**
- * {@link DnsResolver} used by the {@link DockerHttpClientConnectionManager} to ensure
- * only the loopback address is used.
- *
- * @author Phillip Webb
- */
-class DockerDnsResolver implements DnsResolver {
-
-	private static final InetAddress[] LOOPBACK = new InetAddress[] { InetAddress.getLoopbackAddress() };
-
-	@Override
-	public InetAddress[] resolve(String host) throws UnknownHostException {
-		return LOOPBACK;
+	public static void main(String[] args) {
+		SpringApplication.run(SampleR2dbcFlywayApplication.class, args);
 	}
 
 }

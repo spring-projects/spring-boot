@@ -61,10 +61,11 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DockerApi}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class DockerApiTests {
 
-	private static final String API_URL = "docker://localhost/" + DockerApi.API_VERSION;
+	private static final String API_URL = "/" + DockerApi.API_VERSION;
 
 	private static final String IMAGES_URL = API_URL + "/images";
 

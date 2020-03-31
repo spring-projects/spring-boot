@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.httpclient;
 
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -26,16 +26,17 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
  * {@link HttpClientConnectionManager} for Docker.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class DockerHttpClientConnectionManager extends BasicHttpClientConnectionManager {
+class LocalDockerHttpClientConnectionManager extends BasicHttpClientConnectionManager {
 
-	DockerHttpClientConnectionManager() {
-		super(getRegistry(), null, null, new DockerDnsResolver());
+	LocalDockerHttpClientConnectionManager() {
+		super(getRegistry(), null, null, new LocalDockerDnsResolver());
 	}
 
 	private static Registry<ConnectionSocketFactory> getRegistry() {
 		RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.create();
-		builder.register("docker", new DockerConnectionSocketFactory());
+		builder.register("docker", new LocalDockerConnectionSocketFactory());
 		return builder.build();
 	}
 

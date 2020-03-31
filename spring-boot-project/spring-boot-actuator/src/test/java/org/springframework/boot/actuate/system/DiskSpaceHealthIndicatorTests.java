@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ class DiskSpaceHealthIndicatorTests {
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
-		given(this.fileMock.canRead()).willReturn(true);
 		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, THRESHOLD);
 	}
 
@@ -66,6 +65,7 @@ class DiskSpaceHealthIndicatorTests {
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("exists")).isEqualTo(true);
 	}
 
 	@Test
@@ -78,6 +78,16 @@ class DiskSpaceHealthIndicatorTests {
 		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
 		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
 		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails().get("exists")).isEqualTo(true);
+	}
+
+	@Test
+	void whenPathDoesNotExistDiskSpaceIsDown() {
+		Health health = new DiskSpaceHealthIndicator(new File("does/not/exist"), THRESHOLD).health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("free")).isEqualTo(0L);
+		assertThat(health.getDetails().get("total")).isEqualTo(0L);
+		assertThat(health.getDetails().get("exists")).isEqualTo(false);
 	}
 
 }

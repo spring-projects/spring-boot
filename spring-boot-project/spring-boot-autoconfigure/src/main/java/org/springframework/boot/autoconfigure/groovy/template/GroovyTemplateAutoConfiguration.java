@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class GroovyTemplateAutoConfiguration {
 
 		private final GroovyTemplateProperties properties;
 
-		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties,
-				ObjectProvider<MarkupTemplateEngine> templateEngine) {
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
 		}
@@ -96,8 +95,8 @@ public class GroovyTemplateAutoConfiguration {
 		/**
 		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
 		 * Unfortunately it's quite common for people to use groovy-all and not actually
-		 * need templating support. This method check attempts to check the source jar so
-		 * that we can skip the {@code /template} folder check for such cases.
+		 * need templating support. This method attempts to check the source jar so that
+		 * we can skip the {@code /template} folder check for such cases.
 		 * @return true if the groovy-all jar is used
 		 */
 		private boolean isUsingGroovyAllJar() {

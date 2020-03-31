@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.cassandra;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
@@ -57,12 +56,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(SELECT);
-		if (results.isFullyFetched()) {
-			builder.up();
-			return;
-		}
-		String version = results.one().getString(0);
+		String version = this.cassandraOperations.getCqlOperations().queryForObject(SELECT, String.class);
 		builder.up().withDetail("version", version);
 	}
 

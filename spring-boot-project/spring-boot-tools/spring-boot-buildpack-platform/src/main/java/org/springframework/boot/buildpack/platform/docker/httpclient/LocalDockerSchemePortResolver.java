@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.httpclient;
 
 import org.apache.http.HttpHost;
 import org.apache.http.conn.SchemePortResolver;
@@ -25,8 +25,9 @@ import org.apache.http.util.Args;
  * {@link SchemePortResolver} for Docker.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class DockerSchemePortResolver implements SchemePortResolver {
+class LocalDockerSchemePortResolver implements SchemePortResolver {
 
 	private static final int DEFAULT_DOCKER_PORT = 2376;
 

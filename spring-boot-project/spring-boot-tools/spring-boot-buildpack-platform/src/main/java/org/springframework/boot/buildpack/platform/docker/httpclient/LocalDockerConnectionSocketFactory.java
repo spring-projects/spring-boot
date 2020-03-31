@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.httpclient;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -33,8 +33,9 @@ import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
  * pipe.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class DockerConnectionSocketFactory implements ConnectionSocketFactory {
+class LocalDockerConnectionSocketFactory implements ConnectionSocketFactory {
 
 	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
 

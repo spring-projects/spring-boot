@@ -23,6 +23,7 @@ import java.net.URI;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -34,9 +35,9 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 
+import org.springframework.boot.buildpack.platform.docker.httpclient.DelegatingDockerHttpClientConnection;
+import org.springframework.boot.buildpack.platform.docker.httpclient.DockerHttpClientConnection;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -50,17 +51,14 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
  */
 class HttpClientHttp implements Http {
 
-	private final CloseableHttpClient client;
+	private final DockerHttpClientConnection clientConnection;
 
 	HttpClientHttp() {
-		HttpClientBuilder builder = HttpClients.custom();
-		builder.setConnectionManager(new DockerHttpClientConnectionManager());
-		builder.setSchemePortResolver(new DockerSchemePortResolver());
-		this.client = builder.build();
+		this.clientConnection = DelegatingDockerHttpClientConnection.create();
 	}
 
-	HttpClientHttp(CloseableHttpClient client) {
-		this.client = client;
+	HttpClientHttp(DockerHttpClientConnection clientConnection) {
+		this.clientConnection = clientConnection;
 	}
 
 	/**
@@ -90,7 +88,6 @@ class HttpClientHttp implements Http {
 	 * @param writer a content writer
 	 * @return the operation response
 	 */
-
 	@Override
 	public Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPost(uri), contentType, writer);
@@ -103,7 +100,6 @@ class HttpClientHttp implements Http {
 	 * @param writer a content writer
 	 * @return the operation response
 	 */
-
 	@Override
 	public Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPut(uri), contentType, writer);
@@ -114,7 +110,6 @@ class HttpClientHttp implements Http {
 	 * @param uri the destination URI
 	 * @return the operation response
 	 */
-
 	@Override
 	public Response delete(URI uri) {
 		return execute(new HttpDelete(uri));
@@ -128,23 +123,36 @@ class HttpClientHttp implements Http {
 	}
 
 	private Response execute(HttpUriRequest request) {
+		HttpHost host = this.clientConnection.getHttpHost();
+		CloseableHttpClient client = this.clientConnection.getHttpClient();
+
 		try {
-			CloseableHttpResponse response = this.client.execute(request);
+			CloseableHttpResponse response = client.execute(host, request);
 			StatusLine statusLine = response.getStatusLine();
 			int statusCode = statusLine.getStatusCode();
 			HttpEntity entity = response.getEntity();
 
 			if (statusCode >= 400 && statusCode < 500) {
-				Errors errors = SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
-				throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), errors);
+				throw new DockerException(host.toHostString(), request.getURI(), statusCode,
+						statusLine.getReasonPhrase(), getErrorsFromResponse(entity));
 			}
 			if (statusCode == 500) {
-				throw new DockerException(request.getURI(), statusCode, statusLine.getReasonPhrase(), null);
+				throw new DockerException(host.toHostString(), request.getURI(), statusCode,
+						statusLine.getReasonPhrase(), null);
 			}
 			return new HttpClientResponse(response);
 		}
 		catch (IOException ioe) {
-			throw new DockerException(request.getURI(), 500, ioe.getMessage(), null);
+			throw new DockerException(host.toHostString(), request.getURI(), 500, ioe.getMessage(), null);
+		}
+	}
+
+	private Errors getErrorsFromResponse(HttpEntity entity) {
+		try {
+			return SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
+		}
+		catch (IOException ioe) {
+			return null;
 		}
 	}
 
