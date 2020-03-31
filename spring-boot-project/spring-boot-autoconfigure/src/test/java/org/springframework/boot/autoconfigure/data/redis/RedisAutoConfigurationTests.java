@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,27 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
@@ -54,7 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class RedisAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
 	@Test
@@ -228,6 +236,61 @@ class RedisAutoConfigurationTests {
 						.isEqualTo("password")
 
 				);
+	}
+
+	@Test
+	void testRedisConfigurationCreateClientOptionsByDefault() {
+		this.contextRunner.run(assertClientOptions(ClientOptions.class, (options) -> {
+			assertThat(options.getTimeoutOptions().isApplyConnectionTimeout()).isTrue();
+			assertThat(options.getTimeoutOptions().isTimeoutCommands()).isTrue();
+		}));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterCreateClusterClientOptions() {
+		this.contextRunner.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
+				.run(assertClientOptions(ClusterClientOptions.class, (options) -> {
+					assertThat(options.getTimeoutOptions().isApplyConnectionTimeout()).isTrue();
+					assertThat(options.getTimeoutOptions().isTimeoutCommands()).isTrue();
+				}));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterRefreshPeriod() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.redis.lettuce.cluster.refresh.period=30s")
+				.run(assertClientOptions(ClusterClientOptions.class,
+						(options) -> assertThat(options.getTopologyRefreshOptions().getRefreshPeriod())
+								.hasSeconds(30)));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterAdaptiveRefresh() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.redis.lettuce.cluster.refresh.adaptive=true")
+				.run(assertClientOptions(ClusterClientOptions.class,
+						(options) -> assertThat(options.getTopologyRefreshOptions().getAdaptiveRefreshTriggers())
+								.isEqualTo(EnumSet.allOf(RefreshTrigger.class))));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterRefreshPeriodHasNoEffectWithNonClusteredConfiguration() {
+		this.contextRunner.withPropertyValues("spring.redis.cluster.refresh.period=30s").run(assertClientOptions(
+				ClientOptions.class, (options) -> assertThat(options.getClass()).isEqualTo(ClientOptions.class)));
+	}
+
+	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(
+			Class<T> expectedType, Consumer<T> options) {
+		return (context) -> {
+			LettuceClientConfiguration clientConfiguration = context.getBean(LettuceConnectionFactory.class)
+					.getClientConfiguration();
+			assertThat(clientConfiguration.getClientOptions()).isPresent();
+			ClientOptions clientOptions = clientConfiguration.getClientOptions().get();
+			assertThat(clientOptions.getClass()).isEqualTo(expectedType);
+			options.accept(expectedType.cast(clientOptions));
+		};
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(LettuceConnectionFactory factory) {
