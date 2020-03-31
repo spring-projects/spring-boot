@@ -20,9 +20,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
+import org.springframework.boot.configurationsample.incremental.BazProperties;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
+import org.springframework.boot.configurationsample.incremental.RenamedBazProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +37,8 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 
 	@Test
 	void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class,
+				BazProperties.class);
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
@@ -43,43 +46,80 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").fromSource(BazProperties.QuuxProperties.class)
+				.withDefaultValue(0));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").fromSource(BazProperties.QuuxProperties.class)
+				.withDefaultValue(0));
+		metadata = project.incrementalBuild(BazProperties.class);
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").fromSource(BazProperties.QuuxProperties.class)
+				.withDefaultValue(0));
 		project.addSourceCode(BarProperties.class, BarProperties.class.getResourceAsStream("BarProperties.snippet"));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("bar.extra"));
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("baz.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").withDefaultValue(0));
 		project.revert(BarProperties.class);
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.extra"));
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("baz.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").withDefaultValue(0));
 	}
 
 	@Test
 	void incrementalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class,
+				BazProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("baz.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").withDefaultValue(0));
 		project.replaceText(BarProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("baz.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").withDefaultValue(0));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.counter"));
+		project.replaceText(BazProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
+		metadata = project.incrementalBuild(BazProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.counter"));
+		assertThat(metadata).isNotEqualTo(Metadata.withProperty("baz.counter"));
+		assertThat(metadata).isNotEqualTo(Metadata.withProperty("quux.counter"));
 	}
 
 	@Test
 	void incrementalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
+		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class,
+				BazProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata)
 				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").fromSource(BazProperties.QuuxProperties.class)
+				.withDefaultValue(0));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter").fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
@@ -90,6 +130,27 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter").fromSource(BazProperties.QuuxProperties.class)
+				.withDefaultValue(0));
+		project.delete(BazProperties.class);
+		project.add(RenamedBazProperties.class);
+		metadata = project.incrementalBuild(RenamedBazProperties.class);
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.doesNotHave(Metadata.withProperty("baz.counter").fromSource(BazProperties.class).withDefaultValue(0));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("quux.counter")
+				.fromSource(BazProperties.QuuxProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("baz.counter").fromSource(RenamedBazProperties.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("quux.counter")
+				.fromSource(RenamedBazProperties.RenamedQuuxProperties.class).withDefaultValue(0));
 	}
 
 }
