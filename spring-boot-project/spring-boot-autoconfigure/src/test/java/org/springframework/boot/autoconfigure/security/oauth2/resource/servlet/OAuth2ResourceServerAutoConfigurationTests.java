@@ -54,6 +54,7 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -87,6 +88,23 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
+				});
+	}
+
+	@Test
+	void autoConfigurationShouldUseApplicationsRestTemplate() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
+					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
+					Object jwkSource = ReflectionTestUtils.getField(keySelector, "jwkSource");
+					Object jwkSetRetriever = ReflectionTestUtils.getField(jwkSource, "jwkSetRetriever");
+					Object restOperations = ReflectionTestUtils.getField(jwkSetRetriever, "restOperations");
+					assertThat(restOperations).isNotNull();
+					assertThat(restOperations).isEqualTo(RestTemplateConfig.configuredRestTemplate);
 				});
 	}
 
@@ -420,6 +438,19 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Bean
 		JwtDecoder decoder() {
 			return mock(JwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebSecurity
+	static class RestTemplateConfig {
+
+		private static RestTemplate configuredRestTemplate = new RestTemplate();
+
+		@Bean
+		RestTemplate restTemplate() {
+			return configuredRestTemplate;
 		}
 
 	}

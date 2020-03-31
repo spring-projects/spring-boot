@@ -19,6 +19,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Optional;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,6 +38,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Configures a {@link JwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI or Public
@@ -63,9 +65,14 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		JwtDecoder jwtDecoderByJwkKeySetUri() {
-			NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+		JwtDecoder jwtDecoderByJwkKeySetUri(Optional<RestTemplate> configuredRestTemplate) {
+			NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder jwtDecoderBuilder = NimbusJwtDecoder
+					.withJwkSetUri(this.properties.getJwkSetUri())
+					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm()));
+
+			configuredRestTemplate.ifPresent(jwtDecoderBuilder::restOperations);
+			NimbusJwtDecoder nimbusJwtDecoder = jwtDecoderBuilder.build();
+
 			String issuerUri = this.properties.getIssuerUri();
 			if (issuerUri != null) {
 				nimbusJwtDecoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
