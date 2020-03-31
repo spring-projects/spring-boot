@@ -625,6 +625,8 @@ This search ordering lets you specify default values in one configuration file a
 You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
 These default values can then be overridden at runtime with a different file located in one of the custom locations.
 
+WARNING: `spring.config.additional-location` and `spring.config.location` are mutually exclusive. The `spring.config.additional-location` location will only be used if no location is specified for `spring.config.location`.
+
 NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
 
 NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
