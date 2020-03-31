@@ -20,6 +20,7 @@ dependencies {
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.0.0")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm-pdf:3.0.0")
+	implementation("org.gradle:test-retry-gradle-plugin:1.1.3")
 	implementation("org.springframework:spring-core:5.2.2.RELEASE")
 	implementation("org.springframework:spring-web:5.2.2.RELEASE")
 	implementation("com.google.code.gson:gson:2.8.5")

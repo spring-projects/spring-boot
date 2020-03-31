@@ -56,6 +56,8 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
+import org.gradle.testretry.TestRetryPlugin;
+import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 import org.springframework.util.FileCopyUtils;
@@ -71,7 +73,8 @@ import org.springframework.util.FileCopyUtils;
  * <ul>
  * <li>{@code sourceCompatibility} is set to {@code 1.8}
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
- * Checkstyle}, and {@link TestFailuresPlugin Test Failures} plugins are applied
+ * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
+ * Retry} plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
@@ -139,10 +142,16 @@ public class ConventionsPlugin implements Plugin<Project> {
 				javadoc.getOptions().source("1.8").encoding("UTF-8");
 				withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
 			});
+			project.getPlugins().apply(TestRetryPlugin.class);
 			project.getTasks().withType(Test.class, (test) -> {
 				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
+				project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
+					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
+					testRetry.getFailOnPassedAfterRetry().set(true);
+					testRetry.getMaxRetries().set(3);
+				});
 			});
 			project.getTasks().withType(Jar.class, (jar) -> {
 				project.afterEvaluate((evaluated) -> {

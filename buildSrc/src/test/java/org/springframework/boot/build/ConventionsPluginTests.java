@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,8 +75,29 @@ class ConventionsPluginTests {
 		}
 	}
 
-	private void runGradle(String... args) {
-		GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withPluginClasspath().build();
+	@Test
+	void testRetryIsConfigured() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("description 'Test'");
+			out.println("task retryConfig {");
+			out.println("    doLast {");
+			out.println("    test.retry {");
+			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
+			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
+			out.println("        }");
+			out.println("    }");
+			out.println("}");
+		}
+		assertThat(runGradle("retryConfig", "--stacktrace").getOutput()).contains("maxRetries: 3")
+				.contains("failOnPassedAfterRetry: true");
+	}
+
+	private BuildResult runGradle(String... args) {
+		return GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withPluginClasspath().build();
 	}
 
 }
