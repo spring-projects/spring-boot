@@ -120,49 +120,63 @@ public class ConventionsPlugin implements Plugin<Project> {
 		applyJavaConventions(project);
 		applyAsciidoctorConventions(project);
 		applyMavenPublishingConventions(project);
-		applyGradleFlakyTestConventions(project);
 	}
 
 	private void applyJavaConventions(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
-			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
-			project.getTasks().withType(JavaCompile.class, (compile) -> {
-				compile.getOptions().setEncoding("UTF-8");
-				withOptionalBuildJavaHome(project, (javaHome) -> {
-					compile.getOptions().setFork(true);
-					compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
-					compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
-				});
-				List<String> args = compile.getOptions().getCompilerArgs();
-				if (!args.contains("-parameters")) {
-					args.add("-parameters");
-				}
+			configureSpringJavaFormat(project);
+			applyJavaCompileConventions(project);
+			applyJavadocConventions(project);
+			applyTestConventions(project);
+			applyJarManifestConventions(project);
+			applyGradleFlakyTestConventions(project);
+		});
+	}
+
+	private void applyJarManifestConventions(Project project) {
+		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
+			jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
+			jar.manifest((manifest) -> {
+				Map<String, Object> attributes = new TreeMap<>();
+				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+				attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
+				attributes.put("Built-By", "Spring");
+				attributes.put("Implementation-Title", project.getDescription());
+				attributes.put("Implementation-Version", project.getVersion());
+				manifest.attributes(attributes);
 			});
-			project.getTasks().withType(Javadoc.class, (javadoc) -> {
-				javadoc.getOptions().source("1.8").encoding("UTF-8");
-				withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
+		}));
+	}
+
+	private void applyTestConventions(Project project) {
+		project.getTasks().withType(Test.class, (test) -> {
+			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
+			test.useJUnitPlatform();
+			test.setMaxHeapSize("1024M");
+		});
+	}
+
+	private void applyJavadocConventions(Project project) {
+		project.getTasks().withType(Javadoc.class, (javadoc) -> {
+			javadoc.getOptions().source("1.8").encoding("UTF-8");
+			withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
+		});
+	}
+
+	private void applyJavaCompileConventions(Project project) {
+		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			compile.getOptions().setEncoding("UTF-8");
+			withOptionalBuildJavaHome(project, (javaHome) -> {
+				compile.getOptions().setFork(true);
+				compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
+				compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
 			});
-			project.getTasks().withType(Test.class, (test) -> {
-				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
-				test.useJUnitPlatform();
-				test.setMaxHeapSize("1024M");
-			});
-			project.getTasks().withType(Jar.class, (jar) -> {
-				project.afterEvaluate((evaluated) -> {
-					jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
-					jar.manifest((manifest) -> {
-						Map<String, Object> attributes = new TreeMap<>();
-						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-						attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
-						attributes.put("Built-By", "Spring");
-						attributes.put("Implementation-Title", project.getDescription());
-						attributes.put("Implementation-Version", project.getVersion());
-						manifest.attributes(attributes);
-					});
-				});
-			});
+			List<String> args = compile.getOptions().getCompilerArgs();
+			if (!args.contains("-parameters")) {
+				args.add("-parameters");
+			}
 		});
 	}
 
