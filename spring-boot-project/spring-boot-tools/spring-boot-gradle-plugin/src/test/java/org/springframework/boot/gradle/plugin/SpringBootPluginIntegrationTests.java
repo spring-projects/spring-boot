@@ -42,22 +42,37 @@ class SpringBootPluginIntegrationTests {
 
 	@DisabledForJreRange(min = JRE.JAVA_14)
 	@Test
-	void failFastWithVersionOfGradleLowerThanRequired() {
+	void failFastWithVersionOfGradle5LowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("5.5.1").buildAndFail();
 		assertThat(result.getOutput())
-				.contains("Spring Boot plugin requires Gradle 5.6 or later. The current version is Gradle 5.5.1");
+				.contains("Spring Boot plugin requires Gradle 5 (5.6.x only) or Gradle 6 (6.3 or later). "
+						+ "The current version is Gradle 5.5.1");
+	}
+
+	@DisabledForJreRange(min = JRE.JAVA_14)
+	@Test
+	void failFastWithVersionOfGradle6LowerThanRequired() {
+		BuildResult result = this.gradleBuild.gradleVersion("6.2.2").buildAndFail();
+		assertThat(result.getOutput())
+				.contains("Spring Boot plugin requires Gradle 5 (5.6.x only) or Gradle 6 (6.3 or later). "
+						+ "The current version is Gradle 6.2.2");
 	}
 
 	@DisabledForJreRange(min = JRE.JAVA_13)
 	@Test
-	void succeedWithVersionOfGradleHigherThanRequired() {
+	void succeedWithVersionOfGradle5HigherThanRequired() {
 		this.gradleBuild.gradleVersion("5.6.1").build();
 	}
 
 	@DisabledForJreRange(min = JRE.JAVA_13)
 	@Test
-	void succeedWithVersionOfGradleMatchingWhatIsRequired() {
+	void succeedWithVersionOfGradle6MatchingWhatIsRequired() {
 		this.gradleBuild.gradleVersion("5.6").build();
+	}
+
+	@Test
+	void succeedWithVersionOfGradle6MatchingWithIsRequired() {
+		this.gradleBuild.gradleVersion("6.3").build();
 	}
 
 	@Test
