@@ -1,3 +1,4 @@
+docker-upgrade-issue-title: "Upgrade Docker version in CI"
 email-server: "smtp.svc.pivotal.io"
 email-from: "ci@spring.io"
 email-to: ["spring-boot-dev@pivotal.io"]
