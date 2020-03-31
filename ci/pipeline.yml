@@ -189,6 +189,7 @@ jobs:
 - name: detect-docker-updates
   plan:
   - get: git-repo
+  - get: git-repo-ci-docker
   - get: every-wednesday
     trigger: true
   - get: spring-boot-ci-image

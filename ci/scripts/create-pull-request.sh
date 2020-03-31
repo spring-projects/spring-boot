@@ -11,5 +11,5 @@ if [[ -f commit-details/message ]]; then
 		-X \
 		POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/pulls" > /dev/null || { echo "Failed to create pull request" >&2; exit 1; }
 else
-	echo "Already up-to-date"
+	echo "Already up-to-date."
 fi
