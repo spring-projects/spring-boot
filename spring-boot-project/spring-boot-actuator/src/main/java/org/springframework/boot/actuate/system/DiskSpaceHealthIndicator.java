@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
-		// return value of 0L means "the abstract pathname does not name a
-		// partition" which for our purposes means it's not usable i.e DOWN
-		if (diskFreeInBytes >= this.threshold.toBytes() && diskFreeInBytes != 0L) {
+		if (diskFreeInBytes >= this.threshold.toBytes()) {
 			builder.up();
 		}
 		else {
@@ -70,9 +68,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.down();
 		}
 		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold.toBytes()).withDetail("exists", this.path.exists())
-				.withDetail("canRead", this.path.canRead()).withDetail("canWrite", this.path.canWrite())
-				.withDetail("canExecute", this.path.canExecute());
+				.withDetail("threshold", this.threshold.toBytes()).withDetail("exists", this.path.exists());
 	}
 
 }

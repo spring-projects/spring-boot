@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.system;
-
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,9 +59,8 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	void pathIsNotRequiredToExist() {
-		String randomPath = "IDoNOTeXiST" + UUID.randomUUID().toString();
-		this.contextRunner.withPropertyValues("management.health.diskspace.path=" + randomPath)
+	void runWhenPathDoesNotExistShouldCreateIndicator() {
+		this.contextRunner.withPropertyValues("management.health.diskspace.path=does/not/exist")
 				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceHealthIndicator.class));
 	}
 
