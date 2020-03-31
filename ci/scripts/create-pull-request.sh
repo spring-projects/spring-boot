@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-commit_message=$( cat commit-details/message )
-
-if [[ ${commit_message} != "" ]]; then
+if [[ -f commit-details/message ]]; then
 	curl \
 	  -s \
 		-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
