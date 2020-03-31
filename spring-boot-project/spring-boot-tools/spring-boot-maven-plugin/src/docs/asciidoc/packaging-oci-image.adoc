@@ -2,7 +2,7 @@
 == Packaging OCI Images
 
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
-Images can be built using the `build-image` goal and a local Docker installation.
+Images can be built using the `build-image` goal.
 
 The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
@@ -30,6 +30,26 @@ It is possible to automate the creation of an image whenever the `package` phase
 TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
+
+[[build-image-docker-daemon]]
+=== Docker daemon
+
+The `build-image` goal requires access to a Docker daemon.
+By default, it will communicate with a Docker daemon over a local connection.
+This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
+
+Environment variables can be set to configure the `build-image` goal to use the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube].
+The following table shows the environment variables and their values:
+
+|===
+| Environment variable | Description
+
+| DOCKER_HOST | URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| DOCKER_TLS_VERIFY | Enable secure HTTPS protocol when set to `1` (optional)
+| DOCKER_CERT_PATH | Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
+|===
+
+On Linux and macOS, these environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
 
 
 [[build-image-customization]]

@@ -1,10 +1,29 @@
 [[build-image]]
 == Packaging OCI images
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from executable jars using https://buildpacks.io[Cloud Native Buildpacks].
-Images can be built using the `bootBuildImage` task and a local Docker installation.
+Images can be built using the `bootBuildImage` task.
 The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
 
+[[build-image-docker-daemon]]
+=== Docker daemon
+
+The `bootBuildImage` task requires access to a Docker daemon.
+By default, it will communicate with a Docker daemon over a local connection.
+This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
+
+Environment variables can be set to configure the `bootBuildImage` task to use the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube].
+The following table shows the environment variables and their values:
+
+|===
+| Environment variable | Description
+
+| DOCKER_HOST | URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+| DOCKER_TLS_VERIFY | Enable secure HTTPS protocol when set to `1` (optional)
+| DOCKER_CERT_PATH | Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
+|===
+
+On Linux and macOS, these environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
 
 [[build-image-customization]]
 === Image Customizations
