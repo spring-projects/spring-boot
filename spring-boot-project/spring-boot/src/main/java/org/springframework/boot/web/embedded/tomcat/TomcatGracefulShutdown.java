@@ -16,22 +16,20 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link GracefulShutdown} for {@link Tomcat}.
@@ -90,10 +88,7 @@ class TomcatGracefulShutdown implements GracefulShutdown {
 
 	private boolean active(Container context) {
 		try {
-			Field field = ReflectionUtils.findField(context.getClass(), "inProgressAsyncCount");
-			field.setAccessible(true);
-			AtomicLong inProgressAsyncCount = (AtomicLong) field.get(context);
-			if (inProgressAsyncCount.get() > 0) {
+			if (((StandardContext) context).getInProgressAsyncCount() > 0) {
 				return true;
 			}
 			for (Container wrapper : context.findChildren()) {
