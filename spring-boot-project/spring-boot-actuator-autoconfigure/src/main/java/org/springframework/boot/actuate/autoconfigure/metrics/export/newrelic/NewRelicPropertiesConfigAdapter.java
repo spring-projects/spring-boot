@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
+import io.micrometer.newrelic.ClientProviderType;
 import io.micrometer.newrelic.NewRelicConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -42,6 +43,11 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	@Override
 	public String eventType() {
 		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
+	}
+
+	@Override
+	public ClientProviderType clientProviderType() {
+		return get(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
 	}
 
 	@Override

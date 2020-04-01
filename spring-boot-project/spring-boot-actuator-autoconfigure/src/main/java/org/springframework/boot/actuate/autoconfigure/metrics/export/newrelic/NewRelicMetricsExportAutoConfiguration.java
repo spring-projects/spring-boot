@@ -17,10 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicInsightsAgentClientProvider;
+import io.micrometer.newrelic.NewRelicInsightsApiClientProvider;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
+import org.apache.commons.lang3.StringUtils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -41,6 +45,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Neil Powell
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -67,11 +72,48 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock) {
-		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
-				.build();
+	@ConditionalOnClass(name = { "com.newrelic.agent.Agent" })
+	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
+			havingValue = "INSIGHTS_AGENT", matchIfMissing = true)
+	public NewRelicClientProvider newRelicInsightsAgentClientProvider(NewRelicConfig config) {
+		return new NewRelicInsightsAgentClientProvider(config);
+	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
+			havingValue = "INSIGHTS_API", matchIfMissing = true)
+	public NewRelicClientProvider newRelicInsightsApiClientProvider(NewRelicConfig config,
+			@Value("${management.metrics.export.newrelic.api.proxy-host:}") String apiProxyHost,
+			@Value("${management.metrics.export.newrelic.api.proxy-port:0}") int apiProxyPort) {
+
+		NewRelicClientProvider clientProvider = null;
+
+		if (StringUtils.isNotEmpty(apiProxyHost)) {
+			// Allow setting of proxy info for REST API provider
+			clientProvider = new NewRelicInsightsApiClientProvider(config, apiProxyHost, apiProxyPort);
+		}
+		else {
+			clientProvider = new NewRelicInsightsApiClientProvider(config);
+		}
+
+		return clientProvider;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config, Clock clock,
+			NewRelicClientProvider newRelicClientProvider, @Value("${spring.application.name:}") String springAppName) {
+
+		NewRelicMeterRegistry registry = new NewRelicMeterRegistry(config, newRelicClientProvider, clock);
+
+		if (newRelicClientProvider instanceof NewRelicInsightsApiClientProvider
+				&& StringUtils.isNotEmpty(springAppName)) {
+			// set appName for added metric context (like the Agent)
+			registry.config().commonTags("appName", springAppName);
+		}
+
+		return registry;
 	}
 
 }

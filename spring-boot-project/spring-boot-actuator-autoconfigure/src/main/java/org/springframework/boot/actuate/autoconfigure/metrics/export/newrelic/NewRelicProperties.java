@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
+import io.micrometer.newrelic.ClientProviderType;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -47,6 +49,14 @@ public class NewRelicProperties extends StepRegistryProperties {
 	private String eventType = "SpringBootSample";
 
 	/**
+	 * The type of metric publishing client provider. Use {@code INSIGHTS_API} for the New
+	 * Relic Insights REST API (pre-existing implementation). Use {@code INSIGHTS_AGENT}
+	 * for delegation to the New Relic Java Insights Agent. Defaults to
+	 * {@code INSIGHTS_API} for publishing with the New Relic REST API.
+	 */
+	private ClientProviderType clientProviderType;
+
+	/**
 	 * New Relic API key.
 	 */
 	private String apiKey;
@@ -75,6 +85,14 @@ public class NewRelicProperties extends StepRegistryProperties {
 
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
+	}
+
+	public ClientProviderType getClientProviderType() {
+		return this.clientProviderType;
+	}
+
+	public void setClientProviderType(ClientProviderType clientProviderType) {
+		this.clientProviderType = clientProviderType;
 	}
 
 	public String getApiKey() {
