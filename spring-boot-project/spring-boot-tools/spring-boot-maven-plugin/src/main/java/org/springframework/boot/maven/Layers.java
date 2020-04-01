@@ -33,8 +33,8 @@ public class Layers {
 	private File configuration;
 
 	/**
-	 * Whether layered jar layout is enabled.
-	 * @return true if the layered layout is enabled.
+	 * Whether a layers.idx file should be added to the jar.
+	 * @return true if a layers.idx file should be added.
 	 */
 	public boolean isEnabled() {
 		return this.enabled;

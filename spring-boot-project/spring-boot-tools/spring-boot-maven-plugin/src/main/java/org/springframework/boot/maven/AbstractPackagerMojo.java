@@ -43,7 +43,6 @@ import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts.Expanded;
 import org.springframework.boot.loader.tools.Layouts.Jar;
-import org.springframework.boot.loader.tools.Layouts.LayeredJar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
@@ -57,6 +56,8 @@ import org.springframework.boot.loader.tools.layer.CustomLayers;
  * @since 2.3.0
  */
 public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo {
+
+	private static final org.springframework.boot.loader.tools.Layers IMPLICIT_LAYERS = org.springframework.boot.loader.tools.Layers.IMPLICIT;
 
 	/**
 	 * The Maven project.
@@ -135,10 +136,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			packager.setLayout(this.layout.layout());
 		}
 		if (this.layers != null && this.layers.isEnabled()) {
-			if (this.layers.getConfiguration() != null) {
-				packager.setLayers(getCustomLayers(this.layers.getConfiguration()));
-			}
-			packager.setLayout(new LayeredJar());
+			packager.setLayers((this.layers.getConfiguration() != null)
+					? getCustomLayers(this.layers.getConfiguration()) : IMPLICIT_LAYERS);
 			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());
 		}
 		return packager;

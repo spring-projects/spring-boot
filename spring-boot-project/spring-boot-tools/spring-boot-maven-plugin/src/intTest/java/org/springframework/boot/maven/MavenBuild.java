@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -56,7 +55,6 @@ import static org.assertj.core.api.Assertions.contentOf;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
- *
  */
 class MavenBuild {
 
@@ -70,7 +68,7 @@ class MavenBuild {
 
 	private final Properties properties = new Properties();
 
-	private Consumer<File> preparation;
+	private ProjectCallback preparation;
 
 	private File projectDir;
 
@@ -111,20 +109,20 @@ class MavenBuild {
 		return this;
 	}
 
-	MavenBuild prepare(Consumer<File> callback) {
+	MavenBuild prepare(ProjectCallback callback) {
 		this.preparation = callback;
 		return this;
 	}
 
-	void execute(Consumer<File> callback) {
+	void execute(ProjectCallback callback) {
 		execute(callback, 0);
 	}
 
-	void executeAndFail(Consumer<File> callback) {
+	void executeAndFail(ProjectCallback callback) {
 		execute(callback, 1);
 	}
 
-	private void execute(Consumer<File> callback, int expectedExitCode) {
+	private void execute(ProjectCallback callback, int expectedExitCode) {
 		Invoker invoker = new DefaultInvoker();
 		invoker.setMavenHome(this.home);
 		InvocationRequest request = new DefaultInvocationRequest();
@@ -175,7 +173,7 @@ class MavenBuild {
 			File target = new File(this.temp, "target");
 			target.mkdirs();
 			if (this.preparation != null) {
-				this.preparation.accept(this.temp);
+				this.preparation.doWith(this.temp);
 			}
 			File buildLogFile = new File(target, "build.log");
 			try (PrintWriter buildLog = new PrintWriter(new FileWriter(buildLogFile))) {
@@ -191,7 +189,7 @@ class MavenBuild {
 					throw new RuntimeException(ex);
 				}
 			}
-			callback.accept(this.temp);
+			callback.doWith(this.temp);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -211,6 +209,21 @@ class MavenBuild {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	/**
+	 * Action to take on a maven project folder.
+	 */
+	@FunctionalInterface
+	public interface ProjectCallback {
+
+		/**
+		 * Take the action on the given project.
+		 * @param project the project directory
+		 * @throws Exception on error
+		 */
+		void doWith(File project) throws Exception;
+
 	}
 
 }

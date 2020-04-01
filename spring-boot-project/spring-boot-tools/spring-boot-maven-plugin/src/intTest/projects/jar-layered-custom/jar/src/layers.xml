@@ -15,9 +15,9 @@
 		<into layer="my-dependencies-name" />
 	</dependencies>
 	<layerOrder>
+		<layer>my-dependencies-name</layer>
+		<layer>snapshot-dependencies</layer>
 		<layer>configuration</layer>
 		<layer>application</layer>
-		<layer>snapshot-dependencies</layer>
-		<layer>my-dependencies-name</layer>
 	</layerOrder>
 </layers>

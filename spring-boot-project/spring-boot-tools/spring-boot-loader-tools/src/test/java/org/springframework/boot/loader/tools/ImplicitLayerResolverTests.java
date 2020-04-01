@@ -61,6 +61,14 @@ class ImplicitLayerResolverTests {
 	}
 
 	@Test
+	void getLayerWhenLoaderClassReturnsLoaderLayer() {
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Launcher.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Utils.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+	}
+
+	@Test
 	void getLayerWhenLibraryIsSnapshotReturnsSnapshotLayer() {
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.BUILD-SNAPSHOT.jar")))
 				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);

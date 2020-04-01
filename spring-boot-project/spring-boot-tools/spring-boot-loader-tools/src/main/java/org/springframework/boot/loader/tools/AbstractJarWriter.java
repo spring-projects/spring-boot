@@ -86,7 +86,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
 			setUpEntry(jarFile, entry);
 			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
-				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
+				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, false);
 				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
 					writeEntry(transformedEntry, entryWriter, unpackHandler);
@@ -114,13 +114,18 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
+		writeEntry(entryName, new InputStreamEntryWriter(inputStream, true));
+	}
+
+	/**
+	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 * @param entryName the name of the entry
+	 * @param entryWriter the entry writer
+	 * @throws IOException if the write fails
+	 */
+	public void writeEntry(String entryName, EntryWriter entryWriter) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry(entryName);
-		try {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream));
-		}
-		finally {
-			inputStream.close();
-		}
+		writeEntry(entry, entryWriter);
 	}
 
 	/**
@@ -133,9 +138,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		JarArchiveEntry entry = new JarArchiveEntry(location + library.getName());
 		entry.setTime(getNestedLibraryTime(library));
 		new CrcAndSize(library::openStream).setupStoredEntry(entry);
-		try (InputStream inputStream = library.openStream()) {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
-		}
+		writeEntry(entry, new InputStreamEntryWriter(library.openStream(), true), new LibraryUnpackHandler(library));
 	}
 
 	/**
@@ -200,7 +203,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
 				if (entry.getName().endsWith(".class")) {
-					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
+					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream, false));
 				}
 			}
 		}
@@ -254,7 +257,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		entryWriter.write(output);
 		entry.setComment("UNPACK:" + unpackHandler.sha1Hash(entry.getName()));
-		return new InputStreamEntryWriter(new ByteArrayInputStream(output.toByteArray()));
+		return new InputStreamEntryWriter(new ByteArrayInputStream(output.toByteArray()), true);
 	}
 
 	/**
@@ -264,8 +267,11 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 		private final InputStream inputStream;
 
-		InputStreamEntryWriter(InputStream inputStream) {
+		private final boolean close;
+
+		InputStreamEntryWriter(InputStream inputStream, boolean close) {
 			this.inputStream = inputStream;
+			this.close = close;
 		}
 
 		@Override
@@ -276,6 +282,9 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				outputStream.write(buffer, 0, bytesRead);
 			}
 			outputStream.flush();
+			if (this.close) {
+				this.inputStream.close();
+			}
 		}
 
 	}
