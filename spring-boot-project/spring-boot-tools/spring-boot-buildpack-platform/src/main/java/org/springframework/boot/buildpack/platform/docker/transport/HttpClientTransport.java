@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,29 +36,30 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import org.springframework.boot.buildpack.platform.docker.httpclient.DelegatingDockerHttpClientConnection;
-import org.springframework.boot.buildpack.platform.docker.httpclient.DockerHttpClientConnection;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.util.Assert;
 
 /**
- * {@link Http} implementation backed by a {@link HttpClient}.
+ * Abstract base class for {@link HttpTransport} implementations backed by a
+ * {@link HttpClient}.
  *
  * @author Phillip Webb
  * @author Mike Smithson
  * @author Scott Frederick
  */
-class HttpClientHttp implements Http {
+abstract class HttpClientTransport implements HttpTransport {
 
-	private final DockerHttpClientConnection clientConnection;
+	private final CloseableHttpClient client;
 
-	HttpClientHttp() {
-		this.clientConnection = DelegatingDockerHttpClientConnection.create();
-	}
+	private final HttpHost host;
 
-	HttpClientHttp(DockerHttpClientConnection clientConnection) {
-		this.clientConnection = clientConnection;
+	protected HttpClientTransport(CloseableHttpClient client, HttpHost host) {
+		Assert.notNull(client, "Client must not be null");
+		Assert.notNull(host, "Host must not be null");
+		this.client = client;
+		this.host = host;
 	}
 
 	/**
@@ -123,27 +124,20 @@ class HttpClientHttp implements Http {
 	}
 
 	private Response execute(HttpUriRequest request) {
-		HttpHost host = this.clientConnection.getHttpHost();
-		CloseableHttpClient client = this.clientConnection.getHttpClient();
-
 		try {
-			CloseableHttpResponse response = client.execute(host, request);
+			CloseableHttpResponse response = this.client.execute(this.host, request);
 			StatusLine statusLine = response.getStatusLine();
 			int statusCode = statusLine.getStatusCode();
 			HttpEntity entity = response.getEntity();
-
-			if (statusCode >= 400 && statusCode < 500) {
-				throw new DockerException(host.toHostString(), request.getURI(), statusCode,
-						statusLine.getReasonPhrase(), getErrorsFromResponse(entity));
-			}
-			if (statusCode == 500) {
-				throw new DockerException(host.toHostString(), request.getURI(), statusCode,
-						statusLine.getReasonPhrase(), null);
+			if (statusCode >= 400 && statusCode <= 500) {
+				Errors errors = (statusCode != 500) ? getErrorsFromResponse(entity) : null;
+				throw new DockerEngineException(this.host.toHostString(), request.getURI(), statusCode,
+						statusLine.getReasonPhrase(), errors);
 			}
 			return new HttpClientResponse(response);
 		}
-		catch (IOException ioe) {
-			throw new DockerException(host.toHostString(), request.getURI(), 500, ioe.getMessage(), null);
+		catch (IOException ex) {
+			throw new DockerEngineException(this.host.toHostString(), request.getURI(), 500, ex.getMessage(), null);
 		}
 	}
 
@@ -151,9 +145,13 @@ class HttpClientHttp implements Http {
 		try {
 			return SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
 		}
-		catch (IOException ioe) {
+		catch (IOException ex) {
 			return null;
 		}
+	}
+
+	HttpHost getHost() {
+		return this.host;
 	}
 
 	/**

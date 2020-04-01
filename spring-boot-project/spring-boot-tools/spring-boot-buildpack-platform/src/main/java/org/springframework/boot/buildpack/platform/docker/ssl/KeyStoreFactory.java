@@ -22,7 +22,9 @@ import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
@@ -31,6 +33,8 @@ import java.security.cert.X509Certificate;
  * @author Scott Frederick
  */
 final class KeyStoreFactory {
+
+	private static final char[] NO_PASSWORD = {};
 
 	private KeyStoreFactory() {
 	}
@@ -45,19 +49,15 @@ final class KeyStoreFactory {
 	 */
 	static KeyStore create(Path certPath, Path keyPath, String alias) {
 		try {
-			KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			keyStore.load(null);
-
+			KeyStore keyStore = getKeyStore();
 			X509Certificate[] certificates = CertificateParser.parse(certPath);
-
-			if (keyPath != null && Files.exists(keyPath)) {
-				PrivateKey privateKey = PrivateKeyParser.parse(keyPath);
-				addCertsToStore(keyStore, certificates, privateKey, alias);
+			PrivateKey privateKey = getPrivateKey(keyPath);
+			try {
+				addCertificates(keyStore, certificates, privateKey, alias);
 			}
-			else {
-				addCertsToStore(keyStore, certificates, alias);
+			catch (KeyStoreException ex) {
+				throw new IllegalStateException("Error adding certificates to KeyStore: " + ex.getMessage(), ex);
 			}
-
 			return keyStore;
 		}
 		catch (GeneralSecurityException | IOException ex) {
@@ -65,25 +65,29 @@ final class KeyStoreFactory {
 		}
 	}
 
-	private static void addCertsToStore(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
-			String alias) {
-		try {
-			keyStore.setKeyEntry(alias, privateKey, new char[] {}, certificates);
-		}
-		catch (KeyStoreException ex) {
-			throw new IllegalStateException("Error adding certificates to KeyStore: " + ex.getMessage(), ex);
-		}
+	private static KeyStore getKeyStore()
+			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(null);
+		return keyStore;
 	}
 
-	private static void addCertsToStore(KeyStore keyStore, X509Certificate[] certs, String alias) {
-		try {
-			for (int index = 0; index < certs.length; index++) {
-				String indexedAlias = alias + "-" + index;
-				keyStore.setCertificateEntry(indexedAlias, certs[index]);
-			}
+	private static PrivateKey getPrivateKey(Path path) {
+		if (path != null && Files.exists(path)) {
+			return PrivateKeyParser.parse(path);
 		}
-		catch (KeyStoreException ex) {
-			throw new IllegalStateException("Error adding certificates to KeyStore: " + ex.getMessage(), ex);
+		return null;
+	}
+
+	private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
+			String alias) throws KeyStoreException {
+		if (privateKey != null) {
+			keyStore.setKeyEntry(alias, privateKey, NO_PASSWORD, certificates);
+		}
+		else {
+			for (int index = 0; index < certificates.length; index++) {
+				keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
+			}
 		}
 	}
 

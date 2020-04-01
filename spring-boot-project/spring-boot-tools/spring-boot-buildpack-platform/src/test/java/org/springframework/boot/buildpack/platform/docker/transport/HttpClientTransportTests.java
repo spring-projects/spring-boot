@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,8 +42,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.buildpack.platform.docker.Http.Response;
-import org.springframework.boot.buildpack.platform.docker.httpclient.DockerHttpClientConnection;
+import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,13 +52,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link HttpClientHttp}.
+ * Tests for {@link HttpClientTransport}.
  *
  * @author Phillip Webb
  * @author Mike Smithson
  * @author Scott Frederick
  */
-class HttpClientHttpTests {
+class HttpClientTransportTests {
 
 	private static final String APPLICATION_JSON = "application/json";
 
@@ -84,7 +83,7 @@ class HttpClientHttpTests {
 	@Captor
 	private ArgumentCaptor<HttpUriRequest> requestCaptor;
 
-	private HttpClientHttp http;
+	private HttpClientTransport http;
 
 	private URI uri;
 
@@ -94,7 +93,7 @@ class HttpClientHttpTests {
 		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class))).willReturn(this.response);
 		given(this.response.getEntity()).willReturn(this.entity);
 		given(this.response.getStatusLine()).willReturn(this.statusLine);
-		this.http = new HttpClientHttp(new TestClientConnection(this.client));
+		this.http = new TestHttpClientTransport(this.client);
 		this.uri = new URI("example");
 	}
 
@@ -181,14 +180,14 @@ class HttpClientHttpTests {
 	void executeWhenResposeIsIn400RangeShouldThrowDockerException() throws IOException {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.statusLine.getStatusCode()).willReturn(404);
-		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getErrors()).hasSize(2));
 	}
 
 	@Test
 	void executeWhenResposeIsIn500RangeShouldThrowDockerException() {
 		given(this.statusLine.getStatusCode()).willReturn(500);
-		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getErrors()).isNull());
 	}
 
@@ -196,8 +195,8 @@ class HttpClientHttpTests {
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
 		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class)))
 				.willThrow(new IOException("test IO exception"));
-		assertThatExceptionOfType(DockerException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerException::getStatusCode)
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
+				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerEngineException::getStatusCode)
 				.withMessageContaining("500")
 				.satisfies((ex) -> assertThat(ex.getReasonPhrase()).contains("test IO exception"));
 	}
@@ -208,22 +207,13 @@ class HttpClientHttpTests {
 		return new String(out.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	private static final class TestClientConnection implements DockerHttpClientConnection {
+	/**
+	 * Test {@link HttpClientTransport} implementation.
+	 */
+	static class TestHttpClientTransport extends HttpClientTransport {
 
-		private final CloseableHttpClient client;
-
-		private TestClientConnection(CloseableHttpClient client) {
-			this.client = client;
-		}
-
-		@Override
-		public HttpHost getHttpHost() {
-			return HttpHost.create("docker://localhost");
-		}
-
-		@Override
-		public CloseableHttpClient getHttpClient() {
-			return this.client;
+		protected TestHttpClientTransport(CloseableHttpClient client) {
+			super(client, HttpHost.create("docker://localhost"));
 		}
 
 	}

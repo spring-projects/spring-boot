@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.util.Collections;
 import java.util.Iterator;

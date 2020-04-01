@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -23,17 +23,19 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
+import org.springframework.boot.buildpack.platform.system.Environment;
 
 /**
- * HTTP transport used by the {@link DockerApi}.
+ * HTTP transport used for docker access.
  *
  * @author Phillip Webb
+ * @since 2.3.0
  */
-interface Http {
+public interface HttpTransport {
 
 	/**
 	 * Perform a HTTP GET operation.
-	 * @param uri the destination URI
+	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error
 	 */
@@ -41,7 +43,7 @@ interface Http {
 
 	/**
 	 * Perform a HTTP POST operation.
-	 * @param uri the destination URI
+	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error
 	 */
@@ -49,7 +51,7 @@ interface Http {
 
 	/**
 	 * Perform a HTTP POST operation.
-	 * @param uri the destination URI
+	 * @param uri the destination URI (excluding any host/port)
 	 * @param contentType the content type to write
 	 * @param writer a content writer
 	 * @return the operation response
@@ -59,7 +61,7 @@ interface Http {
 
 	/**
 	 * Perform a HTTP PUT operation.
-	 * @param uri the destination URI
+	 * @param uri the destination URI (excluding any host/port)
 	 * @param contentType the content type to write
 	 * @param writer a content writer
 	 * @return the operation response
@@ -69,11 +71,31 @@ interface Http {
 
 	/**
 	 * Perform a HTTP DELETE operation.
-	 * @param uri the destination URI
+	 * @param uri the destination URI (excluding any host/port)
 	 * @return the operation response
 	 * @throws IOException on IO error
 	 */
 	Response delete(URI uri) throws IOException;
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the
+	 * {@link Environment#SYSTEM system environment}.
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create() {
+		return create(Environment.SYSTEM);
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the given
+	 * {@link Environment}.
+	 * @param environment the source environment
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(Environment environment) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment);
+		return (remote != null) ? remote : LocalHttpClientTransport.create();
+	}
 
 	/**
 	 * An HTTP operation response.

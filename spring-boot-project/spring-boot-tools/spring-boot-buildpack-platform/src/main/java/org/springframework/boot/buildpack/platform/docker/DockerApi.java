@@ -26,7 +26,8 @@ import java.util.List;
 
 import org.apache.http.client.utils.URIBuilder;
 
-import org.springframework.boot.buildpack.platform.docker.Http.Response;
+import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
+import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
@@ -53,7 +54,7 @@ public class DockerApi {
 
 	static final String API_VERSION = "v1.24";
 
-	private final Http http;
+	private final HttpTransport http;
 
 	private final JsonStream jsonStream;
 
@@ -67,15 +68,15 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(new HttpClientHttp());
+		this(HttpTransport.create());
 	}
 
 	/**
-	 * Create a new {@link DockerApi} instance backed by a specific {@link HttpClientHttp}
+	 * Create a new {@link DockerApi} instance backed by a specific {@link HttpTransport}
 	 * implementation.
 	 * @param http the http implementation
 	 */
-	DockerApi(Http http) {
+	DockerApi(HttpTransport http) {
 		this.http = http;
 		this.jsonStream = new JsonStream(SharedObjectMapper.get());
 		this.image = new ImageApi();
@@ -83,7 +84,7 @@ public class DockerApi {
 		this.volume = new VolumeApi();
 	}
 
-	private Http http() {
+	private HttpTransport http() {
 		return this.http;
 	}
 

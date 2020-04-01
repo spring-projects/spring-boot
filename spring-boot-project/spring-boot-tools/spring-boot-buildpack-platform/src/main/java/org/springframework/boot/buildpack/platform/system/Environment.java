@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.httpclient;
-
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
+package org.springframework.boot.buildpack.platform.system;
 
 /**
- * Describes a connection to a Docker host.
+ * Provides access to environment variable values.
  *
  * @author Scott Frederick
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public interface DockerHttpClientConnection {
+@FunctionalInterface
+public interface Environment {
 
 	/**
-	 * Create an {@link HttpHost} describing the Docker host connection.
-	 * @return the {@code HttpHost}
+	 * Standard {@link Environment} implementation backed by
+	 * {@link System#getenv(String)}.
 	 */
-	HttpHost getHttpHost();
+	Environment SYSTEM = System::getenv;
 
 	/**
-	 * Create an {@link HttpClient} that can be used to communicate with the Docker host.
-	 * @return the {@code HttpClient}
+	 * Gets the value of the specified environment variable.
+	 * @param name the name of the environment variable
+	 * @return the string value of the variable, or {@code null} if the variable is not
+	 * defined in the environment
 	 */
-	CloseableHttpClient getHttpClient();
+	String get(String name);
 
 }

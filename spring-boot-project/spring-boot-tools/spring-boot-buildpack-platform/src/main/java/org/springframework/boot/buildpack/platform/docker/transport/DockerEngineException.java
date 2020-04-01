@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.net.URI;
 
@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @since 2.3.0
  */
-public class DockerException extends RuntimeException {
+public class DockerEngineException extends RuntimeException {
 
 	private final int statusCode;
 
@@ -35,7 +35,7 @@ public class DockerException extends RuntimeException {
 
 	private final Errors errors;
 
-	DockerException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
+	DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
 		super(buildMessage(host, uri, statusCode, reasonPhrase, errors));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;

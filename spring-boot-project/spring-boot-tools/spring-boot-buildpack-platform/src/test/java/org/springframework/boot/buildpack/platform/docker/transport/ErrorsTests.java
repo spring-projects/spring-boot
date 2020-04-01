@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.buildpack.platform.docker.Errors.Error;
+import org.springframework.boot.buildpack.platform.docker.transport.Errors.Error;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
