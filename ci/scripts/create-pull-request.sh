@@ -2,6 +2,7 @@
 set -e
 
 if [[ -f commit-details/message ]]; then
+	ISSUE_TITLE="$(cat commit-details/message)"
 	curl \
 	  -s \
 		-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
