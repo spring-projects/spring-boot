@@ -80,8 +80,7 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	}
 
 	/**
-	 * {@link DnsResolver} used by the {@link LocalDockerHttpClientConnectionManager} to
-	 * ensure only the loopback address is used.
+	 * {@link DnsResolver} that ensures only the loopback address is used.
 	 */
 	private static class LocalDnsResolver implements DnsResolver {
 
