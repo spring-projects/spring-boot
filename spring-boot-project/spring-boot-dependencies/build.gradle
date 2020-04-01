@@ -1264,7 +1264,7 @@ bom {
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.29.Final") {
+	library("Netty tcNative", "2.0.30.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative-boringssl-static"
