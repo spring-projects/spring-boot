@@ -23,7 +23,7 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>cloudfoundry/cnb:0.0.43-bionic</builder>
+								<builder>cloudfoundry/cnb:bionic-platform-api-0.1</builder>
 							</image>
 						</configuration>
 					</execution>

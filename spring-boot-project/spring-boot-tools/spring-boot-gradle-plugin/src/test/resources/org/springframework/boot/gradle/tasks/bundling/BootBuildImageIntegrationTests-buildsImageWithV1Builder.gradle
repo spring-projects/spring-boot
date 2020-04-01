@@ -7,5 +7,5 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
  bootBuildImage {
-	 builder = "cloudfoundry/cnb:0.0.43-bionic"
+	 builder = "cloudfoundry/cnb:bionic-platform-api-0.1"
  }

@@ -48,7 +48,7 @@ The following table summarizes the available properties and their default values
 | `builder`
 | `--builder`
 | Name of the Builder image to use.
-| `cloudfoundry/cnb:0.0.53-bionic`
+| `cloudfoundry/cnb:bionic-platform-api-0.2`
 
 | `imageName`
 | `--imageName`

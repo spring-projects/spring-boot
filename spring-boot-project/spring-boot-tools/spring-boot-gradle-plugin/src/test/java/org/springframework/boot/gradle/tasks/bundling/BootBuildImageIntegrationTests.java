@@ -61,7 +61,7 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(result.getOutput()).contains("cloudfoundry/cnb:bionic-platform-api");
 		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -78,7 +78,7 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example.com/test-image-name");
-		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(result.getOutput()).contains("cloudfoundry/cnb:bionic-platform-api");
 		ImageReference imageReference = ImageReference.of(ImageName.of("example.com/test-image-name"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -96,7 +96,7 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.43-bionic");
+		assertThat(result.getOutput()).contains("cloudfoundry/cnb:bionic-platform-api-0.1");
 		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
