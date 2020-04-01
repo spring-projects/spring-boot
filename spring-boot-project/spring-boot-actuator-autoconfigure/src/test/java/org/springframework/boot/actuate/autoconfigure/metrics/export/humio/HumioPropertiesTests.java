@@ -37,7 +37,6 @@ class HumioPropertiesTests extends StepRegistryPropertiesTests {
 		HumioConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getApiToken()).isEqualTo(config.apiToken());
-		assertThat(properties.getRepository()).isEqualTo(config.repository());
 		assertThat(properties.getTags()).isEmpty();
 		assertThat(config.tags()).isNull();
 		assertThat(properties.getUri()).isEqualTo(config.uri());

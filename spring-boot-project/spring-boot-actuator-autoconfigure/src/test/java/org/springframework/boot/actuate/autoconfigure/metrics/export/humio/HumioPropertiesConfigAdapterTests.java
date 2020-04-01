@@ -37,14 +37,6 @@ class HumioPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenPropertiesRepositoryIsSetAdapterRepositoryReturnsIt() {
-		HumioProperties properties = new HumioProperties();
-		properties.setRepository("test");
-		assertThat(new HumioPropertiesConfigAdapter(properties).repository()).isEqualTo("test");
-	}
-
-	@Test
 	void whenPropertiesTagsIsSetAdapterTagsReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setTags(Collections.singletonMap("name", "test"));
