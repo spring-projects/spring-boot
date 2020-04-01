@@ -115,19 +115,10 @@ class Lifecycle implements Closeable {
 			deleteVolume(this.buildCacheVolume);
 		}
 		run(detectPhase());
-		if (this.platformVersion.analyzeFollowsRestore()) {
-			run(restorePhase());
-			run(analyzePhase());
-		}
-		else {
-			run(analyzePhase());
-			run(restorePhase());
-		}
+		run(analyzePhase());
+		run(restorePhase());
 		run(buildPhase());
 		run(exportPhase());
-		if (this.platformVersion.hasCachePhase()) {
-			run(cachePhase());
-		}
 		this.log.executedLifecycle(this.request);
 	}
 
@@ -140,10 +131,9 @@ class Lifecycle implements Closeable {
 	}
 
 	private Phase restorePhase() {
-		String cacheDirArg = this.platformVersion.hasCachePhase() ? "-path" : "-cache-dir";
 		Phase phase = createPhase("restorer");
 		phase.withDaemonAccess();
-		phase.withArgs(cacheDirArg, Folder.CACHE);
+		phase.withArgs("-cache-dir", Folder.CACHE);
 		phase.withArgs("-layers", Folder.LAYERS);
 		phase.withLogLevelArg();
 		phase.withBinds(this.buildCacheVolume, Folder.CACHE);
@@ -159,13 +149,9 @@ class Lifecycle implements Closeable {
 		}
 		phase.withArgs("-daemon");
 		phase.withArgs("-layers", Folder.LAYERS);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withArgs("-cache-dir", Folder.CACHE);
-		}
+		phase.withArgs("-cache-dir", Folder.CACHE);
 		phase.withArgs(this.request.getName());
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		}
+		phase.withBinds(this.buildCacheVolume, Folder.CACHE);
 		return phase;
 	}
 
@@ -186,23 +172,9 @@ class Lifecycle implements Closeable {
 		phase.withArgs("-app", Folder.APPLICATION);
 		phase.withArgs("-daemon");
 		phase.withArgs("-launch-cache", Folder.LAUNCH_CACHE);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withArgs("-cache-dir", Folder.CACHE);
-		}
+		phase.withArgs("-cache-dir", Folder.CACHE);
 		phase.withArgs(this.request.getName());
 		phase.withBinds(this.launchCacheVolume, Folder.LAUNCH_CACHE);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		}
-		return phase;
-	}
-
-	private Phase cachePhase() {
-		Phase phase = createPhase("cacher");
-		phase.withDaemonAccess();
-		phase.withArgs("-path", Folder.CACHE);
-		phase.withArgs("-layers", Folder.LAYERS);
-		phase.withLogLevelArg();
 		phase.withBinds(this.buildCacheVolume, Folder.CACHE);
 		return phase;
 	}
