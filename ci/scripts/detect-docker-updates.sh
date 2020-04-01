@@ -1,9 +1,9 @@
 #!/bin/bash
 
 latest_version=$(curl -I -s https://github.com/docker/docker-ce/releases/latest | grep "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
-commit_message="Upgrade CI to Docker $latest_version"
+title_prefix="Upgrade CI to Docker"
 
-existing_upgrade_issues=$( curl -s https://api.github.com/repos/spring-projects/spring-boot/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster | jq -c --arg TITLE "$commit_message" '.[] | select(.pull_request != null) | select(.title==$TITLE)' )
+existing_upgrade_issues=$( curl -s https://api.github.com/repos/spring-projects/spring-boot/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster | jq -c --arg TITLE_PREFIX "$title_prefix" '.[] | select(.pull_request != null) | select(.title | startswith($TITLE_PREFIX))' )
 
 if [[ ${existing_upgrade_issues} = "" ]]; then
   git clone git-repo git-repo-updated > /dev/null
@@ -31,6 +31,7 @@ git config user.name "Spring Buildmaster" > /dev/null
 git config user.email "buildmaster@springframework.org" > /dev/null
 sed -i "s/version=.*/version=\"$latest_version\"/" ci/images/get-docker-url.sh
 git add ci/images/get-docker-url.sh > /dev/null
+commit_message="$title_prefix $latest_version"
 git commit -m "$commit_message" > /dev/null
 popd
 echo ${commit_message} > commit-details/message
