@@ -697,7 +697,7 @@ bom {
 			]
 		}
 	}
-	library("Janino", "3.1.1") {
+	library("Janino", "3.1.2") {
 		group("org.codehaus.janino") {
 			modules = [
 				"commons-compiler",
