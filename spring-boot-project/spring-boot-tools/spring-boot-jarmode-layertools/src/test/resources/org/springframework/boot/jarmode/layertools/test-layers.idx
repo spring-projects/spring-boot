@@ -1,0 +1,3 @@
+test BOOT-INF/lib/a.jar
+test BOOT-INF/lib/b.jar
+application BOOT-INF/classes/Demo.class
