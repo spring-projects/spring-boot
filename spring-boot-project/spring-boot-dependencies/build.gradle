@@ -1757,7 +1757,7 @@ bom {
 			]
 		}
 	}
-	library("Tomcat", "9.0.31") {
+	library("Tomcat", "9.0.33") {
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
