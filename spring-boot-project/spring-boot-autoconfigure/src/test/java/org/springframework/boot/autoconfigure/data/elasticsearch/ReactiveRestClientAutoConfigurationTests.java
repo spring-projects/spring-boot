@@ -77,7 +77,6 @@ public class ReactiveRestClientAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(
 				"spring.data.elasticsearch.client.reactive.endpoints=" + elasticsearch.getContainerIpAddress() + ":"
 						+ elasticsearch.getFirstMappedPort(),
-				"spring.data.elasticsearch.client.reactive.max-in-memory-size=-1",
 				"spring.data.elasticsearch.client.reactive.connection-timeout=120s",
 				"spring.data.elasticsearch.client.reactive.socket-timeout=120s").run((context) -> {
 					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
