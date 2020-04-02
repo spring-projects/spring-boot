@@ -25,20 +25,21 @@ Packaging an executable archive is performed by the `repackage` goal, as shown i
 	</build>
 ----
 
-TIP: If you are using `spring-boot-starter-parent`, such execution is already pre-configured with a `repackage` execution id so that only the plugin definition should be added.
+TIP: If you are using `spring-boot-starter-parent`, such execution is already pre-configured with a `repackage` execution ID so that only the plugin definition should be added.
 
-The example above repackages a jar or war that is built during the package phase of the Maven lifecycle, including any `provided` dependencies that are defined in the project.
-If some of these dependencies need to be excluded, you can use one of the exclude options, see the <<repackage-example-exclude-dependency,dependency exclusion>> for more details.
+The example above repackages a `jar` or `war` archive that is built during the package phase of the Maven lifecycle, including any `provided` dependencies that are defined in the project.
+If some of these dependencies need to be excluded, you can use one of the `exclude` options; see the <<repackage-example-exclude-dependency,dependency exclusion>> for more details.
+
+The original (i.e. non-executable) artifact is renamed to `.original` by default but it is also possible to keep the original artifact using a custom classifier.
 
 NOTE: The `outputFileNameMapping` feature of the `maven-war-plugin` is currently not supported.
 
 Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 In order to make that work with `war` packaging, the `spring-boot-devtools` dependency must be set as `optional` or with the `provided` scope.
 
-The original (i.e. non executable) artifact is renamed to `.original` by default but it is also possible to keep the original artifact using a custom classifier.
-
-The plugin rewrites your manifest, and in particular it manages the "Main-Class" and "Start-Class" entries, so if the defaults don't work you have to configure those there (not in the jar plugin).
-The "Main-Class" in the manifest is actually controlled by the "layout" property of the Spring Boot plugin, as shown in the following example:
+The plugin rewrites your manifest, and in particular it manages the `Main-Class` and `Start-Class` entries.
+If the defaults don't work you have to configure the values in the Spring Boot plugin, not in the jar plugin.
+The `Main-Class` in the manifest is controlled by the `layout` property of the Spring Boot plugin, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -64,7 +65,7 @@ The "Main-Class" in the manifest is actually controlled by the "layout" property
 	</build>
 ----
 
-The `layout` property defaults to a guess based on the archive type (`jar` or `war`). The following layouts are available:
+The `layout` property defaults to a value determined by the archive type (`jar` or `war`). The following layouts are available:
 
 * `JAR`: regular executable JAR layout.
 * `WAR`: executable WAR layout. `provided` dependencies are placed in `WEB-INF/lib-provided` to avoid any clash when the `war` is deployed in a servlet container.
@@ -152,7 +153,7 @@ The following example shows how the default ordering described above can be defi
 		<application>
 			<into layer="spring-boot-loader">
 				<include>org/springframework/boot/loader/**</include>
-			</into>			
+			</into>
 			<into layer="application" />
 		</application>
 		<dependencies>
@@ -572,7 +573,7 @@ The following `layers.xml` configuration shown one such setup:
 		<application>
 			<into layer="spring-boot-loader">
 				<include>org/springframework/boot/loader/**</include>
-			</into>			
+			</into>
 			<into layer="application" />
 		</application>
 		<dependencies>
