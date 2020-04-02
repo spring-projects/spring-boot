@@ -56,7 +56,7 @@ public class DatadogProperties extends StepRegistryProperties {
 	 * URI to ship metrics to. If you need to publish metrics to an internal proxy
 	 * en-route to Datadog, you can define the location of the proxy with this.
 	 */
-	private String uri = "https://app.datadoghq.com";
+	private String uri = "https://api.datadoghq.com";
 
 	public String getApiKey() {
 		return this.apiKey;
