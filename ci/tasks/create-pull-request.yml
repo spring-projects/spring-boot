@@ -10,6 +10,5 @@ params:
   GITHUB_ORGANIZATION:
   GITHUB_PASSWORD:
   GITHUB_USERNAME:
-  ISSUE_TITLE:
 run:
   path: git-repo/ci/scripts/create-pull-request.sh

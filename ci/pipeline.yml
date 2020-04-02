@@ -199,7 +199,6 @@ jobs:
       params:
         GITHUB_REPO: spring-boot
         GITHUB_ORGANIZATION: spring-projects
-        ISSUE_TITLE: ((docker-upgrade-issue-title))
       image: spring-boot-ci-image
     - put: git-repo-ci-docker
       params:
@@ -214,7 +213,6 @@ jobs:
         GITHUB_ORGANIZATION: spring-projects
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
-        ISSUE_TITLE: ((docker-upgrade-issue-title))
       image: spring-boot-ci-image
 - name: build
   serial: true
