@@ -53,6 +53,8 @@ added after the original pull request but before a merge.
   https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ
   Plugin] or format the code from the Gradle build by running
   `./gradlew format`.
+* If you want to format the buildSrc module, you can format the code
+  by running `./gradlew -p buildSrc format` from the project root directory.
 * The build includes checkstyle rules for many of our code conventions. Run
   `./gradlew checkstyleMain checkstyleTest` if you want to check you changes are
   compliant.
