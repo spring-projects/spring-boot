@@ -39,16 +39,8 @@ import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
-import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPom;
-import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
-import org.gradle.api.publish.maven.MavenPomIssueManagement;
-import org.gradle.api.publish.maven.MavenPomLicenseSpec;
-import org.gradle.api.publish.maven.MavenPomOrganization;
-import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.resources.TextResourceFactory;
@@ -111,6 +103,7 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Andy Wilkinson
  * @author Christoph Dreis
+ * @author Mike Smithson
  */
 public class ConventionsPlugin implements Plugin<Project> {
 
@@ -123,51 +116,79 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void applyJavaConventions(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
-			project.getPlugins().apply(TestFailuresPlugin.class);
+			applyTestFailuresPlugin(project);
 			configureSpringJavaFormat(project);
-			project.setProperty("sourceCompatibility", "1.8");
-			project.getTasks().withType(JavaCompile.class, (compile) -> {
-				compile.getOptions().setEncoding("UTF-8");
-				withOptionalBuildJavaHome(project, (javaHome) -> {
-					compile.getOptions().setFork(true);
-					compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
-					compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
-				});
-				List<String> args = compile.getOptions().getCompilerArgs();
-				if (!args.contains("-parameters")) {
-					args.add("-parameters");
-				}
-			});
-			project.getTasks().withType(Javadoc.class, (javadoc) -> {
-				javadoc.getOptions().source("1.8").encoding("UTF-8");
-				withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
-			});
-			project.getPlugins().apply(TestRetryPlugin.class);
-			project.getTasks().withType(Test.class, (test) -> {
-				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
-				test.useJUnitPlatform();
-				test.setMaxHeapSize("1024M");
-				project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
-					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
-					testRetry.getFailOnPassedAfterRetry().set(true);
-					testRetry.getMaxRetries().set(3);
-				});
-			});
-			project.getTasks().withType(Jar.class, (jar) -> {
-				project.afterEvaluate((evaluated) -> {
-					jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
-					jar.manifest((manifest) -> {
-						Map<String, Object> attributes = new TreeMap<>();
-						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-						attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
-						attributes.put("Built-By", "Spring");
-						attributes.put("Implementation-Title", project.getDescription());
-						attributes.put("Implementation-Version", project.getVersion());
-						manifest.attributes(attributes);
-					});
+			setSourceCompatibility(project);
+			configureJavaCompileConventions(project);
+			configureJavadocConventions(project);
+			configureTestConventions(project);
+			configureJarManifestConventions(project);
+		});
+	}
+
+	private void applyMavenPublishingConventions(Project project) {
+		new MavenPomConventions().apply(project);
+	}
+
+	private void configureJarManifestConventions(Project project) {
+		project.getTasks().withType(Jar.class, (jar) -> {
+			project.afterEvaluate((evaluated) -> {
+				jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
+				jar.manifest((manifest) -> {
+					Map<String, Object> attributes = new TreeMap<>();
+					attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+					attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
+					attributes.put("Built-By", "Spring");
+					attributes.put("Implementation-Title", project.getDescription());
+					attributes.put("Implementation-Version", project.getVersion());
+					manifest.attributes(attributes);
 				});
 			});
 		});
+	}
+
+	private void configureTestConventions(Project project) {
+		project.getPlugins().apply(TestRetryPlugin.class);
+		project.getTasks().withType(Test.class, (test) -> {
+			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
+			test.useJUnitPlatform();
+			test.setMaxHeapSize("1024M");
+			project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
+				TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
+				testRetry.getFailOnPassedAfterRetry().set(true);
+				testRetry.getMaxRetries().set(3);
+			});
+		});
+	}
+
+	private void configureJavadocConventions(Project project) {
+		project.getTasks().withType(Javadoc.class, (javadoc) -> {
+			javadoc.getOptions().source("1.8").encoding("UTF-8");
+			withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
+		});
+	}
+
+	private void configureJavaCompileConventions(Project project) {
+		project.getTasks().withType(JavaCompile.class, (compile) -> {
+			compile.getOptions().setEncoding("UTF-8");
+			withOptionalBuildJavaHome(project, (javaHome) -> {
+				compile.getOptions().setFork(true);
+				compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
+				compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
+			});
+			List<String> args = compile.getOptions().getCompilerArgs();
+			if (!args.contains("-parameters")) {
+				args.add("-parameters");
+			}
+		});
+	}
+
+	private void setSourceCompatibility(Project project) {
+		project.setProperty("sourceCompatibility", "1.8");
+	}
+
+	private void applyTestFailuresPlugin(Project project) {
+		project.getPlugins().apply(TestFailuresPlugin.class);
 	}
 
 	private void copyLegalFiles(Project project, CopySpec metaInf) {
@@ -231,68 +252,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void applyAsciidoctorConventions(Project project) {
 		new AsciidoctorConventions().apply(project);
-	}
-
-	private void applyMavenPublishingConventions(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
-			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-			if (project.hasProperty("deploymentRepository")) {
-				publishing.getRepositories().maven((mavenRepository) -> {
-					mavenRepository.setUrl(project.property("deploymentRepository"));
-					mavenRepository.setName("deployment");
-				});
-			}
-			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> customizePom(mavenPublication.getPom(), project));
-			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
-				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
-				extension.withJavadocJar();
-				extension.withSourcesJar();
-			});
-		});
-	}
-
-	private void customizePom(MavenPom pom, Project project) {
-		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
-		pom.getDescription().set(project.provider(project::getDescription));
-		pom.organization(this::customizeOrganization);
-		pom.licenses(this::customizeLicences);
-		pom.developers(this::customizeDevelopers);
-		pom.scm(this::customizeScm);
-		pom.issueManagement(this::customizeIssueManagement);
-	}
-
-	private void customizeOrganization(MavenPomOrganization organization) {
-		organization.getName().set("Pivotal Software, Inc.");
-		organization.getUrl().set("https://spring.io");
-	}
-
-	private void customizeLicences(MavenPomLicenseSpec licences) {
-		licences.license((licence) -> {
-			licence.getName().set("Apache License, Version 2.0");
-			licence.getUrl().set("http://www.apache.org/licenses/LICENSE-2.0");
-		});
-	}
-
-	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
-		developers.developer((developer) -> {
-			developer.getName().set("Pivotal");
-			developer.getEmail().set("info@pivotal.io");
-			developer.getOrganization().set("Pivotal Software, Inc.");
-			developer.getOrganizationUrl().set("https://www.spring.io");
-		});
-	}
-
-	private void customizeScm(MavenPomScm scm) {
-		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
-		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
-		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
-
-	}
-
-	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
-		issueManagement.getSystem().set("GitHub");
-		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
 	}
 
 }
