@@ -381,6 +381,18 @@
       }
     },
     {
+      "name": "management.metrics.export.wavefront.connect-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.read-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.client.request.autotime.enabled",
       "description": "Whether to automatically time web client requests.",
       "defaultValue": true
