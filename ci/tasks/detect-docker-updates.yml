@@ -9,6 +9,5 @@ outputs:
 params:
   GITHUB_REPO:
   GITHUB_ORGANIZATION:
-  ISSUE_TITLE:
 run:
   path: git-repo/ci/scripts/detect-docker-updates.sh
