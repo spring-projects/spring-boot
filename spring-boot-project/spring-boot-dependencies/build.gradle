@@ -573,7 +573,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.10.3") {
+	library("Jackson Bom", "2.11.0.rc1") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -1637,7 +1637,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.3.0.M3") {
+	library("Spring Integration", "5.3.0.M4") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
