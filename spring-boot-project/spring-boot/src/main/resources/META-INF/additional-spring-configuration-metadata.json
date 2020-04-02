@@ -641,6 +641,11 @@
       "defaultValue": "console"
     },
     {
+      "name": "spring.main.cloud-platform",
+      "type": "org.springframework.boot.cloud.CloudPlatform",
+      "description": "Override the Cloud Platform auto-detection."
+    },
+    {
       "name": "spring.main.lazy-initialization",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",

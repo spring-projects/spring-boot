@@ -23,14 +23,28 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
- * Simple detection for well known cloud platforms. For more advanced cloud provider
- * integration consider the Spring Cloud project.
+ * Simple detection for well known cloud platforms. Detection can be forced using the
+ * {@code "spring.main.cloud-platform"} configuration property. For more advanced cloud
+ * provider integration consider the Spring Cloud project.
  *
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 1.3.0
- * @see "https://cloud.spring.io"
+ * @see "https://spring.io/projects/spring-cloud"
  */
 public enum CloudPlatform {
+
+	/**
+	 * No Cloud platform. Useful when false-positives are detected.
+	 */
+	NONE {
+
+		@Override
+		public boolean isAutoDetected(Environment environment) {
+			return false;
+		}
+
+	},
 
 	/**
 	 * Cloud Foundry platform.
@@ -38,7 +52,7 @@ public enum CloudPlatform {
 	CLOUD_FOUNDRY {
 
 		@Override
-		public boolean isActive(Environment environment) {
+		public boolean isAutoDetected(Environment environment) {
 			return environment.containsProperty("VCAP_APPLICATION") || environment.containsProperty("VCAP_SERVICES");
 		}
 
@@ -50,7 +64,7 @@ public enum CloudPlatform {
 	HEROKU {
 
 		@Override
-		public boolean isActive(Environment environment) {
+		public boolean isAutoDetected(Environment environment) {
 			return environment.containsProperty("DYNO");
 		}
 
@@ -62,7 +76,7 @@ public enum CloudPlatform {
 	SAP {
 
 		@Override
-		public boolean isActive(Environment environment) {
+		public boolean isAutoDetected(Environment environment) {
 			return environment.containsProperty("HC_LANDSCAPE");
 		}
 
@@ -82,14 +96,14 @@ public enum CloudPlatform {
 		private static final String SERVICE_PORT_SUFFIX = "_SERVICE_PORT";
 
 		@Override
-		public boolean isActive(Environment environment) {
+		public boolean isAutoDetected(Environment environment) {
 			if (environment instanceof ConfigurableEnvironment) {
-				return isActive((ConfigurableEnvironment) environment);
+				return isAutoDetected((ConfigurableEnvironment) environment);
 			}
 			return false;
 		}
 
-		private boolean isActive(ConfigurableEnvironment environment) {
+		private boolean isAutoDetected(ConfigurableEnvironment environment) {
 			PropertySource<?> environmentPropertySource = environment.getPropertySources()
 					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 			if (environmentPropertySource != null) {
@@ -98,13 +112,13 @@ public enum CloudPlatform {
 					return true;
 				}
 				if (environmentPropertySource instanceof EnumerablePropertySource) {
-					return isActive((EnumerablePropertySource<?>) environmentPropertySource);
+					return isAutoDetected((EnumerablePropertySource<?>) environmentPropertySource);
 				}
 			}
 			return false;
 		}
 
-		private boolean isActive(EnumerablePropertySource<?> environmentPropertySource) {
+		private boolean isAutoDetected(EnumerablePropertySource<?> environmentPropertySource) {
 			for (String propertyName : environmentPropertySource.getPropertyNames()) {
 				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
 					String serviceName = propertyName.substring(0,
@@ -124,7 +138,31 @@ public enum CloudPlatform {
 	 * @param environment the environment
 	 * @return if the platform is active.
 	 */
-	public abstract boolean isActive(Environment environment);
+	public boolean isActive(Environment environment) {
+		return isEnforced(environment) || isAutoDetected(environment);
+	}
+
+	/**
+	 * Detemines if the platform is enforced by looking at the
+	 * {@code "spring.main.cloud-platform"} configuration property.
+	 * @param environment the environment
+	 * @return if the platform is enforced
+	 */
+	public boolean isEnforced(Environment environment) {
+		String platform = environment.getProperty("spring.main.cloud-platform");
+		if (platform != null) {
+			return this.name().equalsIgnoreCase(platform);
+		}
+		return false;
+	}
+
+	/**
+	 * Determines if the platform is auto-detected by looking for platform-specific
+	 * environment variables.
+	 * @param environment the environment
+	 * @return if the platform is auto-detected.
+	 */
+	public abstract boolean isAutoDetected(Environment environment);
 
 	/**
 	 * Returns if the platform is behind a load balancer and uses
