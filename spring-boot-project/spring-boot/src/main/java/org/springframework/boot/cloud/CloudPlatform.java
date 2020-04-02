@@ -24,13 +24,17 @@ import org.springframework.core.env.StandardEnvironment;
 
 /**
  * Simple detection for well known cloud platforms. Detection can be forced using the
- * {@code "spring.main.cloud-platform"} configuration property. For more advanced cloud
- * provider integration consider the Spring Cloud project.
+ * {@code "spring.main.cloud-platform"} configuration property.
+ *
+ * <p>
+ * For more advanced cloud platform integration, consider using a platform-specific
+ * library such as <a href="https://github.com/pivotal-cf/java-cfenv">Java CFEnv</a> or
+ * <a href="https://spring.io/projects/spring-cloud-kubernetes">Spring Cloud
+ * Kubernetes</a>.
  *
  * @author Phillip Webb
  * @author Brian Clozel
  * @since 1.3.0
- * @see "https://spring.io/projects/spring-cloud"
  */
 public enum CloudPlatform {
 
