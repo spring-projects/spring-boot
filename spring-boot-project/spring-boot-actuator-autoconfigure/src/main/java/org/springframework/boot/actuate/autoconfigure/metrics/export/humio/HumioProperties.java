@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Humio metrics
@@ -43,11 +42,6 @@ public class HumioProperties extends StepRegistryProperties {
 	 * Connection timeout for requests to this backend.
 	 */
 	private Duration connectTimeout = Duration.ofSeconds(5);
-
-	/**
-	 * Name of the repository to publish metrics to.
-	 */
-	private String repository = "";
 
 	/**
 	 * Humio tags describing the data source in which metrics will be stored. Humio tags
@@ -78,17 +72,6 @@ public class HumioProperties extends StepRegistryProperties {
 	@Override
 	public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "No longer used as repository is resolved from the api token.")
-	public String getRepository() {
-		return this.repository;
-	}
-
-	@Deprecated
-	public void setRepository(String repository) {
-		this.repository = repository;
 	}
 
 	public Map<String, String> getTags() {

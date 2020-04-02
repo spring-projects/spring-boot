@@ -254,6 +254,12 @@
       "defaultValue": "one"
     },
     {
+      "name": "management.metrics.export.humio.repository",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether exporting of metrics to Prometheus is enabled.",
