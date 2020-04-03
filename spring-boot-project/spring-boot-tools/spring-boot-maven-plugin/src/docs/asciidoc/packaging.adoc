@@ -189,7 +189,7 @@ If no `<include>` is defined, then all content (not claimed by an earlier block)
 
 If no `<exclude>` is defined, then no exclusions are applied.
 
-Looking at the `<dependencies>` example above, we can see tha the first `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+Looking at the `<dependencies>` example above, we can see that the first `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
 The subsequent `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
 
 The `<application>` block has similar rules.

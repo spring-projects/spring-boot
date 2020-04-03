@@ -348,7 +348,7 @@ If no `include` call is made, then all content (not claimed by an earlier closur
 
 If no `exclude` call is made, then no exclusions are applied.
 
-Looking at the `dependencies` closure in the example above, we can see tha the first `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
 The subsequent `intoLayer` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
 
 The `application` closure has similar rules.
