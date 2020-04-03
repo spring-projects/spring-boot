@@ -9,6 +9,9 @@ plugins {
 tasks.getByName<BootJar>("bootJar") {
 	layered {
 		application {
+			intoLayer("spring-boot-loader") {
+				include("org/springframework/boot/loader/**")
+			}
 			intoLayer("application")
 		}
 		dependencies {
@@ -17,7 +20,7 @@ tasks.getByName<BootJar>("bootJar") {
 			}
 			intoLayer("dependencies") {
 		}
-		layersOrder("dependencies", "snapshot-dependencies", "application")
+		layersOrder("dependencies", "spring-boot-loader", "snapshot-dependencies", "application")
 	}
 }
 // end::layered[]
