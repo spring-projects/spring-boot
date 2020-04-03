@@ -1965,7 +1965,7 @@ Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
 
 
 
-[[howto-initialize-a-database-using-r2dc]]
+[[howto-initialize-a-database-using-r2dbc]]
 === Initialize a Database Using R2DBC
 If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
 
