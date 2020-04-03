@@ -42,6 +42,9 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<>(listeners);
 	}
 
+	/**
+	 * 通知所有监听器
+	 */
 	void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.starting();
