@@ -437,12 +437,16 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	protected List<String> getEntryNames(File file) throws IOException {
-		List<String> entryNames = new ArrayList<>();
 		try (JarFile jarFile = new JarFile(file)) {
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				entryNames.add(entries.nextElement().getName());
-			}
+			return getEntryNames(jarFile);
+		}
+	}
+
+	protected List<String> getEntryNames(JarFile jarFile) {
+		List<String> entryNames = new ArrayList<>();
+		Enumeration<JarEntry> entries = jarFile.entries();
+		while (entries.hasMoreElements()) {
+			entryNames.add(entries.nextElement().getName());
 		}
 		return entryNames;
 	}

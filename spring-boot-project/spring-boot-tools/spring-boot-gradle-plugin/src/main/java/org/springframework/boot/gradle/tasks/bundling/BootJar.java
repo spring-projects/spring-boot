@@ -97,14 +97,8 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		if (this.layered != null) {
-			this.support.configureManifest(getManifest(), getMainClassName(), null, null, CLASSPATH_INDEX,
-					LAYERS_INDEX);
-		}
-		else {
-			this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER,
-					CLASSPATH_INDEX, null);
-		}
+		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER, CLASSPATH_INDEX,
+				(this.layered != null) ? LAYERS_INDEX : null);
 		super.copy();
 	}
 
@@ -112,8 +106,8 @@ public class BootJar extends Jar implements BootArchive {
 	protected CopyAction createCopyAction() {
 		if (this.layered != null) {
 			LayerResolver layerResolver = new LayerResolver(getConfigurations(), this.layered, this::isLibrary);
-			boolean includeLayerTools = this.layered.isIncludeLayerTools();
-			return this.support.createCopyAction(this, layerResolver, includeLayerTools);
+			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_FOLDER : null;
+			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
 		}
 		return this.support.createCopyAction(this);
 	}

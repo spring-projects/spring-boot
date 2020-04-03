@@ -93,12 +93,8 @@ class BootArchiveSupport {
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClass);
 		attributes.computeIfAbsent("Spring-Boot-Version", (name) -> determineSpringBootVersion());
-		if (classes != null) {
-			attributes.putIfAbsent("Spring-Boot-Classes", classes);
-		}
-		if (lib != null) {
-			attributes.putIfAbsent("Spring-Boot-Lib", lib);
-		}
+		attributes.putIfAbsent("Spring-Boot-Classes", classes);
+		attributes.putIfAbsent("Spring-Boot-Lib", lib);
 		if (classPathIndex != null) {
 			attributes.putIfAbsent("Spring-Boot-Classpath-Index", classPathIndex);
 		}
@@ -113,10 +109,10 @@ class BootArchiveSupport {
 	}
 
 	CopyAction createCopyAction(Jar jar) {
-		return createCopyAction(jar, null, false);
+		return createCopyAction(jar, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, LayerResolver layerResolver, boolean includeLayerTools) {
+	CopyAction createCopyAction(Jar jar, LayerResolver layerResolver, String layerToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -128,8 +124,8 @@ class BootArchiveSupport {
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
-				includeLayerTools, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver, encoding,
-				layerResolver);
+				layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver,
+				encoding, layerResolver);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

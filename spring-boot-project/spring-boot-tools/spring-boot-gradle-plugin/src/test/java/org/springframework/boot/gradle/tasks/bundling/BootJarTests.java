@@ -80,45 +80,40 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	}
 
 	@Test
-	void whenJarIsLayeredThenBootInfContainsOnlyLayersAndIndexFiles() throws IOException {
-		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames.stream().filter((name) -> name.startsWith("BOOT-INF/"))
-				.filter((name) -> !name.startsWith("BOOT-INF/layers/"))).contains("BOOT-INF/layers.idx",
-						"BOOT-INF/classpath.idx");
-	}
-
-	@Test
 	void whenJarIsLayeredThenManifestContainsEntryForLayersIndexInPlaceOfClassesAndLib() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes"))
+					.isEqualTo("BOOT-INF/classes/");
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib"))
+					.isEqualTo("BOOT-INF/lib/");
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
 					.isEqualTo("BOOT-INF/layers.idx");
 		}
 	}
 
 	@Test
-	void whenJarIsLayeredThenLayersIndexIsPresentAndListsLayersInOrder() throws IOException {
+	void whenJarIsLayeredThenLayersIndexIsPresentAndCorrect() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(entryLines(jarFile, "BOOT-INF/layers.idx")).containsExactly("dependencies", "spring-boot-loader",
+			List<String> entryNames = getEntryNames(jarFile);
+			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
+					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
+					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
+			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
+			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
+			assertThat(index).contains("dependencies BOOT-INF/lib/first-library.jar",
+					"dependencies BOOT-INF/lib/second-library.jar",
+					"snapshot-dependencies BOOT-INF/lib/third-library-SNAPSHOT.jar",
+					"application BOOT-INF/classes/com/example/Application.class",
+					"application BOOT-INF/classes/application.properties",
+					"application BOOT-INF/classes/static/test.css");
 		}
 	}
 
 	@Test
-	void whenJarIsLayeredThenContentsAreMovedToLayerDirectories() throws IOException {
-		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames)
-				.containsSubsequence("BOOT-INF/layers/dependencies/lib/first-library.jar",
-						"BOOT-INF/layers/dependencies/lib/second-library.jar")
-				.contains("BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar")
-				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
-						"BOOT-INF/layers/application/classes/application.properties")
-				.contains("BOOT-INF/layers/application/classes/static/test.css");
-	}
-
-	@Test
-	void whenJarIsLayeredWithCustomStrategiesThenContentsAreMovedToLayerDirectories() throws IOException {
+	void whenJarIsLayeredWithCustomStrategiesThenLayersIndexIsPresentAndCorrent() throws IOException {
 		File jar = createLayeredJar((layered) -> {
 			layered.application((application) -> {
 				application.intoLayer("resources", (spec) -> spec.include("static/**"));
@@ -131,25 +126,30 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			});
 			layered.layerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
 		});
-		List<String> entryNames = getEntryNames(jar);
-		assertThat(entryNames)
-				.containsSubsequence("BOOT-INF/layers/my-internal-deps/lib/first-library.jar",
-						"BOOT-INF/layers/my-internal-deps/lib/second-library.jar")
-				.contains("BOOT-INF/layers/my-snapshot-deps/lib/third-library-SNAPSHOT.jar")
-				.containsSubsequence("BOOT-INF/layers/application/classes/com/example/Application.class",
-						"BOOT-INF/layers/application/classes/application.properties")
-				.contains("BOOT-INF/layers/resources/classes/static/test.css");
+		try (JarFile jarFile = new JarFile(jar)) {
+			List<String> entryNames = getEntryNames(jar);
+			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
+					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
+					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
+			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
+			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
+					"resources", "application");
+			assertThat(index).contains("my-internal-deps BOOT-INF/lib/first-library.jar",
+					"my-internal-deps BOOT-INF/lib/second-library.jar",
+					"my-snapshot-deps BOOT-INF/lib/third-library-SNAPSHOT.jar",
+					"application BOOT-INF/classes/com/example/Application.class",
+					"application BOOT-INF/classes/application.properties",
+					"resources BOOT-INF/classes/static/test.css");
+		}
 	}
 
 	@Test
-	void whenJarIsLayeredJarsInLibAreStored() throws IOException {
+	void jarsInLibAreStored() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/first-library.jar").getMethod())
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
 					.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/second-library.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar")
-					.getMethod()).isEqualTo(ZipEntry.STORED);
 		}
 	}
 
@@ -164,14 +164,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	@Test
 	void whenJarIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
 		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames).contains(jarModeLayerTools());
-	}
-
-	private String jarModeLayerTools() {
-		JarModeLibrary library = JarModeLibrary.LAYER_TOOLS;
-		String version = library.getCoordinates().getVersion();
-		String layer = (version == null || !version.contains("SNAPSHOT")) ? "dependencies" : "snapshot-dependencies";
-		return "BOOT-INF/layers/" + layer + "/lib/" + library.getName();
+		assertThat(entryNames).contains("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
 	}
 
 	@Test
@@ -265,6 +258,14 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 				new InputStreamReader(jarFile.getInputStream(jarFile.getEntry(entryName))))) {
 			return reader.lines().collect(Collectors.toList());
 		}
+	}
+
+	private Set<String> getLayerNames(List<String> index) {
+		return index.stream().map(this::getLayerName).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private String getLayerName(String indexLine) {
+		return indexLine.substring(0, indexLine.indexOf(" "));
 	}
 
 	@Override

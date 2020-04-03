@@ -18,9 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
@@ -30,9 +28,7 @@ import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
 
-import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
-import org.springframework.boot.loader.tools.Layers;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
 
@@ -47,8 +43,6 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  */
 class LayerResolver {
 
-	private static final String BOOT_INF_FOLDER = "BOOT-INF/";
-
 	private final ResolvedDependencies resolvedDependencies;
 
 	private final LayeredSpec layeredConfiguration;
@@ -62,40 +56,28 @@ class LayerResolver {
 		this.librarySpec = librarySpec;
 	}
 
-	String getPath(JarModeLibrary jarModeLibrary) {
-		Layers layers = this.layeredConfiguration.asLayers();
-		Layer layer = layers.getLayer(jarModeLibrary);
-		if (layer != null) {
-			return BOOT_INF_FOLDER + "layers/" + layer + "/lib/" + jarModeLibrary.getName();
-		}
-		return BOOT_INF_FOLDER + "lib/" + jarModeLibrary.getName();
-	}
-
-	String getPath(FileCopyDetails details) {
-		String path = details.getRelativePath().getPathString();
-		Layer layer = getLayer(details);
-		if (layer == null || !path.startsWith(BOOT_INF_FOLDER)) {
-			return path;
-		}
-		path = path.substring(BOOT_INF_FOLDER.length());
-		return BOOT_INF_FOLDER + "layers/" + layer + "/" + path;
-	}
-
 	Layer getLayer(FileCopyDetails details) {
-		Layers layers = this.layeredConfiguration.asLayers();
 		try {
 			if (this.librarySpec.isSatisfiedBy(details)) {
-				return layers.getLayer(asLibrary(details));
+				return getLayer(asLibrary(details));
 			}
-			return layers.getLayer(details.getSourcePath());
+			return getLayer(details.getSourcePath());
 		}
 		catch (UnsupportedOperationException ex) {
 			return null;
 		}
 	}
 
-	List<String> getLayerNames() {
-		return this.layeredConfiguration.asLayers().stream().map(Layer::toString).collect(Collectors.toList());
+	Layer getLayer(Library library) {
+		return this.layeredConfiguration.asLayers().getLayer(library);
+	}
+
+	Layer getLayer(String applicationResource) {
+		return this.layeredConfiguration.asLayers().getLayer(applicationResource);
+	}
+
+	Iterable<Layer> getLayers() {
+		return this.layeredConfiguration.asLayers();
 	}
 
 	private Library asLibrary(FileCopyDetails details) {
