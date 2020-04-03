@@ -16,51 +16,18 @@
 
 package org.springframework.boot.build;
 
-import io.spring.javaformat.gradle.FormatTask;
-import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
-import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.api.tasks.compile.JavaCompile;
-import org.gradle.api.tasks.javadoc.Javadoc;
-import org.gradle.api.tasks.testing.Test;
-import org.gradle.testretry.TestRetryPlugin;
-
-import org.springframework.boot.build.testing.TestFailuresPlugin;
 
 /**
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
  * Conventions are applied in response to various plugins being applied.
  *
- * <p/>
- *
- * When the {@link JavaBasePlugin Java base plugin} is applied:
- *
- * <ul>
- * <li>{@code sourceCompatibility} is set to {@code 1.8}
- * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
- * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
- * Retry} plugins are applied
- * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
- * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
- * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
- * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
- * files and the following manifest entries:
- * <ul>
- * <li>{@code Automatic-Module-Name}
- * <li>{@code Build-Jdk-Spec}
- * <li>{@code Built-By}
- * <li>{@code Implementation-Title}
- * <li>{@code Implementation-Version}
- * </ul>
- * </ul>
- *
- * <p/>
+ * When the {@link JavaBasePlugin} is applied, the conventions in *
+ * {@link JavaConventions} are applied.
  *
  * When the {@link MavenPublishPlugin} is applied, the conventions in
  * {@link MavenPublishingConventions} are applied.
@@ -77,8 +44,8 @@ public class ConventionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		applyJavaConventions(project);
-		applyAsciidoctorConventions(project);
 		applyMavenPublishingConventions(project);
+		applyAsciidoctorConventions(project);
 	}
 
 	private void applyJavaConventions(Project project) {

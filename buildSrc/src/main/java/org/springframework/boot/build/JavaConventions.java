@@ -37,6 +37,41 @@ import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 
+/**
+ * Applies Java Plugin conventions to projects that are part of Spring Boot's build.
+ * Conventions are applied in response to various plugins being applied.
+ * <p/>
+ *
+ * When the {@link JavaBasePlugin Java base plugin} is applied:
+ *
+ * <p/>
+ *
+ * <ul>
+ * <li>{@code sourceCompatibility} is set to {@code 1.8}
+ * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
+ * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
+ * Retry} plugins are applied
+ * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
+ * to use UTF-8 encoding
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
+ * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
+ * files and the following manifest entries:
+ * <ul>
+ * <li>{@code Automatic-Module-Name}
+ * <li>{@code Build-Jdk-Spec}
+ * <li>{@code Built-By}
+ * <li>{@code Implementation-Title}
+ * <li>{@code Implementation-Version}
+ * </ul>
+ * </ul>
+ *
+ * <p/>
+ *
+ * @author Andy Wilkinson
+ * @author Christoph Dreis
+ * @author Mike Smithson
+ */
 class JavaConventions {
 
 	void apply(Project project) {

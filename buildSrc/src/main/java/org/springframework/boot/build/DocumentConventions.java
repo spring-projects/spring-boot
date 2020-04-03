@@ -27,9 +27,18 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.resources.TextResourceFactory;
+import org.gradle.jvm.tasks.Jar;
 
 import org.springframework.util.FileCopyUtils;
 
+/**
+ * Class to support the generation of NOTICE.txt and LICENSE.txt files as a result of the
+ * {@link Jar} task being configured in {@link JavaConventions} class.
+ *
+ * @author Andy Wilkinson
+ * @author Christoph Dreis
+ * @author Mike Smithson
+ */
 class DocumentConventions {
 
 	void copyLegalFiles(Project project, CopySpec metaInf) {

@@ -31,8 +31,8 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
 /**
- * Plugin to apply Maven Publishing conventions to projects that are part of Spring Boot's
- * build. Conventions are applied in response to various plugins being applied.
+ * Applies Maven Publishing conventions to projects that are part of Spring Boot's build.
+ * Conventions are applied in response to various plugins being applied.
  *
  * When the {@link MavenPublishPlugin Maven Publish plugin} is applied:
  *
@@ -46,6 +46,8 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  *
  * <p/>
  *
+ * @author Andy Wilkinson
+ * @author Christoph Dreis
  * @author Mike Smithson
  */
 class MavenPublishingConventions {
