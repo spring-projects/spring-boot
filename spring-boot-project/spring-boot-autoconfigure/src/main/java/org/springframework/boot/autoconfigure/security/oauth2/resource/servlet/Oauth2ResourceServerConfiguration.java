@@ -25,9 +25,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
- * Configuration classes for OAuth2 Resource Server
- * These should be {@code @Import} in a regular auto-configuration class to guarantee
- * their order of execution.
+ * Configuration classes for OAuth2 Resource Server These should be {@code @Import} in a
+ * regular auto-configuration class to guarantee their order of execution.
  *
  * @author Madhura Bhave
  */
