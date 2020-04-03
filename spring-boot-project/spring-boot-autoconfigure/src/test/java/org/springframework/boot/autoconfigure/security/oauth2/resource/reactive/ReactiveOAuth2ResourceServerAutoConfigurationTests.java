@@ -289,6 +289,20 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfigurationWhenJwkSetUriAndIntrospectionUriAvailable() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
+					assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
+					assertFilterConfiguredWithJwtAuthenticationManager(context);
+				});
+	}
+
+	@Test
 	void opaqueTokenIntrospectorIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withPropertyValues(
@@ -318,36 +332,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
 				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOpaqueTokenIntrospector.class));
-	}
-
-	@Test
-	void autoConfigurationWhenBothJwkSetUriAndTokenIntrospectionUriSetShouldFail() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
-				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
-						"Only one of jwt.jwk-set-uri and opaquetoken.introspection-uri should be configured."));
-	}
-
-	@Test
-	void autoConfigurationWhenBothJwtIssuerUriAndTokenIntrospectionUriSetShouldFail() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
-						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
-				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
-						"Only one of jwt.issuer-uri and opaquetoken.introspection-uri should be configured."));
-	}
-
-	@Test
-	void autoConfigurationWhenBothJwtKeyLocationAndTokenIntrospectionUriSetShouldFail() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
-						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
-				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
-						"Only one of jwt.public-key-location and opaquetoken.introspection-uri should be configured."));
 	}
 
 	@SuppressWarnings("unchecked")
