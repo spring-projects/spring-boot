@@ -124,7 +124,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 				dependencies.intoLayer("my-internal-deps", (spec) -> spec.include("com.example:*:*"));
 				dependencies.intoLayer("my-deps");
 			});
-			layered.layerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
+			layered.setLayerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
 		});
 		try (JarFile jarFile = new JarFile(jar)) {
 			List<String> entryNames = getEntryNames(jar);

@@ -5,6 +5,10 @@ plugins {
 	id("org.springframework.boot") version "{version}"
 }
 
+tasks.getByName<BootJar>("bootJar") {
+	mainClassName = "com.example.ExampleApplication"
+}
+
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
 	layered {
@@ -18,9 +22,9 @@ tasks.getByName<BootJar>("bootJar") {
 			intoLayer("snapshot-dependencies") {
 				include("*:*:*SNAPSHOT")
 			}
-			intoLayer("dependencies") {
+			intoLayer("dependencies")
 		}
-		layersOrder("dependencies", "spring-boot-loader", "snapshot-dependencies", "application")
+		layerOrder = listOf("dependencies", "spring-boot-loader", "snapshot-dependencies", "application")
 	}
 }
 // end::layered[]

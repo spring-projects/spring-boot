@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.CopySpec;
@@ -33,7 +32,6 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.util.ConfigureUtil;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -158,28 +156,33 @@ public class BootJar extends Jar implements BootArchive {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
 
+	/**
+	 * Returns the spec that describes the layers in a layerd jar.
+	 * @return the spec for the layers or {@code null}.
+	 * @since 2.3.0
+	 */
 	@Nested
 	@Optional
 	public LayeredSpec getLayered() {
 		return this.layered;
 	}
 
+	/**
+	 * Configures the jar to be layered using the default layering.
+	 * @since 2.3.0
+	 */
 	public void layered() {
-		layered(true);
+		enableLayeringIfNecessary();
 	}
 
-	public void layered(boolean layered) {
-		this.layered = layered ? new LayeredSpec() : null;
-	}
-
-	public void layered(Closure<?> closure) {
-		layered(ConfigureUtil.configureUsing(closure));
-	}
-
+	/**
+	 * Configures the jar to be layered, customizing the layers using the given
+	 * {@code action}.
+	 * @param action the action to apply
+	 * @since 2.3.0
+	 */
 	public void layered(Action<LayeredSpec> action) {
-		LayeredSpec layered = new LayeredSpec();
-		action.execute(layered);
-		this.layered = layered;
+		action.execute(enableLayeringIfNecessary());
 	}
 
 	@Override
@@ -258,6 +261,7 @@ public class BootJar extends Jar implements BootArchive {
 	 * {@code BOOT-INF/lib} is considered to be a library.
 	 * @param details the file copy details
 	 * @return {@code true} if the details are for a library
+	 * @since 2.3.0
 	 */
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
@@ -271,6 +275,13 @@ public class BootJar extends Jar implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
+	}
+
+	private LayeredSpec enableLayeringIfNecessary() {
+		if (this.layered == null) {
+			this.layered = new LayeredSpec();
+		}
+		return this.layered;
 	}
 
 	/**

@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -187,6 +188,36 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
 			assertThat(entry).isNotNull();
+			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
+					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
+		}
+	}
+
+	@TestTemplate
+	void bootJarLayeredCustom() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered-custom").build("bootJar");
+		File file = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(file).isFile();
+		try (JarFile jar = new JarFile(file)) {
+			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
+			assertThat(entry).isNotNull();
+			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
+					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
+		}
+	}
+
+	@TestTemplate
+	void bootJarLayeredExcludeTools() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered-exclude-tools").build("bootJar");
+		File file = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(file).isFile();
+		try (JarFile jar = new JarFile(file)) {
+			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
+			assertThat(entry).isNotNull();
+			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
+					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
 		}
 	}
 

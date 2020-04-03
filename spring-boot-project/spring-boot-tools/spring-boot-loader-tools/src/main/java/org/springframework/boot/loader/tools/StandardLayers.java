@@ -26,6 +26,8 @@ import java.util.stream.Stream;
  * Base class for the standard set of {@link Layers}. Defines the following layers:
  * <ol>
  * <li>"dependencies" - For non snapshot dependencies</li>
+ * <li>"spring-boot-loader" - For classes from {@code spring-boot-loader} used to launch a
+ * fat jar</li>
  * <li>"snapshot-dependencies" - For snapshot dependencies</li>
  * <li>"application" - For application classes and resources</li>
  * </ol>

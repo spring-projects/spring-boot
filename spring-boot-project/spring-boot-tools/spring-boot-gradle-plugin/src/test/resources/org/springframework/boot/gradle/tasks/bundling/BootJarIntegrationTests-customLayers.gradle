@@ -21,7 +21,7 @@ bootJar {
 			}
 			intoLayer("dependencies")
 		}
-		layerOrder "dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"
+		layerOrder = ["dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"]
 	}
 }
 

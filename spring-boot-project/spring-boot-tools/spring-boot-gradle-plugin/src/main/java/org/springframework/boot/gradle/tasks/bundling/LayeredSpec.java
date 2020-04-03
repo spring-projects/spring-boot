@@ -61,59 +61,117 @@ public class LayeredSpec {
 
 	private Layers layers;
 
+	/**
+	 * Returns whether the layer tools should be included as a dependency in the layered
+	 * jar.
+	 * @return whether the layer tools should be included
+	 */
 	@Input
 	public boolean isIncludeLayerTools() {
 		return this.includeLayerTools;
 	}
 
+	/**
+	 * Sets whether the layer tools should be included as a dependency in the layered jar.
+	 * @param includeLayerTools {@code true} if the layer tools should be included,
+	 * otherwise {@code false}
+	 */
 	public void setIncludeLayerTools(boolean includeLayerTools) {
 		this.includeLayerTools = includeLayerTools;
 	}
 
+	/**
+	 * Returns the {@link ApplicationSpec} that controls the layers to which application
+	 * classes and resources belong.
+	 * @return the application spec
+	 */
 	@Input
 	public ApplicationSpec getApplication() {
 		return this.application;
 	}
 
-	public void application(ApplicationSpec spec) {
+	/**
+	 * Sets the {@link ApplicationSpec} that controls the layers to which application
+	 * classes are resources belong.
+	 * @param spec the application spec
+	 */
+	public void setApplication(ApplicationSpec spec) {
 		this.application = spec;
 	}
 
-	public void application(Closure<?> closure) {
-		application(ConfigureUtil.configureUsing(closure));
-	}
-
+	/**
+	 * Customizes the {@link ApplicationSpec} using the given {@code action}.
+	 * @param action the action
+	 */
 	public void application(Action<ApplicationSpec> action) {
 		action.execute(this.application);
 	}
 
+	/**
+	 * Customizes the {@link ApplicationSpec} using the given {@code closure}.
+	 * @param closure the closure
+	 */
+	public void application(Closure<?> closure) {
+		application(ConfigureUtil.configureUsing(closure));
+	}
+
+	/**
+	 * Returns the {@link DependenciesSpec} that controls the layers to which dependencies
+	 * belong.
+	 * @return the dependencies spec
+	 */
 	@Input
 	public DependenciesSpec getDependencies() {
 		return this.dependencies;
 	}
 
-	public void dependencies(DependenciesSpec spec) {
+	/**
+	 * Sets the {@link DependenciesSpec} that controls the layers to which dependencies
+	 * belong.
+	 * @param spec the dependencies spec
+	 */
+	public void setDependencies(DependenciesSpec spec) {
 		this.dependencies = spec;
 	}
 
-	public void dependencies(Closure<?> closure) {
-		dependencies(ConfigureUtil.configureUsing(closure));
-	}
-
+	/**
+	 * Customizes the {@link DependenciesSpec} using the given {@code action}.
+	 * @param action the action
+	 */
 	public void dependencies(Action<DependenciesSpec> action) {
 		action.execute(this.dependencies);
 	}
 
+	/**
+	 * Customizes the {@link DependenciesSpec} using the given {@code closure}.
+	 * @param closure the closure
+	 */
+	public void dependencies(Closure<?> closure) {
+		dependencies(ConfigureUtil.configureUsing(closure));
+	}
+
+	/**
+	 * Returns the order of the layers in the jar from least to most frequently changing.
+	 * @return the layer order
+	 */
 	@Input
 	public List<String> getLayerOrder() {
 		return this.layerOrder;
 	}
 
-	public void layerOrder(String... layerOrder) {
+	/**
+	 * Sets to order of the layers in the jar from least to most frequently changing.
+	 * @param layerOrder the layer order
+	 */
+	public void setLayerOrder(String... layerOrder) {
 		this.layerOrder = Arrays.asList(layerOrder);
 	}
 
-	public void layerOrder(List<String> layerOrder) {
+	/**
+	 * Sets to order of the layers in the jar from least to most frequently changing.
+	 * @param layerOrder the layer order
+	 */
+	public void setLayerOrder(List<String> layerOrder) {
 		this.layerOrder = layerOrder;
 	}
 
@@ -141,6 +199,10 @@ public class LayeredSpec {
 		return new CustomLayers(layers, this.application.asSelectors(), this.dependencies.asSelectors());
 	}
 
+	/**
+	 * Base class for specs that control the layers to which a category of content should
+	 * belong.
+	 */
 	public abstract static class IntoLayersSpec implements Serializable {
 
 		private final List<IntoLayerSpec> intoLayers;
@@ -174,6 +236,9 @@ public class LayeredSpec {
 
 	}
 
+	/**
+	 * Spec that controls the content that should be part of a particular layer.
+	 */
 	public static class IntoLayerSpec implements Serializable {
 
 		private final String intoLayer;
@@ -182,14 +247,33 @@ public class LayeredSpec {
 
 		private final List<String> excludes = new ArrayList<>();
 
+		/**
+		 * Creates a new {@code IntoLayerSpec} that will control the content of the given
+		 * layer.
+		 * @param intoLayer the layer
+		 */
 		public IntoLayerSpec(String intoLayer) {
 			this.intoLayer = intoLayer;
 		}
 
+		/**
+		 * Adds patterns that control the content that is included in the layer. If no
+		 * includes are specified then all content is included. If includes are specified
+		 * then content must match an inclusion pattern and not match any exclusion
+		 * patterns to be included.
+		 * @param patterns the patterns to be included
+		 */
 		public void include(String... patterns) {
 			this.includes.addAll(Arrays.asList(patterns));
 		}
 
+		/**
+		 * Adds patterns that control the content that is excluded from the layer. If no
+		 * excludes a specified no content is excluded. If exclusions are specified then
+		 * any content that matches an exclusion will be excluded irrespective of whether
+		 * it matches an include pattern.
+		 * @param patterns the patterns to be excluded
+		 */
 		public void exclude(String... patterns) {
 			this.includes.addAll(Arrays.asList(patterns));
 		}
@@ -201,8 +285,17 @@ public class LayeredSpec {
 
 	}
 
+	/**
+	 * An {@link IntoLayersSpec} that controls the layers to which application classes and
+	 * resources belong.
+	 */
 	public static class ApplicationSpec extends IntoLayersSpec {
 
+		/**
+		 * Creates a new {@code ApplicationSpec} with the given {@code contents}.
+		 * @param contents specs for the layers in which application content should be
+		 * included
+		 */
 		public ApplicationSpec(IntoLayerSpec... contents) {
 			super(contents);
 		}
@@ -213,8 +306,15 @@ public class LayeredSpec {
 
 	}
 
+	/**
+	 * An {@link IntoLayersSpec} that controls the layers to which dependencies belong.
+	 */
 	public static class DependenciesSpec extends IntoLayersSpec {
 
+		/**
+		 * Creates a new {@code DependenciesSpec} with the given {@code contents}.
+		 * @param contents specs for the layers in which dependencies should be included
+		 */
 		public DependenciesSpec(IntoLayerSpec... contents) {
 			super(contents);
 		}
