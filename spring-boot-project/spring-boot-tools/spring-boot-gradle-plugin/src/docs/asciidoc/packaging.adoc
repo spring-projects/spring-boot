@@ -265,7 +265,7 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 [[packaging-layered-jars]]
 ==== Packaging layered jars
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders futher so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
 To use this feature, the layering feature must be enabled:
@@ -316,7 +316,7 @@ include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=laye
 Depending on your application, you may want to tune how layers are created and add new ones.
 
 This can be done using configuration that describes how the jar can be separated into layers, and the order of those layers.
-The following example shows how the default ordering described above can be defined explicity:
+The following example shows how the default ordering described above can be defined explicitly:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -338,10 +338,10 @@ The `layered` DSL is defined using three parts:
 
 Nested `intoLayer` closures are used within `application` and `dependencies` sections to claim content for a layer.
 These closures are evaluated in the order that they are defined, from top to bottom.
-Any content not claimed by an earlier `intoLayer` closure remains availble for subsequent ones to consider.
+Any content not claimed by an earlier `intoLayer` closure remains available for subsequent ones to consider.
 
-The `intoLayer` closurer claims content using nested `include` and `exclude` calls.
-The `applicaton` closure uses Ant-style patch matching for include/exclude parameters.
+The `intoLayer` closure claims content using nested `include` and `exclude` calls.
+The `application` closure uses Ant-style patch matching for include/exclude parameters.
 The `dependencies` section uses `group:artifact[:version]` patterns.
 
 If no `include` call is made, then all content (not claimed by an earlier closure) is considered.
