@@ -17,7 +17,6 @@
 package org.springframework.boot.build;
 
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -43,18 +42,15 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * it.
  * <li>The poms of all {@link MavenPublication Maven publications} are customized to meet
  * Maven Central's requirements.
- * <li>If the {@link JavaPlugin Java plugin} has also been applied, creation of Javadoc
- * and source jars is enabled.
  * </ul>
  *
  * <p/>
  *
  * @author Mike Smithson
  */
-public class MavenPomConventions implements Plugin<Project> {
+class MavenPublishingConventions {
 
-	@Override
-	public void apply(Project project) {
+	void applyPublishingConventions(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			if (project.hasProperty("deploymentRepository")) {
@@ -108,7 +104,6 @@ public class MavenPomConventions implements Plugin<Project> {
 		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
 		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
-
 	}
 
 	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
