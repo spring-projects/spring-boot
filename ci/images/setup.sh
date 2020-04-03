@@ -27,9 +27,8 @@ test -f /opt/openjdk/bin/javac
 ###########################################################
 # DOCKER
 ###########################################################
-DOCKER_URL=$( ./get-docker-url.sh )
-
 cd /
+DOCKER_URL=$( ./get-docker-url.sh )
 curl -L ${DOCKER_URL} | tar zx
 mv /docker/* /bin/
 chmod +x /bin/docker*
