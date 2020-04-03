@@ -34,8 +34,8 @@ class ImplicitLayerResolverTests {
 
 	@Test
 	void iteratorReturnsLayers() {
-		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SNAPSHOT_DEPENDENCIES,
-				StandardLayers.APPLICATION);
+		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SPRING_BOOT_LOADER,
+				StandardLayers.SNAPSHOT_DEPENDENCIES, StandardLayers.APPLICATION);
 	}
 
 	@Test

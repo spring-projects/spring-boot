@@ -100,7 +100,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	@Test
 	void whenJarIsLayeredThenLayersIndexIsPresentAndListsLayersInOrder() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(entryLines(jarFile, "BOOT-INF/layers.idx")).containsExactly("dependencies",
+			assertThat(entryLines(jarFile, "BOOT-INF/layers.idx")).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
 		}
 	}
