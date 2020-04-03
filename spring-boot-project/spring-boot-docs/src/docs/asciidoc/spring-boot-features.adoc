@@ -7996,77 +7996,41 @@ The other issue is that putting your application's code and all its dependencies
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
-=== Layered Jars
-To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports "layered jars".
-A regular fat jar that can be run with `java -jar` has the following structure:
-
-[source]
-----
-META-INF/
-  MANIFEST.MF
-org/
-  springframework/
-    boot/
-      loader/
-        ...
-BOOT-INF/
-  classes/
-    ...
-  lib/
-    ...
-----
-
-The jar is organized into three main parts:
-
-* Classes used to bootstrap jar loading
-* Your application classes in `BOOT-INF/classes`
-* Dependencies in `BOOT-INF/lib`
-
-Instead of the above jar, you can create a layered jar that looks something like this:
-
-[source]
-----
-META-INF/
-  MANIFEST.MF
-org/
-  springframework/
-    boot/
-      loader/
-        ...
-BOOT-INF/
-  layers/
-    <name>/
-      classes/
-        ...
-      lib/
-        ...
-    <name>/
-      classes/
-        ...
-      lib/
-        ...
-  layers.idx
-----
-
-You still see the bootstrap loader classes (you can still run `java -jar`) but now the `lib` and `classes` folders have been split up and categorized into layers.
-There’s also a `layers.idx` file that provides the order in which layers should be added.
+=== Layering Docker Images
+To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports adding a layer index file to the jar.
+The `layers.idx` file lists all the files in the jar along with the layer that the file should go in.
+The list of files in the index is ordered based on the order in which the layers should be added.
 Out-of-the-box, the following layers are supported:
 
 * `dependencies` (for regular released dependencies)
+* `spring-boot-loader` (for everything under `org/springframework/boot/loader`)
 * `snapshot-dependencies` (for snapshot dependencies)
-* `resources` (for static resources)
 * `application` (for application classes and resources)
 
+The following shows an example of a `layers.idx` file:
+
+[source]
+----
+dependencies BOOT-INF/lib/library1.jar
+dependencies BOOT-INF/lib/library2.jar
+spring-boot-loader org/springframework/boot/loader/JarLauncher.class
+spring-boot-loader org/springframework/boot/loader/jar/JarEntry.class
+...
+snapshot-dependencies BOOT-INF/lib/library3-SNAPSHOT.jar
+application META-INF/MANIFEST.MF
+application BOOT-INF/classes/a/b/C.class
+----
 
 This layering is designed to separate code based on how likely it is to change between application builds.
 Library code is less likely to change between builds, so it is placed in its own layers to allow tooling to re-use the layers from cache.
 Application code is more likely to change between builds so it is isolated in a separate layer.
 
-For Maven, refer to the {spring-boot-maven-plugin-docs}/#repackage-layered-jars[packaging layered jars section] for more details on creating a layered jar.
+For Maven, refer to the {spring-boot-maven-plugin-docs}/#repackage-layered-jars[packaging layered jars section] for more details on adding a layer index to the jar.
 For Gradle, refer to the {spring-boot-gradle-plugin-docs}/#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
 
-=== Writing the Dockerfile
 
+
+=== Writing the Dockerfile
 When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 Here’s how you can launch your jar with a `layertools` jar mode:
@@ -8107,6 +8071,13 @@ COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/resources/ ./
 COPY --from=builder application/application/ ./
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+----
+
+Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
+
+[indent=0]
+----
+	docker build --build-arg JAR_FILE=path/to/myapp.jar .
 ----
 
 This is a multi-stage dockerfile.
