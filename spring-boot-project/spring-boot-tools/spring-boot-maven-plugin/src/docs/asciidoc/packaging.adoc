@@ -76,7 +76,7 @@ The `layout` property defaults to a guess based on the archive type (`jar` or `w
 [[repackage-layers]]
 === Layered jars
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders futher so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
 To use this feature, the layering feature must be enabled:
@@ -141,7 +141,7 @@ This can be done using a separate configuration file that should be registered a
 ----
 
 The configuration file describes how the jar can be separated into layers, and the order of those layers.
-The following example shows how the default ordering described above can be defined explicity:
+The following example shows how the default ordering described above can be defined explicitly:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -179,10 +179,10 @@ The `layers` XML format is defined in three sections:
 
 Nested `<into>` blocks are used within `<application>` and `<dependencies>` sections to claim content for a layer.
 The blocks are evaluated in the order that they are defined, from top to bottom.
-Any content not claimed by an earlier block remains availble for subsequent blocks to consider.
+Any content not claimed by an earlier block remains available for subsequent blocks to consider.
 
 The `<into>` block claims content using nested `<include>` and `<exclude>` elements.
-The `<applicaton>` section uses Ant-style patch matching for include/exclude expressions.
+The `<application>` section uses Ant-style patch matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
 
 If no `<include>` is defined, then all content (not claimed by an earlier block) is considered.
@@ -559,7 +559,7 @@ If you wish to exclude this dependency, you can do so in the following manner:
 
 [[repackage-layered-jars-additional-layers]]
 ==== Custom layers configuration
-The default setup splits dependencies into snaphost and non-snapshot, however, you may have more complex rules.
+The default setup splits dependencies into snapshot and non-snapshot, however, you may have more complex rules.
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.
 The following `layers.xml` configuration shown one such setup:
 
