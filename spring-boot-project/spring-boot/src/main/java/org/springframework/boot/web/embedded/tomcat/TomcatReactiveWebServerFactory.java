@@ -149,7 +149,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.addLifecycleListener(new Tomcat.FixContextListener());
 		context.setParentClassLoader(ClassUtils.getDefaultClassLoader());
 		skipAllTldScanning(context);
-		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
+		WebappLoader loader = new WebappLoader();
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
 		context.setLoader(loader);
