@@ -222,7 +222,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			// Tomcat is < 8.5.39. Continue.
 		}
 		configureTldSkipPatterns(context);
-		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
+		WebappLoader loader = new WebappLoader();
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
 		context.setLoader(loader);
