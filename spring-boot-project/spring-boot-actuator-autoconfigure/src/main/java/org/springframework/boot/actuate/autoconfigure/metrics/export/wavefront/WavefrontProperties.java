@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
-import java.time.Duration;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,11 +30,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("management.metrics.export.wavefront")
 public class WavefrontProperties extends PushRegistryProperties {
-
-	/**
-	 * Step size (i.e. reporting frequency) to use.
-	 */
-	private Duration step = Duration.ofSeconds(10);
 
 	/**
 	 * URI to ship metrics to.
@@ -66,16 +60,6 @@ public class WavefrontProperties extends PushRegistryProperties {
 
 	public void setUri(URI uri) {
 		this.uri = uri;
-	}
-
-	@Override
-	public Duration getStep() {
-		return this.step;
-	}
-
-	@Override
-	public void setStep(Duration step) {
-		this.step = step;
 	}
 
 	public String getSource() {
