@@ -166,6 +166,9 @@ do as they were designed before this was clarified.
 | https://picocli.info/[picocli]
 | https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
 
+| https://www.quickfixj.org/[quickfixj]
+| https://github.com/gevoulga/spring-boot-quickfixj
+
 | https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
 
