@@ -262,29 +262,20 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-		/**
-		 * <1>获取当前类加载器</>
-		 */
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
-		/**
-		 * <2>设置主类，即启动类</>
-		 */
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		/**
-		 * <3>web类型判断</>
-		 */
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		/**
-		 * <4>从META-INF/spring.factories中后去所有的初始化器/</>
+		 * 获取所有的JAR包中的初始化器
 		 */
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		/**
-		 * <5>从META-INF/spring.factories中后去所有的监听器/</>
+		 * 获取所有的JAR包中的监听器
 		 */
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		/**
-		 * <6>设置主类</>
+		 * 推断main方法所在类为主类
 		 */
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -306,13 +297,12 @@ public class SpringApplication {
 		this(null, primarySources);
 	}
 
-
-
+	/**
+	 * main方法所在类
+	 * @return
+	 */
 	private Class<?> deduceMainApplicationClass() {
 		try {
-			/**
-			 * <6.1>推断主类</>
-			 */
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
 			for (StackTraceElement stackTraceElement : stackTrace) {
 				if ("main".equals(stackTraceElement.getMethodName())) {
@@ -337,9 +327,11 @@ public class SpringApplication {
 		 *  <1> 创建 StopWatch 对象，并启动。StopWatch 主要用于简单统计 run 启动过程的时长。
 		 */
 		StopWatch stopWatch = new StopWatch();
+		//启动监视器
 		stopWatch.start();
 		//
 		ConfigurableApplicationContext context = null;
+		//异常报告集合
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		/**
 		 * <2> 配置 headless 属性
@@ -349,6 +341,9 @@ public class SpringApplication {
 		 * <3> 获得 SpringApplicationRunListener 的数组，并启动监听
 		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
+		/**
+		 * 在run方法第一次启动时立即调用。可以用于非常早期的初始化。
+		 */
 		listeners.starting();
 		try {
 			/**
@@ -356,6 +351,7 @@ public class SpringApplication {
 			 */
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
 			/**
+			 *     准备环境变量
 			 * <5> 加载属性配置。执行完成后，所有的 environment 的属性都会加载进来，包括 application.properties 和外部的属性配置。
 			 */
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
@@ -429,6 +425,9 @@ public class SpringApplication {
 	}
 
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments) {
+		/**
+		 * 创建环境变量
+		 */
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
@@ -518,11 +517,11 @@ public class SpringApplication {
 		 */
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		/**
-		 * 创建实例对象
+		 * 创建对象
 		 */
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
 		/**
-		 * 给所有实例排序
+		 * 排序对象
 		 */
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
@@ -566,8 +565,16 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
+		/**
+		 * 根据WEB应用的类型创建 环境容器
+		 */
 		switch (this.webApplicationType) {
 		case SERVLET:
+			/**
+			 * 创建关于SERVLET的环境容器
+			 * 创建 StandardServletEnvironment 会先调用父类构造器 customizePropertySources
+			 * 放入 systemEnvironment 和 systemProperties
+			 */
 			return new StandardServletEnvironment();
 		case REACTIVE:
 			return new StandardReactiveWebEnvironment();
@@ -589,9 +596,11 @@ public class SpringApplication {
 	 */
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		if (this.addConversionService) {
+			//TODO 不理解此处含义
 			ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 			environment.setConversionService((ConfigurableConversionService) conversionService);
 		}
+
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}
@@ -603,11 +612,24 @@ public class SpringApplication {
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
 	 */
+
+	/**
+	 * 添加 删除 或排序 所有应用的PropertySource
+	 */
 	protected void configurePropertySources(ConfigurableEnvironment environment, String[] args) {
+		/**
+		 * 获取到所有的环境资源
+		 */
 		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
+			/**
+			 * 将默认配置添加到资源列表中（最后）
+			 */
 			sources.addLast(new MapPropertySource("defaultProperties", this.defaultProperties));
 		}
+		/**
+		 * 加入 springApplicationCommandLineArgs 到资源列表
+		 */
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 			if (sources.contains(name)) {
@@ -619,6 +641,9 @@ public class SpringApplication {
 				sources.replace(name, composite);
 			}
 			else {
+				/**
+				 * springApplicationCommandLineArgs 放到第一位置
+				 */
 				sources.addFirst(new SimpleCommandLinePropertySource(args));
 			}
 		}
@@ -1348,9 +1373,6 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
-		/***
-		 * <1>创建SpringApplication并加载所有的MATE-INFO/spring.properties中的类</>
-		 */
 		return new SpringApplication(primarySources).run(args);
 	}
 
