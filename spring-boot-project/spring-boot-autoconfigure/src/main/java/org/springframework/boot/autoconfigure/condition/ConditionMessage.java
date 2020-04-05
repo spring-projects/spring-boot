@@ -300,7 +300,7 @@ public final class ConditionMessage {
 				return new ConditionMessage(ConditionMessage.this, this.condition);
 			}
 			return new ConditionMessage(ConditionMessage.this,
-					this.condition + (StringUtils.isEmpty(this.condition) ? "" : " ") + reason);
+					StringUtils.isEmpty(this.condition) ? reason : this.condition + " " + reason);
 		}
 
 	}
