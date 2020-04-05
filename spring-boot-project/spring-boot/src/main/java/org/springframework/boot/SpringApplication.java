@@ -262,12 +262,30 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		/**
+		 * <1>获取当前类加载器</>
+		 */
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
+		/**
+		 * <2>设置主类，即启动类</>
+		 */
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		/**
+		 * <3>web类型判断</>
+		 */
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		/**
+		 * <4>从META-INF/spring.factories中后去所有的初始化器/</>
+		 */
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		/**
+		 * <5>从META-INF/spring.factories中后去所有的监听器/</>
+		 */
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		/**
+		 * <6>设置主类</>
+		 */
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -292,6 +310,9 @@ public class SpringApplication {
 
 	private Class<?> deduceMainApplicationClass() {
 		try {
+			/**
+			 * <6.1>推断主类</>
+			 */
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
 			for (StackTraceElement stackTraceElement : stackTrace) {
 				if ("main".equals(stackTraceElement.getMethodName())) {
@@ -497,11 +518,11 @@ public class SpringApplication {
 		 */
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		/**
-		 * 创建对象
+		 * 创建实例对象
 		 */
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
 		/**
-		 * 排序对象
+		 * 给所有实例排序
 		 */
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
@@ -1327,6 +1348,9 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		/***
+		 * <1>创建SpringApplication并加载所有的MATE-INFO/spring.properties中的类</>
+		 */
 		return new SpringApplication(primarySources).run(args);
 	}
 
