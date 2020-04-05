@@ -50,11 +50,6 @@ public abstract class PushRegistryProperties {
 	private Duration readTimeout = Duration.ofSeconds(10);
 
 	/**
-	 * Number of threads to use with the metrics publishing scheduler.
-	 */
-	private Integer numThreads = 2;
-
-	/**
 	 * Number of measurements per request to use for this backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
@@ -90,16 +85,6 @@ public abstract class PushRegistryProperties {
 
 	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
-	}
-
-	@Deprecated
-	public Integer getNumThreads() {
-		return this.numThreads;
-	}
-
-	@Deprecated
-	public void setNumThreads(Integer numThreads) {
-		this.numThreads = numThreads;
 	}
 
 	public Integer getBatchSize() {

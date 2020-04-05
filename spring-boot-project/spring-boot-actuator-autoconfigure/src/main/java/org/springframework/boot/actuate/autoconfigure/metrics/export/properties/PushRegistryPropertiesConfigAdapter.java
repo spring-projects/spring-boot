@@ -57,12 +57,6 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public int numThreads() {
-		return get(T::getNumThreads, PushRegistryConfig.super::numThreads);
-	}
-
-	@Override
 	public int batchSize() {
 		return get(T::getBatchSize, PushRegistryConfig.super::batchSize);
 	}
