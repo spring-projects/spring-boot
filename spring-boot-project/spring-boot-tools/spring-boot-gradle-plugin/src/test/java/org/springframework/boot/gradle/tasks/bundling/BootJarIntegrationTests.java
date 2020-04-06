@@ -31,8 +31,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.jar.JarFile;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
@@ -103,30 +104,25 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
 				"application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
-		List<String> expectedDependencies = new ArrayList<>();
+		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add("BOOT-INF/lib/commons-lang3-3.9.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
-		List<String> expectedSnapshotDependencies = new ArrayList<>();
+		Set<String> expectedSnapshotDependencies = new TreeSet<>();
 		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
-		assertThat(indexedLayers.get("spring-boot-loader"))
-				.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
-		assertThat(indexedLayers.get("application")).containsExactly("META-INF/MANIFEST.MF",
-				"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt", "BOOT-INF/classpath.idx",
-				"BOOT-INF/layers.idx");
+		assertThat(indexedLayers.get("application")).containsExactly("BOOT-INF/classes/", "BOOT-INF/classpath.idx",
+				"BOOT-INF/layers.idx", "META-INF/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String listLayersOutput = listLayers.getOutput();
 		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
 		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
 		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
-		assertThat(extractedLayers.keySet()).isEqualTo(indexedLayers.keySet());
-		extractedLayers.forEach(
-				(name, contents) -> assertThat(contents).containsExactlyInAnyOrderElementsOf(indexedLayers.get(name)));
+		assertExtractedLayers(layerNames, indexedLayers);
 	}
 
 	@TestTemplate
@@ -151,7 +147,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
 				"static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
-		List<String> expectedDependencies = new ArrayList<>();
+		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
@@ -160,23 +156,48 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
-		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
+		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
-		List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
-				"BOOT-INF/classpath.idx", "BOOT-INF/layers.idx");
+		Set<String> nonLoaderEntries = new TreeSet<>();
+		nonLoaderEntries.add("BOOT-INF/classes/example/");
+		nonLoaderEntries.add("BOOT-INF/classpath.idx");
+		nonLoaderEntries.add("BOOT-INF/layers.idx");
+		nonLoaderEntries.add("META-INF/");
 		assertThat(appLayer).containsSubsequence(nonLoaderEntries);
 		appLayer.removeAll(nonLoaderEntries);
-		assertThat(appLayer).allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+		assertThat(appLayer).containsExactly("org/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String listLayersOutput = listLayers.getOutput();
 		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
 		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
 		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertExtractedLayers(layerNames, indexedLayers);
+	}
+
+	private void assertExtractedLayers(List<String> layerNames, Map<String, List<String>> indexedLayers)
+			throws IOException {
 		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
 		assertThat(extractedLayers.keySet()).isEqualTo(indexedLayers.keySet());
-		extractedLayers.forEach(
-				(name, contents) -> assertThat(contents).containsExactlyInAnyOrderElementsOf(indexedLayers.get(name)));
+		extractedLayers.forEach((name, contents) -> {
+			List<String> index = indexedLayers.get(name);
+			List<String> unexpected = new ArrayList<>();
+			for (String file : contents) {
+				if (!isInIndex(index, file)) {
+					unexpected.add(name);
+				}
+			}
+			assertThat(unexpected).isEmpty();
+		});
+	}
+
+	private boolean isInIndex(List<String> index, String file) {
+		for (String candidate : index) {
+			if (file.equals(candidate) || candidate.endsWith("/") && file.startsWith(candidate)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void writeMainClass() {
@@ -213,11 +234,21 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	private Map<String, List<String>> readLayerIndex(JarFile jarFile) throws IOException {
+		Map<String, List<String>> index = new LinkedHashMap<>();
 		ZipEntry indexEntry = jarFile.getEntry("BOOT-INF/layers.idx");
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
-			return reader.lines().map((line) -> line.split(" "))
-					.collect(Collectors.groupingBy((layerAndPath) -> layerAndPath[0], LinkedHashMap::new,
-							Collectors.mapping((layerAndPath) -> layerAndPath[1], Collectors.toList())));
+			String line = reader.readLine();
+			String layer = null;
+			while (line != null) {
+				if (line.startsWith("- ")) {
+					layer = line.substring(3, line.length() - 2);
+				}
+				else if (line.startsWith("  - ")) {
+					index.computeIfAbsent(layer, (key) -> new ArrayList<>()).add(line.substring(5, line.length() - 1));
+				}
+				line = reader.readLine();
+			}
+			return index;
 		}
 	}
 

@@ -69,6 +69,13 @@ class IndexedLayersTests {
 				.withMessage("No layer defined in index for file " + "'file.jar'");
 	}
 
+	@Test
+	void getLayerWhenMatchesFolderReturnsLayer() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
+		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("application");
+		assertThat(layers.getLayer(mockEntry("META-INF/a/sub/folder/and/a/file"))).isEqualTo("application");
+	}
+
 	private String getIndex() throws Exception {
 		ClassPathResource resource = new ClassPathResource("test-layers.idx", getClass());
 		InputStreamReader reader = new InputStreamReader(resource.getInputStream());

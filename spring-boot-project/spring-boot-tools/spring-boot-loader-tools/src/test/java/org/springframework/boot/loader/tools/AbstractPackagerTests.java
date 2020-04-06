@@ -268,84 +268,20 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
-		getExpectedLayers(expectedLayers);
-		expectedLayers.add("default " + "BOOT-INF/classpath.idx");
-		expectedLayers.add("default " + "BOOT-INF/layers.idx");
-		expectedLayers.add("0001 " + "BOOT-INF/lib/" + libJarFile1.getName());
-		expectedLayers.add("0002 " + "BOOT-INF/lib/" + libJarFile2.getName());
-		expectedLayers.add("0003 " + "BOOT-INF/lib/" + libJarFile3.getName());
-		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly(expectedLayers.toArray(new String[0]));
-	}
-
-	private void getExpectedLayers(List<String> expectedLayers) {
-		expectedLayers.add("default META-INF/MANIFEST.MF");
-		expectedLayers.add("default org/springframework/boot/loader/ClassPathIndexFile.class");
-		expectedLayers.add("default org/springframework/boot/loader/ExecutableArchiveLauncher.class");
-		expectedLayers.add("default org/springframework/boot/loader/JarLauncher.class");
-		expectedLayers.add(
-				"default org/springframework/boot/loader/LaunchedURLClassLoader$UseFastConnectionExceptionsEnumeration.class");
-		expectedLayers.add("default org/springframework/boot/loader/LaunchedURLClassLoader.class");
-		expectedLayers.add("default org/springframework/boot/loader/Launcher.class");
-		expectedLayers.add("default org/springframework/boot/loader/MainMethodRunner.class");
-		expectedLayers.add("default org/springframework/boot/loader/PropertiesLauncher$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/PropertiesLauncher$ArchiveEntryFilter.class");
-		expectedLayers
-				.add("default org/springframework/boot/loader/PropertiesLauncher$PrefixMatchingArchiveFilter.class");
-		expectedLayers.add("default org/springframework/boot/loader/PropertiesLauncher.class");
-		expectedLayers.add("default org/springframework/boot/loader/WarLauncher.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/Archive$Entry.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/Archive$EntryFilter.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/Archive.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/ExplodedArchive$AbstractIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/ExplodedArchive$ArchiveIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/ExplodedArchive$EntryIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/ExplodedArchive$FileEntry.class");
-		expectedLayers
-				.add("default org/springframework/boot/loader/archive/ExplodedArchive$SimpleJarFileArchive.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/ExplodedArchive.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/JarFileArchive$AbstractIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/JarFileArchive$EntryIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/JarFileArchive$JarFileEntry.class");
-		expectedLayers
-				.add("default org/springframework/boot/loader/archive/JarFileArchive$NestedArchiveIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/archive/JarFileArchive.class");
-		expectedLayers.add("default org/springframework/boot/loader/data/RandomAccessData.class");
-		expectedLayers.add("default org/springframework/boot/loader/data/RandomAccessDataFile$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/data/RandomAccessDataFile$DataInputStream.class");
-		expectedLayers.add("default org/springframework/boot/loader/data/RandomAccessDataFile$FileAccess.class");
-		expectedLayers.add("default org/springframework/boot/loader/data/RandomAccessDataFile.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/AsciiBytes.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/Bytes.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryEndRecord$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryEndRecord$Zip64End.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryEndRecord$Zip64Locator.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryEndRecord.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryFileHeader.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryParser.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/CentralDirectoryVisitor.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/FileHeader.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/Handler.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarEntry.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarEntryFilter.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFile$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFile$2.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFile$JarFileType.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFile.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFileEntries$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFileEntries$EntryIterator.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarFileEntries.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarURLConnection$1.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarURLConnection$2.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarURLConnection$CloseAction.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarURLConnection$JarEntryName.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/JarURLConnection.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/StringSequence.class");
-		expectedLayers.add("default org/springframework/boot/loader/jar/ZipInflaterInputStream.class");
-		expectedLayers.add("default org/springframework/boot/loader/jarmode/JarMode.class");
-		expectedLayers.add("default org/springframework/boot/loader/jarmode/JarModeLauncher.class");
-		expectedLayers.add("default org/springframework/boot/loader/jarmode/TestJarMode.class");
-		expectedLayers.add("default org/springframework/boot/loader/util/SystemPropertyUtils.class");
-		expectedLayers.add("default BOOT-INF/classes/a/b/C.class");
+		expectedLayers.add("- 'default':");
+		expectedLayers.add("  - 'BOOT-INF/classes/'");
+		expectedLayers.add("  - 'BOOT-INF/classpath.idx'");
+		expectedLayers.add("  - 'BOOT-INF/layers.idx'");
+		expectedLayers.add("  - 'META-INF/'");
+		expectedLayers.add("  - 'org/'");
+		expectedLayers.add("- '0001':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile1.getName() + "'");
+		expectedLayers.add("- '0002':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile2.getName() + "'");
+		expectedLayers.add("- '0003':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile3.getName() + "'");
+		assertThat(layersIndex.split("\\n"))
+				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test
@@ -360,8 +296,13 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly("spring-boot-jarmode-layertools.jar");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
-		assertThat(Arrays.stream(layersIndex.split("\\n")).map((n) -> n.split(" ")[0]).distinct())
-				.containsExactly("default");
+		List<String> expectedLayers = new ArrayList<>();
+		expectedLayers.add("- 'default':");
+		expectedLayers.add("  - 'BOOT-INF/'");
+		expectedLayers.add("  - 'META-INF/'");
+		expectedLayers.add("  - 'org/'");
+		assertThat(layersIndex.split("\\n"))
+				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test

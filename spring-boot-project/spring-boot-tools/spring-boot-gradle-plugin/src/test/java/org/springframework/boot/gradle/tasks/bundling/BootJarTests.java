@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -103,12 +104,27 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
-			assertThat(index).contains("dependencies BOOT-INF/lib/first-library.jar",
-					"dependencies BOOT-INF/lib/second-library.jar",
-					"snapshot-dependencies BOOT-INF/lib/third-library-SNAPSHOT.jar",
-					"application BOOT-INF/classes/com/example/Application.class",
-					"application BOOT-INF/classes/application.properties",
-					"application BOOT-INF/classes/static/test.css");
+			String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
+			List<String> expected = new ArrayList<>();
+			expected.add("- \"dependencies\":");
+			expected.add("  - \"BOOT-INF/lib/first-library.jar\"");
+			expected.add("  - \"BOOT-INF/lib/second-library.jar\"");
+			if (!layerToolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + layerToolsJar + "\"");
+			}
+			expected.add("- \"spring-boot-loader\":");
+			expected.add("  - \"org/\"");
+			expected.add("- \"snapshot-dependencies\":");
+			if (layerToolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + layerToolsJar + "\"");
+			}
+			expected.add("  - \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"");
+			expected.add("- \"application\":");
+			expected.add("  - \"BOOT-INF/classes/\"");
+			expected.add("  - \"BOOT-INF/classpath.idx\"");
+			expected.add("  - \"BOOT-INF/layers.idx\"");
+			expected.add("  - \"META-INF/\"");
+			assertThat(index).containsExactlyElementsOf(expected);
 		}
 	}
 
@@ -134,12 +150,25 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
 					"resources", "application");
-			assertThat(index).contains("my-internal-deps BOOT-INF/lib/first-library.jar",
-					"my-internal-deps BOOT-INF/lib/second-library.jar",
-					"my-snapshot-deps BOOT-INF/lib/third-library-SNAPSHOT.jar",
-					"application BOOT-INF/classes/com/example/Application.class",
-					"application BOOT-INF/classes/application.properties",
-					"resources BOOT-INF/classes/static/test.css");
+			String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
+			List<String> expected = new ArrayList<>();
+			expected.add("- \"my-deps\":");
+			expected.add("  - \"" + layerToolsJar + "\"");
+			expected.add("- \"my-internal-deps\":");
+			expected.add("  - \"BOOT-INF/lib/first-library.jar\"");
+			expected.add("  - \"BOOT-INF/lib/second-library.jar\"");
+			expected.add("- \"my-snapshot-deps\":");
+			expected.add("  - \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"");
+			expected.add("- \"resources\":");
+			expected.add("  - \"BOOT-INF/classes/static/\"");
+			expected.add("- \"application\":");
+			expected.add("  - \"BOOT-INF/classes/application.properties\"");
+			expected.add("  - \"BOOT-INF/classes/com/\"");
+			expected.add("  - \"BOOT-INF/classpath.idx\"");
+			expected.add("  - \"BOOT-INF/layers.idx\"");
+			expected.add("  - \"META-INF/\"");
+			expected.add("  - \"org/\"");
+			assertThat(index).containsExactlyElementsOf(expected);
 		}
 	}
 
@@ -261,11 +290,13 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	}
 
 	private Set<String> getLayerNames(List<String> index) {
-		return index.stream().map(this::getLayerName).collect(Collectors.toCollection(LinkedHashSet::new));
-	}
-
-	private String getLayerName(String indexLine) {
-		return indexLine.substring(0, indexLine.indexOf(" "));
+		Set<String> layerNames = new LinkedHashSet<>();
+		for (String line : index) {
+			if (line.startsWith("- ")) {
+				layerNames.add(line.substring(3, line.length() - 2));
+			}
+		}
+		return layerNames;
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Layers} implementation backed by a {@code BOOT-INF/layers.idx} file.
@@ -43,12 +44,19 @@ class IndexedLayers implements Layers {
 	private MultiValueMap<String, String> layers = new LinkedMultiValueMap<>();
 
 	IndexedLayers(String indexFile) {
-		String[] lines = indexFile.split("\n");
-		Arrays.stream(lines).map(String::trim).filter((line) -> !line.isEmpty()).forEach((line) -> {
-			String[] content = line.split(" ");
-			Assert.state(content.length == 2, "Layer index file is malformed");
-			this.layers.add(content[0], content[1]);
-		});
+		String[] lines = Arrays.stream(indexFile.split("\n")).filter(StringUtils::hasText).toArray(String[]::new);
+		String layer = null;
+		for (String line : lines) {
+			if (line.startsWith("- ")) {
+				layer = line.substring(3, line.length() - 2);
+			}
+			else if (line.startsWith("  - ")) {
+				this.layers.add(layer, line.substring(5, line.length() - 1));
+			}
+			else {
+				throw new IllegalStateException("Layer index file is malformed");
+			}
+		}
 		Assert.state(!this.layers.isEmpty(), "Empty layer index file loaded");
 	}
 
@@ -59,10 +67,15 @@ class IndexedLayers implements Layers {
 
 	@Override
 	public String getLayer(ZipEntry entry) {
-		String name = entry.getName();
-		for (Map.Entry<String, List<String>> indexEntry : this.layers.entrySet()) {
-			if (indexEntry.getValue().contains(name)) {
-				return indexEntry.getKey();
+		return getLayer(entry.getName());
+	}
+
+	private String getLayer(String name) {
+		for (Map.Entry<String, List<String>> entry : this.layers.entrySet()) {
+			for (String candidate : entry.getValue()) {
+				if (candidate.equals(name) || (candidate.endsWith("/") && name.startsWith(candidate))) {
+					return entry.getKey();
+				}
 			}
 		}
 		throw new IllegalStateException("No layer defined in index for file '" + name + "'");

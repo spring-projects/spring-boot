@@ -1,3 +1,6 @@
-test BOOT-INF/lib/a.jar
-test BOOT-INF/lib/b.jar
-application BOOT-INF/classes/Demo.class
+- "test":
+  - "BOOT-INF/lib/a.jar"
+  - "BOOT-INF/lib/b.jar"
+- "application":
+  - "BOOT-INF/classes/Demo.class"
+  - "META-INF/"
