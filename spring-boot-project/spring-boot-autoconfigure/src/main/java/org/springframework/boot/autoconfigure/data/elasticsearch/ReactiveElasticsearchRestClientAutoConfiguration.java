@@ -42,12 +42,12 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveRestClients.class, WebClient.class, HttpClient.class })
-@EnableConfigurationProperties(ReactiveRestClientProperties.class)
-public class ReactiveRestClientAutoConfiguration {
+@EnableConfigurationProperties(ReactiveElasticsearchRestClientProperties.class)
+public class ReactiveElasticsearchRestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ClientConfiguration clientConfiguration(ReactiveRestClientProperties properties) {
+	public ClientConfiguration clientConfiguration(ReactiveElasticsearchRestClientProperties properties) {
 		ClientConfiguration.MaybeSecureClientConfigurationBuilder builder = ClientConfiguration.builder()
 				.connectedTo(properties.getEndpoints().toArray(new String[0]));
 		if (properties.isUseSsl()) {
@@ -59,7 +59,7 @@ public class ReactiveRestClientAutoConfiguration {
 	}
 
 	private void configureTimeouts(ClientConfiguration.TerminalClientConfigurationBuilder builder,
-			ReactiveRestClientProperties properties) {
+			ReactiveElasticsearchRestClientProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getConnectionTimeout()).whenNonNull().to(builder::withConnectTimeout);
 		map.from(properties.getSocketTimeout()).whenNonNull().to(builder::withSocketTimeout);
@@ -71,7 +71,7 @@ public class ReactiveRestClientAutoConfiguration {
 	}
 
 	private void configureExchangeStrategies(ClientConfiguration.TerminalClientConfigurationBuilder builder,
-			ReactiveRestClientProperties properties) {
+			ReactiveElasticsearchRestClientProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
 		builder.withWebClientConfigurer((webClient) -> {
 			ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()

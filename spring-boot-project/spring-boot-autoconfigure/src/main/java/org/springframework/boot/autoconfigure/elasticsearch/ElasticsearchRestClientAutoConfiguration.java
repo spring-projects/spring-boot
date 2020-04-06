@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch.rest;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import org.elasticsearch.client.RestClient;
 
@@ -33,10 +33,10 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
-@EnableConfigurationProperties(RestClientProperties.class)
-@Import({ RestClientConfigurations.RestClientBuilderConfiguration.class,
-		RestClientConfigurations.RestHighLevelClientConfiguration.class,
-		RestClientConfigurations.RestClientFallbackConfiguration.class })
-public class RestClientAutoConfiguration {
+@EnableConfigurationProperties(ElasticsearchRestClientProperties.class)
+@Import({ ElasticsearchRestClientConfigurations.RestClientBuilderConfiguration.class,
+		ElasticsearchRestClientConfigurations.RestHighLevelClientConfiguration.class,
+		ElasticsearchRestClientConfigurations.RestClientFallbackConfiguration.class })
+public class ElasticsearchRestClientAutoConfiguration {
 
 }

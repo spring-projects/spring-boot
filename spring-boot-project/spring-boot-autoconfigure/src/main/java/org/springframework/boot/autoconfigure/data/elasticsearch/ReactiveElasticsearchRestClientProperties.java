@@ -31,7 +31,7 @@ import org.springframework.util.unit.DataSize;
  * @since 2.2.0
  */
 @ConfigurationProperties(prefix = "spring.data.elasticsearch.client.reactive")
-public class ReactiveRestClientProperties {
+public class ReactiveElasticsearchRestClientProperties {
 
 	/**
 	 * Comma-separated list of the Elasticsearch endpoints to connect to.
