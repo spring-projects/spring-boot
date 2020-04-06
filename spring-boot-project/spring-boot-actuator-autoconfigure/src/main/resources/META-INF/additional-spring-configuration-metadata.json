@@ -329,6 +329,10 @@
       "defaultValue": true
     },
     {
+      "name": "management.metrics.export.prometheus.histogram-flavor",
+      "defaultValue": "prometheus"
+    },
+    {
       "name": "management.metrics.export.signalfx.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",

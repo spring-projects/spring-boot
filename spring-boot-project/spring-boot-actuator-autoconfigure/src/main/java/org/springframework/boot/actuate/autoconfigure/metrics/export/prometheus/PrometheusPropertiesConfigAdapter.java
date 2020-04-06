@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 
 import java.time.Duration;
 
+import io.micrometer.prometheus.HistogramFlavor;
 import io.micrometer.prometheus.PrometheusConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
@@ -43,6 +44,11 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	@Override
 	public boolean descriptions() {
 		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
+	}
+
+	@Override
+	public HistogramFlavor histogramFlavor() {
+		return get(PrometheusProperties::getHistogramFlavor, PrometheusConfig.super::histogramFlavor);
 	}
 
 	@Override
