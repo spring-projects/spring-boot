@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
-import io.micrometer.statsd.StatsdMetrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -61,11 +60,6 @@ public class StatsdMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig, Clock clock) {
 		return new StatsdMeterRegistry(statsdConfig, clock);
-	}
-
-	@Bean
-	public StatsdMetrics statsdMetrics() {
-		return new StatsdMetrics();
 	}
 
 }

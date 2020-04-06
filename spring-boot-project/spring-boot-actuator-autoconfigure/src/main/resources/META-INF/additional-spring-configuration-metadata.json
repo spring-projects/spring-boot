@@ -329,6 +329,10 @@
       "defaultValue": true
     },
     {
+      "name": "management.metrics.export.prometheus.histogram-flavor",
+      "defaultValue": "prometheus"
+    },
+    {
       "name": "management.metrics.export.signalfx.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
@@ -372,6 +376,18 @@
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
       "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.connect-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.read-timeout",
       "deprecation": {
         "level": "error"
       }

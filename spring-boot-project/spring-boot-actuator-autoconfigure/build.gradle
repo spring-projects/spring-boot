@@ -101,6 +101,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-solr")
 	optional("org.springframework.integration:spring-integration-core")
+	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
