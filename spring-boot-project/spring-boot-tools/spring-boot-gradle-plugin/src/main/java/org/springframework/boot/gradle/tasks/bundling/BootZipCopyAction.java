@@ -26,9 +26,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.zip.UnixStat;
@@ -345,8 +347,9 @@ class BootZipCopyAction implements CopyAction {
 			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
 			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
 			if (classPathIndex != null) {
-				writeEntry(classPathIndex,
-						ZipEntryWriter.fromLines(BootZipCopyAction.this.encoding, this.writtenLibraries), true);
+				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
+						.collect(Collectors.toList());
+				writeEntry(classPathIndex, ZipEntryWriter.fromLines(BootZipCopyAction.this.encoding, lines), true);
 			}
 		}
 

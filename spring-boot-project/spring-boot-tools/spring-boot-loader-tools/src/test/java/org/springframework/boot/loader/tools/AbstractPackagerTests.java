@@ -212,7 +212,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	}
 
 	@Test
-	void index() throws Exception {
+	void classPathIndex() throws Exception {
 		TestJarFile libJar1 = new TestJarFile(this.tempDir);
 		libJar1.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
 		File libJarFile1 = libJar1.getFile();
@@ -233,8 +233,9 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
-		assertThat(Arrays.asList(libraries)).contains(libJarFile1.getName(), libJarFile2.getName(),
-				libJarFile3.getName());
+		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
+				.map((jar) -> "- \"" + jar.getName() + "\"").collect(Collectors.toList());
+		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
 	@Test
@@ -263,8 +264,9 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly(libJarFile1.getName(),
-				libJarFile2.getName(), libJarFile3.getName());
+		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
+				.map((file) -> "- \"" + file.getName() + "\"").collect(Collectors.toList());
+		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -293,7 +295,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, Libraries.NONE);
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly("spring-boot-jarmode-layertools.jar");
+		assertThat(Arrays.asList(classpathIndex.split("\\n")))
+				.containsExactly("- \"spring-boot-jarmode-layertools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();

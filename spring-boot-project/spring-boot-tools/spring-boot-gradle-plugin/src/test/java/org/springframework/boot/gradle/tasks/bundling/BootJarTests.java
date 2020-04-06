@@ -185,8 +185,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	@Test
 	void whenJarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("first-library.jar",
-					"second-library.jar", "third-library-SNAPSHOT.jar");
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
+					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"");
 		}
 	}
 
@@ -208,8 +208,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
 					.isEqualTo("BOOT-INF/classpath.idx");
-			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("first-library.jar",
-					"second-library.jar", "third-library-SNAPSHOT.jar");
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
+					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"");
 		}
 	}
 

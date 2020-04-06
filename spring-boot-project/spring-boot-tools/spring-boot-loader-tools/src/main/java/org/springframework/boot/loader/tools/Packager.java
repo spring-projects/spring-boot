@@ -505,7 +505,8 @@ public abstract class Packager {
 		}
 
 		private void writeClasspathIndex(RepackagingLayout layout, AbstractJarWriter writer) throws IOException {
-			List<String> names = this.libraries.keySet().stream().map(this::getJarName).collect(Collectors.toList());
+			List<String> names = this.libraries.keySet().stream().map(this::getJarName)
+					.map((name) -> "- \"" + name + "\"").collect(Collectors.toList());
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
 		}
 
