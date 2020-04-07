@@ -1,5 +1,5 @@
 [[build-image]]
-== Packaging OCI images
+== Packaging OCI Images
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
 Images can be built using the `build-image` goal.
 
@@ -32,7 +32,7 @@ When the `build-image` repackages the application, it applies the same settings 
 
 
 [[build-image-docker-daemon]]
-=== Docker daemon
+=== Docker Daemon
 The `build-image` goal requires access to a Docker daemon.
 By default, it will communicate with a Docker daemon over a local connection.
 This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
@@ -58,7 +58,7 @@ On Linux and macOS, these environment variables can be set using the command `ev
 
 
 [[build-image-customization]]
-=== Image customizations
+=== Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
 The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
@@ -108,7 +108,7 @@ include::goals/build-image.adoc[leveloffset=+1]
 
 
 [[build-image-example-custom-image-builder]]
-==== Custom image builder
+==== Custom Image Builder
 If you need to customize the builder used to create the image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -140,8 +140,10 @@ The builder can be specified on the command line as well, as shown in this examp
 	$ mvn spring-boot:build-image -Dspring-boot.build-image:builder=mine/java-cnb-builder
 ----
 
+
+
 [[build-image-example-builder-configuration]]
-==== Builder configuration
+==== Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
 The following example assumes that the default builder defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use):
@@ -197,7 +199,7 @@ When using the default builder, this can be accomplished by setting the `HTTPS_P
 
 
 [[build-image-example-custom-image-name]]
-==== Custom image name
+==== Custom Image Name
 By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 

@@ -1,12 +1,12 @@
 [[reacting-to-other-plugins]]
-== Reacting to other plugins
+== Reacting to Other Plugins
 When another plugin is applied the Spring Boot plugin reacts by making various changes to the project's configuration.
 This section describes those changes.
 
 
 
 [[reacting-to-other-plugins-java]]
-=== Reacting to the Java plugin
+=== Reacting to the Java Plugin
 When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an executable, fat jar for the project.
@@ -22,7 +22,7 @@ When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring B
 
 
 [[reacting-to-other-plugins-kotlin]]
-=== Reacting to the Kotlin plugin
+=== Reacting to the Kotlin Plugin
 When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
 
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version of the plugin.
@@ -32,7 +32,7 @@ When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring
 
 
 [[reacting-to-other-plugins-war]]
-=== Reacting to the war plugin
+=== Reacting to the War Plugin
 When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-war-javadoc}[`BootWar`] task named `bootWar` that will create an executable, fat war for the project.
@@ -44,13 +44,13 @@ When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boo
 
 
 [[reacting-to-other-plugins-dependency-management]]
-=== Reacting to the dependency management plugin
+=== Reacting to the Dependency Management Plugin
 When the {dependency-management-plugin}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
 
 
 
 [[reacting-to-other-plugins-application]]
-=== Reacting to the application plugin
+=== Reacting to the Application Plugin
 When Gradle's {application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts that launch the artifact in the `bootArchives` configuration using `java -jar`.

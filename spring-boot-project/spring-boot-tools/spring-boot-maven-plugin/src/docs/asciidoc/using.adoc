@@ -1,5 +1,5 @@
 [[using]]
-== Using the plugin
+== Using the Plugin
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
 The parent project provides the following features:
 

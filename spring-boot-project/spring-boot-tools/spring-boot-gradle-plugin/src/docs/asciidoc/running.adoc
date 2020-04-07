@@ -1,5 +1,5 @@
 [[running-your-application]]
-== Running your application with Gradle
+== Running your Application with Gradle
 To run your application without first building an archive use the `bootRun` task:
 
 [source,bash,indent=0,subs="verbatim"]
@@ -73,7 +73,7 @@ include::../gradle/running/application-plugin-main-class-name.gradle.kts[tags=ma
 
 
 [[running-your-application-passing-arguments]]
-=== Passing arguments to your application
+=== Passing Arguments to your Application
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
 
@@ -87,7 +87,7 @@ See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.Stri
 
 
 [[running-your-application-reloading-resources]]
-=== Reloading resources
+=== Reloading Resources
 If devtools has been added to your project it will automatically monitor your application for changes.
 Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:
 

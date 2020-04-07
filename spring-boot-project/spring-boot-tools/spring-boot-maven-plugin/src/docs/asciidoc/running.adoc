@@ -1,6 +1,5 @@
 [[run]]
-== Running your application with Maven
-
+== Running your Application with Maven
 The plugin includes a run goal which can be used to launch your application from the command line, as shown in the following example:
 
 [indent=0]

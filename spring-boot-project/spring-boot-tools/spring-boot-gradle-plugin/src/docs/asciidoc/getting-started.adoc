@@ -1,6 +1,5 @@
 [[getting-started]]
-== Getting started
-
+== Getting Started
 To get started with the plugin it needs to be applied to your project.
 
 ifeval::["{version-type}" == "RELEASE"]
