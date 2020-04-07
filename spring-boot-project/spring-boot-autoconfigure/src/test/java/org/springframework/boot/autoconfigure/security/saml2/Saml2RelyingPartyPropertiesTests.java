@@ -44,7 +44,7 @@ class Saml2RelyingPartyPropertiesTests {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.url",
 				"https://simplesaml-for-spring-saml/SSOService.php");
 		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn().getUrl())
+				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon().getUrl())
 						.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
@@ -53,14 +53,14 @@ class Saml2RelyingPartyPropertiesTests {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.url",
 				"https://simplesaml-for-spring-saml/SSOService.php");
 		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn().getUrl())
+				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon().getUrl())
 						.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
 	@Test
 	void customizeSsoBindingDefaultsToRedirect() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
 				.getBinding()).isEqualTo(Saml2MessageBinding.REDIRECT);
 	}
 
@@ -68,7 +68,7 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoBinding() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.binding",
 				"post");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
 				.getBinding()).isEqualTo(Saml2MessageBinding.POST);
 	}
 
@@ -76,14 +76,14 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoSignRequests() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.sign-request",
 				"false");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
 				.isSignRequest()).isEqualTo(false);
 	}
 
 	@Test
 	void customizeSsoSignRequestsIsTrueByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSingleSignOn()
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
 				.isSignRequest()).isEqualTo(true);
 	}
 
