@@ -161,6 +161,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java8
+        MILESTONE: ((branch))
       image: spring-boot-ci-image
     - task: detect-jdk11-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
@@ -170,6 +171,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java11
+        MILESTONE: ((branch))
       image: spring-boot-ci-image
 - name: detect-ubuntu-image-updates
   plan:
@@ -185,6 +187,7 @@ jobs:
         GITHUB_ORGANIZATION: spring-projects
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
+        MILESTONE: ((branch))
       image: spring-boot-ci-image
 - name: detect-docker-updates
   plan:
@@ -199,6 +202,7 @@ jobs:
       params:
         GITHUB_REPO: spring-boot
         GITHUB_ORGANIZATION: spring-projects
+        MILESTONE: ((branch))
       image: spring-boot-ci-image
     - put: git-repo-ci-docker
       params:
