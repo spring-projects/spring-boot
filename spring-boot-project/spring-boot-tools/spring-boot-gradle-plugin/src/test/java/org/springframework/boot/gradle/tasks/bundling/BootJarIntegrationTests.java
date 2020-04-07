@@ -44,6 +44,7 @@ import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -257,8 +258,9 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		for (String layerName : layerNames) {
 			File layer = new File(root, layerName);
 			assertThat(layer).isDirectory();
-			extractedLayers.put(layerName, Files.walk(layer.toPath()).filter((path) -> path.toFile().isFile())
-					.map(layer.toPath()::relativize).map(Path::toString).collect(Collectors.toList()));
+			extractedLayers.put(layerName,
+					Files.walk(layer.toPath()).filter((path) -> path.toFile().isFile()).map(layer.toPath()::relativize)
+							.map(Path::toString).map(StringUtils::cleanPath).collect(Collectors.toList()));
 		}
 		return extractedLayers;
 	}
