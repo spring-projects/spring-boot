@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.plugin;
+package org.springframework.boot.gradle.util;
 
 import java.io.File;
 import java.io.IOException;

@@ -38,7 +38,7 @@ import org.springframework.boot.buildpack.platform.docker.transport.DockerEngine
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
-import org.springframework.boot.gradle.plugin.VersionExtractor;
+import org.springframework.boot.gradle.util.VersionExtractor;
 import org.springframework.util.StringUtils;
 
 /**
