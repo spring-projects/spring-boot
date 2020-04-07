@@ -68,7 +68,6 @@ class HelpCommandTests {
 		this.command.run(this.out, Collections.emptyMap(), Arrays.asList("extract"));
 		System.out.println(this.out);
 		assertThat(this.out).hasSameContentAsResource("help-extract-output.txt");
-
 	}
 
 	private File createJarFile(String name) throws IOException {
@@ -81,7 +80,7 @@ class HelpCommandTests {
 			writer.write("  - \"BOOT-INF/lib/a.jar\"\n");
 			writer.write("  - \"BOOT-INF/lib/b.jar\"\n");
 			writer.write("- \"0002\":\n");
-			writer.write("  - \"0002 BOOT-INF/lib/c.jar\"\n");
+			writer.write("  - \"BOOT-INF/lib/c.jar\"\n");
 			writer.write("- \"0003\":\n");
 			writer.write("  - \"BOOT-INF/lib/d.jar\"\n");
 			writer.flush();
