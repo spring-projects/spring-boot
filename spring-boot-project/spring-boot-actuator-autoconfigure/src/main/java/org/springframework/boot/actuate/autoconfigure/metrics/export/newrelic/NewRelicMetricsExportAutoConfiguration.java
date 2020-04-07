@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
 import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicInsightsAgentClientProvider;
@@ -84,36 +88,35 @@ public class NewRelicMetricsExportAutoConfiguration {
 	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
 			havingValue = "INSIGHTS_API", matchIfMissing = true)
 	public NewRelicClientProvider newRelicInsightsApiClientProvider(NewRelicConfig config,
-			@Value("${management.metrics.export.newrelic.api.proxy-host:}") String apiProxyHost,
-			@Value("${management.metrics.export.newrelic.api.proxy-port:0}") int apiProxyPort) {
+			@Value("${management.metrics.export.newrelic.api-proxy-host:}") String proxyHost,
+			@Value("${management.metrics.export.newrelic.api-proxy-port:0}") int proxyPort) {
 
-		NewRelicClientProvider clientProvider = null;
-
-		if (StringUtils.isNotEmpty(apiProxyHost)) {
+		if (StringUtils.isNotEmpty(proxyHost)) {
 			// Allow setting of proxy info for REST API provider
-			clientProvider = new NewRelicInsightsApiClientProvider(config, apiProxyHost, apiProxyPort);
+			return new NewRelicInsightsApiClientProvider(config,
+					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout(),
+							new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort))));
+
+			// read/connectTimeout via NewRelicConfig.
+			// See: https://github.com/micrometer-metrics/micrometer/pull/1961
+			// return new NewRelicInsightsApiClientProvider(config,
+			// apiProxyHost, apiProxyPort);
 		}
 		else {
-			clientProvider = new NewRelicInsightsApiClientProvider(config);
-		}
+			return new NewRelicInsightsApiClientProvider(config,
+					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()));
 
-		return clientProvider;
+			// read/connectTimeout via NewRelicConfig.
+			// See: https://github.com/micrometer-metrics/micrometer/pull/1961
+			// return new NewRelicInsightsApiClientProvider(config);
+		}
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config, Clock clock,
-			NewRelicClientProvider newRelicClientProvider, @Value("${spring.application.name:}") String springAppName) {
-
-		NewRelicMeterRegistry registry = new NewRelicMeterRegistry(config, newRelicClientProvider, clock);
-
-		if (newRelicClientProvider instanceof NewRelicInsightsApiClientProvider
-				&& StringUtils.isNotEmpty(springAppName)) {
-			// set appName for added metric context (like the Agent)
-			registry.config().commonTags("appName", springAppName);
-		}
-
-		return registry;
+			NewRelicClientProvider newRelicClientProvider) {
+		return new NewRelicMeterRegistry(config, newRelicClientProvider, clock);
 	}
 
 }

@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NewRelicProperties}.
  *
  * @author Stephane Nicoll
+ * @author Neil Powell
  */
 class NewRelicPropertiesTests extends StepRegistryPropertiesTests {
 
@@ -38,6 +39,7 @@ class NewRelicPropertiesTests extends StepRegistryPropertiesTests {
 		// apiKey and account are mandatory
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.isMeterNameEventTypeEnabled()).isEqualTo(config.meterNameEventTypeEnabled());
+		assertThat(properties.getClientProviderType()).isEqualTo(config.clientProviderType());
 	}
 
 	@Test

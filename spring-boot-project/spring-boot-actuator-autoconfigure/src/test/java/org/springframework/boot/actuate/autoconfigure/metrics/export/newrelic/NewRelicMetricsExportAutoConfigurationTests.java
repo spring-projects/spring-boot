@@ -17,6 +17,17 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.FunctionTimer;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.LongTaskTimer;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.TimeGauge;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.config.NamingConvention;
+import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -34,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NewRelicMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Neil Powell
  */
 class NewRelicMetricsExportAutoConfigurationTests {
 
@@ -124,6 +136,15 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void allowsClientProviderToBeCustomized() {
+		this.contextRunner.withUserConfiguration(CustomClientProviderConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.account-id=12345")
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicClientProvider.class)
+						.hasBean("customClientProvider"));
+	}
+
+	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
@@ -172,6 +193,73 @@ class NewRelicMetricsExportAutoConfigurationTests {
 		@Bean
 		NewRelicMeterRegistry customRegistry(NewRelicConfig config, Clock clock) {
 			return new NewRelicMeterRegistry(config, clock);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomClientProviderConfiguration {
+
+		@Bean
+		NewRelicClientProvider customClientProvider() {
+			return new NewRelicClientProvider() {
+
+				@Override
+				public Object writeTimer(Timer timer) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeTimeGauge(TimeGauge gauge) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeSummary(DistributionSummary summary) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeMeter(Meter meter) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeLongTaskTimer(LongTaskTimer timer) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeGauge(Gauge gauge) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeFunctionTimer(FunctionTimer timer) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeFunctionCounter(FunctionCounter counter) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public Object writeCounter(Counter counter) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public void setNamingConvention(NamingConvention namingConvention) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+
+				@Override
+				public void publish(NewRelicMeterRegistry meterRegistry) {
+					throw new UnsupportedOperationException("Auto-generated method stub");
+				}
+			};
 		}
 
 	}

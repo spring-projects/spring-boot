@@ -54,7 +54,7 @@ public class NewRelicProperties extends StepRegistryProperties {
 	 * for delegation to the New Relic Java Insights Agent. Defaults to
 	 * {@code INSIGHTS_API} for publishing with the New Relic REST API.
 	 */
-	private ClientProviderType clientProviderType;
+	private ClientProviderType clientProviderType = ClientProviderType.INSIGHTS_API;
 
 	/**
 	 * New Relic API key.
