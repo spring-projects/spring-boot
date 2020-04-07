@@ -30,6 +30,7 @@ public class GenericBuilderProperties<T extends GenericBuilderProperties<T>> {
 		return this.number;
 	}
 
+	@SuppressWarnings("unchecked")
 	public T setNumber(int number) {
 		this.number = number;
 		return (T) this;

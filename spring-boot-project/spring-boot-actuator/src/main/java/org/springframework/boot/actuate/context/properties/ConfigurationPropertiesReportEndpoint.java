@@ -186,7 +186,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param prefix the prefix
 	 * @return the serialized instance
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));

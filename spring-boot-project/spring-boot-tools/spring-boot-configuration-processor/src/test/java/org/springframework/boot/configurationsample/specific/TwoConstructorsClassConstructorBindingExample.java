@@ -24,6 +24,7 @@ import org.springframework.boot.configurationsample.MetaConstructorBinding;
  * @author Stephane Nicoll
  */
 @MetaConstructorBinding
+@SuppressWarnings("unused")
 public class TwoConstructorsClassConstructorBindingExample {
 
 	private String name;

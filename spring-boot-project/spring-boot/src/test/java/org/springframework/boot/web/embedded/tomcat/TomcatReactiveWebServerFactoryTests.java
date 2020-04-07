@@ -37,6 +37,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +47,6 @@ import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFac
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.SocketUtils;
@@ -55,7 +55,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -75,14 +74,16 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		return new TomcatReactiveWebServerFactory(0);
 	}
 
+	@Override
 	@Test
 	@Disabled("gh-19702")
-	void compressionOfResponseToGetRequest() {
+	protected void compressionOfResponseToGetRequest() {
 	}
 
+	@Override
 	@Test
 	@Disabled("gh-19702")
-	void compressionOfResponseToPostRequest() {
+	protected void compressionOfResponseToPostRequest() {
 	}
 
 	@Test
@@ -248,18 +249,9 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		});
 	}
 
-	@Test
-	void sslWithInvalidAliasFailsDuringStartup() {
-		String keyStore = "classpath:test.jks";
-		String keyPassword = "password";
-		AbstractReactiveWebServerFactory factory = getFactory();
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore(keyStore);
-		ssl.setKeyPassword(keyPassword);
-		ssl.setKeyAlias("test-alias-404");
-		factory.setSsl(ssl);
-		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
-				.isInstanceOf(WebServerException.class);
+	@Override
+	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
+		assertThatExceptionOfType(WebServerException.class).isThrownBy(call);
 	}
 
 	@Test

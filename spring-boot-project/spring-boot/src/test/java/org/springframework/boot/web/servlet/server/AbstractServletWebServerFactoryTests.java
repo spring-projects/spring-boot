@@ -95,6 +95,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -469,8 +470,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.setSsl(ssl);
 		ServletRegistrationBean<ExampleServlet> registration = new ServletRegistrationBean<>(
 				new ExampleServlet(true, false), "/hello");
-		assertThatThrownBy(() -> factory.getWebServer(registration).start())
-				.hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
+		ThrowingCallable call = () -> factory.getWebServer(registration).start();
+		assertThatSslWithInvalidAliasCallFails(call);
+	}
+
+	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
+		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
 	}
 
 	@Test

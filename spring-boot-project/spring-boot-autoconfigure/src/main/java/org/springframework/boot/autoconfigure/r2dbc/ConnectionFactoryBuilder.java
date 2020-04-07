@@ -136,8 +136,8 @@ public final class ConnectionFactoryBuilder {
 	static class ConnectionFactoryOptionsInitializer {
 
 		/**
-		 * Initialize a {@link ConnectionFactoryOptions.Builder} using the specified
-		 * properties.
+		 * Initialize a {@link io.r2dbc.spi.ConnectionFactoryOptions.Builder
+		 * ConnectionFactoryOptions.Builder} using the specified properties.
 		 * @param properties the properties to use to initialize the builder
 		 * @param embeddedDatabaseConnection the embedded connection to use as a fallback
 		 * @return an initialized builder

@@ -19,9 +19,6 @@ package org.springframework.boot.autoconfigure.web.format;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
@@ -48,8 +45,6 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private static final boolean JSR_354_PRESENT = ClassUtils.isPresent("javax.money.MonetaryAmount",
 			WebConversionService.class.getClassLoader());
-
-	private static final Log logger = LogFactory.getLog(WebConversionService.class);
 
 	private final String dateFormat;
 

@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link MongoClientFactorySupport}.
  *
+ * @param <T> the mongo client type
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll

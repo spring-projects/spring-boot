@@ -77,7 +77,7 @@ class LogbackConfigurationTests {
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
 		assertThat(appender).isInstanceOf(RollingFileAppender.class);
 		RollingPolicy rollingPolicy = ((RollingFileAppender<?>) appender).getRollingPolicy();
-		String fileNamePattern = ((SizeAndTimeBasedRollingPolicy) rollingPolicy).getFileNamePattern();
+		String fileNamePattern = ((SizeAndTimeBasedRollingPolicy<?>) rollingPolicy).getFileNamePattern();
 		assertThat(fileNamePattern).endsWith("spring.log.%d{yyyy-MM-dd}.%i.gz");
 	}
 
@@ -90,7 +90,7 @@ class LogbackConfigurationTests {
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
 		assertThat(appender).isInstanceOf(RollingFileAppender.class);
 		RollingPolicy rollingPolicy = ((RollingFileAppender<?>) appender).getRollingPolicy();
-		String fileNamePattern = ((SizeAndTimeBasedRollingPolicy) rollingPolicy).getFileNamePattern();
+		String fileNamePattern = ((SizeAndTimeBasedRollingPolicy<?>) rollingPolicy).getFileNamePattern();
 		assertThat(fileNamePattern).endsWith("my.log.%d{yyyyMMdd}.%i.gz");
 	}
 

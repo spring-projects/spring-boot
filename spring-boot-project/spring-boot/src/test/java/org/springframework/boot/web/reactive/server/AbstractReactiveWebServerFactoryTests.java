@@ -43,6 +43,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -178,8 +179,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyPassword(keyPassword);
 		ssl.setKeyAlias("test-alias-404");
 		factory.setSsl(ssl);
-		assertThatThrownBy(() -> factory.getWebServer(new EchoHandler()).start())
-				.hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
+		assertThatSslWithInvalidAliasCallFails(() -> factory.getWebServer(new EchoHandler()).start());
+	}
+
+	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
+		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
@@ -280,7 +284,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	void compressionOfResponseToGetRequest() {
+	protected void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.get().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));
@@ -288,7 +292,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	void compressionOfResponseToPostRequest() {
+	protected void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.post().exchange().flatMap((res) -> res.toEntity(Void.class))
 				.block(Duration.ofSeconds(30));

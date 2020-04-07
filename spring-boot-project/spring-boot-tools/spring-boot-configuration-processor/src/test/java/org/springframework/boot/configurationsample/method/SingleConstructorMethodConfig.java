@@ -24,6 +24,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("unused")
 public class SingleConstructorMethodConfig {
 
 	@ConfigurationProperties(prefix = "foo")

@@ -167,10 +167,8 @@ class R2dbcAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.r2dbc.pool.enabled=false", "spring.r2dbc.url:r2dbc:simple://foo",
 				"spring.r2dbc.properties.test=value", "spring.r2dbc.properties.another=2").run((context) -> {
 					SimpleTestConnectionFactory connectionFactory = context.getBean(SimpleTestConnectionFactory.class);
-					assertThat((Object) connectionFactory.options.getRequiredValue(Option.valueOf("test")))
-							.isEqualTo("value");
-					assertThat((Object) connectionFactory.options.getRequiredValue(Option.valueOf("another")))
-							.isEqualTo("2");
+					assertThat(getRequiredOptionsValue(connectionFactory, "test")).isEqualTo("value");
+					assertThat(getRequiredOptionsValue(connectionFactory, "another")).isEqualTo("2");
 				});
 	}
 
@@ -181,11 +179,13 @@ class R2dbcAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class);
 					SimpleTestConnectionFactory connectionFactory = (SimpleTestConnectionFactory) context
 							.getBean(ConnectionPool.class).unwrap();
-					assertThat((Object) connectionFactory.options.getRequiredValue(Option.valueOf("test")))
-							.isEqualTo("value");
-					assertThat((Object) connectionFactory.options.getRequiredValue(Option.valueOf("another")))
-							.isEqualTo("2");
+					assertThat(getRequiredOptionsValue(connectionFactory, "test")).isEqualTo("value");
+					assertThat(getRequiredOptionsValue(connectionFactory, "another")).isEqualTo("2");
 				});
+	}
+
+	private Object getRequiredOptionsValue(SimpleTestConnectionFactory connectionFactory, String name) {
+		return connectionFactory.options.getRequiredValue(Option.valueOf(name));
 	}
 
 	@Test
