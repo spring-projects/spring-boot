@@ -34,7 +34,7 @@ import org.springframework.util.MultiValueMap;
 /**
  * Index describing the layer to which each entry in a jar belongs. Index files are simple
  * text files that should be read from top to bottom. Each file defines the layers and
- * their content. Layers names are written as quoted strings prefixed by a dash space
+ * their content. Layer names are written as quoted strings prefixed by a dash space
  * ({@code "- "}) and with a colon ({@code ":"}) suffix. Layer content is either a file or
  * folder name written as a quoted string prefixed by space space dash space
  * ({@code "  - "}). A folder name ends with {@code /}, a file name does not. When a
@@ -107,7 +107,7 @@ public class LayersIndex {
 	}
 
 	/**
-	 * A node within the index represeting a single path segment.
+	 * A node within the index representing a single path segment.
 	 */
 	private static class Node {
 
@@ -122,7 +122,7 @@ public class LayersIndex {
 			this.layers = new HashSet<>();
 		}
 
-		Node(String name, Layer layer, Node parent) {
+		Node(String name, Layer layer) {
 			this.name = name;
 			this.layers = new HashSet<>(Collections.singleton(layer));
 		}
@@ -135,7 +135,7 @@ public class LayersIndex {
 					return child;
 				}
 			}
-			Node child = new Node(name, layer, this);
+			Node child = new Node(name, layer);
 			this.children.add(child);
 			return child;
 		}
