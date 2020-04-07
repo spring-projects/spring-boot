@@ -44,7 +44,8 @@ class IndexedLayers implements Layers {
 	private MultiValueMap<String, String> layers = new LinkedMultiValueMap<>();
 
 	IndexedLayers(String indexFile) {
-		String[] lines = Arrays.stream(indexFile.split("\n")).filter(StringUtils::hasText).toArray(String[]::new);
+		String[] lines = Arrays.stream(indexFile.split("\n")).map((line) -> line.replace("\r", ""))
+				.filter(StringUtils::hasText).toArray(String[]::new);
 		String layer = null;
 		for (String line : lines) {
 			if (line.startsWith("- ")) {
