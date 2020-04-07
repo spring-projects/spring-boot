@@ -104,7 +104,15 @@ class LayersIndexTests {
 		index.add(LAYER_A, "a2/b1");
 		index.add(LAYER_B, "a2/b2");
 		assertThatIndex(index).writesExpectedContent();
+	}
 
+	@Test
+	void writeToWhenSpaceInFileName() {
+		LayersIndex index = new LayersIndex(LAYER_A);
+		index.add(LAYER_A, "a b");
+		index.add(LAYER_A, "a b/c");
+		index.add(LAYER_A, "a b/d");
+		assertThatIndex(index).writesExpectedContent();
 	}
 
 	private LayersIndexAssert assertThatIndex(LayersIndex index) {

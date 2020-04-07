@@ -4,3 +4,4 @@
 - "application":
   - "BOOT-INF/classes/Demo.class"
   - "META-INF/"
+  - "a b/c d"
