@@ -3,7 +3,9 @@
 latest_version=$(curl -I -s https://github.com/docker/docker-ce/releases/latest | grep "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
 title_prefix="Upgrade CI to Docker"
 
-existing_upgrade_issues=$( curl -s https://api.github.com/repos/spring-projects/spring-boot/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster | jq -c --arg TITLE_PREFIX "$title_prefix" '.[] | select(.pull_request != null) | select(.title | startswith($TITLE_PREFIX))' )
+milestone_number=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open | jq -c --arg MILESTONE "$MILESTONE" '.[] | select(.title==$MILESTONE)' | jq -r '.number')
+
+existing_upgrade_issues=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster\&milestone\=${milestone_number} | jq -c --arg TITLE_PREFIX "$title_prefix" '.[] | select(.pull_request != null) | select(.title | startswith($TITLE_PREFIX))' )
 
 if [[ ${existing_upgrade_issues} = "" ]]; then
   git clone git-repo git-repo-updated > /dev/null
