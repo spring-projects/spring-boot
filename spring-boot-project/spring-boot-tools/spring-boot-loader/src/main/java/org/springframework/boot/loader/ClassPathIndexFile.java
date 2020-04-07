@@ -31,8 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.util.Assert;
-
 /**
  * A class path index file that provides ordering information for JARs.
  *
@@ -51,8 +49,10 @@ final class ClassPathIndexFile {
 	}
 
 	private String extractName(String line) {
-		Assert.state(line.startsWith("- \"") && line.endsWith("\""), "Malformed classpath index line [" + line + "]");
-		return line.substring(3, line.length() - 1);
+		if (line.startsWith("- \"") && line.endsWith("\"")) {
+			return line.substring(3, line.length() - 1);
+		}
+		throw new IllegalStateException("Malformed classpath index line [" + line + "]");
 	}
 
 	int size() {
