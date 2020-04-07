@@ -1,5 +1,5 @@
 [[repackage]]
-== Packaging executable archives
+== Packaging Executable Archives
 
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
@@ -75,7 +75,7 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 
 
 [[repackage-layers]]
-=== Layered jars
+=== Layered Jars
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
 
@@ -116,7 +116,7 @@ Content that is least likely to change should be added first, followed by layers
 
 
 [[repackage-layers-configuration]]
-==== Custom Layers configuration
+==== Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
 This can be done using a separate configuration file that should be registered as shown below:
 
@@ -530,7 +530,7 @@ This example excludes any artifact belonging to the `com.foo` group:
 
 
 [[repackage-layered-jars-tools]]
-==== Layered jar tools
+==== Layered Jar Tools
 When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
@@ -559,7 +559,7 @@ If you wish to exclude this dependency, you can do so in the following manner:
 
 
 [[repackage-layered-jars-additional-layers]]
-==== Custom layers configuration
+==== Custom Layers Configuration
 The default setup splits dependencies into snapshot and non-snapshot, however, you may have more complex rules.
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.
 The following `layers.xml` configuration shown one such setup:
