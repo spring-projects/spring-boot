@@ -68,7 +68,7 @@ Once the `spring-boot-antlib` namespace has been declared, the following additio
 
 
 [[spring-boot-ant-exejar]]
-==== `spring-boot:exejar`
+==== Using the "`exejar`" Task
 You can use the `exejar` task to create a Spring Boot executable jar.
 The following attributes are supported by the task:
 
@@ -136,7 +136,7 @@ This section shows two examples of Ant tasks.
 
 
 [[spring-boot-ant-findmainclass]]
-=== `spring-boot:findmainclass`
+=== Using the "`findmainclass`" Task
 The `findmainclass` task is used internally by `exejar` to locate a class declaring a `main`.
 If necessary, you can also use this task directly in your build.
 The following attributes are supported:

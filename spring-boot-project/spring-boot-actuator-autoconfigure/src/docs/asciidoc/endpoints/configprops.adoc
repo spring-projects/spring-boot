@@ -6,7 +6,7 @@ The `configprops` endpoint provides information about the application's `@Config
 
 
 [[configprops-retrieving]]
-== Retrieving the `@ConfigurationProperties` Bean
+== Retrieving the @ConfigurationProperties Bean
 
 To retrieve the `@ConfigurationProperties` beans, make a `GET` request to `/actuator/configprops`, as shown in the following curl-based example:
 

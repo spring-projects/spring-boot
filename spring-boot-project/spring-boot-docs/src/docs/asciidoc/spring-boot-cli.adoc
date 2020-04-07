@@ -408,7 +408,7 @@ You can mix class declarations with `beans{}` in the same file as long as they s
 
 
 [[cli-maven-settings]]
-== Configuring the CLI with `settings.xml`
+== Configuring the CLI with settings.xml
 The Spring Boot CLI uses Aether, Maven's dependency resolution engine, to resolve dependencies.
 The CLI makes use of the Maven configuration found in `~/.m2/settings.xml` to configure Aether.
 The following configuration settings are honored by the CLI:

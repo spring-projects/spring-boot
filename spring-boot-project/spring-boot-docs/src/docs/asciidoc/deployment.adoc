@@ -505,7 +505,7 @@ Spring Boot application can be easily started as Unix/Linux services by using ei
 
 
 [[deployment-initd-service]]
-==== Installation as an `init.d` Service (System V)
+==== Installation as an init.d Service (System V)
 If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install, fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your application can be used as an `init.d` service.
 To do so, symlink the jar to `init.d` to support the standard `start`, `stop`, `restart`, and `status` commands.
 
@@ -543,7 +543,7 @@ For example, on Debian, you could use the following command:
 
 
 [[deployment-initd-service-securing]]
-===== Securing an `init.d` Service
+===== Securing an init.d Service
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
@@ -594,7 +594,7 @@ Use `chmod` so that the file can only be read by the owner and use `chown` to ma
 
 
 [[deployment-systemd-service]]
-==== Installation as a `systemd` Service
+==== Installation as a systemd Service
 `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 Although you can continue to use `init.d` scripts with `systemd`, it is also possible to launch Spring Boot applications by using `systemd` '`service`' scripts.
 
