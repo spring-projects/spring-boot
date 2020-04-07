@@ -503,16 +503,16 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private void load(PropertySourceLoader loader, String location, Profile profile, DocumentFilter filter,
 				DocumentConsumer consumer) {
-			try {
-				Resource[] resources = getResources(location);
-				for (Resource resource : resources) {
+			Resource[] resources = getResources(location);
+			for (Resource resource : resources) {
+				try {
 					if (resource == null || !resource.exists()) {
 						if (this.logger.isTraceEnabled()) {
 							StringBuilder description = getDescription("Skipped missing config ", location, resource,
 									profile);
 							this.logger.trace(description);
 						}
-						return;
+						continue;
 					}
 					if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
 						if (this.logger.isTraceEnabled()) {
@@ -520,7 +520,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 									resource, profile);
 							this.logger.trace(description);
 						}
-						return;
+						continue;
 					}
 					String name = (location.contains("*")) ? "applicationConfig: [" + resource.toString() + "]"
 							: "applicationConfig: [" + location + "]";
@@ -531,7 +531,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 									profile);
 							this.logger.trace(description);
 						}
-						return;
+						continue;
 					}
 					List<Document> loaded = new ArrayList<>();
 					for (Document document : documents) {
@@ -551,9 +551,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						}
 					}
 				}
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Failed to load property source from location '" + location + "'", ex);
+				catch (Exception ex) {
+					StringBuilder description = getDescription("Failed to load property source from ", location,
+							resource, profile);
+					throw new IllegalStateException(description.toString(), ex);
+				}
 			}
 		}
 

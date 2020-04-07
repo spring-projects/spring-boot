@@ -1010,10 +1010,10 @@ class ConfigFileApplicationListenerTests {
 				"spring.config.location=" + location);
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String a = this.environment.getProperty("a.property");
-		String b = this.environment.getProperty("b.property");
-		assertThat(a).isEqualTo("apple");
-		assertThat(b).isEqualTo("ball");
+		String first = this.environment.getProperty("first.property");
+		String second = this.environment.getProperty("second.property");
+		assertThat(first).isEqualTo("apple");
+		assertThat(second).isEqualTo("ball");
 	}
 
 	@Test
@@ -1023,10 +1023,10 @@ class ConfigFileApplicationListenerTests {
 				"spring.config.location=" + location);
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String a = this.environment.getProperty("a.property");
-		String b = this.environment.getProperty("b.property");
-		assertThat(a).isEqualTo("apple");
-		assertThat(b).isEqualTo("ball");
+		String first = this.environment.getProperty("first.property");
+		String second = this.environment.getProperty("second.property");
+		assertThat(first).isEqualTo("apple");
+		assertThat(second).isEqualTo("ball");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
