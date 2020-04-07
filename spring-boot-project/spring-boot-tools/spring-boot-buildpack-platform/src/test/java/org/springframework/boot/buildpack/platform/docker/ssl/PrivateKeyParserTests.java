@@ -28,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.util.StringUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -81,7 +83,7 @@ class PrivateKeyParserTests {
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
 		URI privateKeyPath = new URI("file:///bad/path/key.pem");
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(Paths.get(privateKeyPath)))
-				.withMessageContaining(privateKeyPath.getPath());
+				.withMessageContaining(StringUtils.cleanPath(privateKeyPath.getPath()));
 	}
 
 }
