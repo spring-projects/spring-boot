@@ -91,7 +91,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 						"management.metrics.export.newrelic.event-type=wxyz",
 						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsApiClientProvider"));
 	}
 
 	@Test
@@ -103,7 +104,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 						"management.metrics.export.newrelic.meter-name-event-type-enabled=true",
 						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsApiClientProvider"));
 	}
 
 	@Test
@@ -111,7 +113,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.event-type=wxyz")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsAgentClientProvider"));
 	}
 
 	@Test
@@ -120,7 +123,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.metrics.export.newrelic.event-type=",
 						"management.metrics.export.newrelic.meter-name-event-type-enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsAgentClientProvider"));
 	}
 
 	@Test

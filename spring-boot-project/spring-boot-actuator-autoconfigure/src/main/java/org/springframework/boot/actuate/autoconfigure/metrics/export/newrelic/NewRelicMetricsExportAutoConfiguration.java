@@ -68,31 +68,30 @@ public class NewRelicMetricsExportAutoConfiguration {
 		this.properties = properties;
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public NewRelicConfig newRelicConfig() {
 		return new NewRelicPropertiesConfigAdapter(this.properties);
 	}
 
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = { "com.newrelic.agent.Agent" })
 	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
 			havingValue = "INSIGHTS_AGENT", matchIfMissing = true)
-	@Bean
 	public NewRelicClientProvider newRelicInsightsAgentClientProvider(NewRelicConfig config) {
 		return new NewRelicInsightsAgentClientProvider(config);
 	}
 
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
 			havingValue = "INSIGHTS_API", matchIfMissing = true)
-	@Bean
 	public NewRelicClientProvider newRelicInsightsApiClientProvider(NewRelicConfig config,
 			@Value("${management.metrics.export.newrelic.api-proxy-host:}") String proxyHost,
 			@Value("${management.metrics.export.newrelic.api-proxy-port:0}") int proxyPort) {
 
 		if (StringUtils.isNotEmpty(proxyHost)) {
-			// Allow setting of proxy info for REST API provider
 			return new NewRelicInsightsApiClientProvider(config,
 					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout(),
 							new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort))));
@@ -103,8 +102,8 @@ public class NewRelicMetricsExportAutoConfiguration {
 		}
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config, Clock clock,
 			NewRelicClientProvider newRelicClientProvider) {
 		return new NewRelicMeterRegistry(config, newRelicClientProvider, clock);
