@@ -10,6 +10,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude group: "org.hibernate.validator"
 	}
+	implementation("org.eclipse.jetty:jetty-server")
 
 	intTestImplementation(enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
