@@ -240,7 +240,8 @@ task zip(type: Zip) {
 	}
 	from(asciidoctorPdf.outputDir) {
 		into "reference/pdf"
-		rename "index.pdf", "spring-boot-reference.pdf"
+		include "index.pdf"
+		rename { "spring-boot-reference.pdf" }
 	}
 	from(asciidoctorMultipage.outputDir) {
 		into "reference/html"
