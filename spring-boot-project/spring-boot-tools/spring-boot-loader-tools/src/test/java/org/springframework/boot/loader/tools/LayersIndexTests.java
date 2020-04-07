@@ -75,7 +75,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenLayerNotUsedSkipsLayer() {
+	void writeToWhenLayerNotUsedDoesNotSkipLayer() {
 		LayersIndex index = new LayersIndex(LAYER_A, LAYER_B, LAYER_C);
 		index.add(LAYER_A, "a1");
 		index.add(LAYER_A, "a2");

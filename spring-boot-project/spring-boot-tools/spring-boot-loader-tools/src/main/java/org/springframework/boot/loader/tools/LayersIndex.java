@@ -96,8 +96,8 @@ public class LayersIndex {
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
 		for (Layer layer : this.layers) {
 			List<String> names = index.get(layer);
-			if (names != null && !names.isEmpty()) {
-				writer.write("- \"" + layer + "\":\n");
+			writer.write("- \"" + layer + "\":\n");
+			if (names != null) {
 				for (String name : names) {
 					writer.write("  - \"" + name + "\"\n");
 				}
