@@ -102,7 +102,7 @@ class ListCommandTests {
 		writer.write("  - \"BOOT-INF/lib/a.jar\"\n");
 		writer.write("  - \"BOOT-INF/lib/b.jar\"\n");
 		writer.write("- \"0002\":\n");
-		writer.write("  - \"0002 BOOT-INF/lib/c.jar\"\n");
+		writer.write("  - \"BOOT-INF/lib/c.jar\"\n");
 		writer.write("- \"0003\":\n");
 		writer.write("  - \"BOOT-INF/lib/d.jar\"\n");
 		writer.flush();
