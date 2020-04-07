@@ -16,7 +16,6 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
@@ -29,7 +28,7 @@ import org.springframework.util.Assert;
  * @since 2.3.0
  * @see Layers
  */
-public class Layer implements Serializable {
+public class Layer {
 
 	private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z0-9-]+$");
 

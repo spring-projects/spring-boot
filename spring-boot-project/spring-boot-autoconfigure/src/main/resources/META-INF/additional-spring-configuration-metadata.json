@@ -1750,7 +1750,6 @@
       "name": "spring.data.couchbase.consistency",
       "type": "org.springframework.data.couchbase.core.query.Consistency",
       "deprecation": {
-        "replacement": "spring.data.cassandra.read-timeout",
         "level": "error"
       }
     },

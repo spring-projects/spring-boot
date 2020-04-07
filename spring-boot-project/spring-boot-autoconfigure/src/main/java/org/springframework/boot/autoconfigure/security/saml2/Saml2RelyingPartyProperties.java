@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
+import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 
 /**
  * SAML2 relying party properties.
@@ -124,6 +125,8 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private String ssoUrl;
 
+		private SingleSignOn singleSignOn = new SingleSignOn();
+
 		private Verification verification = new Verification();
 
 		public String getEntityId() {
@@ -134,16 +137,65 @@ public class Saml2RelyingPartyProperties {
 			this.entityId = entityId;
 		}
 
+		@Deprecated
 		public String getSsoUrl() {
-			return this.ssoUrl;
+			return this.getSingleSignOn().getUrl();
 		}
 
+		@Deprecated
 		public void setSsoUrl(String ssoUrl) {
-			this.ssoUrl = ssoUrl;
+			this.singleSignOn.setUrl(ssoUrl);
+		}
+
+		public SingleSignOn getSingleSignOn() {
+			return this.singleSignOn;
 		}
 
 		public Verification getVerification() {
 			return this.verification;
+		}
+
+		public static class SingleSignOn {
+
+			/**
+			 * Remote endpoint to send authentication requests to.
+			 */
+			private String url;
+
+			/**
+			 * Whether to redirect or post authentication requests.
+			 */
+			private Saml2MessageBinding binding = Saml2MessageBinding.REDIRECT;
+
+			/**
+			 * Whether to sign authentication requests.
+			 */
+			private boolean signRequest = true;
+
+			public String getUrl() {
+				return this.url;
+			}
+
+			public void setUrl(String url) {
+				this.url = url;
+			}
+
+			public Saml2MessageBinding getBinding() {
+				return this.binding;
+			}
+
+			public void setBinding(Saml2MessageBinding binding) {
+				this.binding = binding;
+			}
+
+			public boolean isSignRequest() {
+				return this.signRequest;
+			}
+
+			public void setSignRequest(boolean signRequest) {
+				this.signRequest = signRequest;
+			}
+
 		}
 
 		public static class Verification {

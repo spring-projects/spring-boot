@@ -16,82 +16,60 @@
 
 package org.springframework.boot.loader.tools;
 
-import org.springframework.util.Assert;
-
 /**
- * Encapsulates information about the Maven artifact coordinates of a library.
+ * Encapsulates information about the artifact coordinates of a library.
  *
  * @author Scott Frederick
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public final class LibraryCoordinates {
-
-	private final String groupId;
-
-	private final String artifactId;
-
-	private final String version;
-
-	/**
-	 * Create a new instance from discrete elements.
-	 * @param groupId the group ID
-	 * @param artifactId the artifact ID
-	 * @param version the version
-	 */
-	public LibraryCoordinates(String groupId, String artifactId, String version) {
-		this.groupId = groupId;
-		this.artifactId = artifactId;
-		this.version = version;
-	}
-
-	/**
-	 * Create a new instance from a String value in the form
-	 * {@code groupId:artifactId:version} where the version is optional.
-	 * @param coordinates the coordinates
-	 */
-	public LibraryCoordinates(String coordinates) {
-		String[] elements = coordinates.split(":");
-		Assert.isTrue(elements.length >= 2, "Coordinates must contain at least 'groupId:artifactId'");
-		this.groupId = elements[0];
-		this.artifactId = elements[1];
-		this.version = (elements.length > 2) ? elements[2] : null;
-	}
+public interface LibraryCoordinates {
 
 	/**
 	 * Return the group ID of the coordinates.
 	 * @return the group ID
 	 */
-	public String getGroupId() {
-		return this.groupId;
-	}
+	String getGroupId();
 
 	/**
 	 * Return the artifact ID of the coordinates.
 	 * @return the artifact ID
 	 */
-	public String getArtifactId() {
-		return this.artifactId;
-	}
+	String getArtifactId();
 
 	/**
 	 * Return the version of the coordinates.
 	 * @return the version
 	 */
-	public String getVersion() {
-		return this.version;
+	String getVersion();
+
+	/**
+	 * Factory method to create {@link LibraryCoordinates} with the specified values.
+	 * @param groupId the group ID
+	 * @param artifactId the artifact ID
+	 * @param version the version
+	 * @return a new {@link LibraryCoordinates} instance
+	 */
+	static LibraryCoordinates of(String groupId, String artifactId, String version) {
+		return new DefaultLibraryCoordinates(groupId, artifactId, version);
 	}
 
 	/**
-	 * Return the coordinates in the form {@code groupId:artifactId:version}.
+	 * Utility method that returns the given coordinates using the standard
+	 * {@code group:artifact:version} form.
+	 * @param coordinates the coordinates to convert (may be {@code null})
+	 * @return the standard notation form or {@code "::"} when the coordinates are null
 	 */
-	@Override
-	public String toString() {
+	static String toStandardNotationString(LibraryCoordinates coordinates) {
+		if (coordinates == null) {
+			return "::";
+		}
 		StringBuilder builder = new StringBuilder();
-		builder.append((this.groupId != null) ? this.groupId : "");
+		builder.append((coordinates.getGroupId() != null) ? coordinates.getGroupId() : "");
 		builder.append(":");
-		builder.append((this.artifactId != null) ? this.artifactId : "");
+		builder.append((coordinates.getArtifactId() != null) ? coordinates.getArtifactId() : "");
 		builder.append(":");
-		builder.append((this.version != null) ? this.version : "");
+		builder.append((coordinates.getVersion() != null) ? coordinates.getVersion() : "");
 		return builder.toString();
 	}
 

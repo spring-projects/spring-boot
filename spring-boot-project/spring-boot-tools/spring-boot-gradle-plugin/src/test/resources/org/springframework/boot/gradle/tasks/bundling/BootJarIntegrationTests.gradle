@@ -11,7 +11,7 @@ bootJar {
 		}
 	}
 	if (project.hasProperty('layered') && project.getProperty('layered')) {
-		layers {
+		layered {
 			includeLayerTools = project.hasProperty('excludeTools') && project.getProperty('excludeTools') ? false : true
 		}
 	}

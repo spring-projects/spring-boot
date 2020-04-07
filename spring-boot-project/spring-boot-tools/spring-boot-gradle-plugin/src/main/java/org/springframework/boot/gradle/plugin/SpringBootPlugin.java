@@ -30,6 +30,7 @@ import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
+import org.springframework.boot.gradle.util.VersionExtractor;
 
 /**
  * Gradle plugin for Spring Boot.

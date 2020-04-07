@@ -1,35 +1,23 @@
-<layers-configuration xmlns="http://www.springframework.org/schema/boot/layers"
-					  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-					  xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
-					  https://www.springframework.org/schema/layers/layers-configuration-2.3.xsd">
-	<layers>
+<layers xmlns="http://www.springframework.org/schema/boot/layers"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
+					  https://www.springframework.org/schema/layers/layers-2.3.xsd">
+	<application>
+		<into layer="configuration">
+			<include>**/application*.*</include>
+		</into>
+		<into layer="application" />
+	</application>
+	<dependencies>
+		<into layer="snapshot-dependencies">
+			<include>*:*:*-SNAPSHOT</include>
+		</into>
+		<into layer="my-dependencies-name" />
+	</dependencies>
+	<layerOrder>
+		<layer>my-dependencies-name</layer>
+		<layer>snapshot-dependencies</layer>
 		<layer>configuration</layer>
 		<layer>application</layer>
-		<layer>snapshot-dependencies</layer>
-		<layer>my-dependencies-name</layer>
-	</layers>
-	<libraries>
-		<layer-content layer="snapshot-dependencies">
-			<coordinates>
-				<include>*:*:*-SNAPSHOT</include>
-			</coordinates>
-		</layer-content>
-		<layer-content layer="my-dependencies-name">
-			<coordinates>
-				<include>*:*:*</include>
-			</coordinates>
-		</layer-content>
-	</libraries>
-	<application>
-		<layer-content layer="configuration">
-			<locations>
-				<include>**/application*.*</include>
-			</locations>
-		</layer-content>
-		<layer-content layer="application">
-			<locations>
-				<include>**</include>
-			</locations>
-		</layer-content>
-	</application>
-</layers-configuration>
+	</layerOrder>
+</layers>

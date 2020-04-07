@@ -11,6 +11,6 @@ tasks.getByName<BootJar>("bootJar") {
 
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
-	layers()
+	layered()
 }
 // end::layered[]

@@ -5,26 +5,23 @@ plugins {
 
 bootJar {
 	mainClassName = 'com.example.Application'
-	layers {
-		layersOrder "dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"
-		libraries {
-			layerContent("snapshot-dependencies") { coordinates { include "*:*:*SNAPSHOT" } }
-			layerContent("commons-dependencies") { coordinates { include "org.apache.commons:*" } }
-			layerContent("dependencies") { coordinates { include "*:*" } }
-		}
+	layered {
 		application {
-			layerContent("static") {
-				locations {
-					include "META-INF/resources/**", "resources/**"
-					include "static/**", "public/**"
-				}
+			intoLayer("static") {
+				include "META-INF/resources/**", "resources/**", "static/**", "public/**"
 			}
-			layerContent("app") {
-				locations {
-					include "**"
-				}
-			}
+			intoLayer("app")
 		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include "*:*:*SNAPSHOT"
+			}
+			intoLayer("commons-dependencies") {
+				include "org.apache.commons:*" 
+			}
+			intoLayer("dependencies")
+		}
+		layerOrder = ["dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"]
 	}
 }
 
@@ -34,6 +31,19 @@ repositories {
 }
 
 dependencies {
-	implementation("org.apache.commons:commons-lang3:3.9")
 	implementation("commons-io:commons-io:2.7-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+task listLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "list"
+}
+
+task extractLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "extract"
 }

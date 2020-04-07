@@ -11,7 +11,6 @@ dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-parent")))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
-	implementation(project(":spring-boot-project:spring-boot"))
 	implementation("org.springframework:spring-core")
 
 	testImplementation("org.assertj:assertj-core")

@@ -24,8 +24,13 @@ package org.springframework.boot.loader.tools;
  */
 class ImplicitLayerResolver extends StandardLayers {
 
+	private static final String SPRING_BOOT_LOADER_PREFIX = "org/springframework/boot/loader/";
+
 	@Override
 	public Layer getLayer(String name) {
+		if (name.startsWith(SPRING_BOOT_LOADER_PREFIX)) {
+			return SPRING_BOOT_LOADER;
+		}
 		return APPLICATION;
 	}
 

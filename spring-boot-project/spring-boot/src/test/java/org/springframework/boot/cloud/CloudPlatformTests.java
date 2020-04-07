@@ -129,6 +129,14 @@ class CloudPlatformTests {
 		assertThat(platform).isNull();
 	}
 
+	@Test
+	void getActiveWhenHasEnforcedCloudPlatform() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("spring.main.cloud-platform", "kubernetes"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
+	}
+
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
 		MockEnvironment environment = new MockEnvironment();
 		PropertySource<?> propertySource = new SystemEnvironmentPropertySource(

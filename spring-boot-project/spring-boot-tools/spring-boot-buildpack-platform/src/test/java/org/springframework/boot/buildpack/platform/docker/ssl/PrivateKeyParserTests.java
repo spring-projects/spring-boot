@@ -79,9 +79,9 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
-		URI privateKeyPath = new URI("file:///bad/path/key.pem");
-		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(Paths.get(privateKeyPath)))
-				.withMessageContaining(privateKeyPath.getPath());
+		Path path = Paths.get(new URI("file:///bad/path/key.pem"));
+		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
+				.withMessageContaining(path.toString());
 	}
 
 }

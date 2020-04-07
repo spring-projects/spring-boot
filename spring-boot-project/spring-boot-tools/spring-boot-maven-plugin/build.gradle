@@ -99,6 +99,7 @@ task zip(type: Zip) {
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
 		into "reference/pdf"
+		rename "index.pdf", "${project.name}-reference.pdf"
 	}
 	from(asciidoctor.outputDir) {
 		into "reference/html"

@@ -16,9 +16,13 @@
 
 package org.springframework.boot.jarmode.layertools;
 
+import java.io.InputStreamReader;
 import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -29,6 +33,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link IndexedLayers}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class IndexedLayersTests {
 
@@ -39,41 +44,48 @@ class IndexedLayersTests {
 	}
 
 	@Test
-	void createWhenIndexFileHasNoApplicationLayerAddSpringBootApplication() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers).contains("springbootapplication");
+	void createWhenIndexFileIsMalformedThrowsException() throws Exception {
+		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers("test"))
+				.withMessage("Layer index file is malformed");
 	}
 
 	@Test
-	void iteratorReturnsLayers() {
-		IndexedLayers layers = new IndexedLayers("test\napplication");
+	void iteratorReturnsLayers() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
 		assertThat(layers).containsExactly("test", "application");
 	}
 
 	@Test
-	void getLayerWhenMatchesLayerPatterReturnsLayer() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers.getLayer(mockEntry("BOOT-INF/layers/test/lib/file.jar"))).isEqualTo("test");
+	void getLayerWhenMatchesNameReturnsLayer() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
+		assertThat(layers.getLayer(mockEntry("BOOT-INF/lib/a.jar"))).isEqualTo("test");
+		assertThat(layers.getLayer(mockEntry("BOOT-INF/classes/Demo.class"))).isEqualTo("application");
 	}
 
 	@Test
-	void getLayerWhenMatchesLayerPatterForMissingLayerThrowsException() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThatIllegalStateException()
-				.isThrownBy(() -> layers.getLayer(mockEntry("BOOT-INF/layers/missing/lib/file.jar")))
-				.withMessage("Unexpected layer 'missing'");
+	void getLayerWhenMatchesNameForMissingLayerThrowsException() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
+		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(mockEntry("file.jar")))
+				.withMessage("No layer defined in index for file " + "'file.jar'");
 	}
 
 	@Test
-	void getLayerWhenDoesNotMatchLayerPatternReturnsApplication() {
-		IndexedLayers layers = new IndexedLayers("test\napplication");
+	void getLayerWhenMatchesFolderReturnsLayer() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
 		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("application");
+		assertThat(layers.getLayer(mockEntry("META-INF/a/sub/folder/and/a/file"))).isEqualTo("application");
 	}
 
 	@Test
-	void getLayerWhenDoesNotMatchLayerPatternAndHasNoApplicationLayerReturnsSpringApplication() {
-		IndexedLayers layers = new IndexedLayers("test");
-		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("springbootapplication");
+	void getLayerWhenFileHasSpaceReturnsLayer() throws Exception {
+		IndexedLayers layers = new IndexedLayers(getIndex());
+		assertThat(layers.getLayer(mockEntry("a b/c d"))).isEqualTo("application");
+	}
+
+	private String getIndex() throws Exception {
+		ClassPathResource resource = new ClassPathResource("test-layers.idx", getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 	private ZipEntry mockEntry(String name) {

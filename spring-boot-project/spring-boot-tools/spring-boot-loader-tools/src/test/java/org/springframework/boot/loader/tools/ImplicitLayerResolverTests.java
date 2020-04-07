@@ -34,8 +34,8 @@ class ImplicitLayerResolverTests {
 
 	@Test
 	void iteratorReturnsLayers() {
-		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SNAPSHOT_DEPENDENCIES,
-				StandardLayers.APPLICATION);
+		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SPRING_BOOT_LOADER,
+				StandardLayers.SNAPSHOT_DEPENDENCIES, StandardLayers.APPLICATION);
 	}
 
 	@Test
@@ -58,6 +58,14 @@ class ImplicitLayerResolverTests {
 	void getLayerWhenNameNotInResourceLocationReturnsApplicationLayer() {
 		assertThat(this.layers.getLayer("com/example/Application.class")).isEqualTo(StandardLayers.APPLICATION);
 		assertThat(this.layers.getLayer("com/example/application.properties")).isEqualTo(StandardLayers.APPLICATION);
+	}
+
+	@Test
+	void getLayerWhenLoaderClassReturnsLoaderLayer() {
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Launcher.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Utils.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
 	}
 
 	@Test

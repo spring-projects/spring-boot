@@ -80,8 +80,7 @@ public class ArtifactsLibraries implements Libraries {
 					name = artifact.getGroupId() + "-" + name;
 					this.log.debug("Renamed to: " + name);
 				}
-				LibraryCoordinates coordinates = new LibraryCoordinates(artifact.getGroupId(), artifact.getArtifactId(),
-						artifact.getVersion());
+				LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
 				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact)));
 			}
 		}
@@ -120,6 +119,39 @@ public class ArtifactsLibraries implements Libraries {
 		}
 		sb.append(".").append(artifact.getArtifactHandler().getExtension());
 		return sb.toString();
+	}
+
+	/**
+	 * {@link LibraryCoordinates} backed by a Maven {@link Artifact}.
+	 */
+	private static class ArtifactLibraryCoordinates implements LibraryCoordinates {
+
+		private final Artifact artifact;
+
+		ArtifactLibraryCoordinates(Artifact artifact) {
+			this.artifact = artifact;
+		}
+
+		@Override
+		public String getGroupId() {
+			return this.artifact.getGroupId();
+		}
+
+		@Override
+		public String getArtifactId() {
+			return this.artifact.getArtifactId();
+		}
+
+		@Override
+		public String getVersion() {
+			return this.artifact.getVersion();
+		}
+
+		@Override
+		public String toString() {
+			return this.artifact.toString();
+		}
+
 	}
 
 }

@@ -17,9 +17,16 @@
 package org.springframework.boot.jarmode.layertools;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.jar.JarFile;
 
-import org.springframework.boot.system.ApplicationHome;
 import org.springframework.util.Assert;
 
 /**
@@ -39,7 +46,7 @@ class Context {
 	 * Create a new {@link Context} instance.
 	 */
 	Context() {
-		this(new ApplicationHome().getSource(), Paths.get(".").toAbsolutePath().normalize().toFile());
+		this(getSourceJarFile(), Paths.get(".").toAbsolutePath().normalize().toFile());
 	}
 
 	/**
@@ -53,6 +60,39 @@ class Context {
 		this.jarFile = jarFile;
 		this.workingDir = workingDir;
 		this.relativeDir = deduceRelativeDir(jarFile.getParentFile(), this.workingDir);
+	}
+
+	private static File getSourceJarFile() {
+		try {
+			ProtectionDomain domain = Context.class.getProtectionDomain();
+			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
+			File source = (location != null) ? findSource(location) : null;
+			if (source != null && source.exists()) {
+				return source.getAbsoluteFile();
+			}
+			return null;
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private static File findSource(URL location) throws IOException, URISyntaxException {
+		URLConnection connection = location.openConnection();
+		if (connection instanceof JarURLConnection) {
+			return getRootJarFile(((JarURLConnection) connection).getJarFile());
+		}
+		return new File(location.toURI());
+	}
+
+	private static File getRootJarFile(JarFile jarFile) {
+		String name = jarFile.getName();
+		int separator = name.indexOf("!/");
+		if (separator > 0) {
+			name = name.substring(0, separator);
+		}
+		return new File(name);
 	}
 
 	private String deduceRelativeDir(File sourceFolder, File workingDir) {

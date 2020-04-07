@@ -33,33 +33,10 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 	$ java -cp BOOT-INF/classes:BOOT-INF/lib/* com.example.MyApplication
 ----
 
-More efficient container images can also be created by copying the dependencies to the image as a separate layer from the application classes and resources (which normally change more frequently).
-There is more than one way to achieve this layer separation.
-For example, using a `Dockerfile` you could express it in this form:
+NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
+The jar contains a `classpath.idx` file which is used by the `JarLauncher` when constructing the classpath.
 
-[indent=0]
-----
-	FROM openjdk:8-jdk-alpine AS builder
-	WORKDIR target/dependency
-	ARG APPJAR=target/*.jar
-	COPY ${APPJAR} app.jar
-	RUN jar -xf ./app.jar
-
-	FROM openjdk:8-jre-alpine
-	VOLUME /tmp
-	ARG DEPENDENCY=target/dependency
-	COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-	COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
-	COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
-	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
-----
-
-Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
-
-[indent=0]
-----
-	docker build --build-arg APPJAR=path/to/myapp.jar .
-----
+More efficient container images can also be created by <<spring-boot-features.adoc#building-docker-images,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
 
 
 

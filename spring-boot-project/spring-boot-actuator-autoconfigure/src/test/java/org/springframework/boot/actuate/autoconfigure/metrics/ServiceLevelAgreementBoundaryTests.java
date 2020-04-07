@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ServiceLevelAgreementBoundary}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class ServiceLevelAgreementBoundaryTests {
 
@@ -44,6 +45,24 @@ class ServiceLevelAgreementBoundaryTests {
 	void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
 		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123ms");
 		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	void getValueForDistributionSummaryWhenFromDoubleShouldReturnDoubleValue() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf(123.42);
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
+	}
+
+	@Test
+	void getValueForDistributionSummaryWhenFromStringShouldReturnDoubleValue() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123.42");
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
+	}
+
+	@Test
+	void getValueForDistributionSummaryWhenFromDurationShouldReturnNull() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123ms");
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isNull();
 	}
 
 }

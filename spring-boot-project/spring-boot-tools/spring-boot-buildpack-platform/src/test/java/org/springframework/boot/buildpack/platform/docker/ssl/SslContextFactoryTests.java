@@ -50,8 +50,7 @@ class SslContextFactoryTests {
 		this.fileWriter.writeFile("cert.pem", PemFileWriter.CERTIFICATE);
 		this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_KEY);
 		this.fileWriter.writeFile("ca.pem", PemFileWriter.CA_CERTIFICATE);
-
-		SSLContext sslContext = new SslContextFactory().forPath(this.fileWriter.getTempDir().toString());
+		SSLContext sslContext = new SslContextFactory().forDirectory(this.fileWriter.getTempDir().toString());
 		assertThat(sslContext).isNotNull();
 	}
 

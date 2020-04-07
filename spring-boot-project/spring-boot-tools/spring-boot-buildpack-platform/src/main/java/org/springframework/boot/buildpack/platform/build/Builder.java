@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
-import org.springframework.boot.buildpack.platform.docker.DockerException;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.util.Assert;
@@ -56,7 +56,7 @@ public class Builder {
 		this.docker = docker;
 	}
 
-	public void build(BuildRequest request) throws DockerException, IOException {
+	public void build(BuildRequest request) throws DockerEngineException, IOException {
 		Assert.notNull(request, "Request must not be null");
 		this.log.start(request);
 		Image builderImage = pullBuilder(request);

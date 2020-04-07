@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -52,6 +54,7 @@ public class ReactiveRestClientAutoConfiguration {
 			builder.usingSsl();
 		}
 		configureTimeouts(builder, properties);
+		configureExchangeStrategies(builder, properties);
 		return builder.build();
 	}
 
@@ -64,6 +67,19 @@ public class ReactiveRestClientAutoConfiguration {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBasicAuth(username, properties.getPassword());
 			builder.withDefaultHeaders(headers);
+		});
+	}
+
+	private void configureExchangeStrategies(ClientConfiguration.TerminalClientConfigurationBuilder builder,
+			ReactiveRestClientProperties properties) {
+		PropertyMapper map = PropertyMapper.get();
+		builder.withWebClientConfigurer((webClient) -> {
+			ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+					.codecs((configurer) -> map.from(properties.getMaxInMemorySize()).whenNonNull()
+							.asInt(DataSize::toBytes)
+							.to((maxInMemorySize) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)))
+					.build();
+			return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
 		});
 	}
 

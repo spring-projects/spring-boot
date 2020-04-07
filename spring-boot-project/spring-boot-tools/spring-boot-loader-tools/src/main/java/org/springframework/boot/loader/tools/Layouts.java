@@ -95,30 +95,13 @@ public final class Layouts {
 		}
 
 		@Override
-		public boolean isExecutable() {
-			return true;
-		}
-
-	}
-
-	/**
-	 * Executable JAR layout with support for layers.
-	 */
-	public static class LayeredJar extends Jar implements LayeredLayout {
-
-		@Override
 		public String getLayersIndexFileLocation() {
 			return "BOOT-INF/layers.idx";
 		}
 
 		@Override
-		public String getRepackagedClassesLocation(Layer layer) {
-			return "BOOT-INF/layers/" + layer + "/classes/";
-		}
-
-		@Override
-		public String getLibraryLocation(String libraryName, LibraryScope scope, Layer layer) {
-			return "BOOT-INF/layers/" + layer + "/lib/";
+		public boolean isExecutable() {
+			return true;
 		}
 
 	}

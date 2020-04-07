@@ -1,5 +1,5 @@
 [[integration-tests]]
-== Running Integration tests
+== Running Integration Tests
 While you may start your Spring Boot application very easily from your test (or test suite) itself, it may be desirable to handle that in the build itself.
 To make sure that the lifecycle of your Spring Boot application is properly managed around your integration tests, you can use the `start` and `stop` goals, as shown in the following example:
 

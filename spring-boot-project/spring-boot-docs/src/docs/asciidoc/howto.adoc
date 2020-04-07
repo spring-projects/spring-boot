@@ -1965,7 +1965,7 @@ Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
 
 
 
-[[howto-initialize-a-database-using-r2dc]]
+[[howto-initialize-a-database-using-r2dbc]]
 === Initialize a Database Using R2DBC
 If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
 
@@ -2440,22 +2440,13 @@ Using this format lets the time be parsed into a `Date` and its format, when ser
 
 [[howto-customize-dependency-versions]]
 === Customize Dependency Versions
-If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies` (for instance, `spring-boot-starter-parent`) but you want to override a specific third-party dependency, you can add appropriate `<properties>` elements.
-Browse the <<appendix-dependency-versions.adoc#dependency-versions-properties, `Version properties`>> for a complete list of version properties.
-For example, to pick a different `slf4j` version, you would add the following property:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<slf4j.version>1.7.5<slf4j.version>
-	</properties>
-----
-
-NOTE: Doing so only works if your Maven project inherits (directly or indirectly) from `spring-boot-dependencies`.
-If you have added `spring-boot-dependencies` in your own `dependencyManagement` section with `<scope>import</scope>`, you have to redefine the artifact yourself instead of overriding the property.
+The `spring-boot-dependencies` POM manages the versions of common dependencies.
+The Spring Boot plugins for Maven and Gradle allow these managed dependency versions to be customized using build properties.
 
 WARNING: Each Spring Boot release is designed and tested against this specific set of third-party dependencies.
 Overriding versions may cause compatibility issues.
+
+To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}/#using[this section] of the Maven plugin's documentation.
 
 To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}/#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
 
@@ -2501,7 +2492,7 @@ However, you must additionally add an `<executions>` section, as follows:
 	</build>
 ----
 
-See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] for full usage details.
+See the {spring-boot-maven-plugin-docs}#repackage[plugin documentation] for full usage details.
 
 
 

@@ -57,7 +57,7 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockAplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(request.getBuilder().toString()).contains("docker.io/cloudfoundry/cnb:bionic-platform-api");
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();

@@ -114,13 +114,23 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
-		JarArchiveEntry entry = new JarArchiveEntry(entryName);
 		try {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream));
+			writeEntry(entryName, new InputStreamEntryWriter(inputStream));
 		}
 		finally {
 			inputStream.close();
 		}
+	}
+
+	/**
+	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 * @param entryName the name of the entry
+	 * @param entryWriter the entry writer
+	 * @throws IOException if the write fails
+	 */
+	public void writeEntry(String entryName, EntryWriter entryWriter) throws IOException {
+		JarArchiveEntry entry = new JarArchiveEntry(entryName);
+		writeEntry(entry, entryWriter);
 	}
 
 	/**

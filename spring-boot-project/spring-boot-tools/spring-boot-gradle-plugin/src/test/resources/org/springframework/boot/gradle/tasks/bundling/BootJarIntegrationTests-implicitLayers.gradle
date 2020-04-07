@@ -5,7 +5,7 @@ plugins {
 
 bootJar {
 	mainClassName = 'com.example.Application'
-	layers()
+	layered()
 }
 
 repositories {
@@ -14,6 +14,19 @@ repositories {
 }
 
 dependencies {
-	implementation("org.apache.commons:commons-lang3:3.9")
 	implementation("commons-io:commons-io:2.7-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+task listLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "list"
+}
+
+task extractLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "extract"
 }

@@ -30,7 +30,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
-import org.apache.kafka.common.requests.IsolationLevel;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -1218,6 +1217,31 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
+		}
+
+	}
+
+	public enum IsolationLevel {
+
+		/**
+		 * Read everything including aborted transactions.
+		 */
+		READ_UNCOMMITTED((byte) 0),
+
+		/**
+		 * Read records from committed transactions, in addition to records not part of
+		 * transactions.
+		 */
+		READ_COMMITTED((byte) 1);
+
+		private final byte id;
+
+		IsolationLevel(byte id) {
+			this.id = id;
+		}
+
+		public byte id() {
+			return this.id;
 		}
 
 	}

@@ -34,11 +34,11 @@ import org.gradle.api.tasks.options.Option;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
-import org.springframework.boot.buildpack.platform.docker.DockerException;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
-import org.springframework.boot.gradle.plugin.VersionExtractor;
+import org.springframework.boot.gradle.util.VersionExtractor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -203,7 +203,7 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	@TaskAction
-	void buildImage() throws DockerException, IOException {
+	void buildImage() throws DockerEngineException, IOException {
 		Builder builder = new Builder();
 		BuildRequest request = createRequest();
 		builder.build(request);

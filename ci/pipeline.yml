@@ -183,6 +183,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java8
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
     - task: detect-jdk11-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
@@ -192,6 +193,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java11
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
     - task: detect-jdk14-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
@@ -201,6 +203,7 @@ jobs:
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
         JDK_VERSION: java14
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
 - name: detect-ubuntu-image-updates
   plan:
@@ -216,6 +219,7 @@ jobs:
         GITHUB_ORGANIZATION: spring-projects
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
 - name: detect-docker-updates
   plan:
@@ -230,7 +234,7 @@ jobs:
       params:
         GITHUB_REPO: spring-boot
         GITHUB_ORGANIZATION: spring-projects
-        ISSUE_TITLE: ((docker-upgrade-issue-title))
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
     - put: git-repo-ci-docker
       params:
@@ -245,7 +249,6 @@ jobs:
         GITHUB_ORGANIZATION: spring-projects
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
-        ISSUE_TITLE: ((docker-upgrade-issue-title))
       image: spring-boot-ci-image
 - name: build
   serial: true

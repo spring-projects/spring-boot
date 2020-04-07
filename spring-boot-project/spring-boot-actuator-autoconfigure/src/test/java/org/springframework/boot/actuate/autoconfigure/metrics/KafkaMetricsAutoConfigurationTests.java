@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,54 +16,54 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.binder.kafka.KafkaConsumerMetrics;
+import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link KafkaMetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class KafkaMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withPropertyValues("spring.jmx.enabled=true")
 			.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test
-	void whenThereIsNoMBeanServerAutoConfigurationBacksOff() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(KafkaConsumerMetrics.class));
+	void whenThereIsNoProducerFactoryAutoConfigurationBacksOff() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(KafkaClientMetrics.class));
 	}
 
 	@Test
-	void whenThereIsAnMBeanServerKafkaConsumerMetricsIsConfigured() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(KafkaConsumerMetrics.class));
+	void whenThereIsAnAProducerFactoryKafkaClientMetricsIsConfigured() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(KafkaClientMetrics.class));
 	}
 
 	@Test
-	void allowsCustomKafkaConsumerMetricsToBeUsed() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
-				.withUserConfiguration(CustomKafkaConsumerMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(KafkaConsumerMetrics.class)
-						.hasBean("customKafkaConsumerMetrics"));
+	void allowsCustomKafkaClientMetricsToBeUsed() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+				.withUserConfiguration(CustomKafkaClientMetricsConfiguration.class).run((context) -> assertThat(context)
+						.hasSingleBean(KafkaClientMetrics.class).hasBean("customKafkaClientMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomKafkaConsumerMetricsConfiguration {
+	static class CustomKafkaClientMetricsConfiguration {
 
 		@Bean
-		KafkaConsumerMetrics customKafkaConsumerMetrics() {
-			return new KafkaConsumerMetrics();
+		KafkaClientMetrics customKafkaClientMetrics() {
+			return mock(KafkaClientMetrics.class);
 		}
 
 	}

@@ -9,7 +9,7 @@ bootJar {
 
 // tag::layered[]
 bootJar {
-	layers {
+	layered {
 		includeLayerTools = false
 	}
 }

@@ -43,11 +43,11 @@ import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts.Expanded;
 import org.springframework.boot.loader.tools.Layouts.Jar;
-import org.springframework.boot.loader.tools.Layouts.LayeredJar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Packager;
+import org.springframework.boot.loader.tools.layer.CustomLayers;
 
 /**
  * Abstract base class for classes that work with an {@link Packager}.
@@ -56,6 +56,8 @@ import org.springframework.boot.loader.tools.Packager;
  * @since 2.3.0
  */
 public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo {
+
+	private static final org.springframework.boot.loader.tools.Layers IMPLICIT_LAYERS = org.springframework.boot.loader.tools.Layers.IMPLICIT;
 
 	/**
 	 * The Maven project.
@@ -134,25 +136,26 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			packager.setLayout(this.layout.layout());
 		}
 		if (this.layers != null && this.layers.isEnabled()) {
-			if (this.layers.getConfiguration() != null) {
-				try {
-					Document document = getDocumentIfAvailable(this.layers.getConfiguration());
-					CustomLayersProvider customLayersProvider = new CustomLayersProvider();
-					packager.setLayers(customLayersProvider.getLayers(document));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException("Failed to process custom layers configuration "
-							+ this.layers.getConfiguration().getAbsolutePath(), ex);
-				}
-			}
-			packager.setLayout(new LayeredJar());
+			packager.setLayers((this.layers.getConfiguration() != null)
+					? getCustomLayers(this.layers.getConfiguration()) : IMPLICIT_LAYERS);
 			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());
 		}
 		return packager;
 	}
 
-	private Document getDocumentIfAvailable(File configurationFile) throws Exception {
-		InputSource inputSource = new InputSource(new FileInputStream(configurationFile));
+	private CustomLayers getCustomLayers(File configuration) {
+		try {
+			Document document = getDocumentIfAvailable(configuration);
+			return new CustomLayersProvider().getLayers(document);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to process custom layers configuration " + configuration.getAbsolutePath(), ex);
+		}
+	}
+
+	private Document getDocumentIfAvailable(File xmlFile) throws Exception {
+		InputSource inputSource = new InputSource(new FileInputStream(xmlFile));
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		return builder.parse(inputSource);

@@ -29,7 +29,9 @@
 :spring-boot-master-code: https://github.com/{github-repo}/tree/master
 :spring-boot-current-docs: https://docs.spring.io/spring-boot/docs/current/reference/
 :spring-boot-actuator-restapi: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/
-:spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/html/
+:spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/html/
+:spring-boot-maven-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/pdf/spring-boot-maven-plugin-reference.pdf
+:spring-boot-maven-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/api/
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/html/
 :spring-boot-gradle-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/pdf/spring-boot-gradle-plugin-reference.pdf
 :spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/api/

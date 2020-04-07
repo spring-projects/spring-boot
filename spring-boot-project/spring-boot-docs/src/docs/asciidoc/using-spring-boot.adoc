@@ -27,8 +27,8 @@ When you upgrade Spring Boot itself, these dependencies are upgraded as well in 
 
 NOTE: You can still specify a version and override Spring Boot's recommendations if you need to do so.
 
-The curated list contains all the spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
-The list is available as a standard <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>> that can be used with both <<using-boot-maven-parent-pom,Maven>> and <<using-boot-gradle,Gradle>>.
+The curated list contains all the Spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
+The list is available as a standard Bills of Materials (`spring-boot-dependencies`) that can be used with both <<using-boot-maven,Maven>> and <<using-boot-gradle,Gradle>>.
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework.
 We **highly** recommend that you not specify its version.
@@ -37,127 +37,10 @@ We **highly** recommend that you not specify its version.
 
 [[using-boot-maven]]
 === Maven
-Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
-The parent project provides the following features:
+To learn about using Spring Boot with Maven, please refer to the documentation for Spring Boot's Maven plugin:
 
-* Java 1.8 as the default compiler level.
-* UTF-8 source encoding.
-* A <<using-boot-dependency-management,Dependency Management section>>, inherited from the spring-boot-dependencies pom, that manages the versions of common dependencies.
-This dependency management lets you omit <version> tags for those dependencies when used in your own pom.
-* An execution of the {spring-boot-maven-plugin-docs}#goals-repackage[`repackage` goal] with a `repackage` execution id.
-* Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin], https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
-* Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
-
-Note that, since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
-(You can override that by setting a Maven property called `resource.delimiter`.)
-
-
-
-[[using-boot-maven-parent-pom]]
-==== Inheriting the Starter Parent
-To configure your project to inherit from the `spring-boot-starter-parent`, set the `parent` as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<!-- Inherit defaults from Spring Boot -->
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{spring-boot-version}</version>
-	</parent>
-----
-
-NOTE: You should need to specify only the Spring Boot version number on this dependency.
-If you import additional starters, you can safely omit the version number.
-
-With that setup, you can also override individual dependencies by overriding a property in your own project.
-For instance, to upgrade to another Spring Data release train, you would add the following to your `pom.xml`:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<spring-data-releasetrain.version>Fowler-SR2</spring-data-releasetrain.version>
-	</properties>
-----
-
-TIP: Check out the <<howto.adoc#howto-customize-dependency-versions, Customize Dependency Versions "`How-to`">> for more information.
-
-
-
-[[using-boot-maven-without-a-parent]]
-==== Using Spring Boot without the Parent POM
-Not everyone likes inheriting from the `spring-boot-starter-parent` POM.
-You may have your own corporate standard parent that you need to use or you may prefer to explicitly declare all your Maven configuration.
-
-If you do not want to use the `spring-boot-starter-parent`, you can still keep the benefit of the dependency management (but not the plugin management) by using a `scope=import` dependency, as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<!-- Import dependency management from Spring Boot -->
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>{spring-boot-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-----
-
-The preceding sample setup does not let you override individual dependencies by using a property, as explained above.
-To achieve the same result, you need to add an entry in the `dependencyManagement` of your project **before** the `spring-boot-dependencies` entry.
-For instance, to upgrade to another Spring Data release train, you could add the following element to your `pom.xml`:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependencyManagement>
-		<dependencies>
-			<!-- Override Spring Data release train provided by Spring Boot -->
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Fowler-SR2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>{spring-boot-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-----
-
-NOTE: In the preceding example, we specify a _BOM_, but any dependency type can be overridden in the same way.
-
-
-
-[[using-boot-maven-plugin]]
-==== Using the Spring Boot Maven Plugin
-Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> that can package the project as an executable jar.
-Add the plugin to your `<plugins>` section if you want to use it, as shown in the following example:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-----
-
-NOTE: If you use the Spring Boot starter parent pom, you need to add only the plugin.
-There is no need to configure it unless you want to change the settings defined in the parent.
+* Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
+* {spring-boot-maven-plugin-api}[API]
 
 
 

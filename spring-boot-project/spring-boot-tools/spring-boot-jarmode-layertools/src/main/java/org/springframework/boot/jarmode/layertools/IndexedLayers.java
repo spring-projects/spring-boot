@@ -20,59 +20,66 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Layers} implementation backed by a {@code BOOT-INF/layers.idx} file.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class IndexedLayers implements Layers {
 
-	private static final String APPLICATION_LAYER = "application";
-
-	private static final String SPRING_BOOT_APPLICATION_LAYER = "springbootapplication";
-
-	private static final Pattern LAYER_PATTERN = Pattern.compile("^BOOT-INF\\/layers\\/([a-zA-Z0-9-]+)\\/.*$");
-
-	private List<String> layers;
+	private MultiValueMap<String, String> layers = new LinkedMultiValueMap<>();
 
 	IndexedLayers(String indexFile) {
-		String[] lines = indexFile.split("\n");
-		this.layers = Arrays.stream(lines).map(String::trim).filter((line) -> !line.isEmpty())
-				.collect(Collectors.toCollection(ArrayList::new));
-		Assert.state(!this.layers.isEmpty(), "Empty layer index file loaded");
-		if (!this.layers.contains(APPLICATION_LAYER)) {
-			this.layers.add(0, SPRING_BOOT_APPLICATION_LAYER);
+		String[] lines = Arrays.stream(indexFile.split("\n")).map((line) -> line.replace("\r", ""))
+				.filter(StringUtils::hasText).toArray(String[]::new);
+		String layer = null;
+		for (String line : lines) {
+			if (line.startsWith("- ")) {
+				layer = line.substring(3, line.length() - 2);
+			}
+			else if (line.startsWith("  - ")) {
+				this.layers.add(layer, line.substring(5, line.length() - 1));
+			}
+			else {
+				throw new IllegalStateException("Layer index file is malformed");
+			}
 		}
+		Assert.state(!this.layers.isEmpty(), "Empty layer index file loaded");
 	}
 
 	@Override
 	public Iterator<String> iterator() {
-		return this.layers.iterator();
+		return this.layers.keySet().iterator();
 	}
 
 	@Override
 	public String getLayer(ZipEntry entry) {
-		String name = entry.getName();
-		Matcher matcher = LAYER_PATTERN.matcher(name);
-		if (matcher.matches()) {
-			String layer = matcher.group(1);
-			Assert.state(this.layers.contains(layer), () -> "Unexpected layer '" + layer + "'");
-			return layer;
+		return getLayer(entry.getName());
+	}
+
+	private String getLayer(String name) {
+		for (Map.Entry<String, List<String>> entry : this.layers.entrySet()) {
+			for (String candidate : entry.getValue()) {
+				if (candidate.equals(name) || (candidate.endsWith("/") && name.startsWith(candidate))) {
+					return entry.getKey();
+				}
+			}
 		}
-		return this.layers.contains(APPLICATION_LAYER) ? APPLICATION_LAYER : SPRING_BOOT_APPLICATION_LAYER;
+		throw new IllegalStateException("No layer defined in index for file '" + name + "'");
 	}
 
 	/**

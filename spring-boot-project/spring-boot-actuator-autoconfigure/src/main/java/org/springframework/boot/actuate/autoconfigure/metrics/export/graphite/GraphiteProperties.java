@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,14 @@ public class GraphiteProperties {
 	private GraphiteProtocol protocol = GraphiteProtocol.PICKLED;
 
 	/**
-	 * For the default naming convention, turn the specified tag keys into part of the
-	 * metric prefix.
+	 * Whether Graphite tags should be used, as opposed to a hierarchical naming
+	 * convention.
+	 */
+	private boolean graphiteTagsEnabled = true;
+
+	/**
+	 * For the hierarchical naming convention, turn the specified tag keys into part of
+	 * the metric prefix. Ignored if "graphiteTagsEnabled" is true.
 	 */
 	private String[] tagsAsPrefix = new String[0];
 
@@ -129,6 +135,14 @@ public class GraphiteProperties {
 
 	public void setProtocol(GraphiteProtocol protocol) {
 		this.protocol = protocol;
+	}
+
+	public boolean isGraphiteTagsEnabled() {
+		return this.graphiteTagsEnabled;
+	}
+
+	public void setGraphiteTagsEnabled(boolean graphiteTagsEnabled) {
+		this.graphiteTagsEnabled = graphiteTagsEnabled;
 	}
 
 	public String[] getTagsAsPrefix() {

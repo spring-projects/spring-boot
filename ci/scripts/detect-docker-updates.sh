@@ -1,7 +1,11 @@
 #!/bin/bash
 
-existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/pulls\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster )
-existing_upgrade_issues=$( echo "$existing_tasks" | jq -c --arg TITLE "$ISSUE_TITLE" '.[] | select(.title==$TITLE)' )
+latest_version=$(curl -I -s https://github.com/docker/docker-ce/releases/latest | grep "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
+title_prefix="Upgrade CI to Docker"
+
+milestone_number=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open | jq -c --arg MILESTONE "$MILESTONE" '.[] | select(.title==$MILESTONE)' | jq -r '.number')
+
+existing_upgrade_issues=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster\&milestone\=${milestone_number} | jq -c --arg TITLE_PREFIX "$title_prefix" '.[] | select(.pull_request != null) | select(.title | startswith($TITLE_PREFIX))' )
 
 if [[ ${existing_upgrade_issues} = "" ]]; then
   git clone git-repo git-repo-updated > /dev/null
@@ -10,8 +14,6 @@ else
   echo "Pull request already exists."
   exit 0
 fi
-
-latest_version=$(curl -I -s https://github.com/docker/docker-ce/releases/latest | grep "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
 
 if [[ $latest_version =~ (beta|rc) ]]; then
 	echo "Skip pre-release versions"
@@ -31,7 +33,7 @@ git config user.name "Spring Buildmaster" > /dev/null
 git config user.email "buildmaster@springframework.org" > /dev/null
 sed -i "s/version=.*/version=\"$latest_version\"/" ci/images/get-docker-url.sh
 git add ci/images/get-docker-url.sh > /dev/null
-commit_message="Upgrade to Docker $latest_version in CI"
+commit_message="$title_prefix $latest_version"
 git commit -m "$commit_message" > /dev/null
 popd
 echo ${commit_message} > commit-details/message

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,22 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfiguresUseTagsAsPrefixIsIgnoredByDefault() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=ignored").run((context) -> {
+					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
+					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
+					registry.counter("test.count", Tags.of("app", "myapp"));
+					assertThat(registry.getDropwizardRegistry().getMeters()).containsOnlyKeys("test.count;app=myapp");
+				});
+	}
+
+	@Test
 	void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app").run((context) -> {
+				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app",
+						"management.metrics.export.graphite.graphite-tags-enabled=false")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
 					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
 					registry.counter("test.count", Tags.of("app", "myapp"));

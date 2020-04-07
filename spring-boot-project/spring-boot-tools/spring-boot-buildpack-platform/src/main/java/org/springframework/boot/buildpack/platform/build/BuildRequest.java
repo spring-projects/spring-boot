@@ -36,7 +36,9 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	private static final ImageReference DEFAULT_BUILDER = ImageReference.of("cloudfoundry/cnb:0.0.53-bionic");
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "cloudfoundry/cnb:bionic-platform-api-0.2";
+
+	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_NAME);
 
 	private final ImageReference name;
 

@@ -1,0 +1,7 @@
+- "test":
+  - "BOOT-INF/lib/a.jar"
+  - "BOOT-INF/lib/b.jar"
+- "application":
+  - "BOOT-INF/classes/Demo.class"
+  - "META-INF/"
+  - "a b/c d"

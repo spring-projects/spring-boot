@@ -220,10 +220,40 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.metrics.export.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to JMX is enabled.",
-      "defaultValue": true
+      "name": "management.metrics.export.appoptics.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.datadog.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.dynatrace.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.elastic.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "management.metrics.export.ganglia.addressing-mode",
@@ -250,14 +280,66 @@
       "defaultValue": "seconds"
     },
     {
+      "name": "management.metrics.export.humio.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.humio.repository",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.export.influx.consistency",
       "defaultValue": "one"
+    },
+    {
+      "name": "management.metrics.export.influx.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.jmx.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether exporting of metrics to JMX is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.newrelic.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether exporting of metrics to Prometheus is enabled.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.prometheus.histogram-flavor",
+      "defaultValue": "prometheus"
+    },
+    {
+      "name": "management.metrics.export.signalfx.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "management.metrics.export.simple.enabled",
@@ -270,12 +352,42 @@
       "defaultValue": "cumulative"
     },
     {
+      "name": "management.metrics.export.stackdriver.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.export.statsd.flavor",
       "defaultValue": "datadog"
     },
     {
       "name": "management.metrics.export.statsd.queue-size",
       "defaultValue": 2147483647,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.connect-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.read-timeout",
       "deprecation": {
         "level": "error"
       }

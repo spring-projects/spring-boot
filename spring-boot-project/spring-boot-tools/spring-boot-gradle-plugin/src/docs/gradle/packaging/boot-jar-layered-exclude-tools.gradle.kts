@@ -11,8 +11,8 @@ tasks.getByName<BootJar>("bootJar") {
 
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
-	layers {
-		includeLayerTools = false
+	layered {
+		isIncludeLayerTools = false
 	}
 }
 // end::layered[]

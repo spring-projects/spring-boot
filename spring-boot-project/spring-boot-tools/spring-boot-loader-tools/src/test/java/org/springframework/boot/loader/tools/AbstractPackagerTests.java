@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -211,7 +212,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	}
 
 	@Test
-	void index() throws Exception {
+	void classPathIndex() throws Exception {
 		TestJarFile libJar1 = new TestJarFile(this.tempDir);
 		libJar1.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
 		File libJarFile1 = libJar1.getFile();
@@ -232,12 +233,13 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
-		assertThat(Arrays.asList(libraries)).contains(libJarFile1.getName(), libJarFile2.getName(),
-				libJarFile3.getName());
+		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
+				.map((jar) -> "- \"" + jar.getName() + "\"").collect(Collectors.toList());
+		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
 	@Test
-	void layeredLayout() throws Exception {
+	void layersIndex() throws Exception {
 		TestJarFile libJar1 = new TestJarFile(this.tempDir);
 		libJar1.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
 		File libJarFile1 = libJar1.getFile();
@@ -255,7 +257,6 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		layers.addLibrary(libJarFile3, "0003");
 		packager.setLayers(layers);
 		packager.setIncludeRelevantJarModeJars(false);
-		packager.setLayout(new Layouts.LayeredJar());
 		execute(packager, (callback) -> {
 			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
 			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
@@ -263,36 +264,48 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		});
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		List<String> expectedJars = new ArrayList<>();
-		expectedJars.add("BOOT-INF/layers/0001/lib/" + libJarFile1.getName());
-		expectedJars.add("BOOT-INF/layers/0002/lib/" + libJarFile2.getName());
-		expectedJars.add("BOOT-INF/layers/0003/lib/" + libJarFile3.getName());
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly(libJarFile1.getName(),
-				libJarFile2.getName(), libJarFile3.getName());
+		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
+				.map((file) -> "- \"" + file.getName() + "\"").collect(Collectors.toList());
+		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
-		expectedLayers.add("default");
-		expectedLayers.add("0001");
-		expectedLayers.add("0002");
-		expectedLayers.add("0003");
-		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly(expectedLayers.toArray(new String[0]));
+		expectedLayers.add("- 'default':");
+		expectedLayers.add("  - 'BOOT-INF/classes/'");
+		expectedLayers.add("  - 'BOOT-INF/classpath.idx'");
+		expectedLayers.add("  - 'BOOT-INF/layers.idx'");
+		expectedLayers.add("  - 'META-INF/'");
+		expectedLayers.add("  - 'org/'");
+		expectedLayers.add("- '0001':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile1.getName() + "'");
+		expectedLayers.add("- '0002':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile2.getName() + "'");
+		expectedLayers.add("- '0003':");
+		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile3.getName() + "'");
+		assertThat(layersIndex.split("\\n"))
+				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test
-	void layeredLayoutAddJarModeJar() throws Exception {
+	void layersEnabledAddJarModeJar() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		TestLayers layers = new TestLayers();
 		packager.setLayers(layers);
-		packager.setLayout(new Layouts.LayeredJar());
 		execute(packager, Libraries.NONE);
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactly("spring-boot-jarmode-layertools.jar");
+		assertThat(Arrays.asList(classpathIndex.split("\\n")))
+				.containsExactly("- \"spring-boot-jarmode-layertools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
-		assertThat(Arrays.asList(layersIndex.split("\\n"))).containsExactly("default");
+		List<String> expectedLayers = new ArrayList<>();
+		expectedLayers.add("- 'default':");
+		expectedLayers.add("  - 'BOOT-INF/'");
+		expectedLayers.add("  - 'META-INF/'");
+		expectedLayers.add("  - 'org/'");
+		assertThat(layersIndex.split("\\n"))
+				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test
@@ -648,6 +661,11 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		@Override
 		public Iterator<Layer> iterator() {
 			return this.layers.iterator();
+		}
+
+		@Override
+		public Stream<Layer> stream() {
+			return this.layers.stream();
 		}
 
 		@Override

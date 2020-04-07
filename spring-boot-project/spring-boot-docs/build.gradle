@@ -157,19 +157,18 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 
 asciidoctor {
 	sources {
-		include "*.htmlsingleadoc"
+		include "*.singleadoc"
 	}
 }
 
 asciidoctorPdf {
 	sources {
-		include "*.pdfadoc"
+		include "*.singleadoc"
 	}
 }
 
 task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
-		include "*.htmladoc"
 		include "*.adoc"
 	}
 }
@@ -241,6 +240,8 @@ task zip(type: Zip) {
 	}
 	from(asciidoctorPdf.outputDir) {
 		into "reference/pdf"
+		include "index.pdf"
+		rename { "spring-boot-reference.pdf" }
 	}
 	from(asciidoctorMultipage.outputDir) {
 		into "reference/html"
