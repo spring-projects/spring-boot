@@ -110,6 +110,8 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("com.newrelic.agent.java:newrelic-api:5.+")
+	testImplementation("com.newrelic.agent.java:newrelic-agent:5+")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.undertow:undertow-core")
