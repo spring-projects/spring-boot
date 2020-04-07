@@ -17,18 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.DistributionSummary;
-import io.micrometer.core.instrument.FunctionCounter;
-import io.micrometer.core.instrument.FunctionTimer;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.LongTaskTimer;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.TimeGauge;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicInsightsApiClientProvider;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -58,21 +49,33 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void failsWithoutAnApiKey() {
+	void failsApiClientProviderWithoutAnApiKey() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.newrelic.account-id=12345")
+				.withPropertyValues("management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	void failsWithoutAnAccountId() {
+	void failsApiClientProviderWithoutAnAccountId() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde")
+				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	void failsToAutoConfigureWithoutEventType() {
+	void failsToAutoConfigureApiClientProviderWithoutEventType() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.event-type=",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
+				.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	void failsToAutoConfigureAgentClientProviderWithoutEventType() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345",
@@ -81,33 +84,84 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresWithEventTypeOverriden() {
+	void autoConfiguresApiClientProviderWithEventTypeOverriden() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345",
-						"management.metrics.export.newrelic.event-type=wxyz")
+						"management.metrics.export.newrelic.event-type=wxyz",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
 						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
 	}
 
 	@Test
-	void autoConfiguresWithMeterNameEventTypeEnabledAndWithoutEventType() {
+	void autoConfiguresApiClientProviderWithMeterNameEventTypeEnabledAndWithoutEventType() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345",
 						"management.metrics.export.newrelic.event-type=",
+						"management.metrics.export.newrelic.meter-name-event-type-enabled=true",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+	}
+
+	@Test
+	void autoConfiguresAgentClientProviderWithEventTypeOverriden() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.event-type=wxyz")
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+	}
+
+	@Test
+	void autoConfiguresAgentClientProviderWithMeterNameEventTypeEnabledAndWithoutEventType() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.event-type=",
 						"management.metrics.export.newrelic.meter-name-event-type-enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
 						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
 	}
 
 	@Test
-	void autoConfiguresWithAccountIdAndApiKey() {
+	void autoConfiguresAgentClientProvider() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsAgentClientProvider"));
+	}
+
+	@Test
+	void autoConfiguresAgentClientProviderWithClientProviderTypeAgent() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.client-provider-type=INSIGHTS_AGENT")
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsAgentClientProvider"));
+	}
+
+	@Test
+	void autoConfiguresApiClientProviderWithAccountIdAndApiKeyAndClientProviderTypeApi() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsApiClientProvider"));
+	}
+
+	@Test
+	void autoConfiguresApiClientProviderWithAccountIdApiKeyProxyHostProxyPortAndClientProviderTypeApi() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.api-proxy-host=localhost",
+						"management.metrics.export.newrelic.api-proxy-port=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
+				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class)
+						.hasSingleBean(NewRelicClientProvider.class).hasBean("newRelicInsightsApiClientProvider"));
 	}
 
 	@Test
@@ -122,7 +176,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicConfig.class).hasBean("customConfig"));
 	}
 
@@ -130,7 +185,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
 						.hasBean("customRegistry"));
 	}
@@ -139,7 +195,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	void allowsClientProviderToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomClientProviderConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
+						"management.metrics.export.newrelic.account-id=12345",
+						"management.metrics.export.newrelic.client-provider-type=INSIGHTS_API")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicClientProvider.class)
 						.hasBean("customClientProvider"));
 	}
@@ -202,64 +259,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	static class CustomClientProviderConfiguration {
 
 		@Bean
-		NewRelicClientProvider customClientProvider() {
-			return new NewRelicClientProvider() {
-
-				@Override
-				public Object writeTimer(Timer timer) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeTimeGauge(TimeGauge gauge) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeSummary(DistributionSummary summary) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeMeter(Meter meter) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeLongTaskTimer(LongTaskTimer timer) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeGauge(Gauge gauge) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeFunctionTimer(FunctionTimer timer) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeFunctionCounter(FunctionCounter counter) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public Object writeCounter(Counter counter) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public void setNamingConvention(NamingConvention namingConvention) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public void publish(NewRelicMeterRegistry meterRegistry) {
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-			};
+		NewRelicClientProvider customClientProvider(NewRelicConfig config) {
+			return new NewRelicInsightsApiClientProvider(config);
 		}
 
 	}

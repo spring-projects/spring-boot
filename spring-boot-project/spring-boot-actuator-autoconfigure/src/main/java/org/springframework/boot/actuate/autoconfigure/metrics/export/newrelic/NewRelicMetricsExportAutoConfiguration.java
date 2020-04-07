@@ -68,25 +68,25 @@ public class NewRelicMetricsExportAutoConfiguration {
 		this.properties = properties;
 	}
 
-	@Bean
 	@ConditionalOnMissingBean
+	@Bean
 	public NewRelicConfig newRelicConfig() {
 		return new NewRelicPropertiesConfigAdapter(this.properties);
 	}
 
-	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = { "com.newrelic.agent.Agent" })
 	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
 			havingValue = "INSIGHTS_AGENT", matchIfMissing = true)
+	@Bean
 	public NewRelicClientProvider newRelicInsightsAgentClientProvider(NewRelicConfig config) {
 		return new NewRelicInsightsAgentClientProvider(config);
 	}
 
-	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "client-provider-type",
 			havingValue = "INSIGHTS_API", matchIfMissing = true)
+	@Bean
 	public NewRelicClientProvider newRelicInsightsApiClientProvider(NewRelicConfig config,
 			@Value("${management.metrics.export.newrelic.api-proxy-host:}") String proxyHost,
 			@Value("${management.metrics.export.newrelic.api-proxy-port:0}") int proxyPort) {
@@ -96,24 +96,15 @@ public class NewRelicMetricsExportAutoConfiguration {
 			return new NewRelicInsightsApiClientProvider(config,
 					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout(),
 							new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort))));
-
-			// read/connectTimeout via NewRelicConfig.
-			// See: https://github.com/micrometer-metrics/micrometer/pull/1961
-			// return new NewRelicInsightsApiClientProvider(config,
-			// apiProxyHost, apiProxyPort);
 		}
 		else {
 			return new NewRelicInsightsApiClientProvider(config,
 					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()));
-
-			// read/connectTimeout via NewRelicConfig.
-			// See: https://github.com/micrometer-metrics/micrometer/pull/1961
-			// return new NewRelicInsightsApiClientProvider(config);
 		}
 	}
 
-	@Bean
 	@ConditionalOnMissingBean
+	@Bean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config, Clock clock,
 			NewRelicClientProvider newRelicClientProvider) {
 		return new NewRelicMeterRegistry(config, newRelicClientProvider, clock);
