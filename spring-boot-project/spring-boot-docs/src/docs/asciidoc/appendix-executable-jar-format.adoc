@@ -87,6 +87,73 @@ Any dependencies that are required when running embedded but are not required wh
 
 
 
+[[executable-jar-war-index-files]]
+=== Index Files
+Spring Boot Loader-compatible jar and war archives can include additional index files under the `BOOT-INF/` folder.
+A `classpath.idx` file can be provided for both jars and wars, it provides the ordering that jars should be added to the classpath.
+The `layers.idx` file can be used only for jars, it allows a jar to be split into logical layers for Docker/OCI image creation.
+
+Index files follow a YAML compatible syntax so that they can be eaily parsed by third-party tools.
+These files, however, are _not_ parsed internally as YAML and they must be written in exactly the formats described below in order to be used.
+
+
+
+[[executable-jar-war-index-files-classpath]]
+=== Classpath Index
+The classpath index file can be provided in `BOOT-INF/classpath.idx`.
+It provides a list of jar names (not including the folder) in the order that they should be added to the classpath.
+Each line must start with dash space (`"-&#183;"`) and names must be in double quotes.
+
+For example, given the following jar:
+
+[indent=0]
+----
+	example.jar
+	 |
+	 +-META-INF
+	 |  +-...
+	 +-BOOT-INF
+	    +-classes
+	    |  +...
+	    +-lib
+	       +-dependency1.jar
+	       +-dependency2.jar
+----
+
+The index file would look like this:
+
+[indent=0]
+----
+	- "dependency2.jar"
+	- "dependency1.jar"
+----
+
+
+
+[[executable-jar-war-index-files-layers]]
+=== Layer Index
+The classpath index file can be provided in `BOOT-INF/layers.idx`.
+It provides a list of layers and the parts of the jar that should be contained within them.
+Lyers are written in the order that they should be added to the Docker/OCI image.
+Layers names are written as quoted strings prefixed with dash space (`"-&#183;"`) and with a colon (`":"`) suffix.
+Layer content is either a file or folder name written as a quoted string prefixed by space space dash space (`"&#183;&#183;-&#183;"`).
+A folder name ends with `/`, a file name does not.
+When a folder name is used it means that all files inside that folder are in the same layer.
+
+A typical example of a layers index would be:
+
+[indent=0]
+----
+	- "dependencies":
+	  - "BOOT-INF/lib/dependency1.jar"
+	  - "BOOT-INF/lib/dependency2.jar"
+	- "application":
+	  - "BOOT-INF/classes/"
+	  - "META-INF/"
+----
+
+
+
 [[executable-jar-jarfile]]
 == Spring Boot's "`JarFile`" Class
 The core class used to support loading nested jars is `org.springframework.boot.loader.jar.JarFile`.
