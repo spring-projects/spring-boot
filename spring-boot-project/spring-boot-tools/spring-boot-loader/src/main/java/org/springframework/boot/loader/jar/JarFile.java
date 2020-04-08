@@ -424,7 +424,7 @@ public class JarFile extends java.util.jar.JarFile {
 		 *
 		 * @param iterator the iterator
 		 */
-		EnumerationJarEntry(Iterator<JarEntry> iterator){
+		EnumerationJarEntry(Iterator<JarEntry> iterator) {
 			this.iterator = iterator;
 		}
 
@@ -438,5 +438,4 @@ public class JarFile extends java.util.jar.JarFile {
 			return this.iterator.next();
 		}
 	}
-    
 }
