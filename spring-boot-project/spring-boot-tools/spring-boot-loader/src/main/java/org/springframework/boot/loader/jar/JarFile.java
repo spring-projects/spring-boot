@@ -192,19 +192,7 @@ public class JarFile extends java.util.jar.JarFile {
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
 		final Iterator<JarEntry> iterator = this.entries.iterator();
-		return new Enumeration<java.util.jar.JarEntry>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public java.util.jar.JarEntry nextElement() {
-				return iterator.next();
-			}
-
-		};
+		return new EnumerationJarEntry(iterator);
 	}
 
 	public JarEntry getJarEntry(CharSequence name) {
@@ -420,5 +408,35 @@ public class JarFile extends java.util.jar.JarFile {
 		DIRECT, NESTED_DIRECTORY, NESTED_JAR
 
 	}
+	
+	/**
+     * The type Enumeration jar entry.
+     */
+    static class EnumerationJarEntry implements Enumeration<java.util.jar.JarEntry> {
+
+        /**
+         * The Iterator.
+         */
+        Iterator<JarEntry> iterator;
+
+        /**
+         * Instantiates a new Enumeration jar entry.
+         *
+         * @param iterator the iterator
+         */
+        public EnumerationJarEntry(Iterator<JarEntry> iterator){
+            this.iterator = iterator;
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public java.util.jar.JarEntry nextElement() {
+            return iterator.next();
+        }
+    }
 
 }
