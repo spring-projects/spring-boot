@@ -20,6 +20,7 @@ import com.wavefront.sdk.common.WavefrontSender;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -85,6 +86,7 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled("see https://github.com/micrometer-metrics/micrometer/issues/1964")
 	void allowsWavefrontSenderToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomSenderConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)

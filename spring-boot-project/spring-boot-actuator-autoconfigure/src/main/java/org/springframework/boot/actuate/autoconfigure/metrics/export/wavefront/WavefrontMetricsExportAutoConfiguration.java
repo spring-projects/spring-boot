@@ -21,7 +21,6 @@ import java.time.Duration;
 import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.direct.ingestion.WavefrontDirectIngestionClient.Builder;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.config.MissingRequiredConfigurationException;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 
@@ -40,7 +39,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -76,10 +74,6 @@ public class WavefrontMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WavefrontSender wavefrontSender(WavefrontConfig wavefrontConfig) {
-		if (!StringUtils.hasText(wavefrontConfig.apiToken())) {
-			throw new MissingRequiredConfigurationException(
-					"apiToken must be set whenever publishing directly to the Wavefront API");
-		}
 		return createWavefrontSender(wavefrontConfig);
 	}
 
@@ -91,7 +85,7 @@ public class WavefrontMetricsExportAutoConfiguration {
 	}
 
 	private WavefrontSender createWavefrontSender(WavefrontConfig wavefrontConfig) {
-		Builder builder = new Builder(getWavefrontReportingUri(wavefrontConfig.uri()), wavefrontConfig.apiToken());
+		Builder builder = WavefrontMeterRegistry.getDefaultSenderBuilder(wavefrontConfig);
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Sender sender = this.properties.getSender();
 		mapper.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
@@ -99,14 +93,6 @@ public class WavefrontMetricsExportAutoConfiguration {
 		mapper.from(sender.getFlushInterval()).asInt(Duration::getSeconds).to(builder::flushIntervalSeconds);
 		mapper.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
 		return builder.build();
-	}
-
-	private String getWavefrontReportingUri(String uri) {
-		// proxy reporting is now http reporting on newer wavefront proxies.
-		if (uri.startsWith("proxy")) {
-			return "http" + uri.substring(5);
-		}
-		return uri;
 	}
 
 }
