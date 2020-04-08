@@ -17,18 +17,24 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
+import java.net.URL;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.client.config.XmlClientConfigBuilder;
+import com.hazelcast.client.config.YamlClientConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Configuration for Hazelcast client.
@@ -81,6 +87,33 @@ class HazelcastClientConfiguration {
 					"file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml");
 		}
 
-	}
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			String springHazelcastConfigProperty = "spring.hazelcast.config";
+			if (context.getEnvironment().containsProperty(springHazelcastConfigProperty)) {
+				String configLocation = context.getEnvironment().getProperty(springHazelcastConfigProperty);
+				Resource resource = context.getResourceLoader().getResource(configLocation);
+				if (resource.exists()) {
+					try {
+						validateHazelcastClientConfig(resource);
+						return ConditionOutcome.match(startConditionMessage().foundExactly("property "
+								+ springHazelcastConfigProperty));
+					} catch (Exception e) {
+						return super.getResourceOutcome(context, metadata);
+					}
+				}
+			}
+			return super.getResourceOutcome(context, metadata);
+		}
 
+		private void validateHazelcastClientConfig(Resource resource)
+				throws IOException {
+			URL configUrl = resource.getURL();
+			String configFileName = configUrl.getPath();
+			if (configFileName.endsWith(".yaml")) {
+				new YamlClientConfigBuilder(configUrl).build();
+			}
+			new XmlClientConfigBuilder(configUrl).build();
+		}
+	}
 }
