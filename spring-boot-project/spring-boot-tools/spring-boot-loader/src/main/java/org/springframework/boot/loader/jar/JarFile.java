@@ -410,33 +410,33 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 	
 	/**
-     * The type Enumeration jar entry.
-     */
+	 * The type Enumeration jar entry.
+	 */
     static class EnumerationJarEntry implements Enumeration<java.util.jar.JarEntry> {
 
-        /**
-         * The Iterator.
-         */
-        Iterator<JarEntry> iterator;
+		/**
+		 * The Iterator.
+		 */
+		Iterator<JarEntry> iterator;
 
-        /**
-         * Instantiates a new Enumeration jar entry.
-         *
-         * @param iterator the iterator
-         */
-        public EnumerationJarEntry(Iterator<JarEntry> iterator){
-            this.iterator = iterator;
-        }
+		/**
+		 * Instantiates a new Enumeration jar entry.
+		 *
+		 * @param iterator the iterator
+		 */
+		EnumerationJarEntry(Iterator<JarEntry> iterator){
+			this.iterator = iterator;
+		}
 
-        @Override
-        public boolean hasMoreElements() {
-            return iterator.hasNext();
-        }
+		@Override
+		public boolean hasMoreElements() {
+			return this.iterator.hasNext();
+		}
 
-        @Override
-        public java.util.jar.JarEntry nextElement() {
-            return iterator.next();
-        }
-    }
-
+		@Override
+		public java.util.jar.JarEntry nextElement() {
+			return this.iterator.next();
+		}
+	}
+    
 }
