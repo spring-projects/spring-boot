@@ -408,11 +408,11 @@ public class JarFile extends java.util.jar.JarFile {
 		DIRECT, NESTED_DIRECTORY, NESTED_JAR
 
 	}
-	
+
 	/**
 	 * The type Enumeration jar entry.
 	 */
-    static class EnumerationJarEntry implements Enumeration<java.util.jar.JarEntry> {
+	static class EnumerationJarEntry implements Enumeration<java.util.jar.JarEntry> {
 
 		/**
 		 * The Iterator.
