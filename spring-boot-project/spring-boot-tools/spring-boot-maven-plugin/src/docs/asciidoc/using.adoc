@@ -9,7 +9,7 @@ The parent project provides the following features:
 This dependency management lets you omit `<version>` tags for those dependencies when used in your own POM.
 * An execution of the <<goals.adoc#goals-repackage, `repackage` goal>> with a `repackage` execution id.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin], https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
+* Sensible plugin configuration (https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
 
 Note that, since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.

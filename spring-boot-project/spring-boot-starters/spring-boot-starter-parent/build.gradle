@@ -122,13 +122,6 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('exec-maven-plugin')
-							configuration {
-								delegate.mainClass('${start-class}')
-							}
-						}
-						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-resources-plugin')
 							configuration {
