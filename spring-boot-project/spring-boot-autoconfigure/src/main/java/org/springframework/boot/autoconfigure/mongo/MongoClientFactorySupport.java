@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
 /**
  * Base class for setup that is common to MongoDB client factories.
  *
+ * @param <T> the mongo client type
  * @author Christoph Strobl
  * @author Scott Frederick
  * @since 2.3.0

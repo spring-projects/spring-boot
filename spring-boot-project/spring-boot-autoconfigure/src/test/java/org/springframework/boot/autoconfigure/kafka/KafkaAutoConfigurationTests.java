@@ -667,6 +667,7 @@ class KafkaAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class ConsumerFactoryConfiguration {
 
+		@SuppressWarnings("unchecked")
 		private final ConsumerFactory<String, Object> consumerFactory = mock(ConsumerFactory.class);
 
 		@Bean

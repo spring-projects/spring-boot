@@ -132,9 +132,9 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 
 	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests) {
 		return new String[] { PREFIX
-				+ ".foo.identityprovider.single-sign-on.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
-				PREFIX + ".foo.identityprovider.single-sign-on.binding=post",
-				PREFIX + ".foo.identityprovider.single-sign-on.sign-request=" + signRequests,
+				+ ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
+				PREFIX + ".foo.identityprovider.singlesignon.sign-request=" + signRequests,
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}
@@ -143,9 +143,9 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 		return new String[] {
 				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
 				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
-				PREFIX + ".foo.identityprovider.single-sign-on.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
-				PREFIX + ".foo.identityprovider.single-sign-on.binding=post",
-				PREFIX + ".foo.identityprovider.single-sign-on.sign-request=false",
+				PREFIX + ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
+				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}

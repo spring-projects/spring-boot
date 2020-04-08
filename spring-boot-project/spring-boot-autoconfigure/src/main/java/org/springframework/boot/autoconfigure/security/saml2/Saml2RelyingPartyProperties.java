@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 
@@ -120,12 +121,7 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private String entityId;
 
-		/**
-		 * Remote endpoint to send authentication requests to.
-		 */
-		private String ssoUrl;
-
-		private SingleSignOn singleSignOn = new SingleSignOn();
+		private Singlesignon singlesignon = new Singlesignon();
 
 		private Verification verification = new Verification();
 
@@ -138,24 +134,28 @@ public class Saml2RelyingPartyProperties {
 		}
 
 		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "moved to 'singlesignon.url'")
 		public String getSsoUrl() {
-			return this.getSingleSignOn().getUrl();
+			return this.singlesignon.getUrl();
 		}
 
 		@Deprecated
 		public void setSsoUrl(String ssoUrl) {
-			this.singleSignOn.setUrl(ssoUrl);
+			this.singlesignon.setUrl(ssoUrl);
 		}
 
-		public SingleSignOn getSingleSignOn() {
-			return this.singleSignOn;
+		public Singlesignon getSinglesignon() {
+			return this.singlesignon;
 		}
 
 		public Verification getVerification() {
 			return this.verification;
 		}
 
-		public static class SingleSignOn {
+		/**
+		 * Single sign on details for an Identity Provider.
+		 */
+		public static class Singlesignon {
 
 			/**
 			 * Remote endpoint to send authentication requests to.
@@ -198,6 +198,9 @@ public class Saml2RelyingPartyProperties {
 
 		}
 
+		/**
+		 * Verification details for an Identity Provider.
+		 */
 		public static class Verification {
 
 			/**

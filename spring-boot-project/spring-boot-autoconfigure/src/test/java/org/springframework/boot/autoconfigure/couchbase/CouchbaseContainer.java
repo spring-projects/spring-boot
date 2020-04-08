@@ -64,6 +64,7 @@ import static org.testcontainers.shaded.org.apache.commons.codec.binary.Base64.e
  * Temporary copy of TestContainers's Couchbase support until it works against Couchbase
  * SDK v3.
  */
+@SuppressWarnings("resource")
 class CouchbaseContainer extends GenericContainer<CouchbaseContainer> {
 
 	public static final String VERSION = "5.5.1";
@@ -198,7 +199,6 @@ class CouchbaseContainer extends GenericContainer<CouchbaseContainer> {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "ConstantConditions" })
 	public void stop() {
 		try {
 			stopCluster();

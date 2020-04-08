@@ -169,6 +169,7 @@ public class UndertowWebServerFactoryCustomizer
 			return (value) -> this.factory.addBuilderCustomizers((builder) -> builder.setSocketOption(option, value));
 		}
 
+		@SuppressWarnings("unchecked")
 		<T> Consumer<Map<String, String>> forEach(Function<Option<T>, Consumer<T>> function) {
 			return (map) -> map.forEach((key, value) -> {
 				Option<T> option = (Option<T>) NAME_LOOKUP.get(getCanonicalName(key));

@@ -231,7 +231,7 @@ The classpath is deduced from the nested jars.
 
 
 [[executable-jar-property-launcher-features]]
-== `PropertiesLauncher` Features
+== PropertiesLauncher Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
 The following table describes these properties:
 

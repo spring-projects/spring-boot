@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureAfter(RestClientAutoConfiguration.class)
-@SuppressWarnings("deprecation")
 public class ElasticSearchRestHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 

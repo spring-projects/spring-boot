@@ -338,7 +338,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator) ReflectionTestUtils
+					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 							.getField(jwtDecoder, "jwtValidator");
 					Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 							.getField(jwtValidator, "tokenValidators");

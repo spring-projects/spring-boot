@@ -41,6 +41,7 @@ class JacksonJsonParserTests extends AbstractJsonParserTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void instanceWithSpecificObjectMapper() throws IOException {
 		ObjectMapper objectMapper = spy(new ObjectMapper());
 		new JacksonJsonParser(objectMapper).parseMap("{}");

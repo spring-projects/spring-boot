@@ -162,12 +162,10 @@ public class JerseyEndpointResourceFactory {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
 			Map<String, Object> entity = ((ContainerRequest) data).readEntity(Map.class);
-			if (entity == null) {
-				return Collections.emptyMap();
-			}
-			return entity;
+			return (entity != null) ? entity : Collections.emptyMap();
 		}
 
 		private Map<String, Object> extractPathParameters(ContainerRequestContext requestContext) {

@@ -218,7 +218,7 @@ To use Spring property placeholders together with automatic expansion, escape th
 
 
 [[howto-externalize-configuration]]
-=== Externalize the Configuration of `SpringApplication`
+=== Externalize the Configuration of SpringApplication
 A `SpringApplication` has bean properties (mainly setters), so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
@@ -1831,7 +1831,7 @@ If you use Spring Data, you need to configure `@EnableJpaRepositories` according
 
 
 [[howto-use-traditional-persistence-xml]]
-=== Use a Traditional `persistence.xml` File
+=== Use a Traditional persistence.xml File
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the persistence unit name there.
 
@@ -2611,7 +2611,7 @@ See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more det
 
 
 [[howto-build-an-executable-archive-with-ant]]
-=== Build an Executable Archive from Ant without Using `spring-boot-antlib`
+=== Build an Executable Archive from Ant without Using spring-boot-antlib
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 

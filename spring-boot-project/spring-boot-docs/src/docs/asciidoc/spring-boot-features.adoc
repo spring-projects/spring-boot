@@ -1024,7 +1024,7 @@ TIP: If you have more than one constructor for your class you can also use `@Con
 
 
 [[boot-features-external-config-enabling]]
-==== Enabling `@ConfigurationProperties`-annotated types
+==== Enabling @ConfigurationProperties-annotated types
 Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.
 You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
@@ -1068,7 +1068,7 @@ If you still want to inject other beans using the constructor, the configuration
 
 
 [[boot-features-external-config-using]]
-==== Using `@ConfigurationProperties`-annotated types
+==== Using @ConfigurationProperties-annotated types
 This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
 
 [source,yaml,indent=0]
@@ -3133,8 +3133,9 @@ Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 This means that Spring Boot will create a `RSocketMessageHandler` bean that will handle RSocket requests to your application.
 
 
+
 [[boot-features-rsocket-requester]]
-=== Calling RSocket Services with `RSocketRequester`
+=== Calling RSocket Services with RSocketRequester
 Once the `RSocket` channel is established between server and client, any party can send or receive requests to the other.
 
 As a server, you can get injected with an `RSocketRequester` instance on any handler method of an RSocket `@Controller`.
@@ -5645,7 +5646,7 @@ spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}
 
 
 [[boot-features-resttemplate]]
-== Calling REST Services with `RestTemplate`
+== Calling REST Services with RestTemplate
 If you need to call remote REST services from your application, you can use the Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class.
 Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.
 It does, however, auto-configure a `RestTemplateBuilder`, which can be used to create `RestTemplate` instances when needed.
@@ -5699,7 +5700,7 @@ Doing so switches off the auto-configuration of a `RestTemplateBuilder` and prev
 
 
 [[boot-features-webclient]]
-== Calling REST Services with `WebClient`
+== Calling REST Services with WebClient
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
 Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}web-reactive.html#webflux-client[section in the Spring Framework docs].
@@ -7414,7 +7415,7 @@ To do so, configure their location, as shown in the following example:
 
 
 [[boot-features-webservices-template]]
-=== Calling Web Services with `WebServiceTemplate`
+=== Calling Web Services with WebServiceTemplate
 If you need to call remote Web services from your application, you can use the {spring-webservices-docs}#client-web-service-template[`WebServiceTemplate`] class.
 Since `WebServiceTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `WebServiceTemplate` bean.
 It does, however, auto-configure a `WebServiceTemplateBuilder`, which can be used to create `WebServiceTemplate` instances when needed.
@@ -7751,7 +7752,7 @@ Using your own starter in a compatible IDE is also a good idea to validate that 
 
 
 [[boot-features-custom-starter-module-autoconfigure]]
-==== `autoconfigure` Module
+==== The "`autoconfigure`" Module
 The `autoconfigure` module contains everything that is necessary to get started with the library.
 It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
 
@@ -7915,7 +7916,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 
 [[boot-features-kotlin-configuration-properties]]
-=== `@ConfigurationProperties`
+=== @ConfigurationProperties
 `@ConfigurationProperties` when used in combination with <<boot-features-external-config-constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin,indent=0]

@@ -247,7 +247,7 @@ include::../gradle/packaging/boot-jar-custom-launch-script.gradle.kts[tags=custo
 
 
 [[packaging-executable-configuring-properties-launcher]]
-==== Using the `PropertiesLauncher`
+==== Using the PropertiesLauncher
 To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's manifest to set the `Main-Class` attribute:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matcher;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -70,7 +70,7 @@ public class OutputCaptureRule implements TestRule, CapturedOutput {
 					try {
 						if (!OutputCaptureRule.this.matchers.isEmpty()) {
 							String output = OutputCaptureRule.this.delegate.toString();
-							Assert.assertThat(output, allOf(OutputCaptureRule.this.matchers));
+							MatcherAssert.assertThat(output, allOf(OutputCaptureRule.this.matchers));
 						}
 					}
 					finally {

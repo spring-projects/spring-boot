@@ -66,16 +66,16 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean signRequest = properties.getIdentityprovider().getSingleSignOn().isSignRequest();
+		boolean signRequest = properties.getIdentityprovider().getSinglesignon().isSignRequest();
 		validateSigningCredentials(properties, signRequest);
 		RelyingPartyRegistration.Builder builder = RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceUrlTemplate(
 				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
 		builder.providerDetails(
-				(details) -> details.webSsoUrl(properties.getIdentityprovider().getSingleSignOn().getUrl()));
+				(details) -> details.webSsoUrl(properties.getIdentityprovider().getSinglesignon().getUrl()));
 		builder.providerDetails((details) -> details.entityId(properties.getIdentityprovider().getEntityId()));
 		builder.providerDetails(
-				(details) -> details.binding(properties.getIdentityprovider().getSingleSignOn().getBinding()));
+				(details) -> details.binding(properties.getIdentityprovider().getSinglesignon().getBinding()));
 		builder.providerDetails((details) -> details.signAuthNRequest(signRequest));
 		builder.credentials((credentials) -> credentials.addAll(asCredentials(properties)));
 		return builder.build();

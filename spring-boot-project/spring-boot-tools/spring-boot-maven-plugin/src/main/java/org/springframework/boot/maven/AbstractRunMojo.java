@@ -240,10 +240,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				|| (this.systemPropertyVariables != null && !this.systemPropertyVariables.isEmpty());
 	}
 
-	private boolean hasEnvVariables() {
-		return (this.environmentVariables != null && !this.environmentVariables.isEmpty());
-	}
-
 	private boolean hasWorkingDirectorySet() {
 		return this.workingDirectory != null;
 	}

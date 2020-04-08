@@ -196,11 +196,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
