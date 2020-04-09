@@ -31,10 +31,8 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
 /**
- * Applies Maven Publishing conventions to projects that are part of Spring Boot's build.
- * Conventions are applied in response to various plugins being applied.
- *
- * When the {@link MavenPublishPlugin Maven Publish plugin} is applied:
+ * Conventions that are applied in the presence of the {@link MavenPublishPlugin}. When
+ * the plugin is applied:
  *
  * <ul>
  * <li>If the {@code deploymentRepository} property has been set, a
@@ -42,6 +40,8 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * it.
  * <li>The poms of all {@link MavenPublication Maven publications} are customized to meet
  * Maven Central's requirements.
+ * <li>If the {@link JavaPlugin Java plugin} has also been applied, creation of Javadoc
+ * and source jars is enabled.
  * </ul>
  *
  * <p/>
@@ -52,7 +52,7 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  */
 class MavenPublishingConventions {
 
-	void applyPublishingConventions(Project project) {
+	void apply(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			if (project.hasProperty("deploymentRepository")) {

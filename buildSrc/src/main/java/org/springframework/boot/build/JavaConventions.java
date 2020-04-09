@@ -48,13 +48,8 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * Applies Java Plugin conventions to projects that are part of Spring Boot's build.
- * Conventions are applied in response to various plugins being applied.
- * <p/>
- *
- * When the {@link JavaBasePlugin Java base plugin} is applied:
- *
- * <p/>
+ * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
+ * plugin is applied:
  *
  * <ul>
  * <li>{@code sourceCompatibility} is set to {@code 1.8}

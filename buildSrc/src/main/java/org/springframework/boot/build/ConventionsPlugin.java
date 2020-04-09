@@ -26,8 +26,8 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
  * Conventions are applied in response to various plugins being applied.
  *
- * When the {@link JavaBasePlugin} is applied, the conventions in *
- * {@link JavaConventions} are applied.
+ * When the {@link JavaBasePlugin} is applied, the conventions in {@link JavaConventions}
+ * are applied.
  *
  * When the {@link MavenPublishPlugin} is applied, the conventions in
  * {@link MavenPublishingConventions} are applied.
@@ -43,21 +43,9 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		applyJavaConventions(project);
-		applyMavenPublishingConventions(project);
-		applyAsciidoctorConventions(project);
-	}
-
-	private void applyJavaConventions(Project project) {
 		new JavaConventions().apply(project);
-	}
-
-	private void applyAsciidoctorConventions(Project project) {
+		new MavenPublishingConventions().apply(project);
 		new AsciidoctorConventions().apply(project);
-	}
-
-	private void applyMavenPublishingConventions(Project project) {
-		new MavenPublishingConventions().applyPublishingConventions(project);
 	}
 
 }
