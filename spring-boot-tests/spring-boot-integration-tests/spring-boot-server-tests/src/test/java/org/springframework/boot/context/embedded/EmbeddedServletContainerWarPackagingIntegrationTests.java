@@ -102,6 +102,12 @@ class EmbeddedServletContainerWarPackagingIntegrationTests {
 				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
 	}
 
+	@TestTemplate
+	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/actuator/war", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
 	private List<String> readLines(String input) {
 		if (input == null) {
 			return Collections.emptyList();

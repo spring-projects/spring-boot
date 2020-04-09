@@ -7606,6 +7606,9 @@ The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotat
 A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
 A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
 
+The `@ConditionalOnWarDeployment` annotation lets configuration be included depending on whether the application is a traditional WAR application that is deployed to a container.
+This condition will not match for applications that are run with an embedded server.
+
 
 
 [[boot-features-spel-conditions]]

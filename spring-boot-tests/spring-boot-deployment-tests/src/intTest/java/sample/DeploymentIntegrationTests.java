@@ -66,6 +66,16 @@ class DeploymentIntegrationTests {
 		});
 	}
 
+	@ParameterizedTest
+	@MethodSource("deployedApplications")
+	void conditionalOnWarShouldBeTrue(DeployedApplication application) throws Exception {
+		application.test((rest) -> {
+			ResponseEntity<String> response = rest.getForEntity("/actuator/war", String.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+			assertThat(response.getBody()).isEqualTo("{\"hello\":\"world\"}");
+		});
+	}
+
 	static List<DeployedApplication> deployedApplications() {
 		return Arrays.asList(new DeployedApplication("open-liberty:19.0.0.9-webProfile8", "/config/dropins", 9080),
 				new DeployedApplication("tomcat:9.0.29-jdk8-openjdk", "/usr/local/tomcat/webapps", 8080),

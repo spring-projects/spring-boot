@@ -79,4 +79,10 @@ class EmbeddedServletContainerJarPackagingIntegrationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
+	@TestTemplate
+	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/actuator/war", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
 }

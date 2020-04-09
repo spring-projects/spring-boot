@@ -146,6 +146,23 @@ class ApplicationBuilder {
 			srcMainWebapp.mkdirs();
 			FileCopyUtils.copy("webapp resource", new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
 		}
+		copyAutoConfigurationFiles(appFolder);
+		return;
+	}
+
+	private void copyAutoConfigurationFiles(File appFolder) throws IOException {
+		File autoConfigPackage = new File(appFolder, "src/main/java/com/autoconfig");
+		autoConfigPackage.mkdirs();
+		FileCopyUtils.copy(new File("src/test/java/com/autoconfig/ExampleAutoConfiguration.java"),
+				new File(autoConfigPackage, "ExampleAutoConfiguration.java"));
+		File srcMainResources = new File(appFolder, "src/main/resources");
+		srcMainResources.mkdirs();
+		File metaInf = new File(srcMainResources, "META-INF");
+		metaInf.mkdirs();
+		FileCopyUtils.copy(new File("src/test/resources/META-INF/spring.factories"),
+				new File(metaInf, "spring.factories"));
+		FileCopyUtils.copy(new File("src/test/resources/application.yml"),
+				new File(srcMainResources, "application.yml"));
 	}
 
 	private void packageApplication(File appFolder, File settingsXml) throws MavenInvocationException {
