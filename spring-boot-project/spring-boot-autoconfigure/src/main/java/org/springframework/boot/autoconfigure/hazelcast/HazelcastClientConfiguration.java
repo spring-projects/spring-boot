@@ -112,8 +112,9 @@ class HazelcastClientConfiguration {
 			String configFileName = configUrl.getPath();
 			if (configFileName.endsWith(".yaml")) {
 				new YamlClientConfigBuilder(configUrl).build();
+			} else if (configFileName.endsWith(".xml")) {
+				new XmlClientConfigBuilder(configUrl).build();
 			}
-			new XmlClientConfigBuilder(configUrl).build();
 		}
 	}
 }
