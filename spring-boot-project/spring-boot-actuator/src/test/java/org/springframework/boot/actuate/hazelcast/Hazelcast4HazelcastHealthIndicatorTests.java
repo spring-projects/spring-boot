@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,22 +35,24 @@ import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link HazelcastHealthIndicator}.
+ * Tests for {@link HazelcastHealthIndicator} with Hazelcast 4.
  *
  * @author Dmytro Nosan
  * @author Stephane Nicoll
  */
-class HazelcastHealthIndicatorTests {
+@ClassPathExclusions("hazelcast*.jar")
+@ClassPathOverrides("com.hazelcast:hazelcast:4.0")
+class Hazelcast4HazelcastHealthIndicatorTests {
 
 	@Test
 	void hazelcastUp() throws IOException {
-		HazelcastInstance hazelcast = new HazelcastInstanceFactory(new ClassPathResource("hazelcast.xml"))
+		HazelcastInstance hazelcast = new HazelcastInstanceFactory(new ClassPathResource("hazelcast-4.xml"))
 				.getHazelcastInstance();
 		try {
 			Health health = new HazelcastHealthIndicator(hazelcast).health();
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
 			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name",
-					"actuator-hazelcast");
+					"actuator-hazelcast-4");
 			assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
 		}
 		finally {
