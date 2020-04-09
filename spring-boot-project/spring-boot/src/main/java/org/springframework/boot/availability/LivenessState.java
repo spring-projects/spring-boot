@@ -26,15 +26,15 @@ package org.springframework.boot.availability;
  * @author Brian Clozel
  * @since 2.3.0
  */
-public enum LivenessState {
+public enum LivenessState implements AvailabilityState {
 
 	/**
 	 * The application is running and its internal state is correct.
 	 */
-	LIVE,
+	CORRECT,
 
 	/**
-	 * The internal state of the application is broken.
+	 * The application is running but its internal state is broken.
 	 */
 	BROKEN
 

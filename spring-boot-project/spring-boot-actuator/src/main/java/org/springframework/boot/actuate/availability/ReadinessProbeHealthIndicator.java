@@ -19,7 +19,8 @@ package org.springframework.boot.actuate.availability;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.ReadinessState;
 
 /**
@@ -30,20 +31,16 @@ import org.springframework.boot.availability.ReadinessState;
  */
 public class ReadinessProbeHealthIndicator extends AbstractHealthIndicator {
 
-	private final ApplicationAvailabilityProvider applicationAvailabilityProvider;
+	private final ApplicationAvailability applicationAvailability;
 
-	public ReadinessProbeHealthIndicator(ApplicationAvailabilityProvider applicationAvailabilityProvider) {
-		this.applicationAvailabilityProvider = applicationAvailabilityProvider;
+	public ReadinessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
+		this.applicationAvailability = applicationAvailability;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		if (ReadinessState.READY.equals(this.applicationAvailabilityProvider.getReadinessState())) {
-			builder.up();
-		}
-		else {
-			builder.outOfService();
-		}
+		ReadinessState state = this.applicationAvailability.getReadinessState();
+		builder.status(ReadinessState.ACCEPTING_TRAFFIC == state ? Status.UP : Status.OUT_OF_SERVICE);
 	}
 
 }

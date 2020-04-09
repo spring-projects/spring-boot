@@ -20,11 +20,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.ReadinessState;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,25 +34,25 @@ import static org.mockito.Mockito.mock;
  */
 class ReadinessProbeHealthIndicatorTests {
 
-	private ApplicationAvailabilityProvider stateProvider;
+	private ApplicationAvailability availability;
 
 	private ReadinessProbeHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
-		this.stateProvider = mock(ApplicationAvailabilityProvider.class);
-		this.healthIndicator = new ReadinessProbeHealthIndicator(this.stateProvider);
+		this.availability = mock(ApplicationAvailability.class);
+		this.healthIndicator = new ReadinessProbeHealthIndicator(this.availability);
 	}
 
 	@Test
 	void readinessIsReady() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.READY);
+		given(this.availability.getReadinessState()).willReturn(ReadinessState.ACCEPTING_TRAFFIC);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void readinessIsUnready() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.UNREADY);
+		given(this.availability.getReadinessState()).willReturn(ReadinessState.REFUSING_TRAFFIC);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 

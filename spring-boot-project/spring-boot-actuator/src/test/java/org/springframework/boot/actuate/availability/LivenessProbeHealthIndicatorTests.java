@@ -20,11 +20,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.LivenessState;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,25 +34,25 @@ import static org.mockito.Mockito.mock;
  */
 class LivenessProbeHealthIndicatorTests {
 
-	private ApplicationAvailabilityProvider stateProvider;
+	private ApplicationAvailability availability;
 
 	private LivenessProbeHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
-		this.stateProvider = mock(ApplicationAvailabilityProvider.class);
-		this.healthIndicator = new LivenessProbeHealthIndicator(this.stateProvider);
+		this.availability = mock(ApplicationAvailability.class);
+		this.healthIndicator = new LivenessProbeHealthIndicator(this.availability);
 	}
 
 	@Test
 	void livenessIsLive() {
-		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.LIVE);
+		given(this.availability.getLivenessState()).willReturn(LivenessState.CORRECT);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void livenessIsBroken() {
-		when(this.stateProvider.getLivenessState()).thenReturn(LivenessState.BROKEN);
+		given(this.availability.getLivenessState()).willReturn(LivenessState.BROKEN);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 

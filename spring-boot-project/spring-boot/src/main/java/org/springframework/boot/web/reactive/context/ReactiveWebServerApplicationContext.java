@@ -22,7 +22,8 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.availability.ReadinessStateChangedEvent;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
@@ -149,7 +150,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 
 	@Override
 	protected void doClose() {
-		publishEvent(ReadinessStateChangedEvent.unready());
+		AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
 		WebServer webServer = getWebServer();
 		if (webServer != null) {
 			webServer.shutDownGracefully();

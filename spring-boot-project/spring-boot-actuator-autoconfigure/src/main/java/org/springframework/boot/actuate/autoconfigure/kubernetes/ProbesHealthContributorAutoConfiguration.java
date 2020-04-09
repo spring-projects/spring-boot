@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -50,17 +50,16 @@ public class ProbesHealthContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("livenessProbe")
 	@ConditionalOnMissingBean
-	public LivenessProbeHealthIndicator livenessProbeHealthIndicator(
-			ApplicationAvailabilityProvider applicationAvailabilityProvider) {
-		return new LivenessProbeHealthIndicator(applicationAvailabilityProvider);
+	public LivenessProbeHealthIndicator livenessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
+		return new LivenessProbeHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("readinessProbe")
 	@ConditionalOnMissingBean
 	public ReadinessProbeHealthIndicator readinessProbeHealthIndicator(
-			ApplicationAvailabilityProvider applicationAvailabilityProvider) {
-		return new ReadinessProbeHealthIndicator(applicationAvailabilityProvider);
+			ApplicationAvailability applicationAvailability) {
+		return new ReadinessProbeHealthIndicator(applicationAvailability);
 	}
 
 	@Bean

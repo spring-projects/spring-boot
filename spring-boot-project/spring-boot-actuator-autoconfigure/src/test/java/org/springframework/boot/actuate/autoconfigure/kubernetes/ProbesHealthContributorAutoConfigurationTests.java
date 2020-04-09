@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.availability.ReadinessProbeHealthIndicat
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ class ProbesHealthContributorAutoConfigurationTests {
 
 	@Test
 	void probesNotConfiguredIfNotKubernetes() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailabilityProvider.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 				.doesNotHaveBean(LivenessProbeHealthIndicator.class)
 				.doesNotHaveBean(ReadinessProbeHealthIndicator.class)
 				.doesNotHaveBean(HealthEndpointGroupsRegistryCustomizer.class));
@@ -49,7 +49,7 @@ class ProbesHealthContributorAutoConfigurationTests {
 	@Test
 	void probesConfiguredIfProperty() {
 		this.contextRunner.withPropertyValues("management.health.probes.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailabilityProvider.class)
+				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 						.hasSingleBean(LivenessProbeHealthIndicator.class)
 						.hasSingleBean(ReadinessProbeHealthIndicator.class)
 						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));

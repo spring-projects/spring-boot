@@ -37,7 +37,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.availability.ReadinessStateChangedEvent;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -169,7 +170,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	protected void doClose() {
-		publishEvent(ReadinessStateChangedEvent.unready());
+		AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
 		WebServer webServer = this.webServer;
 		if (webServer != null) {
 			webServer.shutDownGracefully();
