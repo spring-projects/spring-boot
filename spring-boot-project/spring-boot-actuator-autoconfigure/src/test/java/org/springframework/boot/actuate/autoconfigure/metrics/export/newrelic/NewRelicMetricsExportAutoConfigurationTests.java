@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  *
  * Tests for {@link NewRelicMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class NewRelicMetricsExportAutoConfigurationTests {
 
@@ -69,7 +72,7 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresWithEventTypeOverriden() {
+	void autoConfiguresWithEventTypeOverridden() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345",
@@ -124,6 +127,18 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void allowsClientProviderToBeCustomized() {
+		this.contextRunner.withUserConfiguration(CustomClientProviderConfiguration.class)
+				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.account-id=12345")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(NewRelicMeterRegistry.class);
+					assertThat(context.getBean(NewRelicMeterRegistry.class))
+							.hasFieldOrPropertyWithValue("clientProvider", context.getBean("customClientProvider"));
+				});
+	}
+
+	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
@@ -172,6 +187,17 @@ class NewRelicMetricsExportAutoConfigurationTests {
 		@Bean
 		NewRelicMeterRegistry customRegistry(NewRelicConfig config, Clock clock) {
 			return new NewRelicMeterRegistry(config, clock);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomClientProviderConfiguration {
+
+		@Bean
+		NewRelicClientProvider customClientProvider() {
+			return mock(NewRelicClientProvider.class);
 		}
 
 	}

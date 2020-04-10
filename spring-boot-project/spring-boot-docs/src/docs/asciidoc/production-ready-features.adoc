@@ -1640,6 +1640,15 @@ You can also change the interval at which metrics are sent to New Relic:
 	management.metrics.export.newrelic.step=30s
 ----
 
+By default, metrics are published via REST calls but it also possible to use the Java Agent API if you have it on the classpath:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.newrelic.client-provider-type=insights-agent
+----
+
+Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
+
 
 
 [[production-ready-metrics-export-prometheus]]

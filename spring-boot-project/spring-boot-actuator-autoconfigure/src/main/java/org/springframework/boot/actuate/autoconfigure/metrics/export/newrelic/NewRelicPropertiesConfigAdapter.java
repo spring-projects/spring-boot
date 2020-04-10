@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
+import io.micrometer.newrelic.ClientProviderType;
 import io.micrometer.newrelic.NewRelicConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -42,6 +43,11 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	@Override
 	public String eventType() {
 		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
+	}
+
+	@Override
+	public ClientProviderType clientProviderType() {
+		return get(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
 	}
 
 	@Override
