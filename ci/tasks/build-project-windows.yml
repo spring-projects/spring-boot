@@ -2,6 +2,8 @@
 platform: windows
 inputs:
 - name: git-repo
+outputs:
+- name: git-repo
 params:
   BRANCH:
   CI: true
