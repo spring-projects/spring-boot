@@ -57,6 +57,7 @@ class DependencyCustomizerTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
 		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
+		given(this.resolver.getVersion("spring-boot-starter-logging")).willReturn("1.2.3");
 		this.moduleNode.addClass(this.classNode);
 		this.dependencyCustomizer = new DependencyCustomizer(new GroovyClassLoader(getClass().getClassLoader()),
 				this.moduleNode, new DependencyResolutionContext() {
@@ -184,6 +185,7 @@ class DependencyCustomizerTests {
 			String classifier, String type, boolean transitive) {
 		assertThat(getMemberValue(annotationNode, "group")).isEqualTo(group);
 		assertThat(getMemberValue(annotationNode, "module")).isEqualTo(module);
+		assertThat(getMemberValue(annotationNode, "version")).isEqualTo(version);
 		if (type == null) {
 			assertThat(annotationNode.getMember("type")).isNull();
 		}
