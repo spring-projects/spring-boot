@@ -25,8 +25,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.WebHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -59,6 +61,12 @@ class HttpHandlerAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureHttpHandlerWithoutWebFluxAutoConfiguration() {
+		this.contextRunner.withUserConfiguration(CustomWebHandler.class)
+				.run((context) -> assertThat(context).hasSingleBean(HttpHandler.class));
+	}
+
+	@Test
 	void shouldConfigureBasePathCompositeHandler() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withPropertyValues("spring.webflux.base-path=/something").run((context) -> {
@@ -81,6 +89,16 @@ class HttpHandlerAutoConfigurationTests {
 		@Bean
 		RouterFunction<ServerResponse> routerFunction() {
 			return route(GET("/test"), (serverRequest) -> null);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomWebHandler {
+
+		@Bean
+		WebHandler webHandler() {
+			return new DispatcherHandler();
 		}
 
 	}
