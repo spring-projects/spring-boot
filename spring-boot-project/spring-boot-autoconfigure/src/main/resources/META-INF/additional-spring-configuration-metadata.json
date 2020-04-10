@@ -114,6 +114,7 @@
     },
     {
       "name": "server.servlet.session.cookie.same-site",
+      "type": "org.springframework.boot.web.servlet.server.Session$Cookie$SameSite",
       "description": "The \"SameSite\" directive for the cookie."
     },
     {
