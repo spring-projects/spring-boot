@@ -99,8 +99,6 @@ public class WavefrontProperties extends PushRegistryProperties {
 
 		private int maxQueueSize = 50000;
 
-		private int batchSize = 10000;
-
 		private Duration flushInterval = Duration.ofSeconds(1);
 
 		private DataSize messageSize = DataSize.ofBytes(Integer.MAX_VALUE);
@@ -111,14 +109,6 @@ public class WavefrontProperties extends PushRegistryProperties {
 
 		public void setMaxQueueSize(int maxQueueSize) {
 			this.maxQueueSize = maxQueueSize;
-		}
-
-		public int getBatchSize() {
-			return this.batchSize;
-		}
-
-		public void setBatchSize(int batchSize) {
-			this.batchSize = batchSize;
 		}
 
 		public Duration getFlushInterval() {

@@ -20,7 +20,6 @@ import com.wavefront.sdk.common.WavefrontSender;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,6 +35,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WavefrontMetricsExportAutoConfiguration}.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  */
 class WavefrontMetricsExportAutoConfigurationTests {
 
@@ -71,22 +71,35 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultWavefrontSenderSettingsAreConsistent() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde").run((context) -> {
+					WavefrontProperties properties = new WavefrontProperties();
+					WavefrontSender sender = context.getBean(WavefrontSender.class);
+					assertThat(sender).extracting("metricsBuffer").hasFieldOrPropertyWithValue("capacity",
+							properties.getSender().getMaxQueueSize());
+					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", properties.getBatchSize());
+					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes",
+							(int) properties.getSender().getMessageSize().toBytes());
+				});
+	}
+
+	@Test
 	void configureWavefrontSender() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
+						"management.metrics.export.wavefront.batch-size=50",
 						"management.metrics.export.wavefront.sender.max-queue-size=100",
-						"management.metrics.export.wavefront.sender.batch-size=200",
 						"management.metrics.export.wavefront.sender.message-size=1KB")
 				.run((context) -> {
 					WavefrontSender sender = context.getBean(WavefrontSender.class);
+					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
 					assertThat(sender).extracting("metricsBuffer").hasFieldOrPropertyWithValue("capacity", 100);
-					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 200);
 					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
 				});
 	}
 
 	@Test
-	@Disabled("see https://github.com/micrometer-metrics/micrometer/issues/1964")
 	void allowsWavefrontSenderToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomSenderConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)

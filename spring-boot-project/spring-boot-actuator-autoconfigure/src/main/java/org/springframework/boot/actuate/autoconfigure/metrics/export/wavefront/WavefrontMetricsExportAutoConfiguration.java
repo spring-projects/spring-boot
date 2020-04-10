@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 import java.time.Duration;
 
 import com.wavefront.sdk.common.WavefrontSender;
-import com.wavefront.sdk.direct.ingestion.WavefrontDirectIngestionClient.Builder;
+import com.wavefront.sdk.common.clients.WavefrontClient.Builder;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
@@ -89,7 +89,6 @@ public class WavefrontMetricsExportAutoConfiguration {
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Sender sender = this.properties.getSender();
 		mapper.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
-		mapper.from(sender.getBatchSize()).to(builder::batchSize);
 		mapper.from(sender.getFlushInterval()).asInt(Duration::getSeconds).to(builder::flushIntervalSeconds);
 		mapper.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
 		return builder.build();
