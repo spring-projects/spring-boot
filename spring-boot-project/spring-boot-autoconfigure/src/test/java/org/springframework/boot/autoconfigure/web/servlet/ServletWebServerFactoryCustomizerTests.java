@@ -101,6 +101,7 @@ public class ServletWebServerFactoryCustomizerTests {
 		map.put("server.servlet.session.cookie.http-only", "true");
 		map.put("server.servlet.session.cookie.secure", "true");
 		map.put("server.servlet.session.cookie.max-age", "60");
+		map.put("server.servlet.session.cookie.same-site", "strict");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -114,6 +115,7 @@ public class ServletWebServerFactoryCustomizerTests {
 		assertThat(cookie.getComment()).isEqualTo("testcomment");
 		assertThat(cookie.getHttpOnly()).isTrue();
 		assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofSeconds(60));
+		assertThat(cookie.getSameSite()).isEqualTo(Cookie.SameSite.STRICT);
 
 	}
 

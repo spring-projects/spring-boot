@@ -113,6 +113,10 @@
       "description": "Whether to always mark the session cookie as secure."
     },
     {
+      "name": "server.servlet.session.cookie.same-site",
+      "description": "The \"SameSite\" directive for the cookie."
+    },
+    {
       "name": "server.servlet.session.persistent",
       "description": "Whether to persist session data between restarts.",
       "defaultValue": false

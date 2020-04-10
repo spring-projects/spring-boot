@@ -103,6 +103,7 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer.setCookieMaxAge((int) maxAge.getSeconds()));
+			map.from(cookie::getSameSite).to((sameSite) -> cookieSerializer.setSameSite(sameSite.toString()));
 			if (ClassUtils.isPresent(REMEMBER_ME_SERVICES_CLASS, getClass().getClassLoader())) {
 				new RememberMeServicesCookieSerializerCustomizer().apply(cookieSerializer);
 			}

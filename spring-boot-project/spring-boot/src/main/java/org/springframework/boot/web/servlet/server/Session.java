@@ -120,6 +120,8 @@ public class Session {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
 
+		private SameSite sameSite;
+
 		/**
 		 * Return the session cookie name.
 		 * @return the session cookie name
@@ -203,6 +205,56 @@ public class Session {
 
 		public void setMaxAge(Duration maxAge) {
 			this.maxAge = maxAge;
+		}
+
+		/**
+		 * Return the SameSite directive for the cookie.
+		 * @return the SameSite directive for the cookie
+		 */
+		public SameSite getSameSite() {
+			return this.sameSite;
+		}
+
+		public void setSameSite(final SameSite sameSite) {
+			this.sameSite = sameSite;
+		}
+
+		/**
+		 * Available SameSite directives for the cookie.
+		 */
+		public enum SameSite {
+
+			/**
+			 * The cookie will only be sent if the site for the cookie matches the current
+			 * site URL. The cookie will not be sent along with requests initiated by
+			 * third party websites.
+			 */
+			STRICT("Strict"),
+
+			/**
+			 * The cookie will only be sent if the site for the cookie matches the current
+			 * site URL. The cookie will be sent along with the GET request initiated by
+			 * third party website.
+			 */
+			LAX("Lax"),
+
+			/**
+			 * The cookie will be sent cross-origin. This directive requires the Secure
+			 * attribute.
+			 */
+			NONE("None");
+
+			private String value;
+
+			SameSite(final String value) {
+				this.value = value;
+			}
+
+			@Override
+			public String toString() {
+				return this.value;
+			}
+
 		}
 
 	}
