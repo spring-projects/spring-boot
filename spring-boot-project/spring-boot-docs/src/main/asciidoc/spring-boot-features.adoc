@@ -1442,7 +1442,7 @@ You could also specify it on the command line by using the following switch: `--
 The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest `PropertySource` wins.
 This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
-Sometimes, it is useful to have profil-specific properties that *add* to the active profiles rather than replace them.
+Sometimes, it is useful to have profile-specific properties that *add* to the active profiles rather than replace them.
 The configprop:spring.profiles.include[] property can be used to unconditionally add active profiles.
 The `SpringApplication` entry point also has a Java API for setting additional profiles (that is, on top of those activated by the configprop:spring.profiles.active[] property).
 See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringApplication.html[SpringApplication].
