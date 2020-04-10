@@ -244,7 +244,7 @@ public class Session {
 			 */
 			NONE("None");
 
-			private String value;
+			private final String value;
 
 			SameSite(final String value) {
 				this.value = value;
