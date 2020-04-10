@@ -83,7 +83,7 @@ public class BasicErrorController extends AbstractErrorController {
 
 	@Override
 	public String getErrorPath() {
-		return this.errorProperties.getPath();
+		return null;
 	}
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
