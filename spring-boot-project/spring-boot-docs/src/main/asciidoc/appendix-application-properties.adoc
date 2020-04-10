@@ -228,6 +228,7 @@ Rather, pick only the properties that you need.
 	server.servlet.session.cookie.name= # Session cookie name.
 	server.servlet.session.cookie.path= # Path of the session cookie.
 	server.servlet.session.cookie.secure= # Whether to always mark the session cookie as secure.
+	server.servlet.session.cookie.same-site= # The "SameSite" directive for the cookie.
 	server.servlet.session.persistent=false # Whether to persist session data between restarts.
 	server.servlet.session.store-dir= # Directory used to store session data.
 	server.servlet.session.timeout=30m # Session timeout. If a duration suffix is not specified, seconds will be used.
