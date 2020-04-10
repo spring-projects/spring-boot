@@ -324,7 +324,7 @@ public abstract class Packager {
 			addBootBootAttributesForRepackagingLayout(attributes, (RepackagingLayout) layout);
 		}
 		else {
-			addBootBootAttributesForPlainLayout(attributes, layout);
+			addBootBootAttributesForPlainLayout(attributes);
 		}
 	}
 
@@ -337,7 +337,7 @@ public abstract class Packager {
 		}
 	}
 
-	private void addBootBootAttributesForPlainLayout(Attributes attributes, Layout layout) {
+	private void addBootBootAttributesForPlainLayout(Attributes attributes) {
 		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, getLayout().getClassesLocation());
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 	}
