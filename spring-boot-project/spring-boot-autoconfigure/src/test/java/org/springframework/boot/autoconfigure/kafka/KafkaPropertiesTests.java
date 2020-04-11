@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
@@ -25,7 +24,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link KafkaProducer}.
+ * Tests for {@link KafkaProperties}.
  *
  * @author Stephane Nicoll
  */
