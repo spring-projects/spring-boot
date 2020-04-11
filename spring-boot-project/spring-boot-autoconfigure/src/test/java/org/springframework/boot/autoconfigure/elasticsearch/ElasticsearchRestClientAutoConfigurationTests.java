@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch.rest;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -42,19 +42,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link RestClientAutoConfiguration}
+ * Tests for {@link ElasticsearchRestClientAutoConfiguration}.
  *
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
-class RestClientAutoConfigurationTests {
+class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
 	void configureShouldCreateBothRestClientVariants() {

@@ -39,19 +39,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveRestClientAutoConfiguration}
+ * Tests for {@link ReactiveElasticsearchRestClientAutoConfiguration}.
  *
  * @author Brian Clozel
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class ReactiveRestClientAutoConfigurationTests {
+public class ReactiveElasticsearchRestClientAutoConfigurationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
 	void configureShouldCreateDefaultBeans() {

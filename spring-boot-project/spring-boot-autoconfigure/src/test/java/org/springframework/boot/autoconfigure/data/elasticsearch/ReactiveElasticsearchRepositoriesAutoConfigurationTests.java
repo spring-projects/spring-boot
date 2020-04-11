@@ -51,7 +51,7 @@ public class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class,
 					ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
 			.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints="
 					+ elasticsearch.getContainerIpAddress() + ":" + elasticsearch.getFirstMappedPort());
