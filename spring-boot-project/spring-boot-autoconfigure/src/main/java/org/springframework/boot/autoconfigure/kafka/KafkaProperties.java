@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -876,7 +876,7 @@ public class KafkaProperties {
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = true;
+		private boolean missingTopicsFatal = false;
 
 		public Type getType() {
 			return this.type;
