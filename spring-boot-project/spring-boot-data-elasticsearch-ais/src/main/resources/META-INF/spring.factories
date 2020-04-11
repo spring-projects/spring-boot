@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.springframework.boot.elasticsearch.ais.service.AutoConfig,\
-  org.springframework.boot.elasticsearch.ais.service.EsRegistryBean,\
-  org.springframework.boot.elasticsearch.ais.service.EsAsyncRegistryBean
