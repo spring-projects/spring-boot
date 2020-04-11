@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -124,6 +126,23 @@ class MetricsWebClientFilterFunctionTests {
 		assertThat(this.registry.get("http.client.requests")
 				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer().count())
 						.isEqualTo(1);
+		assertThatThrownBy(() -> this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200").timer())
+						.isInstanceOf(MeterNotFoundException.class);
+	}
+
+	@Test
+	void filterWhenCancelAfterResponseThrownShouldNotRecordTimer() {
+		ClientRequest request = ClientRequest
+				.create(HttpMethod.GET, URI.create("https://example.com/projects/spring-boot")).build();
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		Mono<ClientResponse> filter = this.filterFunction.filter(request, this.exchange);
+		StepVerifier.create(filter).expectNextCount(1).thenCancel().verify(Duration.ofSeconds(5));
+		assertThat(this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200").timer().count()).isEqualTo(1);
+		assertThatThrownBy(() -> this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer())
+						.isInstanceOf(MeterNotFoundException.class);
 	}
 
 	@Test

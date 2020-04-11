@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -77,13 +78,15 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	}
 
 	private Mono<ClientResponse> instrumentResponse(ClientRequest request, Mono<ClientResponse> responseMono) {
+		final AtomicBoolean responseReceived = new AtomicBoolean();
 		return Mono.deferWithContext((ctx) -> responseMono.doOnEach((signal) -> {
 			if (signal.isOnNext() || signal.isOnError()) {
+				responseReceived.set(true);
 				Iterable<Tag> tags = this.tagProvider.tags(request, signal.get(), signal.getThrowable());
 				recordTimer(tags, getStartTime(ctx));
 			}
 		}).doFinally((signalType) -> {
-			if (SignalType.CANCEL.equals(signalType)) {
+			if (!responseReceived.get() && SignalType.CANCEL.equals(signalType)) {
 				Iterable<Tag> tags = this.tagProvider.tags(request, null, null);
 				recordTimer(tags, getStartTime(ctx));
 			}
