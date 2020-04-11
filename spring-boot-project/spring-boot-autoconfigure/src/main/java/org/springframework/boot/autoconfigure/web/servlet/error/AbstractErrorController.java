@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -80,7 +81,7 @@ public abstract class AbstractErrorController implements ErrorController {
 	}
 
 	protected HttpStatus getStatus(HttpServletRequest request) {
-		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+		Integer statusCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		if (statusCode == null) {
 			return HttpStatus.INTERNAL_SERVER_ERROR;
 		}
