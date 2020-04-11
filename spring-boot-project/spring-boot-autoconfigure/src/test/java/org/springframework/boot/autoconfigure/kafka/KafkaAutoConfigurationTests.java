@@ -38,7 +38,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,7 +85,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
- * @author Dhiren Mathur
  */
 class KafkaAutoConfigurationTests {
 
@@ -405,17 +403,6 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	void listenerPropertiesMatchDefaults() {
-		this.contextRunner.run((context) -> {
-			Listener listenerProperties = new KafkaProperties().getListener();
-			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
-					.getBean(KafkaListenerContainerFactory.class);
-			ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
-			assertThat(containerProperties.isMissingTopicsFatal()).isEqualTo(listenerProperties.isMissingTopicsFatal());
-		});
-	}
-
-	@Test
 	void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
 				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
@@ -578,17 +565,6 @@ class KafkaAutoConfigurationTests {
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
 			assertThat(kafkaListenerContainerFactory.getConsumerFactory())
 					.isNotSameAs(context.getBean(ConsumerFactoryConfiguration.class).consumerFactory);
-		});
-	}
-
-	@Test
-	void testConcurrentKafkaListenerContainerFactoryMatchesDefaults() {
-		Listener listenerProperties = new KafkaProperties().getListener();
-		this.contextRunner.withUserConfiguration(ConsumerFactoryConfiguration.class).run((context) -> {
-			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
-					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			assertThat(kafkaListenerContainerFactory.getContainerProperties().isMissingTopicsFatal())
-					.isEqualTo(listenerProperties.isMissingTopicsFatal());
 		});
 	}
 
