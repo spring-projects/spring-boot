@@ -87,6 +87,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Nakul Mishra
+ * @author Dhiren Mathur
  */
 class KafkaAutoConfigurationTests {
 
@@ -370,7 +371,7 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
 						"spring.kafka.listener.idle-event-interval=1s", "spring.kafka.listener.monitor-interval=45",
 						"spring.kafka.listener.log-container-config=true",
-						"spring.kafka.listener.missing-topics-fatal=false", "spring.kafka.jaas.enabled=true",
+						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
 				.run((context) -> {
@@ -395,7 +396,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.getIdleEventInterval()).isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
-					assertThat(containerProperties.isMissingTopicsFatal()).isFalse();
+					assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 					assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 					assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class)).hasSize(1);
@@ -583,6 +584,17 @@ class KafkaAutoConfigurationTests {
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
 			assertThat(kafkaListenerContainerFactory.getConsumerFactory())
 					.isNotSameAs(context.getBean(ConsumerFactoryConfiguration.class).consumerFactory);
+		});
+	}
+
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryMatchesDefaults() {
+		Listener listenerProperties = new KafkaProperties().getListener();
+		this.contextRunner.withUserConfiguration(ConsumerFactoryConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(kafkaListenerContainerFactory.getContainerProperties().isMissingTopicsFatal())
+					.isEqualTo(listenerProperties.isMissingTopicsFatal());
 		});
 	}
 

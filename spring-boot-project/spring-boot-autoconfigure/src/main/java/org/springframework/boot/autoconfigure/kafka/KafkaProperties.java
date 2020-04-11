@@ -52,6 +52,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @author Artem Bilan
  * @author Nakul Mishra
+ * @author Dhiren Mathur
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -906,7 +907,7 @@ public class KafkaProperties {
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = true;
+		private boolean missingTopicsFatal = false;
 
 		public Type getType() {
 			return this.type;
