@@ -906,7 +906,7 @@ public class KafkaProperties {
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = true;
+		private boolean missingTopicsFatal = false;
 
 		public Type getType() {
 			return this.type;
