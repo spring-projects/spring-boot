@@ -368,12 +368,6 @@ class DockerApiTests {
 
 		private VolumeApi api;
 
-		@Captor
-		private ArgumentCaptor<IOConsumer<OutputStream>> writer;
-
-		@Mock
-		private UpdateListener<LogUpdateEvent> logListener;
-
 		@BeforeEach
 		void setup() {
 			MockitoAnnotations.initMocks(this);
