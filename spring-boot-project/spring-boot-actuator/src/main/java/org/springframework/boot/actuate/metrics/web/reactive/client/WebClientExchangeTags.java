@@ -88,7 +88,7 @@ public final class WebClientExchangeTags {
 		if (response != null) {
 			return Tag.of("status", String.valueOf(response.rawStatusCode()));
 		}
-		else if (throwable != null) {
+		if (throwable != null) {
 			return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
 		}
 		return CLIENT_ERROR;
