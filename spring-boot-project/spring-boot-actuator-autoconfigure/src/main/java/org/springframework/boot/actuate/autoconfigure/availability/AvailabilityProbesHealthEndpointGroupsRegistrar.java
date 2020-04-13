@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.kubernetes;
+package org.springframework.boot.actuate.autoconfigure.availability;
 
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistry;
@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCusto
  * @author Brian Clozel
  * @since 2.3.0
  */
-public class ProbesHealthEndpointGroupsRegistrar implements HealthEndpointGroupsRegistryCustomizer {
+public class AvailabilityProbesHealthEndpointGroupsRegistrar implements HealthEndpointGroupsRegistryCustomizer {
 
 	private static final String LIVENESS_GROUP_NAME = "liveness";
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.kubernetes;
+package org.springframework.boot.actuate.autoconfigure.availability;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,14 +29,14 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ProbesHealthContributorAutoConfiguration}.
+ * Tests for {@link AvailabilityProbesAutoConfiguration}.
  *
  * @author Brian Clozel
  */
-class ProbesHealthContributorAutoConfigurationTests {
+class AvailabilityProbesAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(ApplicationAvailabilityAutoConfiguration.class, ProbesHealthContributorAutoConfiguration.class));
+			.of(ApplicationAvailabilityAutoConfiguration.class, AvailabilityProbesAutoConfiguration.class));
 
 	@Test
 	void probesNotConfiguredIfNotKubernetes() {

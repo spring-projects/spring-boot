@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.kubernetes;
+package org.springframework.boot.actuate.autoconfigure.availability;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesHealthEndpointGroupsRegistrar;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistry;
 import org.springframework.boot.actuate.health.TestHealthEndpointGroupsRegistry;
@@ -25,13 +26,13 @@ import org.springframework.boot.actuate.health.TestHealthEndpointGroupsRegistry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@code ProbesHealthEndpointGroupsRegistrar }
+ * Tests for {@code ProbesHealthEndpointGroupsRegistrar}
  *
  * @author Brian Clozel
  */
-class ProbesHealthEndpointGroupsRegistrarTests {
+class AvailabilityProbesHealthEndpointGroupsRegistrarTests {
 
-	private ProbesHealthEndpointGroupsRegistrar registrar = new ProbesHealthEndpointGroupsRegistrar();
+	private AvailabilityProbesHealthEndpointGroupsRegistrar registrar = new AvailabilityProbesHealthEndpointGroupsRegistrar();
 
 	@Test
 	void shouldAddKubernetesProbes() {

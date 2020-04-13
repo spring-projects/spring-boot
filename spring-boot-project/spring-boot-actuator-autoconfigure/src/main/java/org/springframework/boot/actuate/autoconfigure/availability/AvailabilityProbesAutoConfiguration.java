@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.kubernetes;
+package org.springframework.boot.actuate.autoconfigure.availability;
 
+import org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration.KubernetesOrPropertyCondition;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.kubernetes.ProbesHealthContributorAutoConfiguration.KubernetesOrPropertyCondition;
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
-import org.springframework.boot.actuate.kubernetes.ProbesHealthEndpointGroupsRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
@@ -37,7 +36,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link LivenessStateHealthIndicator} and {@link ReadinessStateHealthIndicator}.
+ * {@link LivenessStateHealthIndicator}, {@link ReadinessStateHealthIndicator} and
+ * {@link HealthEndpointGroupsRegistryCustomizer}.
  *
  * @author Brian Clozel
  * @since 2.3.0
@@ -45,26 +45,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @Conditional(KubernetesOrPropertyCondition.class)
 @AutoConfigureAfter(ApplicationAvailabilityAutoConfiguration.class)
-public class ProbesHealthContributorAutoConfiguration {
+public class AvailabilityProbesAutoConfiguration {
 
 	@Bean
-	@ConditionalOnEnabledHealthIndicator("livenessProbe")
+	@ConditionalOnEnabledHealthIndicator("livenessState")
 	@ConditionalOnMissingBean
-	public LivenessStateHealthIndicator livenessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
+	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
-	@ConditionalOnEnabledHealthIndicator("readinessProbe")
+	@ConditionalOnEnabledHealthIndicator("readinessState")
 	@ConditionalOnMissingBean
-	public ReadinessStateHealthIndicator readinessProbeHealthIndicator(
+	public ReadinessStateHealthIndicator readinessStateHealthIndicator(
 			ApplicationAvailability applicationAvailability) {
 		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
 	public HealthEndpointGroupsRegistryCustomizer probesRegistryCustomizer() {
-		return new ProbesHealthEndpointGroupsRegistrar();
+		return new AvailabilityProbesHealthEndpointGroupsRegistrar();
 	}
 
 	static class KubernetesOrPropertyCondition extends AnyNestedCondition {
