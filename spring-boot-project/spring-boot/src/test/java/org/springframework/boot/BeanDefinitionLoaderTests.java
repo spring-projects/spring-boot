@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import sampleconfig.MyComponentInPackageWithoutDot;
 
 import org.springframework.boot.sampleconfig.MyComponent;
+import org.springframework.boot.sampleconfig.MyNamedComponent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BeanDefinitionLoader}.
  *
  * @author Phillip Webb
+ * @author Vladislav Kisel
  */
 class BeanDefinitionLoaderTests {
 
@@ -51,6 +53,21 @@ class BeanDefinitionLoaderTests {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class);
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
+	}
+
+	@Test
+	void anonymousClassNotLoaded() {
+		MyComponent myComponent = new MyComponent() {
+		};
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, myComponent.getClass());
+		assertThat(loader.load()).isEqualTo(0);
+	}
+
+	@Test
+	void loadJsr330Class() {
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyNamedComponent.class);
+		assertThat(loader.load()).isEqualTo(1);
+		assertThat(this.registry.containsBean("myNamedComponent")).isTrue();
 	}
 
 	@Test
@@ -83,8 +100,9 @@ class BeanDefinitionLoaderTests {
 	@Test
 	void loadPackage() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage());
-		assertThat(loader.load()).isEqualTo(1);
+		assertThat(loader.load()).isEqualTo(2);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
+		assertThat(this.registry.containsBean("myNamedComponent")).isTrue();
 	}
 
 	@Test
@@ -113,8 +131,9 @@ class BeanDefinitionLoaderTests {
 	@Test
 	void loadPackageName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage().getName());
-		assertThat(loader.load()).isEqualTo(1);
+		assertThat(loader.load()).isEqualTo(2);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
+		assertThat(this.registry.containsBean("myNamedComponent")).isTrue();
 	}
 
 	@Test
@@ -131,8 +150,9 @@ class BeanDefinitionLoaderTests {
 	void loadPackageAndClassDoesNotDoubleAdd() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, MyComponent.class.getPackage(),
 				MyComponent.class);
-		assertThat(loader.load()).isEqualTo(1);
+		assertThat(loader.load()).isEqualTo(2);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
+		assertThat(this.registry.containsBean("myNamedComponent")).isTrue();
 	}
 
 }
