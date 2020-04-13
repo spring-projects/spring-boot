@@ -236,10 +236,10 @@ For example, we can export the "Readiness" state of the application to a file so
 [source,java,indent=0]
 ----
     @Component
-	public class ReadinessStateExporter implements ApplicationListener<LivenessStateChangedEvent> {
+	public class ReadinessStateExporter implements ApplicationListener<ReadinessStateChangedEvent> {
 
 		@Override
-	    public void onApplicationEvent(LivenessStateChangedEvent event) {
+	    public void onApplicationEvent(ReadinessStateChangedEvent event) {
 			switch (event.getReadinessState().getStatus()) {
 		    case READY:
 			    // create file /tmp/healthy
