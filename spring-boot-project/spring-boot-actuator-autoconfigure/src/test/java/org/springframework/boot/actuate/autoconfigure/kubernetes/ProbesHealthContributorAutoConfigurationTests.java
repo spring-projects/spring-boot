@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.kubernetes;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.availability.LivenessProbeHealthIndicator;
-import org.springframework.boot.actuate.availability.ReadinessProbeHealthIndicator;
+import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
+import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests fos {@link ProbesHealthContributorAutoConfiguration}.
+ * Tests for {@link ProbesHealthContributorAutoConfiguration}.
  *
  * @author Brian Clozel
  */
@@ -41,8 +41,8 @@ class ProbesHealthContributorAutoConfigurationTests {
 	@Test
 	void probesNotConfiguredIfNotKubernetes() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.doesNotHaveBean(LivenessProbeHealthIndicator.class)
-				.doesNotHaveBean(ReadinessProbeHealthIndicator.class)
+				.doesNotHaveBean(LivenessStateHealthIndicator.class)
+				.doesNotHaveBean(ReadinessStateHealthIndicator.class)
 				.doesNotHaveBean(HealthEndpointGroupsRegistryCustomizer.class));
 	}
 
@@ -50,8 +50,8 @@ class ProbesHealthContributorAutoConfigurationTests {
 	void probesConfiguredIfProperty() {
 		this.contextRunner.withPropertyValues("management.health.probes.enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-						.hasSingleBean(LivenessProbeHealthIndicator.class)
-						.hasSingleBean(ReadinessProbeHealthIndicator.class)
+						.hasSingleBean(LivenessStateHealthIndicator.class)
+						.hasSingleBean(ReadinessStateHealthIndicator.class)
 						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));
 	}
 

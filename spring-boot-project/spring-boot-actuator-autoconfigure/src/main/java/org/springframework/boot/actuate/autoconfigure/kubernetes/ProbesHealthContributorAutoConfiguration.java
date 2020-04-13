@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.kubernetes;
 
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.kubernetes.ProbesHealthContributorAutoConfiguration.KubernetesOrPropertyCondition;
-import org.springframework.boot.actuate.availability.LivenessProbeHealthIndicator;
-import org.springframework.boot.actuate.availability.ReadinessProbeHealthIndicator;
+import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
+import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.actuate.kubernetes.ProbesHealthEndpointGroupsRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link LivenessProbeHealthIndicator} and {@link ReadinessProbeHealthIndicator}.
+ * {@link LivenessStateHealthIndicator} and {@link ReadinessStateHealthIndicator}.
  *
  * @author Brian Clozel
  * @since 2.3.0
@@ -50,16 +50,16 @@ public class ProbesHealthContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("livenessProbe")
 	@ConditionalOnMissingBean
-	public LivenessProbeHealthIndicator livenessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
-		return new LivenessProbeHealthIndicator(applicationAvailability);
+	public LivenessStateHealthIndicator livenessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
+		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("readinessProbe")
 	@ConditionalOnMissingBean
-	public ReadinessProbeHealthIndicator readinessProbeHealthIndicator(
+	public ReadinessStateHealthIndicator readinessProbeHealthIndicator(
 			ApplicationAvailability applicationAvailability) {
-		return new ReadinessProbeHealthIndicator(applicationAvailability);
+		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean

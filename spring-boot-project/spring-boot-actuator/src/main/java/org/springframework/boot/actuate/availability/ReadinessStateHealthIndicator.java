@@ -16,31 +16,32 @@
 
 package org.springframework.boot.actuate.availability;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.availability.ReadinessState;
 
 /**
  * A {@link HealthIndicator} that checks the {@link LivenessState} of the application.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public class LivenessProbeHealthIndicator extends AbstractHealthIndicator {
+public class ReadinessStateHealthIndicator extends AvailabilityStateHealthIndicator {
 
-	private final ApplicationAvailability applicationAvailability;
-
-	public LivenessProbeHealthIndicator(ApplicationAvailability applicationAvailability) {
-		this.applicationAvailability = applicationAvailability;
+	public ReadinessStateHealthIndicator(ApplicationAvailability availability) {
+		super(availability, ReadinessState.class, (statusMappings) -> {
+			statusMappings.add(ReadinessState.ACCEPTING_TRAFFIC, Status.UP);
+			statusMappings.add(ReadinessState.REFUSING_TRAFFIC, Status.OUT_OF_SERVICE);
+		});
 	}
 
 	@Override
-	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		LivenessState state = this.applicationAvailability.getLivenessState();
-		builder.status(LivenessState.CORRECT == state ? Status.UP : Status.DOWN);
+	protected AvailabilityState getState(ApplicationAvailability applicationAvailability) {
+		return applicationAvailability.getReadinessState();
 	}
 
 }

@@ -28,20 +28,20 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReadinessProbeHealthIndicator}
+ * Tests for {@link ReadinessStateHealthIndicator}
  *
  * @author Brian Clozel
  */
-class ReadinessProbeHealthIndicatorTests {
+class ReadinessStateHealthIndicatorTests {
 
 	private ApplicationAvailability availability;
 
-	private ReadinessProbeHealthIndicator healthIndicator;
+	private ReadinessStateHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
 		this.availability = mock(ApplicationAvailability.class);
-		this.healthIndicator = new ReadinessProbeHealthIndicator(this.availability);
+		this.healthIndicator = new ReadinessStateHealthIndicator(this.availability);
 	}
 
 	@Test
