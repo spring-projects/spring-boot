@@ -59,8 +59,8 @@ class HazelcastAutoConfigurationTests {
 	}
 
 	/**
-	 * A test {link {@link URLClassLoader} that emulates the default Hazelcast Jet
-	 * configuration file exists on the classpath.
+	 * A test {@link URLClassLoader} that emulates the default Hazelcast Jet configuration
+	 * file exists on the classpath.
 	 */
 	static class JetConfigClassLoader extends URLClassLoader {
 
@@ -73,12 +73,12 @@ class HazelcastAutoConfigurationTests {
 		@Override
 		public URL getResource(String name) {
 			if (name.equals("hazelcast-jet-default.yaml")) {
-				return getEmulatedJestConfigUrl();
+				return getEmulatedJetConfigUrl();
 			}
 			return super.getResource(name);
 		}
 
-		private URL getEmulatedJestConfigUrl() {
+		private URL getEmulatedJetConfigUrl() {
 			try {
 				return FALLBACK.getURL();
 			}
