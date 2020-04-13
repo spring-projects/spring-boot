@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.availability.AvailabilityP
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
-import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
@@ -38,11 +37,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link LivenessStateHealthIndicator}, {@link ReadinessStateHealthIndicator} and
- * {@link HealthEndpointGroupsRegistryCustomizer}.
+ * {@link EnableAutoConfiguration Auto-configuration} for availability probes.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -66,8 +64,8 @@ public class AvailabilityProbesAutoConfiguration {
 	}
 
 	@Bean
-	public HealthEndpointGroupsRegistryCustomizer probesRegistryCustomizer() {
-		return new AvailabilityProbesHealthEndpointGroupsRegistrar();
+	public AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor() {
+		return new AvailabilityProbesHealthEndpointGroupsPostProcessor();
 	}
 
 	/**
@@ -75,15 +73,17 @@ public class AvailabilityProbesAutoConfiguration {
 	 */
 	static class ProbesCondition extends SpringBootCondition {
 
+		private static final String ENABLED_PROPERTY = "management.health.probes.enabled";
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
-			ConditionMessage.Builder message = ConditionMessage.forCondition("Health probes");
-			String enabled = environment.getProperty("management.health.probes.enabled");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("Health availability");
+			String enabled = environment.getProperty(ENABLED_PROPERTY);
 			if (enabled != null) {
 				boolean match = !"false".equalsIgnoreCase(enabled);
 				return new ConditionOutcome(match,
-						message.because("'management.health.probes.enabled' set to '" + enabled + "'"));
+						message.because("'" + ENABLED_PROPERTY + "' set to '" + enabled + "'"));
 			}
 			if (CloudPlatform.getActive(environment) == CloudPlatform.KUBERNETES) {
 				return ConditionOutcome.match(message.because("running on Kubernetes"));

@@ -17,19 +17,22 @@
 package org.springframework.boot.actuate.health;
 
 /**
- * Callback interface that can be used to customize a
- * {@link HealthEndpointGroupsRegistry}.
+ * Hook that allows for custom modification of {@link HealthEndpointGroups} &mdash; for
+ * example, automatically adding additional auto-configured groups.
  *
+ * @author Phillip Webb
  * @author Brian Clozel
  * @since 2.3.0
  */
 @FunctionalInterface
-public interface HealthEndpointGroupsRegistryCustomizer {
+public interface HealthEndpointGroupsPostProcessor {
 
 	/**
-	 * Callback to customize a {@link HealthEndpointGroupsRegistry} instance.
-	 * @param healthEndpointGroupsRegistry the registry to customize
+	 * Post-process the given {@link HealthEndpointGroups} instance.
+	 * @param groups the existing groups instance
+	 * @return a post-processed groups instance, or the original instance if not
+	 * post-processing was required
 	 */
-	void customize(HealthEndpointGroupsRegistry healthEndpointGroupsRegistry);
+	HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups);
 
 }

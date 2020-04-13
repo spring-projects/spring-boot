@@ -37,7 +37,7 @@ import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
-import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
+import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -56,6 +56,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -155,6 +156,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpointGroups() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").run((context) -> {
 			HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
 	}
@@ -302,12 +304,13 @@ class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void runWhenHealthEndpointGroupsRegistryCustomizerAddsHealthEndpointGroup() {
-		this.contextRunner.withUserConfiguration(HealthEndpointGroupsRegistryCustomizerConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class);
-			HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
-			assertThat(groups.getNames()).contains("test");
-		});
+	void runWhenHasHealthEndpointGroupsPostProcessorPerformsProcessing() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").withUserConfiguration(
+				HealthEndpointGroupsConfiguration.class, TestHealthEndpointGroupsPostProcessor.class).run((context) -> {
+					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> groups.get("test"))
+							.withMessage("postprocessed");
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -429,12 +432,12 @@ class HealthEndpointAutoConfigurationTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	static class HealthEndpointGroupsRegistryCustomizerConfig {
+	static class TestHealthEndpointGroupsPostProcessor implements HealthEndpointGroupsPostProcessor {
 
-		@Bean
-		HealthEndpointGroupsRegistryCustomizer customHealthEndpointGroup() {
-			return (registry) -> registry.add("test", (configurer) -> configurer.include("ping"));
+		@Override
+		public HealthEndpointGroups postProcessHealthEndpointGroups(HealthEndpointGroups groups) {
+			given(groups.get("test")).willThrow(new RuntimeException("postprocessed"));
+			return groups;
 		}
 
 	}

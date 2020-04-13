@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
-import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.availability.ApplicationAvailability;
@@ -43,7 +42,7 @@ class AvailabilityProbesAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 				.doesNotHaveBean(LivenessStateHealthIndicator.class)
 				.doesNotHaveBean(ReadinessStateHealthIndicator.class)
-				.doesNotHaveBean(HealthEndpointGroupsRegistryCustomizer.class));
+				.doesNotHaveBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
 	}
 
 	@Test
@@ -52,7 +51,7 @@ class AvailabilityProbesAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 						.hasSingleBean(LivenessStateHealthIndicator.class)
 						.hasSingleBean(ReadinessStateHealthIndicator.class)
-						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));
+						.hasSingleBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
 	}
 
 	@Test
@@ -61,7 +60,7 @@ class AvailabilityProbesAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 						.hasSingleBean(LivenessStateHealthIndicator.class)
 						.hasSingleBean(ReadinessStateHealthIndicator.class)
-						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));
+						.hasSingleBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
 	}
 
 	@Test
@@ -71,7 +70,7 @@ class AvailabilityProbesAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 						.doesNotHaveBean(LivenessStateHealthIndicator.class)
 						.doesNotHaveBean(ReadinessStateHealthIndicator.class)
-						.doesNotHaveBean(HealthEndpointGroupsRegistryCustomizer.class));
+						.doesNotHaveBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
 	}
 
 }

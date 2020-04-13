@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.health.HealthEndpointGroup.Show;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.security.core.Authentication;
@@ -37,11 +37,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DefaultHealthEndpointGroup}.
+ * Tests for {@link AutoConfiguredHealthEndpointGroup}.
  *
  * @author Phillip Webb
  */
-class DefaultHealthEndpointGroupTests {
+class AutoConfiguredHealthEndpointGroupTests {
 
 	@Mock
 	private StatusAggregator statusAggregator;
@@ -62,7 +62,7 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void isMemberWhenMemberPredicateMatchesAcceptsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> name.startsWith("a"),
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> name.startsWith("a"),
 				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.isMember("albert")).isTrue();
 		assertThat(group.isMember("arnold")).isTrue();
@@ -70,7 +70,7 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void isMemberWhenMemberPredicateRejectsReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> name.startsWith("a"),
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> name.startsWith("a"),
 				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.isMember("bert")).isFalse();
 		assertThat(group.isMember("ernie")).isFalse();
@@ -78,38 +78,39 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showDetailsWhenShowDetailsIsNeverReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.NEVER, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.NEVER, Collections.emptySet());
 		assertThat(group.showDetails(SecurityContext.NONE)).isFalse();
 	}
 
 	@Test
 	void showDetailsWhenShowDetailsIsAlwaysReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.showDetails(SecurityContext.NONE)).isTrue();
 	}
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndPrincipalIsNullReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Collections.emptySet());
 		given(this.securityContext.getPrincipal()).willReturn(null);
 		assertThat(group.showDetails(this.securityContext)).isFalse();
 	}
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndRolesAreEmptyReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Collections.emptySet());
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		assertThat(group.showDetails(this.securityContext)).isTrue();
 	}
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndUseIsInRoleReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Arrays.asList("admin", "root", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED,
+				Arrays.asList("admin", "root", "bossmode"));
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		given(this.securityContext.isUserInRole("root")).willReturn(true);
 		assertThat(group.showDetails(this.securityContext)).isTrue();
@@ -117,8 +118,9 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndUseIsNotInRoleReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Arrays.asList("admin", "rot", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED,
+				Arrays.asList("admin", "rot", "bossmode"));
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		given(this.securityContext.isUserInRole("root")).willReturn(true);
 		assertThat(group.showDetails(this.securityContext)).isFalse();
@@ -126,8 +128,9 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndUserHasRightAuthorityReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Arrays.asList("admin", "root", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED,
+				Arrays.asList("admin", "root", "bossmode"));
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
 				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
@@ -137,8 +140,9 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showDetailsWhenShowDetailsIsWhenAuthorizedAndUserDoesNotHaveRightAuthoritiesReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED, Arrays.asList("admin", "rot", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.WHEN_AUTHORIZED,
+				Arrays.asList("admin", "rot", "bossmode"));
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
 				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
@@ -148,48 +152,50 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showComponentsWhenShowComponentsIsNullDelegatesToShowDetails() {
-		DefaultHealthEndpointGroup alwaysGroup = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup alwaysGroup = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(alwaysGroup.showComponents(SecurityContext.NONE)).isTrue();
-		DefaultHealthEndpointGroup neverGroup = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.NEVER, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup neverGroup = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.NEVER, Collections.emptySet());
 		assertThat(neverGroup.showComponents(SecurityContext.NONE)).isFalse();
 	}
 
 	@Test
 	void showComponentsWhenShowComponentsIsNeverReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.NEVER, Show.ALWAYS, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.NEVER, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.showComponents(SecurityContext.NONE)).isFalse();
 	}
 
 	@Test
 	void showComponentsWhenShowComponentsIsAlwaysReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.ALWAYS, Show.NEVER, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.ALWAYS, Show.NEVER, Collections.emptySet());
 		assertThat(group.showComponents(SecurityContext.NONE)).isTrue();
 	}
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndPrincipalIsNullReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+				Collections.emptySet());
 		given(this.securityContext.getPrincipal()).willReturn(null);
 		assertThat(group.showComponents(this.securityContext)).isFalse();
 	}
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndRolesAreEmptyReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+				Collections.emptySet());
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		assertThat(group.showComponents(this.securityContext)).isTrue();
 	}
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUseIsInRoleReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Arrays.asList("admin", "root", "bossmode"));
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		given(this.securityContext.isUserInRole("root")).willReturn(true);
@@ -198,8 +204,9 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUseIsNotInRoleReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER, Arrays.asList("admin", "rot", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+				Arrays.asList("admin", "rot", "bossmode"));
 		given(this.securityContext.getPrincipal()).willReturn(this.principal);
 		given(this.securityContext.isUserInRole("root")).willReturn(true);
 		assertThat(group.showComponents(this.securityContext)).isFalse();
@@ -207,8 +214,8 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUserHasRightAuthoritiesReturnsTrue() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
 				Arrays.asList("admin", "root", "bossmode"));
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
@@ -219,8 +226,9 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void showComponentsWhenShowComponentsIsWhenAuthorizedAndUserDoesNotHaveRightAuthoritiesReturnsFalse() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER, Arrays.asList("admin", "rot", "bossmode"));
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, Show.WHEN_AUTHORIZED, Show.NEVER,
+				Arrays.asList("admin", "rot", "bossmode"));
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
 				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
@@ -230,15 +238,15 @@ class DefaultHealthEndpointGroupTests {
 
 	@Test
 	void getStatusAggregatorReturnsStatusAggregator() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.getStatusAggregator()).isSameAs(this.statusAggregator);
 	}
 
 	@Test
 	void getHttpCodeStatusMapperReturnsHttpCodeStatusMapper() {
-		DefaultHealthEndpointGroup group = new DefaultHealthEndpointGroup((name) -> true, this.statusAggregator,
-				this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
+		AutoConfiguredHealthEndpointGroup group = new AutoConfiguredHealthEndpointGroup((name) -> true,
+				this.statusAggregator, this.httpCodeStatusMapper, null, Show.ALWAYS, Collections.emptySet());
 		assertThat(group.getHttpCodeStatusMapper()).isSameAs(this.httpCodeStatusMapper);
 	}
 
