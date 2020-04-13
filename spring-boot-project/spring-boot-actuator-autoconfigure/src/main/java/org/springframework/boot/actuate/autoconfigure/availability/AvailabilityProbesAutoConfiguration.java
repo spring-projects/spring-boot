@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.availability;
 
-import org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration.KubernetesOrPropertyCondition;
+import org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration.ProbesCondition;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
@@ -24,15 +24,18 @@ import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCusto
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -43,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@Conditional(KubernetesOrPropertyCondition.class)
+@Conditional(ProbesCondition.class)
 @AutoConfigureAfter(ApplicationAvailabilityAutoConfiguration.class)
 public class AvailabilityProbesAutoConfiguration {
 
@@ -67,20 +70,25 @@ public class AvailabilityProbesAutoConfiguration {
 		return new AvailabilityProbesHealthEndpointGroupsRegistrar();
 	}
 
-	static class KubernetesOrPropertyCondition extends AnyNestedCondition {
+	/**
+	 * {@link SpringBootCondition} to enable or disable probes.
+	 */
+	static class ProbesCondition extends SpringBootCondition {
 
-		KubernetesOrPropertyCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
-		static class Kubernetes {
-
-		}
-
-		@ConditionalOnProperty(prefix = "management.health.probes", name = "enabled")
-		static class ProbesIndicatorsEnabled {
-
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			Environment environment = context.getEnvironment();
+			ConditionMessage.Builder message = ConditionMessage.forCondition("Health probes");
+			String enabled = environment.getProperty("management.health.probes.enabled");
+			if (enabled != null) {
+				boolean match = !"false".equalsIgnoreCase(enabled);
+				return new ConditionOutcome(match,
+						message.because("'management.health.probes.enabled' set to '" + enabled + "'"));
+			}
+			if (CloudPlatform.getActive(environment) == CloudPlatform.KUBERNETES) {
+				return ConditionOutcome.match(message.because("running on Kubernetes"));
+			}
+			return ConditionOutcome.noMatch(message.because("not running on a supported cloud platform"));
 		}
 
 	}

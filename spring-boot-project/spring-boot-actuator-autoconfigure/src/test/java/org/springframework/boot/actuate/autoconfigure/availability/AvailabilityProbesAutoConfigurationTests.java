@@ -39,7 +39,7 @@ class AvailabilityProbesAutoConfigurationTests {
 			.of(ApplicationAvailabilityAutoConfiguration.class, AvailabilityProbesAutoConfiguration.class));
 
 	@Test
-	void probesNotConfiguredIfNotKubernetes() {
+	void probesWhenNotKubernetesAddsNoBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 				.doesNotHaveBean(LivenessStateHealthIndicator.class)
 				.doesNotHaveBean(ReadinessStateHealthIndicator.class)
@@ -47,12 +47,31 @@ class AvailabilityProbesAutoConfigurationTests {
 	}
 
 	@Test
-	void probesConfiguredIfProperty() {
+	void probesWhenKubernetesAddsBeans() {
+		this.contextRunner.withPropertyValues("spring.main.cloud-platform=kubernetes")
+				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+						.hasSingleBean(LivenessStateHealthIndicator.class)
+						.hasSingleBean(ReadinessStateHealthIndicator.class)
+						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));
+	}
+
+	@Test
+	void probesWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.health.probes.enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 						.hasSingleBean(LivenessStateHealthIndicator.class)
 						.hasSingleBean(ReadinessStateHealthIndicator.class)
 						.hasSingleBean(HealthEndpointGroupsRegistryCustomizer.class));
+	}
+
+	@Test
+	void probesWhenKuberntesAndPropertyDisabledAddsNotBeans() {
+		this.contextRunner
+				.withPropertyValues("spring.main.cloud-platform=kubernetes", "management.health.probes.enabled=false")
+				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+						.doesNotHaveBean(LivenessStateHealthIndicator.class)
+						.doesNotHaveBean(ReadinessStateHealthIndicator.class)
+						.doesNotHaveBean(HealthEndpointGroupsRegistryCustomizer.class));
 	}
 
 }
