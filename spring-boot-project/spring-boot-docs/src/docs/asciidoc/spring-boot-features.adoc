@@ -193,31 +193,34 @@ See the {spring-boot-module-api}/builder/SpringApplicationBuilder.html[`SpringAp
 
 
 
-[[boot-features-application-availability-state]]
-=== Application Availability State
-When deployed on plaftorms, applications can provide information about their availability to the platform using infrastructure like https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
-Spring Boot manages this application state with the `ApplicationAvailabilityProvider` and makes it available to application components and the platform itself.
+[[boot-features-application-availability]]
+=== Application Availability
+When deployed on platforms, applications can provide information about their availability to the platform using infrastructure such as https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
+Spring Boot includes out-of-the box support for the commonly used "`liveness`" and "`readiness`" availability states.
+If you are using Spring Boot's "`actuator`" support then these states are exposed as health endpoint groups.
+
+In addition, you can also obtain availability states by injecting the `ApplicationAvailability` interface into your own beans.
 
 
 
-[[boot-features-application-availability-liveness]]
+[[boot-features-application-availability-liveness-state]]
 ==== Liveness State
-The "Liveness" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it's currently failing.
-An invalid "Liveness" state means that the application is in a broken state and cannot recover from it; the infrastructure should then restart the application to mitigate that problem.
+The "`Liveness`" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it's currently failing.
+A broken "`Liveness`" state means that the application is in a state that it cannot recover from, and the infrastructure should restart the application.
 
 NOTE: In general, the "Liveness" state should not be based on external checks, such as <<production-ready-features.adoc#production-ready-health, Health checks>>.
 If it did, a failing external system (a database, a Web API, an external cache) would trigger massive restarts and cascading failures across the platform.
 
-The internal state of Spring Boot applications is mostly represented by the Spring application context.
+The internal state of Spring Boot applications is mostly represented by the Spring `ApplicationContext`.
 If the application context has started successfully, Spring Boot assumes that the application is in a valid state.
 An application is considered live as soon as the context has been refreshed, see <<boot-features-application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
 
 
 
-[[boot-features-application-availability-readiness]]
+[[boot-features-application-availability-readiness-state]]
 ==== Readiness State
-The "Readiness" state of an application tells whether the application is ready to handle traffic.
-A failing "Readiness" state tells the platform that it should not route traffic to the application for now.
+The "`Readiness`" state of an application tells whether the application is ready to handle traffic.
+A failing "`Readiness`" state tells the platform that it should not route traffic to the application for now.
 This typically happens during startup, while `CommandLineRunner` and `ApplicationRunner` components are being processed, or at any time if the application decides that it's too busy for additional traffic.
 
 An application is considered ready as soon as application and command-line runners have been called, see <<boot-features-application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
@@ -226,9 +229,9 @@ TIP: Tasks expected to run during startup should be executed by `CommandLineRunn
 
 
 
-[[boot-features-managing-application-availability]]
+[[boot-features-application-availability-managing]]
 ==== Managing the Application Availability State
-Application components can retrieve the current availability state at any time, by injecting the `ApplicationAvailabilityProvider` and calling methods on it.
+Application components can retrieve the current availability state at any time, by injecting the `ApplicationAvailability` interface and calling methods on it.
 More often, applications will want to listen to state updates or update the state of the application.
 
 For example, we can export the "Readiness" state of the application to a file so that a Kubernetes "exec Probe" can look at this file:
@@ -236,15 +239,15 @@ For example, we can export the "Readiness" state of the application to a file so
 [source,java,indent=0]
 ----
     @Component
-	public class ReadinessStateExporter implements ApplicationListener<ReadinessStateChangedEvent> {
+	public class ReadinessStateExporter {
 
-		@Override
-	    public void onApplicationEvent(ReadinessStateChangedEvent event) {
-			switch (event.getReadinessState().getStatus()) {
-		    case READY:
+		@EventListener
+	    public void onStateChange(AvailabilityChangeEvent<ReadinessState> event) {
+			switch (event.getState()) {
+		    case ACCEPTING_TRAFFIC:
 			    // create file /tmp/healthy
 			break;
-		    case UNREADY:
+		    case REFUSING_TRAFFIC:
 		    	// remove file /tmp/healthy
 			break;
 		    }
@@ -271,7 +274,7 @@ We can also update the state of the application, when the application breaks and
 	    		//...
 	    	}
 	    	catch (CacheCompletelyBrokenException ex) {
-                this.eventPublisher.publishEvent(LivenessStateChangedEvent.broken(ex));
+	    		AvailabilityChangeEvent.publish(this.eventPublisher, ex, LivenessState.BROKEN);
 	    	}
 	    }
 
@@ -280,6 +283,7 @@ We can also update the state of the application, when the application breaks and
 
 Spring Boot provides <<production-ready-features.adoc#production-ready-kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
 You can get more guidance about <<deployment.adoc#cloud-deployment-kubernetes,deploying Spring Boot applications on Kubernetes in the dedicated section>>.
+
 
 
 [[boot-features-application-events-and-listeners]]
@@ -307,9 +311,9 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationContextInitializedEvent` is sent when the `ApplicationContext` is prepared and ApplicationContextInitializers have been called but before any bean definitions are loaded.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
-. An `LivenessStateChangedEvent` is sent right after to indicate that the application is considered as live.
+. An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
 . An `ApplicationReadyEvent` is sent after any application and command-line runners have been called.
-. An `ReadinessStateChangedEvent` is sent right after to indicate that the application is ready to service requests.
+. An `LivenessState` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
