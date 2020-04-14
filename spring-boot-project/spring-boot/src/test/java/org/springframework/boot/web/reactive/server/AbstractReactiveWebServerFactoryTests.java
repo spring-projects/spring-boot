@@ -357,10 +357,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected void assertResponseIsCompressed(ResponseEntity<Void> response) {
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().getFirst("X-Test-Compressed")).isEqualTo("true");
 	}
 
 	protected void assertResponseIsNotCompressed(ResponseEntity<Void> response) {
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().keySet()).doesNotContain("X-Test-Compressed");
 	}
 
