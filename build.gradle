@@ -4,6 +4,8 @@ plugins {
 
 description = "Spring Boot Build"
 
+defaultTasks 'build'
+
 allprojects {
 	group "org.springframework.boot"
 
