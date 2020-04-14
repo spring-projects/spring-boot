@@ -32,6 +32,7 @@ import io.undertow.util.HttpString;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.InvalidMimeTypeException;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
@@ -90,10 +91,16 @@ final class UndertowCompressionConfigurer {
 		public boolean resolve(HttpServerExchange value) {
 			String contentType = value.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
-				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
-						return true;
+				try {
+					MimeType parsed = MimeTypeUtils.parseMimeType(contentType);
+					for (MimeType mimeType : this.mimeTypes) {
+						if (mimeType.isCompatibleWith(parsed)) {
+							return true;
+						}
 					}
+				}
+				catch (InvalidMimeTypeException ex) {
+					return false;
 				}
 			}
 			return false;
