@@ -106,8 +106,10 @@ class DevToolPropertiesIntegrationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String property = environment.getProperty("server.error.include-stacktrace");
-		assertThat(property).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
+		assertThat(includeStackTrace).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		String includeDetails = environment.getProperty("server.error.include-details");
+		assertThat(includeDetails).isEqualTo(ErrorProperties.IncludeDetails.ALWAYS.toString());
 	}
 
 	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)

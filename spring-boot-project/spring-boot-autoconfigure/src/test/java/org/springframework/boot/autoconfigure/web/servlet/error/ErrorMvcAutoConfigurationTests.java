@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ class ErrorMvcAutoConfigurationTests {
 			AutoConfigurations.of(DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class));
 
 	@Test
-	void renderContainsViewWithExceptionDetails() throws Exception {
+	void renderContainsViewWithExceptionDetails() {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
@@ -69,7 +69,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					true);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "

@@ -107,6 +107,10 @@
       "defaultValue": "2KB"
     },
     {
+      "name": "server.error.include-details",
+      "defaultValue": "never"
+    },
+    {
       "name": "server.error.include-stacktrace",
       "defaultValue": "never"
     },

@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link WebMvcEndpointChildContextConfiguration}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
@@ -59,7 +60,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 					WebClient client = WebClient.create("http://localhost:" + port);
 					ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
 							.exchange().block();
-					assertThat(response.bodyToMono(String.class).block()).contains("message\":\"Epic Fail");
+					assertThat(response.bodyToMono(String.class).block())
+							.contains("message\":\"An error occurred while processing the request");
 				});
 	}
 

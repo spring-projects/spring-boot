@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.3.0
  * @see ErrorAttributes
  */
@@ -66,13 +67,35 @@ public abstract class AbstractErrorController implements ErrorController {
 		return sorted;
 	}
 
+	/**
+	 * Returns a {@link Map} of the error attributes.
+	 * @param request the source request
+	 * @param includeStackTrace if stack trace elements should be included
+	 * @return the error attributes
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #getErrorAttributes(HttpServletRequest, boolean, boolean)}
+	 */
+	@Deprecated
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
+		return this.getErrorAttributes(request, includeStackTrace, false);
+	}
+
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace,
+			boolean includeDetails) {
 		WebRequest webRequest = new ServletWebRequest(request);
-		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace);
+		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace, includeDetails);
 	}
 
 	protected boolean getTraceParameter(HttpServletRequest request) {
-		String parameter = request.getParameter("trace");
+		return getBooleanParameter(request, "trace");
+	}
+
+	protected boolean getDetailsParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "details");
+	}
+
+	protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {
+		String parameter = request.getParameter(parameterName);
 		if (parameter == null) {
 			return false;
 		}

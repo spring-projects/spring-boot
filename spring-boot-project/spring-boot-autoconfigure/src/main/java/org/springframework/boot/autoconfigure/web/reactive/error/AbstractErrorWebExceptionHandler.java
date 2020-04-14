@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.web.util.HtmlUtils;
  * Abstract base class for {@link ErrorWebExceptionHandler} implementations.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -131,10 +132,26 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * views or JSON payloads.
 	 * @param request the source request
 	 * @param includeStackTrace whether to include the error stacktrace information
-	 * @return the error attributes as a Map.
+	 * @return the error attributes as a Map
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #getErrorAttributes(ServerRequest, boolean, boolean)}
 	 */
+	@Deprecated
 	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace);
+		return this.errorAttributes.getErrorAttributes(request, includeStackTrace, false);
+	}
+
+	/**
+	 * Extract the error attributes from the current request, to be used to populate error
+	 * views or JSON payloads.
+	 * @param request the source request
+	 * @param includeStackTrace whether to include the error stacktrace information
+	 * @param includeDetails whether to include message and errors attributes
+	 * @return the error attributes as a Map
+	 */
+	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace,
+			boolean includeDetails) {
+		return this.errorAttributes.getErrorAttributes(request, includeStackTrace, includeDetails);
 	}
 
 	/**
@@ -152,7 +169,21 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @return {@code true} if the error trace has been requested, {@code false} otherwise
 	 */
 	protected boolean isTraceEnabled(ServerRequest request) {
-		String parameter = request.queryParam("trace").orElse("false");
+		return getBooleanParameter(request, "trace");
+	}
+
+	/**
+	 * Check whether the details attribute has been set on the given request.
+	 * @param request the source request
+	 * @return {@code true} if the error details have been requested, {@code false}
+	 * otherwise
+	 */
+	protected boolean isDetailsEnabled(ServerRequest request) {
+		return getBooleanParameter(request, "details");
+	}
+
+	private boolean getBooleanParameter(ServerRequest request, String parameterName) {
+		String parameter = request.queryParam(parameterName).orElse("false");
 		return !"false".equalsIgnoreCase(parameter);
 	}
 

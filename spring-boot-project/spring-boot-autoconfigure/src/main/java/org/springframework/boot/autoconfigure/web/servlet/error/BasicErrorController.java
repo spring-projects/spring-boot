@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeDetails;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -47,6 +48,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  * @see ErrorAttributes
  * @see ErrorProperties
@@ -87,8 +89,8 @@ public class BasicErrorController extends AbstractErrorController {
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
-		Map<String, Object> model = Collections
-				.unmodifiableMap(getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(request,
+				isIncludeStackTrace(request, MediaType.TEXT_HTML), isIncludeDetails(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -100,7 +102,8 @@ public class BasicErrorController extends AbstractErrorController {
 		if (status == HttpStatus.NO_CONTENT) {
 			return new ResponseEntity<>(status);
 		}
-		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
+		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL),
+				isIncludeDetails(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);
 	}
 
@@ -123,6 +126,23 @@ public class BasicErrorController extends AbstractErrorController {
 		}
 		if (include == IncludeStacktrace.ON_TRACE_PARAM) {
 			return getTraceParameter(request);
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if the error details attributes should be included.
+	 * @param request the source request
+	 * @param produces the media type produced (or {@code MediaType.ALL})
+	 * @return if the error details attributes should be included
+	 */
+	protected boolean isIncludeDetails(HttpServletRequest request, MediaType produces) {
+		IncludeDetails include = getErrorProperties().getIncludeDetails();
+		if (include == IncludeDetails.ALWAYS) {
+			return true;
+		}
+		if (include == IncludeDetails.ON_DETAILS_PARAM) {
+			return getDetailsParameter(request);
 		}
 		return false;
 	}
