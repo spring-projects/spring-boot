@@ -46,5 +46,4 @@
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
-	<suppress files="[\\/]org.springframework.boot.autoconfigure.couchbase.CouchbaseContainer.java$" checks=".*" />
 </suppressions>

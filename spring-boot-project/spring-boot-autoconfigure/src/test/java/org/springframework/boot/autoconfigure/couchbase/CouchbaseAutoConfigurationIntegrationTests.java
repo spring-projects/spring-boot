@@ -23,8 +23,9 @@ import com.couchbase.client.core.diagnostics.DiagnosticsResult;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.ClusterEnvironment;
-import com.couchbase.client.java.manager.bucket.BucketSettings;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.couchbase.BucketDefinition;
+import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -45,9 +46,9 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	static final CouchbaseContainer couchbase = new CouchbaseContainer().withClusterAdmin("spring", "password")
+	static final CouchbaseContainer couchbase = new CouchbaseContainer().withCredentials("spring", "password")
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
-			.withNewBucket(BucketSettings.create(BUCKET_NAME));
+			.withBucket(new BucketDefinition(BUCKET_NAME));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
