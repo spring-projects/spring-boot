@@ -1172,6 +1172,10 @@ For example, with Maven, you would add the following dependency:
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
 You can then access it by using `/actuator/jolokia` on your management HTTP server.
 
+NOTE: The Jolokia endpoint exposes Jolokia's servlet as an actuator endpoint.
+As a result, it is specific to servlet environments such as Spring MVC and Jersey.
+The endpoint will not be available in a WebFlux application.
+
 
 
 [[production-ready-customizing-jolokia]]
