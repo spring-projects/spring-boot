@@ -190,7 +190,7 @@
 		<spring-batch.version>4.2.1.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.7.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Moore-SR6</spring-data-releasetrain.version>
-		<spring-framework.version>5.2.5.RELEASE</spring-framework.version>
+		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
 		<spring-hateoas.version>1.0.4.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.2.5.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.3.7.RELEASE</spring-kafka.version>
