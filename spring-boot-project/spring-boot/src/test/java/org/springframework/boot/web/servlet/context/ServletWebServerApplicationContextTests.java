@@ -49,7 +49,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.availability.ReadinessStateChangedEvent;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
@@ -178,7 +178,7 @@ class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		this.context.addApplicationListener(listener);
 		this.context.close();
-		assertThat(listener.receivedEvents()).hasSize(2).extracting("class").contains(ReadinessStateChangedEvent.class,
+		assertThat(listener.receivedEvents()).hasSize(2).extracting("class").contains(AvailabilityChangeEvent.class,
 				ContextClosedEvent.class);
 	}
 

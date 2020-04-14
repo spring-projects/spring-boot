@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.function.Predicate;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -30,12 +31,12 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Auto-configured {@link HealthEndpointGroup}.
+ * Auto-configured {@link HealthEndpointGroup} backed by {@link HealthProperties}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class DefaultHealthEndpointGroup implements HealthEndpointGroup {
+class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Predicate<String> members;
 
@@ -50,7 +51,7 @@ class DefaultHealthEndpointGroup implements HealthEndpointGroup {
 	private final Collection<String> roles;
 
 	/**
-	 * Create a new {@link DefaultHealthEndpointGroup} instance.
+	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
 	 * @param members a predicate used to test for group membership
 	 * @param statusAggregator the status aggregator to use
 	 * @param httpCodeStatusMapper the HTTP code status mapper to use
@@ -58,7 +59,7 @@ class DefaultHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param showDetails the show details setting
 	 * @param roles the roles to match
 	 */
-	DefaultHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
+	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
 			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails,
 			Collection<String> roles) {
 		this.members = members;

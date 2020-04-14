@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.availability;
 
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.availability.ApplicationAvailabilityBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration} for
- * {@link ApplicationAvailabilityProvider}.
+ * {@link ApplicationAvailabilityBean}.
  *
  * @author Brian Clozel
  * @since 2.3.0
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationAvailabilityAutoConfiguration {
 
 	@Bean
-	public ApplicationAvailabilityProvider applicationAvailabilityProvider() {
-		return new ApplicationAvailabilityProvider();
+	public ApplicationAvailabilityBean applicationAvailability() {
+		return new ApplicationAvailabilityBean();
 	}
 
 }

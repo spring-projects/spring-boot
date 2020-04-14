@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.availability;
+
 /**
- * Actuator support for kubernetes-related concerns.
+ * Tagging interface used on {@link ApplicationAvailability} states. This interface is
+ * usually implemented on an {@code enum} type.
+ *
+ * @author Phillip Webb
+ * @since 2.3.0
+ * @see LivenessState
+ * @see ReadinessState
  */
-package org.springframework.boot.actuate.kubernetes;
+public interface AvailabilityState {
+
+}

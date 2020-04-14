@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.availability;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
 
 /**
@@ -28,22 +28,18 @@ import org.springframework.boot.availability.LivenessState;
  * @author Brian Clozel
  * @since 2.3.0
  */
-public class LivenessProbeHealthIndicator extends AbstractHealthIndicator {
+public class LivenessStateHealthIndicator extends AvailabilityStateHealthIndicator {
 
-	private final ApplicationAvailabilityProvider applicationAvailabilityProvider;
-
-	public LivenessProbeHealthIndicator(ApplicationAvailabilityProvider applicationAvailabilityProvider) {
-		this.applicationAvailabilityProvider = applicationAvailabilityProvider;
+	public LivenessStateHealthIndicator(ApplicationAvailability availability) {
+		super(availability, LivenessState.class, (statusMappings) -> {
+			statusMappings.add(LivenessState.CORRECT, Status.UP);
+			statusMappings.add(LivenessState.BROKEN, Status.DOWN);
+		});
 	}
 
 	@Override
-	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		if (LivenessState.LIVE.equals(this.applicationAvailabilityProvider.getLivenessState())) {
-			builder.up();
-		}
-		else {
-			builder.down();
-		}
+	protected AvailabilityState getState(ApplicationAvailability applicationAvailability) {
+		return applicationAvailability.getLivenessState();
 	}
 
 }

@@ -2,6 +2,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cache.CachesEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorAutoConfiguration,\
@@ -29,7 +30,6 @@ org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpo
 org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jms.JmsHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.kubernetes.ProbesHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration,\

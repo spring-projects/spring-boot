@@ -26,8 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.availability.LivenessStateChangedEvent;
-import org.springframework.boot.availability.ReadinessStateChangedEvent;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.StaticApplicationContext;
@@ -71,9 +70,9 @@ class EventPublishingRunListenerTests {
 		checkApplicationEvents(ApplicationPreparedEvent.class);
 		context.refresh();
 		this.runListener.started(context);
-		checkApplicationEvents(ApplicationStartedEvent.class, LivenessStateChangedEvent.class);
+		checkApplicationEvents(ApplicationStartedEvent.class, AvailabilityChangeEvent.class);
 		this.runListener.running(context);
-		checkApplicationEvents(ApplicationReadyEvent.class, ReadinessStateChangedEvent.class);
+		checkApplicationEvents(ApplicationReadyEvent.class, AvailabilityChangeEvent.class);
 	}
 
 	void checkApplicationEvents(Class<?>... eventClasses) {

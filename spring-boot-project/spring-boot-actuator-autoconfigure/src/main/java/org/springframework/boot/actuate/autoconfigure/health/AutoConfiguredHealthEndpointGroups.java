@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -32,12 +31,10 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties.Group;
+import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
-import org.springframework.boot.actuate.health.HealthEndpointGroup.Show;
-import org.springframework.boot.actuate.health.HealthEndpointGroupConfigurer;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
-import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistry;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
@@ -48,113 +45,71 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Auto-configured {@link HealthEndpointGroupsRegistry}.
+ * Auto-configured {@link HealthEndpointGroups}.
  *
  * @author Phillip Webb
- * @author Brian Clozel
  */
-class AutoConfiguredHealthEndpointGroupsRegistry implements HealthEndpointGroupsRegistry {
+class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 
 	private static Predicate<String> ALL = (name) -> true;
 
-	private final StatusAggregator defaultStatusAggregator;
-
-	private final HttpCodeStatusMapper defaultHttpCodeStatusMapper;
-
-	private final Show defaultShowComponents;
-
-	private final Show defaultShowDetails;
-
-	private final Set<String> defaultRoles;
-
-	private HealthEndpointGroup primaryGroup;
+	private final HealthEndpointGroup primaryGroup;
 
 	private final Map<String, HealthEndpointGroup> groups;
 
 	/**
-	 * Create a new {@link AutoConfiguredHealthEndpointGroupsRegistry} instance.
+	 * Create a new {@link AutoConfiguredHealthEndpointGroups} instance.
 	 * @param applicationContext the application context used to check for override beans
 	 * @param properties the health endpoint properties
 	 */
-	AutoConfiguredHealthEndpointGroupsRegistry(ApplicationContext applicationContext,
-			HealthEndpointProperties properties) {
+	AutoConfiguredHealthEndpointGroups(ApplicationContext applicationContext, HealthEndpointProperties properties) {
 		ListableBeanFactory beanFactory = (applicationContext instanceof ConfigurableApplicationContext)
 				? ((ConfigurableApplicationContext) applicationContext).getBeanFactory() : applicationContext;
-		this.defaultShowComponents = convertVisibility(properties.getShowComponents());
-		this.defaultShowDetails = convertVisibility(properties.getShowDetails());
-		this.defaultRoles = properties.getRoles();
-
+		Show showComponents = properties.getShowComponents();
+		Show showDetails = properties.getShowDetails();
+		Set<String> roles = properties.getRoles();
 		StatusAggregator statusAggregator = getNonQualifiedBean(beanFactory, StatusAggregator.class);
 		if (statusAggregator == null) {
 			statusAggregator = new SimpleStatusAggregator(properties.getStatus().getOrder());
 		}
-		this.defaultStatusAggregator = statusAggregator;
-
 		HttpCodeStatusMapper httpCodeStatusMapper = getNonQualifiedBean(beanFactory, HttpCodeStatusMapper.class);
 		if (httpCodeStatusMapper == null) {
 			httpCodeStatusMapper = new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping());
 		}
-		this.defaultHttpCodeStatusMapper = httpCodeStatusMapper;
-
-		this.primaryGroup = new DefaultHealthEndpointGroup(ALL, statusAggregator, httpCodeStatusMapper,
-				this.defaultShowComponents, this.defaultShowDetails, this.defaultRoles);
-
-		this.groups = createGroups(properties.getGroup(), beanFactory);
+		this.primaryGroup = new AutoConfiguredHealthEndpointGroup(ALL, statusAggregator, httpCodeStatusMapper,
+				showComponents, showDetails, roles);
+		this.groups = createGroups(properties.getGroup(), beanFactory, statusAggregator, httpCodeStatusMapper,
+				showComponents, showDetails, roles);
 	}
 
-	@Override
-	public HealthEndpointGroupsRegistry add(String groupName, Consumer<HealthEndpointGroupConfigurer> consumer) {
-		DefaultHealthEndpointGroupConfigurer groupConfigurer = new DefaultHealthEndpointGroupConfigurer(
-				this.defaultStatusAggregator, this.defaultHttpCodeStatusMapper, this.defaultShowComponents,
-				this.defaultShowDetails, this.defaultRoles);
-		consumer.accept(groupConfigurer);
-		this.groups.put(groupName, groupConfigurer.toHealthEndpointGroup());
-		return this;
-	}
-
-	@Override
-	public HealthEndpointGroupsRegistry remove(String groupName) {
-		this.groups.remove(groupName);
-		return this;
-	}
-
-	@Override
-	public HealthEndpointGroups toGroups() {
-		return HealthEndpointGroups.of(this.primaryGroup, Collections.unmodifiableMap(this.groups));
-	}
-
-	private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory) {
+	private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory,
+			StatusAggregator defaultStatusAggregator, HttpCodeStatusMapper defaultHttpCodeStatusMapper,
+			Show defaultShowComponents, Show defaultShowDetails, Set<String> defaultRoles) {
 		Map<String, HealthEndpointGroup> groups = new LinkedHashMap<>();
-		groupProperties
-				.forEach((groupName, group) -> groups.put(groupName, createGroup(groupName, group, beanFactory)));
-		return groups;
-	}
-
-	private HealthEndpointGroup createGroup(String groupName, Group groupProperties, BeanFactory beanFactory) {
-		Status status = groupProperties.getStatus();
-		Show showComponents = (groupProperties.getShowComponents() != null)
-				? convertVisibility(groupProperties.getShowComponents()) : this.defaultShowComponents;
-		Show showDetails = (groupProperties.getShowDetails() != null)
-				? convertVisibility(groupProperties.getShowDetails()) : this.defaultShowDetails;
-		Set<String> roles = !CollectionUtils.isEmpty(groupProperties.getRoles()) ? groupProperties.getRoles()
-				: this.defaultRoles;
-		StatusAggregator statusAggregator = getQualifiedBean(beanFactory, StatusAggregator.class, groupName, () -> {
-			if (!CollectionUtils.isEmpty(status.getOrder())) {
-				return new SimpleStatusAggregator(status.getOrder());
-			}
-			return this.defaultStatusAggregator;
+		groupProperties.forEach((groupName, group) -> {
+			Status status = group.getStatus();
+			Show showComponents = (group.getShowComponents() != null) ? group.getShowComponents()
+					: defaultShowComponents;
+			Show showDetails = (group.getShowDetails() != null) ? group.getShowDetails() : defaultShowDetails;
+			Set<String> roles = !CollectionUtils.isEmpty(group.getRoles()) ? group.getRoles() : defaultRoles;
+			StatusAggregator statusAggregator = getQualifiedBean(beanFactory, StatusAggregator.class, groupName, () -> {
+				if (!CollectionUtils.isEmpty(status.getOrder())) {
+					return new SimpleStatusAggregator(status.getOrder());
+				}
+				return defaultStatusAggregator;
+			});
+			HttpCodeStatusMapper httpCodeStatusMapper = getQualifiedBean(beanFactory, HttpCodeStatusMapper.class,
+					groupName, () -> {
+						if (!CollectionUtils.isEmpty(status.getHttpMapping())) {
+							return new SimpleHttpCodeStatusMapper(status.getHttpMapping());
+						}
+						return defaultHttpCodeStatusMapper;
+					});
+			Predicate<String> members = new IncludeExcludeGroupMemberPredicate(group.getInclude(), group.getExclude());
+			groups.put(groupName, new AutoConfiguredHealthEndpointGroup(members, statusAggregator, httpCodeStatusMapper,
+					showComponents, showDetails, roles));
 		});
-		HttpCodeStatusMapper httpCodeStatusMapper = getQualifiedBean(beanFactory, HttpCodeStatusMapper.class, groupName,
-				() -> {
-					if (!CollectionUtils.isEmpty(status.getHttpMapping())) {
-						return new SimpleHttpCodeStatusMapper(status.getHttpMapping());
-					}
-					return this.defaultHttpCodeStatusMapper;
-				});
-		Predicate<String> members = new IncludeExcludeGroupMemberPredicate(groupProperties.getInclude(),
-				groupProperties.getExclude());
-		return new DefaultHealthEndpointGroup(members, statusAggregator, httpCodeStatusMapper, showComponents,
-				showDetails, roles);
+		return Collections.unmodifiableMap(groups);
 	}
 
 	private <T> T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
@@ -183,21 +138,6 @@ class AutoConfiguredHealthEndpointGroupsRegistry implements HealthEndpointGroups
 		catch (NoSuchBeanDefinitionException ex) {
 			return fallback.get();
 		}
-	}
-
-	private Show convertVisibility(HealthProperties.Show show) {
-		if (show == null) {
-			return null;
-		}
-		switch (show) {
-		case ALWAYS:
-			return Show.ALWAYS;
-		case NEVER:
-			return Show.NEVER;
-		case WHEN_AUTHORIZED:
-			return Show.WHEN_AUTHORIZED;
-		}
-		throw new IllegalStateException("Unsupported 'show' value " + show);
 	}
 
 	@Override

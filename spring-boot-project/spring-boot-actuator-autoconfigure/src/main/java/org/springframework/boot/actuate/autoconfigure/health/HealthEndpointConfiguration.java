@@ -21,7 +21,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
 import org.springframework.boot.actuate.health.Health;
@@ -29,7 +31,7 @@ import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
-import org.springframework.boot.actuate.health.HealthEndpointGroupsRegistryCustomizer;
+import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.NamedContributor;
@@ -68,11 +70,8 @@ class HealthEndpointConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	HealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
-			HealthEndpointProperties properties, ObjectProvider<HealthEndpointGroupsRegistryCustomizer> customizers) {
-		AutoConfiguredHealthEndpointGroupsRegistry registry = new AutoConfiguredHealthEndpointGroupsRegistry(
-				applicationContext, properties);
-		customizers.orderedStream().forEach((customizer) -> customizer.customize(registry));
-		return registry.toGroups();
+			HealthEndpointProperties properties) {
+		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 	}
 
 	@Bean
@@ -91,6 +90,42 @@ class HealthEndpointConfiguration {
 	@ConditionalOnMissingBean
 	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
 		return new HealthEndpoint(registry, groups);
+	}
+
+	@Bean
+	static HealthEndpointGroupsBeanPostProcessor healthEndpointGroupsBeanPostProcessor(
+			ObjectProvider<HealthEndpointGroupsPostProcessor> healthEndpointGroupsPostProcessors) {
+		return new HealthEndpointGroupsBeanPostProcessor(healthEndpointGroupsPostProcessors);
+	}
+
+	/**
+	 * {@link BeanPostProcessor} to invoke {@link HealthEndpointGroupsPostProcessor}
+	 * beans.
+	 */
+	private static class HealthEndpointGroupsBeanPostProcessor implements BeanPostProcessor {
+
+		private final ObjectProvider<HealthEndpointGroupsPostProcessor> postProcessors;
+
+		HealthEndpointGroupsBeanPostProcessor(ObjectProvider<HealthEndpointGroupsPostProcessor> postProcessors) {
+			this.postProcessors = postProcessors;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof HealthEndpointGroups) {
+				return applyPostProcessors((HealthEndpointGroups) bean);
+			}
+			return bean;
+		}
+
+		private Object applyPostProcessors(HealthEndpointGroups bean) {
+			for (HealthEndpointGroupsPostProcessor postProcessor : this.postProcessors.orderedStream()
+					.toArray(HealthEndpointGroupsPostProcessor[]::new)) {
+				bean = postProcessor.postProcessHealthEndpointGroups(bean);
+			}
+			return bean;
+		}
+
 	}
 
 	/**

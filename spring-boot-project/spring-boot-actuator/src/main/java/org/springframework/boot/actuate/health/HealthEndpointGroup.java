@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
  * by the {@link HealthEndpoint}.
  *
  * @author Phillip Webb
- * @author Brian Clozel
  * @since 2.2.0
  */
 public interface HealthEndpointGroup {
@@ -62,28 +61,5 @@ public interface HealthEndpointGroup {
 	 * @return the HTTP code status mapper
 	 */
 	HttpCodeStatusMapper getHttpCodeStatusMapper();
-
-	/**
-	 * Options for showing items in responses from the {@link HealthEndpointGroup} web
-	 * extensions.
-	 */
-	enum Show {
-
-		/**
-		 * Never show the item in the response.
-		 */
-		NEVER,
-
-		/**
-		 * Show the item in the response when accessed by an authorized user.
-		 */
-		WHEN_AUTHORIZED,
-
-		/**
-		 * Always show the item in the response.
-		 */
-		ALWAYS
-
-	}
 
 }

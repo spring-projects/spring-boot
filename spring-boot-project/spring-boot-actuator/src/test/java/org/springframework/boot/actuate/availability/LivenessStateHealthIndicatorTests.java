@@ -20,40 +20,40 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.availability.ApplicationAvailabilityProvider;
-import org.springframework.boot.availability.ReadinessState;
+import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.availability.LivenessState;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReadinessProbeHealthIndicator}
+ * Tests for {@link LivenessStateHealthIndicator}
  *
  * @author Brian Clozel
  */
-class ReadinessProbeHealthIndicatorTests {
+class LivenessStateHealthIndicatorTests {
 
-	private ApplicationAvailabilityProvider stateProvider;
+	private ApplicationAvailability availability;
 
-	private ReadinessProbeHealthIndicator healthIndicator;
+	private LivenessStateHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
-		this.stateProvider = mock(ApplicationAvailabilityProvider.class);
-		this.healthIndicator = new ReadinessProbeHealthIndicator(this.stateProvider);
+		this.availability = mock(ApplicationAvailability.class);
+		this.healthIndicator = new LivenessStateHealthIndicator(this.availability);
 	}
 
 	@Test
-	void readinessIsReady() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.READY);
+	void livenessIsLive() {
+		given(this.availability.getLivenessState()).willReturn(LivenessState.CORRECT);
 		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
-	void readinessIsUnready() {
-		when(this.stateProvider.getReadinessState()).thenReturn(ReadinessState.UNREADY);
-		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+	void livenessIsBroken() {
+		given(this.availability.getLivenessState()).willReturn(LivenessState.BROKEN);
+		assertThat(this.healthIndicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 
 }

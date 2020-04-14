@@ -26,16 +26,16 @@ package org.springframework.boot.availability;
  * @author Brian Clozel
  * @since 2.3.0
  */
-public enum ReadinessState {
-
-	/**
-	 * The application is not willing to receive traffic.
-	 */
-	UNREADY,
+public enum ReadinessState implements AvailabilityState {
 
 	/**
 	 * The application is ready to receive traffic.
 	 */
-	READY
+	ACCEPTING_TRAFFIC,
+
+	/**
+	 * The application is not willing to receive traffic.
+	 */
+	REFUSING_TRAFFIC
 
 }
