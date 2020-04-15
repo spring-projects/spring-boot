@@ -2400,7 +2400,7 @@ The following example does the same with Gradle:
 	}
 ----
 
-TIP: See the {spring-boot-gradle-plugin-docs}/#integrating-with-actuator-build-info[Spring Boot Gradle Plugin documentation] for more details.
+TIP: See the {spring-boot-gradle-plugin-docs}#integrating-with-actuator-build-info[Spring Boot Gradle Plugin documentation] for more details.
 
 
 
@@ -2446,9 +2446,9 @@ The Spring Boot plugins for Maven and Gradle allow these managed dependency vers
 WARNING: Each Spring Boot release is designed and tested against this specific set of third-party dependencies.
 Overriding versions may cause compatibility issues.
 
-To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}/#using[this section] of the Maven plugin's documentation.
+To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}#using[this section] of the Maven plugin's documentation.
 
-To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}/#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
+To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
 
 
 

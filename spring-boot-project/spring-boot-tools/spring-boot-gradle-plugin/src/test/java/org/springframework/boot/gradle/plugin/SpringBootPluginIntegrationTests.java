@@ -66,7 +66,7 @@ class SpringBootPluginIntegrationTests {
 
 	@DisabledForJreRange(min = JRE.JAVA_13)
 	@Test
-	void succeedWithVersionOfGradle6MatchingWhatIsRequired() {
+	void succeedWithVersionOfGradle5MatchingWhatIsRequired() {
 		this.gradleBuild.gradleVersion("5.6").build();
 	}
 
