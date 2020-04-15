@@ -44,7 +44,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 2.1.0
  * @see EnableJdbcRepositories
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean({ NamedParameterJdbcOperations.class, PlatformTransactionManager.class })
 @ConditionalOnClass({ NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class })
