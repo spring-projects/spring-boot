@@ -27,14 +27,6 @@ resources:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-- name: git-repo-ci-docker
-  type: git
-  icon: github-circle
-  source:
-    uri: ((github-repo))
-    username: ((github-username))
-    password: ((github-password))
-    branch: ci-docker-((branch))
 - name: git-repo-windows
   type: git
   source:
@@ -224,7 +216,6 @@ jobs:
 - name: detect-docker-updates
   plan:
   - get: git-repo
-  - get: git-repo-ci-docker
   - get: every-wednesday
     trigger: true
   - get: spring-boot-ci-image
@@ -234,21 +225,9 @@ jobs:
       params:
         GITHUB_REPO: spring-boot
         GITHUB_ORGANIZATION: spring-projects
-        MILESTONE: ((milestone))
-      image: spring-boot-ci-image
-    - put: git-repo-ci-docker
-      params:
-        repository: git-repo-updated
-        force: true
-    - task: create-pull-request
-      file: git-repo/ci/tasks/create-pull-request.yml
-      params:
-        BASE_BRANCH: ((branch))
-        BRANCH: ci-docker-((branch))
-        GITHUB_REPO: spring-boot
-        GITHUB_ORGANIZATION: spring-projects
         GITHUB_PASSWORD: ((github-password))
         GITHUB_USERNAME: ((github-username))
+        MILESTONE: ((milestone))
       image: spring-boot-ci-image
 - name: build
   serial: true
