@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,8 +191,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
-		final Iterator<JarEntry> iterator = this.entries.iterator();
-		return new EnumerationJarEntry(iterator);
+		return new JarEntryEnumeration(this.entries.iterator());
 	}
 
 	public JarEntry getJarEntry(CharSequence name) {
@@ -410,21 +409,13 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
-	 * The type Enumeration jar entry.
+	 * An {@link Enumeration} on {@linkplain java.util.jar.JarEntry jar entries}.
 	 */
-	static class EnumerationJarEntry implements Enumeration<java.util.jar.JarEntry> {
+	private static class JarEntryEnumeration implements Enumeration<java.util.jar.JarEntry> {
 
-		/**
-		 * The Iterator.
-		 */
-		Iterator<JarEntry> iterator;
+		private final Iterator<JarEntry> iterator;
 
-		/**
-		 * Instantiates a new Enumeration jar entry.
-		 *
-		 * @param iterator the iterator
-		 */
-		EnumerationJarEntry(Iterator<JarEntry> iterator) {
+		JarEntryEnumeration(Iterator<JarEntry> iterator) {
 			this.iterator = iterator;
 		}
 
@@ -437,5 +428,7 @@ public class JarFile extends java.util.jar.JarFile {
 		public java.util.jar.JarEntry nextElement() {
 			return this.iterator.next();
 		}
+
 	}
+
 }
