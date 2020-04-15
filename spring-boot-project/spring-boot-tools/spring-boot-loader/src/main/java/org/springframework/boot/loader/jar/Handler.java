@@ -112,15 +112,8 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private void log(boolean warning, String message, Exception cause) {
-		try {
-			Level level = warning ? Level.WARNING : Level.FINEST;
-			Logger.getLogger(getClass().getName()).log(level, message, cause);
-		}
-		catch (Exception ex) {
-			if (warning) {
-				System.err.println("WARNING: " + message);
-			}
-		}
+		Level level = warning ? Level.WARNING : Level.FINEST;
+		Logger.getLogger(getClass().getName()).log(level, message, cause);
 	}
 
 	private URLStreamHandler getFallbackHandler() {
@@ -133,7 +126,7 @@ public class Handler extends URLStreamHandler {
 				this.fallbackHandler = (URLStreamHandler) handlerClass.newInstance();
 				return this.fallbackHandler;
 			}
-			catch (Exception ex) {
+			catch (IllegalAccessException | InstantiationException | ClassNotFoundException ex) {
 				// Ignore
 			}
 		}
