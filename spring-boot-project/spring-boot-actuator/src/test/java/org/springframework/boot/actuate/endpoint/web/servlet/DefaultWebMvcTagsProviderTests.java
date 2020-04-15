@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.datastax.oss.driver.shaded.guava.common.base.Functions;
 import io.micrometer.core.instrument.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +72,7 @@ public class DefaultWebMvcTagsProviderTests {
 
 	private Map<String, Tag> asMap(Iterable<Tag> tags) {
 		return StreamSupport.stream(tags.spliterator(), false)
-				.collect(Collectors.toMap(Tag::getKey, Functions.identity()));
+				.collect(Collectors.toMap(Tag::getKey, Function.identity()));
 	}
 
 	private static final class TestWebMvcTagsContributor implements WebMvcTagsContributor {
