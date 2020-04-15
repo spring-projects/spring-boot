@@ -52,7 +52,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
-			.withPropertyValues("spring.couchbase.connection-string:localhost:" + couchbase.getMappedPort(11210),
+			.withPropertyValues("spring.couchbase.connection-string: " + couchbase.getConnectionString(),
 					"spring.couchbase.username:spring", "spring.couchbase.password:password",
 					"spring.couchbase.bucket.name:" + BUCKET_NAME);
 
