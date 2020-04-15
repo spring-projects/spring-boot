@@ -95,7 +95,7 @@ do as they were designed before this was clarified.
 | https://github.com/dabla/grizzly-spring-boot-starter
 
 | https://www.grpc.io/[gRPC]
-| https://github.com/LogNet/grpc-spring-boot-starter
+| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter
 
 | https://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
