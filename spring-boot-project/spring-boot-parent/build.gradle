@@ -12,7 +12,7 @@ javaPlatform {
 
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	api(enforcedPlatform("org.testcontainers:testcontainers-bom:1.13.0"))
+	api(enforcedPlatform("org.testcontainers:testcontainers-bom:1.14.0"))
 
 	constraints {
 		api("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
