@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,20 +191,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
-		Iterator<java.util.jar.JarEntry> iterator = iterator();
-		return new Enumeration<java.util.jar.JarEntry>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public java.util.jar.JarEntry nextElement() {
-				return iterator.next();
-			}
-
-		};
+		return new JarEntryEnumeration(this.entries.iterator());
 	}
 
 	/**
@@ -429,6 +416,29 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 	enum JarFileType {
 
 		DIRECT, NESTED_DIRECTORY, NESTED_JAR
+
+	}
+
+	/**
+	 * An {@link Enumeration} on {@linkplain java.util.jar.JarEntry jar entries}.
+	 */
+	private static class JarEntryEnumeration implements Enumeration<java.util.jar.JarEntry> {
+
+		private final Iterator<JarEntry> iterator;
+
+		JarEntryEnumeration(Iterator<JarEntry> iterator) {
+			this.iterator = iterator;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			return this.iterator.hasNext();
+		}
+
+		@Override
+		public java.util.jar.JarEntry nextElement() {
+			return this.iterator.next();
+		}
 
 	}
 
