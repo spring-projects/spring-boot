@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClientBuilder;
 
 /**
@@ -24,6 +26,7 @@ import org.elasticsearch.client.RestClientBuilder;
  * retaining default auto-configuration.
  *
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.1.0
  */
 @FunctionalInterface
@@ -34,5 +37,19 @@ public interface RestClientBuilderCustomizer {
 	 * @param builder the builder to customize
 	 */
 	void customize(RestClientBuilder builder);
+
+	/**
+	 * Customize the {@link HttpAsyncClientBuilder}.
+	 * @param builder the builder
+	 */
+	default void customize(HttpAsyncClientBuilder builder) {
+	}
+
+	/**
+	 * Customize the {@link RequestConfig.Builder}.
+	 * @param builder the builder
+	 */
+	default void customize(RequestConfig.Builder builder) {
+	}
 
 }
