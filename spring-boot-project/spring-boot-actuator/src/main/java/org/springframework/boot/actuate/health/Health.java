@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -98,7 +99,7 @@ public final class Health extends HealthComponent {
 		if (this.details.isEmpty()) {
 			return this;
 		}
-		return status(getStatus()).build();
+		return status(getStatus()).withoutDuration().build();
 	}
 
 	@Override
@@ -189,9 +190,18 @@ public final class Health extends HealthComponent {
 	 */
 	public static class Builder {
 
+		/**
+		 * The duration label.
+		 */
+		public static final String DURATION_LABEL = "durationNanos";
+
 		private Status status;
 
 		private Map<String, Object> details;
+
+		private final Instant createdAt = Instant.now();
+
+		private boolean addDuration = true;
 
 		/**
 		 * Create new Builder instance.
@@ -261,6 +271,16 @@ public final class Health extends HealthComponent {
 		}
 
 		/**
+		 * Allows the implementor to explicitly prevent the duration from being added to
+		 * the details when {@code build()} is executed.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder withoutDuration() {
+			this.addDuration = false;
+			return this;
+		}
+
+		/**
 		 * Set status to {@link Status#UNKNOWN} status.
 		 * @return this {@link Builder} instance
 		 */
@@ -322,10 +342,15 @@ public final class Health extends HealthComponent {
 
 		/**
 		 * Create a new {@link Health} instance with the previously specified code and
-		 * details.
+		 * details. Optionally add the duration in nanoseconds to given {@code details}
+		 * between the construction of this {@link Builder} and the construction of the
+		 * new {@link Health} instance.
 		 * @return a new {@link Health} instance
 		 */
 		public Health build() {
+			if (this.addDuration) {
+				this.details.put(DURATION_LABEL, (Instant.now().getNano() - this.createdAt.getNano()));
+			}
 			return new Health(this);
 		}
 
