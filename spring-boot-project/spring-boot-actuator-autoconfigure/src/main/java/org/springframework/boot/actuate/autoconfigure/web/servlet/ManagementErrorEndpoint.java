@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,7 @@ import org.springframework.web.context.request.ServletWebRequest;
  * but because of the way the handler mappings are set up it will not be detected.
  *
  * @author Dave Syer
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Controller
@@ -39,15 +41,49 @@ public class ManagementErrorEndpoint {
 
 	private final ErrorAttributes errorAttributes;
 
-	public ManagementErrorEndpoint(ErrorAttributes errorAttributes) {
+	private final ErrorProperties errorProperties;
+
+	public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
+		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorAttributes = errorAttributes;
+		this.errorProperties = errorProperties;
 	}
 
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke(ServletWebRequest request) {
-		return this.errorAttributes.getErrorAttributes(request, false, false);
+		return this.errorAttributes.getErrorAttributes(request, includeStackTrace(request), includeDetails(request));
+	}
+
+	private boolean includeStackTrace(ServletWebRequest request) {
+		ErrorProperties.IncludeStacktrace include = this.errorProperties.getIncludeStacktrace();
+		if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
+			return true;
+		}
+		if (include == ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM) {
+			return getBooleanParameter(request, "trace");
+		}
+		return false;
+	}
+
+	private boolean includeDetails(ServletWebRequest request) {
+		ErrorProperties.IncludeDetails include = this.errorProperties.getIncludeDetails();
+		if (include == ErrorProperties.IncludeDetails.ALWAYS) {
+			return true;
+		}
+		if (include == ErrorProperties.IncludeDetails.ON_DETAILS_PARAM) {
+			return getBooleanParameter(request, "details");
+		}
+		return false;
+	}
+
+	protected boolean getBooleanParameter(ServletWebRequest request, String parameterName) {
+		String parameter = request.getParameter(parameterName);
+		if (parameter == null) {
+			return false;
+		}
+		return !"false".equalsIgnoreCase(parameter);
 	}
 
 }

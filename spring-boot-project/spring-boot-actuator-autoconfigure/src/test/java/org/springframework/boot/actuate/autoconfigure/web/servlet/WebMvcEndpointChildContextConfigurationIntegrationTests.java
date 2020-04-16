@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -45,23 +47,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
+	private final WebApplicationContextRunner runner = new WebApplicationContextRunner(
+			AnnotationConfigServletWebServerApplicationContext::new)
+					.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class,
+							ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+							ErrorMvcAutoConfiguration.class))
+					.withUserConfiguration(FailingEndpoint.class)
+					.withInitializer(new ServerPortInfoApplicationContextInitializer()).withPropertyValues(
+							"server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
+
 	@Test // gh-17938
+	@SuppressWarnings("unchecked")
 	void errorPageAndErrorControllerAreUsed() {
-		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-						DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class))
-				.withUserConfiguration(FailingEndpoint.class)
-				.withInitializer(new ServerPortInfoApplicationContextInitializer()).withPropertyValues("server.port=0",
-						"management.server.port=0", "management.endpoints.web.exposure.include=*")
+		this.runner.run((context) -> {
+			String port = context.getEnvironment().getProperty("local.management.port");
+			WebClient client = WebClient.create("http://localhost:" + port);
+			ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON).exchange()
+					.block();
+			Map<Object, Object> body = response.bodyToMono(Map.class).block();
+			assertThat(body).containsEntry("message", "An error occurred while processing the request");
+			assertThat(body).doesNotContainKey("trace");
+		});
+	}
+
+	@Test
+	void errorPageAndErrorControllerIncludeDetails() {
+		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-details=always")
 				.run((context) -> {
 					String port = context.getEnvironment().getProperty("local.management.port");
 					WebClient client = WebClient.create("http://localhost:" + port);
 					ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
 							.exchange().block();
-					assertThat(response.bodyToMono(String.class).block())
-							.contains("message\":\"An error occurred while processing the request");
+					Map<Object, Object> body = response.bodyToMono(Map.class).block();
+					assertThat(body).containsEntry("message", "Epic Fail");
+					assertThat(body).hasEntrySatisfying("trace", (value) -> assertThat(value).asString()
+							.contains("java.lang.IllegalStateException: Epic Fail"));
 				});
 	}
 
