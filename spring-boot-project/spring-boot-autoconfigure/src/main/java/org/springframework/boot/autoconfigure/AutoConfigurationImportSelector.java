@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -239,14 +239,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	private List<String> filter(List<String> configurations, AutoConfigurationMetadata autoConfigurationMetadata) {
 		long startTime = System.nanoTime();
 		String[] candidates = StringUtils.toStringArray(configurations);
-		boolean[] skip = new boolean[candidates.length];
 		boolean skipped = false;
 		for (AutoConfigurationImportFilter filter : getAutoConfigurationImportFilters()) {
 			invokeAwareMethods(filter);
 			boolean[] match = filter.match(candidates, autoConfigurationMetadata);
 			for (int i = 0; i < match.length; i++) {
 				if (!match[i]) {
-					skip[i] = true;
 					candidates[i] = null;
 					skipped = true;
 				}
@@ -256,9 +254,9 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			return configurations;
 		}
 		List<String> result = new ArrayList<>(candidates.length);
-		for (int i = 0; i < candidates.length; i++) {
-			if (!skip[i]) {
-				result.add(candidates[i]);
+		for (String candidate : candidates) {
+			if (candidate != null) {
+				result.add(candidate);
 			}
 		}
 		if (logger.isTraceEnabled()) {
@@ -266,7 +264,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			logger.trace("Filtered " + numberFiltered + " auto configuration class in "
 					+ TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime) + " ms");
 		}
-		return new ArrayList<>(result);
+		return result;
 	}
 
 	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
