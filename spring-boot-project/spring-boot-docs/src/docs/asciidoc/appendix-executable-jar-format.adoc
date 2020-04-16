@@ -134,7 +134,7 @@ The index file would look like this:
 === Layer Index
 The classpath index file can be provided in `BOOT-INF/layers.idx`.
 It provides a list of layers and the parts of the jar that should be contained within them.
-Lyers are written in the order that they should be added to the Docker/OCI image.
+Layers are written in the order that they should be added to the Docker/OCI image.
 Layers names are written as quoted strings prefixed with dash space (`"-&#183;"`) and with a colon (`":"`) suffix.
 Layer content is either a file or folder name written as a quoted string prefixed by space space dash space (`"&#183;&#183;-&#183;"`).
 A folder name ends with `/`, a file name does not.
