@@ -648,7 +648,7 @@ It often makes sense to customize elements of the start script as it is written 
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
 
-To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}/#packaging-executable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
+To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
 
 The following property substitutions are supported with the default script:
 
