@@ -254,9 +254,9 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			return configurations;
 		}
 		List<String> result = new ArrayList<>(candidates.length);
-		for (int i = 0; i < candidates.length; i++) {
-			if (candidates[i] != null) {
-				result.add(candidates[i]);
+		for (String candidate : candidates) {
+			if (candidate != null) {
+				result.add(candidate);
 			}
 		}
 		if (logger.isTraceEnabled()) {
