@@ -26,7 +26,7 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link BeforeEachCallback} to set a test class's {@code gradleBuild} field prior to
- * test exection.
+ * test execution.
  *
  * @author Andy Wilkinson
  */
