@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +63,12 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class BootZipCopyAction implements CopyAction {
 
-	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC)
-			.toInstant().toEpochMilli();
+	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
+			.getTimeInMillis();
 
 	private final File output;
 
@@ -261,7 +262,7 @@ class BootZipCopyAction implements CopyAction {
 			if (parentDirectory != null && this.writtenDirectories.add(parentDirectory)) {
 				writeParentDirectoriesIfNecessary(parentDirectory, time);
 				ZipArchiveEntry entry = new ZipArchiveEntry(parentDirectory + '/');
-				entry.setUnixMode(UnixStat.DIR_FLAG);
+				entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
 				entry.setTime(time);
 				this.out.putArchiveEntry(entry);
 				this.out.closeArchiveEntry();
@@ -372,7 +373,7 @@ class BootZipCopyAction implements CopyAction {
 				ZipEntryCustomizer entryCustomizer) throws IOException {
 			writeParentDirectoriesIfNecessary(name, CONSTANT_TIME_FOR_ZIP_ENTRIES);
 			ZipArchiveEntry entry = new ZipArchiveEntry(name);
-			entry.setUnixMode(UnixStat.FILE_FLAG);
+			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 			entry.setTime(CONSTANT_TIME_FOR_ZIP_ENTRIES);
 			entryCustomizer.customize(entry);
 			this.out.putArchiveEntry(entry);
