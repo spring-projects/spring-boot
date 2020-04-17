@@ -64,7 +64,7 @@ class CompositeHealthIndicatorTests {
 		indicators.put("two", this.two);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator, indicators);
 		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(2);
+		assertThat(result.getDetails()).hasSize(3);
 		assertThat(result.getDetails()).containsEntry("one",
 				new Health.Builder().unknown().withDetail("1", "1").build());
 		assertThat(result.getDetails()).containsEntry("two",
@@ -82,9 +82,10 @@ class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
 		assertThat(mapper.writeValueAsString(result))
-				.isEqualTo("{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
-						+ ",\"details\":{\"db1\":{\"status\":\"UNKNOWN\",\"details\""
-						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\":{\"2\":\"2\"}}}}}}");
+				.containsPattern("\\{\"status\":\"UNKNOWN\",\"details\":\\{\"db\":\\{\"status\":\"UNKNOWN\""
+						+ ",\"details\":\\{\"db1\":\\{\"status\":\"UNKNOWN\",\"details\""
+						+ ":\\{\"1\":\"1\",\"durationNanos\":[0-9].*}},\"db2\":\\{\"status\":\"UNKNOWN\""
+						+ ",\"details\":\\{\"2\":\"2\",\"durationNanos\":[0-9].*}},\"durationNanos\":[0-9].*}},\"durationNanos\":[0-9].*}}");
 	}
 
 }

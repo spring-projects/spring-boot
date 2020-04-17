@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.cassandra.CassandraInternalException;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
@@ -52,7 +53,7 @@ class CassandraReactiveHealthIndicatorTests {
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("version");
+			assertThat(h.getDetails()).containsOnlyKeys("version", Builder.DURATION_LABEL);
 			assertThat(h.getDetails().get("version")).isEqualTo("6.0.0");
 		}).verifyComplete();
 	}
@@ -68,7 +69,7 @@ class CassandraReactiveHealthIndicatorTests {
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
-			assertThat(h.getDetails()).containsOnlyKeys("error");
+			assertThat(h.getDetails()).containsOnlyKeys("error", Builder.DURATION_LABEL);
 			assertThat(h.getDetails().get("error"))
 					.isEqualTo(CassandraInternalException.class.getName() + ": Connection failed");
 		}).verifyComplete();

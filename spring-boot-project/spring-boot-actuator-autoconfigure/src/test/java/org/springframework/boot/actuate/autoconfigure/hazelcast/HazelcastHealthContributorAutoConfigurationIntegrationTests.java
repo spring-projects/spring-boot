@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -47,7 +48,8 @@ class HazelcastHealthContributorAutoConfigurationIntegrationTests {
 			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
 			Health health = context.getBean(HazelcastHealthIndicator.class).health();
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", hazelcast.getName())
+			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid", Builder.DURATION_LABEL)
+					.containsEntry("name", hazelcast.getName())
 					.containsEntry("uuid", hazelcast.getLocalEndpoint().getUuid());
 		});
 	}

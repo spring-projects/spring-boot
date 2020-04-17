@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.actuate.health.Health.Builder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -52,7 +54,7 @@ class ReactiveHealthIndicatorRegistryFactoryTests {
 		assertThat(registry.getAll()).containsOnlyKeys("test", "regular");
 		StepVerifier.create(registry.get("regular").health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
-			assertThat(h.getDetails()).isEmpty();
+			assertThat(h.getDetails()).containsOnlyKeys(Builder.DURATION_LABEL);
 		}).verifyComplete();
 	}
 

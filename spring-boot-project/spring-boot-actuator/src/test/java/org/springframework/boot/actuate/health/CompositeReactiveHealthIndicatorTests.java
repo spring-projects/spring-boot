@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.actuate.health.Health.Builder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -47,7 +49,7 @@ class CompositeReactiveHealthIndicatorTests {
 				new DefaultReactiveHealthIndicatorRegistry(Collections.singletonMap("test", () -> Mono.just(HEALTHY))));
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("test");
+			assertThat(h.getDetails()).containsOnlyKeys("test", Builder.DURATION_LABEL);
 			assertThat(h.getDetails().get("test")).isEqualTo(HEALTHY);
 		}).verifyComplete();
 	}
@@ -63,7 +65,7 @@ class CompositeReactiveHealthIndicatorTests {
 		StepVerifier.withVirtualTime(indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
 				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
-					assertThat(h.getDetails()).hasSize(50);
+					assertThat(h.getDetails()).hasSize(51);
 				}).verifyComplete();
 
 	}
@@ -77,7 +79,7 @@ class CompositeReactiveHealthIndicatorTests {
 				new DefaultReactiveHealthIndicatorRegistry(indicators)).timeoutStrategy(100, UNKNOWN_HEALTH);
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
+			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast", Builder.DURATION_LABEL);
 			assertThat(h.getDetails().get("slow")).isEqualTo(UNKNOWN_HEALTH);
 			assertThat(h.getDetails().get("fast")).isEqualTo(HEALTHY);
 		}).verifyComplete();
@@ -93,7 +95,7 @@ class CompositeReactiveHealthIndicatorTests {
 		StepVerifier.withVirtualTime(indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
 				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
-					assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
+					assertThat(h.getDetails()).containsOnlyKeys("slow", "fast", Builder.DURATION_LABEL);
 					assertThat(h.getDetails().get("slow")).isEqualTo(HEALTHY);
 					assertThat(h.getDetails().get("fast")).isEqualTo(HEALTHY);
 				}).verifyComplete();

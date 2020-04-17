@@ -64,8 +64,9 @@ class CompositeHealthTests {
 		CompositeHealth health = new CompositeHealth(ApiVersion.V3, Status.UP, components);
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(health);
-		assertThat(json).isEqualTo("{\"status\":\"UP\",\"components\":{\"db1\":{\"status\":\"UP\"},"
-				+ "\"db2\":{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}}}");
+		assertThat(json).containsPattern(
+				"\\{\"status\":\"UP\",\"components\":\\{\"db1\":\\{\"status\":\"UP\",\"details\":\\{\"durationNanos\":[0-9].*},"
+						+ "\"db2\":\\{\"status\":\"DOWN\",\"details\":\\{\"a\":\"b\",\"durationNanos\":[0-9].*}}}}");
 	}
 
 	@Test
@@ -76,8 +77,9 @@ class CompositeHealthTests {
 		CompositeHealth health = new CompositeHealth(ApiVersion.V2, Status.UP, components);
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(health);
-		assertThat(json).isEqualTo("{\"status\":\"UP\",\"details\":{\"db1\":{\"status\":\"UP\"},"
-				+ "\"db2\":{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}}}");
+		assertThat(json).containsPattern(
+				"\\{\"status\":\"UP\",\"details\":\\{\"db1\":\\{\"status\":\"UP\",\"details\":\\{\"durationNanos\":[0-9].*},"
+						+ "\"db2\":\\{\"status\":\"DOWN\",\"details\":\\{\"a\":\"b\",\"durationNanos\":[0-9].*}}}}");
 	}
 
 }

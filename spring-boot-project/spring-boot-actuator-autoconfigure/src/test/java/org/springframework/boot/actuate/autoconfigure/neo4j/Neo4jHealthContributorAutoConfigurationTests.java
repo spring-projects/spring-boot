@@ -22,6 +22,7 @@ import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -60,7 +61,8 @@ class Neo4jHealthContributorAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
 			Health health = context.getBean(Neo4jHealthIndicator.class).health();
-			assertThat(health.getDetails()).containsOnly(entry("test", true));
+			assertThat(health.getDetails()).contains(entry("test", true));
+			assertThat(health.getDetails()).containsOnlyKeys("test", Builder.DURATION_LABEL);
 		});
 	}
 

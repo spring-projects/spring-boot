@@ -23,6 +23,7 @@ import com.hazelcast.transaction.TransactionalTask;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,8 +53,8 @@ class HazelcastHealthIndicatorTests {
 		});
 		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", "hz0-instance")
-				.containsEntry("uuid", "7581bb2f-879f-413f-b574-0071d7519eb0");
+		assertThat(health.getDetails()).containsOnlyKeys("name", "uuid", Builder.DURATION_LABEL)
+				.containsEntry("name", "hz0-instance").containsEntry("uuid", "7581bb2f-879f-413f-b574-0071d7519eb0");
 	}
 
 	@Test
