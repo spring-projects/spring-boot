@@ -53,6 +53,7 @@ public interface ErrorAttributes {
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @param includeDetails if message and errors elements should be included
 	 * @return a map of error attributes
+	 * @since 2.3.0
 	 */
 	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace, boolean includeDetails);
 

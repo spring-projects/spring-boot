@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -118,7 +119,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
-		Integer status = getAttribute(requestAttributes, "javax.servlet.error.status_code");
+		Integer status = getAttribute(requestAttributes, RequestDispatcher.ERROR_STATUS_CODE);
 		if (status == null) {
 			errorAttributes.put("status", 999);
 			errorAttributes.put("error", "None");
@@ -168,7 +169,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 			errorAttributes.put("message", "An error occurred while processing the request");
 			return;
 		}
-		Object message = getAttribute(webRequest, "javax.servlet.error.message");
+		Object message = getAttribute(webRequest, RequestDispatcher.ERROR_MESSAGE);
 		if (StringUtils.isEmpty(message) && error != null) {
 			message = error.getMessage();
 		}
@@ -209,7 +210,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addPath(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
-		String path = getAttribute(requestAttributes, "javax.servlet.error.request_uri");
+		String path = getAttribute(requestAttributes, RequestDispatcher.ERROR_REQUEST_URI);
 		if (path != null) {
 			errorAttributes.put("path", path);
 		}
@@ -218,10 +219,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	public Throwable getError(WebRequest webRequest) {
 		Throwable exception = getAttribute(webRequest, ERROR_ATTRIBUTE);
-		if (exception == null) {
-			exception = getAttribute(webRequest, "javax.servlet.error.exception");
-		}
-		return exception;
+		return (exception != null) ? exception : getAttribute(webRequest, RequestDispatcher.ERROR_EXCEPTION);
 	}
 
 	@SuppressWarnings("unchecked")

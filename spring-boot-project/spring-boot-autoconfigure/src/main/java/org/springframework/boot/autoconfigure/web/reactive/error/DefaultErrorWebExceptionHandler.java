@@ -156,14 +156,14 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		ErrorProperties.IncludeStacktrace include = this.errorProperties.getIncludeStacktrace();
-		if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
+		switch (this.errorProperties.getIncludeStacktrace()) {
+		case ALWAYS:
 			return true;
-		}
-		if (include == ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM) {
+		case ON_TRACE_PARAM:
 			return isTraceEnabled(request);
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -173,14 +173,14 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the message and errors attributes should be included
 	 */
 	protected boolean isIncludeDetails(ServerRequest request, MediaType produces) {
-		ErrorProperties.IncludeDetails include = this.errorProperties.getIncludeDetails();
-		if (include == ErrorProperties.IncludeDetails.ALWAYS) {
+		switch (this.errorProperties.getIncludeDetails()) {
+		case ALWAYS:
 			return true;
-		}
-		if (include == ErrorProperties.IncludeDetails.ON_DETAILS_PARAM) {
+		case ON_DETAILS_PARAM:
 			return isDetailsEnabled(request);
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	/**

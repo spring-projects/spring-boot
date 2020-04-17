@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeDetails;
-import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
@@ -120,14 +118,14 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
-		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
-		if (include == IncludeStacktrace.ALWAYS) {
+		switch (getErrorProperties().getIncludeStacktrace()) {
+		case ALWAYS:
 			return true;
-		}
-		if (include == IncludeStacktrace.ON_TRACE_PARAM) {
+		case ON_TRACE_PARAM:
 			return getTraceParameter(request);
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -137,14 +135,14 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the error details attributes should be included
 	 */
 	protected boolean isIncludeDetails(HttpServletRequest request, MediaType produces) {
-		IncludeDetails include = getErrorProperties().getIncludeDetails();
-		if (include == IncludeDetails.ALWAYS) {
+		switch (getErrorProperties().getIncludeDetails()) {
+		case ALWAYS:
 			return true;
-		}
-		if (include == IncludeDetails.ON_DETAILS_PARAM) {
+		case ON_DETAILS_PARAM:
 			return getDetailsParameter(request);
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	/**
