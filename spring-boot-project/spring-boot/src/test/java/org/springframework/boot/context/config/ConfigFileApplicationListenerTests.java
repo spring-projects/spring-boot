@@ -472,6 +472,16 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void profilesAddedToEnvironmentAndViaPropertyWithBracketNotation(CapturedOutput output) {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active[0]=dev",
+				"spring.profiles.active[1]=other");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
+		assertThat(this.environment.getProperty("my.property")).isEqualTo("fromotherpropertiesfile");
+		validateProfilePreference(output, null, "dev", "other");
+	}
+
+	@Test
 	void postProcessorsAreOrderedCorrectly() {
 		TestConfigFileApplicationListener testListener = new TestConfigFileApplicationListener();
 		testListener.onApplicationEvent(

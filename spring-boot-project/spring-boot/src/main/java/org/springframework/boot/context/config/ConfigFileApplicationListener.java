@@ -358,8 +358,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			// The default profile for these purposes is represented as null. We add it
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
-			Set<Profile> activatedViaProperty = getProfilesFromProperty(ACTIVE_PROFILES_PROPERTY);
-			Set<Profile> includedViaProperty = getProfilesFromProperty(INCLUDE_PROFILES_PROPERTY);
+			Binder binder = Binder.get(this.environment);
+			Set<Profile> activatedViaProperty = getProfiles(binder, ACTIVE_PROFILES_PROPERTY);
+			Set<Profile> includedViaProperty = getProfiles(binder, INCLUDE_PROFILES_PROPERTY);
 			List<Profile> otherActiveProfiles = getOtherActiveProfiles(activatedViaProperty, includedViaProperty);
 			this.profiles.addAll(otherActiveProfiles);
 			// Any pre-existing active profiles set via property sources (e.g.
@@ -372,15 +373,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					this.profiles.add(defaultProfile);
 				}
 			}
-		}
-
-		private Set<Profile> getProfilesFromProperty(String profilesProperty) {
-			if (!this.environment.containsProperty(profilesProperty)) {
-				return Collections.emptySet();
-			}
-			Binder binder = Binder.get(this.environment);
-			Set<Profile> profiles = getProfiles(binder, profilesProperty);
-			return new LinkedHashSet<>(profiles);
 		}
 
 		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty,
@@ -595,8 +587,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return loaded.stream().map((propertySource) -> {
 				Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
 						this.placeholdersResolver);
-				return new Document(propertySource, binder.bind("spring.profiles", STRING_ARRAY).orElse(null),
-						getProfiles(binder, ACTIVE_PROFILES_PROPERTY), getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
+				String[] profiles = binder.bind("spring.profiles", STRING_ARRAY).orElse(null);
+				Set<Profile> activeProfiles = getProfiles(binder, ACTIVE_PROFILES_PROPERTY);
+				Set<Profile> includeProfiles = getProfiles(binder, INCLUDE_PROFILES_PROPERTY);
+				return new Document(propertySource, profiles, activeProfiles, includeProfiles);
 			}).collect(Collectors.toList());
 		}
 
