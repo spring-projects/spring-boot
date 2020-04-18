@@ -153,8 +153,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
-		TestPropertyValues.of("spring.profiles.active=" + StringUtils.arrayToCommaDelimitedString(profiles))
-				.applyTo(environment);
+		String[] pairs = new String[profiles.length];
+		for (int i = 0; i < profiles.length; i++) {
+			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+		}
+		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
