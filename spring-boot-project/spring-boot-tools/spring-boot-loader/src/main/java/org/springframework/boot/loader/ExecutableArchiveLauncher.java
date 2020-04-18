@@ -89,7 +89,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		if (this.classPathIndex != null) {
 			urls.addAll(this.classPathIndex.getUrls());
 		}
-		return this.createClassLoader(urls.toArray(new URL[0]));
+		return createClassLoader(urls.toArray(new URL[0]));
 	}
 
 	private int guessClassPathSize() {

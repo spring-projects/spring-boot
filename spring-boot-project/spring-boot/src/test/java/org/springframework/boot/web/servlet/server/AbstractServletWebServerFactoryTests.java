@@ -1174,7 +1174,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	protected void awaitInGracefulShutdown() {
-		while (!this.inGracefulShutdown()) {
+		while (!inGracefulShutdown()) {
 			try {
 				Thread.sleep(100);
 			}

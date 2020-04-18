@@ -60,7 +60,7 @@ class FilteredReactiveWebContextResource extends AbstractResource {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		throw new FileNotFoundException(this.getDescription() + " cannot be opened because it does not exist");
+		throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
 	}
 
 }

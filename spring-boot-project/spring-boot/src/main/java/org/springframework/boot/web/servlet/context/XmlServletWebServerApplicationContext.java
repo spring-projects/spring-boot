@@ -47,7 +47,7 @@ public class XmlServletWebServerApplicationContext extends ServletWebServerAppli
 	 * {@linkplain #load loaded} and then manually {@link #refresh refreshed}.
 	 */
 	public XmlServletWebServerApplicationContext() {
-		this.reader.setEnvironment(this.getEnvironment());
+		this.reader.setEnvironment(getEnvironment());
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class XmlServletWebServerApplicationContext extends ServletWebServerAppli
 	@Override
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		super.setEnvironment(environment);
-		this.reader.setEnvironment(this.getEnvironment());
+		this.reader.setEnvironment(getEnvironment());
 	}
 
 	/**

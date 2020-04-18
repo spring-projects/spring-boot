@@ -57,7 +57,7 @@ public class OAuth2ClientProperties {
 
 	@PostConstruct
 	public void validate() {
-		this.getRegistration().values().forEach(this::validateRegistration);
+		getRegistration().values().forEach(this::validateRegistration);
 	}
 
 	private void validateRegistration(Registration registration) {

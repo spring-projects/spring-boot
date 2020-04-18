@@ -55,8 +55,8 @@ public class RunCommand extends OptionParsingCommand {
 	}
 
 	public void stop() {
-		if (this.getHandler() != null) {
-			((RunOptionHandler) this.getHandler()).stop();
+		if (getHandler() != null) {
+			((RunOptionHandler) getHandler()).stop();
 		}
 	}
 

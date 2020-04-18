@@ -78,7 +78,7 @@ public class SpringBootExtension {
 	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
 	 */
 	public void buildInfo() {
-		this.buildInfo(null);
+		buildInfo(null);
 	}
 
 	/**

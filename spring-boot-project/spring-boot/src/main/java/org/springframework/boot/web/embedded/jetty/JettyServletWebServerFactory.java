@@ -260,7 +260,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			Resource rootResource = (docBase.isDirectory() ? Resource.newResource(docBase.getCanonicalFile())
 					: JarResource.newJarResource(Resource.newResource(docBase)));
 			resources.add((root != null) ? new LoaderHidingResource(rootResource) : rootResource);
-			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
+			for (URL resourceJarUrl : getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);

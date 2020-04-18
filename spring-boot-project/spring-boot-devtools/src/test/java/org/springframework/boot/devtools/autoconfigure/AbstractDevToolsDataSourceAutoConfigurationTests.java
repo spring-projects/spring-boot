@@ -101,11 +101,11 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
+		return createContext(null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
-		return this.createContext(driverClassName, null, classes);
+		return createContext(driverClassName, null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,

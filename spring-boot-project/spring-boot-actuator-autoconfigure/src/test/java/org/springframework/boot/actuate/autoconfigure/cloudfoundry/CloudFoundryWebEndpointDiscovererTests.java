@@ -79,7 +79,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	}
 
 	private void load(Class<?> configuration, Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		this.load((id) -> null, EndpointId::toString, configuration, consumer);
+		load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,

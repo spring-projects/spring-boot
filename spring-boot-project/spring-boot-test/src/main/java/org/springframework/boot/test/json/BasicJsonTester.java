@@ -81,7 +81,7 @@ public class BasicJsonTester {
 	 * resources
 	 */
 	protected final void initialize(Class<?> resourceLoadClass) {
-		this.initialize(resourceLoadClass, null);
+		initialize(resourceLoadClass, null);
 	}
 
 	/**

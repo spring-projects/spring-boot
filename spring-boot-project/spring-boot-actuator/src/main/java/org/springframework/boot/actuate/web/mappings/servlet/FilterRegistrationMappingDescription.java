@@ -42,7 +42,7 @@ public class FilterRegistrationMappingDescription extends RegistrationMappingDes
 	 * @return the mappings
 	 */
 	public Collection<String> getServletNameMappings() {
-		return this.getRegistration().getServletNameMappings();
+		return getRegistration().getServletNameMappings();
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class FilterRegistrationMappingDescription extends RegistrationMappingDes
 	 * @return the mappings
 	 */
 	public Collection<String> getUrlPatternMappings() {
-		return this.getRegistration().getUrlPatternMappings();
+		return getRegistration().getUrlPatternMappings();
 	}
 
 }
