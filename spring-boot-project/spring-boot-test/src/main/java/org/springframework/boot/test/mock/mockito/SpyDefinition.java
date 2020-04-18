@@ -97,7 +97,7 @@ class SpyDefinition extends Definition {
 		}
 		settings.spiedInstance(instance);
 		settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
-		if (this.isProxyTargetAware()) {
+		if (isProxyTargetAware()) {
 			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
 		return (T) mock(instance.getClass(), settings);

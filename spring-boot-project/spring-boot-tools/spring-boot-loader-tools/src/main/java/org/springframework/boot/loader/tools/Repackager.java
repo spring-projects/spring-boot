@@ -84,7 +84,7 @@ public class Repackager extends Packager {
 	 * @since 1.3.0
 	 */
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
-		this.repackage(destination, libraries, launchScript, null);
+		repackage(destination, libraries, launchScript, null);
 	}
 
 	/**

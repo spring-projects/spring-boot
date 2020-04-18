@@ -266,7 +266,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	@Override
 	public URI[] resolve(Map args, Map... dependencyMaps) {
-		return this.resolve(args, null, dependencyMaps);
+		return resolve(args, null, dependencyMaps);
 	}
 
 	@Override

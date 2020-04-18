@@ -78,7 +78,7 @@ public abstract class AbstractErrorController implements ErrorController {
 	 */
 	@Deprecated
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-		return this.getErrorAttributes(request, includeStackTrace, false);
+		return getErrorAttributes(request, includeStackTrace, false);
 	}
 
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace,

@@ -129,7 +129,7 @@ public class ErrorPage {
 		int result = 1;
 		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.getStatusCode();
+		result = prime * result + getStatusCode();
 		return result;
 	}
 

@@ -103,7 +103,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	@Deprecated
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-		return this.getErrorAttributes(webRequest, includeStackTrace, false);
+		return getErrorAttributes(webRequest, includeStackTrace, false);
 	}
 
 	@Override

@@ -78,7 +78,7 @@ public class BootRun extends JavaExec {
 		}
 		if (System.console() != null) {
 			// Record that the console is available here for AnsiOutput to detect later
-			this.getEnvironment().put("spring.output.ansi.console-available", true);
+			getEnvironment().put("spring.output.ansi.console-available", true);
 		}
 		super.exec();
 	}

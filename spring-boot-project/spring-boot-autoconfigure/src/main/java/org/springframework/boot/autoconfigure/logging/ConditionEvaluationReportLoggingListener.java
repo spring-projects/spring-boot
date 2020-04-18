@@ -113,7 +113,7 @@ public class ConditionEvaluationReportLoggingListener
 			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
 		}
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
-			if (this.getLogLevelForReport().equals(LogLevel.INFO)) {
+			if (getLogLevelForReport().equals(LogLevel.INFO)) {
 				if (this.logger.isInfoEnabled()) {
 					this.logger.info(new ConditionEvaluationReportMessage(this.report));
 				}

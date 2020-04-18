@@ -80,7 +80,7 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 	 * version
 	 */
 	boolean isEqualOrGreaterThan(LifecycleVersion other) {
-		return this.compareTo(other) >= 0;
+		return compareTo(other) >= 0;
 	}
 
 	@Override

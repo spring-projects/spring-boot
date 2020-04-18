@@ -246,7 +246,7 @@ public enum DatabaseDriver {
 	}
 
 	protected Collection<String> getUrlPrefixes() {
-		return Collections.singleton(this.name().toLowerCase(Locale.ENGLISH));
+		return Collections.singleton(name().toLowerCase(Locale.ENGLISH));
 	}
 
 	/**
