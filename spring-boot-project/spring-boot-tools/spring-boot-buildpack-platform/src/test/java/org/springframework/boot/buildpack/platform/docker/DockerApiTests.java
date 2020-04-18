@@ -190,7 +190,7 @@ class DockerApiTests {
 		}
 
 		@Test
-		void removeWhenReferenceIsNulllThrowsException() {
+		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
 					.withMessage("Reference must not be null");
 		}

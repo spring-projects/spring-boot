@@ -93,7 +93,7 @@ If a misconfigured bean is initialized lazily, a failure will no longer occur du
 Care must also be taken to ensure that the JVM has sufficient memory to accommodate all of the application's beans and not just those that are initialized during startup.
 For these reasons, lazy initialization is not enabled by default and it is recommended that fine-tuning of the JVM's heap size is done before enabling lazy initialization.
 
-Lazy initialization can be enabled programatically using the `lazyInitialization` method on `SpringApplicationBuilder` or the `setLazyInitialization` method on `SpringApplication`.
+Lazy initialization can be enabled programmatically using the `lazyInitialization` method on `SpringApplicationBuilder` or the `setLazyInitialization` method on `SpringApplication`.
 Alternatively, it can be enabled using the configprop:spring.main.lazy-initialization[] property as shown in the following example:
 
 [source,properties,indent=0,configprops]

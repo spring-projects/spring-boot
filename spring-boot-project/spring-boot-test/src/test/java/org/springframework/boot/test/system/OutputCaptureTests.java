@@ -69,7 +69,7 @@ class OutputCaptureTests {
 	}
 
 	@Test
-	void pushWhenHasExistingStartesNewCapture() {
+	void pushWhenHasExistingStartsNewCapture() {
 		System.out.print("A");
 		this.output.push();
 		System.out.print("B");

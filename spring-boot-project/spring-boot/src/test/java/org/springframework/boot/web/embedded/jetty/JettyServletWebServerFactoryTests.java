@@ -117,7 +117,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	}
 
 	@Test
-	void sessionTimeoutInMins() {
+	void sessionTimeoutInMinutes() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);

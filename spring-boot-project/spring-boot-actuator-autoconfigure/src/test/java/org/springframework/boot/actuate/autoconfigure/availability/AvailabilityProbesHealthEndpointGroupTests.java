@@ -56,7 +56,7 @@ class AvailabilityProbesHealthEndpointGroupTests {
 	}
 
 	@Test
-	void getStatusAggregattorReturnsDefaultStatusAggregator() {
+	void getStatusAggregatorReturnsDefaultStatusAggregator() {
 		assertThat(this.group.getStatusAggregator()).isEqualTo(StatusAggregator.DEFAULT);
 	}
 
