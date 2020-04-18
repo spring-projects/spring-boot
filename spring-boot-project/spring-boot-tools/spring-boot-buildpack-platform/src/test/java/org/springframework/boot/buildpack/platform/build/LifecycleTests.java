@@ -102,7 +102,7 @@ class LifecycleTests {
 	}
 
 	@Test
-	void executeWhenAleadyRunThrowsException() throws Exception {
+	void executeWhenAlreadyRunThrowsException() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
@@ -211,9 +211,9 @@ class LifecycleTests {
 
 	static class TestLifecycle extends Lifecycle {
 
-		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReferece,
+		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReference,
 				EphemeralBuilder builder) {
-			super(log, docker, request, runImageReferece, builder);
+			super(log, docker, request, runImageReference, builder);
 		}
 
 		@Override

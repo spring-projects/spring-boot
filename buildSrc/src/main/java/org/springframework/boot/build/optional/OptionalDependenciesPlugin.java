@@ -58,7 +58,7 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 					.all((javadoc) -> javadoc.setClasspath(javadoc.getClasspath().plus(optional)));
 		});
 		project.getPlugins().withType(EclipsePlugin.class,
-				(eclipePlugin) -> project.getExtensions().getByType(EclipseModel.class)
+				(eclipsePlugin) -> project.getExtensions().getByType(EclipseModel.class)
 						.classpath((classpath) -> classpath.getPlusConfigurations().add(optional)));
 	}
 

@@ -177,7 +177,7 @@ class HttpClientTransportTests {
 	}
 
 	@Test
-	void executeWhenResposeIsIn400RangeShouldThrowDockerException() throws IOException {
+	void executeWhenResponseIsIn400RangeShouldThrowDockerException() throws IOException {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.statusLine.getStatusCode()).willReturn(404);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
@@ -185,7 +185,7 @@ class HttpClientTransportTests {
 	}
 
 	@Test
-	void executeWhenResposeIsIn500RangeShouldThrowDockerException() {
+	void executeWhenResponseIsIn500RangeShouldThrowDockerException() {
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getErrors()).isNull());

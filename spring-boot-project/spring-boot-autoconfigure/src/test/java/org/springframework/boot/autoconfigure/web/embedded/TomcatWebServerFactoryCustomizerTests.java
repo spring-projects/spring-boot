@@ -481,7 +481,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void accessLogwithIpv6CanonicalSet() {
+	void accessLogWithIpv6CanonicalSet() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.ipv6-canonical=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getIpv6Canonical()).isTrue();

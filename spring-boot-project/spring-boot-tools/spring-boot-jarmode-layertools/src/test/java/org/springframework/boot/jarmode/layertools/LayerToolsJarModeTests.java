@@ -68,7 +68,7 @@ class LayerToolsJarModeTests {
 	}
 
 	@Test
-	void mainWithNoParamersShowsHelp() {
+	void mainWithNoParametersShowsHelp() {
 		new LayerToolsJarMode().run("layertools", NO_ARGS);
 		assertThat(this.out).hasSameContentAsResource("help-output.txt");
 	}

@@ -247,7 +247,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void sessionTimeoutInMins() {
+	void sessionTimeoutInMinutes() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 1);
