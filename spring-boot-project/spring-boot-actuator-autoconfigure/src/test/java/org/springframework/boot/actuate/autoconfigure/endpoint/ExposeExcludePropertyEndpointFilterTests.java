@@ -140,6 +140,12 @@ class ExposeExcludePropertyEndpointFilterTests {
 		assertThat(match(EndpointId.of("fooBar"))).isTrue();
 	}
 
+	@Test // gh-20997
+	public void matchWhenDashInName() throws Exception {
+		setupFilter("bus-refresh", "");
+		assertThat(match(EndpointId.of("bus-refresh"))).isTrue();
+	}
+
 	private void setupFilter(String include, String exclude) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", include);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -35,7 +34,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EndpointFilter} that will filter endpoints based on {@code include} and
- * {@code exclude} properties.
+ * {@code exclude} patterns.
  *
  * @param <E> the endpoint type
  * @author Phillip Webb
@@ -45,11 +44,11 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 
 	private final Class<E> endpointType;
 
-	private final Set<String> include;
+	private final EndpointPatterns include;
 
-	private final Set<String> exclude;
+	private final EndpointPatterns exclude;
 
-	private final Set<String> exposeDefaults;
+	private final EndpointPatterns exposeDefaults;
 
 	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			String... exposeDefaults) {
@@ -58,37 +57,22 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
 		this.endpointType = endpointType;
-		this.include = bind(binder, prefix + ".include");
-		this.exclude = bind(binder, prefix + ".exclude");
-		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
+		this.include = new EndpointPatterns(bind(binder, prefix + ".include"));
+		this.exclude = new EndpointPatterns(bind(binder, prefix + ".exclude"));
+		this.exposeDefaults = new EndpointPatterns(exposeDefaults);
 	}
 
 	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType, Collection<String> include,
 			Collection<String> exclude, String... exposeDefaults) {
 		Assert.notNull(endpointType, "EndpointType Type must not be null");
 		this.endpointType = endpointType;
-		this.include = asSet(include);
-		this.exclude = asSet(exclude);
-		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
+		this.include = new EndpointPatterns(include);
+		this.exclude = new EndpointPatterns(exclude);
+		this.exposeDefaults = new EndpointPatterns(exposeDefaults);
 	}
 
-	private Set<String> bind(Binder binder, String name) {
-		return asSet(binder.bind(name, Bindable.listOf(String.class)).map(this::cleanup).orElseGet(ArrayList::new));
-	}
-
-	private List<String> cleanup(List<String> values) {
-		return values.stream().map(this::cleanup).collect(Collectors.toList());
-	}
-
-	private String cleanup(String value) {
-		return "*".equals(value) ? "*" : EndpointId.fromPropertyValue(value).toLowerCaseString();
-	}
-
-	private Set<String> asSet(Collection<String> items) {
-		if (items == null) {
-			return Collections.emptySet();
-		}
-		return items.stream().map((item) -> item.toLowerCase(Locale.ENGLISH)).collect(Collectors.toSet());
+	private List<String> bind(Binder binder, String name) {
+		return binder.bind(name, Bindable.listOf(String.class)).orElseGet(ArrayList::new);
 	}
 
 	@Override
@@ -101,20 +85,62 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 
 	private boolean isExposed(ExposableEndpoint<?> endpoint) {
 		if (this.include.isEmpty()) {
-			return this.exposeDefaults.contains("*") || contains(this.exposeDefaults, endpoint);
+			return this.exposeDefaults.matchesAll() || this.exposeDefaults.matches(endpoint);
 		}
-		return this.include.contains("*") || contains(this.include, endpoint);
+		return this.include.matchesAll() || this.include.matches(endpoint);
 	}
 
 	private boolean isExcluded(ExposableEndpoint<?> endpoint) {
 		if (this.exclude.isEmpty()) {
 			return false;
 		}
-		return this.exclude.contains("*") || contains(this.exclude, endpoint);
+		return this.exclude.matchesAll() || this.exclude.matches(endpoint);
 	}
 
-	private boolean contains(Set<String> items, ExposableEndpoint<?> endpoint) {
-		return items.contains(endpoint.getEndpointId().toLowerCaseString());
+	/**
+	 * A set of endpoint patterns used to match IDs.
+	 */
+	private static class EndpointPatterns {
+
+		private final boolean empty;
+
+		private final boolean matchesAll;
+
+		private final Set<EndpointId> endpointIds;
+
+		EndpointPatterns(String[] patterns) {
+			this((patterns != null) ? Arrays.asList(patterns) : (Collection<String>) null);
+		}
+
+		EndpointPatterns(Collection<String> patterns) {
+			patterns = (patterns != null) ? patterns : Collections.emptySet();
+			boolean matchesAll = false;
+			Set<EndpointId> endpointIds = new LinkedHashSet<>();
+			for (String pattern : patterns) {
+				if ("*".equals(pattern)) {
+					matchesAll = true;
+				}
+				else {
+					endpointIds.add(EndpointId.fromPropertyValue(pattern));
+				}
+			}
+			this.empty = patterns.isEmpty();
+			this.matchesAll = matchesAll;
+			this.endpointIds = endpointIds;
+		}
+
+		boolean isEmpty() {
+			return this.empty;
+		}
+
+		boolean matchesAll() {
+			return this.matchesAll;
+		}
+
+		boolean matches(ExposableEndpoint<?> endpoint) {
+			return this.endpointIds.contains(endpoint.getEndpointId());
+		}
+
 	}
 
 }
