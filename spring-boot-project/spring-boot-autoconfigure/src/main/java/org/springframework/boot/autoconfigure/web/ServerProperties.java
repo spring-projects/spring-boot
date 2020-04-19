@@ -446,55 +446,67 @@ public class ServerProperties {
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.internal-proxies")
+		@Deprecated
 		public String getInternalProxies() {
 			return this.remoteip.getInternalProxies();
 		}
 
+		@Deprecated
 		public void setInternalProxies(String internalProxies) {
 			this.remoteip.setInternalProxies(internalProxies);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.protocol-header")
+		@Deprecated
 		public String getProtocolHeader() {
 			return this.remoteip.getProtocolHeader();
 		}
 
+		@Deprecated
 		public void setProtocolHeader(String protocolHeader) {
 			this.remoteip.setProtocolHeader(protocolHeader);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.protocol-header-https-value")
+		@Deprecated
 		public String getProtocolHeaderHttpsValue() {
 			return this.remoteip.getProtocolHeaderHttpsValue();
 		}
 
+		@Deprecated
 		public void setProtocolHeaderHttpsValue(String protocolHeaderHttpsValue) {
 			this.remoteip.setProtocolHeaderHttpsValue(protocolHeaderHttpsValue);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.host-header")
+		@Deprecated
 		public String getHostHeader() {
 			return this.remoteip.getHostHeader();
 		}
 
+		@Deprecated
 		public void setHostHeader(String hostHeader) {
 			this.remoteip.setHostHeader(hostHeader);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remote.port-header")
+		@Deprecated
 		public String getPortHeader() {
 			return this.remoteip.getPortHeader();
 		}
 
+		@Deprecated
 		public void setPortHeader(String portHeader) {
 			this.remoteip.setPortHeader(portHeader);
 		}
 
 		@DeprecatedConfigurationProperty(replacement = "server.tomcat.remoteip.remote-ip-header")
+		@Deprecated
 		public String getRemoteIpHeader() {
 			return this.remoteip.getRemoteIpHeader();
 		}
 
+		@Deprecated
 		public void setRemoteIpHeader(String remoteIpHeader) {
 			this.remoteip.setRemoteIpHeader(remoteIpHeader);
 		}
@@ -1057,6 +1069,7 @@ public class ServerProperties {
 			return this.getThreads().getAcceptors();
 		}
 
+		@Deprecated
 		public void setAcceptors(Integer acceptors) {
 			this.getThreads().setAcceptors(acceptors);
 		}
@@ -1067,6 +1080,7 @@ public class ServerProperties {
 			return this.getThreads().getSelectors();
 		}
 
+		@Deprecated
 		public void setSelectors(Integer selectors) {
 			this.getThreads().setSelectors(selectors);
 		}
