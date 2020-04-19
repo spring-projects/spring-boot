@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,20 +47,24 @@ public class ElasticsearchHealthIndicatorProperties {
 	 */
 	private Duration responseTimeout = Duration.ofMillis(100);
 
-	@DeprecatedConfigurationProperty(reason = "Upstream elasticsearch transport is deprected")
+	@DeprecatedConfigurationProperty(reason = "Upstream elasticsearch transport is deprecated.")
+	@Deprecated
 	public List<String> getIndices() {
 		return this.indices;
 	}
 
+	@Deprecated
 	public void setIndices(List<String> indices) {
 		this.indices = indices;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Upstream elasticsearch transport is deprected")
+	@DeprecatedConfigurationProperty(reason = "Upstream elasticsearch transport is deprecated.")
+	@Deprecated
 	public Duration getResponseTimeout() {
 		return this.responseTimeout;
 	}
 
+	@Deprecated
 	public void setResponseTimeout(Duration responseTimeout) {
 		this.responseTimeout = responseTimeout;
 	}

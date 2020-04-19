@@ -138,12 +138,14 @@ public class ServerProperties {
 		this.address = address;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "replaced to support additional strategies",
+	@DeprecatedConfigurationProperty(reason = "Replaced to support additional strategies.",
 			replacement = "server.forward-headers-strategy")
+	@Deprecated
 	public Boolean isUseForwardHeaders() {
 		return ForwardHeadersStrategy.NATIVE.equals(this.forwardHeadersStrategy);
 	}
 
+	@Deprecated
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
 		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders) ? ForwardHeadersStrategy.NATIVE
 				: ForwardHeadersStrategy.NONE;
