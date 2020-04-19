@@ -141,7 +141,7 @@ class ExposeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test // gh-20997
-	public void matchWhenDashInName() throws Exception {
+	void matchWhenDashInName() throws Exception {
 		setupFilter("bus-refresh", "");
 		assertThat(match(EndpointId.of("bus-refresh"))).isTrue();
 	}
