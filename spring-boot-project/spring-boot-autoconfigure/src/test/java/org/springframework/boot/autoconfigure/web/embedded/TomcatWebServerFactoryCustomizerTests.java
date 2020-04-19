@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -112,12 +113,6 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customDisableMaxHttpPostSize() {
-		bind("server.tomcat.max-http-post-size=-1");
-		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
-	}
-
-	@Test
 	void customDisableMaxHttpFormPostSize() {
 		bind("server.tomcat.max-http-form-post-size=-1");
 		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
@@ -129,13 +124,6 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getMaxConnections())
 						.isEqualTo(5));
-	}
-
-	@Test
-	void customMaxHttpPostSize() {
-		bind("server.tomcat.max-http-post-size=10000");
-		customizeAndRunServer(
-				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
 	}
 
 	@Test
@@ -289,9 +277,8 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setUseForwardHeaders() {
-		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
-		this.serverProperties.setUseForwardHeaders(true);
+	void setUseNativeForwardHeadersStrategy() {
+		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
 		testRemoteIpValveConfigured();
 	}
 

@@ -30,6 +30,14 @@
       }
     },
     {
+      "name": "server.connection-timeout",
+      "type" : "java.time.Duration",
+      "deprecation": {
+        "reason": "Each server behaves differently. Use server specific properties instead.",
+        "level": "error"
+      }
+    },
+    {
       "name": "server.jetty.accesslog.date-format",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
@@ -118,6 +126,14 @@
       "name": "server.http2.enabled",
       "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
       "defaultValue": false
+    },
+    {
+      "name": "server.jetty.max-http-post-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "replacement": "server.jetty.max-http-form-post-size",
+        "level": "error"
+      }
     },
     {
       "name": "server.port",
@@ -244,6 +260,23 @@
     {
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
+    },
+    {
+      "name": "server.tomcat.max-http-post-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "replacement": "server.tomcat.max-http-form-post-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.use-forward-headers",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "reason": "Replaced to support additional strategies.",
+        "replacement": "server.forward-headers-strategy",
+        "level": "error"
+      }
     },
     {
       "name": "spring.aop.auto",

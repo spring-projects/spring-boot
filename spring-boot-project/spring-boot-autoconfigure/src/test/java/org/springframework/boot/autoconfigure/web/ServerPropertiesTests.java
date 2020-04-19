@@ -106,12 +106,6 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void testConnectionTimeout() {
-		bind("server.connection-timeout", "60s");
-		assertThat(this.properties.getConnectionTimeout()).hasMillis(60000);
-	}
-
-	@Test
 	void testTomcatBinding() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.conditionIf", "foo");
@@ -403,7 +397,7 @@ class ServerPropertiesTests {
 
 	@Test
 	void tomcatMaxHttpPostSizeMatchesConnectorDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxHttpPostSize().toBytes())
+		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
 				.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 

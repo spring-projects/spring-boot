@@ -78,8 +78,6 @@ public class UndertowWebServerFactoryCustomizer
 		ServerProperties properties = this.serverProperties;
 		map.from(properties::getMaxHttpHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to(options.server(UndertowOptions.MAX_HEADER_SIZE));
-		map.from(properties::getConnectionTimeout).asInt(Duration::toMillis)
-				.to(options.server(UndertowOptions.NO_REQUEST_TIMEOUT));
 		mapUndertowProperties(factory, options);
 		mapAccessLogProperties(factory);
 		map.from(this::getOrDeduceUseForwardHeaders).to(factory::setUseForwardHeaders);

@@ -41,6 +41,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -251,7 +252,7 @@ class JettyWebServerFactoryCustomizerTests {
 
 	@Test
 	void setUseForwardHeaders() {
-		this.serverProperties.setUseForwardHeaders(true);
+		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);

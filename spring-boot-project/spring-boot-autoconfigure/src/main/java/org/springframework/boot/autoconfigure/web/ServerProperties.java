@@ -100,13 +100,6 @@ public class ServerProperties {
 	 */
 	private DataSize maxHttpHeaderSize = DataSize.ofKilobytes(8);
 
-	/**
-	 * Time that connectors wait for another HTTP request before closing the connection.
-	 * When not set, the connector's container-specific default is used. Use a value of -1
-	 * to indicate no (that is, an infinite) timeout.
-	 */
-	private Duration connectionTimeout;
-
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -145,17 +138,6 @@ public class ServerProperties {
 		this.address = address;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "replaced to support additional strategies",
-			replacement = "server.forward-headers-strategy")
-	public Boolean isUseForwardHeaders() {
-		return ForwardHeadersStrategy.NATIVE.equals(this.forwardHeadersStrategy);
-	}
-
-	public void setUseForwardHeaders(Boolean useForwardHeaders) {
-		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders) ? ForwardHeadersStrategy.NATIVE
-				: ForwardHeadersStrategy.NONE;
-	}
-
 	public String getServerHeader() {
 		return this.serverHeader;
 	}
@@ -170,18 +152,6 @@ public class ServerProperties {
 
 	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(
-			reason = "Each server behaves differently. Use server specific properties instead.")
-	public Duration getConnectionTimeout() {
-		return this.connectionTimeout;
-	}
-
-	@Deprecated
-	public void setConnectionTimeout(Duration connectionTimeout) {
-		this.connectionTimeout = connectionTimeout;
 	}
 
 	public ErrorProperties getError() {
@@ -441,17 +411,6 @@ public class ServerProperties {
 		@Deprecated
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.getThreads().setMinSpare(minSpareThreads);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.max-http-form-post-size")
-		public DataSize getMaxHttpPostSize() {
-			return this.maxHttpFormPostSize;
-		}
-
-		@Deprecated
-		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
-			this.maxHttpFormPostSize = maxHttpPostSize;
 		}
 
 		public DataSize getMaxHttpFormPostSize() {
@@ -1082,17 +1041,6 @@ public class ServerProperties {
 
 		public Threads getThreads() {
 			return this.threads;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.jetty.max-http-form-post-size")
-		public DataSize getMaxHttpPostSize() {
-			return this.maxHttpFormPostSize;
-		}
-
-		@Deprecated
-		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
-			this.maxHttpFormPostSize = maxHttpPostSize;
 		}
 
 		public DataSize getMaxHttpFormPostSize() {

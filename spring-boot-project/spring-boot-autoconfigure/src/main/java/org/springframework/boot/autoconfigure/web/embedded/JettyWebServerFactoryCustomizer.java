@@ -87,8 +87,6 @@ public class JettyWebServerFactoryCustomizer
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
 		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
 				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)

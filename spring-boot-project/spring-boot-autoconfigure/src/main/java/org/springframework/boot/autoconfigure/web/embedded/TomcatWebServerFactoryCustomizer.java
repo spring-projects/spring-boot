@@ -100,8 +100,6 @@ public class TomcatWebServerFactoryCustomizer
 		propertyMapper.from(tomcatProperties::getAccesslog).when(ServerProperties.Tomcat.Accesslog::isEnabled)
 				.to((enabled) -> customizeAccessLog(factory));
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull().to(factory::setUriEncoding);
-		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(tomcatProperties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(tomcatProperties::getMaxConnections).when(this::isPositive)

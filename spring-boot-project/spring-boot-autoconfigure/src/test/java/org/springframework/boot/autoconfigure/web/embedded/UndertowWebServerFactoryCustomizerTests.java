@@ -211,14 +211,6 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setUseForwardHeaders() {
-		this.serverProperties.setUseForwardHeaders(true);
-		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
 	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
