@@ -19,6 +19,7 @@ package org.springframework.boot.loader.archive;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -200,7 +201,9 @@ public class ExplodedArchive implements Archive {
 		/**
 		 * {@link Comparator} that orders {@link File} entries by their absolute paths.
 		 */
-		private static class EntryComparator implements Comparator<File> {
+		private static class EntryComparator implements Comparator<File>, Serializable {
+			
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public int compare(File o1, File o2) {
