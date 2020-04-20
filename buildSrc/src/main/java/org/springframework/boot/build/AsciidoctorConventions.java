@@ -156,7 +156,7 @@ class AsciidoctorConventions {
 
 	private String determineArtifactoryRepo(Project project) {
 		String version = project.getVersion().toString();
-		String type = version.substring(version.lastIndexOf('.'));
+		String type = version.substring(version.lastIndexOf('.') + 1);
 		if (type.equals("RELEASE")) {
 			return "release";
 		}
