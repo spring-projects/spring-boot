@@ -8063,7 +8063,7 @@ This layering is designed to separate code based on how likely it is to change b
 Library code is less likely to change between builds, so it is placed in its own layers to allow tooling to re-use the layers from cache.
 Application code is more likely to change between builds so it is isolated in a separate layer.
 
-For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layered-jars[packaging layered jars section] for more details on adding a layer index to the jar.
+For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jars section] for more details on adding a layer index to the jar.
 For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
 
 
@@ -8138,7 +8138,7 @@ With Cloud Native Buildpacks, you can create Docker compatible images that you c
 Spring Boot includes buildpack support directly for both Maven and Gradle.
 This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
 
-Refer to the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#packaging-oci-images[Gradle].
+Refer to the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#build-image[Gradle].
 
 
 
