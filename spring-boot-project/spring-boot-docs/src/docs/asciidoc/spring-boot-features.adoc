@@ -1020,6 +1020,37 @@ This means that the binder will expect to find a constructor with the parameters
 Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
+By default, if no properties are bound to `Security`, the `AcmeProperties` instance will contain a `null` value for `security`.
+If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
+
+[source,java,indent=0]
+----
+	package com.example;
+	import java.net.InetAddress;
+	import java.util.List;
+
+	import org.springframework.boot.context.properties.ConfigurationProperties;
+	import org.springframework.boot.context.properties.ConstructorBinding;
+	import org.springframework.boot.context.properties.bind.DefaultValue;
+
+	@ConstructorBinding
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final boolean enabled;
+
+		private final InetAddress remoteAddress;
+
+		private final Security security;
+
+		public AcmeProperties(boolean enabled, InetAddress remoteAddress, @DefaultValue Security security) {
+			this.enabled = enabled;
+			this.remoteAddress = remoteAddress;
+			this.security = security;
+		}
+	}
+----
+
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (e.g. `@Component` beans, beans created via `@Bean` methods or beans loaded using `@Import`)

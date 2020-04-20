@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that can be used to specify the default value when binding to an immutable
- * property.
+ * property. This annotation can also be used with nested properties to indicate that a
+ * value should always be bound (rather than binding {@code null}).
  *
  * @author Madhura Bhave
  * @since 2.2.0
@@ -38,6 +39,6 @@ public @interface DefaultValue {
 	 * array-based properties.
 	 * @return the default value of the property.
 	 */
-	String[] value();
+	String[] value() default {};
 
 }
