@@ -15,6 +15,7 @@ org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfi
 org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchRestHealthContributorAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration,\
