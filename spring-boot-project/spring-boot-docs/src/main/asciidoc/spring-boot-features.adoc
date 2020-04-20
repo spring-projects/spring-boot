@@ -504,6 +504,7 @@ You can provide default values for your application in `application.properties` 
 These default values can then be overridden at runtime with a different file located in one of the custom locations.
 
 NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, `SPRING_CONFIG_NAME` instead of `spring.config.name`).
+See <<boot-features-external-config-relaxed-binding-from-environment-variables>> for details.
 
 NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
@@ -978,9 +979,8 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard YAML list syntax or comma-separated values
 
 | Environment Variables
-| Upper case format with underscore as the delimiter.
-  `_` should not be used within a property name
-| Numeric values surrounded by underscores, such as `MY_ACME_1_OTHER = my.acme[1].other`
+| Upper case format with underscore as the delimiter (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>).
+| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)`
 
 | System properties
 | Camel case, kebab case, or underscore notation
@@ -989,6 +989,10 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 
 TIP: We recommend that, when possible, properties are stored in lower-case kebab format, such as `my.property-name=acme`.
 
+
+
+[[boot-features-external-config-relaxed-binding-maps]]
+===== Binding Maps
 When binding to `Map` properties, if the `key` contains anything other than lowercase alpha-numeric characters or `-`, you need to use the bracket notation so that the original value is preserved.
 If the key is not surrounded by `[]`, any characters that are not alpha-numeric or `-` are removed.
 For example, consider binding the following properties to a `Map`:
@@ -1006,6 +1010,32 @@ For example, consider binding the following properties to a `Map`:
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
+
+
+[[boot-features-external-config-relaxed-binding-from-environment-variables]]
+===== Binding from Environment Variables
+Most operating systems impose strict rules around the names that can be used for environment variables.
+For example, Linux shell variables can contain only letters (`a` to `z` or `A` to `Z`), numbers (`0` to `9`) or the underscore character (`_`).
+By convention, Unix shell variables will also have their names in UPPERCASE.
+
+Spring Boot's relaxed binding rules are, as much as possible, designed to be compatible with these naming restrictions.
+
+To convert a property name in the canonical-form to an environment variable name you can follow these rules:
+
+* Replace dots (`.`) with underscores (`_`).
+* Remove any dashes (`-`).
+* Convert to uppercase.
+
+For example, the configuration property `spring.main.log-startup-info` would be an environment variable named `SPRING_MAIN_LOGSTARTUPINFO`.
+
+NOTE: Underscores cannot be used to replace the dashes in property names.
+If you attempt to use `SPRING_MAIN_LOG_STARTUP_INFO` with the example above, no value will be bound.
+
+Environment variables can also be used when binding to object lists.
+To bind to a `List`, the element number should be surrounded with underscores in the variable name.
+
+For example, the configuration property `my.acme[0].other` would use an environment variable named `MY_ACME_0_OTHER`.
+
 
 
 [[boot-features-external-config-complex-type-merge]]
