@@ -33,8 +33,7 @@ class KafkaPropertiesTests {
 
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
-		org.apache.kafka.common.requests.IsolationLevel[] original = org.apache.kafka.common.requests.IsolationLevel
-				.values();
+		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
 		assertThat(original).extracting("name").containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
 				IsolationLevel.READ_COMMITTED.name());
 		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
