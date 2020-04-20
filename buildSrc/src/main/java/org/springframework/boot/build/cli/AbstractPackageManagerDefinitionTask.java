@@ -23,12 +23,13 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskExecutionException;
+
+import org.springframework.boot.build.artifactory.ArtifactoryRepository;
 
 /**
  * Base class for generating a package manager definition file such as a Scoop manifest or
@@ -81,7 +82,7 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 			copy.into(this.outputDir);
 			Map<String, Object> properties = new HashMap<>(additionalProperties);
 			properties.put("hash", sha256(this.archive.get().getAsFile()));
-			properties.put("repo", determineArtifactoryRepo(getProject()));
+			properties.put("repo", ArtifactoryRepository.forProject(getProject()));
 			properties.put("project", getProject());
 			copy.expand(properties);
 		});
@@ -95,18 +96,6 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 		catch (Exception ex) {
 			throw new TaskExecutionException(this, ex);
 		}
-	}
-
-	private String determineArtifactoryRepo(Project project) {
-		String version = project.getVersion().toString();
-		String type = version.substring(version.lastIndexOf('.'));
-		if (type.equals("RELEASE")) {
-			return "release";
-		}
-		if (type.startsWith("M") || type.startsWith("RC")) {
-			return "milestone";
-		}
-		return "snapshot";
 	}
 
 }
