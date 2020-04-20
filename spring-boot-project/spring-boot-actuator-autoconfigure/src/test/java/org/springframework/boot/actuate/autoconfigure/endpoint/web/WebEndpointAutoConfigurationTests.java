@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -104,7 +104,7 @@ class WebEndpointAutoConfigurationTests {
 	@Test
 	void webApplicationConfiguresExposeExcludePropertyEndpointFilter() {
 		this.contextRunner
-				.run((context) -> assertThat(context).getBeans(ExposeExcludePropertyEndpointFilter.class).containsKeys(
+				.run((context) -> assertThat(context).getBeans(IncludExcludeEndpointFilter.class).containsKeys(
 						"webExposeExcludePropertyEndpointFilter", "controllerExposeExcludePropertyEndpointFilter"));
 	}
 

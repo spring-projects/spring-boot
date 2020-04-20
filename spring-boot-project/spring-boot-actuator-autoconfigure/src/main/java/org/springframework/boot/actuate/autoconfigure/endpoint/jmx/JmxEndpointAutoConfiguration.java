@@ -23,7 +23,7 @@ import javax.management.MBeanServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
@@ -97,9 +97,9 @@ public class JmxEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public ExposeExcludePropertyEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
+	public IncludExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
 		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
-		return new ExposeExcludePropertyEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
+		return new IncludExcludeEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), "*");
 	}
 
