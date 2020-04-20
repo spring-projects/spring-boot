@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.graphite.GraphiteProtocol;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Graphite
@@ -71,9 +72,9 @@ public class GraphiteProperties {
 
 	/**
 	 * Whether Graphite tags should be used, as opposed to a hierarchical naming
-	 * convention.
+	 * convention. Enabled by default unless "tagsAsPrefix" is set.
 	 */
-	private boolean graphiteTagsEnabled = true;
+	private Boolean graphiteTagsEnabled;
 
 	/**
 	 * For the hierarchical naming convention, turn the specified tag keys into part of
@@ -137,11 +138,11 @@ public class GraphiteProperties {
 		this.protocol = protocol;
 	}
 
-	public boolean isGraphiteTagsEnabled() {
-		return this.graphiteTagsEnabled;
+	public Boolean getGraphiteTagsEnabled() {
+		return (this.graphiteTagsEnabled != null) ? this.graphiteTagsEnabled : ObjectUtils.isEmpty(this.tagsAsPrefix);
 	}
 
-	public void setGraphiteTagsEnabled(boolean graphiteTagsEnabled) {
+	public void setGraphiteTagsEnabled(Boolean graphiteTagsEnabled) {
 		this.graphiteTagsEnabled = graphiteTagsEnabled;
 	}
 

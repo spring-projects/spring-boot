@@ -47,26 +47,26 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfiguresUseTagsAsPrefixIsIgnoredByDefault() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=ignored").run((context) -> {
-					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
-					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
-					registry.counter("test.count", Tags.of("app", "myapp"));
-					assertThat(registry.getDropwizardRegistry().getMeters()).containsOnlyKeys("test.count;app=myapp");
-				});
-	}
-
-	@Test
 	void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app",
-						"management.metrics.export.graphite.graphite-tags-enabled=false")
-				.run((context) -> {
+				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app").run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
 					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
 					registry.counter("test.count", Tags.of("app", "myapp"));
 					assertThat(registry.getDropwizardRegistry().getMeters()).containsOnlyKeys("myapp.testCount");
+				});
+	}
+
+	@Test
+	void autoConfiguresWithTagsAsPrefixCanBeDisabled() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app",
+						"management.metrics.export.graphite.graphite-tags-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
+					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
+					registry.counter("test.count", Tags.of("app", "myapp"));
+					assertThat(registry.getDropwizardRegistry().getMeters()).containsOnlyKeys("test.count;app=myapp");
 				});
 	}
 
