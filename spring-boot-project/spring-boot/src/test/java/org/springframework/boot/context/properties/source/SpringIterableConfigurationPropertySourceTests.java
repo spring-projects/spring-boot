@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -151,6 +153,23 @@ class SpringIterableConfigurationPropertySourceTests {
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("faf")))
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("fof")))
+				.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
+	@Test
+	void containsDescendantOfWhenSystemEnvironmentPropertySourceShouldLegacyProperty() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("FOO_BAR_BAZ_BONG", "bing");
+		source.put("FOO_ALPHABRAVO_GAMMA", "delta");
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				propertySource, SystemEnvironmentPropertyMapper.INSTANCE);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.bar-baz")))
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.alpha-bravo")))
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.blah")))
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 

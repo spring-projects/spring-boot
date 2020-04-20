@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -247,6 +247,16 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 			catch (Exception ex) {
 				return NONE;
 			}
+		}
+
+		@Override
+		public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+			return isAncestorOf(this.first, name, candidate) || isAncestorOf(this.second, name, candidate);
+		}
+
+		private boolean isAncestorOf(PropertyMapper mapper, ConfigurationPropertyName name,
+				ConfigurationPropertyName candidate) {
+			return mapper != null && mapper.isAncestorOf(name, candidate);
 		}
 
 		private PropertyMapping[] merge(PropertyMapping[] first, PropertyMapping[] second) {

@@ -55,4 +55,9 @@ class TestPropertyMapper implements PropertyMapper {
 				.toArray(new PropertyMapping[0]);
 	}
 
+	@Override
+	public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+		return name.isAncestorOf(candidate);
+	}
+
 }

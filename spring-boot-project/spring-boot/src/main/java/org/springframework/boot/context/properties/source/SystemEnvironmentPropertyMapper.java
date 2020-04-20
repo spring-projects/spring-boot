@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	@Override
 	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
 		String name = convertName(configurationPropertyName);
-		String legacyName = convertLegacyName(configurationPropertyName);
+		String legacyName = convertLegacyName(configurationPropertyName, '_', true);
 		if (name.equals(legacyName)) {
 			return new PropertyMapping[] { new PropertyMapping(name, configurationPropertyName) };
 		}
@@ -54,6 +54,15 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 			return NO_MAPPINGS;
 		}
 		return new PropertyMapping[] { new PropertyMapping(propertySourceName, name) };
+	}
+
+	@Override
+	public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+		return name.isAncestorOf(candidate) || isLegacyAncestorOf(name, candidate);
+	}
+
+	private boolean isLegacyAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+		return ConfigurationPropertyName.of(convertLegacyName(name, '.', false)).isAncestorOf(candidate);
 	}
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
@@ -80,19 +89,21 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return result.toString();
 	}
 
-	private String convertLegacyName(ConfigurationPropertyName name) {
+	private String convertLegacyName(ConfigurationPropertyName name, char joinChar, boolean uppercase) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < name.getNumberOfElements(); i++) {
 			if (result.length() > 0) {
-				result.append("_");
+				result.append(joinChar);
 			}
-			result.append(convertLegacyNameElement(name.getElement(i, Form.ORIGINAL)));
+			String element = name.getElement(i, Form.ORIGINAL);
+			result.append(convertLegacyNameElement(element, joinChar, uppercase));
 		}
 		return result.toString();
 	}
 
-	private Object convertLegacyNameElement(String element) {
-		return element.replace('-', '_').toUpperCase(Locale.ENGLISH);
+	private Object convertLegacyNameElement(String element, char joinChar, boolean uppercase) {
+		String converted = element.replace('-', joinChar);
+		return !uppercase ? converted : converted.toUpperCase(Locale.ENGLISH);
 	}
 
 	private CharSequence processElementValue(CharSequence value) {
