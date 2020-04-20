@@ -903,7 +903,13 @@ For example, to configure restart to always use a <<using-boot-devtools-restart-
 	spring.devtools.reload.trigger-file=.reloadtrigger
 ----
 
-NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
+[NOTE]
+====
+Profiles are not supported in devtools properties/yaml files.
+
+Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
+Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.profile` sub-documents in YAML files are not supported.
+====
 
 
 
