@@ -21,6 +21,9 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
+import com.datastax.oss.driver.internal.core.session.throttling.ConcurrencyLimitingRequestThrottler;
+import com.datastax.oss.driver.internal.core.session.throttling.PassThroughRequestThrottler;
+import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequestThrottler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -129,13 +132,53 @@ class CassandraAutoConfigurationTests {
 	@Test
 	void driverConfigLoaderCustomizePoolOptions() {
 		this.contextRunner.withPropertyValues("spring.data.cassandra.pool.idle-timeout=42",
-				"spring.data.cassandra.pool.heartbeat-interval=62", "spring.data.cassandra.pool.max-queue-size=72")
-				.run((context) -> {
+				"spring.data.cassandra.pool.heartbeat-interval=62").run((context) -> {
 					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
 							.getDefaultProfile();
 					assertThat(config.getInt(DefaultDriverOption.HEARTBEAT_TIMEOUT)).isEqualTo(42);
 					assertThat(config.getInt(DefaultDriverOption.HEARTBEAT_INTERVAL)).isEqualTo(62);
+				});
+	}
+
+	@Test
+	void driverConfigLoaderUsePassThroughLimitingRequestThrottlerByDefault() {
+		this.contextRunner.withPropertyValues().run((context) -> {
+			DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+					.getDefaultProfile();
+			assertThat(config.getString(DefaultDriverOption.REQUEST_THROTTLER_CLASS))
+					.isEqualTo(PassThroughRequestThrottler.class.getSimpleName());
+		});
+	}
+
+	@Test
+	void driverConfigLoaderCustomizeConcurrencyLimitingRequestThrottler() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.throttler.type=concurrency-limiting",
+				"spring.data.cassandra.throttler.max-concurrent-requests=62",
+				"spring.data.cassandra.throttler.max-queue-size=72").run((context) -> {
+					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(config.getString(DefaultDriverOption.REQUEST_THROTTLER_CLASS))
+							.isEqualTo(ConcurrencyLimitingRequestThrottler.class.getSimpleName());
+					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS))
+							.isEqualTo(62);
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
+				});
+	}
+
+	@Test
+	void driverConfigLoaderCustomizeRateLimitingRequestThrottler() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.throttler.type=rate-limiting",
+				"spring.data.cassandra.throttler.max-requests-per-second=62",
+				"spring.data.cassandra.throttler.max-queue-size=72",
+				"spring.data.cassandra.throttler.drain-interval=16ms").run((context) -> {
+					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(config.getString(DefaultDriverOption.REQUEST_THROTTLER_CLASS))
+							.isEqualTo(RateLimitingRequestThrottler.class.getSimpleName());
+					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND))
+							.isEqualTo(62);
+					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
+					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL)).isEqualTo(16);
 				});
 	}
 

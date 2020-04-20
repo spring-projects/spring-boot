@@ -122,6 +122,11 @@ public class CassandraProperties {
 	 */
 	private final Pool pool = new Pool();
 
+	/**
+	 * Request throttling configuration.
+	 */
+	private final Throttler throttler = new Throttler();
+
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -264,6 +269,82 @@ public class CassandraProperties {
 		return this.pool;
 	}
 
+	public Throttler getThrottler() {
+		return this.throttler;
+	}
+
+	public static class Throttler {
+
+		/**
+		 * Request throttling type.
+		 */
+		private ThrottlerType type = ThrottlerType.NONE;
+
+		/**
+		 * Maximum number of requests that can be enqueued when the throttling threshold
+		 * is exceeded.
+		 */
+		private int maxQueueSize = 10000;
+
+		/**
+		 * Maximum number of requests that are allowed to execute in parallel.
+		 */
+		private int maxConcurrentRequests = 10000;
+
+		/**
+		 * Maximum allowed request rate.
+		 */
+		private int maxRequestsPerSecond = 10000;
+
+		/**
+		 * How often the throttler attempts to dequeue requests. Set this high enough that
+		 * each attempt will process multiple entries in the queue, but not delay requests
+		 * too much.
+		 */
+		private Duration drainInterval = Duration.ofMillis(10);
+
+		public ThrottlerType getType() {
+			return this.type;
+		}
+
+		public void setType(ThrottlerType type) {
+			this.type = type;
+		}
+
+		public int getMaxQueueSize() {
+			return this.maxQueueSize;
+		}
+
+		public void setMaxQueueSize(int maxQueueSize) {
+			this.maxQueueSize = maxQueueSize;
+		}
+
+		public int getMaxConcurrentRequests() {
+			return this.maxConcurrentRequests;
+		}
+
+		public void setMaxConcurrentRequests(int maxConcurrentRequests) {
+			this.maxConcurrentRequests = maxConcurrentRequests;
+		}
+
+		public int getMaxRequestsPerSecond() {
+			return this.maxRequestsPerSecond;
+		}
+
+		public void setMaxRequestsPerSecond(int maxRequestsPerSecond) {
+			this.maxRequestsPerSecond = maxRequestsPerSecond;
+		}
+
+		public Duration getDrainInterval() {
+			return this.drainInterval;
+		}
+
+		public void setDrainInterval(Duration drainInterval) {
+			this.drainInterval = drainInterval;
+		}
+
+	}
+
 	/**
 	 * Pool properties.
 	 */
@@ -284,11 +365,6 @@ public class CassandraProperties {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration heartbeatInterval = Duration.ofSeconds(30);
 
-		/**
-		 * Maximum number of requests that get queued if no connection is available.
-		 */
-		private int maxQueueSize = 256;
-
 		public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
@@ -303,14 +379,6 @@ public class CassandraProperties {
 
 		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
-		}
-
-		public int getMaxQueueSize() {
-			return this.maxQueueSize;
-		}
-
-		public void setMaxQueueSize(int maxQueueSize) {
-			this.maxQueueSize = maxQueueSize;
 		}
 
 	}
@@ -334,6 +402,35 @@ public class CassandraProperties {
 		 * No compression.
 		 */
 		NONE;
+
+	}
+
+	public enum ThrottlerType {
+
+		/**
+		 * Limit the number of requests that can be executed in parallel.
+		 */
+		CONCURRENCY_LIMITING("ConcurrencyLimitingRequestThrottler"),
+
+		/**
+		 * Limits the request rate per second.
+		 */
+		RATE_LIMITING("RateLimitingRequestThrottler"),
+
+		/**
+		 * No request throttling.
+		 */
+		NONE("PassThroughRequestThrottler");
+
+		private final String type;
+
+		ThrottlerType(String type) {
+			this.type = type;
+		}
+
+		public String type() {
+			return this.type;
+		}
 
 	}
 

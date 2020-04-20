@@ -39,6 +39,8 @@ import com.typesafe.config.ConfigFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Throttler;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.ThrottlerType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -116,6 +118,7 @@ public class CassandraAutoConfiguration {
 		mapQueryOptions(properties, options);
 		mapSocketOptions(properties, options);
 		mapPoolingOptions(properties, options);
+		mapThrottlingOptions(properties, options);
 		map.from(mapContactPoints(properties))
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).to(
@@ -150,8 +153,22 @@ public class CassandraAutoConfiguration {
 				.to((idleTimeout) -> options.add(DefaultDriverOption.HEARTBEAT_TIMEOUT, idleTimeout));
 		map.from(poolProperties::getHeartbeatInterval).whenNonNull().asInt(Duration::getSeconds)
 				.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
-		map.from(poolProperties::getMaxQueueSize)
+	}
+
+	private void mapThrottlingOptions(CassandraProperties properties, CassandraDriverOptions options) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Throttler throttlerProperties = properties.getThrottler();
+		map.from(throttlerProperties::getType).as(ThrottlerType::type)
+				.to((type) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_CLASS, type));
+		map.from(throttlerProperties::getMaxQueueSize)
 				.to((maxQueueSize) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE, maxQueueSize));
+		map.from(throttlerProperties::getMaxConcurrentRequests).to((maxConcurrentRequests) -> options
+				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS, maxConcurrentRequests));
+		map.from(throttlerProperties::getMaxRequestsPerSecond).to((maxRequestsPerSecond) -> options
+				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND, maxRequestsPerSecond));
+		map.from(throttlerProperties::getDrainInterval).asInt(Duration::toMillis).to(
+				(drainInterval) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL, drainInterval));
+
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {

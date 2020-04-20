@@ -350,6 +350,14 @@
       "defaultValue": "none"
     },
     {
+      "name": "spring.data.cassandra.pool.max-queue-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.data.cassandra.throttler.max-queue-size",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.cassandra.repositories.type",
       "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
       "description": "Type of Cassandra repositories to enable.",
@@ -364,6 +372,10 @@
         "replacement": "spring.data.cassandra.repositories.type",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.data.cassandra.throttler.type",
+      "defaultValue": "none"
     },
     {
       "name": "spring.data.couchbase.repositories.type",
