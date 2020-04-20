@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,13 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void gridFsTemplateExists() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid")
-				.run((context) -> assertThat(context).hasSingleBean(GridFsTemplate.class));
+	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid").run((context) -> {
+			assertThat(context).hasSingleBean(GridFsTemplate.class);
+			GridFsTemplate template = context.getBean(GridFsTemplate.class);
+			MongoDbFactory factory = (MongoDbFactory) ReflectionTestUtils.getField(template, "dbFactory");
+			assertThat(factory.getDb().getName()).isEqualTo("grid");
+		});
 	}
 
 	@Test
