@@ -638,12 +638,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		}
 
 		private Set<String> getSearchLocations() {
-			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
-				return getSearchLocations(CONFIG_LOCATION_PROPERTY);
-			}
 			Set<String> locations = getSearchLocations(CONFIG_ADDITIONAL_LOCATION_PROPERTY);
-			locations.addAll(
-					asResolvedSet(ConfigFileApplicationListener.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
+			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
+				locations.addAll(getSearchLocations(CONFIG_LOCATION_PROPERTY));
+			}
+			else {
+				locations.addAll(
+						asResolvedSet(ConfigFileApplicationListener.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
+			}
 			return locations;
 		}
 

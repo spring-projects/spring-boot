@@ -926,6 +926,16 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void additionalLocationWhenLocationConfiguredShouldTakesPrecedenceOverConfiguredLocation() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=classpath:some.properties",
+				"spring.config.additional-location=classpath:override.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bar");
+		assertThat(this.environment.getProperty("value")).isNull();
+	}
+
+	@Test
 	void locationReplaceDefaultLocation() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=classpath:override.properties");
