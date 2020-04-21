@@ -83,31 +83,6 @@ public class CassandraProperties {
 	private Compression compression = Compression.NONE;
 
 	/**
-	 * Queries consistency level.
-	 */
-	private DefaultConsistencyLevel consistencyLevel;
-
-	/**
-	 * Queries serial consistency level.
-	 */
-	private DefaultConsistencyLevel serialConsistencyLevel;
-
-	/**
-	 * Queries default page size.
-	 */
-	private int pageSize = 5000;
-
-	/**
-	 * Socket option: connection time out.
-	 */
-	private Duration connectTimeout;
-
-	/**
-	 * Socket option: read time out.
-	 */
-	private Duration readTimeout;
-
-	/**
 	 * Schema action to take at startup.
 	 */
 	private String schemaAction = "none";
@@ -118,14 +93,19 @@ public class CassandraProperties {
 	private boolean ssl = false;
 
 	/**
+	 * Connection configuration.
+	 */
+	private final Connection connection = new Connection();
+
+	/**
 	 * Pool configuration.
 	 */
 	private final Pool pool = new Pool();
 
 	/**
-	 * Request throttling configuration.
+	 * Request configuration.
 	 */
-	private final Throttler throttler = new Throttler();
+	private final Request request = new Request();
 
 	public String getKeyspaceName() {
 		return this.keyspaceName;
@@ -198,55 +178,59 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.consistency")
 	public DefaultConsistencyLevel getConsistencyLevel() {
-		return this.consistencyLevel;
-	}
-
-	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
-		this.consistencyLevel = consistency;
-	}
-
-	public DefaultConsistencyLevel getSerialConsistencyLevel() {
-		return this.serialConsistencyLevel;
-	}
-
-	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
-		this.serialConsistencyLevel = serialConsistency;
-	}
-
-	public int getPageSize() {
-		return this.pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+		return getRequest().getConsistency();
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.page-size")
+	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
+		getRequest().setConsistency(consistency);
+	}
+
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.serial-consistency")
+	public DefaultConsistencyLevel getSerialConsistencyLevel() {
+		return getRequest().getSerialConsistency();
+	}
+
+	@Deprecated
+	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
+		getRequest().setSerialConsistency(serialConsistency);
+	}
+
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.page-size")
 	public int getFetchSize() {
-		return getPageSize();
+		return getRequest().getPageSize();
 	}
 
 	@Deprecated
 	public void setFetchSize(int fetchSize) {
-		setPageSize(fetchSize);
+		getRequest().setPageSize(fetchSize);
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.connection.init-query-timeout")
 	public Duration getConnectTimeout() {
-		return this.connectTimeout;
+		return getConnection().getInitQueryTimeout();
 	}
 
+	@Deprecated
 	public void setConnectTimeout(Duration connectTimeout) {
-		this.connectTimeout = connectTimeout;
+		getConnection().setInitQueryTimeout(connectTimeout);
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.timeout")
 	public Duration getReadTimeout() {
-		return this.readTimeout;
+		return getRequest().getTimeout();
 	}
 
+	@Deprecated
 	public void setReadTimeout(Duration readTimeout) {
-		this.readTimeout = readTimeout;
+		getRequest().setTimeout(readTimeout);
 	}
 
 	public boolean isSsl() {
@@ -265,12 +249,147 @@ public class CassandraProperties {
 		this.schemaAction = schemaAction;
 	}
 
+	public Connection getConnection() {
+		return this.connection;
+	}
+
 	public Pool getPool() {
 		return this.pool;
 	}
 
-	public Throttler getThrottler() {
-		return this.throttler;
+	public Request getRequest() {
+		return this.request;
+	}
+
+	public static class Connection {
+
+		/**
+		 * Timeout to use when establishing driver connections.
+		 */
+		private Duration connectTimeout = Duration.ofSeconds(5);
+
+		/**
+		 * Timeout to use for internal queries that run as part of the initialization
+		 * process, just after a connection is opened.
+		 */
+		private Duration initQueryTimeout = Duration.ofMillis(500);
+
+		public Duration getConnectTimeout() {
+			return this.connectTimeout;
+		}
+
+		public void setConnectTimeout(Duration connectTimeout) {
+			this.connectTimeout = connectTimeout;
+		}
+
+		public Duration getInitQueryTimeout() {
+			return this.initQueryTimeout;
+		}
+
+		public void setInitQueryTimeout(Duration initQueryTimeout) {
+			this.initQueryTimeout = initQueryTimeout;
+		}
+
+	}
+
+	public static class Request {
+
+		/**
+		 * How long the driver waits for a request to complete.
+		 */
+		private Duration timeout = Duration.ofSeconds(2);
+
+		/**
+		 * Queries consistency level.
+		 */
+		private DefaultConsistencyLevel consistency;
+
+		/**
+		 * Queries serial consistency level.
+		 */
+		private DefaultConsistencyLevel serialConsistency;
+
+		/**
+		 * How many rows will be retrieved simultaneously in a single network roundtrip.
+		 */
+		private int pageSize = 5000;
+
+		private final Throttler throttler = new Throttler();
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+		public DefaultConsistencyLevel getConsistency() {
+			return this.consistency;
+		}
+
+		public void setConsistency(DefaultConsistencyLevel consistency) {
+			this.consistency = consistency;
+		}
+
+		public DefaultConsistencyLevel getSerialConsistency() {
+			return this.serialConsistency;
+		}
+
+		public void setSerialConsistency(DefaultConsistencyLevel serialConsistency) {
+			this.serialConsistency = serialConsistency;
+		}
+
+		public int getPageSize() {
+			return this.pageSize;
+		}
+
+		public void setPageSize(int pageSize) {
+			this.pageSize = pageSize;
+		}
+
+		public Throttler getThrottler() {
+			return this.throttler;
+		}
+
+	}
+
+	/**
+	 * Pool properties.
+	 */
+	public static class Pool {
+
+		/**
+		 * Idle timeout before an idle connection is removed. If a duration suffix is not
+		 * specified, seconds will be used.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration idleTimeout = Duration.ofSeconds(120);
+
+		/**
+		 * Heartbeat interval after which a message is sent on an idle connection to make
+		 * sure it's still alive. If a duration suffix is not specified, seconds will be
+		 * used.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration heartbeatInterval = Duration.ofSeconds(30);
+
+		public Duration getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(Duration idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Duration getHeartbeatInterval() {
+			return this.heartbeatInterval;
+		}
+
+		public void setHeartbeatInterval(Duration heartbeatInterval) {
+			this.heartbeatInterval = heartbeatInterval;
+		}
+
 	}
 
 	public static class Throttler {
@@ -341,44 +460,6 @@ public class CassandraProperties {
 
 		public void setDrainInterval(Duration drainInterval) {
 			this.drainInterval = drainInterval;
-		}
-
-	}
-
-	/**
-	 * Pool properties.
-	 */
-	public static class Pool {
-
-		/**
-		 * Idle timeout before an idle connection is removed. If a duration suffix is not
-		 * specified, seconds will be used.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration idleTimeout = Duration.ofSeconds(120);
-
-		/**
-		 * Heartbeat interval after which a message is sent on an idle connection to make
-		 * sure it's still alive. If a duration suffix is not specified, seconds will be
-		 * used.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration heartbeatInterval = Duration.ofSeconds(30);
-
-		public Duration getIdleTimeout() {
-			return this.idleTimeout;
-		}
-
-		public void setIdleTimeout(Duration idleTimeout) {
-			this.idleTimeout = idleTimeout;
-		}
-
-		public Duration getHeartbeatInterval() {
-			return this.heartbeatInterval;
-		}
-
-		public void setHeartbeatInterval(Duration heartbeatInterval) {
-			this.heartbeatInterval = heartbeatInterval;
 		}
 
 	}
