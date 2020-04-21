@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter.DefaultIncludes;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter.DefaultIncludes;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -87,7 +87,7 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 		return exposures;
 	}
 
-	static class Exposure extends IncludExcludeEndpointFilter<ExposableEndpoint<?>> {
+	static class Exposure extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
 
 		private final String prefix;
 

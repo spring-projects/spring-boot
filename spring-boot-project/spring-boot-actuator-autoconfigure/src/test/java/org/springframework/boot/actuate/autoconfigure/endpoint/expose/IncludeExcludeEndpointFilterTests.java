@@ -32,13 +32,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link IncludExcludeEndpointFilter}.
+ * Tests for {@link IncludeExcludeEndpointFilter}.
  *
  * @author Phillip Webb
  */
-class IncludExcludeEndpointFilterTests {
+class IncludeExcludeEndpointFilterTests {
 
-	private IncludExcludeEndpointFilter<?> filter;
+	private IncludeExcludeEndpointFilter<?> filter;
 
 	@BeforeEach
 	void setup() {
@@ -48,14 +48,14 @@ class IncludExcludeEndpointFilterTests {
 	@Test
 	void createWhenEndpointTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludExcludeEndpointFilter<>(null, new MockEnvironment(), "foo"))
+				.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(null, new MockEnvironment(), "foo"))
 				.withMessageContaining("EndpointType must not be null");
 	}
 
 	@Test
 	void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludExcludeEndpointFilter<>(ExposableEndpoint.class, null, "foo"))
+				.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, null, "foo"))
 				.withMessageContaining("Environment must not be null");
 	}
 
@@ -63,14 +63,15 @@ class IncludExcludeEndpointFilterTests {
 	void createWhenPrefixIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(
-						() -> new IncludExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null))
+						() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null))
 				.withMessageContaining("Prefix must not be empty");
 	}
 
 	@Test
 	void createWhenPrefixIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), ""))
+				.isThrownBy(
+						() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), ""))
 				.withMessageContaining("Prefix must not be empty");
 	}
 
@@ -121,7 +122,7 @@ class IncludExcludeEndpointFilterTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", "bar");
 		environment.setProperty("foo.exclude", "");
-		this.filter = new IncludExcludeEndpointFilter<>(DifferentTestExposableWebEndpoint.class, environment, "foo");
+		this.filter = new IncludeExcludeEndpointFilter<>(DifferentTestExposableWebEndpoint.class, environment, "foo");
 		assertThat(match(EndpointId.of("baz"))).isTrue();
 	}
 
@@ -157,7 +158,7 @@ class IncludExcludeEndpointFilterTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", include);
 		environment.setProperty("foo.exclude", exclude);
-		this.filter = new IncludExcludeEndpointFilter<>(TestExposableWebEndpoint.class, environment, "foo", "def");
+		this.filter = new IncludeExcludeEndpointFilter<>(TestExposableWebEndpoint.class, environment, "foo", "def");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
