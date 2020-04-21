@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,43 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.immutable;
+package org.springframework.boot.configurationsample.specific;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.ConstructorBinding;
 import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
- * Inner properties, in immutable format.
+ * Demonstrates that an empty default value on a property leads to no default value.
  *
- * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties("test")
-@ConstructorBinding
-public class DeducedImmutableClassProperties {
+public class EmptyDefaultValueProperties {
 
-	private final Nested nested;
+	private final String name;
 
-	public DeducedImmutableClassProperties(@DefaultValue Nested nested) {
-		this.nested = nested;
+	@ConstructorBinding
+	public EmptyDefaultValueProperties(@DefaultValue String name) {
+		this.name = name;
 	}
 
-	public Nested getNested() {
-		return this.nested;
-	}
-
-	public static class Nested {
-
-		private final String name;
-
-		public Nested(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
+	public String getName() {
+		return this.name;
 	}
 
 }
