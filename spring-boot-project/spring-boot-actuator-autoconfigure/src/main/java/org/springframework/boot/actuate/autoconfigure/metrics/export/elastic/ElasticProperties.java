@@ -62,17 +62,17 @@ public class ElasticProperties extends StepRegistryProperties {
 	/**
 	 * Login user of the Elastic server.
 	 */
-	private String userName = "";
+	private String userName;
 
 	/**
 	 * Login password of the Elastic server.
 	 */
-	private String password = "";
+	private String password;
 
 	/**
 	 * Ingest pipeline name. By default, events are not pre-processed.
 	 */
-	private String pipeline = "";
+	private String pipeline;
 
 	public String getHost() {
 		return this.host;

@@ -105,4 +105,4 @@ org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChil
 org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
 
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.actuate.autoconfigure.metrics.MissingRequiredConfigurationFailureAnalyzer
+org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
