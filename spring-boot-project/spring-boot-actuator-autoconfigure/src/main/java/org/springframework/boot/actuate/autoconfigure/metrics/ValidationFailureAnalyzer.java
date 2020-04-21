@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.core.instrument.config.validate.Validated.Invalid;
 import io.micrometer.core.instrument.config.validate.ValidationException;
+
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-
-import java.util.stream.Collectors;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
@@ -28,19 +28,17 @@ import java.util.stream.Collectors;
  *
  * @author Andy Wilkinson
  */
-class ValidationFailureAnalyzer
-		extends AbstractFailureAnalyzer<ValidationException> {
+class ValidationFailureAnalyzer extends AbstractFailureAnalyzer<ValidationException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
-		String description = cause.getValidation().failures().stream()
-				.map(failure -> "management.metrics.export." + failure.getProperty() + " was '" +
-						(failure.getValue() == null ? "null" : failure.getValue().toString()) +
-						"' but it " + failure.getMessage() + ".")
-				.collect(Collectors.joining("\n"));
-
-		return new FailureAnalysis(description,
-				"Update your application to provide the missing configuration.", cause);
+		StringBuilder description = new StringBuilder(String.format("Invalid Micrometer configuration detected:%n"));
+		for (Invalid<?> failure : cause.getValidation().failures()) {
+			description.append(String.format("%n  - management.metrics.export.%s was '%s' but it %s",
+					failure.getProperty(), failure.getValue(), failure.getMessage()));
+		}
+		return new FailureAnalysis(description.toString(),
+				"Update your application to correct the invalid configuration.", cause);
 	}
 
 }
