@@ -37,6 +37,11 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.graphite";
+	}
+
+	@Override
 	public String get(String k) {
 		return null;
 	}

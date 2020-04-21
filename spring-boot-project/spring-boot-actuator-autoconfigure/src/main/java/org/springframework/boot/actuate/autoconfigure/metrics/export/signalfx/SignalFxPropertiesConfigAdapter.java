@@ -35,6 +35,11 @@ public class SignalFxPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.signalfx";
+	}
+
+	@Override
 	public String accessToken() {
 		return get(SignalFxProperties::getAccessToken, SignalFxConfig.super::accessToken);
 	}

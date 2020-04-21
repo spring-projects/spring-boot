@@ -33,6 +33,11 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.elastic";
+	}
+
+	@Override
 	public String host() {
 		return get(ElasticProperties::getHost, ElasticConfig.super::host);
 	}

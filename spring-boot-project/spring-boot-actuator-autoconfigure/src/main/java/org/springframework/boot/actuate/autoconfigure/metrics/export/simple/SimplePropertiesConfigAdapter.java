@@ -36,6 +36,11 @@ public class SimplePropertiesConfigAdapter extends PropertiesConfigAdapter<Simpl
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.simple";
+	}
+
+	@Override
 	public String get(String k) {
 		return null;
 	}

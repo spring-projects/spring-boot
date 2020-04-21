@@ -33,6 +33,11 @@ class KairosPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.kairos";
+	}
+
+	@Override
 	public String uri() {
 		return get(KairosProperties::getUri, KairosConfig.super::uri);
 	}
