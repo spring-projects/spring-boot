@@ -35,6 +35,11 @@ class JmxPropertiesConfigAdapter extends PropertiesConfigAdapter<JmxProperties> 
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.jmx";
+	}
+
+	@Override
 	public String get(String key) {
 		return null;
 	}

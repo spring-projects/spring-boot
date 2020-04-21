@@ -33,6 +33,11 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.dynatrace";
+	}
+
+	@Override
 	public String apiToken() {
 		return get(DynatraceProperties::getApiToken, DynatraceConfig.super::apiToken);
 	}

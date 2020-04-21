@@ -34,6 +34,11 @@ public class WavefrontPropertiesConfigAdapter extends PushRegistryPropertiesConf
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.wavefront";
+	}
+
+	@Override
 	public String get(String k) {
 		return null;
 	}

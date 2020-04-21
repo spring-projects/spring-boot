@@ -33,6 +33,11 @@ class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.appoptics";
+	}
+
+	@Override
 	public String uri() {
 		return get(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
 	}

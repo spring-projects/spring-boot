@@ -34,7 +34,7 @@ class ValidationFailureAnalyzer extends AbstractFailureAnalyzer<ValidationExcept
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
 		StringBuilder description = new StringBuilder(String.format("Invalid Micrometer configuration detected:%n"));
 		for (Invalid<?> failure : cause.getValidation().failures()) {
-			description.append(String.format("%n  - management.metrics.export.%s was '%s' but it %s",
+			description.append(String.format("%n  - %s was '%s' but it %s",
 					failure.getProperty(), failure.getValue(), failure.getMessage()));
 		}
 		return new FailureAnalysis(description.toString(),

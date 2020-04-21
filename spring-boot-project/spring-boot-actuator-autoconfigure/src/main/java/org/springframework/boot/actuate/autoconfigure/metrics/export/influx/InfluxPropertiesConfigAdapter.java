@@ -35,6 +35,11 @@ class InfluxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.influx";
+	}
+
+	@Override
 	public String db() {
 		return get(InfluxProperties::getDb, InfluxConfig.super::db);
 	}

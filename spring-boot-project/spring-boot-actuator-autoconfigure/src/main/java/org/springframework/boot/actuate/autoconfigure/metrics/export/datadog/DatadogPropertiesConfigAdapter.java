@@ -34,6 +34,11 @@ class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.datadog";
+	}
+
+	@Override
 	public String apiKey() {
 		return get(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
 	}

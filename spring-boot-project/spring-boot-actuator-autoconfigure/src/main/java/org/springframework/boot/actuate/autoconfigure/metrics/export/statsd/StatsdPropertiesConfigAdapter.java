@@ -41,6 +41,11 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.statsd";
+	}
+
+	@Override
 	public StatsdFlavor flavor() {
 		return get(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
 	}
