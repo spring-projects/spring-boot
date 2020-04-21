@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World" })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World", "bar.name=Bar" })
 class MustacheStandaloneIntegrationTests {
 
 	@Autowired
@@ -67,6 +67,18 @@ class MustacheStandaloneIntegrationTests {
 	}
 
 	@Test
+	void environmentCollectorCompoundKeyWithBean() {
+		assertThat(this.compiler.compile("Hello: {{foo.name}}")
+				.execute(Collections.singletonMap("foo", new Foo()))).isEqualTo("Hello: Foo");
+	}
+
+	@Test
+	void environmentCollectorCompoundKeyWithBeanPrefersEnvironment() {
+		assertThat(this.compiler.compile("Hello: {{bar.name}}")
+				.execute(Collections.singletonMap("bar", new Foo()))).isEqualTo("Hello: Bar");
+	}
+
+	@Test
 	void environmentCollectorSimpleKey() {
 		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
 	}
@@ -81,6 +93,18 @@ class MustacheStandaloneIntegrationTests {
 	@Import({ MustacheAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Application {
 
+	}
+	
+	static class Foo {
+		private String name = "Foo";
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 
 }

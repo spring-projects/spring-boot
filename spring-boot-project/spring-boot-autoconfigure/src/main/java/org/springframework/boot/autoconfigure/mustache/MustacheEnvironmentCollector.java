@@ -67,8 +67,8 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 
 		@Override
 		public Object get(Object ctx, String name) {
+			Object result;
 			if (this.nativeFetcher != null) {
-				Object result;
 				try {
 					result = this.nativeFetcher.get(ctx, name);
 					if (result != null && result != Template.NO_FETCHER_FOUND) {
@@ -79,7 +79,11 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 					// fall through
 				}
 			}
-			return MustacheEnvironmentCollector.this.environment.getProperty(name);
+			result = MustacheEnvironmentCollector.this.environment.getProperty(name);
+			if (result == null) {
+				return Template.NO_FETCHER_FOUND;
+			}
+			return result;
 		}
 
 	}
