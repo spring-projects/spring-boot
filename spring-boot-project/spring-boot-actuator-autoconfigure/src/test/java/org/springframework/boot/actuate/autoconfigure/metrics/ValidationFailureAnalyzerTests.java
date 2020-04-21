@@ -30,18 +30,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link MissingRequiredConfigurationFailureAnalyzer}.
+ * Tests for {@link ValidationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-class MissingRequiredConfigurationFailureAnalyzerTests {
+class ValidationFailureAnalyzerTests {
 
 	@Test
 	void analyzesMissingRequiredConfiguration() {
-		FailureAnalysis analysis = new MissingRequiredConfigurationFailureAnalyzer()
+		FailureAnalysis analysis = new ValidationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdConfiguration.class));
 		assertThat(analysis).isNotNull();
-		assertThat(analysis.getDescription()).isEqualTo("accountId must be set to report metrics to New Relic.");
+		assertThat(analysis.getDescription()).isEqualTo(
+				"management.metrics.export.newrelic.apiKey was 'null' but it is required when publishing to Insights API.\n" +
+				"management.metrics.export.newrelic.accountId was 'null' but it is required when publishing to Insights API.");
 		assertThat(analysis.getAction()).isEqualTo("Update your application to provide the missing configuration.");
 	}
 

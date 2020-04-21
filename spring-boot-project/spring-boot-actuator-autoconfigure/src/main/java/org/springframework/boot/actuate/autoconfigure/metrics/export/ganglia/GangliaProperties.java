@@ -46,8 +46,11 @@ public class GangliaProperties {
 
 	/**
 	 * Base time unit used to report rates.
+	 *
+	 * @deprecated No longer used by Micrometer.
 	 */
-	private TimeUnit rateUnits = TimeUnit.SECONDS;
+	@Deprecated
+	private TimeUnit rateUnits;
 
 	/**
 	 * Base time unit used to report durations.
@@ -56,8 +59,11 @@ public class GangliaProperties {
 
 	/**
 	 * Ganglia protocol version. Must be either 3.1 or 3.0.
+	 *
+	 * @deprecated No longer used by Micrometer.
 	 */
-	private String protocolVersion = "3.1";
+	@Deprecated
+	private String protocolVersion;
 
 	/**
 	 * UDP addressing mode, either unicast or multicast.
