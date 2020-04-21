@@ -23,7 +23,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -40,32 +42,30 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 class ElasticsearchRestClientConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(RestClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(ElasticsearchRestClientProperties properties) {
+			return new DefaultRestClientBuilderCustomizer(properties);
+		}
+
+		@Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchRestClientProperties properties,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
 			HttpHost[] hosts = properties.getUris().stream().map(HttpHost::create).toArray(HttpHost[]::new);
 			RestClientBuilder builder = RestClient.builder(hosts);
-			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getUsername).whenHasText().to((username) -> {
-				CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
-						properties.getPassword());
-				credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-				builder.setHttpClientConfigCallback(
-						(httpClientBuilder) -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
+				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
+				return httpClientBuilder;
 			});
 			builder.setRequestConfigCallback((requestConfigBuilder) -> {
-				map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
-						.to(requestConfigBuilder::setConnectTimeout);
-				map.from(properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
-						.to(requestConfigBuilder::setSocketTimeout);
+				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -104,6 +104,41 @@ class ElasticsearchRestClientConfigurations {
 		@ConditionalOnMissingBean
 		RestClient elasticsearchRestClient(RestClientBuilder builder) {
 			return builder.build();
+		}
+
+	}
+
+	static class DefaultRestClientBuilderCustomizer implements RestClientBuilderCustomizer {
+
+		private static final PropertyMapper map = PropertyMapper.get();
+
+		private final ElasticsearchRestClientProperties properties;
+
+		DefaultRestClientBuilderCustomizer(ElasticsearchRestClientProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(RestClientBuilder builder) {
+		}
+
+		@Override
+		public void customize(HttpAsyncClientBuilder builder) {
+			map.from(this.properties::getUsername).whenHasText().to((username) -> {
+				CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+				Credentials credentials = new UsernamePasswordCredentials(this.properties.getUsername(),
+						this.properties.getPassword());
+				credentialsProvider.setCredentials(AuthScope.ANY, credentials);
+				builder.setDefaultCredentialsProvider(credentialsProvider);
+			});
+		}
+
+		@Override
+		public void customize(RequestConfig.Builder builder) {
+			map.from(this.properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+					.to(builder::setConnectTimeout);
+			map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
+					.to(builder::setSocketTimeout);
 		}
 
 	}

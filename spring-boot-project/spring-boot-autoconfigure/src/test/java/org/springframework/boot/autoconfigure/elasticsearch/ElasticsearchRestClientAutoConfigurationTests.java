@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -36,7 +38,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ElasticsearchRestClientAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Vedran Pavic
  */
 @Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchRestClientAutoConfigurationTests {
@@ -53,7 +55,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10));
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
@@ -106,6 +108,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			assertThat(context).hasSingleBean(RestClient.class);
 			RestClient restClient = context.getBean(RestClient.class);
 			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
+			assertThat(restClient).extracting("client.connmgr.pool.maxTotal").isEqualTo(100);
+			assertThat(restClient).extracting("client.defaultConfig.cookieSpec").isEqualTo("rfc6265-lax");
 		});
 	}
 
@@ -130,10 +134,10 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	private static void assertTimeouts(RestClient restClient, Duration connectTimeout, Duration readTimeout) {
-		Object client = ReflectionTestUtils.getField(restClient, "client");
-		Object config = ReflectionTestUtils.getField(client, "defaultConfig");
-		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout", Math.toIntExact(readTimeout.toMillis()));
-		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout", Math.toIntExact(connectTimeout.toMillis()));
+		assertThat(restClient).extracting("client.defaultConfig.socketTimeout")
+				.isEqualTo(Math.toIntExact(readTimeout.toMillis()));
+		assertThat(restClient).extracting("client.defaultConfig.connectTimeout")
+				.isEqualTo(Math.toIntExact(connectTimeout.toMillis()));
 	}
 
 	@Test
@@ -167,7 +171,24 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 		@Bean
 		RestClientBuilderCustomizer myCustomizer() {
-			return (builder) -> builder.setPathPrefix("/test");
+			return new RestClientBuilderCustomizer() {
+
+				@Override
+				public void customize(RestClientBuilder builder) {
+					builder.setPathPrefix("/test");
+				}
+
+				@Override
+				public void customize(HttpAsyncClientBuilder builder) {
+					builder.setMaxConnTotal(100);
+				}
+
+				@Override
+				public void customize(RequestConfig.Builder builder) {
+					builder.setCookieSpec("rfc6265-lax");
+				}
+
+			};
 		}
 
 	}
