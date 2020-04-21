@@ -209,11 +209,19 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
-				if (entry.getName().endsWith(".class")) {
+				if (isDirectoryEntry(entry) || isClassEntry(entry)) {
 					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
 				}
 			}
 		}
+	}
+
+	private boolean isDirectoryEntry(JarEntry entry) {
+		return entry.isDirectory() && !entry.getName().equals("META-INF/");
+	}
+
+	private boolean isClassEntry(JarEntry entry) {
+		return entry.getName().endsWith(".class");
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
