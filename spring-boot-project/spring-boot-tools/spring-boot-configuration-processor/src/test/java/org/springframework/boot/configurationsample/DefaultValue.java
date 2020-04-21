@@ -33,6 +33,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DefaultValue {
 
-	String[] value();
+	String[] value() default {};
 
 }
