@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludExcludeEndpointFilter.DefaultIncludes;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter.DefaultIncludes;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -113,16 +113,16 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public IncludExcludeEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
+	public IncludeExcludeEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
-		return new IncludExcludeEndpointFilter<>(ExposableWebEndpoint.class, exposure.getInclude(),
+		return new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), DefaultIncludes.WEB);
 	}
 
 	@Bean
-	public IncludExcludeEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
+	public IncludeExcludeEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
-		return new IncludExcludeEndpointFilter<>(ExposableControllerEndpoint.class, exposure.getInclude(),
+		return new IncludeExcludeEndpointFilter<>(ExposableControllerEndpoint.class, exposure.getInclude(),
 				exposure.getExclude());
 	}
 

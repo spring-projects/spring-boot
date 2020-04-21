@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.2.7
  */
-public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> implements EndpointFilter<E> {
+public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implements EndpointFilter<E> {
 
 	private final Class<E> endpointType;
 
@@ -51,7 +51,7 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	private final EndpointPatterns exclude;
 
 	/**
-	 * Create a new {@link IncludExcludeEndpointFilter} with include/exclude rules bound
+	 * Create a new {@link IncludeExcludeEndpointFilter} with include/exclude rules bound
 	 * from the {@link Environment}.
 	 * @param endpointType the endpoint type that should be considered (other types always
 	 * match)
@@ -59,13 +59,13 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	 * @param prefix the property prefix to bind
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
 	 */
-	public IncludExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
+	public IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			String... defaultIncludes) {
 		this(endpointType, environment, prefix, new EndpointPatterns(defaultIncludes));
 	}
 
 	/**
-	 * Create a new {@link IncludExcludeEndpointFilter} with include/exclude rules bound
+	 * Create a new {@link IncludeExcludeEndpointFilter} with include/exclude rules bound
 	 * from the {@link Environment}.
 	 * @param endpointType the endpoint type that should be considered (other types always
 	 * match)
@@ -73,12 +73,12 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	 * @param prefix the property prefix to bind
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
 	 */
-	public IncludExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
+	public IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			DefaultIncludes defaultIncludes) {
 		this(endpointType, environment, prefix, DefaultIncludes.patterns(defaultIncludes));
 	}
 
-	private IncludExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
+	private IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			EndpointPatterns defaultIncludes) {
 		Assert.notNull(endpointType, "EndpointType must not be null");
 		Assert.notNull(environment, "Environment must not be null");
@@ -92,7 +92,7 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	}
 
 	/**
-	 * Create a new {@link IncludExcludeEndpointFilter} with specific include/exclude
+	 * Create a new {@link IncludeExcludeEndpointFilter} with specific include/exclude
 	 * rules.
 	 * @param endpointType the endpoint type that should be considered (other types always
 	 * match)
@@ -100,13 +100,13 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	 * @param exclude the exclude patterns
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
 	 */
-	public IncludExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
+	public IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			String... defaultIncludes) {
 		this(endpointType, include, exclude, new EndpointPatterns(defaultIncludes));
 	}
 
 	/**
-	 * Create a new {@link IncludExcludeEndpointFilter} with specific include/exclude
+	 * Create a new {@link IncludeExcludeEndpointFilter} with specific include/exclude
 	 * rules.
 	 * @param endpointType the endpoint type that should be considered (other types always
 	 * match)
@@ -114,12 +114,12 @@ public class IncludExcludeEndpointFilter<E extends ExposableEndpoint<?>> impleme
 	 * @param exclude the exclude patterns
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
 	 */
-	public IncludExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
+	public IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			DefaultIncludes defaultIncludes) {
 		this(endpointType, include, exclude, DefaultIncludes.patterns(defaultIncludes));
 	}
 
-	private IncludExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
+	private IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			EndpointPatterns defaultIncludes) {
 		Assert.notNull(endpointType, "EndpointType Type must not be null");
 		Assert.notNull(defaultIncludes, "DefaultIncludes must not be null");
