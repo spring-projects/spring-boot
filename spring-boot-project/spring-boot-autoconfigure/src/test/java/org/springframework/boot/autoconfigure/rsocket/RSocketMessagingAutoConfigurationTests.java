@@ -34,11 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-class
-RSocketMessagingAutoConfigurationTests {
+class RSocketMessagingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class, RSocketMessageHandlerCustomizer.class))
+			.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test

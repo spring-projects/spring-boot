@@ -7,6 +7,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 import org.springframework.util.RouteMatcher;
 
 /**
+ * @author Aarti Gupta
  * Callback interface that can be used to customize a RSocketMessageHandler {@link Connector}.
  */
 @FunctionalInterface
