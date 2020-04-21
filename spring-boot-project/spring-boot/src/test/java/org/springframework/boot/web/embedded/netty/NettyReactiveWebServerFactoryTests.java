@@ -62,7 +62,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
-				.satisfies(this::portMatchesRequirement);
+				.satisfies(this::portMatchesRequirement).withCauseInstanceOf(Throwable.class);
 	}
 
 	private void portMatchesRequirement(PortInUseException exception) {

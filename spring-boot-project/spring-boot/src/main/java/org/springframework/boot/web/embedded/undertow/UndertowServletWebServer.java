@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ public class UndertowServletWebServer implements WebServer {
 						List<Port> actualPorts = getActualPorts();
 						failedPorts.removeAll(actualPorts);
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.iterator().next().getNumber(), ex);
 						}
 					}
 					throw new WebServerException("Unable to start embedded Undertow", ex);
