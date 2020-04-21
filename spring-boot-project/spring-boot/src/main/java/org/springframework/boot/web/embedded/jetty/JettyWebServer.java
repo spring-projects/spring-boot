@@ -148,7 +148,7 @@ public class JettyWebServer implements WebServer {
 					}
 					catch (IOException ex) {
 						if (connector instanceof NetworkConnector && findBindException(ex) != null) {
-							throw new PortInUseException(((NetworkConnector) connector).getPort());
+							throw new PortInUseException(((NetworkConnector) connector).getPort(), ex);
 						}
 						throw ex;
 					}

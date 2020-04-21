@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,16 @@ public class PortInUseException extends WebServerException {
 	 * @param port the port that was in use
 	 */
 	public PortInUseException(int port) {
-		super("Port " + port + " is already in use", null);
+		this(port, null);
+	}
+
+	/**
+	 * Creates a new port in use exception for the given {@code port}.
+	 * @param port the port that was in use
+	 * @param cause the cause of the exception
+	 */
+	public PortInUseException(int port, Throwable cause) {
+		super("Port " + port + " is already in use", cause);
 		this.port = port;
 	}
 
