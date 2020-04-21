@@ -61,8 +61,20 @@ class MustacheStandaloneIntegrationTests {
 	}
 
 	@Test
+	void environmentCollectorCompoundKeyStandardMap() {
+		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
+				.execute(Collections.singletonMap("world", "World"))).isEqualTo("Hello: There");
+	}
+
+	@Test
 	void environmentCollectorSimpleKey() {
 		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
+	}
+
+	@Test
+	void environmentCollectorSimpleKeyMap() {
+		assertThat(this.compiler.compile("Hello: {{foo}}").execute(Collections.singletonMap("world", "Foo")))
+				.isEqualTo("Hello: World");
 	}
 
 	@Configuration(proxyBeanMethods = false)
