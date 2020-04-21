@@ -16,28 +16,30 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.config.MissingRequiredConfigurationException;
-
+import io.micrometer.core.instrument.config.validate.ValidationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
+import java.util.stream.Collectors;
+
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link MissingRequiredConfigurationException}.
+ * {@link ValidationException}.
  *
  * @author Andy Wilkinson
  */
-class MissingRequiredConfigurationFailureAnalyzer
-		extends AbstractFailureAnalyzer<MissingRequiredConfigurationException> {
+class ValidationFailureAnalyzer
+		extends AbstractFailureAnalyzer<ValidationException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, MissingRequiredConfigurationException cause) {
-		StringBuilder description = new StringBuilder();
-		description.append(cause.getMessage());
-		if (!cause.getMessage().endsWith(".")) {
-			description.append(".");
-		}
-		return new FailureAnalysis(description.toString(),
+	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
+		String description = cause.getValidation().failures().stream()
+				.map(failure -> "management.metrics.export." + failure.getProperty() + " was '" +
+						(failure.getValue() == null ? "null" : failure.getValue().toString()) +
+						"' but it " + failure.getMessage() + ".")
+				.collect(Collectors.joining("\n"));
+
+		return new FailureAnalysis(description,
 				"Update your application to provide the missing configuration.", cause);
 	}
 

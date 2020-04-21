@@ -16,12 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import io.micrometer.core.instrument.config.validate.ValidationException;
 import io.micrometer.wavefront.WavefrontConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link WavefrontProperties}.
@@ -36,8 +38,6 @@ class WavefrontPropertiesTests extends PushRegistryPropertiesTests {
 		WavefrontConfig config = WavefrontConfig.DEFAULT_DIRECT;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getUri().toString()).isEqualTo(config.uri());
-		// source has no static default value
-		assertThat(properties.getApiToken()).isEqualTo(config.apiToken());
 		assertThat(properties.getGlobalPrefix()).isEqualTo(config.globalPrefix());
 	}
 
