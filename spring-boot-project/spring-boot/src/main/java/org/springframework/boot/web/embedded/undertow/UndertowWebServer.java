@@ -126,7 +126,7 @@ public class UndertowWebServer implements WebServer {
 						List<UndertowWebServer.Port> actualPorts = getActualPorts();
 						failedPorts.removeAll(actualPorts);
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.iterator().next().getNumber(), ex);
 						}
 					}
 					throw new WebServerException("Unable to start embedded Undertow", ex);

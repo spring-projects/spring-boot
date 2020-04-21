@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.unix.Errors.NativeIoException;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +54,12 @@ import org.springframework.util.Assert;
  */
 public class NettyWebServer implements WebServer {
 
-	private static final Predicate<HttpServerRequest> ALWAYS = (r) -> true;
+	/**
+	 * Permission denied error code from {@code errno.h}.
+	 */
+	private static final int ERROR_NO_EACCES = -13;
+
+	private static final Predicate<HttpServerRequest> ALWAYS = (request) -> true;
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
@@ -111,14 +117,25 @@ public class NettyWebServer implements WebServer {
 			}
 			catch (Exception ex) {
 				ChannelBindException bindException = findBindException(ex);
-				if (bindException != null) {
-					throw new PortInUseException(bindException.localPort());
+				if (bindException != null && !isPermissionDenied(bindException.getCause())) {
+					throw new PortInUseException(bindException.localPort(), ex);
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			logger.info("Netty started on port(s): " + getPort());
 			startDaemonAwaitThread(this.disposableServer);
 		}
+	}
+
+	private boolean isPermissionDenied(Throwable bindExceptionCause) {
+		try {
+			if (bindExceptionCause instanceof NativeIoException) {
+				return ((NativeIoException) bindExceptionCause).expectedErr() == ERROR_NO_EACCES;
+			}
+		}
+		catch (Throwable ex) {
+		}
+		return false;
 	}
 
 	@Override
