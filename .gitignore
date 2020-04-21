@@ -8,6 +8,7 @@
 .#*
 .*.md.html
 .DS_Store
+.attach_pid*
 .classpath
 .factorypath
 .gradle
