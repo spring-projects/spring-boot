@@ -60,6 +60,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
 
+	private final JarFile parent;
+
 	private final RandomAccessDataFile rootFile;
 
 	private final String pathFromRoot;
@@ -101,6 +103,27 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
+	 * Create a new JarFile copy based on a given parent.
+	 * @param parent the parent jar
+	 * @throws IOException if the file cannot be read
+	 */
+	JarFile(JarFile parent) throws IOException {
+		super(parent.rootFile.getFile());
+		this.parent = parent;
+		this.rootFile = parent.rootFile;
+		this.pathFromRoot = parent.pathFromRoot;
+		this.data = parent.data;
+		this.type = parent.type;
+		this.url = parent.url;
+		this.urlString = parent.urlString;
+		this.entries = parent.entries;
+		this.manifestSupplier = parent.manifestSupplier;
+		this.manifest = parent.manifest;
+		this.signed = parent.signed;
+		this.comment = parent.comment;
+	}
+
+	/**
 	 * Private constructor used to create a new {@link JarFile} either directly or from a
 	 * nested entry.
 	 * @param rootFile the root jar file
@@ -111,12 +134,13 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarFileType type)
 			throws IOException {
-		this(rootFile, pathFromRoot, data, null, type, null);
+		this(null, rootFile, pathFromRoot, data, null, type, null);
 	}
 
-	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
-			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
+	private JarFile(JarFile parent, RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data,
+			JarEntryFilter filter, JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
+		this.parent = parent;
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -164,6 +188,10 @@ public class JarFile extends java.util.jar.JarFile {
 			}
 
 		};
+	}
+
+	JarFile getParent() {
+		return this.parent;
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
@@ -264,8 +292,9 @@ public class JarFile extends java.util.jar.JarFile {
 			}
 			return null;
 		};
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName().substring(0, name.length() - 1),
-				this.data, filter, JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
+		return new JarFile(this, this.rootFile,
+				this.pathFromRoot + "!/" + entry.getName().substring(0, name.length() - 1), this.data, filter,
+				JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
@@ -293,7 +322,7 @@ public class JarFile extends java.util.jar.JarFile {
 	@Override
 	public void close() throws IOException {
 		super.close();
-		if (this.type == JarFileType.DIRECT) {
+		if (this.type == JarFileType.DIRECT && this.parent == null) {
 			this.rootFile.close();
 		}
 	}
@@ -313,10 +342,9 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {
-			Handler handler = new Handler(this);
 			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
 			file = file.replace("file:////", "file://"); // Fix UNC paths
-			this.url = new URL("jar", "", -1, file, handler);
+			this.url = new URL("jar", "", -1, file, new Handler(this));
 		}
 		return this.url;
 	}
