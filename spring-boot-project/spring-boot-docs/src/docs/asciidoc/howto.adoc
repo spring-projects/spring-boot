@@ -2216,7 +2216,8 @@ See also the section on "`<<spring-boot-features.adoc#boot-features-error-handli
 
 
 [[howto-sanitize-sensible-values]]
-=== Sanitize sensible values
+[[howto-sanitize-sensitive-values]]
+=== Sanitize Sensitive Values
 Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching a certain pattern are sanitized by default (i.e. their values are replaced by `+******+`).
 
 The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize` and `management.endpoint.configprops.keys-to-sanitize` respectively.
@@ -2225,6 +2226,22 @@ Spring Boot uses sensible defaults for such keys: any key ending with the word "
 Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+.*credentials.*+`).
 
 If any of the keys to sanitize are URI format (i.e. `<scheme>://<username>:<password>@<host>:<port>/`), only the password part is sanitized.
+
+
+
+[[howto-map-health-indicators-to-metrics]]
+=== Map Health Indicators to Micrometer Metrics
+Spring Boot health indicators return a `Status` type to indicate the overall system health.
+If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
+By default, the status codes "`up`", "`down`", "`out of service`" and "`unknown`" are used by Spring Boot.
+To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+
+The follow example shows one way to write such an exporter:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/actuate/metrics/MetricsHealthMicrometerExportExample.java[tag=configuration]
+----
 
 
 
