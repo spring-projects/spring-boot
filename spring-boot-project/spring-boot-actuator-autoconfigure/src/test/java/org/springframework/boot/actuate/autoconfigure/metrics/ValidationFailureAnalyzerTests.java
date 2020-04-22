@@ -43,8 +43,8 @@ class ValidationFailureAnalyzerTests {
 	void analyzesMissingRequiredConfiguration() {
 		FailureAnalysis analysis = new ValidationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
-		assertThat(analysis.getCause().getMessage()).contains("management.metrics.export.newrelic.apiKey was 'null'");
 		assertThat(analysis).isNotNull();
+		assertThat(analysis.getCause().getMessage()).contains("management.metrics.export.newrelic.apiKey was 'null'");
 		assertThat(analysis.getDescription()).isEqualTo(String.format("Invalid Micrometer configuration detected:%n%n"
 				+ "  - management.metrics.export.newrelic.apiKey was 'null' but it is required when publishing to Insights API%n"
 				+ "  - management.metrics.export.newrelic.accountId was 'null' but it is required when publishing to Insights API"));
@@ -63,6 +63,7 @@ class ValidationFailureAnalyzerTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import(NewRelicProperties.class)
 	static class MissingAccountIdAndApiKeyConfiguration {
+
 		@Bean
 		NewRelicMeterRegistry meterRegistry(NewRelicProperties newRelicProperties) {
 			return new NewRelicMeterRegistry(new NewRelicPropertiesConfigAdapter(newRelicProperties), Clock.SYSTEM);
