@@ -1946,7 +1946,7 @@ For example, you might choose to set it to the vendor name of the database (`hsq
 
 [NOTE]
 ====
-Spring Boot automatically creates the schema of an embedded `DataSource`.
+When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.
 This behavior can be customized by using the configprop:spring.datasource.initialization-mode[] property.
 For instance, if you want to always initialize the `DataSource` regardless of its type:
 
@@ -1954,14 +1954,19 @@ For instance, if you want to always initialize the `DataSource` regardless of it
 ----
 	spring.datasource.initialization-mode=always
 ----
+In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
+Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.ddl-auto=none
+----
+If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Databasse Migration Tool>>, like Flyway or Liquibase, you cannot use basic SQL scripts to create and initialize the schema.
+In this situation, if `schema.sql` and `data.sql` are present, they will be ignored. It is not possible to use a Database Migration Tool to manage schema, and a basic SQL script to initialize it.
 ====
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting `spring.datasource.continue-on-error`.
-
-NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
-Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
 
 
 
