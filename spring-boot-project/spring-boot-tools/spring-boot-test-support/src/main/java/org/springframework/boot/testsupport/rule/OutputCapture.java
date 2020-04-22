@@ -51,6 +51,7 @@ public class OutputCapture implements TestRule {
 	@Override
 	public Statement apply(Statement base, Description description) {
 		return new Statement() {
+
 			@Override
 			public void evaluate() throws Throwable {
 				captureOutput();
@@ -69,11 +70,11 @@ public class OutputCapture implements TestRule {
 					}
 				}
 			}
+
 		};
 	}
 
 	protected void captureOutput() {
-		// FIXME AnsiOutput.setEnabled(Enabled.NEVER);
 		this.copy = new ByteArrayOutputStream();
 		this.captureOut = new CaptureOutputStream(System.out, this.copy);
 		this.captureErr = new CaptureOutputStream(System.err, this.copy);
@@ -82,7 +83,6 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void releaseOutput() {
-		// FIXME AnsiOutput.setEnabled(Enabled.DETECT);
 		System.setOut(this.captureOut.getOriginal());
 		System.setErr(this.captureErr.getOriginal());
 		this.copy = null;
