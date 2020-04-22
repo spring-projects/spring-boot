@@ -2084,7 +2084,7 @@ If you need to use a different `DataSource`, you can create one and mark its `@B
 If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
 Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
-If any of the three properties has not be set, the value of its equivalent `spring.datasource` property will be used.
+If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
 
