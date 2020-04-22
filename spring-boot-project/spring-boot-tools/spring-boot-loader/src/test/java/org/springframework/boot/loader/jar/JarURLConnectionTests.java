@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.zip.ZipFile;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -61,13 +63,15 @@ class JarURLConnectionTests {
 	@Test
 	void connectionToRootUsingAbsoluteUrl() throws Exception {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
-		assertThat(JarURLConnection.get(url, this.jarFile).getContent()).isSameAs(this.jarFile);
+		Object content = JarURLConnection.get(url, this.jarFile).getContent();
+		assertThat(((JarFile) content).getParent()).isSameAs(this.jarFile);
 	}
 
 	@Test
 	void connectionToRootUsingRelativeUrl() throws Exception {
 		URL url = new URL("jar:file:" + getRelativePath() + "!/");
-		assertThat(JarURLConnection.get(url, this.jarFile).getContent()).isSameAs(this.jarFile);
+		Object content = JarURLConnection.get(url, this.jarFile).getContent();
+		assertThat(((JarFile) content).getParent()).isSameAs(this.jarFile);
 	}
 
 	@Test
@@ -218,6 +222,15 @@ class JarURLConnectionTests {
 	void jarEntryNameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
 		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/\u00c7.class")).toString())
 				.isEqualTo("\u00e1/b/\u00c7.class");
+	}
+
+	@Test
+	void openConnectionCanBeClosedWithoutClosingSourceJar() throws Exception {
+		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
+		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
+		JarFile connectionJarFile = connection.getJarFile();
+		connectionJarFile.close();
+		assertThat((Boolean) ReflectionTestUtils.getField(this.jarFile, ZipFile.class, "closeRequested")).isFalse();
 	}
 
 	private String getRelativePath() {
