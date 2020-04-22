@@ -98,7 +98,7 @@ public class GangliaProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "No longer used by Micormeter")
+	@DeprecatedConfigurationProperty(reason = "No longer used by Micrometer.")
 	public TimeUnit getRateUnits() {
 		return this.rateUnits;
 	}
@@ -117,7 +117,7 @@ public class GangliaProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "No longer used by Micormeter")
+	@DeprecatedConfigurationProperty(reason = "No longer used by Micrometer.")
 	public String getProtocolVersion() {
 		return this.protocolVersion;
 	}
