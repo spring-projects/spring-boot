@@ -4058,7 +4058,7 @@ https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are
 Queries are created automatically from your method names.
 For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
 
-For more complex queries, you can annotate your method with Spring Data's {spring-data-r2dbc-api}/repository/query/Query.html[`Query`] annotation.
+For more complex queries, you can annotate your method with Spring Data's {spring-data-r2dbc-api}/repository/Query.html[`Query`] annotation.
 
 Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
 If you use auto-configuration, repositories are searched from the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) down.
