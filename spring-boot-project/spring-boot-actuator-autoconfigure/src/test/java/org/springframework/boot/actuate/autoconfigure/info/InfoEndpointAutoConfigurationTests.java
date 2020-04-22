@@ -42,7 +42,6 @@ class InfoEndpointAutoConfigurationTests {
 
 	@Test
 	void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
-		// FIXME
 		this.contextRunner.withPropertyValues("management.endpoint.default.enabled:false")
 				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
 	}

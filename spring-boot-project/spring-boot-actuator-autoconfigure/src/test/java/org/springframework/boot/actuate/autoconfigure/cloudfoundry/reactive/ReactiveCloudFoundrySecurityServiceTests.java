@@ -204,8 +204,6 @@ class ReactiveCloudFoundrySecurityServiceTests {
 		});
 		StepVerifier.create(this.securityService.getUaaUrl())
 				.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL)).expectComplete().verify();
-		// this.securityService.getUaaUrl().block(); //FIXME subscribe again to check that
-		// it isn't called again
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
 		expectRequestCount(1);
 	}

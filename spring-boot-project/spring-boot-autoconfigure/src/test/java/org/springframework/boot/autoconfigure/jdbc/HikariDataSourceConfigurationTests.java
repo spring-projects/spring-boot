@@ -55,7 +55,6 @@ class HikariDataSourceConfigurationTests {
 					assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
 					assertThat(ds.getMaxLifetime()).isEqualTo(1234);
 				});
-		// TODO: test JDBC4 isValid()
 	}
 
 	@Test
