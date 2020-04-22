@@ -2177,6 +2177,22 @@ The patterns to use can be customized using the `management.endpoint.env.keys-to
 
 
 
+[[howto-map-health-indicators-to-metrics]]
+=== Map Health Indicators to Micrometer Metrics
+Spring Boot health indicators return a `Status` type to indicate the overall system health.
+If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
+By default, the status codes "`up`", "`down`", "`out of service`" and "`unknown`" are used by Spring Boot.
+To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+
+The follow example shows one way to write such an exporter:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/actuate/metrics/MetricsHealthMicrometerExportExample.java[tag=configuration]
+----
+
+
+
 [[howto-security]]
 == Security
 This section addresses questions about security when working with Spring Boot, including questions that arise from using Spring Security with Spring Boot.
