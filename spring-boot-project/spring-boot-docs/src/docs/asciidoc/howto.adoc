@@ -2076,6 +2076,13 @@ With that setup, migrations in `dev/db/migration` run only when the `dev` profil
 ==== Execute Liquibase Database Migrations on Startup
 To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
 
+[NOTE]
+====
+When you add the `org.liquibase:liquibase-core` to your classpath, by default database migrations will run for both during application startup and before your tests run.
+This behavior can be customized by using the configprop:spring.liquibase.enabled[] property, setting different values in the `main` and `test` folders.
+It is not possible to use two different ways to initialize the database (e.g. Liquibase for application startup, JPA for test runs).
+====
+
 By default, the master change log is read from `db/changelog/db.changelog-master.yaml`, but you can change the location by setting `spring.liquibase.change-log`.
 In addition to YAML, Liquibase also supports JSON, XML, and SQL change log formats.
 
