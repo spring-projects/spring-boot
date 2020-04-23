@@ -23,8 +23,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -50,15 +53,33 @@ class SpringBootTestContextBootstrapperTests {
 		buildTestContext(SpringBootTestMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 
+	@Test
+	void mergedContextConfigurationWhenArgsDifferentShouldNotBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
+		Object contextConfiguration = ReflectionTestUtils.getField(context, "mergedContextConfiguration");
+		TestContext otherContext2 = buildTestContext(SpringBootTestOtherArgsConfiguration.class);
+		Object otherContextConfiguration = ReflectionTestUtils.getField(otherContext2, "mergedContextConfiguration");
+		assertThat(contextConfiguration).isNotEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenArgsSameShouldBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
+		Object contextConfiguration = ReflectionTestUtils.getField(context, "mergedContextConfiguration");
+		TestContext otherContext2 = buildTestContext(SpringBootTestSameArgsConfiguration.class);
+		Object otherContextConfiguration = ReflectionTestUtils.getField(otherContext2, "mergedContextConfiguration");
+		assertThat(contextConfiguration).isEqualTo(otherContextConfiguration);
+	}
+
 	@SuppressWarnings("rawtypes")
-	private void buildTestContext(Class<?> testClass) {
+	private TestContext buildTestContext(Class<?> testClass) {
 		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
 		BootstrapContext bootstrapContext = mock(BootstrapContext.class);
 		bootstrapper.setBootstrapContext(bootstrapContext);
 		given((Class) bootstrapContext.getTestClass()).willReturn(testClass);
 		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(CacheAwareContextLoaderDelegate.class);
 		given(bootstrapContext.getCacheAwareContextLoaderDelegate()).willReturn(contextLoaderDelegate);
-		bootstrapper.buildTestContext();
+		return bootstrapper.buildTestContext();
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -70,6 +91,21 @@ class SpringBootTestContextBootstrapperTests {
 	@SpringBootTest
 	@WebAppConfiguration
 	static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=same")
+	static class SpringBootTestArgsConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=same")
+	static class SpringBootTestSameArgsConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=different")
+	static class SpringBootTestOtherArgsConfiguration {
 
 	}
 
