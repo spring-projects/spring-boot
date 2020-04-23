@@ -924,6 +924,15 @@
       "description": "Type of the trust store."
     },
     {
+      "name": "server.tomcat.max-http-header-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum size of the HTTP message header.",
+      "deprecation": {
+        "replacement": "server.max-http-header-size",
+        "level": "error"
+      }
+    },
+    {
       "name": "server.undertow.buffers-per-region",
       "type": "java.lang.Integer",
       "description": "Number of buffer per region.",
@@ -1060,11 +1069,27 @@
       ]
     },
     {
+      "name": "spring.data.cassandra.load-balancing-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the load balancing policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.cassandra.read-timeout-millis",
       "type": "java.lang.Integer",
       "description": "Socket option: read time out.",
       "deprecation": {
         "replacement": "spring.data.cassandra.read-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.reconnection-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the reconnection policy. The class must have a default constructor.",
+      "deprecation": {
         "level": "error"
       }
     },
@@ -1083,6 +1108,14 @@
       "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
       "description": "Type of Cassandra repositories to enable.",
       "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.cassandra.retry-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the retry policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.couchbase.consistency",
@@ -1844,6 +1877,14 @@
       }
     },
     {
+      "name": "spring.kafka.streams.cache-max-bytes-buffering",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.kafka.streams.cache-max-size-buffering",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.liquibase.check-change-log-location",
       "type": "java.lang.Boolean",
       "description": "Check the change log location exists.",
@@ -1882,6 +1923,14 @@
     {
       "name": "spring.mustache.suffix",
       "defaultValue": ".mustache"
+    },
+    {
+      "name": "spring.mvc.favicon.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable resolution of favicon.ico.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.formcontent.filter.enabled",
@@ -1950,6 +1999,14 @@
     {
       "name": "spring.rabbitmq.listener.type",
       "defaultValue": "simple"
+    },
+    {
+      "name": "spring.rabbitmq.template.queue",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.rabbitmq.template.default-receive-queue",
+        "level": "error"
+      }
     },
     {
       "name": "spring.reactor.stacktrace-mode.enabled",

@@ -974,6 +974,15 @@
       "defaultValue": "*"
     },
     {
+      "name" : "management.endpoints.jmx.unique-names",
+      "type" : "java.lang.Boolean",
+      "description" : "Whether unique runtime object names should be ensured.",
+      "deprecation" : {
+        "replacement": "spring.jmx.unique-names",
+        "level" : "error"
+      }
+    },
+    {
       "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
         "health",
