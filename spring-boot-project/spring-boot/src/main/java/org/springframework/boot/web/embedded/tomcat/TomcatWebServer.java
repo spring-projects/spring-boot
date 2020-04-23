@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.net.BindException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -226,9 +225,7 @@ public class TomcatWebServer implements WebServer {
 				throw ex;
 			}
 			catch (Exception ex) {
-				if (findBindException(ex) != null) {
-					throw new PortInUseException(this.tomcat.getConnector().getPort());
-				}
+				PortInUseException.throwIfPortBindingException(ex, () -> this.tomcat.getConnector().getPort());
 				throw new WebServerException("Unable to start embedded Tomcat server", ex);
 			}
 			finally {
@@ -249,16 +246,6 @@ public class TomcatWebServer implements WebServer {
 		if (LifecycleState.FAILED.equals(connector.getState())) {
 			throw new ConnectorStartFailedException(connector.getPort());
 		}
-	}
-
-	private BindException findBindException(Throwable ex) {
-		if (ex == null) {
-			return null;
-		}
-		if (ex instanceof BindException) {
-			return (BindException) ex;
-		}
-		return findBindException(ex.getCause());
 	}
 
 	private void stopSilently() {
