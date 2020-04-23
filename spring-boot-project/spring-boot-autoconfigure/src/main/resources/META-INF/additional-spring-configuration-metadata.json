@@ -1207,6 +1207,14 @@
       }
     },
     {
+      "name": "spring.data.cassandra.load-balancing-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the load balancing policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.cassandra.pool.max-queue-size",
       "type": "java.lang.Integer",
       "deprecation": {
@@ -1242,6 +1250,14 @@
       }
     },
     {
+      "name": "spring.data.cassandra.reconnection-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the reconnection policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.cassandra.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Cassandra repositories.",
@@ -1256,6 +1272,14 @@
       "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
       "description": "Type of Cassandra repositories to enable.",
       "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.cassandra.retry-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the retry policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.cassandra.throttler.type",
@@ -1283,6 +1307,30 @@
       "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
       "description": "Type of Couchbase repositories to enable.",
       "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-name",
+      "type": "java.lang.String",
+      "description": "Elasticsearch cluster name.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.cluster-nodes",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of cluster node addresses.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.elasticsearch.properties",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional properties used to configure the client.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.elasticsearch.repositories.enabled",
@@ -1405,6 +1453,71 @@
       "deprecation": {
         "level": "error",
         "replacement": "spring.datasource.tomcat.jmx-enabled"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.connection-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.multi-threaded",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable connection requests from multiple execution threads.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.password",
+      "type": "java.lang.String",
+      "description": "Login password.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.proxy.host",
+      "type": "java.lang.String",
+      "description": "Proxy host the HTTP client should use.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.proxy.port",
+      "type": "java.lang.Integer",
+      "description": "Proxy port the HTTP client should use.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.read-timeout",
+      "type": "java.time.Duration",
+      "description": "Read timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.uris",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of the Elasticsearch instances to use.",
+      "deprecation": {
+        "replacement": "spring.elasticsearch.rest.uris",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.username",
+      "type": "java.lang.String",
+      "description": "Login username.",
+      "deprecation": {
+        "level": "error"
       }
     },
     {
@@ -1631,6 +1744,14 @@
     {
       "name": "spring.integration.jdbc.initialize-schema",
       "defaultValue": "embedded"
+    },
+    {
+      "name": "spring.jackson.joda-date-time-format",
+      "type": "java.lang.String",
+      "description": "Joda date time format string. If not configured, \"date-format\" is used as a fallback if it is configured with a format string.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.jersey.type",
@@ -2069,6 +2190,14 @@
       }
     },
     {
+      "name": "spring.kafka.streams.cache-max-bytes-buffering",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.kafka.streams.cache-max-size-buffering",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.liquibase.check-change-log-location",
       "type": "java.lang.Boolean",
       "description": "Check the change log location exists.",
@@ -2112,6 +2241,14 @@
       "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.mvc.favicon.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable resolution of favicon.ico.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.formcontent.filter.enabled",
@@ -2183,8 +2320,30 @@
       "defaultValue": true
     },
     {
+      "name": "spring.rabbitmq.listener.simple.transaction-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.rabbitmq.listener.type",
       "defaultValue": "simple"
+    },
+    {
+      "name": "spring.rabbitmq.publisher-confirms",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.rabbitmq.template.queue",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.rabbitmq.template.default-receive-queue",
+        "level": "error"
+      }
     },
     {
       "name": "spring.reactor.stacktrace-mode.enabled",

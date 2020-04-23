@@ -974,6 +974,15 @@
       "defaultValue": "*"
     },
     {
+      "name": "management.endpoints.jmx.unique-names",
+      "type": "java.lang.Boolean",
+      "description": "Whether unique runtime object names should be ensured.",
+      "deprecation": {
+        "replacement": "spring.jmx.unique-names",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
         "health",
@@ -1024,6 +1033,22 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Elasticsearch health check.",
       "defaultValue": true
+    },
+    {
+      "name": "management.health.elasticsearch.indices",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated index names.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.health.elasticsearch.response-timeout",
+      "type": "java.time.Duration",
+      "description": "Time to wait for a response from the cluster.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "management.health.influxdb.enabled",
@@ -1276,6 +1301,14 @@
       "defaultValue": true
     },
     {
+      "name": "management.metrics.export.kairos.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.export.newrelic.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
@@ -1369,6 +1402,22 @@
       "defaultValue": false
     },
     {
+      "name": "management.metrics.web.client.requests-metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.metrics.web.client.request.metric-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.web.server.auto-time-requests",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "management.metrics.web.server.request.autotime.enabled"
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.server.request.autotime.enabled",
       "description": "Whether to automatically time web server requests.",
       "defaultValue": true
@@ -1381,6 +1430,14 @@
       "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
       "description": "Whether percentile histograms should be published.",
       "defaultValue": false
+    },
+    {
+      "name": "management.metrics.web.server.requests-metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.metrics.web.server.request.metric-name",
+        "level": "error"
+      }
     },
     {
       "name": "management.port",
