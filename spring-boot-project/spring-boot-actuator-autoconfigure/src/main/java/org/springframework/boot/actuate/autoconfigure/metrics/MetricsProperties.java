@@ -43,7 +43,7 @@ public class MetricsProperties {
 	private boolean useGlobalRegistry = true;
 
 	/**
-	 * Whether meter IDs starting-with the specified name should be enabled. The longest
+	 * Whether meter IDs starting with the specified name should be enabled. The longest
 	 * match wins, the key `all` can also be used to configure all meters.
 	 */
 	private final Map<String, Boolean> enable = new LinkedHashMap<>();
@@ -233,7 +233,7 @@ public class MetricsProperties {
 		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
 
 		/**
-		 * Specific Service Level Objectives boundaries for meter IDs starting-with the
+		 * Specific service-level objective boundaries for meter IDs starting with the
 		 * specified name. The longest match wins. Counters will be published for each
 		 * specified boundary. Values can be specified as a long or as a Duration value
 		 * (for timer meters, defaulting to ms if no unit specified).
@@ -241,14 +241,14 @@ public class MetricsProperties {
 		private final Map<String, ServiceLevelObjectiveBoundary[]> slo = new LinkedHashMap<>();
 
 		/**
-		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * Minimum value that meter IDs starting with the specified name are expected to
 		 * observe. The longest match wins. Values can be specified as a long or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */
 		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
 
 		/**
-		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * Maximum value that meter IDs starting with the specified name are expected to
 		 * observe. The longest match wins. Values can be specified as a long or as a
 		 * Duration value (for timer meters, defaulting to ms if no unit specified).
 		 */

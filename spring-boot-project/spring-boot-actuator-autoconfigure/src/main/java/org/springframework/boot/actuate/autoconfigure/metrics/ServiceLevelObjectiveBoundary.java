@@ -21,9 +21,9 @@ import java.time.Duration;
 import io.micrometer.core.instrument.Meter;
 
 /**
- * A service level objective boundary for use when configuring Micrometer. Can be
- * specified as either a {@link Double} (applicable to timers and distribution summaries)
- * or a {@link Duration} (applicable to only timers).
+ * A boundary for a service-level objective (SLO) for use when configuring Micrometer. Can
+ * be specified as either a {@link Double} (applicable to timers and distribution
+ * summaries) or a {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

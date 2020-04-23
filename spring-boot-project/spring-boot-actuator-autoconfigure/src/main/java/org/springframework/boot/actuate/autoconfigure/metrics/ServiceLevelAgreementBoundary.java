@@ -21,9 +21,9 @@ import java.time.Duration;
 import io.micrometer.core.instrument.Meter;
 
 /**
- * A service level agreement boundary for use when configuring Micrometer. Can be
- * specified as either a {@link Long} (applicable to timers and distribution summaries) or
- * a {@link Duration} (applicable to only timers).
+ * A boundary for a service-level agreement (SLA) for use when configuring Micrometer. Can
+ * be specified as either a {@link Long} (applicable to timers and distribution summaries)
+ * or a {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
  * @since 2.0.0

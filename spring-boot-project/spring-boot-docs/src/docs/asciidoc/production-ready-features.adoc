@@ -2132,7 +2132,7 @@ The following properties allow per-meter customization:
 | Publish percentile values computed in your application
 
 | configprop:management.metrics.distribution.slo[]
-| Publish a cumulative histogram with buckets defined by your Service Level Objectives.
+| Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
 For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
