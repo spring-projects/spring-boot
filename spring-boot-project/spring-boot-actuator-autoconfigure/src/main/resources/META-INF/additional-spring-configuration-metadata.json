@@ -1,503 +1,6 @@
 {
   "properties": [
     {
-      "name": "management.endpoint.configprops.keys-to-sanitize",
-      "defaultValue": [
-        "password",
-        "secret",
-        "key",
-        "token",
-        ".*credentials.*",
-        "vcap_services",
-        "sun.java.command"
-      ]
-    },
-    {
-      "name": "management.endpoint.env.keys-to-sanitize",
-      "defaultValue": [
-        "password",
-        "secret",
-        "key",
-        "token",
-        ".*credentials.*",
-        "vcap_services",
-        "sun.java.command"
-      ]
-    },
-    {
-      "name": "management.endpoint.health.show-details",
-      "defaultValue": "never"
-    },
-    {
-      "name": "management.endpoint.health.status.order",
-      "defaultValue": [
-        "DOWN",
-        "OUT_OF_SERVICE",
-        "UP",
-        "UNKNOWN"
-      ]
-    },
-    {
-      "name": "management.endpoints.enabled-by-default",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable or disable all endpoints by default."
-    },
-    {
-      "name": "management.endpoints.jmx.domain",
-      "defaultValue": "org.springframework.boot"
-    },
-    {
-      "name": "management.endpoints.jmx.exposure.include",
-      "defaultValue": "*"
-    },
-    {
-      "name": "management.endpoints.web.exposure.include",
-      "defaultValue": [
-        "health",
-        "info"
-      ]
-    },
-    {
-      "name": "info",
-      "type": "java.util.Map<java.lang.String,java.lang.Object>",
-      "description": "Arbitrary properties to add to the info endpoint."
-    },
-    {
-      "name": "management.cloudfoundry.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable extended Cloud Foundry actuator endpoints.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.cloudfoundry.skip-ssl-validation",
-      "type": "java.lang.Boolean",
-      "description": "Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.auditevents.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable storage of audit events.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.cassandra.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Cassandra health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.couchbase.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Couchbase health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.db.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable database health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.defaults.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable default health indicators.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.diskspace.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable disk space health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.elasticsearch.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Elasticsearch health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.influxdb.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable InfluxDB health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.jms.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable JMS health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.ldap.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable LDAP health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.mongo.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable MongoDB health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.ping.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable ping health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.probes.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable liveness and readiness probes.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.health.rabbit.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable RabbitMQ health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.redis.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Redis health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.solr.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Solr health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.status.order",
-      "defaultValue": [
-        "DOWN",
-        "OUT_OF_SERVICE",
-        "UP",
-        "UNKNOWN"
-      ]
-    },
-    {
-      "name": "management.health.mail.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Mail health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.neo4j.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Neo4j health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.info.build.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable build info.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.info.defaults.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable default info contributors.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.info.env.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable environment info.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.info.git.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable git info.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.info.git.mode",
-      "defaultValue": "simple"
-    },
-    {
-      "name": "management.metrics.export.appoptics.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.datadog.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.dynatrace.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.elastic.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.ganglia.addressing-mode",
-      "defaultValue": "multicast"
-    },
-    {
-      "name": "management.metrics.export.ganglia.duration-units",
-      "defaultValue": "milliseconds"
-    },
-    {
-      "name": "management.metrics.export.ganglia.rate-units",
-      "defaultValue": "seconds"
-    },
-    {
-      "name": "management.metrics.export.graphite.duration-units",
-      "defaultValue": "milliseconds"
-    },
-    {
-      "name": "management.metrics.export.graphite.protocol",
-      "defaultValue": "pickled"
-    },
-    {
-      "name": "management.metrics.export.graphite.rate-units",
-      "defaultValue": "seconds"
-    },
-    {
-      "name": "management.metrics.export.humio.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.humio.repository",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.influx.consistency",
-      "defaultValue": "one"
-    },
-    {
-      "name": "management.metrics.export.influx.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to JMX is enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.export.newrelic.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.prometheus.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to Prometheus is enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.export.prometheus.histogram-flavor",
-      "defaultValue": "prometheus"
-    },
-    {
-      "name": "management.metrics.export.signalfx.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.simple.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.export.simple.mode",
-      "defaultValue": "cumulative"
-    },
-    {
-      "name": "management.metrics.export.stackdriver.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.statsd.flavor",
-      "defaultValue": "datadog"
-    },
-    {
-      "name": "management.metrics.export.statsd.queue-size",
-      "defaultValue": 2147483647,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.num-threads",
-      "type": "java.lang.Integer",
-      "description": "Number of threads to use with the metrics publishing scheduler.",
-      "defaultValue": 2,
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.connect-timeout",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.read-timeout",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.web.client.request.autotime.enabled",
-      "description": "Whether to automatically time web client requests.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.web.client.request.autotime.percentiles",
-      "description": "Computed non-aggregable percentiles to publish."
-    },
-    {
-      "name": "management.metrics.web.client.request.autotime.percentiles-histogram",
-      "description": "Whether percentile histograms should be published.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.metrics.web.server.request.autotime.enabled",
-      "description": "Whether to automatically time web server requests.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.web.server.request.autotime.percentiles",
-      "description": "Computed non-aggregable percentiles to publish."
-    },
-    {
-      "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
-      "description": "Whether percentile histograms should be published.",
-      "defaultValue": false
-    },
-    {
-      "name": "management.server.ssl.ciphers",
-      "description": "Supported SSL ciphers."
-    },
-    {
-      "name": "management.server.ssl.client-auth",
-      "description": "Client authentication mode. Requires a trust store."
-    },
-    {
-      "name": "management.server.ssl.enabled",
-      "description": "Whether to enable SSL support.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.server.ssl.enabled-protocols",
-      "description": "Enabled SSL protocols."
-    },
-    {
-      "name": "management.server.ssl.key-alias",
-      "description": "Alias that identifies the key in the key store."
-    },
-    {
-      "name": "management.server.ssl.key-password",
-      "description": "Password used to access the key in the key store."
-    },
-    {
-      "name": "management.server.ssl.key-store",
-      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
-    },
-    {
-      "name": "management.server.ssl.key-store-password",
-      "description": "Password used to access the key store."
-    },
-    {
-      "name": "management.server.ssl.key-store-provider",
-      "description": "Provider for the key store."
-    },
-    {
-      "name": "management.server.ssl.key-store-type",
-      "description": "Type of the key store."
-    },
-    {
-      "name": "management.server.ssl.protocol",
-      "description": "SSL protocol to use.",
-      "defaultValue":  "TLS"
-    },
-    {
-      "name": "management.server.ssl.trust-store",
-      "description": "Trust store that holds SSL certificates."
-    },
-    {
-      "name": "management.server.ssl.trust-store-password",
-      "description": "Password used to access the trust store."
-    },
-    {
-      "name": "management.server.ssl.trust-store-provider",
-      "description": "Provider for the trust store."
-    },
-    {
-      "name": "management.server.ssl.trust-store-type",
-      "description": "Type of the trust store."
-    },
-    {
-      "name": "management.trace.http.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable HTTP request-response tracing.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.trace.http.include",
-      "defaultValue": [
-        "request-headers",
-        "response-headers",
-        "cookies",
-        "errors"
-      ]
-    },
-    {
       "name": "endpoints.actuator.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
@@ -520,7 +23,8 @@
       "type": "java.lang.Boolean",
       "description": "Mark if the endpoint exposes sensitive information.",
       "deprecation": {
-        "reason": "The \"actuator\" endpoint is no longer available.","level": "error"
+        "reason": "The \"actuator\" endpoint is no longer available.",
+        "level": "error"
       }
     },
     {
@@ -551,19 +55,20 @@
       }
     },
     {
-      "name": "endpoints.autoconfig.id",
-      "type": "java.lang.String",
-      "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
-      "deprecation": {
-        "reason": "Endpoint identifier is no longer customizable.","level": "error"
-      }
-    },
-    {
       "name": "endpoints.autoconfig.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",
       "deprecation": {
         "replacement": "management.endpoint.conditions.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "endpoints.autoconfig.id",
+      "type": "java.lang.String",
+      "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
+      "deprecation": {
+        "reason": "Endpoint identifier is no longer customizable.",
         "level": "error"
       }
     },
@@ -863,7 +368,8 @@
       "type": "java.lang.String",
       "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
       "deprecation": {
-        "reason": "Endpoint identifier is no longer customizable.","level": "error"
+        "reason": "Endpoint identifier is no longer customizable.",
+        "level": "error"
       }
     },
     {
@@ -926,7 +432,8 @@
       "description": "Time to live for cached result, in milliseconds.",
       "defaultValue": 1000,
       "deprecation": {
-        "replacement": "management.endpoint.health.cache.time-to-live","level": "error"
+        "replacement": "management.endpoint.health.cache.time-to-live",
+        "level": "error"
       }
     },
     {
@@ -962,7 +469,8 @@
       "description": "Whether to enable hypermedia support for endpoints.",
       "defaultValue": false,
       "deprecation": {
-        "reason": "Hypermedia support in the Actuator is no longer available.","level": "error"
+        "reason": "Hypermedia support in the Actuator is no longer available.",
+        "level": "error"
       }
     },
     {
@@ -1202,19 +710,19 @@
       }
     },
     {
-      "name": "endpoints.metrics.filter.counter-submissions",
-      "description": "Submissions that should be made to the counter.",
-      "deprecation": {
-        "reason": "Metrics support is now using Micrometer.",
-        "level": "error"
-      }
-    },
-    {
       "name": "endpoints.metrics.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",
       "deprecation": {
         "replacement": "management.endpoint.metrics.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "endpoints.metrics.filter.counter-submissions",
+      "description": "Submissions that should be made to the counter.",
+      "deprecation": {
+        "reason": "Metrics support is now using Micrometer.",
         "level": "error"
       }
     },
@@ -1309,21 +817,21 @@
       }
     },
     {
+      "name": "endpoints.trace.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable the endpoint.",
+      "deprecation": {
+        "replacement": "management.endpoint.httptrace.enabled",
+        "level": "error"
+      }
+    },
+    {
       "name": "endpoints.trace.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable the trace servlet filter.",
       "defaultValue": true,
       "deprecation": {
         "replacement": "management.trace.http.enabled",
-        "level": "error"
-      }
-    },
-    {
-      "name": "endpoints.trace.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Enable the endpoint.",
-      "deprecation": {
-        "replacement": "management.endpoint.httptrace.enabled",
         "level": "error"
       }
     },
@@ -1355,6 +863,11 @@
       }
     },
     {
+      "name": "info",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "description": "Arbitrary properties to add to the info endpoint."
+    },
+    {
       "name": "jolokia.config",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
@@ -1383,6 +896,24 @@
       }
     },
     {
+      "name": "management.auditevents.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable storage of audit events.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.cloudfoundry.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable extended Cloud Foundry actuator endpoints.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.cloudfoundry.skip-ssl-validation",
+      "type": "java.lang.Boolean",
+      "description": "Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.",
+      "defaultValue": false
+    },
+    {
       "name": "management.context-path",
       "type": "java.lang.String",
       "description": "Management endpoint context-path.",
@@ -1393,6 +924,75 @@
       }
     },
     {
+      "name": "management.endpoint.configprops.keys-to-sanitize",
+      "defaultValue": [
+        "password",
+        "secret",
+        "key",
+        "token",
+        ".*credentials.*",
+        "vcap_services",
+        "sun.java.command"
+      ]
+    },
+    {
+      "name": "management.endpoint.env.keys-to-sanitize",
+      "defaultValue": [
+        "password",
+        "secret",
+        "key",
+        "token",
+        ".*credentials.*",
+        "vcap_services",
+        "sun.java.command"
+      ]
+    },
+    {
+      "name": "management.endpoint.health.show-details",
+      "defaultValue": "never"
+    },
+    {
+      "name": "management.endpoint.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
+      "name": "management.endpoints.enabled-by-default",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable or disable all endpoints by default."
+    },
+    {
+      "name": "management.endpoints.jmx.domain",
+      "defaultValue": "org.springframework.boot"
+    },
+    {
+      "name": "management.endpoints.jmx.exposure.include",
+      "defaultValue": "*"
+    },
+    {
+      "name": "management.endpoints.web.exposure.include",
+      "defaultValue": [
+        "health",
+        "info"
+      ]
+    },
+    {
+      "name": "management.health.cassandra.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Cassandra health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.couchbase.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Couchbase health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.health.couchbase.timeout",
       "type": "java.time.Duration",
       "description": "Timeout for getting the Bucket information from the server.",
@@ -1400,6 +1000,133 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "management.health.db.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable database health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.defaults.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable default health indicators.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.diskspace.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable disk space health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.elasticsearch.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Elasticsearch health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.influxdb.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable InfluxDB health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.jms.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMS health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.ldap.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable LDAP health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.mail.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Mail health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.mongo.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable MongoDB health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.neo4j.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Neo4j health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.ping.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable ping health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.probes.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable liveness and readiness probes.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.health.rabbit.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable RabbitMQ health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.redis.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Redis health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.solr.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Solr health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
+      "name": "management.info.build.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable build info.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.info.defaults.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable default info contributors.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.info.env.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable environment info.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.info.git.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable git info.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.info.git.mode",
+      "defaultValue": "simple"
     },
     {
       "name": "management.metrics.binders.files.enabled",
@@ -1455,6 +1182,207 @@
       }
     },
     {
+      "name": "management.metrics.export.appoptics.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.datadog.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.dynatrace.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.elastic.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.ganglia.addressing-mode",
+      "defaultValue": "multicast"
+    },
+    {
+      "name": "management.metrics.export.ganglia.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.ganglia.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.protocol",
+      "defaultValue": "pickled"
+    },
+    {
+      "name": "management.metrics.export.graphite.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.humio.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.humio.repository",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.influx.consistency",
+      "defaultValue": "one"
+    },
+    {
+      "name": "management.metrics.export.influx.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.jmx.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether exporting of metrics to JMX is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.newrelic.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.prometheus.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether exporting of metrics to Prometheus is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.prometheus.histogram-flavor",
+      "defaultValue": "prometheus"
+    },
+    {
+      "name": "management.metrics.export.signalfx.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.simple.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.mode",
+      "defaultValue": "cumulative"
+    },
+    {
+      "name": "management.metrics.export.stackdriver.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.statsd.flavor",
+      "defaultValue": "datadog"
+    },
+    {
+      "name": "management.metrics.export.statsd.queue-size",
+      "defaultValue": 2147483647,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.connect-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.num-threads",
+      "type": "java.lang.Integer",
+      "description": "Number of threads to use with the metrics publishing scheduler.",
+      "defaultValue": 2,
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.export.wavefront.read-timeout",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.enabled",
+      "description": "Whether to automatically time web client requests.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish."
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.enabled",
+      "description": "Whether to automatically time web server requests.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish."
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false
+    },
+    {
       "name": "management.port",
       "type": "java.lang.Integer",
       "description": "Management endpoint HTTP port. Use the same port as the application by default.",
@@ -1496,6 +1424,68 @@
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",
       "defaultValue": false
+    },
+    {
+      "name": "management.server.ssl.ciphers",
+      "description": "Supported SSL ciphers."
+    },
+    {
+      "name": "management.server.ssl.client-auth",
+      "description": "Client authentication mode. Requires a trust store."
+    },
+    {
+      "name": "management.server.ssl.enabled",
+      "description": "Whether to enable SSL support.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.server.ssl.enabled-protocols",
+      "description": "Enabled SSL protocols."
+    },
+    {
+      "name": "management.server.ssl.key-alias",
+      "description": "Alias that identifies the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-password",
+      "description": "Password used to access the key in the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store",
+      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
+    },
+    {
+      "name": "management.server.ssl.key-store-password",
+      "description": "Password used to access the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-provider",
+      "description": "Provider for the key store."
+    },
+    {
+      "name": "management.server.ssl.key-store-type",
+      "description": "Type of the key store."
+    },
+    {
+      "name": "management.server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue": "TLS"
+    },
+    {
+      "name": "management.server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "management.server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "management.server.ssl.trust-store-type",
+      "description": "Type of the trust store."
     },
     {
       "name": "management.shell.auth.jaas.domain",
@@ -1681,7 +1671,8 @@
       "description": "Telnet port.",
       "defaultValue": 5000,
       "deprecation": {
-        "reason": "CRaSH support is no longer available.","level": "error"
+        "reason": "CRaSH support is no longer available.",
+        "level": "error"
       }
     },
     {
@@ -1802,6 +1793,21 @@
         "replacement": "management.server.ssl.trust-store-type",
         "level": "error"
       }
+    },
+    {
+      "name": "management.trace.http.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response tracing.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.trace.http.include",
+      "defaultValue": [
+        "request-headers",
+        "response-headers",
+        "cookies",
+        "errors"
+      ]
     },
     {
       "name": "management.trace.include",
