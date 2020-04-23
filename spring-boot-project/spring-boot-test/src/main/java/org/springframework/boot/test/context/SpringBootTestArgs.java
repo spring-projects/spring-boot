@@ -17,6 +17,7 @@
 package org.springframework.boot.test.context;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -31,26 +32,21 @@ import org.springframework.test.context.MergedContextConfiguration;
  *
  * @author Madhura Bhave
  */
-class SpringBootTestArgsTrackingContextCustomizer implements ContextCustomizer {
+class SpringBootTestArgs implements ContextCustomizer {
 
-	static final String[] NO_ARGS = new String[0];
+	private static final String[] NO_ARGS = new String[0];
 
-	private String[] args;
+	private final String[] args;
 
-	SpringBootTestArgsTrackingContextCustomizer(Class<?> testClass) {
+	SpringBootTestArgs(Class<?> testClass) {
 		this.args = MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 				.get(SpringBootTest.class).getValue("args", String[].class).orElse(NO_ARGS);
 	}
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
-
 	}
 
-	/**
-	 * Return the application arguments that are tracked by this customizer.
-	 * @return the args
-	 */
 	String[] getArgs() {
 		return this.args;
 	}
@@ -58,12 +54,26 @@ class SpringBootTestArgsTrackingContextCustomizer implements ContextCustomizer {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj != null) && (getClass() == obj.getClass())
-				&& Arrays.equals(this.args, ((SpringBootTestArgsTrackingContextCustomizer) obj).args);
+				&& Arrays.equals(this.args, ((SpringBootTestArgs) obj).args);
 	}
 
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(this.args);
+	}
+
+	/**
+	 * Return the application arguments from the given customizers.
+	 * @param customizers the customizers to check
+	 * @return the application args or an empty array
+	 */
+	static String[] get(Set<ContextCustomizer> customizers) {
+		for (ContextCustomizer customizer : customizers) {
+			if (customizer instanceof SpringBootTestArgs) {
+				return ((SpringBootTestArgs) customizer).args;
+			}
+		}
+		return NO_ARGS;
 	}
 
 }

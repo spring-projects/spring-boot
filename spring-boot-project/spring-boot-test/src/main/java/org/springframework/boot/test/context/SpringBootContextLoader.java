@@ -146,13 +146,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @deprecated since 2.2.7
 	 * @see SpringApplication#run(String...)
 	 */
+	@Deprecated
 	protected String[] getArgs(MergedContextConfiguration config) {
-		ContextCustomizer customizer = config.getContextCustomizers().stream()
-				.filter((c) -> c instanceof SpringBootTestArgsTrackingContextCustomizer).findFirst().orElse(null);
-		if (customizer != null) {
-			return ((SpringBootTestArgsTrackingContextCustomizer) customizer).getArgs();
-		}
-		return SpringBootTestArgsTrackingContextCustomizer.NO_ARGS;
+		return SpringBootTestArgs.get(config.getContextCustomizers());
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
