@@ -22,47 +22,47 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ServiceLevelAgreementBoundary}.
+ * Tests for {@link ServiceLevelObjectiveBoundary}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-class ServiceLevelAgreementBoundaryTests {
+class ServiceLevelObjectiveBoundaryTests {
 
 	@Test
 	void getValueForTimerWhenFromLongShouldReturnMsToNanosValue() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf(123L);
-		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf(123L);
+		assertThat(slo.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
 	void getValueForTimerWhenFromNumberStringShouldMsToNanosValue() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123");
-		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("123");
+		assertThat(slo.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
 	void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123ms");
-		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("123ms");
+		assertThat(slo.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
 	void getValueForDistributionSummaryWhenFromDoubleShouldReturnDoubleValue() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf(123.42);
-		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf(123.42);
+		assertThat(slo.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
 	}
 
 	@Test
 	void getValueForDistributionSummaryWhenFromStringShouldReturnDoubleValue() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123.42");
-		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("123.42");
+		assertThat(slo.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123.42);
 	}
 
 	@Test
 	void getValueForDistributionSummaryWhenFromDurationShouldReturnNull() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123ms");
-		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isNull();
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("123ms");
+		assertThat(slo.getValue(Type.DISTRIBUTION_SUMMARY)).isNull();
 	}
 
 }

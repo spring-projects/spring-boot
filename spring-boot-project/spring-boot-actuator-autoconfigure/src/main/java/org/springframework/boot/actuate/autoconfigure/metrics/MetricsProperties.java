@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -232,12 +233,12 @@ public class MetricsProperties {
 		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
 
 		/**
-		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
-		 * longest match wins. Counters will be published for each specified boundary.
-		 * Values can be specified as a long or as a Duration value (for timer meters,
-		 * defaulting to ms if no unit specified).
+		 * Specific Service Level Objectives boundaries for meter IDs starting-with the
+		 * specified name. The longest match wins. Counters will be published for each
+		 * specified boundary. Values can be specified as a long or as a Duration value
+		 * (for timer meters, defaulting to ms if no unit specified).
 		 */
-		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+		private final Map<String, ServiceLevelObjectiveBoundary[]> slo = new LinkedHashMap<>();
 
 		/**
 		 * Minimum value that meter IDs starting-with the specified name are expected to
@@ -261,8 +262,14 @@ public class MetricsProperties {
 			return this.percentiles;
 		}
 
-		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
-			return this.sla;
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "management.metrics.distribution.slo")
+		public Map<String, ServiceLevelObjectiveBoundary[]> getSla() {
+			return this.slo;
+		}
+
+		public Map<String, ServiceLevelObjectiveBoundary[]> getSlo() {
+			return this.slo;
 		}
 
 		public Map<String, String> getMinimumExpectedValue() {
