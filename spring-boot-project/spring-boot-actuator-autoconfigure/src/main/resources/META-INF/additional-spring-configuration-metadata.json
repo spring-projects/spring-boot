@@ -1328,6 +1328,10 @@
       "defaultValue": "prometheus"
     },
     {
+      "name": "management.metrics.export.prometheus.pushgateway.shutdown-operation",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.metrics.export.signalfx.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",
@@ -1413,7 +1417,7 @@
       "name": "management.metrics.web.server.auto-time-requests",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "replacement": "management.metrics.web.server.request.autotime.enabled"
+        "replacement": "management.metrics.web.server.request.autotime.enabled",
         "level": "error"
       }
     },

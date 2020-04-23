@@ -602,6 +602,10 @@
       "defaultValue": "never"
     },
     {
+      "name": "server.forward-headers-strategy",
+      "defaultValue": "ncsa"
+    },
+    {
       "name": "server.http2.enabled",
       "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
       "defaultValue": false
@@ -1218,7 +1222,7 @@
       "name": "spring.data.cassandra.pool.max-queue-size",
       "type": "java.lang.Integer",
       "deprecation": {
-        "replacement": "spring.data.cassandra.throttler.max-queue-size",
+        "replacement": "spring.data.cassandra.request.throttler.max-queue-size",
         "level": "error"
       }
     },
@@ -1274,16 +1278,16 @@
       "defaultValue": "auto"
     },
     {
+      "name": "spring.data.cassandra.request.throttler.type",
+      "defaultValue": "none"
+    },
+    {
       "name": "spring.data.cassandra.retry-policy",
       "type": "java.lang.Class",
       "description": "Class name of the retry policy. The class must have a default constructor.",
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "spring.data.cassandra.throttler.type",
-      "defaultValue": "none"
     },
     {
       "name": "spring.data.couchbase.consistency",
@@ -2412,6 +2416,10 @@
       }
     },
     {
+      "name": "spring.rsocket.server.transport",
+      "defaultValue": "tcp"
+    },
+    {
       "name": "spring.security.filter.dispatcher-types",
       "defaultValue": [
         "async",
@@ -2446,6 +2454,14 @@
       "defaultValue": "on-save"
     },
     {
+      "name": "spring.session.hazelcast.save-mode",
+      "defaultValue": "on-set-attribute"
+    },
+    {
+      "name": "spring.session.jdbc.flush-mode",
+      "defaultValue": "on-save"
+    },
+    {
       "name": "spring.session.jdbc.initialize-schema",
       "defaultValue": "embedded"
     },
@@ -2459,6 +2475,10 @@
       }
     },
     {
+      "name": "spring.session.jdbc.save-mode",
+      "defaultValue": "on-set-attribute"
+    },
+    {
       "name": "spring.session.mongo.collection-name",
       "type": "java.lang.String",
       "description": "Collection name used to store sessions.",
@@ -2469,8 +2489,16 @@
       }
     },
     {
+      "name": "spring.session.redis.configure-action",
+      "defaultValue": "notify-keyspace-events"
+    },
+    {
       "name": "spring.session.redis.flush-mode",
       "defaultValue": "on-save"
+    },
+    {
+      "name": "spring.session.redis.save-mode",
+      "defaultValue": "on-set-attribute"
     },
     {
       "name": "spring.session.servlet.filter-dispatcher-types",
