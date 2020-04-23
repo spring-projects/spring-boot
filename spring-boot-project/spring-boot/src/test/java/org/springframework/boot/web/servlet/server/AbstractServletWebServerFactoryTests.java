@@ -878,7 +878,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	void malformedAddress() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setAddress(InetAddress.getByName("123456"));
+		factory.setAddress(InetAddress.getByName("255.255.255.255"));
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 			this.webServer = factory.getWebServer();
 			this.webServer.start();
