@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -147,8 +146,9 @@ public class JettyWebServer implements WebServer {
 						connector.start();
 					}
 					catch (IOException ex) {
-						if (connector instanceof NetworkConnector && findBindException(ex) != null) {
-							throw new PortInUseException(((NetworkConnector) connector).getPort(), ex);
+						if (connector instanceof NetworkConnector) {
+							PortInUseException.throwIfPortBindingException(ex,
+									() -> ((NetworkConnector) connector).getPort());
 						}
 						throw ex;
 					}
@@ -166,16 +166,6 @@ public class JettyWebServer implements WebServer {
 				throw new WebServerException("Unable to start embedded Jetty server", ex);
 			}
 		}
-	}
-
-	private BindException findBindException(Throwable ex) {
-		if (ex == null) {
-			return null;
-		}
-		if (ex instanceof BindException) {
-			return (BindException) ex;
-		}
-		return findBindException(ex.getCause());
 	}
 
 	private String getActualPortsDescription() {

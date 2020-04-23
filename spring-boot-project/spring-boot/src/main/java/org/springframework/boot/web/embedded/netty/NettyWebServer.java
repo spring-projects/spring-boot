@@ -86,10 +86,11 @@ public class NettyWebServer implements WebServer {
 				this.disposableServer = startHttpServer();
 			}
 			catch (Exception ex) {
-				ChannelBindException bindException = findBindException(ex);
-				if (bindException != null && !isPermissionDenied(bindException.getCause())) {
-					throw new PortInUseException(bindException.localPort(), ex);
-				}
+				PortInUseException.ifCausedBy(ex, ChannelBindException.class, (bindException) -> {
+					if (!isPermissionDenied(bindException.getCause())) {
+						throw new PortInUseException(bindException.localPort(), ex);
+					}
+				});
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			logger.info("Netty started on port(s): " + getPort());
@@ -127,17 +128,6 @@ public class NettyWebServer implements WebServer {
 			routes = provider.apply(routes);
 		}
 		routes.route(ALWAYS, this.handlerAdapter);
-	}
-
-	private ChannelBindException findBindException(Exception ex) {
-		Throwable candidate = ex;
-		while (candidate != null) {
-			if (candidate instanceof ChannelBindException) {
-				return (ChannelBindException) candidate;
-			}
-			candidate = candidate.getCause();
-		}
-		return null;
 	}
 
 	private void startDaemonAwaitThread(DisposableServer disposableServer) {
