@@ -1,6 +1,12 @@
 {
   "properties": [
     {
+      "name": "spring.devtools.add-properties",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable development property defaults.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.devtools.remote.debug.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable remote debug support.",
@@ -19,12 +25,6 @@
         "reason": "Remote debug is no longer supported.",
         "level": "error"
       }
-    },
-    {
-      "name": "spring.devtools.add-properties",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable development property defaults.",
-      "defaultValue": true
     }
   ]
 }
