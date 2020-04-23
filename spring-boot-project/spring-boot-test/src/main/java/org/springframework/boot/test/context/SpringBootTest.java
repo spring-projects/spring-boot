@@ -101,6 +101,7 @@ public @interface SpringBootTest {
 	 * @return the application arguments to pass to the application under test.
 	 * @see ApplicationArguments
 	 * @see SpringApplication#run(String...)
+	 * @since 2.2.0
 	 */
 	String[] args() default {};
 
