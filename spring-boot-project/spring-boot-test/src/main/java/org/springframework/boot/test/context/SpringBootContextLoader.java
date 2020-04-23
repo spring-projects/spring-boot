@@ -82,8 +82,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
 
-	private static final String[] NO_ARGS = new String[0];
-
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
 		Class<?>[] configClasses = config.getClasses();
@@ -149,11 +147,16 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * empty array.
 	 * @param config the source context configuration
 	 * @return the application arguments to use
+	 * @deprecated since 2.2.7
 	 * @see SpringApplication#run(String...)
 	 */
 	protected String[] getArgs(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
-				.getValue("args", String[].class).orElse(NO_ARGS);
+		ContextCustomizer customizer = config.getContextCustomizers().stream()
+				.filter((c) -> c instanceof SpringBootTestArgsTrackingContextCustomizer).findFirst().orElse(null);
+		if (customizer != null) {
+			return ((SpringBootTestArgsTrackingContextCustomizer) customizer).getArgs();
+		}
+		return SpringBootTestArgsTrackingContextCustomizer.NO_ARGS;
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
