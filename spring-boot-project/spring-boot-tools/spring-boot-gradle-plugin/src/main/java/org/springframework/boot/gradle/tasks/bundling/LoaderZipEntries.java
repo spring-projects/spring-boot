@@ -29,11 +29,14 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
 
+import org.springframework.util.StreamUtils;
+
 /**
  * Internal utility used to copy entries from the {@code spring-boot-loader.jar}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class LoaderZipEntries {
 
@@ -84,11 +87,7 @@ class LoaderZipEntries {
 	}
 
 	private void copy(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[4096];
-		int bytesRead = -1;
-		while ((bytesRead = in.read(buffer)) != -1) {
-			out.write(buffer, 0, bytesRead);
-		}
+		StreamUtils.copy(in, out);
 	}
 
 	/**

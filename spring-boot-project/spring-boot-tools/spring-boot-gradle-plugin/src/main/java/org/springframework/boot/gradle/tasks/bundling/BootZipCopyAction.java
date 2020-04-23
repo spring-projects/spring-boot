@@ -183,15 +183,15 @@ class BootZipCopyAction implements CopyAction {
 	 */
 	private class Processor {
 
-		private ZipArchiveOutputStream out;
+		private final ZipArchiveOutputStream out;
 
 		private final LayersIndex layerIndex;
 
 		private LoaderZipEntries.WrittenEntries writtenLoaderEntries;
 
-		private Set<String> writtenDirectories = new LinkedHashSet<>();
+		private final Set<String> writtenDirectories = new LinkedHashSet<>();
 
-		private Set<String> writtenLibraries = new LinkedHashSet<>();
+		private final Set<String> writtenLibraries = new LinkedHashSet<>();
 
 		Processor(ZipArchiveOutputStream out) {
 			this.out = out;
@@ -224,11 +224,8 @@ class BootZipCopyAction implements CopyAction {
 
 		private void processDirectory(FileCopyDetails details) throws IOException {
 			String name = details.getRelativePath().getPathString();
-			long time = getTime(details);
-			writeParentDirectoriesIfNecessary(name, time);
 			ZipArchiveEntry entry = new ZipArchiveEntry(name + '/');
-			entry.setUnixMode(UnixStat.DIR_FLAG | details.getMode());
-			entry.setTime(time);
+			prepareEntry(entry, name, getTime(details), UnixStat.FILE_FLAG | details.getMode());
 			this.out.putArchiveEntry(entry);
 			this.out.closeArchiveEntry();
 			this.writtenDirectories.add(name);
@@ -236,11 +233,8 @@ class BootZipCopyAction implements CopyAction {
 
 		private void processFile(FileCopyDetails details) throws IOException {
 			String name = details.getRelativePath().getPathString();
-			long time = getTime(details);
-			writeParentDirectoriesIfNecessary(name, time);
 			ZipArchiveEntry entry = new ZipArchiveEntry(name);
-			entry.setUnixMode(UnixStat.FILE_FLAG | details.getMode());
-			entry.setTime(time);
+			prepareEntry(entry, name, getTime(details), UnixStat.FILE_FLAG | details.getMode());
 			ZipCompression compression = BootZipCopyAction.this.compressionResolver.apply(details);
 			if (compression == ZipCompression.STORED) {
 				prepareStoredEntry(details, entry);
@@ -257,13 +251,11 @@ class BootZipCopyAction implements CopyAction {
 			}
 		}
 
-		private void writeParentDirectoriesIfNecessary(String name, long time) throws IOException {
+		private void writeParentDirectoriesIfNecessary(String name, Long time) throws IOException {
 			String parentDirectory = getParentDirectory(name);
 			if (parentDirectory != null && this.writtenDirectories.add(parentDirectory)) {
-				writeParentDirectoriesIfNecessary(parentDirectory, time);
 				ZipArchiveEntry entry = new ZipArchiveEntry(parentDirectory + '/');
-				entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
-				entry.setTime(time);
+				prepareEntry(entry, parentDirectory, time, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
 				this.out.putArchiveEntry(entry);
 				this.out.closeArchiveEntry();
 			}
@@ -293,8 +285,7 @@ class BootZipCopyAction implements CopyAction {
 				// Don't write loader entries until after META-INF folder (see gh-16698)
 				return;
 			}
-			LoaderZipEntries loaderEntries = new LoaderZipEntries(
-					BootZipCopyAction.this.preserveFileTimestamps ? null : CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime());
 			this.writtenLoaderEntries = loaderEntries.writeTo(this.out);
 			if (BootZipCopyAction.this.layerResolver != null) {
 				for (String name : this.writtenLoaderEntries.getFiles()) {
@@ -320,11 +311,60 @@ class BootZipCopyAction implements CopyAction {
 
 		private void writeJarModeLibrary(String location, JarModeLibrary library) throws IOException {
 			String name = location + library.getName();
-			writeEntry(name, ZipEntryWriter.fromInputStream(library.openStream()), false,
+			writeEntry(name, ZipEntryContentWriter.fromInputStream(library.openStream()), false,
 					(entry) -> prepareStoredEntry(library.openStream(), entry));
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
 				this.layerIndex.add(layer, name);
+			}
+		}
+
+		private void writeClassPathIndexIfNecessary() throws IOException {
+			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
+			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
+			if (classPathIndex != null) {
+				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
+						.collect(Collectors.toList());
+				writeEntry(classPathIndex, ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines),
+						true);
+			}
+		}
+
+		private void writeLayersIndexIfNecessary() throws IOException {
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
+				String name = (String) manifestAttributes.get("Spring-Boot-Layers-Index");
+				Assert.state(StringUtils.hasText(name), "Missing layer index manifest attribute");
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
+				this.layerIndex.add(layer, name);
+				writeEntry(name, this.layerIndex::writeTo, false);
+			}
+		}
+
+		private void writeEntry(String name, ZipEntryContentWriter entryWriter, boolean addToLayerIndex)
+				throws IOException {
+			writeEntry(name, entryWriter, addToLayerIndex, ZipEntryCustomizer.NONE);
+		}
+
+		private void writeEntry(String name, ZipEntryContentWriter entryWriter, boolean addToLayerIndex,
+				ZipEntryCustomizer entryCustomizer) throws IOException {
+			ZipArchiveEntry entry = new ZipArchiveEntry(name);
+			prepareEntry(entry, name, getTime(), UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+			entryCustomizer.customize(entry);
+			this.out.putArchiveEntry(entry);
+			entryWriter.writeTo(this.out);
+			this.out.closeArchiveEntry();
+			if (addToLayerIndex && BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
+				this.layerIndex.add(layer, name);
+			}
+		}
+
+		private void prepareEntry(ZipArchiveEntry entry, String name, Long time, int mode) throws IOException {
+			writeParentDirectoriesIfNecessary(name, time);
+			entry.setUnixMode(mode);
+			if (time != null) {
+				entry.setTime(time);
 			}
 		}
 
@@ -344,50 +384,18 @@ class BootZipCopyAction implements CopyAction {
 			archiveEntry.setCrc(crcStream.getCrc());
 		}
 
-		private void writeClassPathIndexIfNecessary() throws IOException {
-			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
-			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
-			if (classPathIndex != null) {
-				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
-						.collect(Collectors.toList());
-				writeEntry(classPathIndex, ZipEntryWriter.fromLines(BootZipCopyAction.this.encoding, lines), true);
+		private Long getTime() {
+			return getTime(null);
+		}
+
+		private Long getTime(FileCopyDetails details) {
+			if (!BootZipCopyAction.this.preserveFileTimestamps) {
+				return CONSTANT_TIME_FOR_ZIP_ENTRIES;
 			}
-		}
-
-		private void writeLayersIndexIfNecessary() throws IOException {
-			if (BootZipCopyAction.this.layerResolver != null) {
-				Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
-				String name = (String) manifestAttributes.get("Spring-Boot-Layers-Index");
-				Assert.state(StringUtils.hasText(name), "Missing layer index manifest attribute");
-				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
-				this.layerIndex.add(layer, name);
-				writeEntry(name, (entry, out) -> this.layerIndex.writeTo(out), false);
+			if (details != null) {
+				return details.getLastModified();
 			}
-		}
-
-		private void writeEntry(String name, ZipEntryWriter entryWriter, boolean addToLayerIndex) throws IOException {
-			writeEntry(name, entryWriter, addToLayerIndex, ZipEntryCustomizer.NONE);
-		}
-
-		private void writeEntry(String name, ZipEntryWriter entryWriter, boolean addToLayerIndex,
-				ZipEntryCustomizer entryCustomizer) throws IOException {
-			writeParentDirectoriesIfNecessary(name, CONSTANT_TIME_FOR_ZIP_ENTRIES);
-			ZipArchiveEntry entry = new ZipArchiveEntry(name);
-			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
-			entry.setTime(CONSTANT_TIME_FOR_ZIP_ENTRIES);
-			entryCustomizer.customize(entry);
-			this.out.putArchiveEntry(entry);
-			entryWriter.writeTo(entry, this.out);
-			this.out.closeArchiveEntry();
-			if (addToLayerIndex && BootZipCopyAction.this.layerResolver != null) {
-				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
-				this.layerIndex.add(layer, name);
-			}
-		}
-
-		private long getTime(FileCopyDetails details) {
-			return BootZipCopyAction.this.preserveFileTimestamps ? details.getLastModified()
-					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
+			return null;
 		}
 
 	}
@@ -414,41 +422,40 @@ class BootZipCopyAction implements CopyAction {
 	 * Callback used to write a zip entry data.
 	 */
 	@FunctionalInterface
-	private interface ZipEntryWriter {
+	private interface ZipEntryContentWriter {
 
 		/**
 		 * Write the entry data.
-		 * @param entry the entry being written
 		 * @param out the output stream used to write the data
 		 * @throws IOException on IO error
 		 */
-		void writeTo(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException;
+		void writeTo(ZipArchiveOutputStream out) throws IOException;
 
 		/**
-		 * Create a new {@link ZipEntryWriter} that will copy content from the given
-		 * {@link InputStream}.
+		 * Create a new {@link ZipEntryContentWriter} that will copy content from the
+		 * given {@link InputStream}.
 		 * @param in the source input stream
-		 * @return a new {@link ZipEntryWriter} instance
+		 * @return a new {@link ZipEntryContentWriter} instance
 		 */
-		static ZipEntryWriter fromInputStream(InputStream in) {
-			return (entry, out) -> {
+		static ZipEntryContentWriter fromInputStream(InputStream in) {
+			return (out) -> {
 				StreamUtils.copy(in, out);
 				in.close();
 			};
 		}
 
 		/**
-		 * Create a new {@link ZipEntryWriter} that will copy content from the given
-		 * lines.
+		 * Create a new {@link ZipEntryContentWriter} that will copy content from the
+		 * given lines.
 		 * @param encoding the required character encoding
 		 * @param lines the lines to write
-		 * @return a new {@link ZipEntryWriter} instance
+		 * @return a new {@link ZipEntryContentWriter} instance
 		 */
-		static ZipEntryWriter fromLines(String encoding, Collection<String> lines) {
-			return (entry, out) -> {
+		static ZipEntryContentWriter fromLines(String encoding, Collection<String> lines) {
+			return (out) -> {
 				OutputStreamWriter writer = new OutputStreamWriter(out, encoding);
 				for (String line : lines) {
-					writer.append(line + "\n");
+					writer.append(line).append("\n");
 				}
 				writer.flush();
 			};

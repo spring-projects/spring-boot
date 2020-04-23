@@ -40,6 +40,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.api.Project;
+import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -56,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @param <T> the type of the concrete BootArchive implementation
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
@@ -328,6 +330,12 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				assertThat(entry.getTime()).isEqualTo(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 			}
 		}
+	}
+
+	@Test
+	void constantTimestampMatchesGradleInternalTimestamp() {
+		assertThat(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES)
+				.isEqualTo(ZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 	}
 
 	@Test
