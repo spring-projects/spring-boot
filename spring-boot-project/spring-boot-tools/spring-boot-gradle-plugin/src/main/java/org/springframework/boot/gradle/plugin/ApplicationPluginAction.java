@@ -36,6 +36,8 @@ import org.gradle.api.plugins.ApplicationPluginConvention;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
+import org.gradle.jvm.application.tasks.CreateStartScripts;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.application.CreateBootStartScripts;
 
@@ -53,8 +55,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
 		configureBaseNameConvention(project, applicationConvention, distribution);
-		CreateBootStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
-				CreateBootStartScripts.class);
+		CreateStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
+				determineCreateStartScriptsClass());
 		bootStartScripts
 				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
 		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
@@ -77,6 +79,14 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
+	}
+
+	private Class<? extends CreateStartScripts> determineCreateStartScriptsClass() {
+		return isGradle64OrLater() ? CreateStartScripts.class : CreateBootStartScripts.class;
+	}
+
+	private boolean isGradle64OrLater() {
+		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.4")) >= 0;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -31,7 +31,7 @@ task('javaCompileEncoding') {
 
 task('startScriptsDefaultJvmOpts') {
 	doFirst {
-		tasks.withType(org.springframework.boot.gradle.tasks.application.CreateBootStartScripts) {
+		tasks.getByName("bootStartScripts") {
 			println "$name defaultJvmOpts = $defaultJvmOpts"
 		}
 	}
