@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SpringBootTest
-public class MetricsHealthMicrometerExportExampleTests {
+class MetricsHealthMicrometerExportExampleTests {
 
 	@Autowired
 	private MeterRegistry registry;
