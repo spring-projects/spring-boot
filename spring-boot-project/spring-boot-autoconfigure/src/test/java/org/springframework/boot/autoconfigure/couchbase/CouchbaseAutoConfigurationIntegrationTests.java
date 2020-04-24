@@ -48,7 +48,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer().withCredentials("spring", "password")
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
-			.withBucket(new BucketDefinition(BUCKET_NAME));
+			.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
