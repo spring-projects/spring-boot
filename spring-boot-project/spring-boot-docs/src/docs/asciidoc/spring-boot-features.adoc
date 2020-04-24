@@ -5889,7 +5889,8 @@ When a `jndi-name` is set, it takes precedence over all other Session-related se
 
 [[boot-features-jta]]
 == Distributed Transactions with JTA
-Spring Boot supports distributed JTA transactions across multiple XA resources by using either an https://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix] embedded transaction manager.
+Spring Boot supports distributed JTA transactions across multiple XA resources by using an https://www.atomikos.com/[Atomikos] embedded transaction manager.
+Deprecated support for using a https://github.com/bitronix/btm[Bitronix] embedded transaction manager is also provided but it will be removed in a future release.
 JTA transactions are also supported when deploying to a suitable Java EE Application Server.
 
 When a JTA environment is detected, Spring's `JtaTransactionManager` is used to manage transactions.
@@ -5918,7 +5919,8 @@ To ensure uniqueness in production, you should configure the configprop:spring.j
 
 [[boot-features-jta-bitronix]]
 === Using a Bitronix Transaction Manager
-https://github.com/bitronix/btm[Bitronix] is a popular open-source JTA transaction manager implementation.
+NOTE: As of Spring Boot 2.3, support for Bitronix has been deprecated and will be removed in a future release.
+
 You can use the `spring-boot-starter-jta-bitronix` starter to add the appropriate Bitronix dependencies to your project.
 As with Atomikos, Spring Boot automatically configures Bitronix and post-processes your beans to ensure that startup and shutdown ordering is correct.
 
@@ -5978,7 +5980,7 @@ The {spring-boot-module-code}/jms/XAConnectionFactoryWrapper.java[`XAConnectionF
 The interfaces are responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them as regular `ConnectionFactory` and `DataSource` beans, which transparently enroll in the distributed transaction.
 DataSource and JMS auto-configuration use JTA variants, provided you have a `JtaTransactionManager` bean and appropriate XA wrapper beans registered within your `ApplicationContext`.
 
-The {spring-boot-module-code}/jta/bitronix/BitronixXAConnectionFactoryWrapper.java[BitronixXAConnectionFactoryWrapper] and {spring-boot-module-code}/jta/bitronix/BitronixXADataSourceWrapper.java[BitronixXADataSourceWrapper] provide good examples of how to write XA wrappers.
+The {spring-boot-module-code}/jta/atomikos/AtomikosXAConnectionFactoryWrapper.java[AtomikosXAConnectionFactoryWrapper] and {spring-boot-module-code}/jta/atomikos/AtomikosXADataSourceWrapper.java[AtomikosXADataSourceWrapper] provide good examples of how to write XA wrappers.
 
 
 

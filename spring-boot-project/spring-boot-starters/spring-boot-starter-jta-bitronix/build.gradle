@@ -2,7 +2,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for JTA transactions using Bitronix"
+description = "Starter for JTA transactions using Bitronix. Deprecated since 2.3.0"
 
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
