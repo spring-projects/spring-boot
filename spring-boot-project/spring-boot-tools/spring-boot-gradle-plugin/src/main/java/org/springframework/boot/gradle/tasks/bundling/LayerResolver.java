@@ -17,8 +17,12 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
@@ -92,6 +96,10 @@ class LayerResolver {
 	 */
 	private static class ResolvedDependencies {
 
+		private static final Set<String> DEPRECATED_FOR_RESOLUTION_CONFIGURATIONS = Collections
+				.unmodifiableSet(new HashSet<>(Arrays.asList("archives", "compile", "compileOnly", "default", "runtime",
+						"testCompile", "testCompileOnly", "testRuntime")));
+
 		private final Map<Configuration, ResolvedConfigurationDependencies> configurationDependencies = new LinkedHashMap<>();
 
 		ResolvedDependencies(Iterable<Configuration> configurations) {
@@ -99,7 +107,8 @@ class LayerResolver {
 		}
 
 		private void processConfiguration(Configuration configuration) {
-			if (configuration.isCanBeResolved()) {
+			if (configuration.isCanBeResolved()
+					&& !DEPRECATED_FOR_RESOLUTION_CONFIGURATIONS.contains(configuration.getName())) {
 				this.configurationDependencies.put(configuration,
 						new ResolvedConfigurationDependencies(configuration.getIncoming().getArtifacts()));
 			}
