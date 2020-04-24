@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class GradleBuild {
 	}
 
 	void after() {
-		GradleBuild.this.script = null;
+		this.script = null;
 		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
@@ -113,8 +113,8 @@ public class GradleBuild {
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
-			if (this.gradleVersion != null && this.expectDeprecationWarnings != null
-					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0) {
+			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
+					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
 				assertThat(result.getOutput()).doesNotContain("Deprecated").doesNotContain("deprecated");
 			}
 			return result;
@@ -149,13 +149,16 @@ public class GradleBuild {
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
-		else if (this.dsl == Dsl.KOTLIN) {
-			gradleRunner.withGradleVersion("4.10.3");
+		else {
+			File settingsFile = new File(this.projectDir, "settings" + this.dsl.getExtension());
+			FileCopyUtils.copy("enableFeaturePreview(\"STABLE_PUBLISHING\")", new FileWriter(settingsFile));
 		}
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
+		allArguments.add("--warning-mode");
+		allArguments.add("all");
 		return gradleRunner.withArguments(allArguments);
 	}
 
