@@ -1957,14 +1957,18 @@ For instance, if you want to always initialize the `DataSource` regardless of it
 ----
 	spring.datasource.initialization-mode=always
 ----
+
 In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
 Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
+
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.jpa.hibernate.ddl-auto=none
 ----
+
 If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you cannot use basic SQL scripts to create and initialize the schema.
-In this situation, if `schema.sql` and `data.sql` are present, they will be ignored. It is not possible to use a Database Migration Tool to manage schema creation, and a basic SQL script to initialize it.
+In this situation, if `schema.sql` and `data.sql` are present, they will be ignored.
+It is not possible to use a Database Migration Tool to manage schema creation, and a basic SQL script to initialize it.
 ====
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
@@ -2063,8 +2067,8 @@ To automatically run Liquibase database migrations on startup, add the `org.liqu
 
 [NOTE]
 ====
-When you add the `org.liquibase:liquibase-core` to your classpath, by default database migrations will run for both during application startup and before your tests run.
-This behavior can be customized by using the configprop:spring.liquibase.enabled[] property, setting different values in the `main` and `test` folders.
+When you add the `org.liquibase:liquibase-core` to your classpath, database migrations run by default for both during application startup and before your tests run.
+This behavior can be customized by using the configprop:spring.liquibase.enabled[] property, setting different values in the `main` and `test` configurations.
 It is not possible to use two different ways to initialize the database (e.g. Liquibase for application startup, JPA for test runs).
 ====
 
