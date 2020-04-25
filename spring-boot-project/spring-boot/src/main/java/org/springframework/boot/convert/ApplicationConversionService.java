@@ -112,6 +112,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new StringToDurationConverter());
 		registry.addConverter(new StringToPeriodConverter());
 		registry.addConverter(new DurationToStringConverter());
+		registry.addConverter(new PeriodToStringConverter());
 		registry.addConverter(new NumberToDurationConverter());
 		registry.addConverter(new DurationToNumberConverter());
 		registry.addConverter(new StringToDataSizeConverter());
