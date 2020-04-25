@@ -46,7 +46,7 @@ class KafkaMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void whenThereIsAnAProducerFactoryKafkaClientMetricsIsConfigured() {
+	void whenThereIsAProducerFactoryKafkaClientMetricsIsConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(KafkaClientMetrics.class));
 	}
