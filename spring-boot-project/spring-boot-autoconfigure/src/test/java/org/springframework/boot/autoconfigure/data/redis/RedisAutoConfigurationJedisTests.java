@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,7 +175,10 @@ class RedisAutoConfigurationJedisTests {
 
 		@Bean
 		JedisClientConfigurationBuilderCustomizer customizer() {
-			return JedisClientConfigurationBuilder::useSsl;
+			return (properties, clientConfigurationBuilder) -> {
+				//ignore properties config
+				clientConfigurationBuilder.useSsl();
+			};
 		}
 
 	}

@@ -82,7 +82,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(getProperties(), builder));
 		return builder.build();
 	}
 

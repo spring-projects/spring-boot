@@ -26,6 +26,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
  * auto-configuration.
  *
  * @author Mark Paluch
+ * @author Zmapleshine
  * @since 2.0.0
  */
 @FunctionalInterface
@@ -33,8 +34,9 @@ public interface LettuceClientConfigurationBuilderCustomizer {
 
 	/**
 	 * Customize the {@link LettuceClientConfigurationBuilder}.
+	 * @param properties                 The configuration file to which the current build belongs.
 	 * @param clientConfigurationBuilder the builder to customize
 	 */
-	void customize(LettuceClientConfigurationBuilder clientConfigurationBuilder);
+	void customize(RedisProperties properties, LettuceClientConfigurationBuilder clientConfigurationBuilder);
 
 }

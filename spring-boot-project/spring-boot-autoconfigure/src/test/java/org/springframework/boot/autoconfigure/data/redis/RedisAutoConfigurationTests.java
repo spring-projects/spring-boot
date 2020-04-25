@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisOperations;
@@ -302,7 +301,10 @@ class RedisAutoConfigurationTests {
 
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
-			return LettuceClientConfigurationBuilder::useSsl;
+			return (properties, clientConfigurationBuilder) -> {
+				//ignore properties config
+				clientConfigurationBuilder.useSsl();
+			};
 		}
 
 	}

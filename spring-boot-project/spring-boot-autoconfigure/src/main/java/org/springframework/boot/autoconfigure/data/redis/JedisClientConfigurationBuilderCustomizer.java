@@ -33,8 +33,9 @@ public interface JedisClientConfigurationBuilderCustomizer {
 
 	/**
 	 * Customize the {@link JedisClientConfigurationBuilder}.
+	 * @param properties                 The configuration file to which the current build belongs.
 	 * @param clientConfigurationBuilder the builder to customize
 	 */
-	void customize(JedisClientConfigurationBuilder clientConfigurationBuilder);
+	void customize(RedisProperties properties, JedisClientConfigurationBuilder clientConfigurationBuilder);
 
 }
