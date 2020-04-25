@@ -49,6 +49,8 @@ public class Handler extends URLStreamHandler {
 
 	private static final String SEPARATOR = "!/";
 
+	private static final Pattern SEPARATOR_PATTERN = Pattern.compile(SEPARATOR, Pattern.LITERAL);
+
 	private static final String CURRENT_DIR = "/./";
 
 	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR, Pattern.LITERAL);
@@ -285,7 +287,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private String canonicalize(String path) {
-		return path.replace(SEPARATOR, "/");
+		return SEPARATOR_PATTERN.matcher(path).replaceAll("/");
 	}
 
 	public JarFile getRootJarFileFromUrl(URL url) throws IOException {
