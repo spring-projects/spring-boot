@@ -129,7 +129,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	}
 
 	@Test
-	void whenJarIsLayeredWithCustomStrategiesThenLayersIndexIsPresentAndCorrent() throws IOException {
+	void whenJarIsLayeredWithCustomStrategiesThenLayersIndexIsPresentAndCorrect() throws IOException {
 		File jar = createLayeredJar((layered) -> {
 			layered.application((application) -> {
 				application.intoLayer("resources", (spec) -> spec.include("static/**"));

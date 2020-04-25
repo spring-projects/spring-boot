@@ -93,7 +93,7 @@ Spring Boot Loader-compatible jar and war archives can include additional index 
 A `classpath.idx` file can be provided for both jars and wars, it provides the ordering that jars should be added to the classpath.
 The `layers.idx` file can be used only for jars, it allows a jar to be split into logical layers for Docker/OCI image creation.
 
-Index files follow a YAML compatible syntax so that they can be eaily parsed by third-party tools.
+Index files follow a YAML compatible syntax so that they can be easily parsed by third-party tools.
 These files, however, are _not_ parsed internally as YAML and they must be written in exactly the formats described below in order to be used.
 
 

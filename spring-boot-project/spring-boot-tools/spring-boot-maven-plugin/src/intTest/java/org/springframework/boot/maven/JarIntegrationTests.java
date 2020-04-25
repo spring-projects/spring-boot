@@ -238,7 +238,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenADependendencyHasTestScopeItIsNotIncludedInTheRepackagedJar(MavenBuild mavenBuild) {
+	void whenADependencyHasTestScopeItIsNotIncludedInTheRepackagedJar(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-test-scope").execute((project) -> {
 			File main = new File(project, "target/jar-test-scope-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(main)).doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j")

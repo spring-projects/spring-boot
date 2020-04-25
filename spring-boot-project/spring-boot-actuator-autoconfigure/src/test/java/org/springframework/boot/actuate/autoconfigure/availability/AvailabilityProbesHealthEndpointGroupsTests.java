@@ -96,7 +96,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 	}
 
 	@Test
-	void getRedinessProbeHasOnlyReadinessStateAsMember() {
+	void getReadinessProbeHasOnlyReadinessStateAsMember() {
 		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
 		HealthEndpointGroup probeGroup = availabilityProbes.get("readiness");
 		assertThat(probeGroup.isMember("livenessState")).isFalse();

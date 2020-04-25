@@ -57,7 +57,7 @@ class EventPublishingRunListenerTests {
 	}
 
 	@Test
-	void shouldPublishLifecyleEvents() {
+	void shouldPublishLifecycleEvents() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		assertThat(this.eventListener.receivedEvents()).isEmpty();
 		this.runListener.starting();

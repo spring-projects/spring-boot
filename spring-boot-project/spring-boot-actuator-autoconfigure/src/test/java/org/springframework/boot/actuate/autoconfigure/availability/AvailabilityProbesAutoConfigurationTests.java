@@ -64,7 +64,7 @@ class AvailabilityProbesAutoConfigurationTests {
 	}
 
 	@Test
-	void probesWhenKuberntesAndPropertyDisabledAddsNotBeans() {
+	void probesWhenKubernetesAndPropertyDisabledAddsNotBeans() {
 		this.contextRunner
 				.withPropertyValues("spring.main.cloud-platform=kubernetes", "management.health.probes.enabled=false")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
