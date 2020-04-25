@@ -194,6 +194,7 @@ task zip(type: Zip) {
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
 		into "pdf"
+		rename { "spring-boot-actuator-web-api.pdf" }
 	}
 	from(asciidoctor.outputDir) {
 		into "html"
