@@ -26,6 +26,7 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.
  * auto-configuration.
  *
  * @author Mark Paluch
+ * @author Zmapleshine
  * @since 2.0.0
  */
 @FunctionalInterface
