@@ -975,15 +975,6 @@ class SpringApplicationTests {
 		verifyNoMoreInteractions(listener);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void verifyRegisteredListenerFailedFromContextEvents() {
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean("testApplicationListener",
-				ApplicationListener.class);
-		InOrder inOrder = Mockito.inOrder(listener);
-		inOrder.verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
-		inOrder.verifyNoMoreInteractions();
-	}
-
 	@Test
 	void registerShutdownHookOff() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
