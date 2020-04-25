@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,7 +213,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	public boolean isParentOf(ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
-		if (this.getNumberOfElements() != name.getNumberOfElements() - 1) {
+		if (getNumberOfElements() != name.getNumberOfElements() - 1) {
 			return false;
 		}
 		return isAncestorOf(name);
@@ -227,7 +227,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
-		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
+		if (getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
 		return elementsEqual(name);

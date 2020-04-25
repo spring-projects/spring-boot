@@ -485,7 +485,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected void awaitInGracefulShutdown() {
-		while (!this.inGracefulShutdown()) {
+		while (!inGracefulShutdown()) {
 			try {
 				Thread.sleep(100);
 			}

@@ -88,7 +88,7 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 
 	@Override
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
-		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
+		handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
 	@Override

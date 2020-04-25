@@ -107,12 +107,12 @@ public class BomExtension {
 		this.properties.put(library.getVersionProperty(), library.getVersion());
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
-				this.putArtifactVersionProperty(group.getId(), module.getName(), library.getVersionProperty());
+				putArtifactVersionProperty(group.getId(), module.getName(), library.getVersionProperty());
 				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						createDependencyNotation(group.getId(), module.getName(), library.getVersion()));
 			}
 			for (String bomImport : group.getBoms()) {
-				this.putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
+				putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
 				String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion());
 				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						this.dependencyHandler.platform(bomDependency));

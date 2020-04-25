@@ -82,7 +82,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	@Deprecated
 	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return this.getErrorAttributes(request, includeStackTrace, false);
+		return getErrorAttributes(request, includeStackTrace, false);
 	}
 
 	@Override
