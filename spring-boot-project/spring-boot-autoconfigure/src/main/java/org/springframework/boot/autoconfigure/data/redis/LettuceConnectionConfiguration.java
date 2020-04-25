@@ -96,7 +96,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		}
 		builder.clientOptions(initializeClientOptionsBuilder().timeoutOptions(TimeoutOptions.enabled()).build());
 		builder.clientResources(clientResources);
-		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(getProperties(),builder));
+		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(getProperties(), builder));
 		return builder.build();
 	}
 

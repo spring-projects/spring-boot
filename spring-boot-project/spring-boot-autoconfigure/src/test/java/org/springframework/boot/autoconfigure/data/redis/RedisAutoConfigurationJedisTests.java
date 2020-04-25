@@ -175,10 +175,7 @@ class RedisAutoConfigurationJedisTests {
 
 		@Bean
 		JedisClientConfigurationBuilderCustomizer customizer() {
-			return (properties, clientConfigurationBuilder) -> {
-				//ignore properties config
-				clientConfigurationBuilder.useSsl();
-			};
+			return (properties, clientConfigurationBuilder) -> clientConfigurationBuilder.useSsl();
 		}
 
 	}

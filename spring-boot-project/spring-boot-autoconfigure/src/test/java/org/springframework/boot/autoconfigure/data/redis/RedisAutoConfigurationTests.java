@@ -301,10 +301,7 @@ class RedisAutoConfigurationTests {
 
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
-			return (properties, clientConfigurationBuilder) -> {
-				//ignore properties config
-				clientConfigurationBuilder.useSsl();
-			};
+			return (properties, clientConfigurationBuilder) -> clientConfigurationBuilder.useSsl();
 		}
 
 	}
