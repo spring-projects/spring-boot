@@ -84,6 +84,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private String comment;
 
+	private volatile boolean closed;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -140,6 +142,7 @@ public class JarFile extends java.util.jar.JarFile {
 	private JarFile(JarFile parent, RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data,
 			JarEntryFilter filter, JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
+		super.close();
 		this.parent = parent;
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -321,10 +324,17 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public void close() throws IOException {
-		super.close();
+		if (this.closed) {
+			return;
+		}
+		this.closed = true;
 		if (this.type == JarFileType.DIRECT && this.parent == null) {
 			this.rootFile.close();
 		}
+	}
+
+	boolean isClosed() {
+		return this.closed;
 	}
 
 	String getUrlString() throws MalformedURLException {
