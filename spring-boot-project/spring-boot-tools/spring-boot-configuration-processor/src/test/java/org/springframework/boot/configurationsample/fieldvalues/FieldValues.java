@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.configurationsample.fieldvalues;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Period;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.util.MimeType;
@@ -135,5 +136,15 @@ public class FieldValues {
 	private DataSize dataSizeGigabytes = DataSize.ofGigabytes(30);
 
 	private DataSize dataSizeTerabytes = DataSize.ofTerabytes(40);
+
+	private Period periodNone;
+
+	private Period periodDays = Period.ofDays(3);
+
+	private Period periodWeeks = Period.ofWeeks(2);
+
+	private Period periodMonths = Period.ofMonths(10);
+
+	private Period periodYears = Period.ofYears(15);
 
 }
