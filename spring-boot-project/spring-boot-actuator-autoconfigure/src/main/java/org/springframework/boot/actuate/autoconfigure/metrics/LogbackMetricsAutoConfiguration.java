@@ -44,7 +44,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(MetricsAutoConfiguration.class)
+@AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(LogbackLoggingCondition.class)
