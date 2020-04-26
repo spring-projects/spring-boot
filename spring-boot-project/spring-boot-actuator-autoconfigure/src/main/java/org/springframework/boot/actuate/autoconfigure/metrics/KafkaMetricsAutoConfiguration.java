@@ -43,7 +43,7 @@ import org.springframework.kafka.core.ProducerFactory;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(KafkaAutoConfiguration.class)
-@AutoConfigureAfter(MetricsAutoConfiguration.class)
+@AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnClass({ KafkaClientMetrics.class, ProducerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class KafkaMetricsAutoConfiguration {
