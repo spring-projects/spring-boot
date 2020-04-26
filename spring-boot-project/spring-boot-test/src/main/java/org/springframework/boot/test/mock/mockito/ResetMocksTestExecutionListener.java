@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.test.context.SpringBootTestExecutionListenerOrder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -47,7 +47,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 100;
+		return SpringBootTestExecutionListenerOrder.RESET_MOCKS.getValue();
 	}
 
 	@Override
