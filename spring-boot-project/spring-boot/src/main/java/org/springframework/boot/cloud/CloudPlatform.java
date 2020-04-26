@@ -149,7 +149,7 @@ public enum CloudPlatform {
 	 */
 	public boolean isEnforced(Environment environment) {
 		String platform = environment.getProperty("spring.main.cloud-platform");
-		return (platform != null) ? name().equalsIgnoreCase(platform) : false;
+		return name().equalsIgnoreCase(platform);
 	}
 
 	/**

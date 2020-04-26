@@ -251,11 +251,11 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public boolean shutDownGracefully() {
-		return (this.gracefulShutdown != null) ? this.gracefulShutdown.shutDownGracefully() : false;
+		return (this.gracefulShutdown != null) && this.gracefulShutdown.shutDownGracefully();
 	}
 
 	boolean inGracefulShutdown() {
-		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
+		return (this.gracefulShutdown != null) && this.gracefulShutdown.isShuttingDown();
 	}
 
 	/**
