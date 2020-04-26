@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.ClientRequest;
@@ -25,6 +26,7 @@ import org.springframework.boot.actuate.metrics.web.reactive.client.MetricsWebCl
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.ReactorNettyHttpClientMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -51,6 +53,16 @@ class WebClientMetricsConfiguration {
 		ClientRequest request = properties.getWeb().getClient().getRequest();
 		return new MetricsWebClientCustomizer(meterRegistry, tagsProvider, request.getMetricName(),
 				request.getAutotime());
+	}
+
+	@ConditionalOnClass(HttpClient.class)
+	static class ReactorNettyClientMetricsConfiguration {
+
+		@Bean
+		ReactorNettyHttpClientMapper metricsHttpClientMapper() {
+			return (httpClient) -> httpClient.tcpConfiguration((tcpClient) -> tcpClient.metrics(true));
+		}
+
 	}
 
 }

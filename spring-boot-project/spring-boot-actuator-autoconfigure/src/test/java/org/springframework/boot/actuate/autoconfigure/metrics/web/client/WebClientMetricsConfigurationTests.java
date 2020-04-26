@@ -18,16 +18,25 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import java.time.Duration;
 
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -105,6 +114,47 @@ class WebClientMetricsConfigurationTests {
 					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
 					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
 				});
+	}
+
+	@Test
+	void shouldConfigureMetricsForReactorNetty() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class))
+				.run((context) -> {
+					CompositeMeterRegistry registry = Metrics.globalRegistry;
+					MockWebServer server = new MockWebServer();
+					try {
+						server.start();
+						server.enqueue(new MockResponse());
+						String serverAddress = "http://" + server.getHostName() + ":" + server.getPort();
+						WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+						WebClient client = builder.baseUrl(serverAddress).build();
+						assertThat(registry.find("reactor.netty.tcp.client.connect.time").timer()).isNull();
+						client.get().uri("/test").retrieve().toBodilessEntity().block();
+						assertThat(registry.find("reactor.netty.tcp.client.connect.time").timer()).isNotNull();
+					}
+					finally {
+						server.shutdown();
+					}
+				});
+	}
+
+	@Test
+	void sanityTest() throws Exception {
+		MockWebServer server = new MockWebServer();
+		try {
+			server.start();
+			server.enqueue(new MockResponse());
+			SimpleMeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, Clock.SYSTEM);
+			Metrics.addRegistry(registry);
+			HttpClient client = HttpClient.create().metrics(true);
+			assertThat(registry.find("reactor.netty.http.client.connect.time").timer()).isNull();
+			client.get().uri("http://" + server.getHostName() + ":" + server.getPort()).response().block();
+			assertThat(registry.find("reactor.netty.http.client.connect.time").timer()).isNotNull();
+		}
+		finally {
+			server.shutdown();
+		}
+
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {

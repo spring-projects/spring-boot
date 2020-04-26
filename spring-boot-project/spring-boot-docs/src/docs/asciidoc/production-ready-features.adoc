@@ -1813,6 +1813,7 @@ Spring Boot registers the following core metrics when applicable:
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
 * Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
+* Reactor Netty metrics (TCP and allocator metrics for client and server)
 * {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
 
 
