@@ -111,6 +111,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	JarFile(JarFile parent) throws IOException {
 		super(parent.rootFile.getFile());
+		super.close();
 		this.parent = parent;
 		this.rootFile = parent.rootFile;
 		this.pathFromRoot = parent.pathFromRoot;
