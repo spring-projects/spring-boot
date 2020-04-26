@@ -17,25 +17,24 @@
 package org.springframework.boot.convert;
 
 import java.lang.annotation.*;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
- * Annotation that can be used to change the default unit used when converting a
+ * Annotation that can be used to indicate the format to use when converting a
  * {@link Period}.
  *
+ * @author Eddú Meléndez
  * @author Edson Chávez
  * @since 2.3.0
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface PeriodUnit {
+public @interface PeriodFormat {
 
 	/**
-	 * The Period unit to use if one is not specified.
-	 * @return the Period unit
+	 * The Period format style.
+	 * @return the period format style.
 	 */
-	ChronoUnit value();
+	PeriodStyle value();
 
 }

@@ -45,7 +45,12 @@ public class StringToPeriodConverter implements GenericConverter {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
-		return convert(source.toString(), getPeriodUnit(targetType));
+		return convert(source.toString(), getStyle(targetType), getPeriodUnit(targetType));
+	}
+
+	private PeriodStyle getStyle(TypeDescriptor targetType) {
+		PeriodFormat annotation = targetType.getAnnotation(PeriodFormat.class);
+		return (annotation != null) ? annotation.value() : null;
 	}
 
 	private ChronoUnit getPeriodUnit(TypeDescriptor targetType) {
@@ -53,8 +58,9 @@ public class StringToPeriodConverter implements GenericConverter {
 		return (annotation != null) ? annotation.value() : null;
 	}
 
-	private Period convert(String source, ChronoUnit unit) {
-		return Period.parse(source);
+	private Period convert(String source, PeriodStyle style, ChronoUnit unit) {
+		style = (style != null) ? style : PeriodStyle.detect(source);
+		return style.parse(source, unit);
 	}
 
 }

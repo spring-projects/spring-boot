@@ -4,6 +4,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.util.ObjectUtils;
 
+import java.time.Duration;
 import java.time.Period;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -22,12 +23,17 @@ public class PeriodToStringConverter implements GenericConverter {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
-		return convert((Period) source, getPeriodUnit(sourceType));
+		return convert((Period) source, getPeriodStyle(sourceType), getPeriodUnit(sourceType));
 	}
 
-	private String convert(Period source, ChronoUnit unit) {
+	private PeriodStyle getPeriodStyle(TypeDescriptor sourceType) {
+		PeriodFormat annotation = sourceType.getAnnotation(PeriodFormat.class);
+		return (annotation != null) ? annotation.value() : null;
+	}
 
-		return source.toString();
+	private String convert(Period source, PeriodStyle style, ChronoUnit unit) {
+		style = (style != null) ? style : PeriodStyle.ISO8601;
+		return style.print(source, unit);
 	}
 
 	private ChronoUnit getPeriodUnit(TypeDescriptor sourceType) {

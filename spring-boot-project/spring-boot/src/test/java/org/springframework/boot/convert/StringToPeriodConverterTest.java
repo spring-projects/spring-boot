@@ -18,8 +18,10 @@ package org.springframework.boot.convert;
 
 import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link StringToPeriodConverter}.
  *
+ * @author Eddú Meléndez
  * @author Edson Chávez
  */
 public class StringToPeriodConverterTest {
@@ -43,8 +46,51 @@ public class StringToPeriodConverterTest {
 		assertThat(convert(conversionService, "-P1Y2M")).isEqualTo(Period.parse("-P1Y2M"));
 	}
 
+	@ConversionServiceTest
+	void convertWhenSimpleDaysShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10d")).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "10D")).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "+10d")).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "-10D")).isEqualTo(Period.ofDays(-10));
+	}
+
+	@ConversionServiceTest
+	void convertWhenSimpleMonthsShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10m")).isEqualTo(Period.ofMonths(10));
+		assertThat(convert(conversionService, "10M")).isEqualTo(Period.ofMonths(10));
+		assertThat(convert(conversionService, "+10m")).isEqualTo(Period.ofMonths(10));
+		assertThat(convert(conversionService, "-10M")).isEqualTo(Period.ofMonths(-10));
+	}
+
+	@ConversionServiceTest
+	void convertWhenSimpleYearsShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10y")).isEqualTo(Period.ofYears(10));
+		assertThat(convert(conversionService, "10Y")).isEqualTo(Period.ofYears(10));
+		assertThat(convert(conversionService, "+10y")).isEqualTo(Period.ofYears(10));
+		assertThat(convert(conversionService, "-10Y")).isEqualTo(Period.ofYears(-10));
+	}
+
+	@ConversionServiceTest
+	void convertWhenSimpleWithoutSuffixShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10")).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "+10")).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "-10")).isEqualTo(Period.ofDays(-10));
+	}
+
+	@ConversionServiceTest
+	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(10));
+		assertThat(convert(conversionService, "+10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(10));
+		assertThat(convert(conversionService, "-10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(-10));
+	}
+
 	private Period convert(ConversionService conversionService, String source) {
 		return conversionService.convert(source, Period.class);
+	}
+
+	private Period convert(ConversionService conversionService, String source, ChronoUnit unit, PeriodStyle style) {
+		return (Period) conversionService.convert(source, TypeDescriptor.forObject(source),
+				MockPeriodTypeDescriptor.get(unit, style));
 	}
 
 	static Stream<? extends Arguments> conversionServices() {
