@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DurationToStringConverter}.
+ * Tests for {@link PeriodToStringConverter}.
  *
  * @author Eddú Melendez
  * @author Edson Chávez

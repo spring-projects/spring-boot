@@ -26,7 +26,7 @@ import java.util.Set;
 
 /**
  * {@link Converter} to convert from a {@link Number} to a {@link Period}. Supports
- * {@link Period#parse(CharSequence)} as well a more readable {@code 10s} form.
+ * {@link Period#parse(CharSequence)} as well a more readable {@code 10m} form.
  *
  * @author Eddú Meléndez
  * @author Edson Chávez

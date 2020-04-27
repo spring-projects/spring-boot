@@ -133,9 +133,9 @@ public enum PeriodStyle {
 	public abstract String print(Period value, ChronoUnit unit);
 
 	/**
-	 * Detect the style then parse the value to return a duration.
+	 * Detect the style then parse the value to return a period.
 	 * @param value the value to parse
-	 * @return the parsed duration
+	 * @return the parsed period
 	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
 	 */
 	public static Period detectAndParse(String value) {
@@ -216,7 +216,6 @@ public enum PeriodStyle {
 		}
 
 		public Period parse(String value) {
-
 			int intValue = Integer.parseInt(value);
 
 			if (ChronoUnit.DAYS == this.chronoUnit) {
@@ -231,7 +230,6 @@ public enum PeriodStyle {
 			else if (ChronoUnit.YEARS == this.chronoUnit) {
 				return Period.ofYears(intValue);
 			}
-
 			throw new IllegalArgumentException("Unknow unit '" + this.chronoUnit + "'");
 		}
 
