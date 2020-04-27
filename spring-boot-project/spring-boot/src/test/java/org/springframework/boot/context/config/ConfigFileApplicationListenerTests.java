@@ -63,6 +63,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConfigFileApplicationListener}.
@@ -646,6 +647,15 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment).has(
 				matchingPropertySource("applicationConfig: [file:" + location.replace(File.separatorChar, '/') + "]"));
+	}
+
+	@Test
+	public void classpathWildcardResourceThrowsException() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=classpath*:override.properties");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessage("Classpath wildard patterns cannot be used as a search location");
 	}
 
 	@Test
