@@ -180,7 +180,7 @@
 		<spring-retry.version>1.2.5.RELEASE</spring-retry.version>
 		<spring-security.version>5.1.9.RELEASE</spring-security.version>
 		<spring-session-bom.version>Bean-SR10</spring-session-bom.version>
-		<spring-ws.version>3.0.8.RELEASE</spring-ws.version>
+		<spring-ws.version>3.0.9.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
