@@ -16,8 +16,9 @@ When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring B
 4. Creates a {boot-build-image-javadoc}[`BootBuildImage`] task named `bootBuildImage` that will create a OCI image using a https://buildpacks.io[buildpack].
 5. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run your application.
 6. Creates a configuration named `bootArchives` that contains the artifact produced by the `bootJar` task.
-7. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
-8. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
+7. Creates a configuration named `developmentOnly` for dependencies that are only required at development time, such as Spring Boot's Devtools, and should not be packaged in executable jars and wars.
+8. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
+9. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
 
 
 

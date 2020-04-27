@@ -27,6 +27,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.ApplicationPlugin;
@@ -67,6 +68,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		disableJarTask(project);
 		configureBuildTask(project);
+		configureDevelopmentOnlyConfiguration(project);
 		TaskProvider<BootJar> bootJar = configureBootJarTask(project);
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
@@ -92,7 +94,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 			bootJar.setGroup(BasePlugin.BUILD_GROUP);
 			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-			bootJar.classpath((Callable<FileCollection>) mainSourceSet::getRuntimeClasspath);
+			bootJar.classpath((Callable<FileCollection>) () -> mainSourceSet.getRuntimeClasspath().minus(
+					project.getConfigurations().getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME)));
 			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		});
 	}
@@ -155,6 +158,15 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		compile.doFirst(new AdditionalMetadataLocationsConfigurer());
+	}
+
+	private void configureDevelopmentOnlyConfiguration(Project project) {
+		Configuration developmentOnly = project.getConfigurations()
+				.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		developmentOnly
+				.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
+		project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
+				.extendsFrom(developmentOnly);
 	}
 
 	/**

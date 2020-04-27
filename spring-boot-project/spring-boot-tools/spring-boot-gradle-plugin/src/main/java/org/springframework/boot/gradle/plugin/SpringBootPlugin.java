@@ -71,6 +71,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 	public static final String BOOT_BUILD_IMAGE_TASK_NAME = "bootBuildImage";
 
 	/**
+	 * The name of the {@code developmentOnly} configuration.
+	 * @since 2.3.0
+	 */
+	public static final String DEVELOPMENT_ONLY_CONFIGURATION_NAME = "developmentOnly";
+
+	/**
 	 * The coordinates {@code (group:name:version)} of the
 	 * {@code spring-boot-dependencies} bom.
 	 */

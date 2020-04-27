@@ -19,3 +19,9 @@ task('javaCompileEncoding') {
 		}
 	}
 }
+
+task('configurationExists') {
+	doFirst {
+		println "${configurationName} exists = ${configurations.findByName(configurationName) != null}"
+	}
+}

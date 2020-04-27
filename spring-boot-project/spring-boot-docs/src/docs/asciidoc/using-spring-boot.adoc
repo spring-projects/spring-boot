@@ -533,12 +533,6 @@ To include devtools support, add the module dependency to your build, as shown i
 .Gradle
 [source,groovy,indent=0,subs="attributes"]
 ----
-	configurations {
-		developmentOnly
-		runtimeClasspath {
-			extendsFrom developmentOnly
-		}
-	}
 	dependencies {
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
 	}
@@ -548,11 +542,12 @@ NOTE: Developer tools are automatically disabled when running a fully packaged a
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
 If that does not apply to you (i.e. if you run your application from a container), consider excluding devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
 
-TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly` configuration in Gradle (as shown above) is a best practice that prevents devtools from being transitively applied to other modules that use your project.
+TIP: Flagging the dependency as optional in Maven or using the `developmentOnly` configuration in Gradle (as shown above) prevents devtools from being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default.
-If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the `excludeDevtools` build property to include it.
-The property is supported with both the Maven and Gradle plugins.
+If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to include it.
+When using the Maven plugin, set the `excludeDevtools` property to `false`.
+When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
 
 

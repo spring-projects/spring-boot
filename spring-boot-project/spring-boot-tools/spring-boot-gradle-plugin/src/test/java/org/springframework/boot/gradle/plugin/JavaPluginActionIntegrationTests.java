@@ -139,6 +139,13 @@ class JavaPluginActionIntegrationTests {
 		assertThat(result.getOutput()).contains("compileJava compiler args: [-parameters]");
 	}
 
+	@TestTemplate
+	void applyingJavaPluginCreatesDevelopmentOnlyConfiguration() {
+		assertThat(this.gradleBuild
+				.build("configurationExists", "-PconfigurationName=developmentOnly", "-PapplyJavaPlugin").getOutput())
+						.contains("developmentOnly exists = true");
+	}
+
 	private void createMinimalMainSource() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();

@@ -24,7 +24,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootWarIntegrationTests() {
-		super("bootWar");
+		super("bootWar", "WEB-INF/lib/");
 	}
 
 }

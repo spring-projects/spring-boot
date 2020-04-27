@@ -149,10 +149,11 @@ include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-c
 
 
 
-[[packaging-executable-configuring-excluding-devtools]]
-==== Excluding Devtools
-By default, Spring Boot's Devtools module, `org.springframework.boot:spring-boot-devtools`, will be excluded from an executable jar or war.
-If you want to include Devtools in your archive set the `excludeDevtools` property to `false`:
+[[packaging-executable-configuring-including-development-only-dependencies]]
+==== Including Development-only Dependencies
+By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
+
+If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

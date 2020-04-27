@@ -370,6 +370,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
+	@Deprecated
 	void devtoolsJarCanBeIncluded() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.classpath(jarFile("spring-boot-devtools-0.1.2.jar"));
