@@ -20,20 +20,19 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 
-import java.time.Duration;
 import java.time.Period;
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * {@link Converter} to convert from a {@link Number} to a {@link Duration}. Supports
- * {@link Duration#parse(CharSequence)} as well a more readable {@code 10s} form.
+ * {@link Converter} to convert from a {@link Number} to a {@link Period}. Supports
+ * {@link Period#parse(CharSequence)} as well a more readable {@code 10s} form.
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
  * 
- * @see DurationFormat
- * @see DurationUnit
+ * @see PeriodFormat
+ * @see PeriodUnit
  */
 final class NumberToPeriodConverter implements GenericConverter {
 

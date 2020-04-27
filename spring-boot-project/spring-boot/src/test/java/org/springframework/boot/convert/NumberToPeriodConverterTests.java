@@ -39,14 +39,14 @@ import static org.mockito.Mockito.mock;
 class NumberToPeriodConverterTests {
 
 	@ConversionServiceTest
-	void convertWhenSimpleWithoutSuffixShouldReturnDuration(ConversionService conversionService) {
+	void convertWhenSimpleWithoutSuffixShouldReturnPeriod(ConversionService conversionService) {
 		assertThat(convert(conversionService, 10)).isEqualTo(Period.ofDays(10));
 		assertThat(convert(conversionService, +10)).isEqualTo(Period.ofDays(10));
 		assertThat(convert(conversionService, -10)).isEqualTo(Period.ofDays(-10));
 	}
 
 	@ConversionServiceTest
-	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration(ConversionService conversionService) {
+	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnPeriod(ConversionService conversionService) {
 		assertThat(convert(conversionService, 10, ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
 		assertThat(convert(conversionService, +10, ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
 		assertThat(convert(conversionService, -10, ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(-10));

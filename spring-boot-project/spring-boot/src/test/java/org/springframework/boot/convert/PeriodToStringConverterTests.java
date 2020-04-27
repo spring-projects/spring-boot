@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
@@ -30,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link DurationToStringConverter}.
  *
+ * @author Eddú Melendez
  * @author Edson Chávez
  */
 class PeriodToStringConverterTests {

@@ -19,7 +19,6 @@ package org.springframework.boot.convert;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -28,8 +27,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Create a mock {@link TypeDescriptor} with optional {@link PeriodUnit @DurationUnit} and
- * {@link PeriodFormat @DurationFormat} annotations.
+ * Create a mock {@link TypeDescriptor} with optional {@link PeriodUnit @PeriodUnit} and
+ * {@link PeriodFormat @PeriodFormat} annotations.
  *
  * @author Eddú Meléndez
  * @author Edson Chávez

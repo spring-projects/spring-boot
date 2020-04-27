@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Eddú Meléndez
  * @author Edson Chávez
  */
-class PereiodStyleTests {
+class PeriodStyleTests {
 
 	@Test
 	void detectAndParseWhenValueIsNullShouldThrowException() {

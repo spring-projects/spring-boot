@@ -16,7 +16,12 @@
 
 package org.springframework.boot.convert;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Documented;
+import java.time.Period;
 
 /**
  * Annotation that can be used to indicate the format to use when converting a
@@ -32,7 +37,7 @@ import java.lang.annotation.*;
 public @interface PeriodFormat {
 
 	/**
-	 * The Period format style.
+	 * The {@link Period} format style.
 	 * @return the period format style.
 	 */
 	PeriodStyle value();

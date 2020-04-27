@@ -28,8 +28,9 @@ import java.util.Set;
 
 /**
  * {@link Converter} to convert from a {@link String} to a {@link Period}. Supports
- * {@link Period#parse(CharSequence)} as well a more readable {@code 10s} form.
+ * {@link Period#parse(CharSequence)} as well a more readable form.
  *
+ * @author Eddú Meléndez
  * @author Edson Chávez
  * @see PeriodUnit
  */

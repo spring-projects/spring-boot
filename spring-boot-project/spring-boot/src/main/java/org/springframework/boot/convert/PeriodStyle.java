@@ -18,7 +18,6 @@ package org.springframework.boot.convert;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.util.unit.DataSize;
 
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -27,53 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A standard set of {@link DataSize} units.
- *
- * <p>
- * The unit prefixes used in this class are
- * <a href="https://en.wikipedia.org/wiki/Binary_prefix">binary prefixes</a> indicating
- * multiplication by powers of 2. The following table displays the enum constants defined
- * in this class and corresponding values.
- *
- * <p>
- * <table border="1">
- * <tr>
- * <th>Constant</th>
- * <th>Data Size</th>
- * <th>Power&nbsp;of&nbsp;2</th>
- * <th>Size in Bytes</th>
- * </tr>
- * <tr>
- * <td>{@link #BYTES}</td>
- * <td>1B</td>
- * <td>2^0</td>
- * <td>1</td>
- * </tr>
- * <tr>
- * <td>{@link #KILOBYTES}</td>
- * <td>1KB</td>
- * <td>2^10</td>
- * <td>1,024</td>
- * </tr>
- * <tr>
- * <td>{@link #MEGABYTES}</td>
- * <td>1MB</td>
- * <td>2^20</td>
- * <td>1,048,576</td>
- * </tr>
- * <tr>
- * <td>{@link #GIGABYTES}</td>
- * <td>1GB</td>
- * <td>2^30</td>
- * <td>1,073,741,824</td>
- * </tr>
- * <tr>
- * <td>{@link #TERABYTES}</td>
- * <td>1TB</td>
- * <td>2^40</td>
- * <td>1,099,511,627,776</td>
- * </tr>
- * </table>
+ * A standard set of {@link Period} units.
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
@@ -83,7 +36,7 @@ import java.util.regex.Pattern;
 public enum PeriodStyle {
 
 	/**
-	 * Simple formatting, for example '1s'.
+	 * Simple formatting, for example '1d'.
 	 */
 	SIMPLE("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$") {
 
@@ -145,25 +98,25 @@ public enum PeriodStyle {
 	}
 
 	/**
-	 * Parse the given value to a duration.
+	 * Parse the given value to a Period.
 	 * @param value the value to parse
-	 * @return a duration
+	 * @return a period
 	 */
 	public Period parse(String value) {
 		return parse(value, null);
 	}
 
 	/**
-	 * Parse the given value to a duration.
+	 * Parse the given value to a period.
 	 * @param value the value to parse
-	 * @param unit the duration unit to use if the value doesn't specify one ({@code null}
-	 * will default to ms)
-	 * @return a duration
+	 * @param unit the period unit to use if the value doesn't specify one ({@code null}
+	 * will default to d)
+	 * @return a period
 	 */
 	public abstract Period parse(String value, ChronoUnit unit);
 
 	/**
-	 * Print the specified duration.
+	 * Print the specified period.
 	 * @param value the value to print
 	 * @return the printed result
 	 */
@@ -172,7 +125,7 @@ public enum PeriodStyle {
 	}
 
 	/**
-	 * Print the specified duration using the given unit.
+	 * Print the specified period using the given unit.
 	 * @param value the value to print
 	 * @param unit the value to use for printing
 	 * @return the printed result
@@ -190,11 +143,11 @@ public enum PeriodStyle {
 	}
 
 	/**
-	 * Detect the style then parse the value to return a duration.
+	 * Detect the style then parse the value to return a period.
 	 * @param value the value to parse
-	 * @param unit the duration unit to use if the value doesn't specify one ({@code null}
+	 * @param unit the period unit to use if the value doesn't specify one ({@code null}
 	 * will default to ms)
-	 * @return the parsed duration
+	 * @return the parsed period
 	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
 	 */
 	public static Period detectAndParse(String value, ChronoUnit unit) {
@@ -204,7 +157,7 @@ public enum PeriodStyle {
 	/**
 	 * Detect the style from the given source value.
 	 * @param value the source value
-	 * @return the duration style
+	 * @return the period style
 	 * @throws IllegalStateException if the value is not a known style
 	 */
 	public static PeriodStyle detect(String value) {
@@ -220,22 +173,17 @@ public enum PeriodStyle {
 	enum Unit {
 
 		/**
-		 * Days, represented by suffix {@code B}.
+		 * Days, represented by suffix {@code d}.
 		 */
 		DAYS(ChronoUnit.DAYS, "d", Period::getDays),
 
 		/**
-		 * Days, represented by suffix {@code B}.
-		 */
-		// WEEKS(ChronoUnit.WEEKS,"w", Period::ofWeeks),
-
-		/**
-		 * Days, represented by suffix {@code B}.
+		 * Months, represented by suffix {@code m}.
 		 */
 		MONTHS(ChronoUnit.MONTHS, "m", Period::getMonths),
 
 		/**
-		 * Days, represented by suffix {@code B}.
+		 * Years, represented by suffix {@code y}.
 		 */
 		YEARS(ChronoUnit.YEARS, "y", Period::getYears);
 
