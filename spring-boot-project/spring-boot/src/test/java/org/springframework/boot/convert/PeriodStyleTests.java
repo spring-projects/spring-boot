@@ -16,10 +16,10 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.jupiter.api.Test;
-
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

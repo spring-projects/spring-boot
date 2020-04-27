@@ -16,15 +16,16 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.jupiter.params.provider.Arguments;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
-
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.params.provider.Arguments;
+
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

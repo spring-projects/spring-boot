@@ -16,15 +16,15 @@
 
 package org.springframework.boot.convert;
 
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.util.ObjectUtils;
-
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Set;
+
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link Converter} to convert from a {@link String} to a {@link Period}. Supports
@@ -32,6 +32,7 @@ import java.util.Set;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
+ * @since 2.3.0
  * @see PeriodUnit
  */
 public class StringToPeriodConverter implements GenericConverter {

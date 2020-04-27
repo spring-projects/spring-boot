@@ -16,14 +16,14 @@
 
 package org.springframework.boot.convert;
 
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A standard set of {@link Period} units.
