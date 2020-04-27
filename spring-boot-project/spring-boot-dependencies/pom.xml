@@ -163,7 +163,7 @@
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<snakeyaml.version>1.23</snakeyaml.version>
-		<solr.version>7.7.2</solr.version>
+		<solr.version>7.7.3</solr.version>
 		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.1.15.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.1.14.BUILD-SNAPSHOT</spring-amqp.version>
