@@ -30,7 +30,6 @@ import java.util.Set;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
- * 
  * @see PeriodFormat
  * @see PeriodUnit
  */
