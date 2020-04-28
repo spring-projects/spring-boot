@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,26 @@
 
 package org.springframework.boot.autoconfigure.security.rsocket;
 
-import io.rsocket.RSocketFactory;
+import io.rsocket.core.RSocketServer;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RSocketSecurityAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Brian Clozel
  */
 class RSocketSecurityAutoConfigurationTests {
 
@@ -58,14 +56,15 @@ class RSocketSecurityAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationAddsCustomizerForServerRSocketFactory() {
-		RSocketFactory.ServerRSocketFactory factory = mock(RSocketFactory.ServerRSocketFactory.class);
-		ArgumentCaptor<SecuritySocketAcceptorInterceptor> captor = ArgumentCaptor
-				.forClass(SecuritySocketAcceptorInterceptor.class);
+		RSocketServer server = RSocketServer.create();
 		this.contextRunner.run((context) -> {
-			ServerRSocketFactoryProcessor customizer = context.getBean(ServerRSocketFactoryProcessor.class);
-			customizer.process(factory);
-			verify(factory).addSocketAcceptorPlugin(captor.capture());
-			assertThat(captor.getValue()).isInstanceOf(SecuritySocketAcceptorInterceptor.class);
+			RSocketServerCustomizer customizer = context.getBean(RSocketServerCustomizer.class);
+			customizer.customize(server);
+			server.interceptors((registry) -> registry.forSocketAcceptor((interceptors) -> {
+				assertThat(interceptors).isNotEmpty();
+				assertThat(interceptors)
+						.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
+			}));
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
@@ -62,6 +63,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private Duration lifecycleTimeout;
 
 	private List<ServerRSocketFactoryProcessor> socketFactoryProcessors = new ArrayList<>();
+
+	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
 	@Override
 	public void setPort(int port) {
@@ -91,7 +94,10 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * {@link ServerRSocketFactory} while building the server. Calling this method will
 	 * replace any existing processors.
 	 * @param socketFactoryProcessors processors to apply before the server starts
+	 * @deprecated in favor of {@link #setRSocketServerCustomizers(Collection)} as of
+	 * 2.2.7
 	 */
+	@Deprecated
 	public void setSocketFactoryProcessors(
 			Collection<? extends ServerRSocketFactoryProcessor> socketFactoryProcessors) {
 		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
@@ -102,10 +108,36 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * Add {@link ServerRSocketFactoryProcessor}s that should be called to process the
 	 * {@link ServerRSocketFactory} while building the server.
 	 * @param socketFactoryProcessors processors to apply before the server starts
+	 * @deprecated in favor of
+	 * {@link #addRSocketServerCustomizers(RSocketServerCustomizer...)} as of 2.2.7
 	 */
+	@Deprecated
 	public void addSocketFactoryProcessors(ServerRSocketFactoryProcessor... socketFactoryProcessors) {
 		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
 		this.socketFactoryProcessors.addAll(Arrays.asList(socketFactoryProcessors));
+	}
+
+	/**
+	 * Set {@link RSocketServerCustomizer}s that should be called to configure the
+	 * {@link io.rsocket.core.RSocketServer} while building the server. Calling this
+	 * method will replace any existing customizers.
+	 * @param rSocketServerCustomizers customizers to apply before the server starts
+	 * @since 2.2.7
+	 */
+	public void setRSocketServerCustomizers(Collection<? extends RSocketServerCustomizer> rSocketServerCustomizers) {
+		Assert.notNull(rSocketServerCustomizers, "RSocketServerCustomizers must not be null");
+		this.rSocketServerCustomizers = new ArrayList<>(rSocketServerCustomizers);
+	}
+
+	/**
+	 * Add {@link RSocketServerCustomizer}s that should be called to configure the
+	 * {@link io.rsocket.core.RSocketServer}.
+	 * @param rSocketServerCustomizers customizers to apply before the server starts
+	 * @since 2.2.7
+	 */
+	public void addRSocketServerCustomizers(RSocketServerCustomizer... rSocketServerCustomizers) {
+		Assert.notNull(rSocketServerCustomizers, "RSocketServerCustomizers must not be null");
+		this.rSocketServerCustomizers.addAll(Arrays.asList(rSocketServerCustomizers));
 	}
 
 	/**
@@ -118,13 +150,14 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
-		RSocketFactory.ServerRSocketFactory factory = RSocketFactory.receive();
-		for (ServerRSocketFactoryProcessor processor : this.socketFactoryProcessors) {
-			factory = processor.process(factory);
-		}
-		Mono<CloseableChannel> starter = factory.acceptor(socketAcceptor).transport(transport).start();
+		io.rsocket.core.RSocketServer server = io.rsocket.core.RSocketServer.create(socketAcceptor);
+		RSocketFactory.ServerRSocketFactory factory = new ServerRSocketFactory(server);
+		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
+		this.socketFactoryProcessors.forEach((processor) -> processor.process(factory));
+		Mono<CloseableChannel> starter = server.bind(transport);
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
 	}
 

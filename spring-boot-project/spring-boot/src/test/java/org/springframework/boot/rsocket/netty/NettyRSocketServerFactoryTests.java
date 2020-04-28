@@ -36,6 +36,7 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
@@ -48,6 +49,7 @@ import org.springframework.util.SocketUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.will;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -129,6 +131,7 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void serverProcessors() {
 		NettyRSocketServerFactory factory = getFactory();
 		ServerRSocketFactoryProcessor[] processors = new ServerRSocketFactoryProcessor[2];
@@ -142,6 +145,23 @@ class NettyRSocketServerFactoryTests {
 		InOrder ordered = inOrder((Object[]) processors);
 		for (ServerRSocketFactoryProcessor processor : processors) {
 			ordered.verify(processor).process(any(RSocketFactory.ServerRSocketFactory.class));
+		}
+	}
+
+	@Test
+	void serverCustomizers() {
+		NettyRSocketServerFactory factory = getFactory();
+		RSocketServerCustomizer[] customizers = new RSocketServerCustomizer[2];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(RSocketServerCustomizer.class);
+			will((invocation) -> invocation.getArgument(0)).given(customizers[i])
+					.customize(any(io.rsocket.core.RSocketServer.class));
+		}
+		factory.setRSocketServerCustomizers(Arrays.asList(customizers));
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (RSocketServerCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(io.rsocket.core.RSocketServer.class));
 		}
 	}
 
