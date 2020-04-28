@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.zip.ZipFile;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,7 +28,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -201,7 +199,7 @@ public class JarURLConnectionTests {
 		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
 		JarFile connectionJarFile = connection.getJarFile();
 		connectionJarFile.close();
-		assertThat((Boolean) ReflectionTestUtils.getField(this.jarFile, ZipFile.class, "closeRequested")).isFalse();
+		assertThat(this.jarFile.isClosed()).isFalse();
 	}
 
 	private String getRelativePath() {
