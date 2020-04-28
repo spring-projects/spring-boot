@@ -57,7 +57,7 @@ class LayerResolver {
 	private final Spec<FileCopyDetails> librarySpec;
 
 	LayerResolver(Iterable<Configuration> configurations, LayeredSpec layeredConfiguration,
-				  Spec<FileCopyDetails> librarySpec) {
+			Spec<FileCopyDetails> librarySpec) {
 		this.resolvedDependencies = new ResolvedDependencies(configurations);
 		this.layeredConfiguration = layeredConfiguration;
 		this.librarySpec = librarySpec;
@@ -140,9 +140,11 @@ class LayerResolver {
 			if (resolvedConfiguration != null) {
 				for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
 					ComponentIdentifier identifier = resolvedArtifact.getId().getComponentIdentifier();
-					if (identifier instanceof ModuleComponentIdentifier || identifier instanceof ProjectComponentIdentifier) {
+					if (identifier instanceof ModuleComponentIdentifier
+							|| identifier instanceof ProjectComponentIdentifier) {
 						this.artifactCoordinates.put(resolvedArtifact.getFile(),
-								new ModuleVersionIdentifierLibraryCoordinates(resolvedArtifact.getModuleVersion().getId()));
+								new ModuleVersionIdentifierLibraryCoordinates(
+										resolvedArtifact.getModuleVersion().getId()));
 					}
 				}
 			}

@@ -103,8 +103,9 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			List<String> entryNames = getEntryNames(jarFile);
 			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
 					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/lib/first-project-library.jar",
-					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
-					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
+					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar",
+					"BOOT-INF/classes/com/example/Application.class", "BOOT-INF/classes/application.properties",
+					"BOOT-INF/classes/static/test.css");
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
@@ -152,8 +153,9 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			List<String> entryNames = getEntryNames(jar);
 			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
 					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/lib/first-project-library.jar",
-					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
-					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
+					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar",
+					"BOOT-INF/classes/com/example/Application.class", "BOOT-INF/classes/application.properties",
+					"BOOT-INF/classes/static/test.css");
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
 					"resources", "application");
@@ -186,9 +188,12 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
+					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod())
+					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod())
+					.isEqualTo(ZipEntry.STORED);
 		}
 	}
 
@@ -268,9 +273,12 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		Set<ResolvedArtifact> artifacts = new LinkedHashSet<>();
 		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
 		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
-		artifacts.add(mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
-		artifacts.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
-		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example", "second-project-library", "1.0.0.SNAPSHOT"));
+		artifacts.add(
+				mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
+		artifacts
+				.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
+		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example",
+				"second-project-library", "1.0.0.SNAPSHOT"));
 		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
 		given(resolvedConfiguration.getResolvedArtifacts()).willReturn(artifacts);
 		Configuration configuration = mock(Configuration.class);

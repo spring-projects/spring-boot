@@ -211,7 +211,8 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
 		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
-		assertThat(indexedLayers.get("subproject-dependencies")).containsExactlyElementsOf(expectedSubprojectDependencies);
+		assertThat(indexedLayers.get("subproject-dependencies"))
+				.containsExactlyElementsOf(expectedSubprojectDependencies);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
