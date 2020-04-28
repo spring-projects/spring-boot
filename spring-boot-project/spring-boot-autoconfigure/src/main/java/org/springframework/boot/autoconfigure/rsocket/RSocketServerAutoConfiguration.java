@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 
 import java.util.stream.Collectors;
 
-import io.rsocket.RSocketFactory;
+import io.rsocket.core.RSocketServer;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +58,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })
+@ConditionalOnClass({ RSocketServer.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })
 @ConditionalOnBean(RSocketMessageHandler.class)
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 @EnableConfigurationProperties(RSocketProperties.class)
@@ -69,10 +70,12 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@SuppressWarnings("deprecation")
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
-				RSocketMessageHandler messageHandler, ObjectProvider<ServerRSocketFactoryProcessor> processors) {
+				RSocketMessageHandler messageHandler, ObjectProvider<ServerRSocketFactoryProcessor> processors,
+				ObjectProvider<RSocketServerCustomizer> customizers) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), processors.orderedStream());
+					messageHandler.responder(), processors.orderedStream(), customizers.orderedStream());
 		}
 
 	}
@@ -89,14 +92,17 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@SuppressWarnings("deprecation")
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
-				ObjectProvider<ServerRSocketFactoryProcessor> processors) {
+				ObjectProvider<ServerRSocketFactoryProcessor> processors,
+				ObjectProvider<RSocketServerCustomizer> customizers) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
+			factory.setRSocketServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 			factory.setSocketFactoryProcessors(processors.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
@@ -109,13 +115,12 @@ public class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
-		ServerRSocketFactoryProcessor frameDecoderServerFactoryCustomizer(RSocketMessageHandler rSocketMessageHandler) {
-			return (serverRSocketFactory) -> {
+		RSocketServerCustomizer frameDecoderRSocketServerCustomizer(RSocketMessageHandler rSocketMessageHandler) {
+			return (server) -> {
 				if (rSocketMessageHandler.getRSocketStrategies()
 						.dataBufferFactory() instanceof NettyDataBufferFactory) {
-					return serverRSocketFactory.frameDecoder(PayloadDecoder.ZERO_COPY);
+					server.payloadDecoder(PayloadDecoder.ZERO_COPY);
 				}
-				return serverRSocketFactory;
 			};
 		}
 
