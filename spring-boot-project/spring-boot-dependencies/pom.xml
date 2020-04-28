@@ -57,7 +57,7 @@
 		<dependency-management-plugin.version>1.0.9.RELEASE</dependency-management-plugin.version>
 		<db2-jdbc.version>11.5.0.0</db2-jdbc.version>
 		<derby.version>10.14.2.0</derby.version>
-		<dropwizard-metrics.version>4.1.5</dropwizard-metrics.version>
+		<dropwizard-metrics.version>4.1.6</dropwizard-metrics.version>
 		<ehcache.version>2.10.6</ehcache.version>
 		<ehcache3.version>3.8.1</ehcache3.version>
 		<embedded-mongo.version>2.2.0</embedded-mongo.version>
