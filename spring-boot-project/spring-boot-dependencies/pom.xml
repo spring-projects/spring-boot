@@ -66,7 +66,7 @@
 		<elasticsearch.version>6.8.7</elasticsearch.version>
 		<glassfish-el.version>3.0.3</glassfish-el.version>
 		<glassfish-jaxb.version>2.3.2</glassfish-jaxb.version>
-		<groovy.version>2.5.10</groovy.version>
+		<groovy.version>2.5.11</groovy.version>
 		<gson.version>2.8.6</gson.version>
 		<h2.version>1.4.200</h2.version>
 		<hamcrest.version>2.1</hamcrest.version>
