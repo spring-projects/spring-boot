@@ -24,11 +24,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvedArtifact;
+import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
 
@@ -43,6 +45,7 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  * @author Madhura Bhave
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Paddy Drury
  * @see BootZipCopyAction
  */
 class LayerResolver {
@@ -54,7 +57,7 @@ class LayerResolver {
 	private final Spec<FileCopyDetails> librarySpec;
 
 	LayerResolver(Iterable<Configuration> configurations, LayeredSpec layeredConfiguration,
-			Spec<FileCopyDetails> librarySpec) {
+				  Spec<FileCopyDetails> librarySpec) {
 		this.resolvedDependencies = new ResolvedDependencies(configurations);
 		this.layeredConfiguration = layeredConfiguration;
 		this.librarySpec = librarySpec;
@@ -110,7 +113,7 @@ class LayerResolver {
 			if (configuration.isCanBeResolved()
 					&& !DEPRECATED_FOR_RESOLUTION_CONFIGURATIONS.contains(configuration.getName())) {
 				this.configurationDependencies.put(configuration,
-						new ResolvedConfigurationDependencies(configuration.getIncoming().getArtifacts()));
+						new ResolvedConfigurationDependencies(configuration.getResolvedConfiguration()));
 			}
 		}
 
@@ -133,14 +136,13 @@ class LayerResolver {
 
 		private final Map<File, LibraryCoordinates> artifactCoordinates = new LinkedHashMap<>();
 
-		ResolvedConfigurationDependencies(ArtifactCollection resolvedDependencies) {
-			if (resolvedDependencies != null) {
-				for (ResolvedArtifactResult resolvedArtifact : resolvedDependencies.getArtifacts()) {
+		ResolvedConfigurationDependencies(ResolvedConfiguration resolvedConfiguration) {
+			if (resolvedConfiguration != null) {
+				for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
 					ComponentIdentifier identifier = resolvedArtifact.getId().getComponentIdentifier();
-					if (identifier instanceof ModuleComponentIdentifier) {
+					if (identifier instanceof ModuleComponentIdentifier || identifier instanceof ProjectComponentIdentifier) {
 						this.artifactCoordinates.put(resolvedArtifact.getFile(),
-								new ModuleComponentIdentifierLibraryCoordinates(
-										(ModuleComponentIdentifier) identifier));
+								new ModuleVersionIdentifierLibraryCoordinates(resolvedArtifact.getModuleVersion().getId()));
 					}
 				}
 			}
@@ -153,13 +155,13 @@ class LayerResolver {
 	}
 
 	/**
-	 * Adapts a {@link ModuleComponentIdentifier} to {@link LibraryCoordinates}.
+	 * Adapts a {@link ModuleVersionIdentifier} to {@link LibraryCoordinates}.
 	 */
-	private static class ModuleComponentIdentifierLibraryCoordinates implements LibraryCoordinates {
+	private static class ModuleVersionIdentifierLibraryCoordinates implements LibraryCoordinates {
 
-		private final ModuleComponentIdentifier identifier;
+		private final ModuleVersionIdentifier identifier;
 
-		ModuleComponentIdentifierLibraryCoordinates(ModuleComponentIdentifier identifier) {
+		ModuleVersionIdentifierLibraryCoordinates(ModuleVersionIdentifier identifier) {
 			this.identifier = identifier;
 		}
 
@@ -170,7 +172,7 @@ class LayerResolver {
 
 		@Override
 		public String getArtifactId() {
-			return this.identifier.getModule();
+			return this.identifier.getName();
 		}
 
 		@Override

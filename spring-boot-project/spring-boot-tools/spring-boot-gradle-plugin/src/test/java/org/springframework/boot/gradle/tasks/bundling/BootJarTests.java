@@ -30,12 +30,14 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvedArtifact;
+import org.gradle.api.artifacts.ResolvedConfiguration;
+import org.gradle.api.artifacts.ResolvedModuleVersion;
 import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.gradle.tasks.bundling.BootJarTests.TestBootJar;
@@ -51,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Paddy Drury
  */
 class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 
@@ -99,7 +102,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			List<String> entryNames = getEntryNames(jarFile);
 			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
-					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
+					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/lib/first-project-library.jar",
+					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
 					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
@@ -108,6 +112,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"dependencies\":");
 			expected.add("  - \"BOOT-INF/lib/first-library.jar\"");
+			expected.add("  - \"BOOT-INF/lib/first-project-library.jar\"");
 			expected.add("  - \"BOOT-INF/lib/second-library.jar\"");
 			if (!layerToolsJar.contains("SNAPSHOT")) {
 				expected.add("  - \"" + layerToolsJar + "\"");
@@ -115,6 +120,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			expected.add("- \"spring-boot-loader\":");
 			expected.add("  - \"org/\"");
 			expected.add("- \"snapshot-dependencies\":");
+			expected.add("  - \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 			if (layerToolsJar.contains("SNAPSHOT")) {
 				expected.add("  - \"" + layerToolsJar + "\"");
 			}
@@ -145,7 +151,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		try (JarFile jarFile = new JarFile(jar)) {
 			List<String> entryNames = getEntryNames(jar);
 			assertThat(entryNames).contains("BOOT-INF/lib/first-library.jar", "BOOT-INF/lib/second-library.jar",
-					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
+					"BOOT-INF/lib/third-library-SNAPSHOT.jar", "BOOT-INF/lib/first-project-library.jar",
+					"BOOT-INF/lib/second-project-library-SNAPSHOT.jar", "BOOT-INF/classes/com/example/Application.class",
 					"BOOT-INF/classes/application.properties", "BOOT-INF/classes/static/test.css");
 			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
@@ -156,8 +163,10 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			expected.add("  - \"" + layerToolsJar + "\"");
 			expected.add("- \"my-internal-deps\":");
 			expected.add("  - \"BOOT-INF/lib/first-library.jar\"");
+			expected.add("  - \"BOOT-INF/lib/first-project-library.jar\"");
 			expected.add("  - \"BOOT-INF/lib/second-library.jar\"");
 			expected.add("- \"my-snapshot-deps\":");
+			expected.add("  - \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 			expected.add("  - \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"");
 			expected.add("- \"resources\":");
 			expected.add("  - \"BOOT-INF/classes/static/\"");
@@ -177,8 +186,9 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 		}
 	}
 
@@ -186,7 +196,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	void whenJarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
-					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"");
+					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"", "- \"first-project-library.jar\"",
+					"- \"second-project-library-SNAPSHOT.jar\"");
 		}
 	}
 
@@ -209,7 +220,8 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
 					.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
-					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"");
+					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"", "- \"first-project-library.jar\"",
+					"- \"second-project-library-SNAPSHOT.jar\"");
 		}
 	}
 
@@ -251,34 +263,52 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		File css = new File(staticResources, "test.css");
 		css.createNewFile();
 		bootJar.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
-				jarFile("third-library-SNAPSHOT.jar"));
-		Set<ResolvedArtifactResult> artifacts = new LinkedHashSet<>();
+				jarFile("third-library-SNAPSHOT.jar"), jarFile("first-project-library.jar"),
+				jarFile("second-project-library-SNAPSHOT.jar"));
+		Set<ResolvedArtifact> artifacts = new LinkedHashSet<>();
 		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
 		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
-		artifacts.add(
-				mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
-		ArtifactCollection resolvedDependencies = mock(ArtifactCollection.class);
-		given(resolvedDependencies.getArtifacts()).willReturn(artifacts);
-		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
-		given(resolvableDependencies.getArtifacts()).willReturn(resolvedDependencies);
+		artifacts.add(mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
+		artifacts.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
+		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example", "second-project-library", "1.0.0.SNAPSHOT"));
+		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
+		given(resolvedConfiguration.getResolvedArtifacts()).willReturn(artifacts);
 		Configuration configuration = mock(Configuration.class);
 		given(configuration.isCanBeResolved()).willReturn(true);
-		given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
 		bootJar.setConfiguration(Collections.singleton(configuration));
 	}
 
-	private ResolvedArtifactResult mockLibraryArtifact(String fileName, String group, String module, String version) {
-		ModuleComponentIdentifier identifier = mock(ModuleComponentIdentifier.class);
-		given(identifier.getGroup()).willReturn(group);
-		given(identifier.getModule()).willReturn(module);
-		given(identifier.getVersion()).willReturn(version);
+	private ResolvedArtifact mockLibraryArtifact(String fileName, String group, String module, String version) {
+		ModuleComponentIdentifier moduleComponentIdentifier = mock(ModuleComponentIdentifier.class);
 		ComponentArtifactIdentifier libraryArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(libraryArtifactId.getComponentIdentifier()).willReturn(identifier);
-		ResolvedArtifactResult libraryArtifact = mock(ResolvedArtifactResult.class);
+		given(libraryArtifactId.getComponentIdentifier()).willReturn(moduleComponentIdentifier);
+		ResolvedArtifact libraryArtifact = mockArtifact(fileName, group, module, version);
+		given(libraryArtifact.getId()).willReturn(libraryArtifactId);
+		return libraryArtifact;
+	}
+
+	private ResolvedArtifact mockProjectArtifact(String fileName, String group, String module, String version) {
+		ProjectComponentIdentifier projectComponentIdentifier = mock(ProjectComponentIdentifier.class);
+		ComponentArtifactIdentifier projectArtifactId = mock(ComponentArtifactIdentifier.class);
+		given(projectArtifactId.getComponentIdentifier()).willReturn(projectComponentIdentifier);
+		ResolvedArtifact projectArtifact = mockArtifact(fileName, group, module, version);
+		given(projectArtifact.getId()).willReturn(projectArtifactId);
+		return projectArtifact;
+	}
+
+	private ResolvedArtifact mockArtifact(String fileName, String group, String module, String version) {
+		ModuleVersionIdentifier moduleVersionIdentifier = mock(ModuleVersionIdentifier.class);
+		given(moduleVersionIdentifier.getGroup()).willReturn(group);
+		given(moduleVersionIdentifier.getName()).willReturn(module);
+		given(moduleVersionIdentifier.getVersion()).willReturn(version);
+		ResolvedModuleVersion moduleVersion = mock(ResolvedModuleVersion.class);
+		given(moduleVersion.getId()).willReturn(moduleVersionIdentifier);
+		ResolvedArtifact libraryArtifact = mock(ResolvedArtifact.class);
 		File file = new File(this.temp, fileName).getAbsoluteFile();
 		System.out.println(file);
 		given(libraryArtifact.getFile()).willReturn(file);
-		given(libraryArtifact.getId()).willReturn(libraryArtifactId);
+		given(libraryArtifact.getModuleVersion()).willReturn(moduleVersion);
 		return libraryArtifact;
 	}
 
