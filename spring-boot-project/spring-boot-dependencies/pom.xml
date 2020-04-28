@@ -197,7 +197,7 @@
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.5.RELEASE</spring-retry.version>
-		<spring-security.version>5.2.2.RELEASE</spring-security.version>
+		<spring-security.version>5.2.3.RELEASE</spring-security.version>
 		<spring-session-bom.version>Corn-SR2</spring-session-bom.version>
 		<spring-ws.version>3.0.8.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
