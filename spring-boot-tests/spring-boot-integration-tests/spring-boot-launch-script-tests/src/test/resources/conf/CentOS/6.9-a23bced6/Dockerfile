@@ -9,3 +9,5 @@ RUN yum install -y wget && \
     rm -f jdk.rpm
 ADD spring-boot-launch-script-tests.jar /spring-boot-launch-script-tests.jar
 ADD test-functions.sh /test-functions.sh
+ADD init.d/test-functions.sh /init.d/test-functions.sh
+ADD jar/test-functions.sh /jar/test-functions.sh
