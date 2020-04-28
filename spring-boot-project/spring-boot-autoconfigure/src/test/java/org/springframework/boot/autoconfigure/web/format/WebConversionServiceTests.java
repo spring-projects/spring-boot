@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,14 @@ class WebConversionServiceTests {
 	}
 
 	@Test
+	void isoDateFormat() {
+		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().dateFormat("iso"));
+		LocalDate date = LocalDate.of(2020, 4, 26);
+		assertThat(conversionService.convert(date, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
+	}
+
+	@Test
 	void customDateFormatWithJavaUtilDate() {
 		customDateFormat(Date.from(ZonedDateTime.of(2018, 1, 1, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant()));
 	}
@@ -61,6 +70,14 @@ class WebConversionServiceTests {
 		LocalTime time = LocalTime.of(12, 45, 23);
 		assertThat(conversionService.convert(time, String.class))
 				.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
+	}
+
+	@Test
+	void isoTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("iso"));
+		LocalTime time = LocalTime.of(12, 45, 23);
+		assertThat(conversionService.convert(time, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
 	}
 
 	@Test
@@ -80,6 +97,15 @@ class WebConversionServiceTests {
 	}
 
 	@Test
+	void isoDateTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(
+				new DateTimeFormatters().dateTimeFormat("iso"));
+		LocalDateTime dateTime = LocalDateTime.of(2020, 4, 26, 12, 45, 23);
+		assertThat(conversionService.convert(dateTime, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime));
+	}
+
+	@Test
 	void customDateTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(
 				new DateTimeFormatters().dateTimeFormat("dd*MM*yyyy HH*mm*ss"));
@@ -88,11 +114,29 @@ class WebConversionServiceTests {
 	}
 
 	@Test
-	void convertFromStringToDate() {
+	void convertFromStringToLocalDate() {
 		WebConversionService conversionService = new WebConversionService(
 				new DateTimeFormatters().dateFormat("yyyy-MM-dd"));
-		java.time.LocalDate date = conversionService.convert("2018-01-01", java.time.LocalDate.class);
+		LocalDate date = conversionService.convert("2018-01-01", LocalDate.class);
 		assertThat(date).isEqualTo(java.time.LocalDate.of(2018, 1, 1));
+	}
+
+	@Test
+	void convertFromStringToLocalDateWithIsoFormatting() {
+		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().dateFormat("iso"));
+		LocalDate date = conversionService.convert("2018-01-01", LocalDate.class);
+		assertThat(date).isEqualTo(java.time.LocalDate.of(2018, 1, 1));
+	}
+
+	@Test
+	void convertFromStringToDateWithIsoFormatting() {
+		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().dateFormat("iso"));
+		Date date = conversionService.convert("2018-01-01", Date.class);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2018);
+		assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.JANUARY);
+		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1);
 	}
 
 	private void customDateFormat(Object input) {

@@ -43,8 +43,14 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters dateFormat(String pattern) {
-		this.dateFormatter = formatter(pattern);
-		this.datePattern = pattern;
+		if (isIso(pattern)) {
+			this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+			this.datePattern = "yyyy-MM-dd";
+		}
+		else {
+			this.dateFormatter = formatter(pattern);
+			this.datePattern = pattern;
+		}
 		return this;
 	}
 
@@ -54,7 +60,7 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters timeFormat(String pattern) {
-		this.timeFormatter = formatter(pattern);
+		this.timeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_TIME : formatter(pattern);
 		return this;
 	}
 
@@ -64,7 +70,7 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters dateTimeFormat(String pattern) {
-		this.dateTimeFormatter = formatter(pattern);
+		this.dateTimeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_DATE_TIME : formatter(pattern);
 		return this;
 	}
 
@@ -91,6 +97,10 @@ public class DateTimeFormatters {
 	private static DateTimeFormatter formatter(String pattern) {
 		return StringUtils.hasText(pattern)
 				? DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.SMART) : null;
+	}
+
+	private static boolean isIso(String pattern) {
+		return "iso".equalsIgnoreCase(pattern);
 	}
 
 }
