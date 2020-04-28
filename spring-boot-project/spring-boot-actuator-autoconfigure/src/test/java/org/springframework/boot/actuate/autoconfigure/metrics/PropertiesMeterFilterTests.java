@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,7 +240,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.minimum-expected-value.spring.boot=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(10).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
@@ -248,7 +248,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.minimum-expected-value.spring=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(10).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
@@ -256,7 +256,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.minimum-expected-value.spring=10", "distribution.minimum-expected-value.spring.boot=50"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(50).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(50).toNanos());
 	}
 
 	@Test
@@ -264,7 +264,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring.boot=5000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(5000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(5000).toNanos());
 	}
 
 	@Test
@@ -272,7 +272,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring=5000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(5000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(5000).toNanos());
 	}
 
 	@Test
@@ -281,7 +281,7 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.maximum-expected-value.spring=5000",
 						"distribution.maximum-expected-value.spring.boot=10000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(10000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10000).toNanos());
 	}
 
 	private Id createMeterId(String name) {
