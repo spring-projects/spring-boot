@@ -214,7 +214,7 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.admin.ssl.trust-store-type=PKCS12", "spring.kafka.admin.ssl.protocol=TLSv1.2")
 				.run((context) -> {
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
-					Map<String, Object> configs = admin.getConfig();
+					Map<String, Object> configs = admin.getConfigurationProperties();
 					// common
 					assertThat(configs.get(AdminClientConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
 					// admin
@@ -583,7 +583,7 @@ class KafkaAutoConfigurationTests {
 					Map<String, Object> producerConfigs = producerFactory.getConfigurationProperties();
 					assertThat(producerConfigs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
-					Map<String, Object> configs = admin.getConfig();
+					Map<String, Object> configs = admin.getConfigurationProperties();
 					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("PLAINTEXT");
 				});
 	}
