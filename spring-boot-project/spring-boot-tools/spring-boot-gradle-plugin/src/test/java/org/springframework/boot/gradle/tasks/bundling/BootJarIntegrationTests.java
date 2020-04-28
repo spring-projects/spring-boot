@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Paddy Drury
  */
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
@@ -176,6 +177,64 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertExtractedLayers(layerNames, indexedLayers);
 	}
 
+	@TestTemplate
+	void projectDependenciesCanBeIncludedInCustomLayer() throws IOException {
+		writeSettingsGradle();
+		writeMainClass();
+		writeResource();
+		BuildResult build = this.gradleBuild.build("bootJar");
+		assertThat(build.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> indexedLayers;
+		String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/foo-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/bar-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/layers.idx")).isNotNull();
+			indexedLayers = readLayerIndex(jarFile);
+		}
+		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
+				"subproject-dependencies", "static", "app");
+		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
+		Set<String> expectedSubprojectDependencies = new TreeSet<>();
+		expectedSubprojectDependencies.add("BOOT-INF/lib/foo-1.2.3.jar");
+		expectedSubprojectDependencies.add("BOOT-INF/lib/bar-1.2.3.jar");
+		Set<String> expectedDependencies = new TreeSet<>();
+		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		List<String> expectedSnapshotDependencies = new ArrayList<>();
+		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		assertThat(indexedLayers.get("subproject-dependencies"))
+				.containsExactlyElementsOf(expectedSubprojectDependencies);
+		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
+		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
+		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
+		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/");
+		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
+		Set<String> nonLoaderEntries = new TreeSet<>();
+		nonLoaderEntries.add("BOOT-INF/classes/example/");
+		nonLoaderEntries.add("BOOT-INF/classpath.idx");
+		nonLoaderEntries.add("BOOT-INF/layers.idx");
+		nonLoaderEntries.add("META-INF/");
+		assertThat(appLayer).containsSubsequence(nonLoaderEntries);
+		appLayer.removeAll(nonLoaderEntries);
+		assertThat(appLayer).containsExactly("org/");
+		BuildResult listLayers = this.gradleBuild.build("listLayers");
+		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		String listLayersOutput = listLayers.getOutput();
+		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
+		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
+		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertExtractedLayers(layerNames, indexedLayers);
+	}
+
 	private void assertExtractedLayers(List<String> layerNames, Map<String, List<String>> indexedLayers)
 			throws IOException {
 		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
@@ -199,6 +258,16 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			}
 		}
 		return false;
+	}
+
+	private void writeSettingsGradle() {
+		File settings = new File(this.gradleBuild.getProjectDir(), "settings.gradle");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(settings))) {
+			writer.println("include 'foo', 'bar'");
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void writeMainClass() {
