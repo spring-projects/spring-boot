@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,20 +34,7 @@ public class WebFluxProperties {
 	 */
 	private String basePath;
 
-	/**
-	 * Date format to use. For instance, `dd/MM/yyyy`.
-	 */
-	private String dateFormat;
-
-	/**
-	 * Time format to use. For instance, `HH:mm:ss`.
-	 */
-	private String timeFormat;
-
-	/**
-	 * Datetime format to use. For instance, `yyyy-MM-dd HH:mm:ss`.
-	 */
-	private String dateTimeFormat;
+	private final Format format = new Format();
 
 	/**
 	 * Path pattern used for static resources.
@@ -74,28 +62,19 @@ public class WebFluxProperties {
 		return candidate;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.webflux.format.date")
 	public String getDateFormat() {
-		return this.dateFormat;
+		return this.format.getDate();
 	}
 
+	@Deprecated
 	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
+		this.format.setDate(dateFormat);
 	}
 
-	public String getTimeFormat() {
-		return this.timeFormat;
-	}
-
-	public void setTimeFormat(final String timeFormat) {
-		this.timeFormat = timeFormat;
-	}
-
-	public String getDateTimeFormat() {
-		return this.dateTimeFormat;
-	}
-
-	public void setDateTimeFormat(final String dateTimeFormat) {
-		this.dateTimeFormat = dateTimeFormat;
+	public Format getFormat() {
+		return this.format;
 	}
 
 	public String getStaticPathPattern() {
@@ -104,6 +83,49 @@ public class WebFluxProperties {
 
 	public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
+	}
+
+	public static class Format {
+
+		/**
+		 * Date format to use, for example `dd/MM/yyyy`.
+		 */
+		private String date;
+
+		/**
+		 * Time format to use, for example `HH:mm:ss`.
+		 */
+		private String time;
+
+		/**
+		 * Date-time format to use, for example `yyyy-MM-dd HH:mm:ss`.
+		 */
+		private String dateTime;
+
+		public String getDate() {
+			return this.date;
+		}
+
+		public void setDate(String date) {
+			this.date = date;
+		}
+
+		public String getTime() {
+			return this.time;
+		}
+
+		public void setTime(String time) {
+			this.time = time;
+		}
+
+		public String getDateTime() {
+			return this.dateTime;
+		}
+
+		public void setDateTime(String dateTime) {
+			this.dateTime = dateTime;
+		}
+
 	}
 
 }
