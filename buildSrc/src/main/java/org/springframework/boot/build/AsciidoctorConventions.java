@@ -113,7 +113,7 @@ class AsciidoctorConventions {
 	private UnzipDocumentationResources createUnzipDocumentationResourcesTask(Project project) {
 		Configuration documentationResources = project.getConfigurations().maybeCreate("documentationResources");
 		documentationResources.getDependencies()
-				.add(project.getDependencies().create("io.spring.docresources:spring-doc-resources:0.2.1.RELEASE"));
+				.add(project.getDependencies().create("io.spring.docresources:spring-doc-resources:0.2.2.RELEASE"));
 		UnzipDocumentationResources unzipResources = project.getTasks().create("unzipDocumentationResources",
 				UnzipDocumentationResources.class);
 		unzipResources.setResources(documentationResources);
