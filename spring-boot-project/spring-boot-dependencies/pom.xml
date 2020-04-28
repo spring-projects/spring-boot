@@ -80,7 +80,7 @@
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
-		<infinispan.version>9.4.18.Final</infinispan.version>
+		<infinispan.version>9.4.19.Final</infinispan.version>
 		<influxdb-java.version>2.15</influxdb-java.version>
 		<!-- deprecated since 2.1 in favor of "jackson-bom.version" -->
 		<jackson.version>2.10.3</jackson.version>
