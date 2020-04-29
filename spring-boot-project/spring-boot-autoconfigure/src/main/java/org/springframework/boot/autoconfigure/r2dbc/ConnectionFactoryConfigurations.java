@@ -70,13 +70,9 @@ abstract class ConnectionFactoryConfigurations {
 					customizers.orderedStream().collect(Collectors.toList()));
 
 			R2dbcProperties.Pool pool = properties.getPool();
-			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration
-					.builder(connectionFactory)
-					.initialSize(pool.getInitialSize())
-					.maxSize(pool.getMaxSize())
-					.maxIdleTime(pool.getMaxIdleTime())
-					.maxLifeTime(pool.getMaxLifeTime())
-					.maxAcquireTime(pool.getMaxAcquireTime())
+			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory)
+					.initialSize(pool.getInitialSize()).maxSize(pool.getMaxSize()).maxIdleTime(pool.getMaxIdleTime())
+					.maxLifeTime(pool.getMaxLifeTime()).maxAcquireTime(pool.getMaxAcquireTime())
 					.maxCreateConnectionTime(pool.getMaxCreateConnectionTime())
 					.validationDepth(pool.getValidationDepth());
 

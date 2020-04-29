@@ -238,6 +238,7 @@ public class R2dbcProperties {
 		public void setValidationDepth(ValidationDepth validationDepth) {
 			this.validationDepth = validationDepth;
 		}
+
 	}
 
 }
