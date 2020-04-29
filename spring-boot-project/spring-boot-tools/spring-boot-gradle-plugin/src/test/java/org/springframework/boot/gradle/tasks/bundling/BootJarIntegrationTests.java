@@ -178,7 +178,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void projectDependenciesCanBeIncludedInCustomLayer() throws IOException {
+	void multiModuleCustomLayers() throws IOException {
 		writeSettingsGradle();
 		writeMainClass();
 		writeResource();
@@ -188,8 +188,8 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/lib/foo-1.2.3.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/lib/bar-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/alpha-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/bravo-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -203,8 +203,8 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 				"subproject-dependencies", "static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedSubprojectDependencies = new TreeSet<>();
-		expectedSubprojectDependencies.add("BOOT-INF/lib/foo-1.2.3.jar");
-		expectedSubprojectDependencies.add("BOOT-INF/lib/bar-1.2.3.jar");
+		expectedSubprojectDependencies.add("BOOT-INF/lib/alpha-1.2.3.jar");
+		expectedSubprojectDependencies.add("BOOT-INF/lib/bravo-1.2.3.jar");
 		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
@@ -261,9 +261,9 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	private void writeSettingsGradle() {
-		File settings = new File(this.gradleBuild.getProjectDir(), "settings.gradle");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(settings))) {
-			writer.println("include 'foo', 'bar'");
+		try (PrintWriter writer = new PrintWriter(
+				new FileWriter(new File(this.gradleBuild.getProjectDir(), "settings.gradle")))) {
+			writer.println("include 'alpha', 'bravo'");
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

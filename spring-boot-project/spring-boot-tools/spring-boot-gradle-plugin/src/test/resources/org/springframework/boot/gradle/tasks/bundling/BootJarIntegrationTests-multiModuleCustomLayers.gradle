@@ -40,8 +40,8 @@ repositories {
 }
 
 dependencies {
-	implementation(project(':foo'))
-	implementation(project(':bar'))
+	implementation(project(':alpha'))
+	implementation(project(':bravo'))
 	implementation("commons-io:commons-io:2.7-SNAPSHOT")
 	implementation("org.apache.commons:commons-lang3:3.9")
 	implementation("org.springframework:spring-core:5.2.5.RELEASE")

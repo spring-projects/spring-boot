@@ -28,9 +28,6 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
-import org.gradle.api.artifacts.component.ComponentIdentifier;
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
 
@@ -137,16 +134,9 @@ class LayerResolver {
 		private final Map<File, LibraryCoordinates> artifactCoordinates = new LinkedHashMap<>();
 
 		ResolvedConfigurationDependencies(ResolvedConfiguration resolvedConfiguration) {
-			if (resolvedConfiguration != null) {
-				for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
-					ComponentIdentifier identifier = resolvedArtifact.getId().getComponentIdentifier();
-					if (identifier instanceof ModuleComponentIdentifier
-							|| identifier instanceof ProjectComponentIdentifier) {
-						this.artifactCoordinates.put(resolvedArtifact.getFile(),
-								new ModuleVersionIdentifierLibraryCoordinates(
-										resolvedArtifact.getModuleVersion().getId()));
-					}
-				}
+			for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
+				this.artifactCoordinates.put(resolvedArtifact.getFile(),
+						new ModuleVersionIdentifierLibraryCoordinates(resolvedArtifact.getModuleVersion().getId()));
 			}
 		}
 
