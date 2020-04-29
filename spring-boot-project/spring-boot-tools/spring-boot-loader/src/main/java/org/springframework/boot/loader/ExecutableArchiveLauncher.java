@@ -139,7 +139,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Determine if the specified entry is a nested item that should be added to the
 	 * classpath.
 	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a nested item (jar or folder)
+	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
 

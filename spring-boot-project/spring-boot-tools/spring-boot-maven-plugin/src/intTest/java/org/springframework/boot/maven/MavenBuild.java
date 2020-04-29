@@ -212,7 +212,7 @@ class MavenBuild {
 	}
 
 	/**
-	 * Action to take on a maven project folder.
+	 * Action to take on a maven project directory.
 	 */
 	@FunctionalInterface
 	public interface ProjectCallback {

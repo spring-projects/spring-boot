@@ -70,10 +70,10 @@ class IndexedLayersTests {
 	}
 
 	@Test
-	void getLayerWhenMatchesFolderReturnsLayer() throws Exception {
+	void getLayerWhenMatchesDirectoryReturnsLayer() throws Exception {
 		IndexedLayers layers = new IndexedLayers(getIndex());
 		assertThat(layers.getLayer(mockEntry("META-INF/MANIFEST.MF"))).isEqualTo("application");
-		assertThat(layers.getLayer(mockEntry("META-INF/a/sub/folder/and/a/file"))).isEqualTo("application");
+		assertThat(layers.getLayer(mockEntry("META-INF/a/sub/directory/and/a/file"))).isEqualTo("application");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,20 +126,20 @@ class HandlerTests {
 
 	@Test
 	void urlWithSpecReferencingParentDirectory() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"../folderB/c/d/e.xsd");
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/directoryA/a.xsd",
+				"../directoryB/c/d/e.xsd");
 	}
 
 	@Test
 	void urlWithSpecReferencingAncestorDirectoryOutsideJarStopsAtJarRoot() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"../../../../../../folderB/b.xsd");
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/directoryA/a.xsd",
+				"../../../../../../directoryB/b.xsd");
 	}
 
 	@Test
 	void urlWithSpecReferencingCurrentDirectory() throws MalformedURLException {
-		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"./folderB/c/d/e.xsd");
+		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/directoryA/a.xsd",
+				"./directoryB/c/d/e.xsd");
 	}
 
 	@Test

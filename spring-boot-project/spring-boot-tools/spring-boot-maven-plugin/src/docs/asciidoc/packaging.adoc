@@ -77,7 +77,7 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 [[repackage-layers]]
 === Layered Jars
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
 To use this feature, the layering feature must be enabled:

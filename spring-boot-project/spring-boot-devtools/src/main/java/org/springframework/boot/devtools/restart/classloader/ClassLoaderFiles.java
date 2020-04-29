@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link ClassLoaderFileRepository} that maintains a collection of
- * {@link ClassLoaderFile} items grouped by source folders.
+ * {@link ClassLoaderFile} items grouped by source directories.
  *
  * @author Phillip Webb
  * @since 1.3.0
@@ -41,13 +41,13 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 	private static final long serialVersionUID = 1;
 
-	private final Map<String, SourceFolder> sourceFolders;
+	private final Map<String, SourceDirectory> sourceDirectories;
 
 	/**
 	 * Create a new {@link ClassLoaderFiles} instance.
 	 */
 	public ClassLoaderFiles() {
-		this.sourceFolders = new LinkedHashMap<>();
+		this.sourceDirectories = new LinkedHashMap<>();
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 */
 	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
 		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
-		this.sourceFolders = new LinkedHashMap<>(classLoaderFiles.sourceFolders);
+		this.sourceDirectories = new LinkedHashMap<>(classLoaderFiles.sourceDirectories);
 	}
 
 	/**
@@ -66,9 +66,9 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 */
 	public void addAll(ClassLoaderFiles files) {
 		Assert.notNull(files, "Files must not be null");
-		for (SourceFolder folder : files.getSourceFolders()) {
-			for (Map.Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
-				addFile(folder.getName(), entry.getKey(), entry.getValue());
+		for (SourceDirectory directory : files.getSourceDirectories()) {
+			for (Map.Entry<String, ClassLoaderFile> entry : directory.getFilesEntrySet()) {
+				addFile(directory.getName(), entry.getKey(), entry.getValue());
 			}
 		}
 	}
@@ -84,45 +84,45 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 	/**
 	 * Add a single {@link ClassLoaderFile} to the collection.
-	 * @param sourceFolder the source folder of the file
+	 * @param sourceDirectory the source directory of the file
 	 * @param name the name of the file
 	 * @param file the file to add
 	 */
-	public void addFile(String sourceFolder, String name, ClassLoaderFile file) {
-		Assert.notNull(sourceFolder, "SourceFolder must not be null");
+	public void addFile(String sourceDirectory, String name, ClassLoaderFile file) {
+		Assert.notNull(sourceDirectory, "SourceDirectory must not be null");
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(file, "File must not be null");
 		removeAll(name);
-		getOrCreateSourceFolder(sourceFolder).add(name, file);
+		getOrCreateSourceDirectory(sourceDirectory).add(name, file);
 	}
 
 	private void removeAll(String name) {
-		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
-			sourceFolder.remove(name);
+		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
+			sourceDirectory.remove(name);
 		}
 	}
 
 	/**
-	 * Get or create a {@link SourceFolder} with the given name.
-	 * @param name the name of the folder
-	 * @return an existing or newly added {@link SourceFolder}
+	 * Get or create a {@link SourceDirectory} with the given name.
+	 * @param name the name of the directory
+	 * @return an existing or newly added {@link SourceDirectory}
 	 */
-	protected final SourceFolder getOrCreateSourceFolder(String name) {
-		SourceFolder sourceFolder = this.sourceFolders.get(name);
-		if (sourceFolder == null) {
-			sourceFolder = new SourceFolder(name);
-			this.sourceFolders.put(name, sourceFolder);
+	protected final SourceDirectory getOrCreateSourceDirectory(String name) {
+		SourceDirectory sourceDirectory = this.sourceDirectories.get(name);
+		if (sourceDirectory == null) {
+			sourceDirectory = new SourceDirectory(name);
+			this.sourceDirectories.put(name, sourceDirectory);
 		}
-		return sourceFolder;
+		return sourceDirectory;
 	}
 
 	/**
-	 * Return all {@link SourceFolder SourceFolders} that have been added to the
+	 * Return all {@link SourceDirectory SourceDirectories} that have been added to the
 	 * collection.
-	 * @return a collection of {@link SourceFolder} items
+	 * @return a collection of {@link SourceDirectory} items
 	 */
-	public Collection<SourceFolder> getSourceFolders() {
-		return Collections.unmodifiableCollection(this.sourceFolders.values());
+	public Collection<SourceDirectory> getSourceDirectories() {
+		return Collections.unmodifiableCollection(this.sourceDirectories.values());
 	}
 
 	/**
@@ -131,16 +131,16 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 */
 	public int size() {
 		int size = 0;
-		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
-			size += sourceFolder.getFiles().size();
+		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
+			size += sourceDirectory.getFiles().size();
 		}
 		return size;
 	}
 
 	@Override
 	public ClassLoaderFile getFile(String name) {
-		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
-			ClassLoaderFile file = sourceFolder.get(name);
+		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
+			ClassLoaderFile file = sourceDirectory.get(name);
 			if (file != null) {
 				return file;
 			}
@@ -149,9 +149,9 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	}
 
 	/**
-	 * An individual source folder that is being managed by the collection.
+	 * An individual source directory that is being managed by the collection.
 	 */
-	public static class SourceFolder implements Serializable {
+	public static class SourceDirectory implements Serializable {
 
 		private static final long serialVersionUID = 1;
 
@@ -159,7 +159,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 		private final Map<String, ClassLoaderFile> files = new LinkedHashMap<>();
 
-		SourceFolder(String name) {
+		SourceDirectory(String name) {
 			this.name = name;
 		}
 
@@ -180,8 +180,8 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		}
 
 		/**
-		 * Return the name of the source folder.
-		 * @return the name of the source folder
+		 * Return the name of the source directory.
+		 * @return the name of the source directory
 		 */
 		public String getName() {
 			return this.name;
@@ -189,8 +189,8 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 		/**
 		 * Return all {@link ClassLoaderFile ClassLoaderFiles} in the collection that are
-		 * contained in this source folder.
-		 * @return the files contained in the source folder
+		 * contained in this source directory.
+		 * @return the files contained in the source directory
 		 */
 		public Collection<ClassLoaderFile> getFiles() {
 			return Collections.unmodifiableCollection(this.files.values());

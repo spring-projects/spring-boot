@@ -245,13 +245,13 @@ class ArtemisAutoConfigurationTests {
 
 	@Test
 	void embeddedWithPersistentMode(@TempDir Path temp) throws IOException {
-		File dataFolder = Files.createTempDirectory(temp, null).toFile();
+		File dataDirectory = Files.createTempDirectory(temp, null).toFile();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.embedded.queues=TestQueue",
 						"spring.artemis.embedded.persistent:true",
-						"spring.artemis.embedded.dataDirectory:" + dataFolder.getAbsolutePath())
+						"spring.artemis.embedded.dataDirectory:" + dataDirectory.getAbsolutePath())
 				.run((context) -> context.getBean(JmsTemplate.class).send("TestQueue",
 						(session) -> session.createTextMessage(messageId)))
 				.run((context) -> {

@@ -447,7 +447,7 @@ Property values can be injected directly into your beans by using the `@Value` a
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
 Properties are considered in the following order:
 
-. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` folder when devtools is active.
+. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
 . {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
 . `properties` attribute on your tests.
   Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
@@ -2482,11 +2482,11 @@ In the preceding example, if `YourException` is thrown by a controller defined i
 
 [[boot-features-error-handling-custom-error-pages]]
 ===== Custom Error Pages
-If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` folder.
-Error pages can either be static HTML (that is, added under any of the static resource folders) or be built by using templates.
+If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
+Error pages can either be static HTML (that is, added under any of the static resource directories) or be built by using templates.
 The name of the file should be the exact status code or a series mask.
 
-For example, to map `404` to a static HTML file, your folder structure would be as follows:
+For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
 [source,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2501,7 +2501,7 @@ For example, to map `404` to a static HTML file, your folder structure would be 
 	             +- <other public assets>
 ----
 
-To map all `5xx` errors by using a FreeMarker template, your folder structure would be as follows:
+To map all `5xx` errors by using a FreeMarker template, your directory structure would be as follows:
 
 [source,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2828,11 +2828,11 @@ For a more complete picture, you can also subclass `DefaultErrorWebExceptionHand
 
 [[boot-features-webflux-error-handling-custom-error-pages]]
 ===== Custom Error Pages
-If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` folder.
-Error pages can either be static HTML (that is, added under any of the static resource folders) or built with templates.
+If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
+Error pages can either be static HTML (that is, added under any of the static resource directories) or built with templates.
 The name of the file should be the exact status code or a series mask.
 
-For example, to map `404` to a static HTML file, your folder structure would be as follows:
+For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
 [source,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2847,7 +2847,7 @@ For example, to map `404` to a static HTML file, your folder structure would be 
 	             +- <other public assets>
 ----
 
-To map all `5xx` errors by using a Mustache template, your folder structure would be as follows:
+To map all `5xx` errors by using a Mustache template, your directory structure would be as follows:
 
 [source,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -8157,7 +8157,7 @@ Assuming the above `Dockerfile` is in the current directory, your docker image c
 ----
 
 This is a multi-stage dockerfile.
-The builder stage extracts the folders that are needed later.
+The builder stage extracts the directories that are needed later.
 Each of the `COPY` commands relates to the layers extracted by the jarmode.
 
 Of course, a Dockerfile can be written without using the jarmode.

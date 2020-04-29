@@ -94,70 +94,70 @@ class FileSystemWatcherTests {
 	}
 
 	@Test
-	void sourceFolderMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(null))
-				.withMessageContaining("Folder must not be null");
+	void sourceDirectoryMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(null))
+				.withMessageContaining("Directory must not be null");
 	}
 
 	@Test
-	void sourceFolderMustNotBeAFile() throws IOException {
+	void sourceDirectoryMustNotBeAFile() throws IOException {
 		File file = new File(this.tempDir, "file");
 		assertThat(file.createNewFile()).isTrue();
 		assertThat(file.isFile()).isTrue();
-		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(file))
-				.withMessageContaining("Folder '" + file + "' must not be a file");
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(file))
+				.withMessageContaining("Directory '" + file + "' must not be a file");
 	}
 
 	@Test
-	void cannotAddSourceFolderToStartedListener() throws Exception {
+	void cannotAddSourceDirectoryToStartedListener() throws Exception {
 		this.watcher.start();
-		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addSourceFolder(this.tempDir))
+		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addSourceDirectory(this.tempDir))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
 	void addFile() throws Exception {
-		File folder = startWithNewFolder();
-		File file = touch(new File(folder, "test.txt"));
+		File directory = startWithNewDirectory();
+		File file = touch(new File(directory, "test.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
 		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
 	void addNestedFile() throws Exception {
-		File folder = startWithNewFolder();
-		File file = touch(new File(new File(folder, "sub"), "text.txt"));
+		File directory = startWithNewDirectory();
+		File file = touch(new File(new File(directory, "sub"), "text.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
 		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
-	void createSourceFolderAndAddFile() throws IOException {
-		File folder = new File(this.tempDir, "does/not/exist");
-		assertThat(folder.exists()).isFalse();
-		this.watcher.addSourceFolder(folder);
+	void createSourceDirectoryAndAddFile() throws IOException {
+		File directory = new File(this.tempDir, "does/not/exist");
+		assertThat(directory.exists()).isFalse();
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
-		folder.mkdirs();
-		File file = touch(new File(folder, "text.txt"));
+		directory.mkdirs();
+		File file = touch(new File(directory, "text.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
 		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
 	void waitsForPollingInterval() throws Exception {
 		setupWatcher(10, 1);
-		File folder = startWithNewFolder();
-		touch(new File(folder, "test1.txt"));
+		File directory = startWithNewDirectory();
+		touch(new File(directory, "test1.txt"));
 		while (this.changes.size() != 1) {
 			Thread.sleep(10);
 		}
-		touch(new File(folder, "test2.txt"));
+		touch(new File(directory, "test2.txt"));
 		this.watcher.stopAfter(1);
 		assertThat(this.changes.size()).isEqualTo(2);
 	}
@@ -165,9 +165,9 @@ class FileSystemWatcherTests {
 	@Test
 	void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
-		File folder = startWithNewFolder();
+		File directory = startWithNewDirectory();
 		for (int i = 0; i < 10; i++) {
-			touch(new File(folder, i + "test.txt"));
+			touch(new File(directory, i + "test.txt"));
 			Thread.sleep(100);
 		}
 		this.watcher.stopAfter(1);
@@ -177,39 +177,39 @@ class FileSystemWatcherTests {
 
 	@Test
 	void withExistingFiles() throws Exception {
-		File folder = new File(this.tempDir, UUID.randomUUID().toString());
-		folder.mkdir();
-		touch(new File(folder, "test.txt"));
-		this.watcher.addSourceFolder(folder);
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
+		touch(new File(directory, "test.txt"));
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
-		File file = touch(new File(folder, "test2.txt"));
+		File file = touch(new File(directory, "test2.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
 		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
 	void multipleSources() throws Exception {
-		File folder1 = new File(this.tempDir, UUID.randomUUID().toString());
-		folder1.mkdir();
-		File folder2 = new File(this.tempDir, UUID.randomUUID().toString());
-		folder2.mkdir();
-		this.watcher.addSourceFolder(folder1);
-		this.watcher.addSourceFolder(folder2);
+		File directory1 = new File(this.tempDir, UUID.randomUUID().toString());
+		directory1.mkdir();
+		File directory2 = new File(this.tempDir, UUID.randomUUID().toString());
+		directory2.mkdir();
+		this.watcher.addSourceDirectory(directory1);
+		this.watcher.addSourceDirectory(directory2);
 		this.watcher.start();
-		File file1 = touch(new File(folder1, "test.txt"));
-		File file2 = touch(new File(folder2, "test.txt"));
+		File file1 = touch(new File(directory1, "test.txt"));
+		File file2 = touch(new File(directory2, "test.txt"));
 		this.watcher.stopAfter(1);
 		Set<ChangedFiles> change = getSingleOnChange();
 		assertThat(change.size()).isEqualTo(2);
 		for (ChangedFiles changedFiles : change) {
-			if (changedFiles.getSourceFolder().equals(folder1)) {
-				ChangedFile file = new ChangedFile(folder1, file1, Type.ADD);
+			if (changedFiles.getSourceDirectory().equals(directory1)) {
+				ChangedFile file = new ChangedFile(directory1, file1, Type.ADD);
 				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 			else {
-				ChangedFile file = new ChangedFile(folder2, file2, Type.ADD);
+				ChangedFile file = new ChangedFile(directory2, file2, Type.ADD);
 				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 		}
@@ -217,48 +217,48 @@ class FileSystemWatcherTests {
 
 	@Test
 	void multipleListeners() throws Exception {
-		File folder = new File(this.tempDir, UUID.randomUUID().toString());
-		folder.mkdir();
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
-		this.watcher.addSourceFolder(folder);
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.addListener(listener2Changes::addAll);
 		this.watcher.start();
-		File file = touch(new File(folder, "test.txt"));
+		File file = touch(new File(directory, "test.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
 		assertThat(changedFiles.getFiles()).contains(expected);
 		assertThat(listener2Changes).isEqualTo(this.changes.get(0));
 	}
 
 	@Test
 	void modifyDeleteAndAdd() throws Exception {
-		File folder = new File(this.tempDir, UUID.randomUUID().toString());
-		folder.mkdir();
-		File modify = touch(new File(folder, "modify.txt"));
-		File delete = touch(new File(folder, "delete.txt"));
-		this.watcher.addSourceFolder(folder);
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
+		File modify = touch(new File(directory, "modify.txt"));
+		File delete = touch(new File(directory, "delete.txt"));
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), modify);
 		delete.delete();
-		File add = touch(new File(folder, "add.txt"));
+		File add = touch(new File(directory, "add.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
 		Set<ChangedFile> expected = new HashSet<>();
-		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
-		expected.add(new ChangedFile(folder, delete, Type.DELETE));
-		expected.add(new ChangedFile(folder, add, Type.ADD));
+		expected.add(new ChangedFile(directory, modify, Type.MODIFY));
+		expected.add(new ChangedFile(directory, delete, Type.DELETE));
+		expected.add(new ChangedFile(directory, add, Type.ADD));
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
 	void withTriggerFilter() throws Exception {
-		File folder = new File(this.tempDir, UUID.randomUUID().toString());
-		folder.mkdir();
-		File file = touch(new File(folder, "file.txt"));
-		File trigger = touch(new File(folder, "trigger.txt"));
-		this.watcher.addSourceFolder(folder);
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
+		File file = touch(new File(directory, "file.txt"));
+		File trigger = touch(new File(directory, "trigger.txt"));
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.setTriggerFilter((candidate) -> candidate.getName().equals("trigger.txt"));
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
@@ -269,7 +269,7 @@ class FileSystemWatcherTests {
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
 		Set<ChangedFile> expected = new HashSet<>();
-		expected.add(new ChangedFile(folder, file, Type.MODIFY));
+		expected.add(new ChangedFile(directory, file, Type.MODIFY));
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -278,12 +278,12 @@ class FileSystemWatcherTests {
 		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
-	private File startWithNewFolder() throws IOException {
-		File folder = new File(this.tempDir, UUID.randomUUID().toString());
-		folder.mkdir();
-		this.watcher.addSourceFolder(folder);
+	private File startWithNewDirectory() throws IOException {
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
+		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
-		return folder;
+		return directory;
 	}
 
 	private ChangedFiles getSingleChangedFiles() {

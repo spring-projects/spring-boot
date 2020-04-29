@@ -55,8 +55,8 @@ class ClassPathIndexFileTests {
 	}
 
 	@Test
-	void loadIfPossibleWhenRootIsFolderThrowsException() throws Exception {
-		File root = new File(this.temp, "folder");
+	void loadIfPossibleWhenRootIsDirectoryThrowsException() throws Exception {
+		File root = new File(this.temp, "directory");
 		root.mkdirs();
 		assertThat(ClassPathIndexFile.loadIfPossible(root.toURI().toURL(), "test.idx")).isNull();
 	}

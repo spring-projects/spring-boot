@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,18 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.util.ResourceUtils;
 
 /**
- * Provides access to entries on the classpath that refer to folders.
+ * Provides access to entries on the classpath that refer to directories.
  *
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 2.3.0
  */
-public class ClassPathFolders implements Iterable<File> {
+public class ClassPathDirectories implements Iterable<File> {
 
-	private static final Log logger = LogFactory.getLog(ClassPathFolders.class);
+	private static final Log logger = LogFactory.getLog(ClassPathDirectories.class);
 
-	private final List<File> folders = new ArrayList<>();
+	private final List<File> directories = new ArrayList<>();
 
-	public ClassPathFolders(URL[] urls) {
+	public ClassPathDirectories(URL[] urls) {
 		if (urls != null) {
 			addUrls(urls);
 		}
@@ -56,7 +56,7 @@ public class ClassPathFolders implements Iterable<File> {
 	private void addUrl(URL url) {
 		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
 			try {
-				this.folders.add(ResourceUtils.getFile(url));
+				this.directories.add(ResourceUtils.getFile(url));
 			}
 			catch (Exception ex) {
 				logger.warn(LogMessage.format("Unable to get classpath URL %s", url));
@@ -67,7 +67,7 @@ public class ClassPathFolders implements Iterable<File> {
 
 	@Override
 	public Iterator<File> iterator() {
-		return Collections.unmodifiableList(this.folders).iterator();
+		return Collections.unmodifiableList(this.directories).iterator();
 	}
 
 }

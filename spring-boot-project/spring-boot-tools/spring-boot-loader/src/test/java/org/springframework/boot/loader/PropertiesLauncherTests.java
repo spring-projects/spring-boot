@@ -102,7 +102,7 @@ class PropertiesLauncherTests {
 	void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
 		assertThatIllegalStateException().isThrownBy(PropertiesLauncher::new)
-				.withMessageContaining("Invalid source folder").withCauseInstanceOf(IllegalArgumentException.class);
+				.withMessageContaining("Invalid source directory").withCauseInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

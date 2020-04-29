@@ -43,10 +43,10 @@ class ContextTests {
 	}
 
 	@Test
-	void createWhenSourceIsFolderThrowsException() {
-		File folder = new File(this.temp, "test");
-		folder.mkdir();
-		assertThatIllegalStateException().isThrownBy(() -> new Context(folder, this.temp))
+	void createWhenSourceIsDirectoryThrowsException() {
+		File directory = new File(this.temp, "test");
+		directory.mkdir();
+		assertThatIllegalStateException().isThrownBy(() -> new Context(directory, this.temp))
 				.withMessage("Unable to find source JAR");
 	}
 
@@ -95,13 +95,13 @@ class ContextTests {
 
 	@Test
 	void getRelativePathWhenCannotBeDeducedReturnsNull() throws Exception {
-		File folder1 = new File(this.temp, "folder1");
-		folder1.mkdir();
-		File folder2 = new File(this.temp, "folder1");
-		folder2.mkdir();
-		File jar = new File(folder1, "test.jar");
+		File directory1 = new File(this.temp, "directory1");
+		directory1.mkdir();
+		File directory2 = new File(this.temp, "directory2");
+		directory2.mkdir();
+		File jar = new File(directory1, "test.jar");
 		Files.createFile(jar.toPath());
-		Context context = new Context(jar, folder2);
+		Context context = new Context(jar, directory2);
 		assertThat(context.getRelativeJarDir()).isNull();
 	}
 

@@ -605,7 +605,7 @@ To enable that support, your application needs to have two additional dependenci
 Spring Boot ships by default with Tomcat 9.0.x which supports HTTP/2 out of the box when using JDK 9 or later.
 Alternatively, HTTP/2 can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
 
-The library folder must be made available, if not already, to the JVM library path.
+The library directory must be made available, if not already, to the JVM library path.
 You can do so with a JVM argument such as `-Djava.library.path=/usr/local/opt/tomcat-native/lib`.
 More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
 
@@ -2019,7 +2019,7 @@ Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Fly
 To automatically run Flyway database migrations on startup, add the `org.flywaydb:flyway-core` to your classpath.
 
 Typically, migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an underscore-separated version, such as '`1`' or '`2_1`').
-By default, they are in a folder called `classpath:db/migration`, but you can modify that location by setting `spring.flyway.locations`.
+By default, they are in a directory called `classpath:db/migration`, but you can modify that location by setting `spring.flyway.locations`.
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
@@ -2036,7 +2036,7 @@ Assume the following:
 	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
 
-Rather than using `db/migration`, the preceding configuration sets the folder to use according to the type of the database (such as `db/migration/mysql` for MySQL).
+Rather than using `db/migration`, the preceding configuration sets the directory to use according to the type of the database (such as `db/migration/mysql` for MySQL).
 The list of supported databases is available in {spring-boot-module-code}/jdbc/DatabaseDriver.java[`DatabaseDriver`].
 
 Migrations can also be written in Java.
@@ -2049,7 +2049,7 @@ Spring Boot calls `Flyway.migrate()` to perform the database migration.
 If you would like more control, provide a `@Bean` that implements {spring-boot-autoconfigure-module-code}/flyway/FlywayMigrationStrategy.java[`FlywayMigrationStrategy`].
 
 Flyway supports SQL and Java https://flywaydb.org/documentation/callbacks.html[callbacks].
-To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` folder.
+To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
 To use Java-based callbacks, create one or more beans that implement `Callback`.
 Any such beans are automatically registered with `Flyway`.
 They can be ordered by using `@Order` or by implementing `Ordered`.

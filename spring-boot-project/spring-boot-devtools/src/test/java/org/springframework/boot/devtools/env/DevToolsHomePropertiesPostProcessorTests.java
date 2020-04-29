@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromHomeFolderUsingProperties() throws Exception {
+	void loadsPropertiesFromHomeDirectoryUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		writeFile(properties, ".spring-boot-devtools.properties");
@@ -64,7 +64,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingProperties() throws Exception {
+	void loadsPropertiesFromConfigDirectoryUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
@@ -75,7 +75,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingYml() throws Exception {
+	void loadsPropertiesFromConfigDirectoryUsingYml() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -86,7 +86,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingYaml() throws Exception {
+	void loadsPropertiesFromConfigDirectoryUsingYaml() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -97,7 +97,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadFromConfigFolderWithPropertiesTakingPrecedence() throws Exception {
+	void loadFromConfigDirectoryWithPropertiesTakingPrecedence() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -114,7 +114,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadFromConfigFolderTakesPrecedenceOverHomeFolder() throws Exception {
+	void loadFromConfigDirectoryTakesPrecedenceOverHomeDirectory() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		properties.put("bar", "baz");
@@ -130,7 +130,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadFromConfigFolderWithYamlTakesPrecedenceOverHomeFolder() throws Exception {
+	void loadFromConfigDirectoryWithYamlTakesPrecedenceOverHomeDirectory() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc.xyz", "jkl");
 		properties.put("bar", "baz");
@@ -173,7 +173,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
-		protected File getHomeFolder() {
+		protected File getHomeDirectory() {
 			return DevToolsHomePropertiesPostProcessorTests.this.home;
 		}
 

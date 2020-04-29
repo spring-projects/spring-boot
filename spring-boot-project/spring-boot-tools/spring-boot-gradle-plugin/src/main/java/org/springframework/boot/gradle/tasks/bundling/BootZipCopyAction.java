@@ -282,7 +282,7 @@ class BootZipCopyAction implements CopyAction {
 				return;
 			}
 			if (isInMetaInf(details)) {
-				// Don't write loader entries until after META-INF folder (see gh-16698)
+				// Always write loader entries after META-INF directory (see gh-16698)
 				return;
 			}
 			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime());

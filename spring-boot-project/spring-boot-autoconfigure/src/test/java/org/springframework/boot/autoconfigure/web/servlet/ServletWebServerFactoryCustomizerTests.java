@@ -147,13 +147,13 @@ class ServletWebServerFactoryCustomizerTests {
 	@Test
 	void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.servlet.session.store-dir", "myfolder");
+		map.put("server.servlet.session.store-dir", "mydirectory");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("myfolder"));
+		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("mydirectory"));
 	}
 
 	@Test

@@ -439,8 +439,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			getSearchLocations().forEach((location) -> {
-				boolean isFolder = location.endsWith("/");
-				Set<String> names = isFolder ? getSearchNames() : NO_SEARCH_NAMES;
+				boolean isDirectory = location.endsWith("/");
+				Set<String> names = isDirectory ? getSearchNames() : NO_SEARCH_NAMES;
 				names.forEach((name) -> load(location, name, profile, filterFactory, consumer));
 			});
 		}

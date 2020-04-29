@@ -1025,7 +1025,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void whenConfigLocationSpecifiesFolderConfigFileProcessingContinues() {
+	void whenConfigLocationSpecifiesDirectoryConfigFileProcessingContinues() {
 		String location = "classpath:application.unknown/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);
@@ -1033,7 +1033,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void locationsWithWildcardFoldersShouldLoadAllFilesThatMatch() {
+	void locationsWithWildcardDirectoriesShouldLoadAllFilesThatMatch() {
 		String location = "file:src/test/resources/config/*/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);

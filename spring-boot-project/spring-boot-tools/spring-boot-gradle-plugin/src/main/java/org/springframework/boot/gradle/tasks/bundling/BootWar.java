@@ -42,11 +42,11 @@ public class BootWar extends War implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.WarLauncher";
 
-	private static final String CLASSES_FOLDER = "WEB-INF/classes/";
+	private static final String CLASSES_DIRECTORY = "WEB-INF/classes/";
 
-	private static final String LIB_PROVIDED_FOLDER = "WEB-INF/lib-provided/";
+	private static final String LIB_PROVIDED_DIRECTORY = "WEB-INF/lib-provided/";
 
-	private static final String LIB_FOLDER = "WEB-INF/lib/";
+	private static final String LIB_DIRECTORY = "WEB-INF/lib/";
 
 	private final BootArchiveSupport support;
 
@@ -70,7 +70,7 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER, null, null);
+		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_DIRECTORY, LIB_DIRECTORY, null, null);
 		super.copy();
 	}
 
@@ -194,7 +194,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
-		return path.startsWith(LIB_FOLDER) || path.startsWith(LIB_PROVIDED_FOLDER);
+		return path.startsWith(LIB_DIRECTORY) || path.startsWith(LIB_PROVIDED_DIRECTORY);
 	}
 
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {

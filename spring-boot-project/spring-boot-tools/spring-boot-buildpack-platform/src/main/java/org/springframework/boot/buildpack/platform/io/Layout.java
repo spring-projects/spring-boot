@@ -19,7 +19,7 @@ package org.springframework.boot.buildpack.platform.io;
 import java.io.IOException;
 
 /**
- * Interface that can be used to write a file/folder layout.
+ * Interface that can be used to write a file/directory layout.
  *
  * @author Phillip Webb
  * @since 2.3.0
@@ -27,17 +27,17 @@ import java.io.IOException;
 public interface Layout {
 
 	/**
-	 * Add a folder to the content.
-	 * @param name the full name of the folder to add.
-	 * @param owner the owner of the folder
+	 * Add a directory to the content.
+	 * @param name the full name of the directory to add.
+	 * @param owner the owner of the directory
 	 * @throws IOException on IO error
 	 */
-	void folder(String name, Owner owner) throws IOException;
+	void directory(String name, Owner owner) throws IOException;
 
 	/**
 	 * Write a file to the content.
 	 * @param name the full name of the file to add.
-	 * @param owner the owner of the folder
+	 * @param owner the owner of the file
 	 * @param content the content to add
 	 * @throws IOException on IO error
 	 */

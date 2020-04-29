@@ -31,7 +31,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.AbstractResource;
@@ -123,8 +123,8 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	private List<Resource> getAdditionalResources(String locationPattern) throws MalformedURLException {
 		List<Resource> additionalResources = new ArrayList<>();
 		String trimmedLocationPattern = trimLocationPattern(locationPattern);
-		for (SourceFolder sourceFolder : this.classLoaderFiles.getSourceFolders()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
+		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
+			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
 				String name = entry.getKey();
 				ClassLoaderFile file = entry.getValue();
 				if (file.getKind() != Kind.DELETED && this.antPathMatcher.match(trimmedLocationPattern, name)) {
@@ -147,8 +147,8 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	private boolean isDeleted(Resource resource) {
-		for (SourceFolder sourceFolder : this.classLoaderFiles.getSourceFolders()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
+		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
+			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
 				try {
 					String name = entry.getKey();
 					ClassLoaderFile file = entry.getValue();

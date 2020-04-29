@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DefaultSourceFolderUrlFilter}.
+ * Tests for {@link DefaultSourceDirectoryUrlFilter}.
  *
  * @author Phillip Webb
  */
-class DefaultSourceFolderUrlFilterTests {
+class DefaultSourceDirectoryUrlFilterTests {
 
 	private static final String SOURCE_ROOT = "/Users/me/code/some-root/";
 
@@ -52,33 +52,33 @@ class DefaultSourceFolderUrlFilterTests {
 		COMMON_POSTFIXES = Collections.unmodifiableList(postfixes);
 	}
 
-	private DefaultSourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+	private DefaultSourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
 
 	@Test
-	void mavenSourceFolder() throws Exception {
+	void mavenSourceDirectory() throws Exception {
 		doTest("my-module/target/classes/");
 	}
 
 	@Test
-	void gradleEclipseSourceFolder() throws Exception {
+	void gradleEclipseSourceDirectory() throws Exception {
 		doTest("my-module/bin/");
 	}
 
 	@Test
-	void unusualSourceFolder() throws Exception {
+	void unusualSourceDirectory() throws Exception {
 		doTest("my-module/something/quite/quite/mad/");
 	}
 
 	@Test
 	void skippedProjects() throws Exception {
-		String sourceFolder = "/Users/me/code/spring-boot-samples/spring-boot-sample-devtools";
+		String sourceDirectory = "/Users/me/code/spring-boot-samples/spring-boot-sample-devtools";
 		URL jarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
-		assertThat(this.filter.isMatch(sourceFolder, jarUrl)).isTrue();
+		assertThat(this.filter.isMatch(sourceDirectory, jarUrl)).isTrue();
 		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
 				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
-		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl)).isFalse();
+		assertThat(this.filter.isMatch(sourceDirectory, nestedJarUrl)).isFalse();
 		URL fileUrl = new URL("file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
-		assertThat(this.filter.isMatch(sourceFolder, fileUrl)).isTrue();
+		assertThat(this.filter.isMatch(sourceDirectory, fileUrl)).isTrue();
 	}
 
 	private void doTest(String sourcePostfix) throws MalformedURLException {
@@ -89,11 +89,11 @@ class DefaultSourceFolderUrlFilterTests {
 	}
 
 	private void doTest(String sourcePostfix, String moduleRoot, boolean expected) throws MalformedURLException {
-		String sourceFolder = SOURCE_ROOT + sourcePostfix;
+		String sourceDirectory = SOURCE_ROOT + sourcePostfix;
 		for (String postfix : COMMON_POSTFIXES) {
 			for (URL url : getUrls(moduleRoot + postfix)) {
-				boolean match = this.filter.isMatch(sourceFolder, url);
-				assertThat(match).as(url + " against " + sourceFolder).isEqualTo(expected);
+				boolean match = this.filter.isMatch(sourceDirectory, url);
+				assertThat(match).as(url + " against " + sourceDirectory).isEqualTo(expected);
 			}
 		}
 	}

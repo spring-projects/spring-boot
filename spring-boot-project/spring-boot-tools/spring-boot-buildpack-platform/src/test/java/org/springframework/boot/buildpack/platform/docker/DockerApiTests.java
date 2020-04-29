@@ -262,7 +262,7 @@ class DockerApiTests {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			TarArchive archive = TarArchive.of((layout) -> {
-				layout.folder("/test", Owner.ROOT);
+				layout.directory("/test", Owner.ROOT);
 				layout.file("/test/file", Owner.ROOT, Content.of("test"));
 			});
 			ContainerContent content = ContainerContent.of(archive);

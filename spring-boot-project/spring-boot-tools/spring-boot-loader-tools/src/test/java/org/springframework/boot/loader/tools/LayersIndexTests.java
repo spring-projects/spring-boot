@@ -85,7 +85,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenAllFilesInFolderAreInSameLayerUsesFolder() {
+	void writeToWhenAllFilesInDirectoryAreInSameLayerUsesDirectory() {
 		LayersIndex index = new LayersIndex(LAYER_A, LAYER_B, LAYER_C);
 		index.add(LAYER_A, "a1/b1/c1");
 		index.add(LAYER_A, "a1/b1/c2");
@@ -96,7 +96,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenAllFilesInFolderAreInNotInSameLayerUsesFiles() {
+	void writeToWhenAllFilesInDirectoryAreInNotInSameLayerUsesFiles() {
 		LayersIndex index = new LayersIndex(LAYER_A, LAYER_B, LAYER_C);
 		index.add(LAYER_A, "a1/b1/c1");
 		index.add(LAYER_B, "a1/b1/c2");

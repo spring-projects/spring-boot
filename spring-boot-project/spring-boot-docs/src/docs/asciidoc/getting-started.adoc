@@ -365,8 +365,8 @@ Before we begin, open a terminal and run the following commands to ensure that y
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
 
-NOTE: This sample needs to be created in its own folder.
-Subsequent instructions assume that you have created a suitable folder and that it is your current directory.
+NOTE: This sample needs to be created in its own directory.
+Subsequent instructions assume that you have created a suitable directory and that it is your current directory.
 
 
 
@@ -481,7 +481,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 [[getting-started-first-application-code]]
 === Writing the Code
 To finish our application, we need to create a single Java file.
-By default, Maven compiles sources from `src/main/java`, so you need to create that folder structure and then add a file named `src/main/java/Example.java` to contain the following code:
+By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/Example.java` to contain the following code:
 
 [source,java,indent=0]
 ----

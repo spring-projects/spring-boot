@@ -239,7 +239,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
 			throws IOException {
 		String name = entry.getName();
-		writeParentFolderEntries(name);
+		writeParentDirectoryEntries(name);
 		if (this.writtenEntries.add(name)) {
 			entry.setUnixMode(name.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
 			entry.getGeneralPurposeBit().useUTF8ForNames(true);
@@ -254,7 +254,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
 
-	private void writeParentFolderEntries(String name) throws IOException {
+	private void writeParentDirectoryEntries(String name) throws IOException {
 		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));

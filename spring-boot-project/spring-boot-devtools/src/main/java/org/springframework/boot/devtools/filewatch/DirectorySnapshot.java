@@ -31,31 +31,31 @@ import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.Assert;
 
 /**
- * A snapshot of a folder at a given point in time.
+ * A snapshot of a directory at a given point in time.
  *
  * @author Phillip Webb
  */
-class FolderSnapshot {
+class DirectorySnapshot {
 
-	private static final Set<String> DOT_FOLDERS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
+	private static final Set<String> DOTS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
 
-	private final File folder;
+	private final File directory;
 
 	private final Date time;
 
 	private Set<FileSnapshot> files;
 
 	/**
-	 * Create a new {@link FolderSnapshot} for the given folder.
-	 * @param folder the source folder
+	 * Create a new {@link DirectorySnapshot} for the given directory.
+	 * @param directory the source directory
 	 */
-	FolderSnapshot(File folder) {
-		Assert.notNull(folder, "Folder must not be null");
-		Assert.isTrue(!folder.isFile(), () -> "Folder '" + folder + "' must not be a file");
-		this.folder = folder;
+	DirectorySnapshot(File directory) {
+		Assert.notNull(directory, "Directory must not be null");
+		Assert.isTrue(!directory.isFile(), () -> "Directory '" + directory + "' must not be a file");
+		this.directory = directory;
 		this.time = new Date();
 		Set<FileSnapshot> files = new LinkedHashSet<>();
-		collectFiles(folder, files);
+		collectFiles(directory, files);
 		this.files = Collections.unmodifiableSet(files);
 	}
 
@@ -63,7 +63,7 @@ class FolderSnapshot {
 		File[] children = source.listFiles();
 		if (children != null) {
 			for (File child : children) {
-				if (child.isDirectory() && !DOT_FOLDERS.contains(child.getName())) {
+				if (child.isDirectory() && !DOTS.contains(child.getName())) {
 					collectFiles(child, result);
 				}
 				else if (child.isFile()) {
@@ -73,29 +73,30 @@ class FolderSnapshot {
 		}
 	}
 
-	ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
+	ChangedFiles getChangedFiles(DirectorySnapshot snapshot, FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
-		File folder = this.folder;
-		Assert.isTrue(snapshot.folder.equals(folder), () -> "Snapshot source folder must be '" + folder + "'");
+		File directory = this.directory;
+		Assert.isTrue(snapshot.directory.equals(directory),
+				() -> "Snapshot source directory must be '" + directory + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
 			if (acceptChangedFile(triggerFilter, currentFile)) {
 				FileSnapshot previousFile = previousFiles.remove(currentFile.getFile());
 				if (previousFile == null) {
-					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
+					changes.add(new ChangedFile(directory, currentFile.getFile(), Type.ADD));
 				}
 				else if (!previousFile.equals(currentFile)) {
-					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
+					changes.add(new ChangedFile(directory, currentFile.getFile(), Type.MODIFY));
 				}
 			}
 		}
 		for (FileSnapshot previousFile : previousFiles.values()) {
 			if (acceptChangedFile(triggerFilter, previousFile)) {
-				changes.add(new ChangedFile(folder, previousFile.getFile(), Type.DELETE));
+				changes.add(new ChangedFile(directory, previousFile.getFile(), Type.DELETE));
 			}
 		}
-		return new ChangedFiles(folder, changes);
+		return new ChangedFiles(directory, changes);
 	}
 
 	private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
@@ -118,14 +119,14 @@ class FolderSnapshot {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof FolderSnapshot) {
-			return equals((FolderSnapshot) obj, null);
+		if (obj instanceof DirectorySnapshot) {
+			return equals((DirectorySnapshot) obj, null);
 		}
 		return super.equals(obj);
 	}
 
-	boolean equals(FolderSnapshot other, FileFilter filter) {
-		if (this.folder.equals(other.folder)) {
+	boolean equals(DirectorySnapshot other, FileFilter filter) {
+		if (this.directory.equals(other.directory)) {
 			Set<FileSnapshot> ourFiles = filter(this.files, filter);
 			Set<FileSnapshot> otherFiles = filter(other.files, filter);
 			return ourFiles.equals(otherFiles);
@@ -148,22 +149,22 @@ class FolderSnapshot {
 
 	@Override
 	public int hashCode() {
-		int hashCode = this.folder.hashCode();
+		int hashCode = this.directory.hashCode();
 		hashCode = 31 * hashCode + this.files.hashCode();
 		return hashCode;
 	}
 
 	/**
-	 * Return the source folder of this snapshot.
-	 * @return the source folder
+	 * Return the source directory of this snapshot.
+	 * @return the source directory
 	 */
-	File getFolder() {
-		return this.folder;
+	File getDirectory() {
+		return this.directory;
 	}
 
 	@Override
 	public String toString() {
-		return this.folder + " snapshot at " + this.time;
+		return this.directory + " snapshot at " + this.time;
 	}
 
 }

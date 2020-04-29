@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import java.util.regex.Pattern;
 import org.springframework.util.StringUtils;
 
 /**
- * Default implementation of {@link SourceFolderUrlFilter} that attempts to match URLs
+ * Default implementation of {@link SourceDirectoryUrlFilter} that attempts to match URLs
  * using common naming conventions.
  *
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 2.3.0
  */
-public class DefaultSourceFolderUrlFilter implements SourceFolderUrlFilter {
+public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter {
 
 	private static final String[] COMMON_ENDINGS = { "/target/classes", "/bin" };
 
@@ -44,12 +44,12 @@ public class DefaultSourceFolderUrlFilter implements SourceFolderUrlFilter {
 			"spring-boot-devtools", "spring-boot-autoconfigure", "spring-boot-actuator", "spring-boot-starter"));
 
 	@Override
-	public boolean isMatch(String sourceFolder, URL url) {
+	public boolean isMatch(String sourceDirectory, URL url) {
 		String jarName = getJarName(url);
 		if (!StringUtils.hasLength(jarName)) {
 			return false;
 		}
-		return isMatch(sourceFolder, jarName);
+		return isMatch(sourceDirectory, jarName);
 	}
 
 	private String getJarName(URL url) {
@@ -60,23 +60,23 @@ public class DefaultSourceFolderUrlFilter implements SourceFolderUrlFilter {
 		return null;
 	}
 
-	private boolean isMatch(String sourceFolder, String jarName) {
-		sourceFolder = stripTrailingSlash(sourceFolder);
-		sourceFolder = stripCommonEnds(sourceFolder);
-		String[] folders = StringUtils.delimitedListToStringArray(sourceFolder, "/");
-		for (int i = folders.length - 1; i >= 0; i--) {
-			if (isFolderMatch(folders[i], jarName)) {
+	private boolean isMatch(String sourceDirectory, String jarName) {
+		sourceDirectory = stripTrailingSlash(sourceDirectory);
+		sourceDirectory = stripCommonEnds(sourceDirectory);
+		String[] directories = StringUtils.delimitedListToStringArray(sourceDirectory, "/");
+		for (int i = directories.length - 1; i >= 0; i--) {
+			if (isDirectoryMatch(directories[i], jarName)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean isFolderMatch(String folder, String jarName) {
-		if (!jarName.startsWith(folder) || SKIPPED_PROJECTS.contains(folder)) {
+	private boolean isDirectoryMatch(String directory, String jarName) {
+		if (!jarName.startsWith(directory) || SKIPPED_PROJECTS.contains(directory)) {
 			return false;
 		}
-		String version = jarName.substring(folder.length());
+		String version = jarName.substring(directory.length());
 		return version.isEmpty() || VERSION_PATTERN.matcher(version).matches();
 	}
 

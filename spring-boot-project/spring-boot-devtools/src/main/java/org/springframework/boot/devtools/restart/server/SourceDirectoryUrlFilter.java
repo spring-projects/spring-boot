@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,22 @@ package org.springframework.boot.devtools.restart.server;
 import java.net.URL;
 
 /**
- * Filter URLs based on a source folder name. Used to match URLs from the running
- * classpath against source folders on a remote system.
+ * Filter URLs based on a source directory name. Used to match URLs from the running
+ * classpath against source directory on a remote system.
  *
  * @author Phillip Webb
- * @since 1.3.0
- * @see DefaultSourceFolderUrlFilter
+ * @since 2.3.0
+ * @see DefaultSourceDirectoryUrlFilter
  */
 @FunctionalInterface
-public interface SourceFolderUrlFilter {
+public interface SourceDirectoryUrlFilter {
 
 	/**
-	 * Determine if the specified URL matches a source folder.
-	 * @param sourceFolder the source folder
+	 * Determine if the specified URL matches a source directory.
+	 * @param sourceDirectory the source directory
 	 * @param url the URL to check
 	 * @return {@code true} if the URL matches
 	 */
-	boolean isMatch(String sourceFolder, URL url);
+	boolean isMatch(String sourceDirectory, URL url);
 
 }

@@ -86,7 +86,7 @@ public class BuildRequestTests {
 	}
 
 	@Test
-	void forJarFileWhenJarFileIsFolderThrowsException() {
+	void forJarFileWhenJarFileIsDirectoryThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(this.tempDir))
 				.withMessage("JarFile must be a file");
 	}

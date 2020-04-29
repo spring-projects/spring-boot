@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,29 +49,29 @@ class PatternClassPathRestartStrategyTests {
 	void singlePattern() {
 		ClassPathRestartStrategy strategy = createStrategy("static/**");
 		assertRestartRequired(strategy, "static/file.txt", false);
-		assertRestartRequired(strategy, "static/folder/file.txt", false);
+		assertRestartRequired(strategy, "static/directory/file.txt", false);
 		assertRestartRequired(strategy, "public/file.txt", true);
-		assertRestartRequired(strategy, "public/folder/file.txt", true);
+		assertRestartRequired(strategy, "public/directory/file.txt", true);
 	}
 
 	@Test
 	void multiplePatterns() {
 		ClassPathRestartStrategy strategy = createStrategy("static/**,public/**");
 		assertRestartRequired(strategy, "static/file.txt", false);
-		assertRestartRequired(strategy, "static/folder/file.txt", false);
+		assertRestartRequired(strategy, "static/directory/file.txt", false);
 		assertRestartRequired(strategy, "public/file.txt", false);
-		assertRestartRequired(strategy, "public/folder/file.txt", false);
+		assertRestartRequired(strategy, "public/directory/file.txt", false);
 		assertRestartRequired(strategy, "src/file.txt", true);
-		assertRestartRequired(strategy, "src/folder/file.txt", true);
+		assertRestartRequired(strategy, "src/directory/file.txt", true);
 	}
 
 	@Test
 	void pomChange() {
 		ClassPathRestartStrategy strategy = createStrategy("META-INF/maven/**");
 		assertRestartRequired(strategy, "pom.xml", true);
-		String mavenFolder = "META-INF/maven/org.springframework.boot/spring-boot-devtools";
-		assertRestartRequired(strategy, mavenFolder + "/pom.xml", false);
-		assertRestartRequired(strategy, mavenFolder + "/pom.properties", false);
+		String mavenDirectory = "META-INF/maven/org.springframework.boot/spring-boot-devtools";
+		assertRestartRequired(strategy, mavenDirectory + "/pom.xml", false);
+		assertRestartRequired(strategy, mavenDirectory + "/pom.properties", false);
 	}
 
 	@Test

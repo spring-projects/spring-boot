@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
-import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
+import org.springframework.boot.devtools.restart.server.SourceDirectoryUrlFilter;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -244,8 +244,8 @@ class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
-			return new MockHttpRestartServer(sourceFolderUrlFilter);
+			SourceDirectoryUrlFilter sourceDirectoryUrlFilter = mock(SourceDirectoryUrlFilter.class);
+			return new MockHttpRestartServer(sourceDirectoryUrlFilter);
 		}
 
 	}
@@ -257,8 +257,8 @@ class RemoteDevToolsAutoConfigurationTests {
 
 		private boolean invoked;
 
-		MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
-			super(sourceFolderUrlFilter);
+		MockHttpRestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter) {
+			super(sourceDirectoryUrlFilter);
 		}
 
 		@Override

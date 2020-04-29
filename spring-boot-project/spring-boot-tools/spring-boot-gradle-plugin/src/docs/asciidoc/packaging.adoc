@@ -174,7 +174,7 @@ include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-d
 Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
 For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
 
-To deal with any problematic libraries, an executable archive can be configured to unpack specific nested jars to a temporary folder when the executable archive is run.
+To deal with any problematic libraries, an executable archive can be configured to unpack specific nested jars to a temporary directory when the executable archive is run.
 Libraries can be identified as requiring unpacking using Ant-style patterns that match against the absolute path of the source jar file:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -268,7 +268,7 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 [[packaging-layered-jars]]
 ==== Packaging Layered Jars
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
 To use this feature, the layering feature must be enabled:

@@ -46,9 +46,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";
 
-	private static final String CLASSES_FOLDER = "BOOT-INF/classes/";
+	private static final String CLASSES_DIRECTORY = "BOOT-INF/classes/";
 
-	private static final String LIB_FOLDER = "BOOT-INF/lib/";
+	private static final String LIB_DIRECTORY = "BOOT-INF/lib/";
 
 	private static final String LAYERS_INDEX = "BOOT-INF/layers.idx";
 
@@ -95,8 +95,8 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER, CLASSPATH_INDEX,
-				(this.layered != null) ? LAYERS_INDEX : null);
+		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_DIRECTORY, LIB_DIRECTORY,
+				CLASSPATH_INDEX, (this.layered != null) ? LAYERS_INDEX : null);
 		super.copy();
 	}
 
@@ -104,7 +104,7 @@ public class BootJar extends Jar implements BootArchive {
 	protected CopyAction createCopyAction() {
 		if (this.layered != null) {
 			LayerResolver layerResolver = new LayerResolver(getConfigurations(), this.layered, this::isLibrary);
-			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_FOLDER : null;
+			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
 			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
 		}
 		return this.support.createCopyAction(this);
@@ -265,7 +265,7 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
-		return path.startsWith(LIB_FOLDER);
+		return path.startsWith(LIB_DIRECTORY);
 	}
 
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
