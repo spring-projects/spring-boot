@@ -59,7 +59,7 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.79") {
+	library("AppEngine SDK", "1.9.80") {
 		group("com.google.appengine") {
 			modules = [
 				"appengine-api-1.0-sdk"
