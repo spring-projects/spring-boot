@@ -46,9 +46,14 @@ public class ErrorProperties {
 	private IncludeStacktrace includeStacktrace = IncludeStacktrace.NEVER;
 
 	/**
-	 * When to include "message" and "errors" attributes.
+	 * When to include "message" attribute.
 	 */
-	private IncludeDetails includeDetails = IncludeDetails.NEVER;
+	private IncludeAttribute includeMessage = IncludeAttribute.NEVER;
+
+	/**
+	 * When to include "errors" attribute.
+	 */
+	private IncludeAttribute includeBindingErrors = IncludeAttribute.NEVER;
 
 	private final Whitelabel whitelabel = new Whitelabel();
 
@@ -76,12 +81,20 @@ public class ErrorProperties {
 		this.includeStacktrace = includeStacktrace;
 	}
 
-	public IncludeDetails getIncludeDetails() {
-		return this.includeDetails;
+	public IncludeAttribute getIncludeMessage() {
+		return this.includeMessage;
 	}
 
-	public void setIncludeDetails(IncludeDetails includeDetails) {
-		this.includeDetails = includeDetails;
+	public void setIncludeMessage(IncludeAttribute includeMessage) {
+		this.includeMessage = includeMessage;
+	}
+
+	public IncludeAttribute getIncludeBindingErrors() {
+		return this.includeMessage;
+	}
+
+	public void setIncludeBindingErrors(IncludeAttribute includeMessage) {
+		this.includeMessage = includeMessage;
 	}
 
 	public Whitelabel getWhitelabel() {
@@ -96,39 +109,56 @@ public class ErrorProperties {
 		/**
 		 * Never add stacktrace information.
 		 */
-		NEVER,
+		NEVER(IncludeAttribute.NEVER),
 
 		/**
 		 * Always add stacktrace information.
 		 */
-		ALWAYS,
+		ALWAYS(IncludeAttribute.ALWAYS),
+
+		/**
+		 * Add error attribute when the appropriate request parameter is "true".
+		 */
+		ON_PARAM(IncludeAttribute.ON_PARAM),
 
 		/**
 		 * Add stacktrace information when the "trace" request parameter is "true".
+		 * @deprecated since 2.3.0 in favor of {@link #ON_PARAM}
 		 */
-		ON_TRACE_PARAM
+		@Deprecated
+		ON_TRACE_PARAM(IncludeAttribute.ON_PARAM);
+
+		private final IncludeAttribute include;
+
+		IncludeStacktrace(IncludeAttribute include) {
+			this.include = include;
+		}
+
+		public IncludeAttribute getInclude() {
+			return this.include;
+		}
 
 	}
 
 	/**
-	 * Include error details attributes options.
+	 * Include error attributes options.
 	 */
-	public enum IncludeDetails {
+	public enum IncludeAttribute {
 
 		/**
-		 * Never add error detail information.
+		 * Never add error attribute.
 		 */
 		NEVER,
 
 		/**
-		 * Always add error detail information.
+		 * Always add error attribute.
 		 */
 		ALWAYS,
 
 		/**
-		 * Add error details information when the "details" request parameter is "true".
+		 * Add error attribute when the appropriate request parameter is "true".
 		 */
-		ON_DETAILS_PARAM
+		ON_PARAM
 
 	}
 

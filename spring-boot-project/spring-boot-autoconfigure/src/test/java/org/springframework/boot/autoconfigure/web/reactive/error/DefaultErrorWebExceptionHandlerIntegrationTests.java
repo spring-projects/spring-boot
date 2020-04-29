@@ -99,7 +99,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	@Test
 	void htmlError() {
-		this.contextRunner.withPropertyValues("server.error.include-details=always").run((context) -> {
+		this.contextRunner.withPropertyValues("server.error.include-message=always").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			String body = client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader().contentType(TEXT_HTML_UTF8)
@@ -116,26 +116,43 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isBadRequest().expectBody().jsonPath("status").isEqualTo("400").jsonPath("error")
 					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path").isEqualTo(("/bind"))
 					.jsonPath("exception").doesNotExist().jsonPath("errors").doesNotExist().jsonPath("message")
-					.isNotEmpty().jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
+					.isEmpty().jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
 	@Test
-	void bindingResultErrorIncludeDetails() {
-		this.contextRunner.withPropertyValues("server.error.include-details=on-details-param").run((context) -> {
-			WebTestClient client = getWebClient(context);
-			client.post().uri("/bind?details=true").contentType(MediaType.APPLICATION_JSON).bodyValue("{}").exchange()
-					.expectStatus().isBadRequest().expectBody().jsonPath("status").isEqualTo("400").jsonPath("error")
-					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path").isEqualTo(("/bind"))
-					.jsonPath("exception").doesNotExist().jsonPath("errors").isArray().jsonPath("message").isNotEmpty()
-					.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
-		});
+	void bindingResultErrorIncludeMessageAndErrors() {
+		this.contextRunner.withPropertyValues("server.error.include-message=on-param",
+				"server.error.include-binding-errors=on-param").run((context) -> {
+					WebTestClient client = getWebClient(context);
+					client.post().uri("/bind?message=true&errors=true").contentType(MediaType.APPLICATION_JSON)
+							.bodyValue("{}").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
+							.isEqualTo("400").jsonPath("error").isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
+							.jsonPath("path").isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
+							.jsonPath("errors").isArray().jsonPath("message").isNotEmpty().jsonPath("requestId")
+							.isEqualTo(this.logIdFilter.getLogId());
+				});
+	}
+
+	@Test
+	void includeStackTraceOnTraceParam() {
+		this.contextRunner.withPropertyValues("server.error.include-exception=true",
+				"server.error.include-stacktrace=on-trace-param").run((context) -> {
+					WebTestClient client = getWebClient(context);
+					client.get().uri("/?trace=true").exchange().expectStatus()
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody().jsonPath("status")
+							.isEqualTo("500").jsonPath("error")
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).jsonPath("exception")
+							.isEqualTo(IllegalStateException.class.getName()).jsonPath("trace").exists()
+							.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
+				});
 	}
 
 	@Test
 	void includeStackTraceOnParam() {
-		this.contextRunner.withPropertyValues("server.error.include-exception=true",
-				"server.error.include-stacktrace=on-trace-param").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=on-param")
+				.run((context) -> {
 					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=true").exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody().jsonPath("status")
@@ -177,11 +194,12 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void includeDetailsOnParam() {
-		this.contextRunner.withPropertyValues("server.error.include-exception=true",
-				"server.error.include-details=on-details-param").run((context) -> {
+	void includeMessageOnParam() {
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true", "server.error.include-message=on-param")
+				.run((context) -> {
 					WebTestClient client = getWebClient(context);
-					client.get().uri("/?details=true").exchange().expectStatus()
+					client.get().uri("/?message=true").exchange().expectStatus()
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody().jsonPath("status")
 							.isEqualTo("500").jsonPath("error")
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).jsonPath("exception")
@@ -191,9 +209,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void alwaysIncludeDetails() {
+	void alwaysIncludeMessage() {
 		this.contextRunner
-				.withPropertyValues("server.error.include-exception=true", "server.error.include-details=always")
+				.withPropertyValues("server.error.include-exception=true", "server.error.include-message=always")
 				.run((context) -> {
 					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=false").exchange().expectStatus()
@@ -206,9 +224,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void neverIncludeDetails() {
+	void neverIncludeMessage() {
 		this.contextRunner
-				.withPropertyValues("server.error.include-exception=true", "server.error.include-details=never")
+				.withPropertyValues("server.error.include-exception=true", "server.error.include-message=never")
 				.run((context) -> {
 					WebTestClient client = getWebClient(context);
 					client.get().uri("/?trace=true").exchange().expectStatus()
@@ -235,7 +253,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	void defaultErrorView() {
 		this.contextRunner
 				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
-						"server.error.include-stacktrace=always", "server.error.include-details=always")
+						"server.error.include-stacktrace=always", "server.error.include-message=always")
 				.run((context) -> {
 					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus()
@@ -250,7 +268,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void escapeHtmlInDefaultErrorView() {
 		this.contextRunner
-				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-details=always")
+				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-message=always")
 				.run((context) -> {
 					WebTestClient client = getWebClient(context);
 					String body = client.get().uri("/html").accept(MediaType.TEXT_HTML).exchange().expectStatus()

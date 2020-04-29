@@ -66,7 +66,8 @@ class DefaultErrorWebExceptionHandlerTests {
 		ResourceProperties resourceProperties = new ResourceProperties();
 		ErrorProperties errorProperties = new ErrorProperties();
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
-		given(errorAttributes.getErrorAttributes(any(), anyBoolean(), anyBoolean())).willReturn(getErrorAttributes());
+		given(errorAttributes.getErrorAttributes(any(), anyBoolean(), anyBoolean(), anyBoolean()))
+				.willReturn(getErrorAttributes());
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				resourceProperties, errorProperties, context);
 		setupViewResolver(exceptionHandler);

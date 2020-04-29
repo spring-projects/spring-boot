@@ -51,16 +51,16 @@ class ManagementErrorEndpointTests {
 	void errorResponseNeverDetails() {
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
-		assertThat(response).containsEntry("message", "An error occurred while processing the request");
+		assertThat(response).containsEntry("message", "");
 		assertThat(response).doesNotContainKey("trace");
 	}
 
 	@Test
 	void errorResponseAlwaysDetails() {
 		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ALWAYS);
-		this.errorProperties.setIncludeDetails(ErrorProperties.IncludeDetails.ALWAYS);
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ALWAYS);
 		this.request.addParameter("trace", "false");
-		this.request.addParameter("details", "false");
+		this.request.addParameter("message", "false");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).containsEntry("message", "test exception");
@@ -70,20 +70,20 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseParamsAbsent() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM);
-		this.errorProperties.setIncludeDetails(ErrorProperties.IncludeDetails.ON_DETAILS_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
-		assertThat(response).containsEntry("message", "An error occurred while processing the request");
+		assertThat(response).containsEntry("message", "");
 		assertThat(response).doesNotContainKey("trace");
 	}
 
 	@Test
 	void errorResponseParamsTrue() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM);
-		this.errorProperties.setIncludeDetails(ErrorProperties.IncludeDetails.ON_DETAILS_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.request.addParameter("trace", "true");
-		this.request.addParameter("details", "true");
+		this.request.addParameter("message", "true");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
 		assertThat(response).containsEntry("message", "test exception");
@@ -93,13 +93,13 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseParamsFalse() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM);
-		this.errorProperties.setIncludeDetails(ErrorProperties.IncludeDetails.ON_DETAILS_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.request.addParameter("trace", "false");
-		this.request.addParameter("details", "false");
+		this.request.addParameter("message", "false");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
-		assertThat(response).containsEntry("message", "An error occurred while processing the request");
+		assertThat(response).containsEntry("message", "");
 		assertThat(response).doesNotContainKey("trace");
 	}
 

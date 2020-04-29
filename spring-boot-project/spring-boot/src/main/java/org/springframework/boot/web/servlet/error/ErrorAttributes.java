@@ -37,10 +37,10 @@ public interface ErrorAttributes {
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
-	 * @param includeStackTrace if stack trace elements should be included
+	 * @param includeStackTrace if stack trace element should be included
 	 * @return a map of error attributes
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(WebRequest, boolean, boolean)}
+	 * {@link #getErrorAttributes(WebRequest, boolean, boolean, boolean)}
 	 */
 	@Deprecated
 	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace);
@@ -50,12 +50,14 @@ public interface ErrorAttributes {
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
-	 * @param includeStackTrace if stack trace elements should be included
-	 * @param includeDetails if message and errors elements should be included
+	 * @param includeStackTrace if stack trace element should be included
+	 * @param includeMessage if message element should be included
+	 * @param includeBindingErrors if errors element should be included
 	 * @return a map of error attributes
 	 * @since 2.3.0
 	 */
-	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace, boolean includeDetails);
+	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace, boolean includeMessage,
+			boolean includeBindingErrors);
 
 	/**
 	 * Return the underlying cause of the error or {@code null} if the error cannot be

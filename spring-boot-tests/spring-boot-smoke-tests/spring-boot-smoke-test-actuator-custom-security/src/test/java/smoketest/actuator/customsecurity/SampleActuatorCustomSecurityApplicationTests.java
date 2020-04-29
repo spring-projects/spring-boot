@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "server.error.include-details=always" })
+		properties = { "server.error.include-message=always" })
 class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort

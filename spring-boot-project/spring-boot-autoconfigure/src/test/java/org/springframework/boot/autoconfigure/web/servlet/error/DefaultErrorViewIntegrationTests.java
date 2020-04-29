@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(properties = { "server.error.include-details=always" })
+@SpringBootTest(properties = { "server.error.include-message=always" })
 @DirtiesContext
 class DefaultErrorViewIntegrationTests {
 

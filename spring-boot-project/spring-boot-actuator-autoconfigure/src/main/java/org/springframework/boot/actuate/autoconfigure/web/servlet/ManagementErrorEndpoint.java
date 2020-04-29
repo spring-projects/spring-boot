@@ -53,26 +53,38 @@ public class ManagementErrorEndpoint {
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke(ServletWebRequest request) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace(request), includeDetails(request));
+		return this.errorAttributes.getErrorAttributes(request, includeStackTrace(request), includeMessage(request),
+				includeBindingErrors(request));
 	}
 
 	private boolean includeStackTrace(ServletWebRequest request) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
-		case ON_TRACE_PARAM:
+		case ON_PARAM:
 			return getBooleanParameter(request, "trace");
 		default:
 			return false;
 		}
 	}
 
-	private boolean includeDetails(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeDetails()) {
+	private boolean includeMessage(ServletWebRequest request) {
+		switch (this.errorProperties.getIncludeMessage()) {
 		case ALWAYS:
 			return true;
-		case ON_DETAILS_PARAM:
-			return getBooleanParameter(request, "details");
+		case ON_PARAM:
+			return getBooleanParameter(request, "message");
+		default:
+			return false;
+		}
+	}
+
+	private boolean includeBindingErrors(ServletWebRequest request) {
+		switch (this.errorProperties.getIncludeBindingErrors()) {
+		case ALWAYS:
+			return true;
+		case ON_PARAM:
+			return getBooleanParameter(request, "errors");
 		default:
 			return false;
 		}

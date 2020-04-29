@@ -51,7 +51,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true, true), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
@@ -69,7 +69,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					true);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true, true), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "

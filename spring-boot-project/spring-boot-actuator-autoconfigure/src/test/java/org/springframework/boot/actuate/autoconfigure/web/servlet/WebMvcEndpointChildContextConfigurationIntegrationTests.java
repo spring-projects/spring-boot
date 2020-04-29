@@ -67,14 +67,14 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 			ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON).exchange()
 					.block();
 			Map<Object, Object> body = response.bodyToMono(Map.class).block();
-			assertThat(body).containsEntry("message", "An error occurred while processing the request");
+			assertThat(body).containsEntry("message", "");
 			assertThat(body).doesNotContainKey("trace");
 		});
 	}
 
 	@Test
 	void errorPageAndErrorControllerIncludeDetails() {
-		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-details=always")
+		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-message=always")
 				.run((context) -> {
 					String port = context.getEnvironment().getProperty("local.management.port");
 					WebClient client = WebClient.create("http://localhost:" + port);

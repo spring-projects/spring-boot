@@ -88,7 +88,8 @@ public class BasicErrorController extends AbstractErrorController {
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
 		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.TEXT_HTML), isIncludeDetails(request, MediaType.TEXT_HTML)));
+				isIncludeStackTrace(request, MediaType.TEXT_HTML), isIncludeMessage(request, MediaType.TEXT_HTML),
+				isIncludeBindingErrors(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -101,7 +102,7 @@ public class BasicErrorController extends AbstractErrorController {
 			return new ResponseEntity<>(status);
 		}
 		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL),
-				isIncludeDetails(request, MediaType.ALL));
+				isIncludeMessage(request, MediaType.ALL), isIncludeBindingErrors(request, MediaType.TEXT_HTML));
 		return new ResponseEntity<>(body, status);
 	}
 
@@ -117,10 +118,12 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
+	@SuppressWarnings("deprecation")
 	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
 		switch (getErrorProperties().getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
+		case ON_PARAM:
 		case ON_TRACE_PARAM:
 			return getTraceParameter(request);
 		default:
@@ -129,17 +132,34 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	/**
-	 * Determine if the error details attributes should be included.
+	 * Determine if the message attribute should be included.
 	 * @param request the source request
 	 * @param produces the media type produced (or {@code MediaType.ALL})
-	 * @return if the error details attributes should be included
+	 * @return if the message attribute should be included
 	 */
-	protected boolean isIncludeDetails(HttpServletRequest request, MediaType produces) {
-		switch (getErrorProperties().getIncludeDetails()) {
+	protected boolean isIncludeMessage(HttpServletRequest request, MediaType produces) {
+		switch (getErrorProperties().getIncludeMessage()) {
 		case ALWAYS:
 			return true;
-		case ON_DETAILS_PARAM:
-			return getDetailsParameter(request);
+		case ON_PARAM:
+			return getMessageParameter(request);
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Determine if the errors attribute should be included.
+	 * @param request the source request
+	 * @param produces the media type produced (or {@code MediaType.ALL})
+	 * @return if the errors attribute should be included
+	 */
+	protected boolean isIncludeBindingErrors(HttpServletRequest request, MediaType produces) {
+		switch (getErrorProperties().getIncludeMessage()) {
+		case ALWAYS:
+			return true;
+		case ON_PARAM:
+			return getErrorsParameter(request);
 		default:
 			return false;
 		}

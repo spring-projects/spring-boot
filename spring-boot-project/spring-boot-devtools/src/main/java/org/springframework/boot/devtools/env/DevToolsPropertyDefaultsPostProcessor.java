@@ -71,7 +71,8 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.resources.chain.cache", "false");
 		properties.put("spring.template.provider.cache", "false");
 		properties.put("spring.mvc.log-resolved-exception", "true");
-		properties.put("server.error.include-details", "ALWAYS");
+		properties.put("server.error.include-binding-errors", "ALWAYS");
+		properties.put("server.error.include-message", "ALWAYS");
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
 		properties.put("spring.reactor.debug", "true");

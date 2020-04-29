@@ -37,7 +37,11 @@
       }
     },
     {
-      "name": "server.error.include-details",
+      "name": "server.error.include-binding-errors",
+      "defaultValue": "never"
+    },
+    {
+      "name": "server.error.include-message",
       "defaultValue": "never"
     },
     {

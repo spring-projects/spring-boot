@@ -74,25 +74,30 @@ public abstract class AbstractErrorController implements ErrorController {
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @return the error attributes
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(HttpServletRequest, boolean, boolean)}
+	 * {@link #getErrorAttributes(HttpServletRequest, boolean, boolean, boolean)}
 	 */
 	@Deprecated
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-		return getErrorAttributes(request, includeStackTrace, false);
+		return getErrorAttributes(request, includeStackTrace, false, false);
 	}
 
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace,
-			boolean includeDetails) {
+			boolean includeMessage, boolean includeBindingErrors) {
 		WebRequest webRequest = new ServletWebRequest(request);
-		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace, includeDetails);
+		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace, includeMessage,
+				includeBindingErrors);
 	}
 
 	protected boolean getTraceParameter(HttpServletRequest request) {
 		return getBooleanParameter(request, "trace");
 	}
 
-	protected boolean getDetailsParameter(HttpServletRequest request) {
-		return getBooleanParameter(request, "details");
+	protected boolean getMessageParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "message");
+	}
+
+	protected boolean getErrorsParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "errors");
 	}
 
 	protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {
