@@ -1309,7 +1309,7 @@ bom {
 			]
 		}
 	}
-	library("OkHttp3", "3.14.7") {
+	library("OkHttp3", "3.14.8") {
 		group("com.squareup.okhttp3") {
 			modules = [
 				"logging-interceptor",
