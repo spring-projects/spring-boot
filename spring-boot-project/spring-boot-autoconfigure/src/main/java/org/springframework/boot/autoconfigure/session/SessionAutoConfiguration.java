@@ -110,8 +110,9 @@ public class SessionAutoConfiguration {
 		static class RememberMeServicesConfiguration {
 
 			@Bean
-			RememberMeServicesCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
-				return new RememberMeServicesCookieSerializerCustomizer();
+			CookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
+				return (cookieSerializer) -> cookieSerializer
+						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
 
 		}
@@ -137,19 +138,6 @@ public class SessionAutoConfiguration {
 				ReactiveSessionConfigurationImportSelector.class })
 		static class ReactiveSessionRepositoryConfiguration {
 
-		}
-
-	}
-
-	/**
-	 * Customization for {@link SpringSessionRememberMeServices} that is only instantiated
-	 * when Spring Security is on the classpath.
-	 */
-	static class RememberMeServicesCookieSerializerCustomizer implements CookieSerializerCustomizer {
-
-		@Override
-		public void customize(DefaultCookieSerializer cookieSerializer) {
-			cookieSerializer.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 		}
 
 	}
