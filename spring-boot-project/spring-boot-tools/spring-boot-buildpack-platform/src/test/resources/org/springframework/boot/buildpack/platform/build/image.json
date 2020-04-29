@@ -5,7 +5,7 @@
 		"paketo-buildpacks/builder:base-platform-api-0.2"
 	],
 	"RepoDigests": [
-		"packeto-buidpacks/cnb@sha256:5b03a853e636b78c44e475bbc514e2b7b140cc41cca8ab907e9753431ae8c0b0"
+		"paketo-buidpacks/cnb@sha256:5b03a853e636b78c44e475bbc514e2b7b140cc41cca8ab907e9753431ae8c0b0"
 	],
 	"Parent": "",
 	"Comment": "",

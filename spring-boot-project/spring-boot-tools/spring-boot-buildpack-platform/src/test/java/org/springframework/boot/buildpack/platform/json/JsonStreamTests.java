@@ -45,7 +45,7 @@ class JsonStreamTests extends AbstractJsonTests {
 		this.jsonStream.get(getContent("stream.json"), result::add);
 		assertThat(result).hasSize(595);
 		assertThat(result.get(594).toString())
-				.contains("Status: Downloaded newer image for packeto-buildpacks/cnb:base");
+				.contains("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class JsonStreamTests extends AbstractJsonTests {
 		assertThat(result).hasSize(595);
 		assertThat(result.get(1).getId()).isEqualTo("5667fdb72017");
 		assertThat(result.get(594).getStatus())
-				.isEqualTo("Status: Downloaded newer image for packeto-buildpacks/cnb:base");
+				.isEqualTo("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
 	}
 
 	/**

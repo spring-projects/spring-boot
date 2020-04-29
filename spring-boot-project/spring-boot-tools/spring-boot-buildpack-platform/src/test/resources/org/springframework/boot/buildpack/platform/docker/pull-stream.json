@@ -1,5 +1,5 @@
 {
-	"status": "Pulling from packeto-buildpacks/cnb",
+	"status": "Pulling from paketo-buildpacks/cnb",
 	"id": "base"
 }
 {"status":"Pulling fs layer","progressDetail":{},"id":"5667fdb72017"}
@@ -595,4 +595,4 @@
 {"status":"Extracting","progressDetail":{"current":32,"total":32},"progress":"[==================================================\u003e]      32B/32B","id":"4f4fb700ef54"}
 {"status":"Pull complete","progressDetail":{},"id":"4f4fb700ef54"}
 {"status":"Digest: sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30"}
-{"status":"Status: Downloaded newer image for packeto-buildpacks/cnb:base"}
+{"status":"Status: Downloaded newer image for paketo-buildpacks/cnb:base"}
