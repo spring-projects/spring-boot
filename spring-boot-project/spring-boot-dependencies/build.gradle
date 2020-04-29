@@ -1703,7 +1703,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "3.0.8.RELEASE") {
+	library("Spring WS", "3.0.9.RELEASE") {
 		group("org.springframework.ws") {
 			modules = [
 				"spring-ws-core",
