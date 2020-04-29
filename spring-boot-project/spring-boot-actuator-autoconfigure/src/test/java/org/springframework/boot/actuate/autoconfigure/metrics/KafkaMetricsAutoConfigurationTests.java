@@ -16,18 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.MicrometerConsumerListener;
+import org.springframework.kafka.core.MicrometerProducerListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link KafkaMetricsAutoConfiguration}.
@@ -37,35 +37,28 @@ import static org.mockito.Mockito.mock;
  */
 class KafkaMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test
-	void whenThereIsNoProducerFactoryAutoConfigurationBacksOff() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(KafkaClientMetrics.class));
+	void whenThereIsAMeterRegistryThenMetricsListenersAreAdded() {
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
+					assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
+							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerProducerListener.class);
+					assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
+							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerConsumerListener.class);
+				});
 	}
 
 	@Test
-	void whenThereIsAProducerFactoryKafkaClientMetricsIsConfigured() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(KafkaClientMetrics.class));
-	}
-
-	@Test
-	void allowsCustomKafkaClientMetricsToBeUsed() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
-				.withUserConfiguration(CustomKafkaClientMetricsConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(KafkaClientMetrics.class).hasBean("customKafkaClientMetrics"));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomKafkaClientMetricsConfiguration {
-
-		@Bean
-		KafkaClientMetrics customKafkaClientMetrics() {
-			return mock(KafkaClientMetrics.class);
-		}
-
+	void whenThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
+			assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
+					.getListeners()).isEmpty();
+			assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
+					.getListeners()).isEmpty();
+		});
 	}
 
 }
