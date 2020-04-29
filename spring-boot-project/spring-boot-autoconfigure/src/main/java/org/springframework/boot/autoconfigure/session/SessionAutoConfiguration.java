@@ -53,6 +53,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
@@ -61,7 +62,6 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -83,8 +83,6 @@ import org.springframework.util.ClassUtils;
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
-	private static final String REMEMBER_ME_SERVICES_CLASS = "org.springframework.security.web.authentication.RememberMeServices";
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import({ ServletSessionRepositoryValidator.class, SessionRepositoryFilterConfiguration.class })
@@ -92,7 +90,8 @@ public class SessionAutoConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
+		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
+				ObjectProvider<CookieSerializerCustomizer> cookieSerializerCustomizers) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -102,10 +101,20 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer.setCookieMaxAge((int) maxAge.getSeconds()));
-			if (ClassUtils.isPresent(REMEMBER_ME_SERVICES_CLASS, getClass().getClassLoader())) {
-				new RememberMeServicesCookieSerializerCustomizer().apply(cookieSerializer);
-			}
+			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(RememberMeServices.class)
+		static class RememberMeServicesConfiguration {
+
+			@Bean
+			CookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
+				return (cookieSerializer) -> cookieSerializer
+						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+			}
+
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -129,18 +138,6 @@ public class SessionAutoConfiguration {
 				ReactiveSessionConfigurationImportSelector.class })
 		static class ReactiveSessionRepositoryConfiguration {
 
-		}
-
-	}
-
-	/**
-	 * Customization for {@link SpringSessionRememberMeServices} that is only instantiated
-	 * when Spring Security is on the classpath.
-	 */
-	static class RememberMeServicesCookieSerializerCustomizer {
-
-		void apply(DefaultCookieSerializer cookieSerializer) {
-			cookieSerializer.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 		}
 
 	}
