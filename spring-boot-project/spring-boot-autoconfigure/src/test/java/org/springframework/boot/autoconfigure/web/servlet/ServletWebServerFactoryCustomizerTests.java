@@ -75,6 +75,14 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void testCustomizeDefaultServlet() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.properties.getServlet().getDefaultServlet().setRegistered(true);
+		this.customizer.customize(factory);
+		verify(factory).setRegisterDefaultServlet(true);
+	}
+
+	@Test
 	void testCustomizeSsl() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
