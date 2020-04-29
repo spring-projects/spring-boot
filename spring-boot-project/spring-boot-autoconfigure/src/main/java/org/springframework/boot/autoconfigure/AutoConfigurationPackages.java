@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -120,12 +121,12 @@ public abstract class AutoConfigurationPackages {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-			register(registry, new PackageImport(metadata).getPackageName());
+			register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
 		}
 
 		@Override
 		public Set<Object> determineImports(AnnotationMetadata metadata) {
-			return Collections.singleton(new PackageImport(metadata));
+			return Collections.singleton(new PackageImports(metadata));
 		}
 
 	}
@@ -133,16 +134,28 @@ public abstract class AutoConfigurationPackages {
 	/**
 	 * Wrapper for a package import.
 	 */
-	private static final class PackageImport {
+	private static final class PackageImports {
 
-		private final String packageName;
+		private final List<String> packageNames;
 
-		PackageImport(AnnotationMetadata metadata) {
-			this.packageName = ClassUtils.getPackageName(metadata.getClassName());
+		PackageImports(AnnotationMetadata metadata) {
+			AnnotationAttributes attributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+			List<String> packageNames = new ArrayList<>();
+			for (String basePackage : attributes.getStringArray("basePackages")) {
+				packageNames.add(basePackage);
+			}
+			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
+				packageNames.add(basePackageClass.getPackage().getName());
+			}
+			if (packageNames.isEmpty()) {
+				packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));
+			}
+			this.packageNames = Collections.unmodifiableList(packageNames);
 		}
 
-		String getPackageName() {
-			return this.packageName;
+		List<String> getPackageNames() {
+			return this.packageNames;
 		}
 
 		@Override
@@ -150,17 +163,17 @@ public abstract class AutoConfigurationPackages {
 			if (obj == null || getClass() != obj.getClass()) {
 				return false;
 			}
-			return this.packageName.equals(((PackageImport) obj).packageName);
+			return this.packageNames.equals(((PackageImports) obj).packageNames);
 		}
 
 		@Override
 		public int hashCode() {
-			return this.packageName.hashCode();
+			return this.packageNames.hashCode();
 		}
 
 		@Override
 		public String toString() {
-			return "Package Import " + this.packageName;
+			return "Package Imports " + this.packageNames;
 		}
 
 	}
