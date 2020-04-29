@@ -1278,6 +1278,13 @@ bom {
 			]
 		}
 	}
+	library("OAuth2 OIDC SDK", "7.1.1") {
+		group("com.nimbusds") {
+			modules = [
+				"oauth2-oidc-sdk"
+			]
+		}
+	}
 	library("OJDBC", "19.3.0.0") {
 		group("com.oracle.ojdbc") {
 			modules = [
