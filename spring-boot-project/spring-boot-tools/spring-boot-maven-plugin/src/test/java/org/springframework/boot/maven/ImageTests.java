@@ -57,7 +57,7 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).contains("docker.io/cloudfoundry/cnb:bionic-platform-api");
+		assertThat(request.getBuilder().toString()).contains("paketo-buildpacks/builder");
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();

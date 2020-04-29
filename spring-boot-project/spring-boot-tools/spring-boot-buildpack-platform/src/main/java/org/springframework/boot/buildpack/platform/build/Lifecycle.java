@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * application.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class Lifecycle implements Closeable {
 
@@ -116,7 +117,12 @@ class Lifecycle implements Closeable {
 		}
 		run(detectPhase());
 		run(analyzePhase());
-		run(restorePhase());
+		if (this.request.isCleanCache()) {
+			this.log.skippingPhase("restorer", "due to cleaning cache");
+		}
+		else {
+			run(restorePhase());
+		}
 		run(buildPhase());
 		run(exportPhase());
 		this.log.executedLifecycle(this.request);
@@ -144,12 +150,14 @@ class Lifecycle implements Closeable {
 		Phase phase = createPhase("analyzer");
 		phase.withDaemonAccess();
 		phase.withLogLevelArg();
+		phase.withArgs("-daemon");
 		if (this.request.isCleanCache()) {
 			phase.withArgs("-skip-layers");
 		}
-		phase.withArgs("-daemon");
+		else {
+			phase.withArgs("-cache-dir", Directory.CACHE);
+		}
 		phase.withArgs("-layers", Directory.LAYERS);
-		phase.withArgs("-cache-dir", Directory.CACHE);
 		phase.withArgs(this.request.getName());
 		phase.withBinds(this.buildCacheVolume, Directory.CACHE);
 		return phase;

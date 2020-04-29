@@ -52,7 +52,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar).isFile();
 			File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
 			assertThat(original).doesNotExist();
-			assertThat(buildLog(project)).contains("Building image").contains("cloudfoundry/cnb:bionic-platform-api")
+			assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
 					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference.of(ImageName.of("build-image"), "0.0.1.BUILD-SNAPSHOT");
@@ -93,11 +93,13 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void whenBuildImageIsInvokedWithCommandLineParameters(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image").goals("package")
 				.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
-				.systemProperty("spring-boot.build-image.builder", "cloudfoundry/cnb:bionic-platform-api-0.2")
+				.systemProperty("spring-boot.build-image.builder",
+						"gcr.io/paketo-buildpacks/builder:base-platform-api-0.2")
 				.execute((project) -> {
 					assertThat(buildLog(project)).contains("Building image")
 							.contains("example.com/test/cmd-property-name:v1")
-							.contains("cloudfoundry/cnb:bionic-platform-api-0.2").contains("Successfully built image");
+							.contains("paketo-buildpacks/builder:base-platform-api-0.2")
+							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of("example.com/test/cmd-property-name:v1");
 					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -112,7 +114,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void whenBuildImageIsInvokedWithV2BuilderImage(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-v2-builder").goals("package").execute((project) -> {
 			assertThat(buildLog(project)).contains("Building image")
-					.contains("cloudfoundry/cnb:bionic-platform-api-0.2")
+					.contains("paketo-buildpacks/builder:base-platform-api-0.2")
 					.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference

@@ -128,6 +128,11 @@ class LifecycleTests {
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest().withCleanCache(true);
 		createLifecycle(request).execute();
+		assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+		assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-clean-cache.json"));
+		assertPhaseWasNotRun("restorer");
+		assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+		assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
 		VolumeName name = VolumeName.of("pack-cache-b35197ac41ea.build");
 		verify(this.docker.volume()).delete(name, true);
 	}
@@ -199,6 +204,11 @@ class LifecycleTests {
 		verify(this.docker.container()).logs(eq(containerReference), any());
 		verify(this.docker.container()).remove(containerReference, true);
 		configConsumer.accept(this.configs.get(containerReference.toString()));
+	}
+
+	private void assertPhaseWasNotRun(String name) {
+		ContainerReference containerReference = ContainerReference.of("lifecycle-" + name);
+		assertThat(this.configs.get(containerReference.toString())).isNull();
 	}
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {

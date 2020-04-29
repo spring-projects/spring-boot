@@ -174,7 +174,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
-		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("cloudfoundry/cnb");
+		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketo-buildpacks/builder");
 	}
 
 	@Test

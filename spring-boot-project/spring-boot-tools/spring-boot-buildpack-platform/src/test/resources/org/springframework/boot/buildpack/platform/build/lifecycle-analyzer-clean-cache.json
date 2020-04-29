@@ -1,7 +1,7 @@
 {
   "User" : "root",
   "Image" : "pack.local/ephemeral-builder",
-  "Cmd" : [ "/lifecycle/cacher", "-path", "/cache", "-layers", "/layers" ],
+  "Cmd" : [ "/lifecycle/analyzer", "-daemon", "-skip-layers", "-layers", "/layers", "docker.io/library/my-application:latest" ],
   "Labels" : {
     "author" : "spring-boot"
   },

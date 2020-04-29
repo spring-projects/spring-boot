@@ -23,7 +23,7 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>cloudfoundry/cnb:bionic-platform-api-0.2</builder>
+								<builder>gcr.io/paketo-buildpacks/builder:base-platform-api-0.2</builder>
 							</image>
 						</configuration>
 					</execution>

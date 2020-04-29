@@ -48,7 +48,7 @@ The following table summarizes the available properties and their default values
 | `builder`
 | `--builder`
 | Name of the Builder image to use.
-| `cloudfoundry/cnb:bionic-platform-api-0.2`
+| `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
 
 | `imageName`
 | `--imageName`

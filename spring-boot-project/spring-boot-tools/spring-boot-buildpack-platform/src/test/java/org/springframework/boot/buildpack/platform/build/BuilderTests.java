@@ -72,7 +72,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/" + BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));
@@ -96,7 +96,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image-with-bad-stack.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/" + BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));
@@ -112,7 +112,7 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("docker.io/" + BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
 				.willAnswer(withPulledImage(runImage));

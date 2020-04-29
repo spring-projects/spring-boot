@@ -45,7 +45,7 @@ class PullUpdateEventTests extends AbstractJsonTests {
 		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-update-minimal.json"),
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isNull();
-		assertThat(event.getStatus()).isEqualTo("Status: Downloaded newer image for cloudfoundry/cnb:bionic");
+		assertThat(event.getStatus()).isEqualTo("Status: Downloaded newer image for packeto-buildpacks/cnb:base");
 		assertThat(event.getProgressDetail()).isNull();
 		assertThat(event.getProgress()).isNull();
 	}

@@ -29,6 +29,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * Callback interface used to provide {@link Builder} output logging.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  * @see #toSystemOut()
  */
@@ -85,6 +86,13 @@ public interface BuildLog {
 	 * @return a consumer for log updates
 	 */
 	Consumer<LogUpdateEvent> runningPhase(BuildRequest request, String name);
+
+	/**
+	 * Log that a specific phase is being skipped.
+	 * @param name the name of the phase
+	 * @param reason the reason the phase is skipped
+	 */
+	void skippingPhase(String name, String reason);
 
 	/**
 	 * Log that the lifecycle has executed.

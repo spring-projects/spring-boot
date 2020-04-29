@@ -1,10 +1,10 @@
 {
 	"Id": "sha256:9b450bffdb05bcf660d464d0bfdf344ee6ca38e9b8de4f408c8080b0c9319349",
 	"RepoTags": [
-		"cloudfoundry/cnb:latest"
+		"packeto-buildpacks/cnb:latest"
 	],
 	"RepoDigests": [
-		"cloudfoundry/run@sha256:715806bb793b66e3fc1a5a8f5584c6a1b6db05425e573887673bddcf426f1b90"
+		"packeto-buildpacks/run@sha256:715806bb793b66e3fc1a5a8f5584c6a1b6db05425e573887673bddcf426f1b90"
 	],
 	"Parent": "",
 	"Comment": "",

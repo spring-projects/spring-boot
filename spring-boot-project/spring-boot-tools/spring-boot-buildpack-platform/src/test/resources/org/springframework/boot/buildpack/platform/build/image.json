@@ -1,11 +1,11 @@
 {
 	"Id": "sha256:44cc64492fb6a6d78d3e6d087f380ae6e479aa1b2c79823b32cdacfcc2f3d715",
 	"RepoTags": [
-		"cloudfoundry/cnb:bionic",
-		"cloudfoundry/cnb:bionic-platform-api-0.3"
+		"paketo-buildpacks/cnb:base",
+		"paketo-buildpacks/builder:base-platform-api-0.2"
 	],
 	"RepoDigests": [
-		"cloudfoundry/cnb@sha256:5b03a853e636b78c44e475bbc514e2b7b140cc41cca8ab907e9753431ae8c0b0"
+		"packeto-buidpacks/cnb@sha256:5b03a853e636b78c44e475bbc514e2b7b140cc41cca8ab907e9753431ae8c0b0"
 	],
 	"Parent": "",
 	"Comment": "",

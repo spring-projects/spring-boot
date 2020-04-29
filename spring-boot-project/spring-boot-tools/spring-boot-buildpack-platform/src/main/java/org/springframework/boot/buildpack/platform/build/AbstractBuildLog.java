@@ -29,6 +29,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * Base class for {@link BuildLog} implementations.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public abstract class AbstractBuildLog implements BuildLog {
@@ -71,6 +72,13 @@ public abstract class AbstractBuildLog implements BuildLog {
 		log(" > Running " + name);
 		String prefix = String.format("    %-14s", "[" + name + "] ");
 		return (event) -> log(prefix + event);
+	}
+
+	@Override
+	public void skippingPhase(String name, String reason) {
+		log();
+		log(" > Skipping " + name + " " + reason);
+		log();
 	}
 
 	@Override

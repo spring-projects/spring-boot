@@ -73,7 +73,7 @@ The following table summarizes the available parameters and their default values
 | `builder`
 | Name of the Builder image to use.
 | `spring-boot.build-image.builder`
-| `cloudfoundry/cnb:bionic-platform-api-0.2`
+| `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
 
 | `name`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
