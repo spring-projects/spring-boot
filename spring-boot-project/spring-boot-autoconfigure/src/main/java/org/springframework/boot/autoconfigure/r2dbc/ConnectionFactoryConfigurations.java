@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Rodolpho S. Couto
  */
 abstract class ConnectionFactoryConfigurations {
 
@@ -67,12 +68,22 @@ abstract class ConnectionFactoryConfigurations {
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
 			ConnectionFactory connectionFactory = createConnectionFactory(properties, resourceLoader.getClassLoader(),
 					customizers.orderedStream().collect(Collectors.toList()));
+
 			R2dbcProperties.Pool pool = properties.getPool();
-			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory)
-					.maxSize(pool.getMaxSize()).initialSize(pool.getInitialSize()).maxIdleTime(pool.getMaxIdleTime());
+			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration
+					.builder(connectionFactory)
+					.initialSize(pool.getInitialSize())
+					.maxSize(pool.getMaxSize())
+					.maxIdleTime(pool.getMaxIdleTime())
+					.maxLifeTime(pool.getMaxLifeTime())
+					.maxAcquireTime(pool.getMaxAcquireTime())
+					.maxCreateConnectionTime(pool.getMaxCreateConnectionTime())
+					.validationDepth(pool.getValidationDepth());
+
 			if (StringUtils.hasText(pool.getValidationQuery())) {
 				builder.validationQuery(pool.getValidationQuery());
 			}
+
 			return new ConnectionPool(builder.build());
 		}
 
