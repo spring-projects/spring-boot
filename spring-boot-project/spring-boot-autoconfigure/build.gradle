@@ -27,6 +27,7 @@ dependencies {
 	optional("com.hazelcast:hazelcast-client")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")
+	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.samskivert:jmustache")
 	optional("com.sun.mail:jakarta.mail")
 	optional("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
