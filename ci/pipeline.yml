@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.12-SNAPSHOT
+    tag: 0.0.12
 - name: pull-request
   type: docker-image
   source:
