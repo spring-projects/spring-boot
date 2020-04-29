@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.r2dbc.spi.ValidationDepth;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -184,7 +185,7 @@ public class R2dbcProperties {
 		}
 
 		public Duration getMaxLifeTime() {
-			return maxLifeTime;
+			return this.maxLifeTime;
 		}
 
 		public void setMaxLifeTime(Duration maxLifeTime) {
@@ -192,7 +193,7 @@ public class R2dbcProperties {
 		}
 
 		public Duration getMaxAcquireTime() {
-			return maxAcquireTime;
+			return this.maxAcquireTime;
 		}
 
 		public void setMaxAcquireTime(Duration maxAcquireTime) {
@@ -200,7 +201,7 @@ public class R2dbcProperties {
 		}
 
 		public Duration getMaxCreateConnectionTime() {
-			return maxCreateConnectionTime;
+			return this.maxCreateConnectionTime;
 		}
 
 		public void setMaxCreateConnectionTime(Duration maxCreateConnectionTime) {
@@ -232,7 +233,7 @@ public class R2dbcProperties {
 		}
 
 		public ValidationDepth getValidationDepth() {
-			return validationDepth;
+			return this.validationDepth;
 		}
 
 		public void setValidationDepth(ValidationDepth validationDepth) {
