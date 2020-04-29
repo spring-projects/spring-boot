@@ -77,9 +77,9 @@ class ServletWebServerFactoryCustomizerTests {
 	@Test
 	void testCustomizeDefaultServlet() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
-		this.properties.getServlet().getDefaultServlet().setRegistered(true);
+		this.properties.getServlet().setRegisterDefaultServlet(false);
 		this.customizer.customize(factory);
-		verify(factory).setRegisterDefaultServlet(true);
+		verify(factory).setRegisterDefaultServlet(false);
 	}
 
 	@Test

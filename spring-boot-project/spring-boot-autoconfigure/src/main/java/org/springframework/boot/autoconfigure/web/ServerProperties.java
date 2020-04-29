@@ -38,7 +38,6 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.servlet.server.DefaultServlet;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
@@ -227,8 +226,10 @@ public class ServerProperties {
 		 */
 		private String applicationDisplayName = "application";
 
-		@NestedConfigurationProperty
-		private final DefaultServlet defaultServlet = new DefaultServlet();
+		/**
+		 * Whether to register the default Servlet with the container.
+		 */
+		private boolean registerDefaultServlet = true;
 
 		@NestedConfigurationProperty
 		private final Encoding encoding = new Encoding();
@@ -263,12 +264,16 @@ public class ServerProperties {
 			this.applicationDisplayName = displayName;
 		}
 
-		public Map<String, String> getContextParameters() {
-			return this.contextParameters;
+		public boolean isRegisterDefaultServlet() {
+			return this.registerDefaultServlet;
 		}
 
-		public DefaultServlet getDefaultServlet() {
-			return this.defaultServlet;
+		public void setRegisterDefaultServlet(boolean registerDefaultServlet) {
+			this.registerDefaultServlet = registerDefaultServlet;
+		}
+
+		public Map<String, String> getContextParameters() {
+			return this.contextParameters;
 		}
 
 		public Encoding getEncoding() {
