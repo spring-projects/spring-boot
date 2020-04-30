@@ -1516,7 +1516,7 @@ bom {
 			]
 		}
 	}
-	library("SAAJ Impl", "1.5.1") {
+	library("SAAJ Impl", "1.5.2") {
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
