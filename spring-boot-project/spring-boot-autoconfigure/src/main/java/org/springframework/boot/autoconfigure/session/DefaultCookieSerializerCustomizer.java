@@ -26,11 +26,11 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
  * @since 2.3.0
  */
 @FunctionalInterface
-public interface CookieSerializerCustomizer {
+public interface DefaultCookieSerializerCustomizer {
 
 	/**
 	 * Customize the cookie serializer.
-	 * @param cookieSerializer the {@code CookieSerializer} to customize
+	 * @param cookieSerializer the {@code DefaultCookieSerializer} to customize
 	 */
 	void customize(DefaultCookieSerializer cookieSerializer);
 

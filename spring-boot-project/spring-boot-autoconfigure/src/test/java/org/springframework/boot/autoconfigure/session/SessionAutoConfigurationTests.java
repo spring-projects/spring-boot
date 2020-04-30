@@ -294,19 +294,19 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@EnableSpringHttpSession
 	static class CookieSerializerCustomization extends SessionRepositoryConfiguration {
 
-		private final CookieSerializerCustomizer customizer1 = mock(CookieSerializerCustomizer.class);
+		private final DefaultCookieSerializerCustomizer customizer1 = mock(DefaultCookieSerializerCustomizer.class);
 
-		private final CookieSerializerCustomizer customizer2 = mock(CookieSerializerCustomizer.class);
+		private final DefaultCookieSerializerCustomizer customizer2 = mock(DefaultCookieSerializerCustomizer.class);
 
 		@Bean
 		@Order(1)
-		CookieSerializerCustomizer customizer1() {
+		DefaultCookieSerializerCustomizer customizer1() {
 			return this.customizer1;
 		}
 
 		@Bean
 		@Order(2)
-		CookieSerializerCustomizer customizer2() {
+		DefaultCookieSerializerCustomizer customizer2() {
 			return this.customizer2;
 		}
 

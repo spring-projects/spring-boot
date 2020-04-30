@@ -91,7 +91,7 @@ public class SessionAutoConfiguration {
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
 		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
-				ObjectProvider<CookieSerializerCustomizer> cookieSerializerCustomizers) {
+				ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -110,7 +110,7 @@ public class SessionAutoConfiguration {
 		static class RememberMeServicesConfiguration {
 
 			@Bean
-			CookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
+			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
 						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
