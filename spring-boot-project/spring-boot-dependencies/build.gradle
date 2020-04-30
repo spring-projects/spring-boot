@@ -418,7 +418,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "3.12.6") {
+	library("Hazelcast", "3.12.7") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
