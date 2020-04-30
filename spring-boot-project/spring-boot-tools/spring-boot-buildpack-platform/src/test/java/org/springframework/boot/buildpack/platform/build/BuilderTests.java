@@ -79,11 +79,7 @@ class BuilderTests {
 		Builder builder = new Builder(BuildLog.to(out), docker);
 		BuildRequest request = getTestRequest();
 		builder.build(request);
-		assertThat(out.toString()).contains("Running detector");
-		assertThat(out.toString()).contains("Running restorer");
-		assertThat(out.toString()).contains("Running analyzer");
-		assertThat(out.toString()).contains("Running builder");
-		assertThat(out.toString()).contains("Running exporter");
+		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		verify(docker.image()).load(archive.capture(), any());
@@ -119,7 +115,7 @@ class BuilderTests {
 		Builder builder = new Builder(BuildLog.to(out), docker);
 		BuildRequest request = getTestRequest();
 		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> builder.build(request))
-				.withMessage("Builder lifecycle 'detector' failed with status code 9");
+				.withMessage("Builder lifecycle 'creator' failed with status code 9");
 	}
 
 	private DockerApi mockDockerApi() throws IOException {

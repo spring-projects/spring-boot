@@ -23,7 +23,7 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>gcr.io/paketo-buildpacks/builder:base-platform-api-0.2</builder>
+								<builder>gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3</builder>
 							</image>
 						</configuration>
 					</execution>

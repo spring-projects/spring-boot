@@ -89,14 +89,14 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void buildsImageWithV2Builder() throws IOException {
+	void buildsImageWithCustomBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("example/test-image-v2");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:base-platform-api-0.2");
-		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-v2"));
+		assertThat(result.getOutput()).contains("example/test-image-custom");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-custom"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 		}
@@ -109,12 +109,12 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithCommandLineOptions() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=example/test-image-v2",
-				"--builder=gcr.io/paketo-buildpacks/builder:base-platform-api-0.2");
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=example/test-image-cmd",
+				"--builder=gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("example/test-image-v2");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:base-platform-api-0.2");
-		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-v2"));
+		assertThat(result.getOutput()).contains("example/test-image-cmd");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-cmd"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 		}
@@ -129,7 +129,7 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains("Builder lifecycle 'builder' failed with status code");
+		assertThat(result.getOutput()).containsPattern("Builder lifecycle '.*' failed with status code");
 	}
 
 	private void writeMainClass() {
