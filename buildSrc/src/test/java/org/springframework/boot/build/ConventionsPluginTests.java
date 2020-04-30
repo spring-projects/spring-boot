@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -76,7 +78,7 @@ class ConventionsPluginTests {
 	}
 
 	@Test
-	void testRetryIsConfigured() throws IOException {
+	void testRetryIsConfiguredOnCI() throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'java'");
@@ -85,6 +87,7 @@ class ConventionsPluginTests {
 			out.println("description 'Test'");
 			out.println("task retryConfig {");
 			out.println("    doLast {");
+			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
 			out.println("    test.retry {");
 			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
 			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
@@ -92,12 +95,36 @@ class ConventionsPluginTests {
 			out.println("    }");
 			out.println("}");
 		}
-		assertThat(runGradle("retryConfig", "--stacktrace").getOutput()).contains("maxRetries: 3")
+		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
+				.contains("Retry plugin applied: true").contains("maxRetries: 3")
 				.contains("failOnPassedAfterRetry: true");
 	}
 
+	@Test
+	void testRetryIsNotConfiguredLocally() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("description 'Test'");
+			out.println("task retryConfig {");
+			out.println("    doLast {");
+			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
+			out.println("    }");
+			out.println("}");
+		}
+		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
+				.contains("Retry plugin applied: false");
+	}
+
 	private BuildResult runGradle(String... args) {
-		return GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withPluginClasspath().build();
+		return runGradle(Collections.emptyMap(), args);
+	}
+
+	private BuildResult runGradle(Map<String, String> environment, String... args) {
+		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
+				.withPluginClasspath().build();
 	}
 
 }
