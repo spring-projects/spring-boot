@@ -192,7 +192,7 @@
 		<spring-data-releasetrain.version>Moore-SR7</spring-data-releasetrain.version>
 		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 		<spring-hateoas.version>1.0.5.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.2.6.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-integration.version>5.2.6.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.3.8.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
