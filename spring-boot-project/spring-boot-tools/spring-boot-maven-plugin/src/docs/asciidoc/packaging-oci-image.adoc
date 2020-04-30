@@ -137,7 +137,7 @@ The builder can be specified on the command line as well, as shown in this examp
 
 [indent=0]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image:builder=mine/java-cnb-builder
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder
 ----
 
 
@@ -230,6 +230,6 @@ The image name can be specified on the command line as well, as shown in this ex
 
 [indent=0]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image:imageName=example.com/library/v1
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/v1
 ----
 
