@@ -107,18 +107,19 @@ class JavaConventions {
 	}
 
 	private void configureTestConventions(Project project) {
-		if (Boolean.valueOf(System.getenv("CI"))) {
+		project.getTasks().withType(Test.class, (test) -> {
+			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
+			test.useJUnitPlatform();
+			test.setMaxHeapSize("1024M");
+		});
+		if (Boolean.parseBoolean(System.getenv("CI"))) {
 			project.getPlugins().apply(TestRetryPlugin.class);
-			project.getTasks().withType(Test.class, (test) -> {
-				withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
-				test.useJUnitPlatform();
-				test.setMaxHeapSize("1024M");
-				project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
-					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
-					testRetry.getFailOnPassedAfterRetry().set(true);
-					testRetry.getMaxRetries().set(3);
-				});
-			});
+			project.getTasks().withType(Test.class,
+					(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
+						TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
+						testRetry.getFailOnPassedAfterRetry().set(true);
+						testRetry.getMaxRetries().set(3);
+					}));
 		}
 	}
 
