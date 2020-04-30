@@ -499,7 +499,8 @@ For example, if you have some Redis configuration and some MySQL configuration, 
 This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
 In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
 
-NOTE: Locations with wildcards are not processed in a deterministic order and files that match the wildcard cannot be used to override keys in the other.
+NOTE: A wildcard location must contain only one `*` and end with `*/` for search locations that are directories or `*/<filename>` for search locations that are files.
+Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
 
 
 [[boot-features-external-config-application-json]]

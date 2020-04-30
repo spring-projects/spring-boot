@@ -16,10 +16,12 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,9 +30,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 
@@ -60,9 +65,9 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
@@ -162,6 +167,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	private final DeferredLog logger = new DeferredLog();
 
 	private static final Resource[] EMPTY_RESOURCES = {};
+
+	private static final Comparator<File> FILE_COMPARATOR = Comparator.comparing(File::getAbsolutePath);
 
 	private String searchLocations;
 
@@ -304,8 +311,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final ResourceLoader resourceLoader;
 
-		private final PathMatchingResourcePatternResolver patternResolver;
-
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
 		private Deque<Profile> profiles;
@@ -325,7 +330,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					: new DefaultResourceLoader(getClass().getClassLoader());
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 					getClass().getClassLoader());
-			this.patternResolver = new PathMatchingResourcePatternResolver(this.resourceLoader);
 		}
 
 		void load() {
@@ -555,9 +559,22 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private Resource[] getResources(String location) {
 			try {
-				return this.patternResolver.getResources(location);
+				if (location.contains("*")) {
+					String directoryPath = location.substring(0, location.indexOf("*/"));
+					String fileName = location.substring(location.lastIndexOf("/") + 1);
+					Resource resource = this.resourceLoader.getResource(directoryPath);
+					File[] files = resource.getFile().listFiles(File::isDirectory);
+					if (files != null) {
+						Arrays.sort(files, FILE_COMPARATOR);
+						return Arrays.stream(files).map((file) -> file.listFiles((dir, name) -> name.equals(fileName)))
+								.filter(Objects::nonNull).flatMap((Function<File[], Stream<File>>) Arrays::stream)
+								.map(FileSystemResource::new).toArray(Resource[]::new);
+					}
+					return EMPTY_RESOURCES;
+				}
+				return new Resource[] { this.resourceLoader.getResource(location) };
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				return EMPTY_RESOURCES;
 			}
 		}
@@ -658,7 +675,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					if (!path.contains("$")) {
 						path = StringUtils.cleanPath(path);
 						Assert.state(!path.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX),
-								"Classpath wildard patterns cannot be used as a search location");
+								"Classpath wildcard patterns cannot be used as a search location");
+						validateWildcardLocation(path);
 						if (!ResourceUtils.isUrl(path)) {
 							path = ResourceUtils.FILE_URL_PREFIX + path;
 						}
@@ -667,6 +685,15 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				}
 			}
 			return locations;
+		}
+
+		private void validateWildcardLocation(String path) {
+			if (path.contains("*")) {
+				Assert.state(StringUtils.countOccurrencesOf(path, "*") == 1,
+						"Wildard pattern with multiple '*'s cannot be used as search location");
+				String directoryPath = path.substring(0, path.lastIndexOf("/") + 1);
+				Assert.state(directoryPath.endsWith("*/"), "Wildcard patterns must end with '*/'");
+			}
 		}
 
 		private Set<String> getSearchNames() {
