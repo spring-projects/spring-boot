@@ -90,11 +90,11 @@ public class ErrorProperties {
 	}
 
 	public IncludeAttribute getIncludeBindingErrors() {
-		return this.includeMessage;
+		return this.includeBindingErrors;
 	}
 
-	public void setIncludeBindingErrors(IncludeAttribute includeMessage) {
-		this.includeMessage = includeMessage;
+	public void setIncludeBindingErrors(IncludeAttribute includeBindingErrors) {
+		this.includeBindingErrors = includeBindingErrors;
 	}
 
 	public Whitelabel getWhitelabel() {
@@ -109,34 +109,23 @@ public class ErrorProperties {
 		/**
 		 * Never add stacktrace information.
 		 */
-		NEVER(IncludeAttribute.NEVER),
+		NEVER,
 
 		/**
 		 * Always add stacktrace information.
 		 */
-		ALWAYS(IncludeAttribute.ALWAYS),
+		ALWAYS,
 
 		/**
 		 * Add error attribute when the appropriate request parameter is "true".
 		 */
-		ON_PARAM(IncludeAttribute.ON_PARAM),
+		ON_PARAM,
 
 		/**
 		 * Add stacktrace information when the "trace" request parameter is "true".
-		 * @deprecated since 2.3.0 in favor of {@link #ON_PARAM}
 		 */
-		@Deprecated
-		ON_TRACE_PARAM(IncludeAttribute.ON_PARAM);
-
-		private final IncludeAttribute include;
-
-		IncludeStacktrace(IncludeAttribute include) {
-			this.include = include;
-		}
-
-		public IncludeAttribute getInclude() {
-			return this.include;
-		}
+		@Deprecated // since 2.3.0 in favor of {@link #ON_PARAM}
+		ON_TRACE_PARAM;
 
 	}
 

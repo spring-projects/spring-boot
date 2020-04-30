@@ -76,6 +76,7 @@ import org.springframework.util.FileCopyUtils;
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
+ * @author Scott Frederick
  */
 class JavaConventions {
 

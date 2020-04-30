@@ -38,7 +38,6 @@ import org.springframework.format.support.FormattingConversionService;
 final class ConversionServiceArguments {
 
 	private ConversionServiceArguments() {
-
 	}
 
 	static Stream<? extends Arguments> with(Formatter<?> formatter) {
