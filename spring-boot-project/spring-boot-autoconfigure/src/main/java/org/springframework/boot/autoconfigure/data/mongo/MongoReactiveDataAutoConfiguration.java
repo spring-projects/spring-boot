@@ -16,7 +16,15 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.util.Optional;
+
+import com.mongodb.ClientSessionOptions;
+import com.mongodb.reactivestreams.client.ClientSession;
 import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecRegistry;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -31,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -42,6 +52,7 @@ import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsOperations;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive mongo
@@ -98,8 +109,77 @@ public class MongoReactiveDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
-			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
-		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDatabaseFactory, mappingMongoConverter, null);
+			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory,
+			MongoProperties properties) {
+		return new ReactiveGridFsTemplate(dataBufferFactory,
+				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties), mappingMongoConverter,
+				null);
+	}
+
+	/**
+	 * {@link ReactiveMongoDatabaseFactory} decorator to use
+	 * {@link MongoProperties#getGridFsDatabase()} when set.
+	 */
+	static class GridFsReactiveMongoDatabaseFactory implements ReactiveMongoDatabaseFactory {
+
+		private final ReactiveMongoDatabaseFactory delegate;
+
+		private final MongoProperties properties;
+
+		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties) {
+			this.delegate = delegate;
+			this.properties = properties;
+		}
+
+		@Override
+		public boolean hasCodecFor(Class<?> type) {
+			return this.delegate.hasCodecFor(type);
+		}
+
+		@Override
+		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
+			String gridFsDatabase = this.properties.getGridFsDatabase();
+			if (StringUtils.hasText(gridFsDatabase)) {
+				return this.delegate.getMongoDatabase(gridFsDatabase);
+			}
+			return this.delegate.getMongoDatabase();
+		}
+
+		@Override
+		public Mono<MongoDatabase> getMongoDatabase(String dbName) throws DataAccessException {
+			return this.delegate.getMongoDatabase(dbName);
+		}
+
+		@Override
+		public <T> Optional<Codec<T>> getCodecFor(Class<T> type) {
+			return this.delegate.getCodecFor(type);
+		}
+
+		@Override
+		public PersistenceExceptionTranslator getExceptionTranslator() {
+			return this.delegate.getExceptionTranslator();
+		}
+
+		@Override
+		public CodecRegistry getCodecRegistry() {
+			return this.delegate.getCodecRegistry();
+		}
+
+		@Override
+		public Mono<ClientSession> getSession(ClientSessionOptions options) {
+			return this.delegate.getSession(options);
+		}
+
+		@Override
+		public ReactiveMongoDatabaseFactory withSession(ClientSession session) {
+			return this.delegate.withSession(session);
+		}
+
+		@Override
+		public boolean isTransactionActive() {
+			return this.delegate.isTransactionActive();
+		}
+
 	}
 
 }
