@@ -66,6 +66,7 @@ dependencies {
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.jooq:jooq")
