@@ -1085,10 +1085,12 @@ class ConfigFileApplicationListenerTests {
 		List<String> sources = this.environment.getPropertySources().stream()
 				.filter((source) -> source.getName().contains("applicationConfig")).map((source) -> {
 					String name = source.getName();
-					return name.substring(name.indexOf("src/test/resources"));
+					name = name.substring(name.indexOf("src/test/resources"));
+					name = name.substring(0, name.length() - 1);
+					return name;
 				}).collect(Collectors.toList());
-		assertThat(sources).containsExactly("src/test/resources/config/1-first/testproperties.properties]]",
-				"src/test/resources/config/2-second/testproperties.properties]]");
+		assertThat(sources).containsExactly("src/test/resources/config/1-first/testproperties.properties",
+				"src/test/resources/config/2-second/testproperties.properties");
 	}
 
 	@Test

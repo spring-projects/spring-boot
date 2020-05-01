@@ -520,8 +520,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						}
 						continue;
 					}
-					String name = (location.contains("*")) ? "applicationConfig: [" + resource.toString() + "]"
-							: "applicationConfig: [" + location + "]";
+					String name = "applicationConfig: [" + getLocationName(location, resource) + "]";
 					List<Document> documents = loadDocuments(loader, name, resource);
 					if (CollectionUtils.isEmpty(documents)) {
 						if (this.logger.isTraceEnabled()) {
@@ -557,26 +556,40 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}
 		}
 
+		private String getLocationName(String location, Resource resource) {
+			if (!location.contains("*")) {
+				return location;
+			}
+			if (resource instanceof FileSystemResource) {
+				return ((FileSystemResource) resource).getPath();
+			}
+			return resource.getDescription();
+		}
+
 		private Resource[] getResources(String location) {
 			try {
 				if (location.contains("*")) {
-					String directoryPath = location.substring(0, location.indexOf("*/"));
-					String fileName = location.substring(location.lastIndexOf("/") + 1);
-					Resource resource = this.resourceLoader.getResource(directoryPath);
-					File[] files = resource.getFile().listFiles(File::isDirectory);
-					if (files != null) {
-						Arrays.sort(files, FILE_COMPARATOR);
-						return Arrays.stream(files).map((file) -> file.listFiles((dir, name) -> name.equals(fileName)))
-								.filter(Objects::nonNull).flatMap((Function<File[], Stream<File>>) Arrays::stream)
-								.map(FileSystemResource::new).toArray(Resource[]::new);
-					}
-					return EMPTY_RESOURCES;
+					return getResourcesFromPatternLocation(location);
 				}
 				return new Resource[] { this.resourceLoader.getResource(location) };
 			}
 			catch (Exception ex) {
 				return EMPTY_RESOURCES;
 			}
+		}
+
+		private Resource[] getResourcesFromPatternLocation(String location) throws IOException {
+			String directoryPath = location.substring(0, location.indexOf("*/"));
+			String fileName = location.substring(location.lastIndexOf("/") + 1);
+			Resource resource = this.resourceLoader.getResource(directoryPath);
+			File[] files = resource.getFile().listFiles(File::isDirectory);
+			if (files != null) {
+				Arrays.sort(files, FILE_COMPARATOR);
+				return Arrays.stream(files).map((file) -> file.listFiles((dir, name) -> name.equals(fileName)))
+						.filter(Objects::nonNull).flatMap((Function<File[], Stream<File>>) Arrays::stream)
+						.map(FileSystemResource::new).toArray(Resource[]::new);
+			}
+			return EMPTY_RESOURCES;
 		}
 
 		private void addIncludedProfiles(Set<Profile> includeProfiles) {
