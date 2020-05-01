@@ -64,8 +64,16 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LdapOperations.class)
-	public LdapTemplate ldapTemplate(ContextSource contextSource) {
-		return new LdapTemplate(contextSource);
+	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource) {
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
+		propertyMapper.from(properties.isIgnorePartialResultException())
+				.to(ldapTemplate::setIgnorePartialResultException);
+		propertyMapper.from(properties.isIgnoreNameNotFoundException())
+				.to(ldapTemplate::setIgnoreNameNotFoundException);
+		propertyMapper.from(properties.isIgnoreSizeLimitExceededException())
+				.to(ldapTemplate::setIgnoreSizeLimitExceededException);
+		return ldapTemplate;
 	}
 
 }

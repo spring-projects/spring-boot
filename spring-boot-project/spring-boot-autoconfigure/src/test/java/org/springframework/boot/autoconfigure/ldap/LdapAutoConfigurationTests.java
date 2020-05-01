@@ -112,8 +112,26 @@ class LdapAutoConfigurationTests {
 
 	@Test
 	void templateExists() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
-				.run((context) -> assertThat(context).hasSingleBean(LdapTemplate.class));
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
+			assertThat(context).hasSingleBean(LdapTemplate.class);
+			LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", false);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException", false);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", true);
+		});
+	}
+
+	@Test
+	void templateWithCustomConfigurationExists() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389",
+				"spring.ldap.ignorePartialResultException=true", "spring.ldap.ignoreNameNotFoundException=true",
+				"spring.ldap.ignoreSizeLimitExceededException=false").run((context) -> {
+					assertThat(context).hasSingleBean(LdapTemplate.class);
+					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", true);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException", true);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", false);
+				});
 	}
 
 	@Test
