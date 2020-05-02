@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import io.prometheus.client.CollectorRegistry;
@@ -26,6 +26,7 @@ import io.prometheus.client.exporter.common.TextFormat;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
  * {@link Endpoint @Endpoint} that outputs metrics in a format that can be scraped by the
@@ -44,17 +45,15 @@ public class PrometheusScrapeEndpoint {
 	}
 
 	@ReadOperation(produces = TextFormat.CONTENT_TYPE_004)
-	public String scrape() {
-		try {
-			Writer writer = new StringWriter();
-			TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
-			return writer.toString();
-		}
-		catch (IOException ex) {
-			// This actually never happens since StringWriter::write() doesn't throw any
-			// IOException
-			throw new RuntimeException("Writing metrics failed", ex);
-		}
+	public StreamingResponseBody scrape() {
+		return (outputStream) -> {
+			try (Writer writer = new OutputStreamWriter(outputStream)) {
+				TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Writing metrics failed", ex);
+			}
+		};
 	}
 
 }
