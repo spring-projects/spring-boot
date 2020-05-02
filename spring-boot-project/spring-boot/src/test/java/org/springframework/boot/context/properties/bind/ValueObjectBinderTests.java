@@ -16,6 +16,8 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -305,6 +307,29 @@ class ValueObjectBinderTests {
 				.isThrownBy(() -> this.binder.bindOrCreate("foo",
 						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes.class)))
 				.withStackTraceContaining("Parameter of type int must have a non-empty default value.");
+	}
+
+	@Test
+	void bindWhenBindingToPathTypeWithValue() { // gh-21263
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.name", "test");
+		source.put("test.path", "specific_value");
+		this.sources.add(source);
+		Bindable<PathBean> target = Bindable.of(PathBean.class);
+		PathBean bound = this.binder.bind("test", target).get();
+		assertThat(bound.getName()).isEqualTo("test");
+		assertThat(bound.getPath()).isEqualTo(Paths.get("specific_value"));
+	}
+
+	@Test
+	void bindWhenBindingToPathTypeWithDefaultValue() { // gh-21263
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.name", "test");
+		this.sources.add(source);
+		Bindable<PathBean> target = Bindable.of(PathBean.class);
+		PathBean bound = this.binder.bindOrCreate("test", target);
+		assertThat(bound.getName()).isEqualTo("test");
+		assertThat(bound.getPath()).isEqualTo(Paths.get("default_value"));
 	}
 
 	private void noConfigurationProperty(BindException ex) {
@@ -680,6 +705,27 @@ class ValueObjectBinderTests {
 
 		int getIntValue() {
 			return this.intValue;
+		}
+
+	}
+
+	static class PathBean {
+
+		private final String name;
+
+		private final Path path;
+
+		PathBean(String name, @DefaultValue("default_value") Path path) {
+			this.name = name;
+			this.path = path;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Path getPath() {
+			return this.path;
 		}
 
 	}

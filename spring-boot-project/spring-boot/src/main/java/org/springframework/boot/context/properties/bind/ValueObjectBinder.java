@@ -36,6 +36,7 @@ import org.springframework.core.KotlinDetector;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.util.Assert;
 
 /**
@@ -94,14 +95,28 @@ class ValueObjectBinder implements DataObjectBinder {
 		Annotation[] annotations = parameter.getAnnotations();
 		for (Annotation annotation : annotations) {
 			if (annotation instanceof DefaultValue) {
-				DefaultValue defaultValue = (DefaultValue) annotation;
-				if (defaultValue.value().length == 0) {
+				String[] defaultValue = ((DefaultValue) annotation).value();
+				if (defaultValue.length == 0) {
 					return getNewInstanceIfPossible(context, type);
 				}
-				return context.getConverter().convert(defaultValue.value(), type, annotations);
+				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
 			}
 		}
 		return null;
+	}
+
+	private <T> T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
+			Annotation[] annotations) {
+		try {
+			return converter.convert(defaultValue, type, annotations);
+		}
+		catch (ConversionException ex) {
+			// Try again in case ArrayToObjectConverter is not in play
+			if (defaultValue.length == 1) {
+				return converter.convert(defaultValue[0], type, annotations);
+			}
+			throw ex;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
