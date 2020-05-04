@@ -547,7 +547,7 @@ If you wish to exclude this dependency, you can do so in the following manner:
 					<configuration>
 						<layers>
 							<enabled>true</enabled>
-							<includeLayerTools>false</enabled>
+							<includeLayerTools>false</includeLayerTools>
 						</layers>
 					</configuration>
 				</plugin>
