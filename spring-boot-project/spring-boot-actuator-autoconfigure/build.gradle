@@ -53,6 +53,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-influx")
 	optional("io.micrometer:micrometer-registry-jmx")
 	optional("io.micrometer:micrometer-registry-kairos")
+	optional("io.micrometer:micrometer-registry-health")
 	optional("io.micrometer:micrometer-registry-new-relic")
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.micrometer:micrometer-registry-stackdriver")
