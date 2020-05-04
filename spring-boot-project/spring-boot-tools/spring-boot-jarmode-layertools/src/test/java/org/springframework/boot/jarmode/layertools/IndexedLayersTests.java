@@ -52,7 +52,7 @@ class IndexedLayersTests {
 	@Test
 	void iteratorReturnsLayers() throws Exception {
 		IndexedLayers layers = new IndexedLayers(getIndex());
-		assertThat(layers).containsExactly("test", "application");
+		assertThat(layers).containsExactly("test", "empty", "application");
 	}
 
 	@Test

@@ -69,10 +69,11 @@ class ExtractCommandTests {
 	@Test
 	void runExtractsLayers() throws Exception {
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
-		assertThat(this.extract.list()).containsOnly("a", "b", "c");
+		assertThat(this.extract.list()).containsOnly("a", "b", "c", "d");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists();
 		assertThat(new File(this.extract, "b/b/b.jar")).exists();
 		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+		assertThat(new File(this.extract, "d")).isDirectory();
 	}
 
 	@Test
@@ -119,7 +120,7 @@ class ExtractCommandTests {
 
 		@Override
 		public Iterator<String> iterator() {
-			return Arrays.asList("a", "b", "c").iterator();
+			return Arrays.asList("a", "b", "c", "d").iterator();
 		}
 
 		@Override
