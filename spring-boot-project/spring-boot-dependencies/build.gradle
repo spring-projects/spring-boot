@@ -1155,6 +1155,9 @@ bom {
 		}
 	}
 	library("Maven Shade Plugin", "3.2.2") {
+		prohibit("3.2.3") {
+			because "https://github.com/spring-projects/spring-boot/issues/21128"
+		}
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-shade-plugin"
