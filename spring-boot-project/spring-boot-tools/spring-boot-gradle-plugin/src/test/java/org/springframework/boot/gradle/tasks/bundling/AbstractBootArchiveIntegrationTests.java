@@ -46,11 +46,14 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	private final String libPath;
 
+	private final String classesPath;
+
 	GradleBuild gradleBuild;
 
-	protected AbstractBootArchiveIntegrationTests(String taskName, String libPath) {
+	protected AbstractBootArchiveIntegrationTests(String taskName, String libPath, String classesPath) {
 		this.taskName = taskName;
 		this.libPath = libPath;
+		this.classesPath = classesPath;
 	}
 
 	@TestTemplate
@@ -142,12 +145,18 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void developmentOnlyDependenciesAreNotIncludedInTheArchiveByDefault() throws IOException {
+		File srcMainResources = new File(this.gradleBuild.getProjectDir(), "src/main/resources");
+		srcMainResources.mkdirs();
+		new File(srcMainResources, "resource").createNewFile();
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			Stream<String> libEntryNames = jarFile.stream().filter((entry) -> !entry.isDirectory())
 					.map(JarEntry::getName).filter((name) -> name.startsWith(this.libPath));
 			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar");
+			Stream<String> classesEntryNames = jarFile.stream().filter((entry) -> !entry.isDirectory())
+					.map(JarEntry::getName).filter((name) -> name.startsWith(this.classesPath));
+			assertThat(classesEntryNames).containsExactly(this.classesPath + "resource");
 		}
 	}
 

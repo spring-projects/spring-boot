@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.plugin;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
@@ -64,8 +65,11 @@ class WarPluginAction implements PluginApplicationAction {
 			bootWar.setDescription("Assembles an executable war archive containing webapp"
 					+ " content, and the main classes and their dependencies.");
 			bootWar.providedClasspath(providedRuntimeConfiguration(project));
-			bootWar.setClasspath(bootWar.getClasspath().minus(
-					project.getConfigurations().getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME)));
+			Configuration developmentOnly = project.getConfigurations()
+					.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+			Configuration productionRuntimeClasspath = project.getConfigurations()
+					.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+			bootWar.setClasspath(bootWar.getClasspath().minus((developmentOnly.minus(productionRuntimeClasspath))));
 			bootWar.conventionMapping("mainClassName", new MainClassConvention(project, bootWar::getClasspath));
 		});
 	}

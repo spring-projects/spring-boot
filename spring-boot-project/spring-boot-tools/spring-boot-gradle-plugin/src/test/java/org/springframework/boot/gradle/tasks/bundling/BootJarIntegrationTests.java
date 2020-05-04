@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootJarIntegrationTests() {
-		super("bootJar", "BOOT-INF/lib/");
+		super("bootJar", "BOOT-INF/lib/", "BOOT-INF/classes/");
 	}
 
 	@TestTemplate

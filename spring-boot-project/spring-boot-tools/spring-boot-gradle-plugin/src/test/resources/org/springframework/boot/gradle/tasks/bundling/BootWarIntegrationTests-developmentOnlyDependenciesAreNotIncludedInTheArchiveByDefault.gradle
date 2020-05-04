@@ -13,5 +13,6 @@ repositories {
 
 dependencies {
 	developmentOnly("org.apache.commons:commons-lang3:3.9")
+	developmentOnly("commons-io:commons-io:2.6")
 	implementation("commons-io:commons-io:2.6")
 }

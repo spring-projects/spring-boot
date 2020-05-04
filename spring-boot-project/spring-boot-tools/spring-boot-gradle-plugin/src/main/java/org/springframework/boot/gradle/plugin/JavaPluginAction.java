@@ -94,8 +94,13 @@ final class JavaPluginAction implements PluginApplicationAction {
 			bootJar.setGroup(BasePlugin.BUILD_GROUP);
 			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-			bootJar.classpath((Callable<FileCollection>) () -> mainSourceSet.getRuntimeClasspath().minus(
-					project.getConfigurations().getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME)));
+			bootJar.classpath((Callable<FileCollection>) () -> {
+				Configuration developmentOnly = project.getConfigurations()
+						.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+				Configuration productionRuntimeClasspath = project.getConfigurations()
+						.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+				return mainSourceSet.getRuntimeClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)));
+			});
 			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		});
 	}
@@ -165,8 +170,13 @@ final class JavaPluginAction implements PluginApplicationAction {
 				.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		developmentOnly
 				.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
-		project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
-				.extendsFrom(developmentOnly);
+		Configuration runtimeClasspath = project.getConfigurations()
+				.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		Configuration productionRuntimeClasspath = project.getConfigurations()
+				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+		productionRuntimeClasspath.setVisible(false);
+		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
+		runtimeClasspath.extendsFrom(developmentOnly);
 	}
 
 	/**
