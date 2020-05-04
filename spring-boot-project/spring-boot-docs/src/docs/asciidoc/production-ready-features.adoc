@@ -147,7 +147,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
   Requires a dependency on `micrometer-registry-prometheus`.
 |===
 
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}html/[HTML] or {spring-boot-actuator-restapi}pdf/spring-boot-actuator-web-api.pdf[PDF]).
+To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
@@ -363,7 +363,7 @@ A typical Spring Security configuration might look something like the following 
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
-See the API documentation ({spring-boot-actuator-restapi}html[HTML] or {spring-boot-actuator-restapi}pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
+See the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:

@@ -787,7 +787,7 @@ If the `development`, `production` and `eu-central` profiles are *not* enabled, 
 ====
 `spring.profiles` can therefore contain a simple profile name (for example `production`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}core.html#beans-definition-profiles-java[reference guide] for more details.
+Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 ====
 
 If none are explicitly active when the application context starts, the default profiles are activated.
@@ -2028,7 +2028,7 @@ Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
 The `<springProfile>` tag can contain a simple profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}core.html#beans-definition-profiles-java[reference guide] for more details.
+Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 The following listing shows three sample profiles:
 
 [source,xml,indent=0]
@@ -2145,7 +2145,7 @@ If you have not yet developed a Spring Boot web application, you can follow the 
 
 [[boot-features-spring-mvc]]
 === The "`Spring Web MVC Framework`"
-The {spring-framework-docs}web.html#mvc[Spring Web MVC framework] (often referred to as simply "`Spring MVC`") is a rich "`model view controller`" web framework.
+The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as simply "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
@@ -2175,7 +2175,7 @@ The following code shows a typical `@RestController` that serves JSON data:
 	}
 ----
 
-Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}web.html#mvc[reference documentation].
+Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
 
@@ -2195,7 +2195,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this document>>).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
 
-If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
+If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
 If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 
@@ -2344,7 +2344,7 @@ See {spring-boot-autoconfigure-module-code}/web/ResourceProperties.java[`Resourc
 
 [TIP]
 ====
-This feature has been thoroughly described in a dedicated https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post] and in Spring Framework's {spring-framework-docs}web.html#mvc-config-static-resources[reference documentation].
+This feature has been thoroughly described in a dedicated https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post] and in Spring Framework's {spring-framework-docs}/web.html#mvc-config-static-resources[reference documentation].
 ====
 
 [[boot-features-spring-mvc-welcome-page]]
@@ -2368,7 +2368,7 @@ If such a file is present, it is automatically used as the favicon of the applic
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
 
 Spring Boot chooses to disable suffix pattern matching by default, which means that requests like `"GET /projects/spring-boot.json"` won't be matched to `@GetMapping("/projects/spring-boot")` mappings.
-This is considered as a {spring-framework-docs}web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice for Spring MVC applications].
+This is considered as a {spring-framework-docs}/web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice for Spring MVC applications].
 This feature was mainly useful in the past for HTTP clients which did not send proper "Accept" request headers; we needed to make sure to send the correct Content Type to the client.
 Nowadays, Content Negotiation is much more reliable.
 
@@ -2534,7 +2534,7 @@ For more complex mappings, you can also add beans that implement the `ErrorViewR
 ----
 
 
-You can also use regular Spring MVC features such as {spring-framework-docs}web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
+You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
 The `ErrorController` then picks up any unhandled exceptions.
 
 
@@ -2604,9 +2604,9 @@ Note that doing so disables the `ObjectMapper` customization described earlier.
 ==== CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible way what kind of cross-domain requests are authorized., instead of using some less secure and less powerful approaches such as IFRAME or JSONP.
 
-As of version 4.2, Spring MVC {spring-framework-docs}web.html#mvc-cors[supports CORS].
-Using {spring-framework-docs}web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
-{spring-framework-docs}web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
+As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports CORS].
+Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
+{spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2692,7 +2692,7 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 	}
 ----
 
-WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}web-reactive.html#webflux-fn[reference documentation].
+WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
 
 TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
@@ -2714,7 +2714,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (described <<boot-features-webflux-httpcodecs,later in this document>>).
 * Support for serving static resources, including support for WebJars (described <<boot-features-spring-mvc-static-content,later in this document>>).
 
-If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}web-reactive.html#webflux-config[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
+If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}/web-reactive.html#webflux-config[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
 
 If you want to take complete control of Spring WebFlux, you can add your own `@Configuration` annotated with `@EnableWebFlux`.
 
@@ -3149,7 +3149,7 @@ It enables symmetric interaction models via async message passing over a single 
 
 
 The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and responders, both on the client and on the server side.
-See the {spring-framework-docs}web-reactive.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
+See the {spring-framework-docs}/web-reactive.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
 
 
 [[boot-features-rsocket-strategies-auto-configuration]]
@@ -4863,7 +4863,7 @@ At its core, the abstraction applies caching to methods, thus reducing the numbe
 The caching logic is applied transparently, without any interference to the invoker.
 Spring Boot auto-configures the cache infrastructure as long as caching support is enabled via the `@EnableCaching` annotation.
 
-NOTE: Check the {spring-framework-docs}integration.html#cache[relevant section] of the Spring Framework reference for more details.
+NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section] of the Spring Framework reference for more details.
 
 In a nutshell, adding caching to an operation of your service is as easy as adding the relevant annotation to its method, as shown in the following example:
 
@@ -4898,7 +4898,7 @@ When you have made up your mind about the cache provider to use, please make sur
 Nearly all providers require you to explicitly configure every cache that you use in the application.
 Some offer a way to customize the default caches defined by the configprop:spring.cache.cache-names[] property.
 
-TIP: It is also possible to transparently {spring-framework-docs}integration.html#cache-annotations-put[update] or {spring-framework-docs}integration.html#cache-annotations-evict[evict] data from the cache.
+TIP: It is also possible to transparently {spring-framework-docs}/integration.html#cache-annotations-put[update] or {spring-framework-docs}/integration.html#cache-annotations-evict[evict] data from the cache.
 
 
 
@@ -5168,7 +5168,7 @@ Spring Boot also has support for Apache Kafka.
 === JMS
 The `javax.jms.ConnectionFactory` interface provides a standard method of creating a `javax.jms.Connection` for interacting with a JMS broker.
 Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
-(See the {spring-framework-docs}integration.html#jms[relevant section] of the Spring Framework reference documentation for details.)
+(See the {spring-framework-docs}/integration.html#jms[relevant section] of the Spring Framework reference documentation for details.)
 Spring Boot also auto-configures the necessary infrastructure to send and receive messages.
 
 
@@ -5774,7 +5774,7 @@ Doing so switches off the auto-configuration of a `RestTemplateBuilder` and prev
 == Calling REST Services with WebClient
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
 Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
-You can learn more about the `WebClient` in the dedicated {spring-framework-docs}web-reactive.html#webflux-client[section in the Spring Framework docs].
+You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
 
 Spring Boot creates and pre-configures a `WebClient.Builder` for you; it is strongly advised to inject it in your components and use it to create `WebClient` instances.
 Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see <<boot-features-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
@@ -5815,7 +5815,7 @@ Developers can override the resource configuration for Jetty and Reactor Netty b
 
 If you wish to override that choice for the client, you can define your own `ClientHttpConnector` bean and have full control over the client configuration.
 
-You can learn more about the {spring-framework-docs}web-reactive.html#webflux-client-builder[`WebClient` configuration options in the Spring Framework reference documentation].
+You can learn more about the {spring-framework-docs}/web-reactive.html#webflux-client-builder[`WebClient` configuration options in the Spring Framework reference documentation].
 
 
 
@@ -5862,7 +5862,7 @@ For instance, the following service triggers the validation of the first argumen
 == Sending Email
 The Spring Framework provides an easy abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 
-TIP: See the {spring-framework-docs}integration.html#mail[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
+TIP: See the {spring-framework-docs}/integration.html#mail[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
 
 If `spring.mail.host` and the relevant libraries (as defined by `spring-boot-starter-mail`) are available, a default `JavaMailSender` is created if none exists.
 The sender can be further customized by configuration items from the `spring.mail` namespace.
@@ -6242,7 +6242,7 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
 * https://junit.org/junit5/[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
-* {spring-framework-docs}testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
+* {spring-framework-docs}/testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://assertj.github.io/doc/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
 * https://site.mockito.org/[Mockito]: A Java mocking framework.
@@ -6266,7 +6266,7 @@ It is useful to be able to perform integration testing without requiring deploym
 The Spring Framework includes a dedicated test module for such integration testing.
 You can declare a dependency directly to `org.springframework:spring-test` or use the `spring-boot-starter-test` "`Starter`" to pull it in transitively.
 
-If you have not used the `spring-test` module before, you should start by reading the {spring-framework-docs}testing.html#testing[relevant section] of the Spring Framework reference documentation.
+If you have not used the `spring-test` module before, you should start by reading the {spring-framework-docs}/testing.html#testing[relevant section] of the Spring Framework reference documentation.
 
 
 
@@ -6400,7 +6400,7 @@ include::{code-examples}/test/web/MockMvcExampleTests.java[tag=test-mock-mvc]
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests,using `@WebMvcTest` instead>>.
 
-Alternatively, you can configure a {spring-framework-docs}testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
+Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -6425,7 +6425,7 @@ If you need to start a full running server, we recommend that you use random por
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
 The `@LocalServerPort` annotation can be used to <<howto.adoc#howto-discover-the-http-port-at-runtime,inject the actual port used>> into your test.
-For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}testing.html#webtestclient-tests[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -6741,7 +6741,7 @@ TIP: If you need to register extra components, such as Jackson `Module`, you can
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
 
-`@WebFluxTest` also auto-configures {spring-framework-docs}testing.html#webtestclient[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
+`@WebFluxTest` also auto-configures {spring-framework-docs}/testing.html#webtestclient[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
@@ -6799,7 +6799,7 @@ Regular `@Component` beans are not loaded into the `ApplicationContext`.
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, data JPA tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
 [source,java,indent=0]
@@ -6873,7 +6873,7 @@ Regular `@Component` beans are not loaded into the `ApplicationContext`.
 TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
 [source,java,indent=0]
@@ -6904,7 +6904,7 @@ Regular `@Component` beans are not loaded into the `ApplicationContext`.
 TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole test class as <<boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test,shown in the JDBC example>>.
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
@@ -7015,7 +7015,7 @@ The following example shows a typical setup for using Neo4J tests in Spring Boot
 ----
 
 By default, Data Neo4j tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
 [source,java,indent=0]
@@ -7456,9 +7456,9 @@ include::{test-examples}/web/client/SampleWebClientTests.java[tag=test]
 Spring Boot provides WebSockets auto-configuration for embedded Tomcat, Jetty, and Undertow.
 If you deploy a war file to a standalone container, Spring Boot assumes that the container is responsible for the configuration of its WebSocket support.
 
-Spring Framework provides {spring-framework-docs}web.html#websocket[rich WebSocket support] for MVC web applications that can be easily accessed through the `spring-boot-starter-websocket` module.
+Spring Framework provides {spring-framework-docs}/web.html#websocket[rich WebSocket support] for MVC web applications that can be easily accessed through the `spring-boot-starter-websocket` module.
 
-WebSocket support is also available for {spring-framework-docs}web-reactive.html#webflux-websocket[reactive web applications] and requires to include the WebSocket API alongside `spring-boot-starter-webflux`:
+WebSocket support is also available for {spring-framework-docs}/web-reactive.html#webflux-websocket[reactive web applications] and requires to include the WebSocket API alongside `spring-boot-starter-webflux`:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -7686,7 +7686,7 @@ This condition will not match for applications that are run with an embedded ser
 
 [[boot-features-spel-conditions]]
 ==== SpEL Expression Conditions
-The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {spring-framework-docs}core.html#expressions[SpEL expression].
+The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {spring-framework-docs}/core.html#expressions[SpEL expression].
 
 
 
@@ -7889,7 +7889,7 @@ If a project is created with only your custom starter, Spring Boot's core featur
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {kotlin-docs}java-interop.html[interoperability] with existing libraries written in Java.
 
 Spring Boot provides Kotlin support by leveraging the support in other Spring projects such as Spring Framework, Spring Data, and Reactor.
-See the {spring-framework-docs}languages.html#kotlin[Spring Framework Kotlin support documentation] for more information.
+See the {spring-framework-docs}/languages.html#kotlin[Spring Framework Kotlin support documentation] for more information.
 
 The easiest way to start with Spring Boot and Kotlin is to follow https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial].
 You can create new Kotlin projects via https://start.spring.io/#!language=kotlin[start.spring.io].
@@ -8183,7 +8183,7 @@ Refer to the individual plugin documentation on how to use buildpacks with {spri
 
 [[boot-features-whats-next]]
 == What to Read Next
-If you want to learn more about any of the classes discussed in this section, you can check out the {spring-boot-api}[Spring Boot API documentation] or you can browse the {spring-boot-code}[source code directly].
+If you want to learn more about any of the classes discussed in this section, you can check out the {spring-boot-api}/[Spring Boot API documentation] or you can browse the {spring-boot-code}[source code directly].
 If you have specific questions, take a look at the <<howto.adoc#howto, how-to>> section.
 
 If you are comfortable with Spring Boot's core features, you can continue on and read about <<production-ready-features.adoc#production-ready, production-ready features>>.

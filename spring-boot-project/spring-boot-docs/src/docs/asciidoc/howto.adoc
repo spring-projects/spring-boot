@@ -794,7 +794,7 @@ There are also non-standard headers, like `X-Forwarded-Host`, `X-Forwarded-Port`
 If the proxy adds the commonly used `X-Forwarded-For` and `X-Forwarded-Proto` headers, setting `server.forward-headers-strategy` to `NATIVE` is enough to support those.
 With this option, the Web servers themselves natively support this feature; you can check their specific documentation to learn about specific behavior.
 
-If this is not enough, Spring Framework provides a {spring-framework-docs}web.html#filters-forwarded-headers[ForwardedHeaderFilter].
+If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
 You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
