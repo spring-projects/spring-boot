@@ -1039,7 +1039,16 @@ class ConfigFileApplicationListenerTests {
 				"spring.config.location=" + location);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
-				.withMessage("Wildcard patterns must end with '*/'");
+				.withMessageStartingWith("Search location '").withMessageEndingWith("' must end with '*/'");
+	}
+
+	@Test
+	void configNameCannotContainWildcard() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=file:src/test/resources/", "spring.config.name=*/application");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessage("Config name '*/application' cannot contain wildcards");
 	}
 
 	@Test
@@ -1049,7 +1058,8 @@ class ConfigFileApplicationListenerTests {
 				"spring.config.location=" + location);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
-				.withMessage("Wildard pattern with multiple '*'s cannot be used as search location");
+				.withMessageStartingWith("Search location '")
+				.withMessageEndingWith("' cannot contain multiple wildcards");
 	}
 
 	@Test

@@ -703,16 +703,18 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		private void validateWildcardLocation(String path) {
 			if (path.contains("*")) {
 				Assert.state(StringUtils.countOccurrencesOf(path, "*") == 1,
-						"Wildard pattern with multiple '*'s cannot be used as search location");
+						() -> "Search location '" + path + "' cannot contain multiple wildcards");
 				String directoryPath = path.substring(0, path.lastIndexOf("/") + 1);
-				Assert.state(directoryPath.endsWith("*/"), "Wildcard patterns must end with '*/'");
+				Assert.state(directoryPath.endsWith("*/"), () -> "Search location '" + path + "' must end with '*/'");
 			}
 		}
 
 		private Set<String> getSearchNames() {
 			if (this.environment.containsProperty(CONFIG_NAME_PROPERTY)) {
 				String property = this.environment.getProperty(CONFIG_NAME_PROPERTY);
-				return asResolvedSet(property, null);
+				Set<String> names = asResolvedSet(property, null);
+				names.forEach(this::assertValidConfigName);
+				return names;
 			}
 			return asResolvedSet(ConfigFileApplicationListener.this.names, DEFAULT_NAMES);
 		}
@@ -722,6 +724,12 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					(value != null) ? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<>(list);
+		}
+
+		private void assertValidConfigName(String name) {
+			Assert.state(!name.contains("*"), () -> "Config name '" + name + "' cannot contain wildcards");
+			Assert.state(!name.contains("/") && !name.contains("\\"),
+					() -> "Config name '" + name + "' cannot contain slashes");
 		}
 
 		private void addLoadedPropertySources() {
