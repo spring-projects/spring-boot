@@ -77,6 +77,15 @@ class StaticResourceJarsTests {
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
+	@Test
+	void ignoreWildcardUrls() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		URL folderUrl = jarFile.getParentFile().toURI().toURL();
+		URL wildcardUrl = new URL(folderUrl.toString() + "*.jar");
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(wildcardUrl);
+		assertThat(staticResourceJarUrls).isEmpty();
+	}
+
 	private File createResourcesJar(String name) throws IOException {
 		return createJar(name, (output) -> {
 			JarEntry jarEntry = new JarEntry("META-INF/resources");
