@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -545,17 +545,18 @@ class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName n13 = ConfigurationPropertyName.of("f-o-o[b-a-r--]");
 		ConfigurationPropertyName n14 = ConfigurationPropertyName.of("[1]");
 		ConfigurationPropertyName n15 = ConfigurationPropertyName.of("[-1]");
-		assertThat(n01.hashCode()).isEqualTo(n02.hashCode());
-		assertThat(n01.hashCode()).isEqualTo(n02.hashCode());
-		assertThat(n01.hashCode()).isEqualTo(n03.hashCode());
-		assertThat(n01.hashCode()).isEqualTo(n04.hashCode());
-		assertThat(n01.hashCode()).isEqualTo(n11.hashCode());
 		assertThat((Object) n01).isEqualTo(n01);
+		assertThat(n01.hashCode()).isEqualTo(n01.hashCode());
 		assertThat((Object) n01).isEqualTo(n02);
+		assertThat(n01.hashCode()).isEqualTo(n02.hashCode());
 		assertThat((Object) n01).isEqualTo(n03);
+		assertThat(n01.hashCode()).isEqualTo(n03.hashCode());
 		assertThat((Object) n01).isEqualTo(n04);
+		assertThat(n01.hashCode()).isEqualTo(n04.hashCode());
 		assertThat((Object) n11).isEqualTo(n03);
+		assertThat(n11.hashCode()).isEqualTo(n03.hashCode());
 		assertThat((Object) n03).isEqualTo(n11);
+		assertThat(n03.hashCode()).isEqualTo(n11.hashCode());
 		assertThat((Object) n01).isNotEqualTo(n05);
 		assertThat((Object) n01).isNotEqualTo(n06);
 		assertThat((Object) n07).isNotEqualTo(n08);
