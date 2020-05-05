@@ -65,10 +65,14 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link #getRestTemplate()}.
  * <p>
  * If you are using the
- * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
- * annotation, a {@link TestRestTemplate} is automatically available and can be
- * {@code @Autowired} into your test. If you need customizations (for example to adding
- * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
+ * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest} annotation
+ * with
+ * {@link org.springframework.boot.test.context.SpringBootTest.WebEnvironment#RANDOM_PORT
+ * WebEnvironment.RANDOM_PORT} or
+ * {@link org.springframework.boot.test.context.SpringBootTest.WebEnvironment#DEFINED_PORT
+ * WebEnvironment.DEFINED_PORT}, a {@link TestRestTemplate} is automatically available and
+ * can be {@code @Autowired} into your test. If you need customizations (for example to
+ * adding additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
  * @author Phillip Webb
