@@ -131,6 +131,13 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-20625
+	void environmentPropertyAccessWhenMutableWithCacheShouldBePerformant() {
+		StandardEnvironment environment = createPerformanceTestEnvironment(false);
+		ConfigurationPropertyCaching.get(environment).enable();
+		testPropertySourcePerformance(environment, 1000);
+	}
+
+	@Test // gh-20625
 	@Disabled("for manual testing")
 	void environmentPropertyAccessWhenMutableShouldBeTolerable() {
 		testPropertySourcePerformance(false, 5000);
