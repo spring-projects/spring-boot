@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -124,7 +125,7 @@ class StaticResourceJars {
 		try {
 			return isResourcesJar(new JarFile(file));
 		}
-		catch (IOException ex) {
+		catch (IOException | InvalidPathException ex) {
 			return false;
 		}
 	}
