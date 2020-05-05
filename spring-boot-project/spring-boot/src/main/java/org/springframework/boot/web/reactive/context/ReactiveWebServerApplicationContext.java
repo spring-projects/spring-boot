@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -90,7 +91,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
-			this.serverManager = ServerManager.get(webServerFactory, lazyInit);
+			this.serverManager = new ServerManager(webServerFactory, lazyInit);
 		}
 		initPropertySources();
 	}
@@ -124,8 +125,11 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 
 	private WebServer startReactiveWebServer() {
 		ServerManager serverManager = this.serverManager;
-		ServerManager.start(serverManager, this::getHttpHandler);
-		return ServerManager.getWebServer(serverManager);
+		if (serverManager != null) {
+			serverManager.start(this::getHttpHandler);
+			return serverManager.server;
+		}
+		return null;
 	}
 
 	/**
@@ -166,11 +170,13 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 
 	private void stopAndReleaseReactiveWebServer() {
 		ServerManager serverManager = this.serverManager;
-		try {
-			ServerManager.stop(serverManager);
-		}
-		finally {
-			this.serverManager = null;
+		if (serverManager != null) {
+			try {
+				serverManager.server.stop();
+			}
+			finally {
+				this.serverManager = null;
+			}
 		}
 	}
 
@@ -181,7 +187,8 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	 */
 	@Override
 	public WebServer getWebServer() {
-		return ServerManager.getWebServer(this.serverManager);
+		ServerManager serverManager = this.serverManager;
+		return (serverManager != null) ? serverManager.server : null;
 	}
 
 	@Override
@@ -225,6 +232,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		private volatile HttpHandler handler;
 
 		private ServerManager(ReactiveWebServerFactory factory, boolean lazyInit) {
+			Assert.notNull(factory, "ReactiveWebServerFactory must not be null");
 			this.handler = this::handleUninitialized;
 			this.server = factory.getWebServer(this);
 			this.lazyInit = lazyInit;
@@ -243,31 +251,10 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			return this.handler;
 		}
 
-		static ServerManager get(ReactiveWebServerFactory factory, boolean lazyInit) {
-			return new ServerManager(factory, lazyInit);
-		}
-
-		static WebServer getWebServer(ServerManager manager) {
-			return (manager != null) ? manager.server : null;
-		}
-
-		static void start(ServerManager manager, Supplier<HttpHandler> handlerSupplier) {
-			if (manager != null && manager.server != null) {
-				manager.handler = manager.lazyInit ? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
-						: handlerSupplier.get();
-				manager.server.start();
-			}
-		}
-
-		static void stop(ServerManager manager) {
-			if (manager != null && manager.server != null) {
-				try {
-					manager.server.stop();
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
+		private void start(Supplier<HttpHandler> handlerSupplier) {
+			this.handler = this.lazyInit ? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
+					: handlerSupplier.get();
+			this.server.start();
 		}
 
 	}
