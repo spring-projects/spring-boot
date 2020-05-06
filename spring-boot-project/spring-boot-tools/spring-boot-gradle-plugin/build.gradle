@@ -56,6 +56,17 @@ gradlePlugin {
 	}
 }
 
+task preparePluginValidationClasses(type: Copy) {
+	destinationDir = file("$buildDir/classes/java/pluginValidation")
+	from(sourceSets.main.output.classesDirs) {
+		exclude "**/CreateBootStartScripts.class"
+	}
+}
+
+validatePlugins {
+	classes.setFrom preparePluginValidationClasses
+}
+
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
