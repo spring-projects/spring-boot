@@ -131,6 +131,7 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.background-processor-delay", "10");
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
 		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
+		map.put("server.tomcat.use-relative-redirects", "true");
 		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		Accesslog accesslog = tomcat.getAccesslog();
@@ -152,6 +153,7 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
+		assertThat(tomcat.getUseRelativeRedirects()).isTrue();
 	}
 
 	@Test
@@ -345,6 +347,11 @@ class ServerPropertiesTests {
 	void tomcatInternalProxiesMatchesDefault() {
 		assertThat(this.properties.getTomcat().getInternalProxies())
 				.isEqualTo(new RemoteIpValve().getInternalProxies());
+	}
+
+	@Test
+	void tomcatUseRelativeRedirectsDefaultsToFalse() {
+		assertThat(this.properties.getTomcat().getUseRelativeRedirects()).isFalse();
 	}
 
 	@Test
