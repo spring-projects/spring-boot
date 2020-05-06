@@ -1147,6 +1147,25 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(request.get(30, TimeUnit.SECONDS)).isInstanceOf(HttpResponse.class);
 	}
 
+	@Test
+	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
+		AbstractServletWebServerFactory factory = getFactory();
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory
+				.getWebServer((context) -> context.addServlet("blockingServlet", blockingServlet).addMapping("/"));
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		initiateGetRequest(port, "/");
+		blockingServlet.awaitQueue();
+		this.webServer.stop();
+		try {
+			blockingServlet.admitOne();
+		}
+		catch (RuntimeException ex) {
+
+		}
+	}
+
 	protected Future<Boolean> initiateGracefulShutdown() {
 		RunnableFuture<Boolean> future = new FutureTask<Boolean>(() -> this.webServer.shutDownGracefully());
 		new Thread(future).start();
@@ -1524,7 +1543,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 		public void admitOne() {
 			try {
-				this.barriers.take().await();
+				CyclicBarrier barrier = this.barriers.take();
+				if (!barrier.isBroken()) {
+					barrier.await();
+				}
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();

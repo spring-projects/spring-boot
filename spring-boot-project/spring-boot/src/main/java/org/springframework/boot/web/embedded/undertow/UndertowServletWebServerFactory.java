@@ -241,6 +241,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		else {
 			builder.addHttpListener(port, getListenAddress());
 		}
+		builder.setServerOption(UndertowOptions.SHUTDOWN_TIMEOUT, 0);
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
