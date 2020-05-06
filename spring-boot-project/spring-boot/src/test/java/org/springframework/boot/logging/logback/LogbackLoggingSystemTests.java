@@ -207,6 +207,14 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void getLoggingConfigurationForLoggerThatDoesNotExistShouldReturnNull() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("doesnotexist");
+		assertThat(configuration).isNull();
+	}
+
+	@Test
 	void getLoggingConfigurationForALL() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
