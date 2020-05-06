@@ -40,6 +40,8 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
@@ -55,6 +57,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.unit.DataSize;
@@ -448,6 +451,20 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatUseRelativeRedirectsDefaultsToFalse() {
 		assertThat(this.properties.getTomcat().getUseRelativeRedirects()).isFalse();
+	}
+
+	@Test
+	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
+		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
+		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
+		Server server = (Server) ReflectionTestUtils.getField(jetty, "server");
+		ThreadPool threadPool = (ThreadPool) ReflectionTestUtils.getField(server, "_threadPool");
+		int idleTimeout = (int) ReflectionTestUtils.getField(threadPool, "_idleTimeout");
+		int maxThreads = (int) ReflectionTestUtils.getField(threadPool, "_maxThreads");
+		int minThreads = (int) ReflectionTestUtils.getField(threadPool, "_minThreads");
+		assertThat(this.properties.getJetty().getThreads().getIdleTimeout().toMillis()).isEqualTo(idleTimeout);
+		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(maxThreads);
+		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(minThreads);
 	}
 
 	@Test
