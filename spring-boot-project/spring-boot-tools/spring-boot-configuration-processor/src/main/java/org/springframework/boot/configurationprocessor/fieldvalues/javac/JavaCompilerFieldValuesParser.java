@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,19 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			DURATION_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
+		private static final String PERIOD_OF = "Period.of";
+
+		private static final Map<String, String> PERIOD_SUFFIX;
+
+		static {
+			Map<String, String> values = new HashMap<>();
+			values.put("Days", "d");
+			values.put("Weeks", "w");
+			values.put("Months", "m");
+			values.put("Years", "y");
+			PERIOD_SUFFIX = Collections.unmodifiableMap(values);
+		}
+
 		private static final String DATA_SIZE_OF = "DataSize.of";
 
 		private static final Map<String, String> DATA_SIZE_SUFFIX;
@@ -193,6 +206,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			Object dataSizeValue = getFactoryValue(expression, factoryValue, DATA_SIZE_OF, DATA_SIZE_SUFFIX);
 			if (dataSizeValue != null) {
 				return dataSizeValue;
+			}
+			Object periodValue = getFactoryValue(expression, factoryValue, PERIOD_OF, PERIOD_SUFFIX);
+			if (periodValue != null) {
+				return periodValue;
 			}
 			return factoryValue;
 		}
