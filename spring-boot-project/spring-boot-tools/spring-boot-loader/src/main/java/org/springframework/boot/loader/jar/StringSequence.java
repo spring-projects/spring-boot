@@ -108,17 +108,7 @@ final class StringSequence implements CharSequence {
 		if (length - prefixLength - offset < 0) {
 			return false;
 		}
-		if (length == this.source.length()) {
-			return this.source.startsWith(prefix, offset);
-		}
-		int prefixOffset = 0;
-		int sourceOffset = offset;
-		while (prefixLength-- != 0) {
-			if (charAt(sourceOffset++) != prefix.charAt(prefixOffset++)) {
-				return false;
-			}
-		}
-		return true;
+		return this.source.startsWith(prefix, this.start + offset);
 	}
 
 	@Override
