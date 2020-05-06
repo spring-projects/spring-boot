@@ -45,7 +45,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -984,6 +987,43 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.getWebServer((context) -> context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(this.webServer::start)
 				.satisfies(this::wrapsFailingServletException);
+	}
+
+	@Test
+	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
+		AbstractServletWebServerFactory factory = getFactory();
+		CyclicBarrier barrier = new CyclicBarrier(2);
+		CountDownLatch latch = new CountDownLatch(1);
+		this.webServer = factory.getWebServer((context) -> context.addServlet("blocking", new HttpServlet() {
+
+			@Override
+			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+					throws ServletException, IOException {
+				try {
+					barrier.await();
+					latch.await();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				catch (BrokenBarrierException ex) {
+					throw new ServletException(ex);
+				}
+			}
+
+		}).addMapping("/"));
+		this.webServer.start();
+		new Thread(() -> {
+			try {
+				getResponse(getLocalUrl("/"));
+			}
+			catch (Exception ex) {
+				// Continue
+			}
+		}).start();
+		barrier.await();
+		this.webServer.stop();
+		latch.countDown();
 	}
 
 	private void wrapsFailingServletException(WebServerException ex) {

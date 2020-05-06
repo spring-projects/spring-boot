@@ -23,7 +23,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
@@ -331,6 +334,31 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
 				.hasMessageContaining("Could not load key store 'null'");
+	}
+
+	@Test
+	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		CyclicBarrier barrier = new CyclicBarrier(2);
+		CountDownLatch latch = new CountDownLatch(1);
+		this.webServer = factory.getWebServer((request, response) -> {
+			try {
+				barrier.await();
+				latch.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (BrokenBarrierException ex) {
+				throw new IllegalStateException(ex);
+			}
+			return response.setComplete();
+		});
+		this.webServer.start();
+		new Thread(() -> getWebClient().build().get().uri("/").exchange().block()).start();
+		barrier.await();
+		this.webServer.stop();
+		latch.countDown();
 	}
 
 	protected WebClient prepareCompressionTest() {
