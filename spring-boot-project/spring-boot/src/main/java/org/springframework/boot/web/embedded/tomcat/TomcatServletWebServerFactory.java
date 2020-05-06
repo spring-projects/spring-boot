@@ -214,7 +214,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
-		context.setUseRelativeRedirects(false);
 		try {
 			context.setCreateUploadTargets(true);
 		}
