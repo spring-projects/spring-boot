@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -37,11 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ErrorMvcAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ErrorMvcAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class));
 
 	@Test
@@ -51,7 +54,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
@@ -69,7 +72,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					true);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true, true, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "
@@ -87,6 +90,11 @@ class ErrorMvcAutoConfigurationTests {
 		response.setOutputStreamAccessAllowed(!committed);
 		response.setWriterAccessAllowed(!committed);
 		return webRequest;
+	}
+
+	private ErrorAttributeOptions withAllOptions() {
+		return ErrorAttributeOptions.of(Include.EXCEPTION, Include.STACK_TRACE, Include.MESSAGE,
+				Include.BINDING_ERRORS);
 	}
 
 }

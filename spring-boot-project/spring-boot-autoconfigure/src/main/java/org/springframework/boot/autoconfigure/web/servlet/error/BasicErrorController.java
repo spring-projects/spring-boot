@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
@@ -87,9 +89,8 @@ public class BasicErrorController extends AbstractErrorController {
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
-		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.TEXT_HTML), isIncludeMessage(request, MediaType.TEXT_HTML),
-				isIncludeBindingErrors(request, MediaType.TEXT_HTML)));
+		Map<String, Object> model = Collections
+				.unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -101,8 +102,7 @@ public class BasicErrorController extends AbstractErrorController {
 		if (status == HttpStatus.NO_CONTENT) {
 			return new ResponseEntity<>(status);
 		}
-		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL),
-				isIncludeMessage(request, MediaType.ALL), isIncludeBindingErrors(request, MediaType.TEXT_HTML));
+		Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);
 	}
 
@@ -110,6 +110,23 @@ public class BasicErrorController extends AbstractErrorController {
 	public ResponseEntity<String> mediaTypeNotAcceptable(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		return ResponseEntity.status(status).build();
+	}
+
+	protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request, MediaType mediaType) {
+		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
+		if (this.errorProperties.isIncludeException()) {
+			options = options.including(Include.EXCEPTION);
+		}
+		if (isIncludeStackTrace(request, mediaType)) {
+			options = options.including(Include.STACK_TRACE);
+		}
+		if (isIncludeMessage(request, mediaType)) {
+			options = options.including(Include.MESSAGE);
+		}
+		if (isIncludeBindingErrors(request, mediaType)) {
+			options = options.including(Include.BINDING_ERRORS);
+		}
+		return options;
 	}
 
 	/**

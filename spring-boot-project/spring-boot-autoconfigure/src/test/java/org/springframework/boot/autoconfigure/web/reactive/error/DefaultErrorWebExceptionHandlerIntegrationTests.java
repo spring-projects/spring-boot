@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -34,6 +36,9 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,6 +48,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -64,7 +70,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	private final LogIdFilter logIdFilter = new LogIdFilter();
 
-	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class,
 					HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 					ErrorWebFluxAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
@@ -343,6 +349,26 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
+	@Test
+	void defaultErrorAttributesSubclassUsingDeprecatedApiAndDelegation() {
+		this.contextRunner.withUserConfiguration(CustomErrorAttributesWithDelegation.class).run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.get().uri("/badRequest").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
+					.isEqualTo("400").jsonPath("error").isEqualTo("custom error").jsonPath("newAttribute")
+					.isEqualTo("value").jsonPath("path").doesNotExist();
+		});
+	}
+
+	@Test
+	void defaultErrorAttributesSubclassUsingDeprecatedApiWithoutDelegation() {
+		this.contextRunner.withUserConfiguration(CustomErrorAttributesWithoutDelegation.class).run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.get().uri("/badRequest").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
+					.isEqualTo("400").jsonPath("timestamp").doesNotExist().jsonPath("error").isEqualTo("custom error")
+					.jsonPath("path").doesNotExist();
+		});
+	}
+
 	private String getErrorTemplatesLocation() {
 		String packageName = getClass().getPackage().getName();
 		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
@@ -401,6 +427,47 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				return body.getContent();
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomErrorAttributesWithDelegation {
+
+		@Bean
+		ErrorAttributes errorAttributes() {
+			return new DefaultErrorAttributes() {
+				@Override
+				@SuppressWarnings("deprecation")
+				public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+					Map<String, Object> errorAttributes = super.getErrorAttributes(request, includeStackTrace);
+					errorAttributes.put("error", "custom error");
+					errorAttributes.put("newAttribute", "value");
+					errorAttributes.remove("path");
+					return errorAttributes;
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomErrorAttributesWithoutDelegation {
+
+		@Bean
+		ErrorAttributes errorAttributes() {
+			return new DefaultErrorAttributes() {
+				@Override
+				@SuppressWarnings("deprecation")
+				public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+					Map<String, Object> errorAttributes = new HashMap<>();
+					errorAttributes.put("status", 400);
+					errorAttributes.put("error", "custom error");
+					return errorAttributes;
+				}
+
+			};
 		}
 
 	}

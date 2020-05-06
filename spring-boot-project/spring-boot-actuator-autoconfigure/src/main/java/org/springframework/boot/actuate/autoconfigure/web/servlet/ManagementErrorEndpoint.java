@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
@@ -53,10 +54,27 @@ public class ManagementErrorEndpoint {
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke(ServletWebRequest request) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace(request), includeMessage(request),
-				includeBindingErrors(request));
+		return this.errorAttributes.getErrorAttributes(request, getErrorAttributeOptions(request));
 	}
 
+	private ErrorAttributeOptions getErrorAttributeOptions(ServletWebRequest request) {
+		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
+		if (this.errorProperties.isIncludeException()) {
+			options = options.including(ErrorAttributeOptions.Include.EXCEPTION);
+		}
+		if (includeStackTrace(request)) {
+			options = options.including(ErrorAttributeOptions.Include.STACK_TRACE);
+		}
+		if (includeMessage(request)) {
+			options = options.including(ErrorAttributeOptions.Include.MESSAGE);
+		}
+		if (includeBindingErrors(request)) {
+			options = options.including(ErrorAttributeOptions.Include.BINDING_ERRORS);
+		}
+		return options;
+	}
+
+	@SuppressWarnings("deprecation")
 	private boolean includeStackTrace(ServletWebRequest request) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:

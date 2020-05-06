@@ -38,7 +38,6 @@ import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -66,8 +65,7 @@ class DefaultErrorWebExceptionHandlerTests {
 		ResourceProperties resourceProperties = new ResourceProperties();
 		ErrorProperties errorProperties = new ErrorProperties();
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
-		given(errorAttributes.getErrorAttributes(any(), anyBoolean(), anyBoolean(), anyBoolean()))
-				.willReturn(getErrorAttributes());
+		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				resourceProperties, errorProperties, context);
 		setupViewResolver(exceptionHandler);

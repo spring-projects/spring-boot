@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
@@ -134,26 +136,23 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @param includeStackTrace whether to include the error stacktrace information
 	 * @return the error attributes as a Map
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(ServerRequest, boolean, boolean, boolean)}
+	 * {@link #getErrorAttributes(ServerRequest, ErrorAttributeOptions)}
 	 */
 	@Deprecated
 	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace, false, false);
+		return getErrorAttributes(request,
+				(includeStackTrace) ? ErrorAttributeOptions.of(Include.STACK_TRACE) : ErrorAttributeOptions.defaults());
 	}
 
 	/**
 	 * Extract the error attributes from the current request, to be used to populate error
 	 * views or JSON payloads.
 	 * @param request the source request
-	 * @param includeStackTrace whether to include the stacktrace attribute
-	 * @param includeMessage whether to include the message attribute
-	 * @param includeBindingErrors whether to include the errors attribute
+	 * @param options options to control error attributes
 	 * @return the error attributes as a Map
 	 */
-	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace,
-			boolean includeMessage, boolean includeBindingErrors) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace, includeMessage,
-				includeBindingErrors);
+	protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		return this.errorAttributes.getErrorAttributes(request, options);
 	}
 
 	/**
