@@ -203,4 +203,18 @@ class StringSequenceTests {
 		assertThat(new StringSequence("xab").startsWith("c", 1)).isFalse();
 	}
 
+	@Test
+	void startsWithOnSubstringTailWhenMatch() {
+		StringSequence subSequence = new StringSequence("xabc").subSequence(1);
+		assertThat(subSequence.startsWith("abc")).isTrue();
+		assertThat(subSequence.startsWith("abcd")).isFalse();
+	}
+
+	@Test
+	void startsWithOnSubstringMiddleWhenMatch() {
+		StringSequence subSequence = new StringSequence("xabc").subSequence(1, 3);
+		assertThat(subSequence.startsWith("ab")).isTrue();
+		assertThat(subSequence.startsWith("abc")).isFalse();
+	}
+
 }
