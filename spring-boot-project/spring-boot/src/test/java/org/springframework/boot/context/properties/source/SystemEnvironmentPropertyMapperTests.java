@@ -83,4 +83,12 @@ class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapperTests {
 		assertThat(getMapper().isAncestorOf(name, ConfigurationPropertyName.of("my.boot.property"))).isFalse();
 	}
 
+	@Test
+	void isAncestorOfWhenCamelCaseSourceConsidersLegacyNames() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("my.springBoot", '.');
+		assertThat(getMapper().isAncestorOf(name, ConfigurationPropertyName.of("my.spring-boot.property"))).isTrue();
+		assertThat(getMapper().isAncestorOf(name, ConfigurationPropertyName.of("my.springboot.property"))).isTrue();
+		assertThat(getMapper().isAncestorOf(name, ConfigurationPropertyName.of("my.boot.property"))).isFalse();
+	}
+
 }
