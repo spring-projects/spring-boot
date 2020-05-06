@@ -23,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A standard set of {@link Period} units.
@@ -38,25 +37,64 @@ public enum PeriodStyle {
 	/**
 	 * Simple formatting, for example '1d'.
 	 */
-	SIMPLE("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$") {
+	SIMPLE("^" + "(?:([-+]?[0-9]+)Y)?" + "(?:([-+]?[0-9]+)M)?" + "(?:([-+]?[0-9]+)W)?" + "(?:([-+]?[0-9]+)D)?" + "$",
+			Pattern.CASE_INSENSITIVE) {
 
 		@Override
 		public Period parse(String value, ChronoUnit unit) {
 			try {
+				if (NUMERIC.matcher(value).matches()) {
+					return Unit.fromChronoUnit(unit).parse(value);
+				}
 				Matcher matcher = matcher(value);
 				Assert.state(matcher.matches(), "Does not match simple period pattern");
-				String suffix = matcher.group(2);
-				return (StringUtils.hasLength(suffix) ? Unit.fromSuffix(suffix) : Unit.fromChronoUnit(unit))
-						.parse(matcher.group(1));
+				Assert.isTrue(hasAtLeastOneGroupValue(matcher), "'" + value + "' is not a valid simple period");
+				int years = parseInt(matcher, 1);
+				int months = parseInt(matcher, 2);
+				int weeks = parseInt(matcher, 3);
+				int days = parseInt(matcher, 4);
+				return Period.of(years, months, Math.addExact(Math.multiplyExact(weeks, 7), days));
 			}
 			catch (Exception ex) {
 				throw new IllegalArgumentException("'" + value + "' is not a valid simple period", ex);
 			}
 		}
 
+		boolean hasAtLeastOneGroupValue(Matcher matcher) {
+			for (int i = 0; i < matcher.groupCount(); i++) {
+				if (matcher.group(i + 1) != null) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private int parseInt(Matcher matcher, int group) {
+			String value = matcher.group(group);
+			return (value != null) ? Integer.parseInt(value) : 0;
+		}
+
+		@Override
+		protected boolean matches(String value) {
+			return NUMERIC.matcher(value).matches() || matcher(value).matches();
+		}
+
 		@Override
 		public String print(Period value, ChronoUnit unit) {
-			return Unit.fromChronoUnit(unit).print(value);
+			if (value.isZero()) {
+				return Unit.fromChronoUnit(unit).print(value);
+			}
+			StringBuilder result = new StringBuilder();
+			append(result, value, Unit.YEARS);
+			append(result, value, Unit.MONTHS);
+			append(result, value, Unit.DAYS);
+			return result.toString();
+		}
+
+		private void append(StringBuilder result, Period value, Unit unit) {
+			if (!unit.isZero(value)) {
+				result.append(unit.print(value));
+			}
 		}
 
 	},
@@ -64,7 +102,7 @@ public enum PeriodStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[\\+\\-]?P.*$") {
+	ISO8601("^[\\+\\-]?P.*$", 0) {
 
 		@Override
 		public Period parse(String value, ChronoUnit unit) {
@@ -83,13 +121,15 @@ public enum PeriodStyle {
 
 	};
 
+	private static final Pattern NUMERIC = Pattern.compile("^[-+]?[0-9]+$");
+
 	private final Pattern pattern;
 
-	PeriodStyle(String pattern) {
-		this.pattern = Pattern.compile(pattern);
+	PeriodStyle(String pattern, int flags) {
+		this.pattern = Pattern.compile(pattern, flags);
 	}
 
-	protected final boolean matches(String value) {
+	protected boolean matches(String value) {
 		return this.pattern.matcher(value).matches();
 	}
 
@@ -175,17 +215,17 @@ public enum PeriodStyle {
 		/**
 		 * Days, represented by suffix {@code d}.
 		 */
-		DAYS(ChronoUnit.DAYS, "d", Period::getDays),
+		DAYS(ChronoUnit.DAYS, "d", Period::getDays, Period::ofDays),
 
 		/**
 		 * Months, represented by suffix {@code m}.
 		 */
-		MONTHS(ChronoUnit.MONTHS, "m", Period::getMonths),
+		MONTHS(ChronoUnit.MONTHS, "m", Period::getMonths, Period::ofMonths),
 
 		/**
 		 * Years, represented by suffix {@code y}.
 		 */
-		YEARS(ChronoUnit.YEARS, "y", Period::getYears);
+		YEARS(ChronoUnit.YEARS, "y", Period::getYears, Period::ofYears);
 
 		private final ChronoUnit chronoUnit;
 
@@ -193,51 +233,29 @@ public enum PeriodStyle {
 
 		private final Function<Period, Integer> intValue;
 
-		Unit(ChronoUnit chronoUnit, String suffix, Function<Period, Integer> intValue) {
+		private final Function<Integer, Period> factory;
+
+		Unit(ChronoUnit chronoUnit, String suffix, Function<Period, Integer> intValue,
+				Function<Integer, Period> factory) {
 			this.chronoUnit = chronoUnit;
 			this.suffix = suffix;
 			this.intValue = intValue;
+			this.factory = factory;
 		}
 
-		/**
-		 * Return the {@link Unit} matching the specified {@code suffix}.
-		 * @param suffix one of the standard suffixes
-		 * @return the {@link Unit} matching the specified {@code suffix}
-		 * @throws IllegalArgumentException if the suffix does not match the suffix of any
-		 * of this enum's constants
-		 */
-		public static Unit fromSuffix(String suffix) {
-			for (Unit candidate : values()) {
-				if (candidate.suffix.equalsIgnoreCase(suffix)) {
-					return candidate;
-				}
-			}
-			throw new IllegalArgumentException("Unknown unit suffix '" + suffix + "'");
+		private Period parse(String value) {
+			return this.factory.apply(Integer.parseInt(value));
 		}
 
-		public Period parse(String value) {
-			int intValue = Integer.parseInt(value);
-
-			if (ChronoUnit.DAYS == this.chronoUnit) {
-				return Period.ofDays(intValue);
-			}
-			else if (ChronoUnit.WEEKS == this.chronoUnit) {
-				return Period.ofWeeks(intValue);
-			}
-			else if (ChronoUnit.MONTHS == this.chronoUnit) {
-				return Period.ofMonths(intValue);
-			}
-			else if (ChronoUnit.YEARS == this.chronoUnit) {
-				return Period.ofYears(intValue);
-			}
-			throw new IllegalArgumentException("Unknow unit '" + this.chronoUnit + "'");
+		private String print(Period value) {
+			return intValue(value) + this.suffix;
 		}
 
-		public String print(Period value) {
-			return longValue(value) + this.suffix;
+		public boolean isZero(Period value) {
+			return intValue(value) == 0;
 		}
 
-		public long longValue(Period value) {
+		public int intValue(Period value) {
 			return this.intValue.apply(value);
 		}
 
@@ -250,7 +268,7 @@ public enum PeriodStyle {
 					return candidate;
 				}
 			}
-			throw new IllegalArgumentException("Unknown unit " + chronoUnit);
+			throw new IllegalArgumentException("Unsupported unit " + chronoUnit);
 		}
 
 	}

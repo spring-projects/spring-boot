@@ -57,6 +57,14 @@ class PeriodStyleTests {
 	}
 
 	@Test
+	void detectAndParseWhenSimpleWeeksShouldReturnPeriod() {
+		assertThat(PeriodStyle.detectAndParse("10w")).isEqualTo(Period.ofWeeks(10));
+		assertThat(PeriodStyle.detectAndParse("10W")).isEqualTo(Period.ofWeeks(10));
+		assertThat(PeriodStyle.detectAndParse("+10w")).isEqualTo(Period.ofWeeks(10));
+		assertThat(PeriodStyle.detectAndParse("-10W")).isEqualTo(Period.ofWeeks(-10));
+	}
+
+	@Test
 	void detectAndParseWhenSimpleMonthsShouldReturnPeriod() {
 		assertThat(PeriodStyle.detectAndParse("10m")).isEqualTo(Period.ofMonths(10));
 		assertThat(PeriodStyle.detectAndParse("10M")).isEqualTo(Period.ofMonths(10));
@@ -84,6 +92,16 @@ class PeriodStyleTests {
 		assertThat(PeriodStyle.detectAndParse("10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
 		assertThat(PeriodStyle.detectAndParse("+10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
 		assertThat(PeriodStyle.detectAndParse("-10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(-10));
+	}
+
+	@Test
+	void detectAndParseWhenComplexShouldReturnPeriod() {
+		assertThat(PeriodStyle.detectAndParse("1y2m")).isEqualTo(Period.of(1, 2, 0));
+		assertThat(PeriodStyle.detectAndParse("1y2m3d")).isEqualTo(Period.of(1, 2, 3));
+		assertThat(PeriodStyle.detectAndParse("2m3d")).isEqualTo(Period.of(0, 2, 3));
+		assertThat(PeriodStyle.detectAndParse("1y3d")).isEqualTo(Period.of(1, 0, 3));
+		assertThat(PeriodStyle.detectAndParse("-1y3d")).isEqualTo(Period.of(-1, 0, 3));
+		assertThat(PeriodStyle.detectAndParse("-1y-3d")).isEqualTo(Period.of(-1, 0, -3));
 	}
 
 	@Test
@@ -161,8 +179,8 @@ class PeriodStyleTests {
 
 	@Test
 	void parseSimpleWhenUnknownUnitShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10mb"))
-				.satisfies((ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit suffix 'mb'"));
+		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10x")).satisfies(
+				(ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Does not match simple period pattern"));
 	}
 
 	@Test
@@ -184,15 +202,21 @@ class PeriodStyleTests {
 	}
 
 	@Test
-	void printSimpleWithoutUnitShouldPrintInDays() {
-		Period period = Period.ofMonths(1);
+	void printSimpleWhenZeroWithoutUnitShouldPrintInDays() {
+		Period period = Period.ofMonths(0);
 		assertThat(PeriodStyle.SIMPLE.print(period)).isEqualTo("0d");
 	}
 
 	@Test
-	void printSimpleWithUnitShouldPrintInUnit() {
-		Period period = Period.ofYears(1000);
-		assertThat(PeriodStyle.SIMPLE.print(period, ChronoUnit.YEARS)).isEqualTo("1000y");
+	void printSimpleWhenZeroWithUnitShouldPrintInUnit() {
+		Period period = Period.ofYears(0);
+		assertThat(PeriodStyle.SIMPLE.print(period, ChronoUnit.YEARS)).isEqualTo("0y");
+	}
+
+	@Test
+	void printSimpleWhenNonZeroShouldIgnoreUnit() {
+		Period period = Period.of(1, 2, 3);
+		assertThat(PeriodStyle.SIMPLE.print(period, ChronoUnit.YEARS)).isEqualTo("1y2m3d");
 	}
 
 }

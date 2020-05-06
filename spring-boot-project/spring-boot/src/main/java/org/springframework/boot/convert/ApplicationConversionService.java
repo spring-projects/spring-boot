@@ -110,12 +110,12 @@ public class ApplicationConversionService extends FormattingConversionService {
 	public static void addApplicationConverters(ConverterRegistry registry) {
 		addDelimitedStringConverters(registry);
 		registry.addConverter(new StringToDurationConverter());
-		registry.addConverter(new StringToPeriodConverter());
 		registry.addConverter(new DurationToStringConverter());
-		registry.addConverter(new PeriodToStringConverter());
 		registry.addConverter(new NumberToDurationConverter());
-		registry.addConverter(new NumberToPeriodConverter());
 		registry.addConverter(new DurationToNumberConverter());
+		registry.addConverter(new StringToPeriodConverter());
+		registry.addConverter(new PeriodToStringConverter());
+		registry.addConverter(new NumberToPeriodConverter());
 		registry.addConverter(new StringToDataSizeConverter());
 		registry.addConverter(new NumberToDataSizeConverter());
 		registry.addConverter(new StringToFileConverter());

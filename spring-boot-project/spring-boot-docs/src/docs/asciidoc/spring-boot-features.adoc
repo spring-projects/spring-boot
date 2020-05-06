@@ -1450,6 +1450,26 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 
+[[boot-features-external-config-conversion-period]]
+===== Converting periods
+In addition to durations, Spring Boot can also work with `java.time.Period` type.
+The following formats can be used in application properties:
+
+* An regular `int` representation (using days as the default unit unless a `@PeriodUnit` has been specified)
+* The standard ISO-8601 format {java-api}/java/time/Period.html#parse-java.lang.CharSequence-[used by `java.time.Period`]
+* A simpler format where the value and the unit pairs are coupled (e.g. `1y3d` means 1 year and 3 days)
+
+The following units are supported with the simple format:
+
+* `y` for years
+* `m` for months
+* `w` for weeks
+* `d` for days
+
+NOTE: The `java.time.Period` type never actually stores the number of weeks, it is simply a shortcut that means "`7 days`".
+
+
+
 [[boot-features-external-config-conversion-datasize]]
 ===== Converting Data Sizes
 Spring Framework has a `DataSize` value type that expresses a size in bytes.

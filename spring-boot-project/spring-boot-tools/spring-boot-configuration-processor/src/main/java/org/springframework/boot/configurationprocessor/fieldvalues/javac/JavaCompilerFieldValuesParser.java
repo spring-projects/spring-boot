@@ -116,6 +116,19 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			DURATION_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
+		private static final String PERIOD_OF = "Period.of";
+
+		private static final Map<String, String> PERIOD_SUFFIX;
+
+		static {
+			Map<String, String> values = new HashMap<>();
+			values.put("Days", "d");
+			values.put("Weeks", "w");
+			values.put("Months", "m");
+			values.put("Years", "y");
+			PERIOD_SUFFIX = Collections.unmodifiableMap(values);
+		}
+
 		private static final String DATA_SIZE_OF = "DataSize.of";
 
 		private static final Map<String, String> DATA_SIZE_SUFFIX;
@@ -128,19 +141,6 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			values.put("Gigabytes", "GB");
 			values.put("Terabytes", "TB");
 			DATA_SIZE_SUFFIX = Collections.unmodifiableMap(values);
-		}
-
-		private static final String PERIOD_OF = "Period.of";
-
-		private static final Map<String, String> PERIOD_SUFFIX;
-
-		static {
-			Map<String, String> values = new HashMap<>();
-			values.put("Days", "d");
-			values.put("Weeks", "w");
-			values.put("Months", "m");
-			values.put("Years", "y");
-			PERIOD_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
 		private final Map<String, Object> fieldValues = new HashMap<>();
