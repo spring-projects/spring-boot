@@ -102,7 +102,7 @@ public enum PeriodStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[\\+\\-]?P.*$", 0) {
+	ISO8601("^[+-]?P.*$", 0) {
 
 		@Override
 		public Period parse(String value, ChronoUnit unit) {

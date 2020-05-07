@@ -36,7 +36,7 @@ public enum DurationStyle {
 	/**
 	 * Simple formatting, for example '1s'.
 	 */
-	SIMPLE("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$") {
+	SIMPLE("^([+-]?\\d+)([a-zA-Z]{0,2})$") {
 
 		@Override
 		public Duration parse(String value, ChronoUnit unit) {
@@ -62,7 +62,7 @@ public enum DurationStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[\\+\\-]?P.*$") {
+	ISO8601("^[+-]?P.*$") {
 
 		@Override
 		public Duration parse(String value, ChronoUnit unit) {
