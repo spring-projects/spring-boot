@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
-			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 		});
 	}
 
@@ -68,6 +68,15 @@ class LdapAutoConfigurationTests {
 					assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:123", "ldap://mycompany:123");
 					assertThat(ldapProperties.getUrls()).hasSize(2);
 				});
+	}
+
+	@Test
+	void contextSourceWithUserDoesNotEnableAnonymousReadOnly() {
+		this.contextRunner.withPropertyValues("spring.ldap.username:root").run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUserDn()).isEqualTo("root");
+			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+		});
 	}
 
 	@Test
@@ -93,7 +102,7 @@ class LdapAutoConfigurationTests {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUserDn()).isEqualTo("");
 			assertThat(contextSource.getPassword()).isEqualTo("");
-			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 			assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("");
 		});
 	}
@@ -109,7 +118,7 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class).run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
-			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 		});
 	}
 
