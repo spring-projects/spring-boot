@@ -728,8 +728,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private void assertValidConfigName(String name) {
 			Assert.state(!name.contains("*"), () -> "Config name '" + name + "' cannot contain wildcards");
-			Assert.state(!name.contains("/") && !name.contains("\\"),
-					() -> "Config name '" + name + "' cannot contain slashes");
 		}
 
 		private void addLoadedPropertySources() {

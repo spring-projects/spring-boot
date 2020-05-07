@@ -1052,6 +1052,14 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void configNameCanContainSlash() {
+		// Spring Cloud config server depends on this
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=file:src/test/resources/", "spring.config.name=config/application");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+	}
+
+	@Test
 	void directoryLocationsWithMultipleWildcardsShouldThrowException() {
 		String location = "file:src/test/resources/config/**/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
