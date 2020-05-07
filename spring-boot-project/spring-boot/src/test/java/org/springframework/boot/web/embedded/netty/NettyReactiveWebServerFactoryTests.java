@@ -19,9 +19,8 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
@@ -106,22 +105,24 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
 		NettyReactiveWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
 		WebClient webClient = getWebClient(this.webServer.getPort()).build();
-		webClient.get().retrieve().toBodilessEntity().subscribe();
-		blockingHandler.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		AtomicReference<Throwable> errorReference = new AtomicReference<>();
-		webClient.get().retrieve().toBodilessEntity().doOnError(errorReference::set).subscribe();
-		assertThat(shutdownResult.get()).isEqualTo(false);
-		blockingHandler.completeOne();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
 		this.webServer.stop();
-		assertThat(errorReference.get()).hasCauseInstanceOf(ConnectException.class);
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {
@@ -140,11 +141,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 				.clientConnector(connector).build();
 		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
 				.exchange().flatMap((response) -> response.bodyToMono(String.class));
-	}
-
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((NettyWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

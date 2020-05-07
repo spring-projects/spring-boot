@@ -97,9 +97,9 @@ class ReactiveWebServerApplicationContextTests {
 		this.context.addApplicationListener(listener);
 		this.context.refresh();
 		List<ApplicationEvent> events = listener.receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").containsExactly(ContextRefreshedEvent.class,
-				ReactiveWebServerInitializedEvent.class);
-		ReactiveWebServerInitializedEvent initializedEvent = (ReactiveWebServerInitializedEvent) events.get(1);
+		assertThat(events).hasSize(2).extracting("class").containsExactly(ReactiveWebServerInitializedEvent.class,
+				ContextRefreshedEvent.class);
+		ReactiveWebServerInitializedEvent initializedEvent = (ReactiveWebServerInitializedEvent) events.get(0);
 		assertThat(initializedEvent.getSource().getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
 	}

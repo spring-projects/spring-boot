@@ -100,6 +100,11 @@ public class ServerProperties {
 	 */
 	private DataSize maxHttpHeaderSize = DataSize.ofKilobytes(8);
 
+	/**
+	 * Type of shutdown that the server will support.
+	 */
+	private Shutdown shutdown = Shutdown.IMMEDIATE;
+
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -108,9 +113,6 @@ public class ServerProperties {
 
 	@NestedConfigurationProperty
 	private final Http2 http2 = new Http2();
-
-	@NestedConfigurationProperty
-	private final Shutdown shutdown = new Shutdown();
 
 	private final Servlet servlet = new Servlet();
 
@@ -154,6 +156,14 @@ public class ServerProperties {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
+	public Shutdown getShutdown() {
+		return this.shutdown;
+	}
+
+	public void setShutdown(Shutdown shutdown) {
+		this.shutdown = shutdown;
+	}
+
 	public ErrorProperties getError() {
 		return this.error;
 	}
@@ -172,10 +182,6 @@ public class ServerProperties {
 
 	public Http2 getHttp2() {
 		return this.http2;
-	}
-
-	public Shutdown getShutdown() {
-		return this.shutdown;
 	}
 
 	public Servlet getServlet() {

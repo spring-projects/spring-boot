@@ -560,9 +560,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -573,9 +571,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		Future<Object> unconnectableRequest = initiateGetRequest(port, "/");
-		assertThat(shutdownResult.get()).isEqualTo(false);
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Future<Object> unconnectableRequest = initiateGetRequest(HttpClients.createDefault(), port, "/");
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
 		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
@@ -585,9 +583,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void whenServerIsShuttingDownARequestOnAnIdleConnectionResultsInConnectionReset() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -603,7 +599,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(keepAliveRequest.get()).isInstanceOf(HttpResponse.class);
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		initiateGracefulShutdown();
+		this.webServer.shutDownGracefully((result) -> {
+		});
 		Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/blocking");
 		blockingServlet.admitOne();
 		Object response = request.get();
@@ -667,11 +664,6 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(ConnectorStartFailedException.class);
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
-	}
-
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((TomcatWebServer) this.webServer).inGracefulShutdown();
 	}
 
 }

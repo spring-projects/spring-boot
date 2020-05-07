@@ -28,9 +28,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -45,6 +42,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -53,8 +51,8 @@ import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -66,7 +64,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -353,23 +350,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	void whenThereAreNoInFlightRequestsShutDownGracefullyReturnsTrueBeforePeriodElapses() throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenARequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
+	void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
+			throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
@@ -382,26 +375,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			responseLatch.countDown();
 		});
 		blockingHandler.awaitQueue();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isFalse();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
 		assertThat(responseReference.get()).isNull();
 		blockingHandler.completeOne();
 		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
+		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenARequestCompletesDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses() throws Exception {
+	void givenAnInflightRequestWhenTheServerIsStoppedThenGracefulShutdownCallbackIsCalledWithRequestsActive()
+			throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
-		if (factory instanceof NettyReactiveWebServerFactory) {
-			ReactorResourceFactory resourceFactory = new ReactorResourceFactory();
-			resourceFactory.afterPropertiesSet();
-			((NettyReactiveWebServerFactory) factory).setResourceFactory(resourceFactory);
-		}
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
@@ -414,14 +400,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			responseLatch.countDown();
 		});
 		blockingHandler.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		assertThat(responseLatch.getCount()).isEqualTo(1);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		assertThat(responseReference.get()).isNull();
+		try {
+			this.webServer.stop();
+		}
+		catch (Exception ex) {
+			// Continue
+		}
+		System.out.println("Stopped");
+		Awaitility.await().atMost(Duration.ofSeconds(5))
+				.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
 		blockingHandler.completeOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
-		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test
@@ -439,7 +430,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			responseLatch.countDown();
 		});
 		blockingHandler.awaitQueue();
-		this.webServer.stop();
+		try {
+			this.webServer.stop();
+		}
+		catch (Exception ex) {
+			// Continue
+		}
 		blockingHandler.completeOne();
 	}
 
@@ -497,26 +493,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		throw new IllegalStateException("Action was not successful in 10 attempts", lastFailure);
 	}
 
-	protected Future<Boolean> initiateGracefulShutdown() {
-		RunnableFuture<Boolean> future = new FutureTask<Boolean>(() -> this.webServer.shutDownGracefully());
-		new Thread(future).start();
-		awaitInGracefulShutdown();
-		return future;
-	}
-
-	protected void awaitInGracefulShutdown() {
-		while (!inGracefulShutdown()) {
-			try {
-				Thread.sleep(100);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
-
-	protected abstract boolean inGracefulShutdown();
-
 	protected static class EchoHandler implements HttpHandler {
 
 		public EchoHandler() {
@@ -534,15 +510,20 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		private final BlockingQueue<MonoProcessor<Void>> monoProcessors = new ArrayBlockingQueue<>(10);
 
+		private volatile boolean blocking = true;
+
 		public BlockingHandler() {
 
 		}
 
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
-			MonoProcessor<Void> completion = MonoProcessor.create();
-			this.monoProcessors.add(completion);
-			return completion.then(Mono.empty());
+			if (this.blocking) {
+				MonoProcessor<Void> completion = MonoProcessor.create();
+				this.monoProcessors.add(completion);
+				return completion.then(Mono.empty());
+			}
+			return Mono.empty();
 		}
 
 		public void completeOne() {
@@ -559,6 +540,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			while (this.monoProcessors.isEmpty()) {
 				Thread.sleep(100);
 			}
+		}
+
+		public void stopBlocking() {
+			this.blocking = false;
+			this.monoProcessors.forEach(MonoProcessor::onComplete);
 		}
 
 	}

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.net.InetAddress;
-import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,13 +75,13 @@ class ReactiveWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void whenGracePeriodPropertyIsSetThenGracePeriodIsCustomized() {
-		this.properties.getShutdown().setGracePeriod(Duration.ofSeconds(30));
+	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
+		this.properties.setShutdown(Shutdown.GRACEFUL);
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
 		verify(factory).setShutdown(shutdownCaptor.capture());
-		assertThat(shutdownCaptor.getValue().getGracePeriod()).isEqualTo(Duration.ofSeconds(30));
+		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 
 }

@@ -17,31 +17,28 @@
 package org.springframework.boot.web.server;
 
 /**
- * Handles graceful shutdown of a {@link WebServer}.
+ * The result of a graceful shutdown request.
  *
  * @author Andy Wilkinson
  * @since 2.3.0
+ * @see GracefulShutdownCallback
+ * @see WebServer#shutDownGracefully(GracefulShutdownCallback)
  */
-public interface GracefulShutdown {
+public enum GracefulShutdownResult {
 
 	/**
-	 * A {@link GracefulShutdown} that returns immediately with no grace period.
+	 * Requests remained active at the end of the grace period.
 	 */
-	GracefulShutdown IMMEDIATE = new ImmediateGracefulShutdown();
+	REQUESTS_ACTIVE,
 
 	/**
-	 * Shuts down the {@link WebServer}, returning {@code true} if activity ceased during
-	 * the grace period, otherwise {@code false}.
-	 * @return {@code true} if activity ceased during the grace period, otherwise
-	 * {@code false}
+	 * The server was idle with no active requests at the end of the grace period.
 	 */
-	boolean shutDownGracefully();
+	IDLE,
 
 	/**
-	 * Returns whether the handler is in the process of gracefully shutting down the web
-	 * server.
-	 * @return {@code true} is graceful shutdown is in progress, otherwise {@code false}.
+	 * The server was shutdown immediately, ignoring any active requests.
 	 */
-	boolean isShuttingDown();
+	IMMEDIATE;
 
 }

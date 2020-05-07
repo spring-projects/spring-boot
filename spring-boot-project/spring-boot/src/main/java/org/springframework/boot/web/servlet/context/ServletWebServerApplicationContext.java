@@ -48,6 +48,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -143,7 +144,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			stopAndReleaseWebServer();
+			WebServer webServer = this.webServer;
+			if (webServer != null) {
+				webServer.stop();
+			}
 			throw ex;
 		}
 	}
@@ -160,28 +164,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	@Override
-	protected void finishRefresh() {
-		super.finishRefresh();
-		WebServer webServer = startWebServer();
-		if (webServer != null) {
-			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
-		}
-	}
-
-	@Override
 	protected void doClose() {
 		AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			webServer.shutDownGracefully();
-		}
 		super.doClose();
-	}
-
-	@Override
-	protected void onClose() {
-		super.onClose();
-		stopAndReleaseWebServer();
 	}
 
 	private void createWebServer() {
@@ -190,6 +175,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		if (webServer == null && servletContext == null) {
 			ServletWebServerFactory factory = getWebServerFactory();
 			this.webServer = factory.getWebServer(getSelfInitializer());
+			getBeanFactory().registerSingleton("webServerGracefulShutdown",
+					new WebServerGracefulShutdownLifecycle(this.webServer));
+			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this.webServer));
 		}
 		else if (servletContext != null) {
 			try {
@@ -303,27 +291,6 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-	private WebServer startWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			webServer.start();
-		}
-		return webServer;
-	}
-
-	private void stopAndReleaseWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			try {
-				webServer.stop();
-				this.webServer = null;
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-	}
-
 	@Override
 	protected Resource getResourceByPath(String path) {
 		if (getServletContext() == null) {
@@ -399,6 +366,74 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 				}
 				this.beanFactory.registerScope(key, value);
 			});
+		}
+
+	}
+
+	private final class WebServerStartStopLifecycle implements SmartLifecycle {
+
+		private final WebServer webServer;
+
+		private volatile boolean running;
+
+		private WebServerStartStopLifecycle(WebServer webServer) {
+			this.webServer = webServer;
+		}
+
+		@Override
+		public void start() {
+			this.webServer.start();
+			this.running = true;
+			ServletWebServerApplicationContext.this.publishEvent(
+					new ServletWebServerInitializedEvent(this.webServer, ServletWebServerApplicationContext.this));
+		}
+
+		@Override
+		public void stop() {
+			this.webServer.stop();
+		}
+
+		@Override
+		public boolean isRunning() {
+			return this.running;
+		}
+
+		@Override
+		public int getPhase() {
+			return Integer.MAX_VALUE - 1;
+		}
+
+	}
+
+	private final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
+
+		private final WebServer webServer;
+
+		private volatile boolean running;
+
+		WebServerGracefulShutdownLifecycle(WebServer webServer) {
+			this.webServer = webServer;
+		}
+
+		@Override
+		public void start() {
+			this.running = true;
+		}
+
+		@Override
+		public void stop() {
+			throw new UnsupportedOperationException("Stop must not be invoked directly");
+		}
+
+		@Override
+		public void stop(Runnable callback) {
+			this.running = false;
+			this.webServer.shutDownGracefully((result) -> callback.run());
+		}
+
+		@Override
+		public boolean isRunning() {
+			return this.running;
 		}
 
 	}

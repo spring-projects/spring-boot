@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jasper.servlet.JspServlet;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Test;
@@ -57,7 +59,7 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 
 	@Override
 	protected JspServlet getJspServlet() throws Exception {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
+		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		ServletHolder holder = context.getServletHandler().getServlet("jsp");
 		if (holder == null) {
 			return null;
@@ -69,13 +71,13 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
+		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		return context.getMimeTypes().getMimeMap();
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
+		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
@@ -91,11 +93,6 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 		handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((JettyWebServer) this.webServer).inGracefulShutdown();
-	}
-
 	@Test
 	void contextPathIsLoggedOnStartupWhenCompressionIsEnabled(CapturedOutput output) {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -106,6 +103,20 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		assertThat(output).containsOnlyOnce("with context path '/custom'");
+	}
+
+	protected WebAppContext findWebAppContext(JettyWebServer webServer) {
+		return findWebAppContext(webServer.getServer().getHandler());
+	}
+
+	private WebAppContext findWebAppContext(Handler handler) {
+		if (handler instanceof WebAppContext) {
+			return (WebAppContext) handler;
+		}
+		if (handler instanceof HandlerWrapper) {
+			return findWebAppContext(((HandlerWrapper) handler).getHandler());
+		}
+		throw new IllegalStateException("No WebAppCotext found");
 	}
 
 }

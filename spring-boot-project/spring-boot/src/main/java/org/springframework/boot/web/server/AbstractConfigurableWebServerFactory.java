@@ -55,7 +55,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private String serverHeader;
 
-	private Shutdown shutdown = new Shutdown();
+	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
 	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.

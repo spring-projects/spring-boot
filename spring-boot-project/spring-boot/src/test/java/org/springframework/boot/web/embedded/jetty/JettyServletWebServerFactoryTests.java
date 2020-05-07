@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +36,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.HttpClients;
+import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -52,6 +54,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
@@ -182,9 +185,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -195,9 +196,9 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		this.webServer.shutDownGracefully((result) -> {
+		});
 		Future<Object> unconnectableRequest = initiateGetRequest(port, "/");
-		assertThat(shutdownResult.get()).isEqualTo(false);
 		blockingServlet.admitOne();
 		Object response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
@@ -209,9 +210,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	void whenServerIsShuttingDownGracefullyThenResponseToRequestOnIdleConnectionWillHaveAConnectionCloseHeader()
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -228,7 +227,8 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 		assertThat(response).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
 		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNull();
-		this.webServer.shutDownGracefully();
+		this.webServer.shutDownGracefully((result) -> {
+		});
 		request = initiateGetRequest(client, port, "/blocking");
 		blockingServlet.awaitQueue();
 		blockingServlet.admitOne();
@@ -244,9 +244,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	void whenARequestCompletesAfterGracefulShutdownHasBegunThenItHasAConnectionCloseHeader()
 			throws InterruptedException, ExecutionException {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -257,12 +255,10 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
 		blockingServlet.admitOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
+		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
 		Object requestResult = request.get();
 		assertThat(requestResult).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) requestResult).getFirstHeader("Connection").getValue()).isEqualTo("close");
@@ -281,8 +277,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	private void assertTimeout(JettyServletWebServerFactory factory, int expected) {
 		this.webServer = factory.getWebServer();
 		JettyWebServer jettyWebServer = (JettyWebServer) this.webServer;
-		Handler[] handlers = jettyWebServer.getServer().getChildHandlersByClass(WebAppContext.class);
-		WebAppContext webAppContext = (WebAppContext) handlers[0];
+		WebAppContext webAppContext = findWebAppContext(jettyWebServer);
 		int actual = webAppContext.getSessionHandler().getMaxInactiveInterval();
 		assertThat(actual).isEqualTo(expected);
 	}
@@ -414,7 +409,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 
 		});
 		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		WebAppContext context = (WebAppContext) jettyWebServer.getServer().getHandler();
+		WebAppContext context = findWebAppContext(jettyWebServer);
 		assertThat(context.getErrorHandler()).isInstanceOf(CustomErrorHandler.class);
 	}
 

@@ -23,7 +23,6 @@ import java.net.ServerSocket;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.catalina.Context;
@@ -38,6 +37,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -257,22 +257,24 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
 		WebClient webClient = getWebClient(this.webServer.getPort()).build();
-		webClient.get().retrieve().toBodilessEntity().subscribe();
-		blockingHandler.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		AtomicReference<Throwable> errorReference = new AtomicReference<>();
-		webClient.get().retrieve().toBodilessEntity().doOnError(errorReference::set).subscribe();
-		assertThat(shutdownResult.get()).isEqualTo(false);
-		blockingHandler.completeOne();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
 		this.webServer.stop();
-		assertThat(errorReference.get()).hasCauseInstanceOf(ConnectException.class);
 	}
 
 	@Test
@@ -312,11 +314,6 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
-	}
-
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((TomcatWebServer) this.webServer).inGracefulShutdown();
 	}
 
 	interface BlockedPortAction {

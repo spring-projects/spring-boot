@@ -24,15 +24,18 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
-import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -56,6 +59,8 @@ public class UndertowWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(UndertowWebServer.class);
 
+	private final AtomicReference<GracefulShutdownCallback> gracefulShutdownCallback = new AtomicReference<>();
+
 	private final Object monitor = new Object();
 
 	private final Undertow.Builder builder;
@@ -68,7 +73,7 @@ public class UndertowWebServer implements WebServer {
 
 	private volatile boolean started = false;
 
-	private volatile GracefulShutdown gracefulShutdown;
+	private volatile GracefulShutdownHandler gracefulShutdown;
 
 	private volatile List<Closeable> closeables;
 
@@ -180,9 +185,9 @@ public class UndertowWebServer implements WebServer {
 			if (handler instanceof Closeable) {
 				this.closeables.add((Closeable) handler);
 			}
-			if (handler instanceof GracefulShutdown) {
-				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdown handler can be defined");
-				this.gracefulShutdown = (GracefulShutdown) handler;
+			if (handler instanceof GracefulShutdownHandler) {
+				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
+				this.gracefulShutdown = (GracefulShutdownHandler) handler;
 			}
 		}
 		return handler;
@@ -271,6 +276,9 @@ public class UndertowWebServer implements WebServer {
 				return;
 			}
 			this.started = false;
+			if (this.gracefulShutdown != null) {
+				notifyGracefulCallback(false);
+			}
 			try {
 				this.undertow.stop();
 				for (Closeable closeable : this.closeables) {
@@ -293,12 +301,30 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	@Override
-	public boolean shutDownGracefully() {
-		return (this.gracefulShutdown != null) ? this.gracefulShutdown.shutDownGracefully() : false;
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown != null) {
+			logger.info("Commencing graceful shutdown. Wait for active requests to complete");
+			this.gracefulShutdownCallback.set(callback);
+			this.gracefulShutdown.shutdown();
+			this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
+		}
+		else {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+		}
 	}
 
-	boolean inGracefulShutdown() {
-		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
+	private void notifyGracefulCallback(boolean success) {
+		GracefulShutdownCallback callback = this.gracefulShutdownCallback.getAndSet(null);
+		if (callback != null) {
+			if (success) {
+				logger.info("Graceful shutdown complete");
+				callback.shutdownComplete(GracefulShutdownResult.IDLE);
+			}
+			else {
+				logger.info("Graceful shutdown aborted with one or more requests still active");
+				callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+			}
+		}
 	}
 
 	protected String getStartLogMessage() {

@@ -20,24 +20,21 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 
+import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -121,29 +118,24 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Test
 	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
 		JettyReactiveWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
 		this.webServer = factory.getWebServer(blockingHandler);
 		this.webServer.start();
-		int port = this.webServer.getPort();
-		CountDownLatch responseLatch = new CountDownLatch(1);
-		getWebClient(port).build().get().retrieve().toBodilessEntity()
-				.subscribe((response) -> responseLatch.countDown());
-		blockingHandler.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		Mono<ResponseEntity<Void>> unconnectableRequest = getWebClient(port).build().get().retrieve()
-				.toBodilessEntity();
-		assertThat(shutdownResult.get()).isEqualTo(false);
-		blockingHandler.completeOne();
-		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> unconnectableRequest.block())
-				.withCauseInstanceOf(ConnectException.class);
-	}
-
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((JettyWebServer) this.webServer).inGracefulShutdown();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
+		this.webServer.stop();
 	}
 
 }

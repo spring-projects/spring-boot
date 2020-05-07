@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +33,7 @@ import io.undertow.UndertowOptions;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -178,8 +178,8 @@ class UndertowWebServerFactoryDelegate {
 	List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
 			HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = createHttpHandlerFactories(webServerFactory.getCompression(),
-				this.useForwardHeaders, webServerFactory.getServerHeader(),
-				webServerFactory.getShutdown().getGracePeriod(), initialHttpHandlerFactories);
+				this.useForwardHeaders, webServerFactory.getServerHeader(), webServerFactory.getShutdown(),
+				initialHttpHandlerFactories);
 		if (isAccessLogEnabled()) {
 			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
 					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
@@ -188,7 +188,7 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
-			String serverHeader, Duration shutdownGracePeriod, HttpHandlerFactory... initialHttpHandlerFactories) {
+			String serverHeader, Shutdown shutdown, HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
 		factories.addAll(Arrays.asList(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
@@ -200,8 +200,8 @@ class UndertowWebServerFactoryDelegate {
 		if (StringUtils.hasText(serverHeader)) {
 			factories.add((next) -> Handlers.header(next, "Server", serverHeader));
 		}
-		if (shutdownGracePeriod != null) {
-			factories.add((next) -> new GracefulShutdownHttpHandler(next, shutdownGracePeriod));
+		if (shutdown == Shutdown.GRACEFUL) {
+			factories.add(Handlers::gracefulShutdown);
 		}
 		return factories;
 	}

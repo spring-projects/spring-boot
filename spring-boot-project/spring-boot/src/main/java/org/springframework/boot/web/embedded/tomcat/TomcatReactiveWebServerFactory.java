@@ -413,7 +413,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @return a new {@link TomcatWebServer} instance
 	 */
 	protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
-		return new TomcatWebServer(tomcat, getPort() >= 0, getShutdown().getGracePeriod());
+		return new TomcatWebServer(tomcat, getPort() >= 0, getShutdown());
 	}
 
 	/**

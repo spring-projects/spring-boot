@@ -53,7 +53,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -97,6 +96,7 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -112,6 +112,7 @@ import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -1033,75 +1034,42 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenThereAreNoInFlightRequestsShutDownGracefullyReturnsTrueBeforePeriodElapses() throws Exception {
+	void whenThereAreNoInFlightRequestsShutDownGracefullyInvokesCallbackWithIdle() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenARequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
-		BlockingServlet blockingServlet = new BlockingServlet();
-		this.webServer = factory.getWebServer((context) -> {
-			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
-			registration.addMapping("/blocking");
-		});
-		this.webServer.start();
-		int port = this.webServer.getPort();
-		Future<Object> request = initiateGetRequest(port, "/blocking");
-		blockingServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isFalse();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isGreaterThanOrEqualTo(5000);
-		assertThat(request.isDone()).isFalse();
-		blockingServlet.admitOne();
-		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-	}
-
-	@Test
-	void whenARequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
+	void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
 			registration.addMapping("/blocking");
-			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
 		blockingServlet.admitOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenAnAsyncRequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
+	void whenAnAsyncRequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilRequestCompletes()
+			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
@@ -1112,39 +1080,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
 		blockingAsyncServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isFalse();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		Thread.sleep(5000);
+		assertThat(result.get()).isNull();
 		assertThat(request.isDone()).isFalse();
 		blockingAsyncServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-	}
-
-	@Test
-	void whenAnAsyncRequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
-			throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
-		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
-		this.webServer = factory.getWebServer((context) -> {
-			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
-			registration.addMapping("/blockingAsync");
-			registration.setAsyncSupported(true);
-		});
-		this.webServer.start();
-		int port = this.webServer.getPort();
-		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
-		blockingAsyncServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		blockingAsyncServlet.admitOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
-		assertThat(request.get(30, TimeUnit.SECONDS)).isInstanceOf(HttpResponse.class);
+		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
@@ -1166,13 +1109,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 	}
 
-	protected Future<Boolean> initiateGracefulShutdown() {
-		RunnableFuture<Boolean> future = new FutureTask<Boolean>(() -> this.webServer.shutDownGracefully());
-		new Thread(future).start();
-		awaitInGracefulShutdown();
-		return future;
-	}
-
 	protected Future<Object> initiateGetRequest(int port, String path) {
 		return initiateGetRequest(HttpClients.createMinimal(), port, path);
 	}
@@ -1190,17 +1126,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		});
 		new Thread(getRequest, "GET " + path).start();
 		return getRequest;
-	}
-
-	protected void awaitInGracefulShutdown() {
-		while (!inGracefulShutdown()) {
-			try {
-				Thread.sleep(100);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
 	}
 
 	private void wrapsFailingServletException(WebServerException ex) {
@@ -1351,8 +1276,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected abstract AbstractServletWebServerFactory getFactory();
 
 	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet() throws Exception;
-
-	protected abstract boolean inGracefulShutdown();
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean<>(new ExampleServlet(), "/hello");

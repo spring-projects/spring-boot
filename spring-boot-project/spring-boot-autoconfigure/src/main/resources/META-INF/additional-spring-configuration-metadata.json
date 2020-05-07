@@ -266,6 +266,9 @@
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
     },
+    { "name": "server.shutdown",
+      "defaultValue:": "immediate"
+    },
     {
       "name": "server.tomcat.max-http-post-size",
       "type": "org.springframework.util.unit.DataSize",

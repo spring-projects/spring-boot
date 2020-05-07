@@ -3145,21 +3145,19 @@ You can learn more about the resource configuration on the client side in the <<
 [[boot-features-graceful-shutdown]]
 == Graceful shutdown
 Graceful shutdown is supported with all four embedded web servers (Jetty, Reactor Netty, Tomcat, and Undertow) and with both reactive and Servlet-based web applications.
-When enabled, shutdown of the application will include a grace period of configurable duration.
-During this grace period, existing requests will be allowed to complete but no new requests will be permitted.
+It occurs as part of closing the application context and is performed in the earliest phase of stopping `SmartLifecycle` beans.
+This stop processing uses a timeout which provides a grace period during which existing requests will be allowed to complete but no new requests will be permitted.
 The exact way in which new requests are not permitted varies depending on the web server that is being used.
 Jetty, Reactor Netty, and Tomcat will stop accepting requests at the network layer.
 Undertow will accept requests but respond immediately with a service unavailable (503) response.
 
 NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
 
-Graceful shutdown occurs as one of the first steps during application close processing and before any beans have been destroyed.
-This ensures that the beans are available for use by any processing that occurs while in-flight requests are being allowed to complete.
-To enable graceful shutdown, configure the configprop:server.shutdown.grace-period[] property, as shown in the following example:
+To enable graceful shutdown, configure the configprop:server.shutdown[] property, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
-server.shutdown.grace-period=30s
+server.shutdown=graceful
 ----
 
 

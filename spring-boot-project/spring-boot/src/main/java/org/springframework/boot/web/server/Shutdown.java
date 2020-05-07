@@ -16,28 +16,23 @@
 
 package org.springframework.boot.web.server;
 
-import java.time.Duration;
-
 /**
  * Configuration for shutting down a {@link WebServer}.
  *
  * @author Andy Wilkinson
  * @since 2.3.0
  */
-public class Shutdown {
+public enum Shutdown {
 
 	/**
-	 * Time to wait for web activity to cease before shutting down the application. By
-	 * default, shutdown will proceed immediately.
+	 * The {@link WebServer} should support graceful shutdown, allowing active requests
+	 * time to complete.
 	 */
-	private Duration gracePeriod;
+	GRACEFUL,
 
-	public Duration getGracePeriod() {
-		return this.gracePeriod;
-	}
-
-	public void setGracePeriod(Duration period) {
-		this.gracePeriod = period;
-	}
+	/**
+	 * The {@link WebServer} should shut down immediately.
+	 */
+	IMMEDIATE;
 
 }

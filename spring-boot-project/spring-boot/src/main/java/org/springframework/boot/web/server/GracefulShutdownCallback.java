@@ -17,20 +17,19 @@
 package org.springframework.boot.web.server;
 
 /**
- * A {@link GracefulShutdown} that returns immediately with no grace period.
+ * A callback for the result of a graceful shutdown request.
  *
  * @author Andy Wilkinson
+ * @since 2.3.0
+ * @see WebServer#shutDownGracefully(GracefulShutdownCallback)
  */
-class ImmediateGracefulShutdown implements GracefulShutdown {
+@FunctionalInterface
+public interface GracefulShutdownCallback {
 
-	@Override
-	public boolean shutDownGracefully() {
-		return false;
-	}
-
-	@Override
-	public boolean isShuttingDown() {
-		return false;
-	}
+	/**
+	 * Graceful shutdown has completed with the given {@code result}.
+	 * @param result the result of the shutdown
+	 */
+	void shutdownComplete(GracefulShutdownResult result);
 
 }

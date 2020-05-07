@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -165,15 +164,15 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void whenGracePeriodPropertyIsSetThenGracePeriodIsCustomized() {
+	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.shutdown.grace-period", "30s");
+		map.put("server.shutdown", "graceful");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
 		verify(factory).setShutdown(shutdownCaptor.capture());
-		assertThat(shutdownCaptor.getValue().getGracePeriod()).isEqualTo(Duration.ofSeconds(30));
+		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 
 	private void bindProperties(Map<String, String> map) {

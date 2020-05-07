@@ -16,9 +16,11 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -33,13 +35,17 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
 
-import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
@@ -85,22 +91,21 @@ public class TomcatWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public TomcatWebServer(Tomcat tomcat, boolean autoStart) {
-		this(tomcat, autoStart, null);
+		this(tomcat, autoStart, Shutdown.IMMEDIATE);
 	}
 
 	/**
 	 * Create a new {@link TomcatWebServer} instance.
 	 * @param tomcat the underlying Tomcat server
 	 * @param autoStart if the server should be started
-	 * @param shutdownGracePeriod grace period to use when shutting down
+	 * @param shutdown type of shutdown supported by the server
 	 * @since 2.3.0
 	 */
-	public TomcatWebServer(Tomcat tomcat, boolean autoStart, Duration shutdownGracePeriod) {
+	public TomcatWebServer(Tomcat tomcat, boolean autoStart, Shutdown shutdown) {
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
-		this.gracefulShutdown = (shutdownGracePeriod != null) ? new TomcatGracefulShutdown(tomcat, shutdownGracePeriod)
-				: GracefulShutdown.IMMEDIATE;
+		this.gracefulShutdown = (shutdown == Shutdown.GRACEFUL) ? new GracefulShutdown(tomcat) : null;
 		initialize();
 	}
 
@@ -325,6 +330,9 @@ public class TomcatWebServer implements WebServer {
 			try {
 				this.started = false;
 				try {
+					if (this.gracefulShutdown != null) {
+						this.gracefulShutdown.abort();
+					}
 					stopTomcat();
 					this.tomcat.destroy();
 				}
@@ -379,12 +387,87 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	@Override
-	public boolean shutDownGracefully() {
-		return this.gracefulShutdown.shutDownGracefully();
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown != null) {
+			this.gracefulShutdown.shutDownGracefully(callback);
+		}
+		else {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+		}
 	}
 
-	boolean inGracefulShutdown() {
-		return this.gracefulShutdown.isShuttingDown();
+	private static final class GracefulShutdown {
+
+		private static final Log logger = LogFactory.getLog(GracefulShutdown.class);
+
+		private final Tomcat tomcat;
+
+		private volatile boolean aborted = false;
+
+		private GracefulShutdown(Tomcat tomcat) {
+			this.tomcat = tomcat;
+		}
+
+		private void shutDownGracefully(GracefulShutdownCallback callback) {
+			logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
+			new Thread(() -> {
+				List<Connector> connectors = getConnectors();
+				for (Connector connector : connectors) {
+					connector.pause();
+					connector.getProtocolHandler().closeServerSocketGraceful();
+				}
+				try {
+					for (Container host : this.tomcat.getEngine().findChildren()) {
+						for (Container context : host.findChildren()) {
+							while (active(context)) {
+								if (this.aborted) {
+									logger.info("Graceful shutdown aborted with one or more requests still active");
+									callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+									return;
+								}
+								Thread.sleep(50);
+							}
+						}
+					}
+
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				logger.info("Graceful shutdown complete");
+				callback.shutdownComplete(GracefulShutdownResult.IDLE);
+			}, "tomcat-shutdown").start();
+		}
+
+		private void abort() {
+			this.aborted = true;
+		}
+
+		private boolean active(Container context) {
+			try {
+				if (((StandardContext) context).getInProgressAsyncCount() > 0) {
+					return true;
+				}
+				for (Container wrapper : context.findChildren()) {
+					if (((StandardWrapper) wrapper).getCountAllocated() > 0) {
+						return true;
+					}
+				}
+				return false;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		private List<Connector> getConnectors() {
+			List<Connector> connectors = new ArrayList<>();
+			for (Service service : this.tomcat.getServer().findServices()) {
+				Collections.addAll(connectors, service.findConnectors());
+			}
+			return connectors;
+		}
+
 	}
 
 }

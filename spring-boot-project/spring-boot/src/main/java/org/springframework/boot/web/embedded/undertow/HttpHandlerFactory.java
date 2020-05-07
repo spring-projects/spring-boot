@@ -19,8 +19,7 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 
 import io.undertow.server.HttpHandler;
-
-import org.springframework.boot.web.server.GracefulShutdown;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 
 /**
  * Factory used by {@link UndertowServletWebServer} to add {@link HttpHandler
@@ -28,7 +27,7 @@ import org.springframework.boot.web.server.GracefulShutdown;
  * following interfaces:
  * <ul>
  * <li>{@link Closeable} - if they wish to be closed just before server stops.</li>
- * <li>{@link GracefulShutdown} - if they wish to manage graceful shutdown.</li>
+ * <li>{@link GracefulShutdownHandler} - if they wish to manage graceful shutdown.</li>
  * </ul>
  *
  * @author Phillip Webb

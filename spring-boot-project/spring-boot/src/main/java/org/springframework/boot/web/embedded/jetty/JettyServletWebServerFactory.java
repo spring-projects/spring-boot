@@ -41,6 +41,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -57,6 +58,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -151,6 +153,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
+		}
+		if (getShutdown() == Shutdown.GRACEFUL) {
+			StatisticsHandler statisticsHandler = new StatisticsHandler();
+			statisticsHandler.setHandler(server.getHandler());
+			server.setHandler(statisticsHandler);
 		}
 		return getJettyWebServer(server);
 	}
@@ -398,7 +405,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @return a new {@link JettyWebServer} instance
 	 */
 	protected JettyWebServer getJettyWebServer(Server server) {
-		return new JettyWebServer(server, getPort() >= 0, getShutdown().getGracePeriod());
+		return new JettyWebServer(server, getPort() >= 0);
 	}
 
 	@Override
