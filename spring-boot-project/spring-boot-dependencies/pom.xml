@@ -174,7 +174,7 @@
 		<spring-hateoas.version>0.25.2.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.1.10.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.2.13.RELEASE</spring-kafka.version>
-		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
+		<spring-ldap.version>2.3.3.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.4.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.5.RELEASE</spring-retry.version>
