@@ -7489,13 +7489,22 @@ include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[ta
 
 [[boot-features-custom-starter]]
 === Creating Your Own Starter
-A full Spring Boot starter for a library may contain the following components:
+A typical Spring Boot starter contains code to auto-configure and customize the infrastructure of a given technology, let's call that "acme".
+To make it easily extensible, a number of configuration keys in a dedicated namespace can be exposed to the environment.
+Finally, a single "starter" dependency is provided to help users get started as easily as possible.
 
-* The `autoconfigure` module that contains the auto-configuration code.
-* The `starter` module that provides a dependency to the `autoconfigure` module as well as the library and any additional dependencies that are typically useful.
+Concretely, a custom starter can contain the following:
+
+* The `autoconfigure` module that contains the auto-configuration code for "acme".
+* The `starter` module that provides a dependency to the `autoconfigure` module as well as "acme" and any additional dependencies that are typically useful.
 In a nutshell, adding the starter should provide everything needed to start using that library.
 
-TIP: You may combine the auto-configuration code and the dependency management in a single module if you do not need to separate those two concerns.
+This separation in two modules is in no way necessary.
+If "acme" has several flavours, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
+Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
+At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
+
+If the auto-configuration is relatively straightforward and does not have optional feature, merging the two modules in the starter is definitely an option.
 
 
 
@@ -7506,7 +7515,7 @@ Do not start your module names with `spring-boot`, even if you use a different M
 We may offer official support for the thing you auto-configure in the future.
 
 As a rule of thumb, you should name a combined module after the starter.
-For example, assume that you are creating a starter for "acme" and that you name the auto-configure module `acme-spring-boot-autoconfigure` and the starter `acme-spring-boot-starter`.
+For example, assume that you are creating a starter for "acme" and that you name the auto-configure module `acme-spring-boot` and the starter `acme-spring-boot-starter`.
 If you only have one module that combines the two, name it `acme-spring-boot-starter`.
 
 
