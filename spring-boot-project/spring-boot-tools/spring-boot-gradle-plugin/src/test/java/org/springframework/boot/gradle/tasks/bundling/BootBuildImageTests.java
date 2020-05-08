@@ -131,15 +131,15 @@ class BootBuildImageTests {
 
 	@Test
 	void whenJavaVersionIsSetInEnvironmentItIsIncludedInTheRequest() {
-		this.buildImage.environment("BP_JAVA_VERSION", "from-env");
+		this.buildImage.environment("BP_JVM_VERSION", "from-env");
 		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JAVA_VERSION", "from-env").hasSize(1);
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "from-env").hasSize(1);
 	}
 
 	@Test
 	void whenTargetCompatibilityIsSetThenJavaVersionIsIncludedInTheRequest() {
 		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JAVA_VERSION", "8.*").hasSize(1);
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "8.*").hasSize(1);
 	}
 
 	@Test
@@ -147,7 +147,7 @@ class BootBuildImageTests {
 		this.buildImage.environment("ALPHA", "a");
 		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_11);
 		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
-				.containsEntry("BP_JAVA_VERSION", "11.*").hasSize(2);
+				.containsEntry("BP_JVM_VERSION", "11.*").hasSize(2);
 	}
 
 	@Test

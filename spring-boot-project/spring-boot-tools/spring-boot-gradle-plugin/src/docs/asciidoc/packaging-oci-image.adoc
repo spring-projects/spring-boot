@@ -102,7 +102,7 @@ This configuration will use a builder image with the name `mine/java-cnb-builder
 ==== Builder Configuration
 If the builder exposes configuration options, those can be set using the `environment` property.
 
-The following example assumes that the default builder defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use):
+The following example assumes that the default builder defines a `BP_JVM_VERSION` property (typically used to customize the JDK version the image should use):
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

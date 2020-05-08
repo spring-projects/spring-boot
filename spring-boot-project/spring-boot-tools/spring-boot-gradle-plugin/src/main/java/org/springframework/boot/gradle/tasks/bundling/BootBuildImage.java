@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
  */
 public class BootBuildImage extends DefaultTask {
 
-	private static final String OPENJDK_BUILDPACK_JAVA_VERSION_KEY = "BP_JAVA_VERSION";
+	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
 	private RegularFileProperty jar;
 
@@ -246,8 +246,8 @@ public class BootBuildImage extends DefaultTask {
 		if (this.environment != null && !this.environment.isEmpty()) {
 			request = request.withEnv(this.environment);
 		}
-		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(OPENJDK_BUILDPACK_JAVA_VERSION_KEY)) {
-			request = request.withEnv(OPENJDK_BUILDPACK_JAVA_VERSION_KEY, translateTargetJavaVersion());
+		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
+			request = request.withEnv(BUILDPACK_JVM_VERSION_KEY, translateTargetJavaVersion());
 		}
 		return request;
 	}

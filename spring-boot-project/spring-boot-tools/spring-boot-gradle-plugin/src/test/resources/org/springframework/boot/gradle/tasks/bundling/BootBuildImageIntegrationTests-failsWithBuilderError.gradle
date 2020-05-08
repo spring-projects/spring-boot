@@ -7,5 +7,5 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
  bootBuildImage {
-	 environment = ["BP_JAVA_VERSION" : "13.9.9"]
+	 environment = ["BP_JVM_VERSION" : "13.9.9"]
  }
