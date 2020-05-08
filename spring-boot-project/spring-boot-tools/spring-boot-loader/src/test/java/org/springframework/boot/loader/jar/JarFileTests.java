@@ -193,8 +193,9 @@ class JarFileTests {
 
 	@Test
 	void getInputStreamWhenClosed() throws Exception {
+		ZipEntry entry = this.jarFile.getEntry("1.dat");
 		this.jarFile.close();
-		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.getInputStream(this.jarFile.getEntry("1.dat")));
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.getInputStream(entry));
 	}
 
 	@Test
