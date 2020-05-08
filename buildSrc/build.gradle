@@ -3,6 +3,11 @@ plugins {
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
 }
+plugins {
+	id "java-gradle-plugin"
+	id "io.spring.javaformat" version "${javaFormatVersion}"
+	id "checkstyle"
+}
 
 repositories {
 	mavenCentral()
