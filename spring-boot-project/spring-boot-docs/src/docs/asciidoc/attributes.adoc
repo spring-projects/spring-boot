@@ -88,7 +88,7 @@
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
-:spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/htmlsingle/
+:spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/html5/
 :spring-security-oauth2: https://spring.io/projects/spring-security-oauth
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
