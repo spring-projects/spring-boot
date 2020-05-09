@@ -152,6 +152,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
+		environment.setActiveProfiles(profiles);
+		// Also add as properties to override any application.properties
 		String[] pairs = new String[profiles.length];
 		for (int i = 0; i < profiles.length; i++) {
 			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
