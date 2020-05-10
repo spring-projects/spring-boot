@@ -280,11 +280,11 @@ public class OAuth2ClientProperties {
 			this.issuerUri = issuerUri;
 		}
 
-		public Map<String, String> getConfigurationMetadata() {
+		public Map<String, Object> getConfigurationMetadata() {
 			return configurationMetadata;
 		}
 
-		public void setConfigurationMetadata(Map<String, String> configurationMetadata) {
+		public void setConfigurationMetadata(Map<String, Object> configurationMetadata) {
 			this.configurationMetadata = configurationMetadata;
 		}
 
