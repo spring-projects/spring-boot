@@ -224,7 +224,7 @@ public class OAuth2ClientProperties {
 		 * OidcClientInitiatedLogoutSuccessHandler reads this metadata configuration to find "end_session_endpoint" 
 		 * configuration to initiate RP initiaed logout
 		 */
-        private Map<String, String> configurationMetadata;
+		private Map<String, String> configurationMetadata;
 
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
@@ -281,14 +281,14 @@ public class OAuth2ClientProperties {
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
-			
-        public Map<String, String> getConfigurationMetadata() {
-            return configurationMetadata;
-        }
 
-        public void setConfigurationMetadata(Map<String, String> configurationMetadata) {
-            this.configurationMetadata = configurationMetadata;
-        }
+		public Map<String, String> getConfigurationMetadata() {
+			return configurationMetadata;
+		}
+
+		public void setConfigurationMetadata(Map<String, String> configurationMetadata) {
+			this.configurationMetadata = configurationMetadata;
+		}
 	}
 
 }
