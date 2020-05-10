@@ -219,6 +219,11 @@ public class OAuth2ClientProperties {
 		 */
 		private String issuerUri;
 
+		/**
+		 * This is required to read metadata configuration of the client from properties.
+		 */
+		private Map<String, Object> configurationMetadata;
+
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
@@ -273,6 +278,14 @@ public class OAuth2ClientProperties {
 
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
+		}
+
+		public Map<String, String> getConfigurationMetadata() {
+			return configurationMetadata;
+		}
+
+		public void setConfigurationMetadata(Map<String, String> configurationMetadata) {
+			this.configurationMetadata = configurationMetadata;
 		}
 
 	}
