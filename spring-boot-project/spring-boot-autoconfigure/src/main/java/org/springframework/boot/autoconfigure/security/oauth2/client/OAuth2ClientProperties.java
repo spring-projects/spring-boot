@@ -217,13 +217,13 @@ public class OAuth2ClientProperties {
 		 * Additional metadata information provided in the properties
 		 */
 		private Map<String, Object> configurationMetadata;
-		
+
 		/**
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
 		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
-		
+
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
@@ -279,7 +279,7 @@ public class OAuth2ClientProperties {
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
-		
+
 		public Map<String, Object> getConfigurationMetadata() {
 			return this.configurationMetadata;
 		}
