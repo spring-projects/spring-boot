@@ -212,20 +212,18 @@ public class OAuth2ClientProperties {
 		 * JWK set URI for the provider.
 		 */
 		private String jwkSetUri;
-
+		
+		/**
+		 * Additional metadata information provided in the properties
+		 */
+		private Map<String, Object> configurationMetadata;
+		
 		/**
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
 		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
 		
-		/**
-		 * Read additional metadata configured for the provider.
-		 * OidcClientInitiatedLogoutSuccessHandler reads this metadata configuration to find "end_session_endpoint" 
-		 * configuration to initiate RP initiaed logout
-		 */
-		private Map<String, String> configurationMetadata;
-
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
@@ -281,12 +279,12 @@ public class OAuth2ClientProperties {
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
-
-		public Map<String, String> getConfigurationMetadata() {
-			return configurationMetadata;
+		
+		public Map<String, Object> getConfigurationMetadata() {
+			return this.configurationMetadata;
 		}
 
-		public void setConfigurationMetadata(Map<String, String> configurationMetadata) {
+		public void setConfigurationMetadata(Map<String, Object> configurationMetadata) {
 			this.configurationMetadata = configurationMetadata;
 		}
 	}
