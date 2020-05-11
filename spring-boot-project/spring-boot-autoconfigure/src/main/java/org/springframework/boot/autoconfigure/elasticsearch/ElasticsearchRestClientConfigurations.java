@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.net.URI;
 import java.time.Duration;
 
 import org.apache.http.HttpHost;
@@ -43,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Evgeniy Cheban
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -58,7 +60,7 @@ class ElasticsearchRestClientConfigurations {
 		@Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchRestClientProperties properties,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			HttpHost[] hosts = properties.getUris().stream().map(HttpHost::create).toArray(HttpHost[]::new);
+			HttpHost[] hosts = properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
 			RestClientBuilder builder = RestClient.builder(hosts);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
@@ -70,6 +72,12 @@ class ElasticsearchRestClientConfigurations {
 			});
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
+		}
+
+		private HttpHost createHttpHost(String uri) {
+			URI parsedUri = URI.create(uri);
+			String userInfo = parsedUri.getUserInfo();
+			return HttpHost.create((userInfo != null) ? uri.replace(userInfo + "@", "") : uri);
 		}
 
 	}
@@ -124,13 +132,30 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
+			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+			builder.setDefaultCredentialsProvider(credentialsProvider);
+			this.properties.getUris().stream().map(URI::create).filter((uri) -> uri.getUserInfo() != null)
+					.forEach((uri) -> {
+						AuthScope authScope = new AuthScope(uri.getHost(), uri.getPort());
+						Credentials credentials = createCredentials(uri.getUserInfo());
+						credentialsProvider.setCredentials(authScope, credentials);
+					});
 			map.from(this.properties::getUsername).whenHasText().to((username) -> {
-				CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 				Credentials credentials = new UsernamePasswordCredentials(this.properties.getUsername(),
 						this.properties.getPassword());
 				credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-				builder.setDefaultCredentialsProvider(credentialsProvider);
 			});
+		}
+
+		private Credentials createCredentials(String usernameAndPassword) {
+			int delimiter = usernameAndPassword.indexOf(":");
+			if (delimiter == -1) {
+				return new UsernamePasswordCredentials(usernameAndPassword, null);
+			}
+
+			String username = usernameAndPassword.substring(0, delimiter);
+			String password = usernameAndPassword.substring(delimiter + 1);
+			return new UsernamePasswordCredentials(username, password);
 		}
 
 		@Override
