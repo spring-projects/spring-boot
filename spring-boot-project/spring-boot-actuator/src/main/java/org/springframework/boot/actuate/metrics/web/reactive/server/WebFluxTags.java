@@ -110,6 +110,9 @@ public final class WebFluxTags {
 			if (ignoreTrailingSlash && patternString.length() > 1) {
 				patternString = TRAILING_SLASH_PATTERN.matcher(patternString).replaceAll("");
 			}
+			if (patternString.isEmpty()) {
+				return URI_ROOT;
+			}
 			return Tag.of("uri", patternString);
 		}
 		HttpStatus status = exchange.getResponse().getStatusCode();
