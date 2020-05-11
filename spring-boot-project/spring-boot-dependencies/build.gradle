@@ -1699,7 +1699,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "Dragonfruit-RC2") {
+	library("Spring Session Bom", "Dragonfruit-BUILD-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
