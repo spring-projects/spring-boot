@@ -76,8 +76,10 @@ class ClientHttpConnectorConfigurationTests {
 	void shouldApplyHttpClientMapper() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
-				.withUserConfiguration(CustomHttpClientMapper.class)
-				.run((context) -> assertThat(CustomHttpClientMapper.called).isTrue());
+				.withUserConfiguration(CustomHttpClientMapper.class).run((context) -> {
+					context.getBean("reactorClientHttpConnector");
+					assertThat(CustomHttpClientMapper.called).isTrue();
+				});
 	}
 
 	static class CustomHttpClientMapper {
@@ -86,8 +88,10 @@ class ClientHttpConnectorConfigurationTests {
 
 		@Bean
 		ReactorNettyHttpClientMapper clientMapper() {
-			called = true;
-			return (client) -> client.baseUrl("/test");
+			return (client) -> {
+				called = true;
+				return client.baseUrl("/test");
+			};
 		}
 
 	}
