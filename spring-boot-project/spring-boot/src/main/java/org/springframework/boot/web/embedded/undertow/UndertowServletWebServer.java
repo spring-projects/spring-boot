@@ -16,31 +16,13 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
-import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import io.undertow.Handlers;
-import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.servlet.api.DeploymentManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.Compression;
-import org.springframework.boot.web.server.GracefulShutdown;
-import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.WebServerException;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,33 +38,11 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  * @see UndertowServletWebServerFactory
  */
-public class UndertowServletWebServer implements WebServer {
-
-	private static final Log logger = LogFactory.getLog(UndertowServletWebServer.class);
-
-	private final Object monitor = new Object();
-
-	private final Builder builder;
-
-	private final DeploymentManager manager;
+public class UndertowServletWebServer extends UndertowWebServer {
 
 	private final String contextPath;
 
-	private final boolean useForwardHeaders;
-
-	private final boolean autoStart;
-
-	private final Compression compression;
-
-	private final String serverHeader;
-
-	private final Duration shutdownGracePeriod;
-
-	private Undertow undertow;
-
-	private volatile boolean started = false;
-
-	private volatile GracefulShutdown gracefulShutdown;
+	private final DeploymentManager manager;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -91,7 +51,10 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param contextPath the root context path
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath, boolean autoStart,
 			Compression compression) {
 		this(builder, manager, contextPath, false, autoStart, compression);
@@ -105,7 +68,10 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression) {
 		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, null);
@@ -120,274 +86,60 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, serverHeader, null);
+		this(builder, UndertowWebServerFactoryDelegate.createHttpHandlerFactories(compression, useForwardHeaders,
+				serverHeader, null, new DeploymentManagerHttpHandlerFactory(manager)), contextPath, autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
 	 * @param builder the builder
-	 * @param manager the deployment manager
+	 * @param httpHandlerFactories the handler factories
 	 * @param contextPath the root context path
-	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
-	 * @param compression compression configuration
-	 * @param serverHeader string to be used in HTTP header
-	 * @param shutdownGracePeriod the period to wait for activity to cease when shutting
-	 * down the server gracefully
 	 * @since 2.3.0
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
-			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader,
-			Duration shutdownGracePeriod) {
-		this.builder = builder;
-		this.manager = manager;
+	public UndertowServletWebServer(Builder builder, Iterable<HttpHandlerFactory> httpHandlerFactories,
+			String contextPath, boolean autoStart) {
+		super(builder, httpHandlerFactories, autoStart);
 		this.contextPath = contextPath;
-		this.useForwardHeaders = useForwardHeaders;
-		this.autoStart = autoStart;
-		this.compression = compression;
-		this.serverHeader = serverHeader;
-		this.shutdownGracePeriod = shutdownGracePeriod;
+		this.manager = findManager(httpHandlerFactories);
 	}
 
-	@Override
-	public void start() throws WebServerException {
-		synchronized (this.monitor) {
-			if (this.started) {
-				return;
+	private DeploymentManager findManager(Iterable<HttpHandlerFactory> httpHandlerFactories) {
+		for (HttpHandlerFactory httpHandlerFactory : httpHandlerFactories) {
+			if (httpHandlerFactory instanceof DeploymentManagerHttpHandlerFactory) {
+				return ((DeploymentManagerHttpHandlerFactory) httpHandlerFactory).getDeploymentManager();
 			}
-			try {
-				if (!this.autoStart) {
-					return;
-				}
-				if (this.undertow == null) {
-					this.undertow = createUndertowServer();
-				}
-				this.undertow.start();
-				this.started = true;
-				UndertowServletWebServer.logger.info("Undertow started on port(s) " + getPortsDescription()
-						+ " with context path '" + this.contextPath + "'");
-			}
-			catch (Exception ex) {
-				try {
-					PortInUseException.ifPortBindingException(ex, (bindException) -> {
-						List<Port> failedPorts = getConfiguredPorts();
-						failedPorts.removeAll(getActualPorts());
-						if (failedPorts.size() == 1) {
-							throw new PortInUseException(failedPorts.get(0).getNumber());
-						}
-					});
-					throw new WebServerException("Unable to start embedded Undertow", ex);
-				}
-				finally {
-					stopSilently();
-				}
-			}
-		}
-	}
-
-	public DeploymentManager getDeploymentManager() {
-		synchronized (this.monitor) {
-			return this.manager;
-		}
-	}
-
-	private void stopSilently() {
-		try {
-			if (this.undertow != null) {
-				this.undertow.stop();
-			}
-		}
-		catch (Exception ex) {
-			// Ignore
-		}
-	}
-
-	private Undertow createUndertowServer() throws ServletException {
-		HttpHandler httpHandler = this.manager.start();
-		httpHandler = getContextHandler(httpHandler);
-		if (this.useForwardHeaders) {
-			httpHandler = Handlers.proxyPeerAddress(httpHandler);
-		}
-		if (StringUtils.hasText(this.serverHeader)) {
-			httpHandler = Handlers.header(httpHandler, "Server", this.serverHeader);
-		}
-		if (this.shutdownGracePeriod != null) {
-			GracefulShutdownHandler gracefulShutdownHandler = Handlers.gracefulShutdown(httpHandler);
-			this.gracefulShutdown = new UndertowGracefulShutdown(gracefulShutdownHandler, this.shutdownGracePeriod);
-			httpHandler = gracefulShutdownHandler;
-		}
-		else {
-			this.gracefulShutdown = GracefulShutdown.IMMEDIATE;
-		}
-		this.builder.setHandler(httpHandler);
-		return this.builder.build();
-	}
-
-	private HttpHandler getContextHandler(HttpHandler httpHandler) {
-		HttpHandler contextHandler = UndertowCompressionConfigurer.configureCompression(this.compression, httpHandler);
-		if (StringUtils.isEmpty(this.contextPath)) {
-			return contextHandler;
-		}
-		return Handlers.path().addPrefixPath(this.contextPath, contextHandler);
-	}
-
-	private String getPortsDescription() {
-		List<Port> ports = getActualPorts();
-		if (!ports.isEmpty()) {
-			return StringUtils.collectionToDelimitedString(ports, " ");
-		}
-		return "unknown";
-	}
-
-	private List<Port> getActualPorts() {
-		List<Port> ports = new ArrayList<>();
-		try {
-			if (!this.autoStart) {
-				ports.add(new Port(-1, "unknown"));
-			}
-			else {
-				for (BoundChannel channel : extractChannels()) {
-					ports.add(getPortFromChannel(channel));
-				}
-			}
-		}
-		catch (Exception ex) {
-			// Continue
-		}
-		return ports;
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<BoundChannel> extractChannels() {
-		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
-		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
-	}
-
-	private Port getPortFromChannel(BoundChannel channel) {
-		SocketAddress socketAddress = channel.getLocalAddress();
-		if (socketAddress instanceof InetSocketAddress) {
-			String protocol = (ReflectionUtils.findField(channel.getClass(), "ssl") != null) ? "https" : "http";
-			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;
 	}
 
-	private List<Port> getConfiguredPorts() {
-		List<Port> ports = new ArrayList<>();
-		for (Object listener : extractListeners()) {
-			try {
-				Port port = getPortFromListener(listener);
-				if (port.getNumber() != 0) {
-					ports.add(port);
-				}
-			}
-			catch (Exception ex) {
-				// Continue
-			}
+	@Override
+	protected HttpHandler createHttpHandler() {
+		HttpHandler handler = super.createHttpHandler();
+		if (!StringUtils.isEmpty(this.contextPath)) {
+			handler = Handlers.path().addPrefixPath(this.contextPath, handler);
 		}
-		return ports;
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<Object> extractListeners() {
-		Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
-		ReflectionUtils.makeAccessible(listenersField);
-		return (List<Object>) ReflectionUtils.getField(listenersField, this.undertow);
-	}
-
-	private Port getPortFromListener(Object listener) {
-		Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
-		ReflectionUtils.makeAccessible(typeField);
-		String protocol = ReflectionUtils.getField(typeField, listener).toString();
-		Field portField = ReflectionUtils.findField(listener.getClass(), "port");
-		ReflectionUtils.makeAccessible(portField);
-		int port = (Integer) ReflectionUtils.getField(portField, listener);
-		return new Port(port, protocol);
+		return handler;
 	}
 
 	@Override
-	public void stop() throws WebServerException {
-		synchronized (this.monitor) {
-			if (!this.started) {
-				return;
-			}
-			this.started = false;
-			try {
-				this.manager.stop();
-				this.manager.undeploy();
-				this.undertow.stop();
-			}
-			catch (Exception ex) {
-				throw new WebServerException("Unable to stop undertow", ex);
-			}
+	protected String getStartLogMessage() {
+		String message = super.getStartLogMessage();
+		if (StringUtils.hasText(this.contextPath)) {
+			message += " with context path '" + this.contextPath + "'";
 		}
+		return message;
 	}
 
-	@Override
-	public int getPort() {
-		List<Port> ports = getActualPorts();
-		if (ports.isEmpty()) {
-			return 0;
-		}
-		return ports.get(0).getNumber();
-	}
-
-	@Override
-	public boolean shutDownGracefully() {
-		return this.gracefulShutdown.shutDownGracefully();
-	}
-
-	boolean inGracefulShutdown() {
-		return this.gracefulShutdown.isShuttingDown();
-	}
-
-	/**
-	 * An active Undertow port.
-	 */
-	private static final class Port {
-
-		private final int number;
-
-		private final String protocol;
-
-		private Port(int number, String protocol) {
-			this.number = number;
-			this.protocol = protocol;
-		}
-
-		int getNumber() {
-			return this.number;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			Port other = (Port) obj;
-			return this.number == other.number;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.number;
-		}
-
-		@Override
-		public String toString() {
-			return this.number + " (" + this.protocol + ")";
-		}
-
+	public DeploymentManager getDeploymentManager() {
+		return this.manager;
 	}
 
 }

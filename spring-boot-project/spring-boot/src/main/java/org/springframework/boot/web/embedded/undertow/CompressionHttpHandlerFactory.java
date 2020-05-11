@@ -37,30 +37,28 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
- * Configure the HTTP compression on an Undertow {@link HttpHandler}.
+ * {@link HttpHandlerFactory} that adds a compression handler.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-final class UndertowCompressionConfigurer {
+class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 
-	private UndertowCompressionConfigurer() {
+	private final Compression compression;
+
+	CompressionHttpHandlerFactory(Compression compression) {
+		this.compression = compression;
 	}
 
-	/**
-	 * Optionally wrap the given {@link HttpHandler} for HTTP compression support.
-	 * @param compression the HTTP compression configuration
-	 * @param httpHandler the HTTP handler to wrap
-	 * @return the wrapped HTTP handler if compression is enabled, or the handler itself
-	 */
-	static HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
-		if (compression == null || !compression.getEnabled()) {
-			return httpHandler;
+	@Override
+	public HttpHandler getHandler(HttpHandler next) {
+		if (!this.compression.getEnabled()) {
+			return next;
 		}
 		ContentEncodingRepository repository = new ContentEncodingRepository();
 		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
-				Predicates.and(getCompressionPredicates(compression)));
-		return new EncodingHandler(repository).setNext(httpHandler);
+				Predicates.and(getCompressionPredicates(this.compression)));
+		return new EncodingHandler(repository).setNext(next);
 	}
 
 	private static Predicate[] getCompressionPredicates(Compression compression) {
@@ -76,6 +74,9 @@ final class UndertowCompressionConfigurer {
 		return predicates.toArray(new Predicate[0]);
 	}
 
+	/**
+	 * Predicate used to match specific mime types.
+	 */
 	private static class CompressibleMimeTypePredicate implements Predicate {
 
 		private final List<MimeType> mimeTypes;

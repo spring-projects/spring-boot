@@ -18,6 +18,7 @@ package org.springframework.boot.web.embedded.undertow;
 
 import java.time.Duration;
 
+import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.GracefulShutdownHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,34 +26,33 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.web.server.GracefulShutdown;
 
 /**
- * {@link GracefulShutdown} for Undertow.
+ * A {@link GracefulShutdownHandler} with support for our own {@link GracefulShutdown}
+ * interface.
  *
  * @author Andy Wilkinson
  */
-class UndertowGracefulShutdown implements GracefulShutdown {
+class GracefulShutdownHttpHandler extends GracefulShutdownHandler implements GracefulShutdown {
 
-	private static final Log logger = LogFactory.getLog(UndertowGracefulShutdown.class);
+	private static final Log logger = LogFactory.getLog(GracefulShutdownHttpHandler.class);
 
-	private final GracefulShutdownHandler gracefulShutdownHandler;
-
-	private final Duration period;
+	private final Duration gracePeriod;
 
 	private volatile boolean shuttingDown;
 
-	UndertowGracefulShutdown(GracefulShutdownHandler gracefulShutdownHandler, Duration period) {
-		this.gracefulShutdownHandler = gracefulShutdownHandler;
-		this.period = period;
+	GracefulShutdownHttpHandler(HttpHandler next, Duration period) {
+		super(next);
+		this.gracePeriod = period;
 	}
 
 	@Override
 	public boolean shutDownGracefully() {
-		logger.info("Commencing graceful shutdown, allowing up to " + this.period.getSeconds()
+		logger.info("Commencing graceful shutdown, allowing up to " + this.gracePeriod.getSeconds()
 				+ "s for active requests to complete");
-		this.gracefulShutdownHandler.shutdown();
+		shutdown();
 		this.shuttingDown = true;
 		boolean graceful = false;
 		try {
-			graceful = this.gracefulShutdownHandler.awaitShutdown(this.period.toMillis());
+			graceful = awaitShutdown(this.gracePeriod.toMillis());
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
