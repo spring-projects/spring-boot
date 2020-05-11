@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -617,6 +618,14 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+	}
+
+	@Test
+	void hashCodeIsOnlyCalculatedOnce() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("hash.code");
+		int hashCode = name.hashCode();
+		int hashCodeField = (int) ReflectionTestUtils.getField(name, "hashCode");
+		assertThat(hashCodeField).isEqualTo(hashCode);
 	}
 
 }
