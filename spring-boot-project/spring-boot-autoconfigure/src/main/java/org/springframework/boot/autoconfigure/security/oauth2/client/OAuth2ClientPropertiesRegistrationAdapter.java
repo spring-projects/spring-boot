@@ -116,6 +116,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 				.to(builder::userInfoAuthenticationMethod);
 		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
 		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
+		map.from(provider::getConfigurationMetadata).to(builder::providerConfigurationMetadata);
 		return builder;
 	}
 
