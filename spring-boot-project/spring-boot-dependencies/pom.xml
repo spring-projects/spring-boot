@@ -175,7 +175,7 @@
 		<reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
 		<rest-assured.version>3.3.0</rest-assured.version>
 		<reactive-streams.version>1.0.3</reactive-streams.version>
-		<rsocket.version>1.0.0-RC7</rsocket.version>
+		<rsocket.version>1.0.0</rsocket.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
 		<rxjava2.version>2.2.19</rxjava2.version>
