@@ -2951,11 +2951,11 @@ The following example shows how to do so in Gradle:
 
 
 [[howto-testcontainers]]
-===  Use TestContainers for integration testing
-The https://www.testcontainers.org/[TestContainers] library provides a way to manage services running inside Docker containers.
+===  Use Testcontainers for integration testing
+The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
-TestContainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
-TestContainers can be used in a Spring Boot test as follows:
+Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
+Testcontainers can be used in a Spring Boot test as follows:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
