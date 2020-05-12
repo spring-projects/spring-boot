@@ -63,9 +63,9 @@ public class DocumentConfigurationProperties extends AbstractTask {
 		builder.addSection("core")
 				.withKeyPrefixes("debug", "trace", "logging", "spring.aop", "spring.application",
 						"spring.autoconfigure", "spring.banner", "spring.beaninfo", "spring.codec", "spring.config",
-						"spring.info", "spring.jmx", "spring.main", "spring.messages", "spring.pid", "spring.profiles",
-						"spring.quartz", "spring.reactor", "spring.task", "spring.mandatory-file-encoding", "info",
-						"spring.output.ansi.enabled")
+						"spring.info", "spring.jmx", "spring.lifecycle", "spring.main", "spring.messages", "spring.pid",
+						"spring.profiles", "spring.quartz", "spring.reactor", "spring.task",
+						"spring.mandatory-file-encoding", "info", "spring.output.ansi.enabled")
 				.addSection("mail").withKeyPrefixes("spring.mail", "spring.sendgrid").addSection("cache")
 				.withKeyPrefixes("spring.cache").addSection("server").withKeyPrefixes("server").addSection("web")
 				.withKeyPrefixes("spring.hateoas", "spring.http", "spring.servlet", "spring.jersey", "spring.mvc",

@@ -3160,6 +3160,13 @@ To enable graceful shutdown, configure the configprop:server.shutdown[] property
 server.shutdown=graceful
 ----
 
+To configure the timeout period, configure the configprop:spring.lifecycle.timeout-per-shutdown-phase[] property, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+spring.lifecycle.timeout-per-shutdown-phase=20s
+----
+
 
 
 [[boot-features-rsocket]]
