@@ -751,7 +751,6 @@
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of the Elasticsearch instances to use.",
       "deprecation": {
-        "replacement": "spring.elasticsearch.rest.uris",
         "level": "error"
       }
     },
