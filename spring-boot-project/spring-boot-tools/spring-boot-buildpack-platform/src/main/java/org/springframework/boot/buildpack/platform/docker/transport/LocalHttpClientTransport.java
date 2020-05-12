@@ -40,6 +40,7 @@ import org.apache.http.util.Args;
 
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
+import org.springframework.boot.buildpack.platform.system.Environment;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -49,15 +50,17 @@ import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
  */
 final class LocalHttpClientTransport extends HttpClientTransport {
 
+	private static final String DOCKER_HOST = "DOCKER_HOST";
+
 	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
 
 	private LocalHttpClientTransport(CloseableHttpClient client) {
 		super(client, LOCAL_DOCKER_HOST);
 	}
 
-	static LocalHttpClientTransport create() {
+	static LocalHttpClientTransport create(Environment environment) {
 		HttpClientBuilder builder = HttpClients.custom();
-		builder.setConnectionManager(new LocalConnectionManager());
+		builder.setConnectionManager(new LocalConnectionManager(environment.get(DOCKER_HOST)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
 		return new LocalHttpClientTransport(builder.build());
 	}
@@ -67,13 +70,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionManager extends BasicHttpClientConnectionManager {
 
-		LocalConnectionManager() {
-			super(getRegistry(), null, null, new LocalDnsResolver());
+		LocalConnectionManager(String host) {
+			super(getRegistry(host), null, null, new LocalDnsResolver());
 		}
 
-		private static Registry<ConnectionSocketFactory> getRegistry() {
+		private static Registry<ConnectionSocketFactory> getRegistry(String host) {
 			RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.create();
-			builder.register("docker", new LocalConnectionSocketFactory());
+			builder.register("docker", new LocalConnectionSocketFactory(host));
 			return builder.build();
 		}
 
@@ -103,12 +106,18 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 		private static final String WINDOWS_NAMED_PIPE_PATH = "//./pipe/docker_engine";
 
+		private final String host;
+
+		LocalConnectionSocketFactory(String host) {
+			this.host = host;
+		}
+
 		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
 			if (Platform.isWindows()) {
-				return NamedPipeSocket.get(WINDOWS_NAMED_PIPE_PATH);
+				return NamedPipeSocket.get((this.host != null) ? this.host : WINDOWS_NAMED_PIPE_PATH);
 			}
-			return DomainSocket.get(DOMAIN_SOCKET_PATH);
+			return DomainSocket.get((this.host != null) ? this.host : DOMAIN_SOCKET_PATH);
 		}
 
 		@Override

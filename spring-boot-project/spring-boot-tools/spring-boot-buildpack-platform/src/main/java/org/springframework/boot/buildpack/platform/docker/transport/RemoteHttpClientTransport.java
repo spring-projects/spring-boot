@@ -16,6 +16,9 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
@@ -53,7 +56,10 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 
 	static RemoteHttpClientTransport createIfPossible(Environment environment, SslContextFactory sslContextFactory) {
 		String host = environment.get(DOCKER_HOST);
-		return (host != null) ? create(environment, sslContextFactory, HttpHost.create(host)) : null;
+		if (host == null || Files.exists(Paths.get(host))) {
+			return null;
+		}
+		return create(environment, sslContextFactory, HttpHost.create(host));
 	}
 
 	private static RemoteHttpClientTransport create(Environment environment, SslContextFactory sslContextFactory,

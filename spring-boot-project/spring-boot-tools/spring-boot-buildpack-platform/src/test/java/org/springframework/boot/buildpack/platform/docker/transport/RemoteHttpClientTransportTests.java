@@ -16,6 +16,9 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -24,6 +27,7 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 
@@ -40,7 +44,7 @@ import static org.mockito.Mockito.mock;
  */
 class RemoteHttpClientTransportTests {
 
-	private Map<String, String> environment = new LinkedHashMap<>();
+	private final Map<String, String> environment = new LinkedHashMap<>();
 
 	@Test
 	void createIfPossibleWhenDockerHostIsNotSetReturnsNull() {
@@ -49,7 +53,16 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
-	void createIfPossibleWhenDockerHostIsSetReturnsTransport() {
+	void createIfPossibleWhenDockerHostIsFileReturnsNull(@TempDir Path tempDir) throws IOException {
+		String dummySocketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath()
+				.toString();
+		this.environment.put("DOCKER_HOST", dummySocketFilePath);
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get);
+		assertThat(transport).isNull();
+	}
+
+	@Test
+	void createIfPossibleWhenDockerHostIsAddressReturnsTransport() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get);
 		assertThat(transport).isNotNull();

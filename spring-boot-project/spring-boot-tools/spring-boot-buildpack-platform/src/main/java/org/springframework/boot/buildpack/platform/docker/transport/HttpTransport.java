@@ -29,6 +29,7 @@ import org.springframework.boot.buildpack.platform.system.Environment;
  * HTTP transport used for docker access.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public interface HttpTransport {
@@ -94,7 +95,7 @@ public interface HttpTransport {
 	 */
 	static HttpTransport create(Environment environment) {
 		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment);
-		return (remote != null) ? remote : LocalHttpClientTransport.create();
+		return (remote != null) ? remote : LocalHttpClientTransport.create(environment);
 	}
 
 	/**
