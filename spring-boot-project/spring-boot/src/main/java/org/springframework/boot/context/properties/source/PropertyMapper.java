@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
@@ -40,6 +41,11 @@ import org.springframework.core.env.PropertySource;
 interface PropertyMapper {
 
 	/**
+	 * The default ancestor of check.
+	 */
+	BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> DEFAULT_ANCESTOR_OF_CHECK = ConfigurationPropertyName::isAncestorOf;
+
+	/**
 	 * Provide mappings from a {@link ConfigurationPropertySource}
 	 * {@link ConfigurationPropertyName}.
 	 * @param configurationPropertyName the name to map
@@ -56,12 +62,12 @@ interface PropertyMapper {
 	ConfigurationPropertyName map(String propertySourceName);
 
 	/**
-	 * Returns {@code true} if {@code name} is an ancestor (immediate or nested parent) of
-	 * the given candidate when considering mapping rules.
-	 * @param name the source name
-	 * @param candidate the candidate to check
-	 * @return {@code true} if the candidate is an ancestor of the name
+	 * Returns a {@link BiPredicate} that can be used to check if one name is an ancestor
+	 * of another when considering the mapping rules.
+	 * @return a predicate that can be used to check if one name is an ancestor of another
 	 */
-	boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate);
+	default BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck() {
+		return DEFAULT_ANCESTOR_OF_CHECK;
+	}
 
 }

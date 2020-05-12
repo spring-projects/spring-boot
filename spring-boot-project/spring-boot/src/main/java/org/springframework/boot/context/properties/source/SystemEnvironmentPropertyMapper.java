@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiPredicate;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 
@@ -103,7 +104,11 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+	public BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck() {
+		return this::isAncestorOf;
+	}
+
+	private boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
 		return name.isAncestorOf(candidate) || isLegacyAncestorOf(name, candidate);
 	}
 

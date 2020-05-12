@@ -69,6 +69,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 */
 	SpringConfigurationPropertySource(PropertySource<?> propertySource, PropertyMapper... mappers) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
+		Assert.isTrue(mappers.length > 0, "Mappers must contain at least one item");
 		this.propertySource = propertySource;
 		this.mappers = mappers;
 	}

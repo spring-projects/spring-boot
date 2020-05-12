@@ -53,9 +53,4 @@ class TestPropertyMapper implements PropertyMapper {
 		return this.fromSource.getOrDefault(propertySourceName, ConfigurationPropertyName.EMPTY);
 	}
 
-	@Override
-	public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
-		return name.isAncestorOf(candidate);
-	}
-
 }

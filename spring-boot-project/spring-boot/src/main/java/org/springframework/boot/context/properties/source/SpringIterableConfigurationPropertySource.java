@@ -16,15 +16,16 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -53,14 +54,27 @@ import org.springframework.util.MultiValueMap;
 class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
 		implements IterableConfigurationPropertySource, CachingConfigurationPropertySource {
 
-	private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
+	private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
 	private final SoftReferenceConfigurationPropertyCache<Mappings> cache;
+
+	private final BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck;
 
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
 		super(propertySource, mappers);
 		assertEnumerablePropertySource();
 		this.cache = new SoftReferenceConfigurationPropertyCache<>(isImmutablePropertySource());
+		this.ancestorOfCheck = getAncestorOfCheck(mappers);
+	}
+
+	private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
+			PropertyMapper[] mappers) {
+		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck = mappers[0]
+				.getAncestorOfCheck();
+		for (int i = 1; i < mappers.length; i++) {
+			ancestorOfCheck = ancestorOfCheck.or(mappers[i].getAncestorOfCheck());
+		}
+		return ancestorOfCheck;
 	}
 
 	private void assertEnumerablePropertySource() {
@@ -100,43 +114,41 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return getConfigurationPropertyNames().stream();
+		ConfigurationPropertyName[] names = getConfigurationPropertyNames();
+		return Arrays.stream(names).filter(Objects::nonNull);
 	}
 
 	@Override
 	public Iterator<ConfigurationPropertyName> iterator() {
-		return getConfigurationPropertyNames().iterator();
+		return new ConfigurationPropertyNamesIterator(getConfigurationPropertyNames());
 	}
 
-	private Collection<ConfigurationPropertyName> getConfigurationPropertyNames() {
+	@Override
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		ConfigurationPropertyState result = super.containsDescendantOf(name);
+		if (result != ConfigurationPropertyState.UNKNOWN) {
+			return result;
+		}
+		ConfigurationPropertyName[] candidates = getConfigurationPropertyNames();
+		for (ConfigurationPropertyName candidate : candidates) {
+			if (candidate != null && this.ancestorOfCheck.test(name, candidate)) {
+				return ConfigurationPropertyState.PRESENT;
+			}
+		}
+		return ConfigurationPropertyState.ABSENT;
+	}
+
+	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
 		if (!isImmutablePropertySource()) {
 			return getMappings().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
-		Collection<ConfigurationPropertyName> configurationPropertyNames = this.configurationPropertyNames;
+		ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
 		if (configurationPropertyNames == null) {
 			configurationPropertyNames = getMappings()
 					.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 			this.configurationPropertyNames = configurationPropertyNames;
 		}
 		return configurationPropertyNames;
-	}
-
-	@Override
-	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
-		ConfigurationPropertyState result = super.containsDescendantOf(name);
-		if (result == ConfigurationPropertyState.UNKNOWN) {
-			result = ConfigurationPropertyState.search(this, (candidate) -> isAncestorOf(name, candidate));
-		}
-		return result;
-	}
-
-	private boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
-		for (PropertyMapper mapper : getMappers()) {
-			if (mapper.isAncestorOf(name, candidate)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private Mappings getMappings() {
@@ -170,6 +182,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private static class Mappings {
 
+		private static final ConfigurationPropertyName[] EMPTY_NAMES_ARRAY = {};
+
 		private final PropertyMapper[] mappers;
 
 		private final boolean immutable;
@@ -178,7 +192,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private volatile Map<String, ConfigurationPropertyName> reverseMappings;
 
-		private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
+		private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
 		private volatile String[] lastUpdated;
 
@@ -230,30 +244,66 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			this.reverseMappings = reverseMappings;
 			this.lastUpdated = this.immutable ? null : propertyNames;
 			this.configurationPropertyNames = this.immutable
-					? Collections.unmodifiableCollection(reverseMappings.values()) : null;
+					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
 		}
 
 		List<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
 			return this.mappings.getOrDefault(configurationPropertyName, Collections.emptyList());
 		}
 
-		Collection<ConfigurationPropertyName> getConfigurationPropertyNames(String[] propertyNames) {
-			Collection<ConfigurationPropertyName> names = this.configurationPropertyNames;
+		ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
+			ConfigurationPropertyName[] names = this.configurationPropertyNames;
 			if (names != null) {
 				return names;
 			}
 			Map<String, ConfigurationPropertyName> reverseMappings = this.reverseMappings;
 			if (reverseMappings == null || reverseMappings.isEmpty()) {
-				return Collections.emptySet();
+				return EMPTY_NAMES_ARRAY;
 			}
-			List<ConfigurationPropertyName> relevantNames = new ArrayList<>(reverseMappings.size());
-			for (String propertyName : propertyNames) {
-				ConfigurationPropertyName configurationPropertyName = reverseMappings.get(propertyName);
-				if (configurationPropertyName != null) {
-					relevantNames.add(configurationPropertyName);
+			names = new ConfigurationPropertyName[propertyNames.length];
+			for (int i = 0; i < propertyNames.length; i++) {
+				names[i] = reverseMappings.get(propertyNames[i]);
+			}
+			return names;
+		}
+
+	}
+
+	/**
+	 * ConfigurationPropertyNames iterator backed by an array.
+	 */
+	private static class ConfigurationPropertyNamesIterator implements Iterator<ConfigurationPropertyName> {
+
+		private final ConfigurationPropertyName[] names;
+
+		private int index = 0;
+
+		ConfigurationPropertyNamesIterator(ConfigurationPropertyName[] names) {
+			this.names = names;
+		}
+
+		@Override
+		public boolean hasNext() {
+			skipNulls();
+			return this.index < this.names.length;
+		}
+
+		@Override
+		public ConfigurationPropertyName next() {
+			skipNulls();
+			if (this.index >= this.names.length) {
+				throw new NoSuchElementException();
+			}
+			return this.names[this.index++];
+		}
+
+		private void skipNulls() {
+			while (this.index < this.names.length) {
+				if (this.names[this.index] != null) {
+					return;
 				}
+				this.index++;
 			}
-			return relevantNames;
 		}
 
 	}
