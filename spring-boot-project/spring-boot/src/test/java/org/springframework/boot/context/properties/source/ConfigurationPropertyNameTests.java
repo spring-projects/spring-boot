@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -623,7 +624,8 @@ class ConfigurationPropertyNameTests {
 	void hashCodeIsStored() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("hash.code");
 		int hashCode = name.hashCode();
-		assertThat(name).hasFieldOrPropertyWithValue("hashCode", hashCode);
+		// hasFieldOrPropertyWithValue would lookup for `hashCode()`.
+		assertThat(ReflectionTestUtils.getField(name, "hashCode")).isEqualTo(hashCode);
 	}
 
 }
