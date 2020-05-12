@@ -516,7 +516,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "10.1.6.Final") {
+	library("Infinispan", "10.1.8.Final") {
 		group("org.infinispan") {
 			modules = [
 				'infinispan-api',
