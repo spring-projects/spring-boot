@@ -66,6 +66,7 @@ import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -599,17 +600,21 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(keepAliveRequest.get()).isInstanceOf(HttpResponse.class);
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
+		blockingServlet.setBlocking(false);
 		this.webServer.shutDownGracefully((result) -> {
 		});
-		Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/blocking");
-		blockingServlet.admitOne();
-		Object response = request.get();
-		assertThat(response).isInstanceOf(HttpResponse.class);
-		Object idleConnectionRequestResult = idleConnectionRequest.get();
+		Object idleConnectionRequestResult = Awaitility.await().until(() -> {
+			Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/blocking");
+			Object result = idleConnectionRequest.get();
+			return result;
+		}, (result) -> result instanceof Exception);
 		assertThat(idleConnectionRequestResult).isInstanceOfAny(SocketException.class, NoHttpResponseException.class);
 		if (idleConnectionRequestResult instanceof SocketException) {
 			assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
 		}
+		blockingServlet.admitOne();
+		Object response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
 		this.webServer.stop();
 	}
 
