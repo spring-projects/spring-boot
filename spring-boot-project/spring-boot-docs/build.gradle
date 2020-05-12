@@ -156,6 +156,10 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
+	attributes "revnumber": null
+}
+
+asciidoctor {
 	sources {
 		include "*.singleadoc"
 	}
@@ -167,10 +171,18 @@ asciidoctorPdf {
 	}
 }
 
+asciidoctorPdf {
+	attributes "revnumber": null
+}
+
 task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "*.adoc"
 	}
+}
+
+asciidoctorMultipage {
+	attributes "revnumber": null
 }
 
 syncDocumentationSourceForAsciidoctor {

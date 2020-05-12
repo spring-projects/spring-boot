@@ -63,6 +63,10 @@ asciidoctor {
 	}
 }
 
+asciidoctor {
+	attributes "revnumber": null
+}
+
 syncDocumentationSourceForAsciidoctorPdf {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
@@ -73,6 +77,10 @@ asciidoctorPdf {
 	sources {
 		include "index.adoc"
 	}
+}
+
+asciidoctorPdf {
+	attributes "revnumber": null
 }
 
 javadoc {

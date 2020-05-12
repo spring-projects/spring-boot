@@ -86,10 +86,18 @@ asciidoctor {
 	attributes "stylesheet": "css/style.css"
 }
 
+asciidoctor {
+	attributes "revnumber": null
+}
+
 asciidoctorPdf {
 	sources {
 		include "index.adoc"
 	}
+}
+
+asciidoctorPdf {
+	attributes "revnumber": null
 }
 
 javadoc {
