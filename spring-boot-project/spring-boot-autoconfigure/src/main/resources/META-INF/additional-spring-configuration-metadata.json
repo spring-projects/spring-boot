@@ -540,15 +540,6 @@
       }
     },
     {
-      "name": "spring.data.cassandra.port",
-      "type": "java.lang.Integer",
-      "description": "Port of the Cassandra server.",
-      "deprecation": {
-        "reason": "each contact point must be of the form 'host:port'.",
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.data.cassandra.reconnection-policy",
       "type": "java.lang.Class",
       "description": "Class name of the reconnection policy. The class must have a default constructor.",
