@@ -380,7 +380,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(responseReference.get()).isNull();
 		blockingHandler.completeOne();
 		assertThat(responseLatch.await(5, TimeUnit.SECONDS)).isTrue();
-		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
