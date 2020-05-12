@@ -444,6 +444,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 				}
 				hashCode = 31 * hashCode + elementHashCode;
 			}
+			this.hashCode = hashCode;
 		}
 		return hashCode;
 	}

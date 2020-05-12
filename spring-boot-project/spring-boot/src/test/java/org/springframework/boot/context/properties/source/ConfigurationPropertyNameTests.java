@@ -619,4 +619,11 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
 	}
 
+	@Test
+	void hashCodeIsStored() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("hash.code");
+		int hashCode = name.hashCode();
+		assertThat(name).hasFieldOrPropertyWithValue("hashCode", hashCode);
+	}
+
 }
