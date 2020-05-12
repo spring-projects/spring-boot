@@ -101,7 +101,7 @@ bom {
 			]
 		}
 	}
-	library("AssertJ", "3.15.0") {
+	library("AssertJ", "3.16.1") {
 		group("org.assertj") {
 			modules = [
 				"assertj-core"
