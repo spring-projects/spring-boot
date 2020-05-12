@@ -574,10 +574,12 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		blockingServlet.awaitQueue();
 		this.webServer.shutDownGracefully((result) -> {
 		});
-		Future<Object> unconnectableRequest = initiateGetRequest(HttpClients.createDefault(), port, "/");
+		Object unconnectableRequest = Awaitility.await().until(
+				() -> initiateGetRequest(HttpClients.createDefault(), port, "/").get(),
+				(result) -> result instanceof Exception);
+		assertThat(unconnectableRequest).isInstanceOf(HttpHostConnectException.class);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
 		this.webServer.stop();
 	}
 
@@ -600,11 +602,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(keepAliveRequest.get()).isInstanceOf(HttpResponse.class);
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		blockingServlet.setBlocking(false);
 		this.webServer.shutDownGracefully((result) -> {
 		});
 		Object idleConnectionRequestResult = Awaitility.await().until(() -> {
-			Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/blocking");
+			Future<Object> idleConnectionRequest = initiateGetRequest(httpClient, port, "/");
 			Object result = idleConnectionRequest.get();
 			return result;
 		}, (result) -> result instanceof Exception);

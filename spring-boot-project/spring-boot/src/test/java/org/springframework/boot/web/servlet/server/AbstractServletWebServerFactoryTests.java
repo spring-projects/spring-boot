@@ -1445,26 +1445,22 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 		private final BlockingQueue<CyclicBarrier> barriers = new ArrayBlockingQueue<>(10);
 
-		protected volatile boolean blocking = true;
-
 		public BlockingServlet() {
 
 		}
 
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			if (this.blocking) {
-				CyclicBarrier barrier = new CyclicBarrier(2);
-				this.barriers.add(barrier);
-				try {
-					barrier.await();
-				}
-				catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
-				catch (BrokenBarrierException ex) {
-					throw new ServletException(ex);
-				}
+			CyclicBarrier barrier = new CyclicBarrier(2);
+			this.barriers.add(barrier);
+			try {
+				barrier.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (BrokenBarrierException ex) {
+				throw new ServletException(ex);
 			}
 		}
 
@@ -1493,10 +1489,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 			while (this.barriers.size() < size) {
 				Thread.sleep(100);
 			}
-		}
-
-		public void setBlocking(boolean blocking) {
-			this.blocking = blocking;
 		}
 
 	}
