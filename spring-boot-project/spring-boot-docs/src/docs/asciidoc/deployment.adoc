@@ -174,15 +174,20 @@ Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-a
 When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
 Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
 
-You can configure a sleep execution in a pre-stop hook to avoid requests being routed to a pod that has already begun shutting down.
+You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
+The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
 
 [source,yml,indent=0]
 ----
-lifecycle:
-  preStop:
-    exec:
-      command: ["sh", "-c", "sleep 10"]
+spec:
+  containers:
+  - name: example-container
+    image: example-image
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sh", "-c", "sleep 10"]
 ----
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
