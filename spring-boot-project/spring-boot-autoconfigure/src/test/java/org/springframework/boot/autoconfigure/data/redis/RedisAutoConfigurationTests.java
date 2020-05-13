@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -199,12 +200,29 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithSentinelAndPassword() {
+	void testRedisConfigurationWithSentinelAndDataNodePassword() {
 		this.contextRunner.withPropertyValues("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
 				"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380").run((context) -> {
 					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 					assertThat(connectionFactory.getPassword()).isEqualTo("password");
+					RedisSentinelConfiguration sentinelConfiguration = connectionFactory.getSentinelConfiguration();
+					assertThat(sentinelConfiguration.getSentinelPassword().isPresent()).isFalse();
 					Set<RedisNode> sentinels = connectionFactory.getSentinelConfiguration().getSentinels();
+					assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
+							.contains("127.0.0.1:26379", "127.0.0.1:26380");
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithSentinelPasswordAndDataNodePassword() {
+		this.contextRunner.withPropertyValues("spring.redis.password=password", "spring.redis.sentinel.password=secret",
+				"spring.redis.sentinel.master:mymaster",
+				"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380").run((context) -> {
+					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+					assertThat(connectionFactory.getPassword()).isEqualTo("password");
+					RedisSentinelConfiguration sentinelConfiguration = connectionFactory.getSentinelConfiguration();
+					assertThat(new String(sentinelConfiguration.getSentinelPassword().get())).isEqualTo("secret");
+					Set<RedisNode> sentinels = sentinelConfiguration.getSentinels();
 					assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
 							.contains("127.0.0.1:26379", "127.0.0.1:26380");
 				});

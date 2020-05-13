@@ -301,6 +301,11 @@ public class RedisProperties {
 		 */
 		private List<String> nodes;
 
+		/**
+		 * Password for authenticating with sentinel(s).
+		 */
+		private String password;
+
 		public String getMaster() {
 			return this.master;
 		}
@@ -315,6 +320,14 @@ public class RedisProperties {
 
 		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 	}
