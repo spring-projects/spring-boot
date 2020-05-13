@@ -1654,7 +1654,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.5.0.BUILD-SNAPSHOT") {
+	library("Spring Kafka", "2.5.0.RELEASE") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
