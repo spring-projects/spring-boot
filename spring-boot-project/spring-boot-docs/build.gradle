@@ -58,9 +58,11 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 task javadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
+		Set<String> excludedProjects = ['spring-boot-antlib', 'spring-boot-configuration-metadata', 'spring-boot-configuration-processor',
+				'spring-boot-gradle-plugin', 'spring-boot-jarmode-layertools', 'spring-boot-maven-plugin']
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { it.name != "spring-boot-maven-plugin" && it.name != "spring-boot-gradle-plugin" }
+			.findAll { !excludedProjects.contains(it.name) }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
