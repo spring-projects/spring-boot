@@ -59,11 +59,11 @@ public class KafkaMetricsAutoConfiguration {
 	}
 
 	private <K, V> void addListener(DefaultKafkaConsumerFactory<K, V> factory, MeterRegistry meterRegistry) {
-		factory.addListener(new MicrometerConsumerListener<K, V>(meterRegistry));
+		factory.addListener(new MicrometerConsumerListener<>(meterRegistry));
 	}
 
 	private <K, V> void addListener(DefaultKafkaProducerFactory<K, V> factory, MeterRegistry meterRegistry) {
-		factory.addListener(new MicrometerProducerListener<K, V>(meterRegistry));
+		factory.addListener(new MicrometerProducerListener<>(meterRegistry));
 	}
 
 }
