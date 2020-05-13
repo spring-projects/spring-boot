@@ -415,6 +415,26 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void getParentShouldReturnParent() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("this.is.a.multipart.name");
+		ConfigurationPropertyName p1 = name.getParent();
+		ConfigurationPropertyName p2 = p1.getParent();
+		ConfigurationPropertyName p3 = p2.getParent();
+		ConfigurationPropertyName p4 = p3.getParent();
+		ConfigurationPropertyName p5 = p4.getParent();
+		assertThat(p1).hasToString("this.is.a.multipart");
+		assertThat(p2).hasToString("this.is.a");
+		assertThat(p3).hasToString("this.is");
+		assertThat(p4).hasToString("this");
+		assertThat(p5).isEqualTo(ConfigurationPropertyName.EMPTY);
+	}
+
+	@Test
+	void getParentWhenEmptyShouldReturnEmpty() {
+		assertThat(ConfigurationPropertyName.EMPTY.getParent()).isEqualTo(ConfigurationPropertyName.EMPTY);
+	}
+
+	@Test
 	void chopWhenLessThenSizeShouldReturnChopped() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.chop(1).toString()).isEqualTo("foo");
@@ -565,6 +585,15 @@ class ConfigurationPropertyNameTests {
 		assertThat((Object) n10).isNotEqualTo(n09);
 		assertThat((Object) n12).isNotEqualTo(n13);
 		assertThat((Object) n14).isNotEqualTo(n15);
+	}
+
+	@Test
+	void equalsAndHashCodeAfterOperations() {
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("nested");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.EMPTY.append("nested");
+		ConfigurationPropertyName n3 = ConfigurationPropertyName.of("nested.value").getParent();
+		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode());
+		assertThat(n1).isEqualTo(n2).isEqualTo(n3);
 	}
 
 	@Test

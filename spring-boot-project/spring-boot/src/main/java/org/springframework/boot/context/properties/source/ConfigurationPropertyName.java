@@ -195,6 +195,16 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
+	 * Return the parent of this {@link ConfigurationPropertyName} or
+	 * {@link ConfigurationPropertyName#EMPTY} if there is no parent.
+	 * @return the parent name
+	 */
+	public ConfigurationPropertyName getParent() {
+		int numberOfElements = getNumberOfElements();
+		return (numberOfElements <= 1) ? EMPTY : chop(numberOfElements - 1);
+	}
+
+	/**
 	 * Return a new {@link ConfigurationPropertyName} by chopping this name to the given
 	 * {@code size}. For example, {@code chop(1)} on the name {@code foo.bar} will return
 	 * {@code foo}.

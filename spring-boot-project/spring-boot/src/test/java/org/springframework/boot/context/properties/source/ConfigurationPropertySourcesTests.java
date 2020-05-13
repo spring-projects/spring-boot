@@ -143,6 +143,21 @@ class ConfigurationPropertySourcesTests {
 		testPropertySourcePerformance(false, 5000);
 	}
 
+	@Test // gh-21416
+	void decendantOfPropertyAccessWhenMutableWithCacheShouldBePerformant() {
+		StandardEnvironment environment = createPerformanceTestEnvironment(true);
+		Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(environment);
+		ConfigurationPropertyName missing = ConfigurationPropertyName.of("missing");
+		long start = System.nanoTime();
+		for (int i = 0; i < 1000; i++) {
+			for (ConfigurationPropertySource source : sources) {
+				assertThat(source.containsDescendantOf(missing)).isEqualTo(ConfigurationPropertyState.ABSENT);
+			}
+		}
+		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		assertThat(total).isLessThan(1000);
+	}
+
 	private void testPropertySourcePerformance(boolean immutable, int maxTime) {
 		StandardEnvironment environment = createPerformanceTestEnvironment(immutable);
 		testPropertySourcePerformance(environment, maxTime);
