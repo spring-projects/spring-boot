@@ -513,7 +513,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not compatible with Dropwizard Metrics.",
       "deprecation": {
-        "reason": "Cassandra no longer providers JMX metrics.",
+        "reason": "Cassandra no longer provides JMX metrics.",
         "level": "error"
       }
     },
