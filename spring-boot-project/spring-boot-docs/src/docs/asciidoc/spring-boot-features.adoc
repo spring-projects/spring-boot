@@ -3376,7 +3376,6 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-authentication-method=header
 	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=https://my-auth-server/token_keys
 	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
-	spring.security.oauth2.client.provider.my-oauth-provider.configuration-metadata.end_session_endpoint=https://my-end-session-endpoint
 ----
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.

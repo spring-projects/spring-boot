@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -220,11 +219,6 @@ public class OAuth2ClientProperties {
 		 */
 		private String issuerUri;
 
-		/**
-		 * Additional metadata describing the provider's configuration.
-		 */
-		private Map<String, Object> configurationMetadata = new LinkedHashMap<>();
-
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
@@ -279,10 +273,6 @@ public class OAuth2ClientProperties {
 
 		public void setIssuerUri(String issuerUri) {
 			this.issuerUri = issuerUri;
-		}
-
-		public Map<String, Object> getConfigurationMetadata() {
-			return this.configurationMetadata;
 		}
 
 	}
