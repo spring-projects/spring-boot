@@ -239,20 +239,6 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	void configurationMetadataFromProviderIsAdapted() {
-		Provider provider = createProvider();
-		provider.getConfigurationMetadata().put("end_session_endpoint", "https://myendsessionendpoint");
-		OAuth2ClientProperties.Registration registration = createRegistration("my-oauth-provider");
-		OAuth2ClientProperties properties = new OAuth2ClientProperties();
-		properties.getRegistration().put("registration", registration);
-		properties.getProvider().put("my-oauth-provider", provider);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-				.getClientRegistrations(properties);
-		assertThat(registrations.get("registration").getProviderDetails().getConfigurationMetadata()
-				.get("end_session_endpoint")).isEqualTo("https://myendsessionendpoint");
-	}
-
-	@Test
 	void oidcProviderConfigurationWithCustomConfigurationOverridesProviderDefaults() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
