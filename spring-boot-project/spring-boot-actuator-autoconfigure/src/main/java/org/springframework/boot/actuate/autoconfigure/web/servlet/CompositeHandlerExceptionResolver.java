@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,15 +51,13 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		if (this.resolvers == null) {
 			this.resolvers = extractResolvers();
 		}
-		Optional<ModelAndView> modelAndView = this.resolvers.stream()
+		ModelAndView resolved = this.resolvers.stream()
 				.map((resolver) -> resolver.resolveException(request, response, handler, ex)).filter(Objects::nonNull)
-				.findFirst();
-		modelAndView.ifPresent((mav) -> {
-			if (mav.isEmpty()) {
-				request.setAttribute("javax.servlet.error.exception", ex);
-			}
-		});
-		return modelAndView.orElse(null);
+				.findFirst().orElse(null);
+		if (resolved != null && resolved.isEmpty()) {
+			request.setAttribute("javax.servlet.error.exception", ex);
+		}
+		return resolved;
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
