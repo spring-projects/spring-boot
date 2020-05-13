@@ -16,6 +16,9 @@
 
 package org.springframework.boot.web.servlet.support;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import javax.servlet.Filter;
@@ -98,11 +101,44 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 					// no-op because the application context is already initialized
 				}
 
+				@Override
+				public void contextDestroyed(ServletContextEvent event) {
+					try {
+						super.contextDestroyed(event);
+					}
+					finally {
+						deregisterJdbcDrivers(event.getServletContext());
+					}
+				}
+
 			});
+
 		}
 		else {
 			this.logger.debug("No ContextLoaderListener registered, as createRootApplicationContext() did not "
 					+ "return an application context");
+		}
+	}
+
+	/**
+	 * Deregisters the JDBC drivers that were registered by the application represented by
+	 * the given {@code servletContext}. The default implementation
+	 * {@link DriverManager#deregisterDriver(Driver) deregisters} every {@link Driver}
+	 * that was loaded by the {@link ServletContext#getClassLoader web application's class
+	 * loader}.
+	 * @param servletContext the web application's servlet context
+	 * @since 2.3.0
+	 */
+	protected void deregisterJdbcDrivers(ServletContext servletContext) {
+		for (Driver driver : Collections.list(DriverManager.getDrivers())) {
+			if (driver.getClass().getClassLoader() == servletContext.getClassLoader()) {
+				try {
+					DriverManager.deregisterDriver(driver);
+				}
+				catch (SQLException ex) {
+					// Continue
+				}
+			}
 		}
 	}
 
