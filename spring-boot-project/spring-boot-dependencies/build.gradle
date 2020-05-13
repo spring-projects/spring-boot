@@ -1847,3 +1847,7 @@ bom {
 		}
 	}
 }
+
+generateMetadataFileForMavenPublication {
+	enabled = false
+}
