@@ -106,17 +106,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@Override
-	@Deprecated
-	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
-		errorAttributes.put("timestamp", new Date());
-		addStatus(errorAttributes, webRequest);
-		addErrorDetails(errorAttributes, webRequest);
-		addPath(errorAttributes, webRequest);
-		return errorAttributes;
-	}
-
-	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
 		if (this.includeException != null) {
@@ -137,6 +126,17 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return errorAttributes;
 	}
 
+	@Override
+	@Deprecated
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+		errorAttributes.put("timestamp", new Date());
+		addStatus(errorAttributes, webRequest);
+		addErrorDetails(errorAttributes, webRequest, includeStackTrace);
+		addPath(errorAttributes, webRequest);
+		return errorAttributes;
+	}
+
 	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
 		Integer status = getAttribute(requestAttributes, RequestDispatcher.ERROR_STATUS_CODE);
 		if (status == null) {
@@ -154,14 +154,17 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 	}
 
-	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest) {
+	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
+			boolean includeStackTrace) {
 		Throwable error = getError(webRequest);
 		if (error != null) {
 			while (error instanceof ServletException && error.getCause() != null) {
 				error = error.getCause();
 			}
 			errorAttributes.put("exception", error.getClass().getName());
-			addStackTrace(errorAttributes, error);
+			if (includeStackTrace) {
+				addStackTrace(errorAttributes, error);
+			}
 		}
 		addErrorMessage(errorAttributes, webRequest, error);
 	}

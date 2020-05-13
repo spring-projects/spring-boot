@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.unix.Errors.NativeIoException;
@@ -125,12 +124,11 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
-		if (this.gracefulShutdown != null) {
-			this.gracefulShutdown.shutDownGracefully(callback);
-		}
-		else {
+		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
 		}
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 	private DisposableServer startHttpServer() {
@@ -195,62 +193,6 @@ public class NettyWebServer implements WebServer {
 			return this.disposableServer.port();
 		}
 		return 0;
-	}
-
-	private static final class GracefulShutdown {
-
-		private static final Log logger = LogFactory.getLog(GracefulShutdown.class);
-
-		private final Supplier<DisposableServer> disposableServer;
-
-		private volatile Thread shutdownThread;
-
-		private volatile boolean shuttingDown;
-
-		private GracefulShutdown(Supplier<DisposableServer> disposableServer) {
-			this.disposableServer = disposableServer;
-		}
-
-		private void shutDownGracefully(GracefulShutdownCallback callback) {
-			DisposableServer server = this.disposableServer.get();
-			if (server == null) {
-				return;
-			}
-			logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-			this.shutdownThread = new Thread(() -> {
-				this.shuttingDown = true;
-				try {
-					server.disposeNow(Duration.ofMillis(Long.MAX_VALUE));
-					logger.info("Graceful shutdown complete");
-					callback.shutdownComplete(GracefulShutdownResult.IDLE);
-				}
-				catch (Exception ex) {
-					logger.info("Graceful shutdown aborted with one or more active requests");
-					callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-				}
-				finally {
-					this.shutdownThread = null;
-					this.shuttingDown = false;
-				}
-			}, "netty-shutdown");
-			this.shutdownThread.start();
-		}
-
-		private void abort() {
-			Thread shutdownThread = this.shutdownThread;
-			if (shutdownThread != null) {
-				while (!this.shuttingDown) {
-					try {
-						Thread.sleep(50);
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				this.shutdownThread.interrupt();
-			}
-		}
-
 	}
 
 }

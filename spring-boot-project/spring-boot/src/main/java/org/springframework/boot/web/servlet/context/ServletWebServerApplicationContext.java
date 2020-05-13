@@ -48,7 +48,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -177,7 +176,8 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			this.webServer = factory.getWebServer(getSelfInitializer());
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.webServer));
-			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this.webServer));
+			getBeanFactory().registerSingleton("webServerStartStop",
+					new WebServerStartStopLifecycle(this, this.webServer));
 		}
 		else if (servletContext != null) {
 			try {
@@ -366,74 +366,6 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 				}
 				this.beanFactory.registerScope(key, value);
 			});
-		}
-
-	}
-
-	private final class WebServerStartStopLifecycle implements SmartLifecycle {
-
-		private final WebServer webServer;
-
-		private volatile boolean running;
-
-		private WebServerStartStopLifecycle(WebServer webServer) {
-			this.webServer = webServer;
-		}
-
-		@Override
-		public void start() {
-			this.webServer.start();
-			this.running = true;
-			ServletWebServerApplicationContext.this.publishEvent(
-					new ServletWebServerInitializedEvent(this.webServer, ServletWebServerApplicationContext.this));
-		}
-
-		@Override
-		public void stop() {
-			this.webServer.stop();
-		}
-
-		@Override
-		public boolean isRunning() {
-			return this.running;
-		}
-
-		@Override
-		public int getPhase() {
-			return Integer.MAX_VALUE - 1;
-		}
-
-	}
-
-	private final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
-
-		private final WebServer webServer;
-
-		private volatile boolean running;
-
-		WebServerGracefulShutdownLifecycle(WebServer webServer) {
-			this.webServer = webServer;
-		}
-
-		@Override
-		public void start() {
-			this.running = true;
-		}
-
-		@Override
-		public void stop() {
-			throw new UnsupportedOperationException("Stop must not be invoked directly");
-		}
-
-		@Override
-		public void stop(Runnable callback) {
-			this.running = false;
-			this.webServer.shutDownGracefully((result) -> callback.run());
-		}
-
-		@Override
-		public boolean isRunning() {
-			return this.running;
 		}
 
 	}

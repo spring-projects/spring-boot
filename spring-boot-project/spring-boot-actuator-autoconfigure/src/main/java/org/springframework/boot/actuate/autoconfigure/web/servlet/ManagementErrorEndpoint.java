@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
@@ -60,16 +61,16 @@ public class ManagementErrorEndpoint {
 	private ErrorAttributeOptions getErrorAttributeOptions(ServletWebRequest request) {
 		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
 		if (this.errorProperties.isIncludeException()) {
-			options = options.including(ErrorAttributeOptions.Include.EXCEPTION);
+			options = options.including(Include.EXCEPTION);
 		}
 		if (includeStackTrace(request)) {
-			options = options.including(ErrorAttributeOptions.Include.STACK_TRACE);
+			options = options.including(Include.STACK_TRACE);
 		}
 		if (includeMessage(request)) {
-			options = options.including(ErrorAttributeOptions.Include.MESSAGE);
+			options = options.including(Include.MESSAGE);
 		}
 		if (includeBindingErrors(request)) {
-			options = options.including(ErrorAttributeOptions.Include.BINDING_ERRORS);
+			options = options.including(Include.BINDING_ERRORS);
 		}
 		return options;
 	}

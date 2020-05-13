@@ -56,10 +56,19 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 
 	static RemoteHttpClientTransport createIfPossible(Environment environment, SslContextFactory sslContextFactory) {
 		String host = environment.get(DOCKER_HOST);
-		if (host == null || Files.exists(Paths.get(host))) {
+		if (host == null || isLocalFileReference(host)) {
 			return null;
 		}
 		return create(environment, sslContextFactory, HttpHost.create(host));
+	}
+
+	private static boolean isLocalFileReference(String host) {
+		try {
+			return Files.exists(Paths.get(host));
+		}
+		catch (Exception ex) {
+			return false;
+		}
 	}
 
 	private static RemoteHttpClientTransport create(Environment environment, SslContextFactory sslContextFactory,

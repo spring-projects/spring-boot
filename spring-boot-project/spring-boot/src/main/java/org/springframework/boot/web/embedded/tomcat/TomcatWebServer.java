@@ -16,11 +16,8 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -35,8 +32,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -388,86 +383,11 @@ public class TomcatWebServer implements WebServer {
 
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
-		if (this.gracefulShutdown != null) {
-			this.gracefulShutdown.shutDownGracefully(callback);
-		}
-		else {
+		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
 		}
-	}
-
-	private static final class GracefulShutdown {
-
-		private static final Log logger = LogFactory.getLog(GracefulShutdown.class);
-
-		private final Tomcat tomcat;
-
-		private volatile boolean aborted = false;
-
-		private GracefulShutdown(Tomcat tomcat) {
-			this.tomcat = tomcat;
-		}
-
-		private void shutDownGracefully(GracefulShutdownCallback callback) {
-			logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-			new Thread(() -> {
-				List<Connector> connectors = getConnectors();
-				for (Connector connector : connectors) {
-					connector.pause();
-					connector.getProtocolHandler().closeServerSocketGraceful();
-				}
-				try {
-					for (Container host : this.tomcat.getEngine().findChildren()) {
-						for (Container context : host.findChildren()) {
-							while (active(context)) {
-								if (this.aborted) {
-									logger.info("Graceful shutdown aborted with one or more requests still active");
-									callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-									return;
-								}
-								Thread.sleep(50);
-							}
-						}
-					}
-
-				}
-				catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
-				logger.info("Graceful shutdown complete");
-				callback.shutdownComplete(GracefulShutdownResult.IDLE);
-			}, "tomcat-shutdown").start();
-		}
-
-		private void abort() {
-			this.aborted = true;
-		}
-
-		private boolean active(Container context) {
-			try {
-				if (((StandardContext) context).getInProgressAsyncCount() > 0) {
-					return true;
-				}
-				for (Container wrapper : context.findChildren()) {
-					if (((StandardWrapper) wrapper).getCountAllocated() > 0) {
-						return true;
-					}
-				}
-				return false;
-			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-		private List<Connector> getConnectors() {
-			List<Connector> connectors = new ArrayList<>();
-			for (Service service : this.tomcat.getServer().findServices()) {
-				Collections.addAll(connectors, service.findConnectors());
-			}
-			return connectors;
-		}
-
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 }

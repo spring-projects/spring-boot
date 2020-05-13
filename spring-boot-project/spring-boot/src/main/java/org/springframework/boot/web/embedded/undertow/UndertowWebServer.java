@@ -302,15 +302,14 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
-		if (this.gracefulShutdown != null) {
-			logger.info("Commencing graceful shutdown. Wait for active requests to complete");
-			this.gracefulShutdownCallback.set(callback);
-			this.gracefulShutdown.shutdown();
-			this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
-		}
-		else {
+		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
 		}
+		logger.info("Commencing graceful shutdown. Wait for active requests to complete");
+		this.gracefulShutdownCallback.set(callback);
+		this.gracefulShutdown.shutdown();
+		this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
 	}
 
 	private void notifyGracefulCallback(boolean success) {

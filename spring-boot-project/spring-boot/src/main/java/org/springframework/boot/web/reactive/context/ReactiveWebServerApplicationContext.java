@@ -16,10 +16,6 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import java.util.function.Supplier;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
@@ -28,11 +24,7 @@ import org.springframework.boot.web.context.ConfigurableWebServerApplicationCont
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.context.SmartLifecycle;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,7 +37,7 @@ import org.springframework.util.StringUtils;
 public class ReactiveWebServerApplicationContext extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
-	private volatile ServerManager serverManager;
+	private volatile WebServerManager serverManager;
 
 	private String serverNamespace;
 
@@ -70,9 +62,9 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			ServerManager serverManager = this.serverManager;
+			WebServerManager serverManager = this.serverManager;
 			if (serverManager != null) {
-				serverManager.server.stop();
+				serverManager.getWebServer().stop();
 			}
 			throw ex;
 		}
@@ -90,12 +82,12 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	}
 
 	private void createWebServer() {
-		ServerManager serverManager = this.serverManager;
+		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
-			this.serverManager = new ServerManager(webServerFactory, this::getHttpHandler, lazyInit);
+			this.serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.serverManager));
 			getBeanFactory().registerSingleton("webServerStartStop",
@@ -155,8 +147,8 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	 */
 	@Override
 	public WebServer getWebServer() {
-		ServerManager serverManager = this.serverManager;
-		return (serverManager != null) ? serverManager.server : null;
+		WebServerManager serverManager = this.serverManager;
+		return (serverManager != null) ? serverManager.getWebServer() : null;
 	}
 
 	@Override
@@ -167,162 +159,6 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	@Override
 	public void setServerNamespace(String serverNamespace) {
 		this.serverNamespace = serverNamespace;
-	}
-
-	/**
-	 * Internal class used to manage the server and the {@link HttpHandler}, taking care
-	 * not to initialize the handler too early.
-	 */
-	final class ServerManager {
-
-		private final WebServer server;
-
-		private DelayedInitializationHttpHandler handler;
-
-		private ServerManager(ReactiveWebServerFactory factory, Supplier<HttpHandler> handlerSupplier,
-				boolean lazyInit) {
-			Assert.notNull(factory, "ReactiveWebServerFactory must not be null");
-			this.handler = new DelayedInitializationHttpHandler(handlerSupplier, lazyInit);
-			this.server = factory.getWebServer(this.handler);
-		}
-
-		private void start() {
-			this.handler.initializeHandler();
-			this.server.start();
-			ReactiveWebServerApplicationContext.this.publishEvent(
-					new ReactiveWebServerInitializedEvent(this.server, ReactiveWebServerApplicationContext.this));
-		}
-
-		void shutDownGracefully(Runnable callback) {
-			this.server.shutDownGracefully((result) -> callback.run());
-		}
-
-		void stop() {
-			this.server.stop();
-		}
-
-		HttpHandler getHandler() {
-			return this.handler;
-		}
-
-	}
-
-	static final class DelayedInitializationHttpHandler implements HttpHandler {
-
-		private final Supplier<HttpHandler> handlerSupplier;
-
-		private final boolean lazyInit;
-
-		private volatile HttpHandler delegate = this::handleUninitialized;
-
-		private DelayedInitializationHttpHandler(Supplier<HttpHandler> handlerSupplier, boolean lazyInit) {
-			this.handlerSupplier = handlerSupplier;
-			this.lazyInit = lazyInit;
-		}
-
-		private Mono<Void> handleUninitialized(ServerHttpRequest request, ServerHttpResponse response) {
-			throw new IllegalStateException("The HttpHandler has not yet been initialized");
-		}
-
-		@Override
-		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
-			return this.delegate.handle(request, response);
-		}
-
-		private void initializeHandler() {
-			this.delegate = this.lazyInit ? new LazyHttpHandler(Mono.fromSupplier(this.handlerSupplier))
-					: this.handlerSupplier.get();
-		}
-
-		HttpHandler getHandler() {
-			return this.delegate;
-		}
-
-	}
-
-	/**
-	 * {@link HttpHandler} that initializes its delegate on first request.
-	 */
-	private static final class LazyHttpHandler implements HttpHandler {
-
-		private final Mono<HttpHandler> delegate;
-
-		private LazyHttpHandler(Mono<HttpHandler> delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
-			return this.delegate.flatMap((handler) -> handler.handle(request, response));
-		}
-
-	}
-
-	private static final class WebServerStartStopLifecycle implements SmartLifecycle {
-
-		private final ServerManager serverManager;
-
-		private volatile boolean running;
-
-		private WebServerStartStopLifecycle(ServerManager serverManager) {
-			this.serverManager = serverManager;
-		}
-
-		@Override
-		public void start() {
-			this.serverManager.start();
-			this.running = true;
-		}
-
-		@Override
-		public void stop() {
-			this.running = false;
-			this.serverManager.stop();
-		}
-
-		@Override
-		public boolean isRunning() {
-			return this.running;
-		}
-
-		@Override
-		public int getPhase() {
-			return Integer.MAX_VALUE - 1;
-		}
-
-	}
-
-	private static final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
-
-		private final ServerManager serverManager;
-
-		private volatile boolean running;
-
-		private WebServerGracefulShutdownLifecycle(ServerManager serverManager) {
-			this.serverManager = serverManager;
-		}
-
-		@Override
-		public void start() {
-			this.running = true;
-		}
-
-		@Override
-		public void stop() {
-			throw new UnsupportedOperationException("Stop must not be invoked directly");
-		}
-
-		@Override
-		public void stop(Runnable callback) {
-			this.running = false;
-			this.serverManager.shutDownGracefully(callback);
-		}
-
-		@Override
-		public boolean isRunning() {
-			return this.running;
-		}
-
 	}
 
 }

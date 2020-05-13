@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +30,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ManagementErrorEndpoint}.
@@ -108,27 +109,27 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseWithCustomErrorAttributesUsingDeprecatedApi() {
 		ErrorAttributes attributes = new ErrorAttributes() {
+
 			@Override
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-				Map<String, Object> response = new HashMap<>();
-				response.put("message", "An error occurred");
-				return response;
+				return Collections.singletonMap("message", "An error occurred");
 			}
 
 			@Override
 			public Throwable getError(WebRequest webRequest) {
 				return null;
 			}
+
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
-		assertThat(response).hasSize(1);
-		assertThat(response).containsEntry("message", "An error occurred");
+		assertThat(response).containsExactly(entry("message", "An error occurred"));
 	}
 
 	@Test
 	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiAndDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
+
 			@Override
 			@SuppressWarnings("deprecation")
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
@@ -138,6 +139,7 @@ class ManagementErrorEndpointTests {
 				response.remove("path");
 				return response;
 			}
+
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
@@ -150,18 +152,16 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiWithoutDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
+
 			@Override
-			@SuppressWarnings("deprecation")
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-				Map<String, Object> response = new HashMap<>();
-				response.put("error", "custom error");
-				return response;
+				return Collections.singletonMap("error", "custom error");
 			}
+
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
-		assertThat(response).hasSize(1);
-		assertThat(response).containsEntry("error", "custom error");
+		assertThat(response).containsExactly(entry("error", "custom error"));
 	}
 
 }

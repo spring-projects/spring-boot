@@ -179,7 +179,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		int port = Math.max(getPort(), 0);
 		connector.setPort(port);
 		if (StringUtils.hasText(getServerHeader())) {
-			connector.setAttribute("server", getServerHeader());
+			connector.setProperty("server", getServerHeader());
 		}
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());

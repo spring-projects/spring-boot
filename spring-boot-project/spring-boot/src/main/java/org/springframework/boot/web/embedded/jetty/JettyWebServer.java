@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -286,12 +284,11 @@ public class JettyWebServer implements WebServer {
 
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
-		if (this.gracefulShutdown != null) {
-			this.gracefulShutdown.shutDownGracefully(callback);
-		}
-		else {
+		if (this.gracefulShutdown == null) {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
 		}
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 	/**
@@ -300,70 +297,6 @@ public class JettyWebServer implements WebServer {
 	 */
 	public Server getServer() {
 		return this.server;
-	}
-
-	static final class GracefulShutdown {
-
-		private static final Log logger = LogFactory.getLog(GracefulShutdown.class);
-
-		private final Server server;
-
-		private final Supplier<Integer> activeRequests;
-
-		private volatile boolean shuttingDown = false;
-
-		private GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
-			this.server = server;
-			this.activeRequests = activeRequests;
-		}
-
-		private void shutDownGracefully(GracefulShutdownCallback callback) {
-			logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-			for (Connector connector : this.server.getConnectors()) {
-				shutdown(connector);
-			}
-			this.shuttingDown = true;
-			new Thread(() -> {
-				while (this.shuttingDown && this.activeRequests.get() > 0) {
-					try {
-						Thread.sleep(100);
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				this.shuttingDown = false;
-				long activeRequests = this.activeRequests.get();
-				if (activeRequests == 0) {
-					logger.info("Graceful shutdown complete");
-					callback.shutdownComplete(GracefulShutdownResult.IDLE);
-				}
-				else {
-					if (logger.isInfoEnabled()) {
-						logger.info("Graceful shutdown aborted with " + activeRequests + " request(s) still active");
-					}
-					callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
-				}
-			}, "jetty-shutdown").start();
-
-		}
-
-		private void shutdown(Connector connector) {
-			try {
-				connector.shutdown().get();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			catch (ExecutionException ex) {
-				// Continue
-			}
-		}
-
-		private void abort() {
-			this.shuttingDown = false;
-		}
-
 	}
 
 }

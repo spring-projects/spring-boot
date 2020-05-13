@@ -84,24 +84,6 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	@Override
-	@Deprecated
-	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
-		errorAttributes.put("timestamp", new Date());
-		errorAttributes.put("path", request.path());
-		Throwable error = getError(request);
-		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
-				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
-		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
-		errorAttributes.put("status", errorStatus.value());
-		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation));
-		errorAttributes.put("requestId", request.exchange().getRequest().getId());
-		handleException(errorAttributes, determineException(error));
-		return errorAttributes;
-	}
-
-	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
 		if (this.includeException != null) {
@@ -119,6 +101,24 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");
 		}
+		return errorAttributes;
+	}
+
+	@Override
+	@Deprecated
+	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+		errorAttributes.put("timestamp", new Date());
+		errorAttributes.put("path", request.path());
+		Throwable error = getError(request);
+		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
+				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
+		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
+		errorAttributes.put("status", errorStatus.value());
+		errorAttributes.put("error", errorStatus.getReasonPhrase());
+		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation));
+		errorAttributes.put("requestId", request.exchange().getRequest().getId());
+		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}
 
@@ -157,9 +157,11 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error) {
+	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
 		errorAttributes.put("exception", error.getClass().getName());
-		addStackTrace(errorAttributes, error);
+		if (includeStackTrace) {
+			addStackTrace(errorAttributes, error);
+		}
 		if (error instanceof BindingResult) {
 			BindingResult result = (BindingResult) error;
 			if (result.hasErrors()) {

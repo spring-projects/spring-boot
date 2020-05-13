@@ -129,7 +129,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Disabled("Flaky due to https://github.com/reactor/reactor-netty/issues/1093")
 	@Override
 	protected void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes() {
-
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {
