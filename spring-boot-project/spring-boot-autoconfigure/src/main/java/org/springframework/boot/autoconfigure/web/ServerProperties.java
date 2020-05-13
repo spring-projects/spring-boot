@@ -538,7 +538,12 @@ public class ServerProperties {
 			this.redirectContextRoot = redirectContextRoot;
 		}
 
-		public boolean getUseRelativeRedirects() {
+		@Deprecated
+		public Boolean getUseRelativeRedirects() {
+			return this.useRelativeRedirects;
+		}
+
+		public boolean isUseRelativeRedirects() {
 			return this.useRelativeRedirects;
 		}
 

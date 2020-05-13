@@ -136,7 +136,7 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	@SuppressWarnings("unchecked")
 	private Map<String, ?> getResponseBody(ClientResponse response) {
-		return (Map<String, ?>) response.bodyToMono(Map.class).block();
+		return response.bodyToMono(Map.class).block();
 	}
 
 	@Endpoint(id = "fail")
