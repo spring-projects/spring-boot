@@ -71,7 +71,7 @@ class PropertiesMigrationReport {
 				"%nThe use of configuration keys that are no longer supported was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
-		report.append("Please refer to the migration guide or reference guide for potential alternatives.");
+		report.append("Please refer to the release notes or reference guide for potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}
