@@ -181,20 +181,12 @@ asciidoctor {
 	}
 }
 
-asciidoctor {
-	attributes "revnumber": null
-}
-
 asciidoctorPdf {
 	configurations "asciidoctorExtensions"
 	dependsOn test
 	sources {
 		include "index.adoc"
 	}
-}
-
-asciidoctorPdf {
-	attributes "revnumber": null
 }
 
 task zip(type: Zip) {

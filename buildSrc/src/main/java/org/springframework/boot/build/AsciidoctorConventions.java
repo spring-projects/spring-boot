@@ -152,6 +152,7 @@ class AsciidoctorConventions {
 		attributes.put("github-tag", determineGitHubTag(project));
 		attributes.put("spring-boot-artifactory-repo", ArtifactoryRepository.forProject(project));
 		attributes.put("version", "{gradle-project-version}");
+		attributes.put("revnumber", null);
 		asciidoctorTask.attributes(attributes);
 	}
 
