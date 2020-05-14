@@ -25,6 +25,16 @@ repositories {
 	}
 }
 
+sourceSets {
+	main
+}
+
+plugins.withType(EclipsePlugin) {
+	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
+		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
+	}
+}
+
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
@@ -45,6 +55,32 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 
 	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
+
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
+	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
+	implementation("com.zaxxer:HikariCP")
+	implementation("io.micrometer:micrometer-core")
+	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("jakarta.servlet:jakarta.servlet-api")
+	implementation("org.apache.commons:commons-dbcp2")
+	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.tomcat.embed:tomcat-embed-core")
+	implementation("org.assertj:assertj-core")
+	implementation("org.glassfish.jersey.core:jersey-server")
+	implementation("org.hibernate:hibernate-jcache")
+	implementation("org.springframework:spring-test")
+	implementation("org.springframework:spring-web")
+	implementation("org.springframework:spring-webflux")
+	implementation("org.springframework.data:spring-data-redis")
+	implementation("org.springframework.data:spring-data-r2dbc")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.restdocs:spring-restdocs-restassured")
+	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
+	implementation("org.springframework.security:spring-security-config")
+	implementation("org.springframework.security:spring-security-web")
+	implementation("org.junit.jupiter:junit-jupiter")
 
 	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
