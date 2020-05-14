@@ -2,6 +2,7 @@ plugins {
 	id "java-platform"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Parent"
@@ -11,8 +12,8 @@ javaPlatform {
 }
 
 dependencies {
-	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	api(enforcedPlatform("org.testcontainers:testcontainers-bom:1.14.1"))
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(platform("org.testcontainers:testcontainers-bom:1.14.1"))
 
 	constraints {
 		api("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
