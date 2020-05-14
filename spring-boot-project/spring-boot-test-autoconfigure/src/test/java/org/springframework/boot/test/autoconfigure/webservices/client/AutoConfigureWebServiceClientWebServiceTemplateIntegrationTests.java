@@ -24,9 +24,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.test.client.MockWebServiceServer;
-import org.springframework.ws.test.client.RequestMatchers;
-import org.springframework.ws.test.client.ResponseCreators;
 import org.springframework.xml.transform.StringSource;
+
+import static org.springframework.ws.test.client.RequestMatchers.payload;
+import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
 /**
  * Tests for {@link AutoConfigureWebServiceClient @AutoConfigureWebServiceClient} with
@@ -43,12 +44,12 @@ class AutoConfigureWebServiceClientWebServiceTemplateIntegrationTests {
 	private WebServiceTemplate webServiceTemplate;
 
 	@Autowired
-	private MockWebServiceServer mockWebServiceServer;
+	private MockWebServiceServer server;
 
 	@Test
 	void webServiceTemplateTest() {
-		this.mockWebServiceServer.expect(RequestMatchers.payload(new StringSource("<request/>")))
-				.andRespond(ResponseCreators.withPayload(new StringSource("<response/>")));
+		this.server.expect(payload(new StringSource("<request/>")))
+				.andRespond(withPayload(new StringSource("<response/>")));
 		this.webServiceTemplate.marshalSendAndReceive("https://example.com", new Request());
 	}
 

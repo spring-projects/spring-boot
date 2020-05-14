@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
+import org.springframework.util.Assert;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.test.client.MockWebServiceServer;
 
@@ -32,7 +33,7 @@ import org.springframework.ws.test.client.MockWebServiceServer;
  */
 class MockWebServiceServerWebServiceTemplateCustomizer implements WebServiceTemplateCustomizer {
 
-	private final AtomicBoolean alreadySet = new AtomicBoolean();
+	private final AtomicBoolean applied = new AtomicBoolean();
 
 	private final TestMockWebServiceServer mockServer;
 
@@ -42,12 +43,8 @@ class MockWebServiceServerWebServiceTemplateCustomizer implements WebServiceTemp
 
 	@Override
 	public void customize(WebServiceTemplate webServiceTemplate) {
-		if (this.alreadySet.compareAndSet(false, true)) {
-			webServiceTemplate.setMessageSender(this.mockServer.getMockMessageSender());
-		}
-		else {
-			throw new IllegalStateException("@WebServiceClientTest supports only a single WebServiceTemplate");
-		}
+		Assert.state(!this.applied.getAndSet(true), "@WebServiceClientTest supports only a single WebServiceTemplate");
+		webServiceTemplate.setMessageSender(this.mockServer.getMockMessageSender());
 	}
 
 }

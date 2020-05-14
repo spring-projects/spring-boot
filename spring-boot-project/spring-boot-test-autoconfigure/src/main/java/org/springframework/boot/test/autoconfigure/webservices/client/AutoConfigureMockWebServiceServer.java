@@ -39,7 +39,7 @@ import org.springframework.ws.test.client.MockWebServiceServer;
 @Documented
 @Inherited
 @ImportAutoConfiguration
-@PropertyMapping("spring.test.webservice.client.mock-server")
+@PropertyMapping("spring.test.webservice.client.mockserver")
 public @interface AutoConfigureMockWebServiceServer {
 
 	/**

@@ -32,7 +32,7 @@ import org.springframework.ws.test.client.MockWebServiceServer;
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.test.webservice.client.mock-server", name = "enabled")
+@ConditionalOnProperty(prefix = "spring.test.webservice.client.mockserver", name = "enabled")
 @ConditionalOnClass({ MockWebServiceServer.class, WebServiceTemplate.class })
 public class MockWebServiceServerAutoConfiguration {
 

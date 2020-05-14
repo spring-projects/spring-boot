@@ -21,13 +21,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.test.client.MockWebServiceServer;
-import org.springframework.ws.test.client.RequestMatchers;
-import org.springframework.ws.test.client.ResponseCreators;
 import org.springframework.ws.test.support.SourceAssertionError;
 import org.springframework.xml.transform.StringSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.ws.test.client.RequestMatchers.connectionTo;
+import static org.springframework.ws.test.client.RequestMatchers.payload;
+import static org.springframework.ws.test.client.ResponseCreators.withError;
+import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
 /**
  * Tests for {@link WebServiceClientTest @WebServiceClientTest}.
@@ -38,30 +40,28 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class WebServiceClientIntegrationTests {
 
 	@Autowired
-	private MockWebServiceServer mockWebServiceServer;
+	private MockWebServiceServer server;
 
 	@Autowired
 	private ExampleWebServiceClient client;
 
 	@Test
 	void mockServerCall() {
-		this.mockWebServiceServer.expect(RequestMatchers.payload(new StringSource("<request/>"))).andRespond(
-				ResponseCreators.withPayload(new StringSource("<response><status>200</status></response>")));
+		this.server.expect(payload(new StringSource("<request/>")))
+				.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
 		assertThat(this.client.test()).extracting(Response::getStatus).isEqualTo(200);
 	}
 
 	@Test
 	void mockServerCall1() {
-		this.mockWebServiceServer.expect(RequestMatchers.connectionTo("https://example1"))
-				.andRespond(ResponseCreators.withPayload(new StringSource("<response/>")));
+		this.server.expect(connectionTo("https://example1")).andRespond(withPayload(new StringSource("<response/>")));
 		assertThatExceptionOfType(SourceAssertionError.class).isThrownBy(this.client::test)
 				.withMessageContaining("Unexpected connection expected");
 	}
 
 	@Test
 	void mockServerCall2() {
-		this.mockWebServiceServer.expect(RequestMatchers.payload(new StringSource("<request/>")))
-				.andRespond(ResponseCreators.withError("Invalid Request"));
+		this.server.expect(payload(new StringSource("<request/>"))).andRespond(withError("Invalid Request"));
 		assertThatExceptionOfType(WebServiceTransportException.class).isThrownBy(this.client::test)
 				.withMessageContaining("Invalid Request");
 	}
