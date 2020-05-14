@@ -39,6 +39,7 @@ import io.undertow.servlet.api.ServletContainer;
 import org.apache.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -72,6 +73,13 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Override
 	protected UndertowServletWebServerFactory getFactory() {
 		return new UndertowServletWebServerFactory(0);
+	}
+
+	@AfterEach
+	void awaitClosureOfSslRelatedInputStreams() {
+		// https://issues.redhat.com/browse/UNDERTOW-1705
+		File resource = new File(this.tempDir, "test.txt");
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> (!resource.isFile()) || resource.delete());
 	}
 
 	@Test
