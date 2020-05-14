@@ -7284,6 +7284,40 @@ include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigu
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-webservices]]
+==== Auto-configured Spring Web Services Tests
+You can use `@WebServiceClientTest` to test applications that use call web services using the Spring Web Services project.
+By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
+(For more about using Web Services with Spring Boot, see "<<boot-features-webservices>>", earlier in this chapter.)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceClientTest` annotation in use:
+
+[source,java,indent=0]
+----
+	@WebServiceClientTest(ExampleWebServiceClient.class)
+	class WebServiceClientIntegrationTests {
+
+		@Autowired
+		private MockWebServiceServer server;
+
+		@Autowired
+		private ExampleWebServiceClient client;
+
+		@Test
+		void mockServerCall() {
+			this.server.expect(payload(new StringSource("<request/>"))).andRespond(
+					withPayload(new StringSource("<response><status>200</status></response>")));
+			assertThat(this.client.test()).extracting(Response::getStatus).isEqualTo(200);
+		}
+
+	}
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-auto-configured-additional-auto-config]]
 ==== Additional Auto-configuration and Slicing
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
