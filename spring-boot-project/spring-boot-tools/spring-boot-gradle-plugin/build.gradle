@@ -51,6 +51,8 @@ gradlePlugin {
 	plugins {
 		springBootPlugin {
 			id = "org.springframework.boot"
+			displayName = "Spring Boot Gradle Plugin"
+			description = "Spring Boot Gradle Plugin"
 			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootPlugin"
 		}
 	}

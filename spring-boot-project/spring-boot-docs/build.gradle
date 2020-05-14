@@ -6,6 +6,8 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
+description = "Spring Boot Docs"
+
 configurations {
 	actuatorApiDocumentation
 	asciidoctorExtensions

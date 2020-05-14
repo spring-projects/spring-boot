@@ -72,7 +72,8 @@ class MavenPublishingConventions {
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
-		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
+		pom.getUrl().set("https://spring.io/projects/spring-boot");
+		pom.getName().set(project.provider(project::getName));
 		pom.getDescription().set(project.provider(project::getDescription));
 		pom.organization(this::customizeOrganization);
 		pom.licenses(this::customizeLicences);
