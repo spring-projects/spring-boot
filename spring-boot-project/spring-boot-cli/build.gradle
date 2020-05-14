@@ -131,10 +131,10 @@ def configureArchive(archive) {
 		into "lib/"
 	}
 	archive.from(file("src/main/content")) {
-		eachFile { it.mode = it.directory ? 0x755 : 0x644 }
+		eachFile { it.mode = it.directory ? 0755 : 0644 }
 	}
 	archive.from(file("src/main/executablecontent")) {
-		eachFile { it.mode = 0x755 }
+		eachFile { it.mode = 0755 }
 	}
 }
 
