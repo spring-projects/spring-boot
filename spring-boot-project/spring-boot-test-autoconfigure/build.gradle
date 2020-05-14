@@ -22,6 +22,7 @@ dependencies {
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
+	optional("com.sun.xml.messaging.saaj:saaj-impl")
 	optional("io.rest-assured:rest-assured")
 	optional("net.sourceforge.htmlunit:htmlunit")
 	optional("org.hibernate:hibernate-core")
