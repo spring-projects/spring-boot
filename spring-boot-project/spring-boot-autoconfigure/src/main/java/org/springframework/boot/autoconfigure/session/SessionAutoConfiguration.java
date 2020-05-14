@@ -53,6 +53,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
@@ -125,6 +126,17 @@ public class SessionAutoConfiguration {
 
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({FindByIndexNameSessionRepository.class, SessionRegistry.class, SpringSessionBackedSessionRegistry.class})
+	@ConditionalOnMissingBean(SessionRegistry.class)
+	static class SessionRegistryConfiguration<S extends Session> {
+
+		@Bean
+		SpringSessionBackedSessionRegistry<S> sessionRegistry(@Autowired FindByIndexNameSessionRepository<S> sessionRepository) {
+			return new SpringSessionBackedSessionRegistry<>(sessionRepository);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
