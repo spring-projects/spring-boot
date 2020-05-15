@@ -164,8 +164,6 @@ class JavaConventions {
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
 				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
-		checkstyleDependencies
-				.add(project.getDependencies().create("io.spring.nohttp:nohttp-checkstyle:0.0.3.RELEASE"));
 	}
 
 	void copyLegalFiles(Project project, CopySpec metaInf) {
