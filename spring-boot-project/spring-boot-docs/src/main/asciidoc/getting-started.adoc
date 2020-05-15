@@ -217,7 +217,7 @@ More details on getting started with Spring Boot and Gradle can be found in the 
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
-It lets you run http://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
+It lets you run https://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
 
 You do not need to use the CLI to work with Spring Boot, but it is definitely the quickest way to get a Spring application off the ground.
 

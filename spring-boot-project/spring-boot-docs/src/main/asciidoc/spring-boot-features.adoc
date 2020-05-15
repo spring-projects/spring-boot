@@ -2315,7 +2315,7 @@ Also, many other templating engines include their own Spring MVC integrations.
 Spring Boot includes auto-configuration support for the following templating engines:
 
  * https://freemarker.apache.org/docs/[FreeMarker]
- * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
+ * https://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * https://www.thymeleaf.org[Thymeleaf]
  * https://mustache.github.io/[Mustache]
 

@@ -1,6 +1,4 @@
-^http://docs.groovy-lang.org.*
 ^http://exslt.org/common.*
-^http://groovy-lang.org.*
 ^http://hsqldb.org.*
 ^http://livereload.com/.*
 ^http://www.jdotsoft.com.*
