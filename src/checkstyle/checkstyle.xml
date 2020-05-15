@@ -6,9 +6,6 @@
 	<module name="SuppressionFilter">
 		<property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
 	</module>
-	<module name="io.spring.nohttp.checkstyle.check.NoHttpCheck">
-		<property name="whitelistFileName" value="${config_loc}/nohttp-whitelist.txt"/>
-	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
 		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
