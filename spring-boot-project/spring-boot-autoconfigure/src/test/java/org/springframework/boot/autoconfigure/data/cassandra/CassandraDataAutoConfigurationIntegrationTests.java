@@ -56,7 +56,8 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.data.cassandra.port=" + cassandra.getFirstMappedPort(),
+				.of("spring.data.cassandra.contact-points=" + cassandra.getContainerIpAddress(),
+						"spring.data.cassandra.port=" + cassandra.getFirstMappedPort(),
 						"spring.data.cassandra.read-timeout=24000", "spring.data.cassandra.connect-timeout=10000")
 				.applyTo(this.context.getEnvironment());
 	}
