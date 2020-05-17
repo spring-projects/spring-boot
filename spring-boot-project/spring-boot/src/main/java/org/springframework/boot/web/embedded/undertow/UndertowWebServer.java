@@ -306,7 +306,7 @@ public class UndertowWebServer implements WebServer {
 			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
 			return;
 		}
-		logger.info("Commencing graceful shutdown. Wait for active requests to complete");
+		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		this.gracefulShutdownCallback.set(callback);
 		this.gracefulShutdown.shutdown();
 		this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
