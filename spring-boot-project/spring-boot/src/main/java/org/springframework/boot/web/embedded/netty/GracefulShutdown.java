@@ -63,7 +63,7 @@ final class GracefulShutdown {
 			callback.shutdownComplete(GracefulShutdownResult.IDLE);
 		}
 		catch (Exception ex) {
-			logger.info("Graceful shutdown aborted with one or more active requests");
+			logger.info("Graceful shutdown aborted with one or more requests still active");
 			callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 		}
 		finally {
