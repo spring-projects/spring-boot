@@ -7761,7 +7761,7 @@ JUnit 5 enables a test class to be instantiated once and reused for all of the c
 This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
 
 JUnit 5 is the default and the vintage engine is provided for backward compatibility with JUnit 4.
-If you don't use it, exclude `org.junit.vintange:junit-vintage-engine`.
+If you don't use it, exclude `org.junit.vintage:junit-vintage-engine`.
 You also need to {junit5-docs}/#writing-tests-test-instance-lifecycle-changing-default[switch test instance lifecycle to "per-class"].
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
