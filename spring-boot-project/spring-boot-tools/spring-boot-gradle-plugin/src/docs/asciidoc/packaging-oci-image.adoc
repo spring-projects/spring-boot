@@ -152,3 +152,10 @@ include::../gradle/packaging/boot-build-image-name.gradle.kts[tags=image-name]
 
 Note that this configuration does not provide an explicit tag so `latest` is used.
 It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.
+
+The image name can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+$ gradle bootBuildImage --imageName=example.com/library/v1
+----
