@@ -224,6 +224,20 @@ class SpringIterableConfigurationPropertySourceTests {
 		assertThat(adapter.stream()).hasSize(2);
 	}
 
+	@Test
+	void orderOfUnderlyingSourceIsPreserved() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("test.map.alpha", "value1");
+		map.put("test.map.bravo", "value2");
+		map.put("test.map.charlie", "value3");
+		map.put("test.map.delta", "value4");
+		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test", map, true);
+		SpringIterableConfigurationPropertySource propertySource = new SpringIterableConfigurationPropertySource(source,
+				DefaultPropertyMapper.INSTANCE);
+		assertThat(propertySource.stream().map(ConfigurationPropertyName::toString)).containsExactly("test.map.alpha",
+				"test.map.bravo", "test.map.charlie", "test.map.delta");
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 *

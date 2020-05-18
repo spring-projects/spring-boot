@@ -19,9 +19,9 @@ package org.springframework.boot.context.properties.source;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -259,7 +259,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
-			return (source != null) ? new HashMap<>(source) : new HashMap<>(size);
+			return (source != null) ? new LinkedHashMap<>(source) : new LinkedHashMap<>(size);
 		}
 
 		private void addParents(Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants,
