@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
-import java.time.Duration;
-
 import io.micrometer.newrelic.ClientProviderType;
 import io.micrometer.newrelic.NewRelicConfig;
 
@@ -70,18 +68,6 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	@Override
 	public String uri() {
 		return get(NewRelicProperties::getUri, NewRelicConfig.super::uri);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public Duration connectTimeout() {
-		return get(NewRelicProperties::getConnectTimeout, NewRelicConfig.super::connectTimeout);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public Duration readTimeout() {
-		return get(NewRelicProperties::getReadTimeout, NewRelicConfig.super::readTimeout);
 	}
 
 }
