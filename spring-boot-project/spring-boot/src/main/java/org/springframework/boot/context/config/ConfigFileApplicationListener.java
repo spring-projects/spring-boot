@@ -580,10 +580,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private Resource[] getResourcesFromPatternLocation(String location) throws IOException {
 			String directoryPath = location.substring(0, location.indexOf("*/"));
-			String fileName = location.substring(location.lastIndexOf("/") + 1);
 			Resource resource = this.resourceLoader.getResource(directoryPath);
 			File[] files = resource.getFile().listFiles(File::isDirectory);
 			if (files != null) {
+				String fileName = location.substring(location.lastIndexOf("/") + 1);
 				Arrays.sort(files, FILE_COMPARATOR);
 				return Arrays.stream(files).map((file) -> file.listFiles((dir, name) -> name.equals(fileName)))
 						.filter(Objects::nonNull).flatMap((Function<File[], Stream<File>>) Arrays::stream)
