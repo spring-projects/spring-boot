@@ -17,8 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+import io.micrometer.newrelic.ClientProviderType;
 import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicInsightsApiClientProvider;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micrometer.newrelic.NewRelicMeterRegistry.Builder;
 
@@ -73,6 +76,13 @@ public class NewRelicMetricsExportAutoConfiguration {
 			ObjectProvider<NewRelicClientProvider> newRelicClientProvider) {
 		Builder builder = NewRelicMeterRegistry.builder(newRelicConfig).clock(clock);
 		newRelicClientProvider.ifUnique(builder::clientProvider);
+
+		if (!newRelicClientProvider.iterator().hasNext()
+				&& ClientProviderType.INSIGHTS_API.equals(newRelicConfig.clientProviderType())) {
+			builder.clientProvider(new NewRelicInsightsApiClientProvider(newRelicConfig, new HttpUrlConnectionSender(
+					this.properties.getConnectTimeout(), this.properties.getReadTimeout())));
+		}
+
 		return builder.build();
 	}
 
