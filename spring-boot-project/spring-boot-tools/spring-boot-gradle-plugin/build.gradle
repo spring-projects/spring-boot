@@ -31,6 +31,7 @@ dependencies {
 	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
 
+	implementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
