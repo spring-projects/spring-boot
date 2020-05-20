@@ -20,7 +20,7 @@ if [[ ${existing_upgrade_issues} = "" ]]; then
 	-s \
 	-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
 	-H "Content-type:application/json" \
-	-d "{\"title\":\"${ISSUE_TITLE}\",\"milestone\":\"${milestone_number}\",\"body\": \"Upgrade to ubuntu:${ubuntu}-${latest}\",\"labels\":[\"status: waiting-for-triage\",\"type: task\"]}"  \
+	-d "{\"title\":\"${ISSUE_TITLE}\",\"milestone\":\"${milestone_number}\",\"body\": \"Upgrade to ubuntu:${ubuntu}-${latest}\",\"labels\":[\"type: task\"]}"  \
 	-f \
 	-X \
 	POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues" > /dev/null || { echo "Failed to create issue" >&2; exit 1; }
