@@ -110,10 +110,10 @@ abstract class PropertyDescriptor<S extends Element> {
 		if (!(typeElement instanceof TypeElement) || typeElement.getKind() == ElementKind.ENUM) {
 			return false;
 		}
-		if (environment.getConfigurationPropertiesAnnotation(getGetter()) != null) {
+		if (environment.getConfigurationPropertiesAnnotation(getGetter()).isPresent()) {
 			return false;
 		}
-		if (environment.getNestedConfigurationPropertyAnnotation(getField()) != null) {
+		if (environment.getNestedConfigurationPropertyAnnotation(getField()).isPresent()) {
 			return true;
 		}
 		if (isCyclePresent(typeElement, getOwnerElement())) {

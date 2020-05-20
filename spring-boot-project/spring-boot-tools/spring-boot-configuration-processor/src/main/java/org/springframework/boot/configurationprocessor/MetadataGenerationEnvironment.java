@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.processing.Messager;
@@ -162,11 +163,11 @@ class MetadataGenerationEnvironment {
 	}
 
 	ItemDeprecation resolveItemDeprecation(Element element) {
-		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
+		final Optional<AnnotationMirror> optionalAnnotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
-		if (annotation != null) {
-			Map<String, Object> elementValues = getAnnotationElementValues(annotation);
+		if (optionalAnnotation.isPresent()) {
+			Map<String, Object> elementValues = getAnnotationElementValues(optionalAnnotation.get());
 			reason = (String) elementValues.get("reason");
 			replacement = (String) elementValues.get("replacement");
 		}
@@ -184,18 +185,18 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean hasAnnotation(Element element, String type) {
-		return getAnnotation(element, type) != null;
+		return getAnnotation(element, type).isPresent();
 	}
 
-	AnnotationMirror getAnnotation(Element element, String type) {
+	Optional<AnnotationMirror> getAnnotation(Element element, String type) {
 		if (element != null) {
 			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
 				if (type.equals(annotation.getAnnotationType().toString())) {
-					return annotation;
+					return Optional.of(annotation);
 				}
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	/**
@@ -255,15 +256,15 @@ class MetadataGenerationEnvironment {
 		return this.elements.getTypeElement(this.configurationPropertiesAnnotation);
 	}
 
-	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
+	Optional<AnnotationMirror> getConfigurationPropertiesAnnotation(Element element) {
 		return getAnnotation(element, this.configurationPropertiesAnnotation);
 	}
 
-	AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
+	Optional<AnnotationMirror> getNestedConfigurationPropertyAnnotation(Element element) {
 		return getAnnotation(element, this.nestedConfigurationPropertyAnnotation);
 	}
 
-	AnnotationMirror getDefaultValueAnnotation(Element element) {
+	Optional<AnnotationMirror> getDefaultValueAnnotation(Element element) {
 		return getAnnotation(element, this.defaultValueAnnotation);
 	}
 
@@ -271,12 +272,12 @@ class MetadataGenerationEnvironment {
 		return this.elements.getTypeElement(this.endpointAnnotation);
 	}
 
-	AnnotationMirror getReadOperationAnnotation(Element element) {
+	Optional<AnnotationMirror> getReadOperationAnnotation(Element element) {
 		return getAnnotation(element, this.readOperationAnnotation);
 	}
 
 	boolean hasNullableAnnotation(Element element) {
-		return getAnnotation(element, NULLABLE_ANNOTATION) != null;
+		return getAnnotation(element, NULLABLE_ANNOTATION).isPresent();
 	}
 
 	private boolean isElementDeprecated(Element element) {

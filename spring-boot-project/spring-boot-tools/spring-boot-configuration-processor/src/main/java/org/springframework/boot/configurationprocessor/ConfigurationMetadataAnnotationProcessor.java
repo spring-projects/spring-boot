@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
@@ -177,16 +178,14 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processElement(Element element) {
 		try {
-			AnnotationMirror annotation = this.metadataEnv.getConfigurationPropertiesAnnotation(element);
-			if (annotation != null) {
-				String prefix = getPrefix(annotation);
+			this.metadataEnv.getConfigurationPropertiesAnnotation(element).map(this::getPrefix).ifPresent(prefix -> {
 				if (element instanceof TypeElement) {
 					processAnnotatedTypeElement(prefix, (TypeElement) element, new Stack<>());
 				}
 				else if (element instanceof ExecutableElement) {
 					processExecutableElement(prefix, (ExecutableElement) element, new Stack<>());
 				}
-			}
+			});
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Error processing configuration meta-data on " + element, ex);
@@ -240,9 +239,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processEndpoint(Element element, List<Element> annotations) {
 		try {
 			String annotationName = this.metadataEnv.getTypeUtils().getQualifiedName(annotations.get(0));
-			AnnotationMirror annotation = this.metadataEnv.getAnnotation(element, annotationName);
-			if (element instanceof TypeElement) {
-				processEndpoint(annotation, (TypeElement) element);
+			final Optional<AnnotationMirror> optionalAnnotation = this.metadataEnv.getAnnotation(element, annotationName);
+			if (optionalAnnotation.isPresent() && element instanceof TypeElement) {
+				processEndpoint(optionalAnnotation.get(), (TypeElement) element);
 			}
 		}
 		catch (Exception ex) {
@@ -271,7 +270,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private boolean hasMainReadOperation(TypeElement element) {
 		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-			if (this.metadataEnv.getReadOperationAnnotation(method) != null
+			if (this.metadataEnv.getReadOperationAnnotation(method).isPresent()
 					&& (TypeKind.VOID != method.getReturnType().getKind()) && hasNoOrOptionalParameters(method)) {
 				return true;
 			}

@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -92,15 +93,16 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	 */
 	private boolean hasLombokPublicAccessor(MetadataGenerationEnvironment env, boolean getter) {
 		String annotation = (getter ? LOMBOK_GETTER_ANNOTATION : LOMBOK_SETTER_ANNOTATION);
-		AnnotationMirror lombokMethodAnnotationOnField = env.getAnnotation(getField(), annotation);
-		if (lombokMethodAnnotationOnField != null) {
-			return isAccessLevelPublic(env, lombokMethodAnnotationOnField);
+		final Optional<AnnotationMirror> optionalLombokMethodAnnotationOnField = env.getAnnotation(getField(),
+				annotation);
+		if (optionalLombokMethodAnnotationOnField.isPresent()) {
+			return isAccessLevelPublic(env, optionalLombokMethodAnnotationOnField.get());
 		}
-		AnnotationMirror lombokMethodAnnotationOnElement = env.getAnnotation(getOwnerElement(), annotation);
-		if (lombokMethodAnnotationOnElement != null) {
-			return isAccessLevelPublic(env, lombokMethodAnnotationOnElement);
-		}
-		return (env.getAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION) != null);
+		final Optional<AnnotationMirror> optionalLombokMethodAnnotationOnElement = env.getAnnotation(getOwnerElement(),
+				annotation);
+		return optionalLombokMethodAnnotationOnElement
+				.map(annotationMirror -> isAccessLevelPublic(env, annotationMirror))
+				.orElseGet(() -> (env.getAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION).isPresent()));
 	}
 
 	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {

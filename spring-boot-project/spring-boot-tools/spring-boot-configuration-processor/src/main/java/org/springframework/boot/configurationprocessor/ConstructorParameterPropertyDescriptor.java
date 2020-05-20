@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -60,22 +61,23 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 	}
 
 	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Element element) {
-		AnnotationMirror annotation = environment.getDefaultValueAnnotation(element);
-		List<String> defaultValue = getDefaultValue(environment, annotation);
-		if (defaultValue != null) {
-			try {
-				TypeMirror specificType = determineSpecificType(environment);
-				if (defaultValue.size() == 1) {
-					return coerceValue(specificType, defaultValue.get(0));
-				}
-				return defaultValue.stream().map((value) -> coerceValue(specificType, value))
-						.collect(Collectors.toList());
-			}
-			catch (IllegalArgumentException ex) {
-				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);
-			}
-		}
-		return null;
+		final Optional<AnnotationMirror> optionalAnnotation = environment.getDefaultValueAnnotation(element);
+		return environment.getDefaultValueAnnotation(element)
+				.map(annotation -> getDefaultValue(environment, annotation)).map(defaultValue -> {
+					try {
+						TypeMirror specificType = determineSpecificType(environment);
+						if (defaultValue.size() == 1) {
+							return coerceValue(specificType, defaultValue.get(0));
+						}
+						return defaultValue.stream().map((value) -> coerceValue(specificType, value))
+								.collect(Collectors.toList());
+					}
+					catch (IllegalArgumentException ex) {
+						environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element,
+								optionalAnnotation.orElse(null));
+					}
+					return null;
+				}).orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
