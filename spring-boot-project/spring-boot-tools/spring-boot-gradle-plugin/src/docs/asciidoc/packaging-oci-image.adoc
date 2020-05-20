@@ -96,6 +96,13 @@ include::../gradle/packaging/boot-build-image-builder.gradle.kts[tags=builder]
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
 
+The builder can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+$ gradle bootBuildImage --builder=mine/java-cnb-builder
+----
+
 
 
 [[build-image-example-builder-configuration]]
@@ -157,5 +164,5 @@ The image name can be specified on the command line as well, as shown in this ex
 
 [indent=0]
 ----
-$ gradle bootBuildImage --imageName=example.com/library/v1
+$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
 ----
