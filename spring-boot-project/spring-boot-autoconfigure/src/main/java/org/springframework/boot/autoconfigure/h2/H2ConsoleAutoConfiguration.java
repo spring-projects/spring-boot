@@ -62,13 +62,7 @@ public class H2ConsoleAutoConfiguration {
 		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
-		H2ConsoleProperties.Settings settings = properties.getSettings();
-		if (settings.isTrace()) {
-			registration.addInitParameter("trace", "");
-		}
-		if (settings.isWebAllowOthers()) {
-			registration.addInitParameter("webAllowOthers", "");
-		}
+		configureSettings(properties.getSettings(), registration);
 		dataSource.ifAvailable((available) -> {
 			try (Connection connection = available.getConnection()) {
 				logger.info("H2 console available at '" + path + "'. Database available at '"
@@ -79,6 +73,20 @@ public class H2ConsoleAutoConfiguration {
 			}
 		});
 		return registration;
+	}
+
+	private void configureSettings(H2ConsoleProperties.Settings settings,
+			ServletRegistrationBean<WebServlet> registration) {
+		if (settings.isTrace()) {
+			registration.addInitParameter("trace", "");
+		}
+		if (settings.isWebAllowOthers()) {
+			registration.addInitParameter("webAllowOthers", "");
+		}
+
+		if (settings.getWebAdminPassword() != null) {
+			registration.addInitParameter("webAdminPassword", settings.getWebAdminPassword());
+		}
 	}
 
 }

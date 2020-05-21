@@ -77,6 +77,8 @@ public class H2ConsoleProperties {
 		 */
 		private boolean webAllowOthers = false;
 
+		private String webAdminPassword;
+
 		public boolean isTrace() {
 			return this.trace;
 		}
@@ -91,6 +93,14 @@ public class H2ConsoleProperties {
 
 		public void setWebAllowOthers(boolean webAllowOthers) {
 			this.webAllowOthers = webAllowOthers;
+		}
+
+		public String getWebAdminPassword() {
+			return this.webAdminPassword;
+		}
+
+		public void setWebAdminPassword(String webAdminPassword) {
+			this.webAdminPassword = webAdminPassword;
 		}
 
 	}
