@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * Central API for running buildpack operations.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class Builder {
@@ -89,7 +90,7 @@ public class Builder {
 	private ImageReference getRunImageReference(Stack stack) {
 		String name = stack.getRunImage().getImage();
 		Assert.state(StringUtils.hasText(name), "Run image must be specified");
-		return ImageReference.of(name);
+		return ImageReference.of(name).inTaggedForm();
 	}
 
 	private Image pullRunImage(BuildRequest request, ImageReference name) throws IOException {
