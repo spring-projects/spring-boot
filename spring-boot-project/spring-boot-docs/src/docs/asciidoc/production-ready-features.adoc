@@ -900,6 +900,9 @@ readinessProbe:
   periodSeconds: ...
 ----
 
+These health groups are only enabled automatically if the application is <<deployment.adoc#cloud-deployment-kubernetes,running in a Kubernetes environment>>.
+You can enable them in any environment using the configprop:management.health.probes.enabled[] configuration property.
+
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
 The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<production-ready-features.adoc#production-ready-kubernetes-probes-lifecycle,how Probes behave during the application lifecycle>>.
 
