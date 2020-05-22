@@ -118,6 +118,7 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.resource.VersionStrategy;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.util.UrlPathHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -139,8 +140,9 @@ class WebMvcAutoConfigurationTests {
 	private static final MockServletWebServerFactory webServerFactory = new MockServletWebServerFactory();
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+							HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
 			.withUserConfiguration(Config.class);
 
 	@Test
@@ -846,6 +848,22 @@ class WebMvcAutoConfigurationTests {
 					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
 					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
 				});
+	}
+
+	@Test
+	void urlPathHelperUsesFullPathByDefault() {
+		this.contextRunner.run((context) -> {
+			UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
+			assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(true);
+		});
+	}
+
+	@Test
+	void urlPathHelperDoesNotUseFullPathWithServletMapping() {
+		this.contextRunner.withPropertyValues("spring.mvc.servlet.path=/test/").run((context) -> {
+			UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
+			assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
+		});
 	}
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {

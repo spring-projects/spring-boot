@@ -119,6 +119,7 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -188,16 +189,20 @@ public class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<HttpMessageConverters> messageConvertersProvider;
 
+		private final ObjectProvider<DispatcherServletPath> dispatcherServletPath;
+
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
 		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
-				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
+				ObjectProvider<DispatcherServletPath> dispatcherServletPath) {
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
+			this.dispatcherServletPath = dispatcherServletPath;
 		}
 
 		@Override
@@ -227,6 +232,14 @@ public class WebMvcAutoConfiguration {
 			configurer.setUseSuffixPatternMatch(this.mvcProperties.getPathmatch().isUseSuffixPattern());
 			configurer.setUseRegisteredSuffixPatternMatch(
 					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
+			this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
+				String servletUrlMapping = dispatcherPath.getServletUrlMapping();
+				if (servletUrlMapping.equals("/")) {
+					UrlPathHelper urlPathHelper = new UrlPathHelper();
+					urlPathHelper.setAlwaysUseFullPath(true);
+					configurer.setUrlPathHelper(urlPathHelper);
+				}
+			});
 		}
 
 		@Override
