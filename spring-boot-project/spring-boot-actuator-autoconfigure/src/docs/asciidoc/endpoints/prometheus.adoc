@@ -15,3 +15,14 @@ include::{snippets}/prometheus/curl-request.adoc[]
 The resulting response is similar to the following:
 
 include::{snippets}/prometheus/http-response.adoc[]
+
+
+
+[[prometheus-retrieving-query-parameters]]
+=== Query Parameters
+
+The endpoint uses query parameters to limit the samples that it returns.
+The following table shows the supported query parameters:
+
+[cols="2,4"]
+include::{snippets}/prometheus/request-parameters.adoc[]
