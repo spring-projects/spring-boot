@@ -70,6 +70,7 @@ class StartupInfoLogger {
 		appendOn(message);
 		appendPid(message);
 		appendContext(message);
+		appendJavaVersion(message);
 		return message;
 	}
 
@@ -145,6 +146,10 @@ class StartupInfoLogger {
 			message.append(context);
 			message.append(")");
 		}
+	}
+
+	private void appendJavaVersion(StringBuilder message) {
+		append(message, "on Java ", () -> System.getProperty("java.version"));
 	}
 
 	private void append(StringBuilder message, String prefix, Callable<Object> call) {
