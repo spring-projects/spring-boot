@@ -74,7 +74,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CouchbaseAutoConfiguration.class);
-		TestPropertyValues.of("spring.couchbase.bootstrap-hosts=localhost",
+		TestPropertyValues.of("spring.couchbase.bootstrap-hosts=" + couchbase.getContainerIpAddress(),
 				"spring.couchbase.env.bootstrap.http-direct-port:" + couchbase.getMappedPort(8091),
 				"spring.couchbase.username:spring", "spring.couchbase.password:password",
 				"spring.couchbase.bucket.name:default").applyTo(this.context.getEnvironment());
