@@ -54,7 +54,9 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class))
-			.withPropertyValues("spring.data.cassandra.contact-points:localhost:" + cassandra.getFirstMappedPort(),
+			.withPropertyValues(
+					"spring.data.cassandra.contact-points:" + cassandra.getContainerIpAddress() + ":"
+							+ cassandra.getFirstMappedPort(),
 					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.read-timeout=20s",
 					"spring.data.cassandra.connect-timeout=10s")
 			.withInitializer((context) -> AutoConfigurationPackages.register((BeanDefinitionRegistry) context,
