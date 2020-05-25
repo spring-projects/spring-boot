@@ -621,7 +621,7 @@
       "name": "spring.data.jpa.repositories.bootstrap-mode",
       "type": "org.springframework.data.repository.config.BootstrapMode",
       "description": "Bootstrap mode for JPA repositories.",
-      "defaultValue": "default"
+      "defaultValue": "deferred"
     },
     {
       "name": "spring.data.jpa.repositories.enabled",
