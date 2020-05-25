@@ -22,8 +22,8 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
-| https://camel.apache.org/spring-boot.html[Apache Camel]
-| https://github.com/apache/camel/tree/master/components/camel-spring-boot
+| https://camel.apache.org/camel-spring-boot/latest/spring-boot.html[Apache Camel]
+| https://github.com/apache/camel-spring-boot
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
