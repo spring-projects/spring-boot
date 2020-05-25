@@ -63,8 +63,7 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagValueIsRootWhenBestMatchingPatternIsEmpty() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				this.parser.parse(""));
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse(""));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("root");
