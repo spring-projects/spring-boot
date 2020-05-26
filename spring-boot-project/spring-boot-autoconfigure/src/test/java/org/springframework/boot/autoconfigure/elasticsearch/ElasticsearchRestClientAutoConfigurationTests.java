@@ -114,6 +114,16 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
+	void configureWhenDeprecatedBuilderCustomizerShouldApply() {
+		this.contextRunner.withUserConfiguration(DeprecatedBuilderCustomizerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/deprecated");
+		});
+	}
+
+	@Test
 	void configureWithNoTimeoutsApplyDefaults() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class);
@@ -189,6 +199,17 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Deprecated
+	static class DeprecatedBuilderCustomizerConfiguration {
+
+		@Bean
+		org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientBuilderCustomizer myCustomizer() {
+			return (builder) -> builder.setPathPrefix("/deprecated");
 		}
 
 	}
