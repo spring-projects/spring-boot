@@ -42,7 +42,7 @@ public class BuildProperties extends InfoProperties {
 	 * @return the group
 	 */
 	public String getGroup() {
-		return get("group");
+		return get("group, das1fd");
 	}
 
 	/**
