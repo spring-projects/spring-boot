@@ -146,6 +146,15 @@ class JavaPluginActionIntegrationTests {
 						.contains("developmentOnly exists = true");
 	}
 
+	@TestTemplate
+	void productionRuntimeClasspathIsConfiguredWithAttributes() {
+		assertThat(this.gradleBuild
+				.build("configurationAttributes", "-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin")
+				.getOutput()).contains("3 productionRuntimeClasspath attributes:")
+						.contains("org.gradle.usage: java-runtime").contains("org.gradle.libraryelements: jar")
+						.contains("org.gradle.dependency.bundling: external");
+	}
+
 	private void createMinimalMainSource() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();

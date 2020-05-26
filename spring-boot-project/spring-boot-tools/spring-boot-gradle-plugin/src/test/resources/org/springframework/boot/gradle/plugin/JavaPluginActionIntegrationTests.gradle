@@ -25,3 +25,13 @@ task('configurationExists') {
 		println "${configurationName} exists = ${configurations.findByName(configurationName) != null}"
 	}
 }
+
+task('configurationAttributes') {
+	doFirst {
+		def attributes = configurations.findByName(configurationName).attributes
+		println "${attributes.keySet().size()} ${configurationName} attributes:"		
+		attributes.keySet().each { attribute ->
+			println "    ${attribute}: ${attributes.getAttribute(attribute)}" 
+		}
+	}
+}
