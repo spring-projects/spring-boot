@@ -103,8 +103,8 @@ class DeploymentIntegrationTests {
 					this.port)) {
 				container.start();
 				TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-						.rootUri("http://" + container.getContainerIpAddress() + ":"
-								+ container.getMappedPort(this.port) + "/spring-boot")
+						.rootUri("http://" + container.getHost() + ":" + container.getMappedPort(this.port)
+								+ "/spring-boot")
 						.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 								.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
 				try {
