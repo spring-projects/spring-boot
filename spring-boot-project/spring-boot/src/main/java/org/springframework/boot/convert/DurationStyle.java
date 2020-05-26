@@ -134,7 +134,7 @@ public enum DurationStyle {
 	 * Detect the style then parse the value to return a duration.
 	 * @param value the value to parse
 	 * @return the parsed duration
-	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
+	 * @throws IllegalArgumentException if the value is not a known style or cannot be parsed
 	 */
 	public static Duration detectAndParse(String value) {
 		return detectAndParse(value, null);
@@ -146,7 +146,7 @@ public enum DurationStyle {
 	 * @param unit the duration unit to use if the value doesn't specify one ({@code null}
 	 * will default to ms)
 	 * @return the parsed duration
-	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
+	 * @throws IllegalArgumentException if the value is not a known style or cannot be parsed
 	 */
 	public static Duration detectAndParse(String value, ChronoUnit unit) {
 		return detect(value).parse(value, unit);
@@ -156,7 +156,7 @@ public enum DurationStyle {
 	 * Detect the style from the given source value.
 	 * @param value the source value
 	 * @return the duration style
-	 * @throws IllegalStateException if the value is not a known style
+	 * @throws IllegalArgumentException if the value is not a known style
 	 */
 	public static DurationStyle detect(String value) {
 		Assert.notNull(value, "Value must not be null");
