@@ -979,12 +979,10 @@ bom {
 				"kafka-clients",
 				"kafka-log4j-appender",
 				"kafka-streams",
-				"kafka-streams-scala_2.11",
 				"kafka-streams-scala_2.12",
 				"kafka-streams-scala_2.13",
 				"kafka-streams-test-utils",
 				"kafka-tools",
-				"kafka_2.11",
 				"kafka_2.12",
 				"kafka_2.13"
 			]
