@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
@@ -79,7 +80,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Constructor} that tracks property origins.
 	 */
-	private class OriginTrackingConstructor extends Constructor {
+	private class OriginTrackingConstructor extends SafeConstructor {
 
 		@Override
 		protected Object constructObject(Node node) {

@@ -16,18 +16,22 @@
 
 package org.springframework.boot.env;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OriginTrackedYamlLoader}.
@@ -114,6 +118,14 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(getLocation(empty)).isEqualTo("27:8");
 		assertThat(nullValue.getValue()).isEqualTo("");
 		assertThat(getLocation(nullValue)).isEqualTo("28:13");
+	}
+
+	@Test
+	void unsupportedType() throws Exception {
+		String yaml = "value: !!java.net.URL [!!java.lang.String [!!java.lang.StringBuilder [\"http://localhost:9000/\"]]]";
+		Resource resource = new ByteArrayResource(yaml.getBytes(StandardCharsets.UTF_8));
+		this.loader = new OriginTrackedYamlLoader(resource);
+		assertThatExceptionOfType(ConstructorException.class).isThrownBy(this.loader::load);
 	}
 
 	private OriginTrackedValue getValue(String name) {
