@@ -108,7 +108,7 @@ class NoSuchMethodFailureAnalyzerTests {
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(R2dbcMappingContext.class.getName() + ".<init>(")
-				.contains("setForceQuote(Z)V")
+				.contains(R2dbcMappingContext.class.getName() + ".setForceQuote(")
 				.contains("class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
 				.contains("    org.springframework.data.r2dbc.mapping.R2dbcMappingContext")
 				.contains("    org.springframework.data.relational.core.mapping.RelationalMappingContext")
