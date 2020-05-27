@@ -164,7 +164,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	protected void doClose() {
-		AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
+		if (this.isActive()) {
+			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
+		}
 		super.doClose();
 	}
 

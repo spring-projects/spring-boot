@@ -183,6 +183,17 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
+	void whenContextIsNotActiveThenCloseDoesNotChangeTheApplicationAvailability() {
+		addWebServerFactoryBean();
+		TestApplicationListener listener = new TestApplicationListener();
+		this.context.addApplicationListener(listener);
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh);
+		this.context.close();
+		assertThat(listener.receivedEvents()).isEmpty();
+	}
+
+	@Test
 	void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
@@ -527,6 +538,14 @@ class ServletWebServerApplicationContextTests {
 
 		ServletRequest getRequest() {
 			return this.request;
+		}
+
+	}
+
+	static class RefreshFailure {
+
+		RefreshFailure() {
+			throw new RuntimeException("Fail refresh");
 		}
 
 	}

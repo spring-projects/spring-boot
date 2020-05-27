@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.ReadinessState;
@@ -142,6 +143,18 @@ class ReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
+	void whenContextIsNotActiveThenCloseDoesNotChangeTheApplicationAvailability() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		TestApplicationListener listener = new TestApplicationListener();
+		this.context.addApplicationListener(listener);
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh);
+		this.context.close();
+		assertThat(listener.receivedEvents()).isEmpty();
+	}
+
+	@Test
 	void whenTheContextIsRefreshedThenASubsequentRefreshAttemptWillFail() {
 		addWebServerFactoryBean();
 		addHttpHandlerBean();
@@ -182,6 +195,14 @@ class ReactiveWebServerApplicationContextTests {
 				receivedEvents.add(this.events.pollFirst());
 			}
 			return receivedEvents;
+		}
+
+	}
+
+	static class RefreshFailure {
+
+		RefreshFailure() {
+			throw new RuntimeException("Fail refresh");
 		}
 
 	}
