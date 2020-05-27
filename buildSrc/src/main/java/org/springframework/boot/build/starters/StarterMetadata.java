@@ -28,7 +28,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.AbstractTask;
-import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -50,7 +50,7 @@ public class StarterMetadata extends AbstractTask {
 		getInputs().property("description", (Callable<String>) () -> getProject().getDescription());
 	}
 
-	@InputFiles
+	@Classpath
 	public FileCollection getDependencies() {
 		return this.dependencies;
 	}
