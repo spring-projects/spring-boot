@@ -68,9 +68,9 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 			JarEntry indexEntry = new JarEntry(entryPrefix + "/classpath.idx");
 			jarOutputStream.putNextEntry(indexEntry);
 			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
-			writer.write("BOOT-INF/lib/foo.jar\n");
-			writer.write("BOOT-INF/lib/bar.jar\n");
-			writer.write("BOOT-INF/lib/baz.jar\n");
+			writer.write("- \"BOOT-INF/lib/foo.jar\"\n");
+			writer.write("- \"BOOT-INF/lib/bar.jar\"\n");
+			writer.write("- \"BOOT-INF/lib/baz.jar\"\n");
 			writer.flush();
 		}
 		addNestedJars(entryPrefix, "/lib/foo.jar", jarOutputStream);

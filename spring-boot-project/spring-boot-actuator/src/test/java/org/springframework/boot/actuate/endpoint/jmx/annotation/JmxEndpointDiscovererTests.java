@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,18 +79,18 @@ class JmxEndpointDiscovererTests {
 			assertThat(getSomething.getDescription()).isEqualTo("Invoke getSomething for endpoint test");
 			assertThat(getSomething.getOutputType()).isEqualTo(String.class);
 			assertThat(getSomething.getParameters()).hasSize(1);
-			hasDefaultParameter(getSomething, 0, String.class);
+			assertThat(getSomething.getParameters().get(0).getType()).isEqualTo(String.class);
 			JmxOperation update = operationByName.get("update");
 			assertThat(update.getDescription()).isEqualTo("Invoke update for endpoint test");
 			assertThat(update.getOutputType()).isEqualTo(Void.TYPE);
 			assertThat(update.getParameters()).hasSize(2);
-			hasDefaultParameter(update, 0, String.class);
-			hasDefaultParameter(update, 1, String.class);
+			assertThat(update.getParameters().get(0).getType()).isEqualTo(String.class);
+			assertThat(update.getParameters().get(1).getType()).isEqualTo(String.class);
 			JmxOperation deleteSomething = operationByName.get("deleteSomething");
 			assertThat(deleteSomething.getDescription()).isEqualTo("Invoke deleteSomething for endpoint test");
 			assertThat(deleteSomething.getOutputType()).isEqualTo(Void.TYPE);
 			assertThat(deleteSomething.getParameters()).hasSize(1);
-			hasDefaultParameter(deleteSomething, 0, String.class);
+			assertThat(deleteSomething.getParameters().get(0).getType()).isEqualTo(String.class);
 		});
 	}
 
@@ -237,12 +237,6 @@ class JmxEndpointDiscovererTests {
 		assertThat(parameter.getName()).isEqualTo(name);
 		assertThat(parameter.getType()).isEqualTo(type);
 		assertThat(parameter.getDescription()).isEqualTo(description);
-	}
-
-	// FIXME rename
-	private void hasDefaultParameter(JmxOperation operation, int index, Class<?> type) {
-		JmxOperationParameter parameter = operation.getParameters().get(index);
-		assertThat(parameter.getType()).isEqualTo(type);
 	}
 
 	private Map<EndpointId, ExposableJmxEndpoint> discover(JmxEndpointDiscoverer discoverer) {

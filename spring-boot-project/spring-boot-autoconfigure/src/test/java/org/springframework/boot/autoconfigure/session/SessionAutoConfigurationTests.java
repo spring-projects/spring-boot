@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -30,6 +31,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
@@ -42,6 +44,8 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -205,6 +209,16 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		});
 	}
 
+	@Test
+	void cookieSerializerCustomization() {
+		this.contextRunner.withBean(CookieSerializerCustomization.class).run((context) -> {
+			CookieSerializerCustomization customization = context.getBean(CookieSerializerCustomization.class);
+			InOrder inOrder = inOrder(customization.customizer1, customization.customizer2);
+			inOrder.verify(customization.customizer1).customize(any());
+			inOrder.verify(customization.customizer2).customize(any());
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class SessionRepositoryConfiguration {
@@ -272,6 +286,28 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		@Bean
 		SpringSessionRememberMeServices rememberMeServices() {
 			return new SpringSessionRememberMeServices();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableSpringHttpSession
+	static class CookieSerializerCustomization extends SessionRepositoryConfiguration {
+
+		private final DefaultCookieSerializerCustomizer customizer1 = mock(DefaultCookieSerializerCustomizer.class);
+
+		private final DefaultCookieSerializerCustomizer customizer2 = mock(DefaultCookieSerializerCustomizer.class);
+
+		@Bean
+		@Order(1)
+		DefaultCookieSerializerCustomizer customizer1() {
+			return this.customizer1;
+		}
+
+		@Bean
+		@Order(2)
+		DefaultCookieSerializerCustomizer customizer2() {
+			return this.customizer2;
 		}
 
 	}

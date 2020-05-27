@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,19 +57,19 @@ class ClassPathFileSystemWatcherTests {
 	}
 
 	@Test
-	void configuredWithRestartStrategy(@TempDir File folder) throws Exception {
+	void configuredWithRestartStrategy(@TempDir File directory) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		Map<String, Object> properties = new HashMap<>();
 		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("https://spring.io"));
-		urls.add(folder.toURI().toURL());
+		urls.add(directory.toURI().toURL());
 		properties.put("urls", urls);
 		MapPropertySource propertySource = new MapPropertySource("test", properties);
 		context.getEnvironment().getPropertySources().addLast(propertySource);
 		context.register(Config.class);
 		context.refresh();
 		Thread.sleep(200);
-		File classFile = new File(folder, "Example.class");
+		File classFile = new File(directory, "Example.class");
 		FileCopyUtils.copy("file".getBytes(), classFile);
 		Thread.sleep(1000);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();

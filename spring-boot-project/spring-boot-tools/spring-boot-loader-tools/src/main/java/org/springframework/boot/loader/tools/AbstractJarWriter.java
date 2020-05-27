@@ -76,7 +76,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
+		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
 	}
 
 	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
@@ -114,13 +114,23 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
-		JarArchiveEntry entry = new JarArchiveEntry(entryName);
 		try {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream));
+			writeEntry(entryName, new InputStreamEntryWriter(inputStream));
 		}
 		finally {
 			inputStream.close();
 		}
+	}
+
+	/**
+	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 * @param entryName the name of the entry
+	 * @param entryWriter the entry writer
+	 * @throws IOException if the write fails
+	 */
+	public void writeEntry(String entryName, EntryWriter entryWriter) throws IOException {
+		JarArchiveEntry entry = new JarArchiveEntry(entryName);
+		writeEntry(entry, entryWriter);
 	}
 
 	/**
@@ -199,11 +209,19 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
-				if (entry.getName().endsWith(".class")) {
+				if (isDirectoryEntry(entry) || isClassEntry(entry)) {
 					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
 				}
 			}
 		}
+	}
+
+	private boolean isDirectoryEntry(JarEntry entry) {
+		return entry.isDirectory() && !entry.getName().equals("META-INF/");
+	}
+
+	private boolean isClassEntry(JarEntry entry) {
+		return entry.getName().endsWith(".class");
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
@@ -221,7 +239,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
 			throws IOException {
 		String name = entry.getName();
-		writeParentFolderEntries(name);
+		writeParentDirectoryEntries(name);
 		if (this.writtenEntries.add(name)) {
 			entry.setUnixMode(name.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
 			entry.getGeneralPurposeBit().useUTF8ForNames(true);
@@ -236,7 +254,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
 
-	private void writeParentFolderEntries(String name) throws IOException {
+	private void writeParentDirectoryEntries(String name) throws IOException {
 		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));

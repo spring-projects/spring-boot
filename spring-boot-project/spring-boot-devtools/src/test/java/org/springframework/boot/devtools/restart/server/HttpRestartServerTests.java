@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ class HttpRestartServerTests {
 	}
 
 	@Test
-	void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
-				.withMessageContaining("SourceFolderUrlFilter must not be null");
+	void sourceDirectoryUrlFilterMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceDirectoryUrlFilter) null))
+				.withMessageContaining("SourceDirectoryUrlFilter must not be null");
 	}
 
 	@Test

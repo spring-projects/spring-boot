@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
  * Configuration properties to configure {@link SpringLiquibase}.
  *
  * @author Marcel Overdijk
+ * @author Eddú Meléndez
+ * @author Ferenc Gratzer
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
@@ -36,7 +38,13 @@ public class LiquibaseProperties {
 	/**
 	 * Change log configuration path.
 	 */
-	private String changeLog = "classpath:db/changelog/db.changelog-master.yaml";
+	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
+
+	/**
+	 * Whether to clear all checksums in the current changelog, so they will be
+	 * recalculated upon the next update.
+	 */
+	private boolean clearChecksums;
 
 	/**
 	 * Comma-separated list of runtime contexts to use.
@@ -114,6 +122,13 @@ public class LiquibaseProperties {
 	 */
 	private boolean testRollbackOnUpdate;
 
+	/**
+	 * Tag name to use when applying database changes. Can also be used with
+	 * "rollbackFile" to generate a rollback script for all existing changes associated
+	 * with that tag.
+	 */
+	private String tag;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
@@ -179,6 +194,14 @@ public class LiquibaseProperties {
 		this.dropFirst = dropFirst;
 	}
 
+	public boolean isClearChecksums() {
+		return this.clearChecksums;
+	}
+
+	public void setClearChecksums(boolean clearChecksums) {
+		this.clearChecksums = clearChecksums;
+	}
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -241,6 +264,14 @@ public class LiquibaseProperties {
 
 	public void setTestRollbackOnUpdate(boolean testRollbackOnUpdate) {
 		this.testRollbackOnUpdate = testRollbackOnUpdate;
+	}
+
+	public String getTag() {
+		return this.tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -185,7 +189,7 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void noDateFormat() {
+	void defaultDateFormat() {
 		this.contextRunner.run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
@@ -195,11 +199,58 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void overrideDateFormat() {
+	void customDateFormatWithDeprecatedProperty() {
 		this.contextRunner.withPropertyValues("spring.webflux.date-format:dd*MM*yyyy").run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
 			assertThat(conversionService.convert(date, String.class)).isEqualTo("25*06*1988");
+		});
+	}
+
+	@Test
+	void customDateFormat() {
+		this.contextRunner.withPropertyValues("spring.webflux.format.date:dd*MM*yyyy").run((context) -> {
+			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
+			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
+			assertThat(conversionService.convert(date, String.class)).isEqualTo("25*06*1988");
+		});
+	}
+
+	@Test
+	void defaultTimeFormat() {
+		this.contextRunner.run((context) -> {
+			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
+			LocalTime time = LocalTime.of(11, 43, 10);
+			assertThat(conversionService.convert(time, String.class))
+					.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
+		});
+	}
+
+	@Test
+	void customTimeFormat() {
+		this.contextRunner.withPropertyValues("spring.webflux.format.time=HH:mm:ss").run((context) -> {
+			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
+			LocalTime time = LocalTime.of(11, 43, 10);
+			assertThat(conversionService.convert(time, String.class)).isEqualTo("11:43:10");
+		});
+	}
+
+	@Test
+	void defaultDateTimeFormat() {
+		this.contextRunner.run((context) -> {
+			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
+			LocalDateTime dateTime = LocalDateTime.of(2020, 4, 28, 11, 43, 10);
+			assertThat(conversionService.convert(dateTime, String.class))
+					.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
+		});
+	}
+
+	@Test
+	void customDateTimeTimeFormat() {
+		this.contextRunner.withPropertyValues("spring.webflux.format.date-time=yyyy-MM-dd HH:mm:ss").run((context) -> {
+			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
+			LocalDateTime dateTime = LocalDateTime.of(2020, 4, 28, 11, 43, 10);
+			assertThat(conversionService.convert(dateTime, String.class)).isEqualTo("2020-04-28 11:43:10");
 		});
 	}
 

@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
-import org.springframework.boot.buildpack.platform.docker.DockerException;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.util.Assert;
@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * Central API for running buildpack operations.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class Builder {
@@ -56,7 +57,7 @@ public class Builder {
 		this.docker = docker;
 	}
 
-	public void build(BuildRequest request) throws DockerException, IOException {
+	public void build(BuildRequest request) throws DockerEngineException, IOException {
 		Assert.notNull(request, "Request must not be null");
 		this.log.start(request);
 		Image builderImage = pullBuilder(request);
@@ -66,7 +67,8 @@ public class Builder {
 		ImageReference runImageReference = getRunImageReference(builderMetadata.getStack());
 		Image runImage = pullRunImage(request, runImageReference);
 		assertHasExpectedStackId(runImage, stackId);
-		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getEnv());
+		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getCreator(),
+				request.getEnv());
 		this.docker.image().load(builder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, runImageReference, builder);
@@ -88,7 +90,7 @@ public class Builder {
 	private ImageReference getRunImageReference(Stack stack) {
 		String name = stack.getRunImage().getImage();
 		Assert.state(StringUtils.hasText(name), "Run image must be specified");
-		return ImageReference.of(name);
+		return ImageReference.of(name).inTaggedForm();
 	}
 
 	private Image pullRunImage(BuildRequest request, ImageReference name) throws IOException {

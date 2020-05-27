@@ -30,6 +30,7 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
@@ -85,14 +86,6 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setUseForwardHeaders() {
-		this.serverProperties.setUseForwardHeaders(true);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
 	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
@@ -107,30 +100,6 @@ class NettyWebServerFactoryCustomizerTests {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
-	}
-
-	@Test
-	void setServerConnectionTimeoutAsZero() {
-		setupServerConnectionTimeout(Duration.ZERO);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, null);
-	}
-
-	@Test
-	void setServerConnectionTimeoutAsMinusOne() {
-		setupServerConnectionTimeout(Duration.ofNanos(-1));
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, 0);
-	}
-
-	@Test
-	void setServerConnectionTimeout() {
-		setupServerConnectionTimeout(Duration.ofSeconds(1));
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, 1000);
 	}
 
 	@Test
@@ -156,14 +125,8 @@ class NettyWebServerFactoryCustomizerTests {
 		assertThat(options).containsEntry(ChannelOption.CONNECT_TIMEOUT_MILLIS, expected);
 	}
 
-	private void setupServerConnectionTimeout(Duration connectionTimeout) {
-		this.serverProperties.setUseForwardHeaders(null);
-		this.serverProperties.setMaxHttpHeaderSize(null);
-		this.serverProperties.setConnectionTimeout(connectionTimeout);
-	}
-
 	private void setupConnectionTimeout(Duration connectionTimeout) {
-		this.serverProperties.setUseForwardHeaders(null);
+		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NONE);
 		this.serverProperties.setMaxHttpHeaderSize(null);
 		this.serverProperties.getNetty().setConnectionTimeout(connectionTimeout);
 	}

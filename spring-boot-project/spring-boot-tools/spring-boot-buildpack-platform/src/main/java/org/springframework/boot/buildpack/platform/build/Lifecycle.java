@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * application.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class Lifecycle implements Closeable {
 
@@ -114,106 +115,34 @@ class Lifecycle implements Closeable {
 		if (this.request.isCleanCache()) {
 			deleteVolume(this.buildCacheVolume);
 		}
-		run(detectPhase());
-		if (this.platformVersion.analyzeFollowsRestore()) {
-			run(restorePhase());
-			run(analyzePhase());
-		}
-		else {
-			run(analyzePhase());
-			run(restorePhase());
-		}
-		run(buildPhase());
-		run(exportPhase());
-		if (this.platformVersion.hasCachePhase()) {
-			run(cachePhase());
-		}
+		run(createPhase());
 		this.log.executedLifecycle(this.request);
 	}
 
-	private Phase detectPhase() {
-		Phase phase = createPhase("detector");
-		phase.withArgs("-app", Folder.APPLICATION);
-		phase.withArgs("-platform", Folder.PLATFORM);
-		phase.withLogLevelArg();
-		return phase;
-	}
-
-	private Phase restorePhase() {
-		String cacheDirArg = this.platformVersion.hasCachePhase() ? "-path" : "-cache-dir";
-		Phase phase = createPhase("restorer");
-		phase.withDaemonAccess();
-		phase.withArgs(cacheDirArg, Folder.CACHE);
-		phase.withArgs("-layers", Folder.LAYERS);
-		phase.withLogLevelArg();
-		phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		return phase;
-	}
-
-	private Phase analyzePhase() {
-		Phase phase = createPhase("analyzer");
+	private Phase createPhase() {
+		Phase phase = new Phase("creator", isVerboseLogging());
 		phase.withDaemonAccess();
 		phase.withLogLevelArg();
+		phase.withArgs("-app", Directory.APPLICATION);
+		phase.withArgs("-platform", Directory.PLATFORM);
+		phase.withArgs("-run-image", this.runImageReference);
+		phase.withArgs("-layers", Directory.LAYERS);
+		phase.withArgs("-cache-dir", Directory.CACHE);
+		phase.withArgs("-launch-cache", Directory.LAUNCH_CACHE);
+		phase.withArgs("-daemon");
 		if (this.request.isCleanCache()) {
-			phase.withArgs("-skip-layers");
-		}
-		phase.withArgs("-daemon");
-		phase.withArgs("-layers", Folder.LAYERS);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withArgs("-cache-dir", Folder.CACHE);
+			phase.withArgs("-skip-restore");
 		}
 		phase.withArgs(this.request.getName());
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		}
+		phase.withBinds(this.layersVolume, Directory.LAYERS);
+		phase.withBinds(this.applicationVolume, Directory.APPLICATION);
+		phase.withBinds(this.buildCacheVolume, Directory.CACHE);
+		phase.withBinds(this.launchCacheVolume, Directory.LAUNCH_CACHE);
 		return phase;
 	}
 
-	private Phase buildPhase() {
-		Phase phase = createPhase("builder");
-		phase.withArgs("-layers", Folder.LAYERS);
-		phase.withArgs("-app", Folder.APPLICATION);
-		phase.withArgs("-platform", Folder.PLATFORM);
-		return phase;
-	}
-
-	private Phase exportPhase() {
-		Phase phase = createPhase("exporter");
-		phase.withDaemonAccess();
-		phase.withLogLevelArg();
-		phase.withArgs("-image", this.runImageReference);
-		phase.withArgs("-layers", Folder.LAYERS);
-		phase.withArgs("-app", Folder.APPLICATION);
-		phase.withArgs("-daemon");
-		phase.withArgs("-launch-cache", Folder.LAUNCH_CACHE);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withArgs("-cache-dir", Folder.CACHE);
-		}
-		phase.withArgs(this.request.getName());
-		phase.withBinds(this.launchCacheVolume, Folder.LAUNCH_CACHE);
-		if (!this.platformVersion.hasCachePhase()) {
-			phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		}
-		return phase;
-	}
-
-	private Phase cachePhase() {
-		Phase phase = createPhase("cacher");
-		phase.withDaemonAccess();
-		phase.withArgs("-path", Folder.CACHE);
-		phase.withArgs("-layers", Folder.LAYERS);
-		phase.withLogLevelArg();
-		phase.withBinds(this.buildCacheVolume, Folder.CACHE);
-		return phase;
-	}
-
-	private Phase createPhase(String name) {
-		boolean verboseLogging = this.request.isVerboseLogging()
-				&& this.lifecycleVersion.isEqualOrGreaterThan(LOGGING_MINIMUM_VERSION);
-		Phase phase = new Phase(name, verboseLogging);
-		phase.withBinds(this.layersVolume, Folder.LAYERS);
-		phase.withBinds(this.applicationVolume, Folder.APPLICATION);
-		return phase;
+	private boolean isVerboseLogging() {
+		return this.request.isVerboseLogging() && this.lifecycleVersion.isEqualOrGreaterThan(LOGGING_MINIMUM_VERSION);
 	}
 
 	private void run(Phase phase) throws IOException {
@@ -239,7 +168,8 @@ class Lifecycle implements Closeable {
 		}
 		try {
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
-			return this.docker.container().create(config, ContainerContent.of(applicationContent, Folder.APPLICATION));
+			return this.docker.container().create(config,
+					ContainerContent.of(applicationContent, Directory.APPLICATION));
 		}
 		finally {
 			this.applicationVolumePopulated = true;
@@ -257,13 +187,13 @@ class Lifecycle implements Closeable {
 	}
 
 	/**
-	 * Common folders used by the various phases.
+	 * Common directories used by the various phases.
 	 */
-	private static class Folder {
+	private static class Directory {
 
 		/**
-		 * The folder used by buildpacks to write their layer contributions. A new layer
-		 * folder is created for each lifecycle execution.
+		 * The directory used by buildpacks to write their layer contributions. A new
+		 * layer directory is created for each lifecycle execution.
 		 * <p>
 		 * Maps to the {@code <layers...>} concept in the
 		 * <a href="https://github.com/buildpacks/spec/blob/master/buildpack.md">buildpack
@@ -273,8 +203,8 @@ class Lifecycle implements Closeable {
 		static final String LAYERS = "/layers";
 
 		/**
-		 * The folder containing the original contributed application. A new application
-		 * folder is created for each lifecycle execution.
+		 * The directory containing the original contributed application. A new
+		 * application directory is created for each lifecycle execution.
 		 * <p>
 		 * Maps to the {@code <app...>} concept in the
 		 * <a href="https://github.com/buildpacks/spec/blob/master/buildpack.md">buildpack
@@ -283,15 +213,15 @@ class Lifecycle implements Closeable {
 		 * convention of using {@code '/workspace'}.
 		 * <p>
 		 * Note that application content is uploaded to the container with the first phase
-		 * that runs and saved in a volume that is passed to subsequent phases. The folder
-		 * is mutable and buildpacks may modify the content.
+		 * that runs and saved in a volume that is passed to subsequent phases. The
+		 * directory is mutable and buildpacks may modify the content.
 		 */
 		static final String APPLICATION = "/workspace";
 
 		/**
-		 * The folder used by buildpacks to obtain environment variables and platform
-		 * specific concerns. The platform folder is read-only and is created/populated by
-		 * the {@link EphemeralBuilder}.
+		 * The directory used by buildpacks to obtain environment variables and platform
+		 * specific concerns. The platform directory is read-only and is created/populated
+		 * by the {@link EphemeralBuilder}.
 		 * <p>
 		 * Maps to the {@code <platform>/env} and {@code <platform>/#} concepts in the
 		 * <a href="https://github.com/buildpacks/spec/blob/master/buildpack.md">buildpack
@@ -301,7 +231,7 @@ class Lifecycle implements Closeable {
 		static final String PLATFORM = "/platform";
 
 		/**
-		 * The folder used by buildpacks for caching. The volume name is based on the
+		 * The directory used by buildpacks for caching. The volume name is based on the
 		 * image {@link BuildRequest#getName() name} being built, and is persistent across
 		 * invocations even if the application content has changed.
 		 * <p>
@@ -311,7 +241,7 @@ class Lifecycle implements Closeable {
 		static final String CACHE = "/cache";
 
 		/**
-		 * The folder used by buildpacks for launch related caching. The volume name is
+		 * The directory used by buildpacks for launch related caching. The volume name is
 		 * based on the image {@link BuildRequest#getName() name} being built, and is
 		 * persistent across invocations even if the application content has changed.
 		 * <p>

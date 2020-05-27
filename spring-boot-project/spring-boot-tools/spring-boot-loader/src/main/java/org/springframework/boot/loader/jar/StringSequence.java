@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,23 +98,17 @@ final class StringSequence implements CharSequence {
 		return this.source.indexOf(str, this.start + fromIndex) - this.start;
 	}
 
-	boolean startsWith(CharSequence prefix) {
+	boolean startsWith(String prefix) {
 		return startsWith(prefix, 0);
 	}
 
-	boolean startsWith(CharSequence prefix, int offset) {
+	boolean startsWith(String prefix, int offset) {
 		int prefixLength = prefix.length();
-		if (length() - prefixLength - offset < 0) {
+		int length = length();
+		if (length - prefixLength - offset < 0) {
 			return false;
 		}
-		int prefixOffset = 0;
-		int sourceOffset = offset;
-		while (prefixLength-- != 0) {
-			if (charAt(sourceOffset++) != prefix.charAt(prefixOffset++)) {
-				return false;
-			}
-		}
-		return true;
+		return this.source.startsWith(prefix, this.start + offset);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,10 +77,31 @@ public final class WebClientExchangeTags {
 
 	/**
 	 * Creates a {@code status} {@code Tag} derived from the
+	 * {@link ClientResponse#statusCode()} of the given {@code response} if available, the
+	 * thrown exception otherwise, or considers the request as Cancelled as a last resort.
+	 * @param response the response
+	 * @param throwable the exception
+	 * @return the status tag
+	 * @since 2.3.0
+	 */
+	public static Tag status(ClientResponse response, Throwable throwable) {
+		if (response != null) {
+			return Tag.of("status", String.valueOf(response.rawStatusCode()));
+		}
+		if (throwable != null) {
+			return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
+		}
+		return CLIENT_ERROR;
+	}
+
+	/**
+	 * Creates a {@code status} {@code Tag} derived from the
 	 * {@link ClientResponse#statusCode()} of the given {@code response}.
 	 * @param response the response
 	 * @return the status tag
+	 * @deprecated since 2.3.0 in favor of {@link #status(ClientResponse, Throwable)}
 	 */
+	@Deprecated
 	public static Tag status(ClientResponse response) {
 		return Tag.of("status", String.valueOf(response.rawStatusCode()));
 	}
@@ -90,7 +111,9 @@ public final class WebClientExchangeTags {
 	 * client.
 	 * @param throwable the exception
 	 * @return the status tag
+	 * @deprecated since 2.3.0 in favor of {@link #status(ClientResponse, Throwable)}
 	 */
+	@Deprecated
 	public static Tag status(Throwable throwable) {
 		return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
 	}

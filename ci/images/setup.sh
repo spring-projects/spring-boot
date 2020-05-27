@@ -27,9 +27,9 @@ test -f /opt/openjdk/bin/javac
 ###########################################################
 # DOCKER
 ###########################################################
-
 cd /
-curl -L https://download.docker.com/linux/static/stable/x86_64/docker-19.03.2.tgz | tar zx
+DOCKER_URL=$( ./get-docker-url.sh )
+curl -L ${DOCKER_URL} | tar zx
 mv /docker/* /bin/
 chmod +x /bin/docker*
 
@@ -38,3 +38,9 @@ curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSI
 chmod +x entrykit && \
 mv entrykit /bin/entrykit && \
 entrykit --symlink
+
+###########################################################
+# GRADLE ENTERPRISE
+###########################################################
+mkdir ~/.gradle
+echo 'systemProp.user.name=concourse' > ~/.gradle/gradle.properties

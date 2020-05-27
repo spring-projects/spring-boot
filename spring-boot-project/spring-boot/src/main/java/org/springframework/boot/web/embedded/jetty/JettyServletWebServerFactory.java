@@ -41,6 +41,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -57,6 +58,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -151,6 +153,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
+		}
+		if (getShutdown() == Shutdown.GRACEFUL) {
+			StatisticsHandler statisticsHandler = new StatisticsHandler();
+			statisticsHandler.setHandler(server.getHandler());
+			server.setHandler(statisticsHandler);
 		}
 		return getJettyWebServer(server);
 	}
@@ -260,7 +267,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			Resource rootResource = (docBase.isDirectory() ? Resource.newResource(docBase.getCanonicalFile())
 					: JarResource.newJarResource(Resource.newResource(docBase)));
 			resources.add((root != null) ? new LoaderHidingResource(rootResource) : rootResource);
-			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
+			for (URL resourceJarUrl : getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);
@@ -484,11 +491,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return this.threadPool;
 	}
 
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
+	@Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,25 +83,25 @@ class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	void getResourceWhenDeletedShouldReturnDeletedResource(@TempDir File folder) throws Exception {
-		File file = createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
+	void getResourceWhenDeletedShouldReturnDeletedResource(@TempDir File directory) throws Exception {
+		File file = createFile(directory, "name.class");
+		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
 		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
 		assertThat(resource).isNotNull().isInstanceOf(DeletedClassLoaderFileResource.class);
 	}
 
 	@Test
-	void getResourcesShouldReturnResources(@TempDir File folder) throws Exception {
-		createFile(folder, "name.class");
-		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
+	void getResourcesShouldReturnResources(@TempDir File directory) throws Exception {
+		createFile(directory, "name.class");
+		Resource[] resources = this.resolver.getResources("file:" + directory.getAbsolutePath() + "/**");
 		assertThat(resources).isNotEmpty();
 	}
 
 	@Test
-	void getResourcesWhenDeletedShouldFilterDeleted(@TempDir File folder) throws Exception {
-		createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
-		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
+	void getResourcesWhenDeletedShouldFilterDeleted(@TempDir File directory) throws Exception {
+		createFile(directory, "name.class");
+		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
+		Resource[] resources = this.resolver.getResources("file:" + directory.getAbsolutePath() + "/**");
 		assertThat(resources).isEmpty();
 	}
 
@@ -179,8 +179,8 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		return resolver;
 	}
 
-	private File createFile(File folder, String name) throws IOException {
-		File file = new File(folder, name);
+	private File createFile(File directory, String name) throws IOException {
+		File file = new File(directory, name);
 		FileCopyUtils.copy("test".getBytes(), file);
 		return file;
 	}

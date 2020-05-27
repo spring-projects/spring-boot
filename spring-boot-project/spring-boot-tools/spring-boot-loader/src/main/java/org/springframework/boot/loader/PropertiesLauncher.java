@@ -516,7 +516,7 @@ public class PropertiesLauncher extends Launcher {
 	private List<Archive> getNestedArchives(String path) throws Exception {
 		Archive parent = this.parent;
 		String root = path;
-		if (!root.equals("/") && root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+		if (!root.equals("/") && root.startsWith("/") || parent.getUrl().toURI().equals(this.home.toURI())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}

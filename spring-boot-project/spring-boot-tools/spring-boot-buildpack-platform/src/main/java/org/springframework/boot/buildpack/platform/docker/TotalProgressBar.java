@@ -63,7 +63,7 @@ public class TotalProgressBar implements Consumer<TotalProgressEvent> {
 	public TotalProgressBar(String prefix, char progressChar, boolean bookend, PrintStream out) {
 		this.progressChar = progressChar;
 		this.bookend = bookend;
-		if (prefix != null && prefix.length() > 0) {
+		if (prefix != null && !prefix.isEmpty()) {
 			out.print(prefix);
 			out.print(" ");
 		}

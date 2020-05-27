@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
+import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsContributor;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
@@ -33,7 +34,6 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,8 +57,8 @@ class WebFluxMetricsAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
 			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
-			assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebFluxTagsProvider.class),
-					"ignoreTrailingSlash")).isEqualTo(true);
+			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
+					.isEqualTo(true);
 		});
 	}
 
@@ -67,8 +67,8 @@ class WebFluxMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.metrics.web.server.request.ignore-trailing-slash=false")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
-					assertThat(ReflectionTestUtils.getField(context.getBean(DefaultWebFluxTagsProvider.class),
-							"ignoreTrailingSlash")).isEqualTo(false);
+					assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
+							.isEqualTo(false);
 				});
 	}
 
@@ -112,6 +112,15 @@ class WebFluxMetricsAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void whenTagContributorsAreDefinedThenTagsProviderUsesThem() {
+		this.contextRunner.withUserConfiguration(TagsContributorsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
+			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("contributors").asList()
+					.hasSize(2);
+		});
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context) {
 		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
 		for (int i = 0; i < 3; i++) {
@@ -126,6 +135,21 @@ class WebFluxMetricsAutoConfigurationTests {
 		@Bean
 		WebFluxTagsProvider customWebFluxTagsProvider() {
 			return mock(WebFluxTagsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TagsContributorsConfiguration {
+
+		@Bean
+		WebFluxTagsContributor tagContributorOne() {
+			return mock(WebFluxTagsContributor.class);
+		}
+
+		@Bean
+		WebFluxTagsContributor tagContributorTwo() {
+			return mock(WebFluxTagsContributor.class);
 		}
 
 	}

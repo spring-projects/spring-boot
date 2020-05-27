@@ -28,8 +28,10 @@ repositories {
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.0.RELEASE")
+	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
 
+	implementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
@@ -50,9 +52,22 @@ gradlePlugin {
 	plugins {
 		springBootPlugin {
 			id = "org.springframework.boot"
+			displayName = "Spring Boot Gradle Plugin"
+			description = "Spring Boot Gradle Plugin"
 			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootPlugin"
 		}
 	}
+}
+
+task preparePluginValidationClasses(type: Copy) {
+	destinationDir = file("$buildDir/classes/java/pluginValidation")
+	from(sourceSets.main.output.classesDirs) {
+		exclude "**/CreateBootStartScripts.class"
+	}
+}
+
+validatePlugins {
+	classes.setFrom preparePluginValidationClasses
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
@@ -98,6 +113,7 @@ task zip(type: Zip) {
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
 		into "reference/pdf"
+		rename "index.pdf", "${project.name}-reference.pdf"
 	}
 	from(asciidoctor.outputDir) {
 		into "reference/html"

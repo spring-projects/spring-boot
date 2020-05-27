@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -79,18 +79,18 @@ class ClassLoaderFilesTests {
 	}
 
 	@Test
-	void addTwiceInDifferentSourceFolders() {
+	void addTwiceInDifferentSourceDirectories() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceFolder("a").getFiles().size()).isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceFolder("b").getFiles().size()).isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles().size()).isEqualTo(0);
+		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles().size()).isEqualTo(1);
 	}
 
 	@Test
-	void getSourceFolders() {
+	void getSourceDirectories() {
 		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
 		ClassLoaderFile file3 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
@@ -99,14 +99,14 @@ class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile2", file2);
 		this.files.addFile("b", "myfile3", file3);
 		this.files.addFile("b", "myfile4", file4);
-		Iterator<SourceFolder> sourceFolders = this.files.getSourceFolders().iterator();
-		SourceFolder sourceFolder1 = sourceFolders.next();
-		SourceFolder sourceFolder2 = sourceFolders.next();
-		assertThat(sourceFolders.hasNext()).isFalse();
-		assertThat(sourceFolder1.getName()).isEqualTo("a");
-		assertThat(sourceFolder2.getName()).isEqualTo("b");
-		assertThat(sourceFolder1.getFiles()).containsOnly(file1, file2);
-		assertThat(sourceFolder2.getFiles()).containsOnly(file3, file4);
+		Iterator<SourceDirectory> sourceDirectories = this.files.getSourceDirectories().iterator();
+		SourceDirectory sourceDirectory1 = sourceDirectories.next();
+		SourceDirectory sourceDirectory2 = sourceDirectories.next();
+		assertThat(sourceDirectories.hasNext()).isFalse();
+		assertThat(sourceDirectory1.getName()).isEqualTo("a");
+		assertThat(sourceDirectory2.getName()).isEqualTo("b");
+		assertThat(sourceDirectory1.getFiles()).containsOnly(file1, file2);
+		assertThat(sourceDirectory2.getFiles()).containsOnly(file3, file4);
 	}
 
 	@Test
@@ -132,13 +132,13 @@ class ClassLoaderFilesTests {
 		toAdd.addFile("a", "myfile2", file2);
 		toAdd.addFile("b", "myfile3", file3);
 		this.files.addAll(toAdd);
-		Iterator<SourceFolder> sourceFolders = this.files.getSourceFolders().iterator();
-		SourceFolder sourceFolder1 = sourceFolders.next();
-		SourceFolder sourceFolder2 = sourceFolders.next();
-		assertThat(sourceFolders.hasNext()).isFalse();
-		assertThat(sourceFolder1.getName()).isEqualTo("a");
-		assertThat(sourceFolder2.getName()).isEqualTo("b");
-		assertThat(sourceFolder1.getFiles()).containsOnly(file1, file2);
+		Iterator<SourceDirectory> sourceDirectoryies = this.files.getSourceDirectories().iterator();
+		SourceDirectory sourceDirectory1 = sourceDirectoryies.next();
+		SourceDirectory sourceDirectory2 = sourceDirectoryies.next();
+		assertThat(sourceDirectoryies.hasNext()).isFalse();
+		assertThat(sourceDirectory1.getName()).isEqualTo("a");
+		assertThat(sourceDirectory2.getName()).isEqualTo("b");
+		assertThat(sourceDirectory1.getFiles()).containsOnly(file1, file2);
 	}
 
 	@Test

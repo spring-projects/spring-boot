@@ -112,8 +112,11 @@ public final class WebMvcTags {
 		if (request != null) {
 			String pattern = getMatchingPattern(request);
 			if (pattern != null) {
-				if (ignoreTrailingSlash) {
+				if (ignoreTrailingSlash && pattern.length() > 1) {
 					pattern = TRAILING_SLASH_PATTERN.matcher(pattern).replaceAll("");
+				}
+				if (pattern.isEmpty()) {
+					return URI_ROOT;
 				}
 				return Tag.of("uri", pattern);
 			}

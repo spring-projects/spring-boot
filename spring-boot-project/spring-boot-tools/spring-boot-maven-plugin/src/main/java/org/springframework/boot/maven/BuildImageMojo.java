@@ -41,6 +41,7 @@ import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -53,6 +54,7 @@ import org.springframework.util.StringUtils;
  * Package an application into a OCI image using a buildpack.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 @Mojo(name = "build-image", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
@@ -60,6 +62,8 @@ import org.springframework.util.StringUtils;
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 @Execute(phase = LifecyclePhase.PACKAGE)
 public class BuildImageMojo extends AbstractPackagerMojo {
+
+	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
 	/**
 	 * Directory containing the JAR.
@@ -97,6 +101,20 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	@Parameter
 	private Image image;
 
+	/**
+	 * Alias for {@link Image#name} to support configuration via command-line property.
+	 * @since 2.3.0
+	 */
+	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
+	String imageName;
+
+	/**
+	 * Alias for {@link Image#builder} to support configuration via command-line property.
+	 * @since 2.3.0
+	 */
+	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
+	String imageBuilder;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -124,7 +142,14 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	private BuildRequest getBuildRequest(Libraries libraries) {
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
-		return ((this.image != null) ? this.image : new Image()).getBuildRequest(this.project.getArtifact(), content);
+		Image image = (this.image != null) ? this.image : new Image();
+		if (image.name == null && this.imageName != null) {
+			image.setName(this.imageName);
+		}
+		if (image.builder == null && this.imageBuilder != null) {
+			image.setBuilder(this.imageBuilder);
+		}
+		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
 
 	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {
@@ -134,13 +159,38 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	private File getJarFile() {
 		// We can use 'project.getArtifact().getFile()' because that was done in a
-		// forked lifecyle and is now null
+		// forked lifecycle and is now null
 		StringBuilder name = new StringBuilder(this.finalName);
 		if (StringUtils.hasText(this.classifier)) {
 			name.append("-").append(this.classifier);
 		}
 		name.append(".jar");
 		return new File(this.sourceDirectory, name.toString());
+	}
+
+	private BuildRequest customize(BuildRequest request) {
+		request = customizeEnvironment(request);
+		request = customizeCreator(request);
+		return request;
+	}
+
+	private BuildRequest customizeEnvironment(BuildRequest request) {
+		if (!request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
+			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
+			String targetJavaVersion = compilerConfiguration.getTargetMajorVersion();
+			if (StringUtils.hasText(targetJavaVersion)) {
+				return request.withEnv(BUILDPACK_JVM_VERSION_KEY, targetJavaVersion + ".*");
+			}
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCreator(BuildRequest request) {
+		String springBootVersion = VersionExtractor.forClass(BuildImageMojo.class);
+		if (StringUtils.hasText(springBootVersion)) {
+			request = request.withCreator(Creator.withVersion(springBootVersion));
+		}
+		return request;
 	}
 
 	/**

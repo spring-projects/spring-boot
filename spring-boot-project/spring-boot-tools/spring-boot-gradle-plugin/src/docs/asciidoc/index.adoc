@@ -38,10 +38,10 @@ Andy Wilkinson, Scott Frederick
 
 [[introduction]]
 == Introduction
-
 The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
 It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
-Spring Boot's Gradle plugin requires Gradle 6.x (5.6 is also supported but this support is deprecated and will be removed in a future release).
+Spring Boot's Gradle plugin requires Gradle 6 (6.3 or later).
+Gradle 5.6 is also supported but this support is deprecated and will be removed in a future release.
 
 In addition to this user guide, {api-documentation}[API documentation] is also available.
 

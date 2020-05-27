@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Nishant Raut
  */
+@SuppressWarnings("deprecation")
 class JtaAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -115,6 +116,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, BitronixJtaConfiguration.class);
 		this.context.getBean(bitronix.tm.Configuration.class);
@@ -126,6 +128,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void defaultBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext(BitronixJtaConfiguration.class);
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class).getServerId();
@@ -133,6 +136,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customBitronixServerId() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.transactionManagerId:custom").applyTo(this.context);
@@ -167,6 +171,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
@@ -192,6 +197,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
@@ -218,6 +224,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues

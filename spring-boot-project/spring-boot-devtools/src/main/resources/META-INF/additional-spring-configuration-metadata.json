@@ -1,26 +1,6 @@
 {
   "properties": [
     {
-      "name": "spring.devtools.remote.debug.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Enable remote debug support.",
-      "defaultValue": true,
-      "deprecation": {
-        "reason": "Remote debug is no longer supported.",
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.devtools.remote.debug.local-port",
-      "type": "java.lang.Integer",
-      "description": "Local remote debug server port.",
-      "defaultValue": 8000,
-      "deprecation": {
-        "reason": "Remote debug is no longer supported.",
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.devtools.add-properties",
       "type": "java.lang.Boolean",
       "description": "Whether to enable development property defaults.",

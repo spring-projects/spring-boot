@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,12 @@ import org.elasticsearch.client.RestClientBuilder;
  *
  * @author Brian Clozel
  * @since 2.1.0
+ * @deprecated as of 2.3.1 in favor of
+ * {@link org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer}
  */
 @FunctionalInterface
-public interface RestClientBuilderCustomizer {
-
-	/**
-	 * Customize the {@link RestClientBuilder}.
-	 * @param builder the builder to customize
-	 */
-	void customize(RestClientBuilder builder);
+@Deprecated
+public interface RestClientBuilderCustomizer
+		extends org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 
@@ -50,8 +51,13 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		if (this.resolvers == null) {
 			this.resolvers = extractResolvers();
 		}
-		return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		ModelAndView resolved = this.resolvers.stream()
+				.map((resolver) -> resolver.resolveException(request, response, handler, ex)).filter(Objects::nonNull)
+				.findFirst().orElse(null);
+		if (resolved != null && resolved.isEmpty()) {
+			request.setAttribute("javax.servlet.error.exception", ex);
+		}
+		return resolved;
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {

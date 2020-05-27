@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
@@ -70,6 +71,14 @@ class ServletWebServerFactoryCustomizerTests {
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("TestName");
+	}
+
+	@Test
+	void testCustomizeDefaultServlet() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.properties.getServlet().setRegisterDefaultServlet(false);
+		this.customizer.customize(factory);
+		verify(factory).setRegisterDefaultServlet(false);
 	}
 
 	@Test
@@ -137,21 +146,33 @@ class ServletWebServerFactoryCustomizerTests {
 	@Test
 	void testCustomizeTomcatMinSpareThreads() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.tomcat.min-spare-threads", "10");
+		map.put("server.tomcat.threads.min-spare", "10");
 		bindProperties(map);
-		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
 	@Test
 	void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.servlet.session.store-dir", "myfolder");
+		map.put("server.servlet.session.store-dir", "mydirectory");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("myfolder"));
+		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("mydirectory"));
+	}
+
+	@Test
+	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.shutdown", "graceful");
+		bindProperties(map);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
+		verify(factory).setShutdown(shutdownCaptor.capture());
+		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 
 	private void bindProperties(Map<String, String> map) {

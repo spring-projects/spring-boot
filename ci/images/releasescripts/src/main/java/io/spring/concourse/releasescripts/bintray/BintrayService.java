@@ -87,7 +87,7 @@ public class BintrayService {
 		}, Objects::nonNull);
 		RequestEntity<Void> publishedFilesRequest = getRequest(releaseInfo, 0);
 		try {
-			waitAtMost(40, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
+			waitAtMost(120, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
 				Object[] publishedFiles = this.restTemplate.exchange(publishedFilesRequest, Object[].class).getBody();
 				return allFiles.length == publishedFiles.length;
 			});

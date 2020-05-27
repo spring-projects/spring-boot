@@ -71,7 +71,7 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenSystemPropertiesAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
+	void whenSystemPropertiesAndJvmArgumentsAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-jvm-system-props").goals("spring-boot:run")
 				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
@@ -79,6 +79,20 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenJvmArgumentsAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-jvmargs").goals("spring-boot:run")
+				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenCommandLineSpecifiesJvmArgumentsTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-jvmargs-commandline").goals("spring-boot:run")
+				.systemProperty("spring-boot.run.jvmArguments", "-Dfoo=value-from-cmd")
+				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenPomAndCommandLineSpecifyJvmArgumentsThenPomOverrides(MavenBuild mavenBuild) {
+		mavenBuild.project("run-jvmargs").goals("spring-boot:run")
+				.systemProperty("spring-boot.run.jvmArguments", "-Dfoo=value-from-cmd")
 				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
@@ -102,8 +116,8 @@ class RunIntegrationTests {
 
 	@TestTemplate
 	void whenAWorkingDirectoryIsConfiguredTheApplicationIsRunFromThatDirectory(MavenBuild mavenBuild) {
-		mavenBuild.project("run-working-directory").goals("spring-boot:run")
-				.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+		mavenBuild.project("run-working-directory").goals("spring-boot:run").execute(
+				(project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*src.main.java"));
 	}
 
 	@TestTemplate
@@ -127,6 +141,15 @@ class RunIntegrationTests {
 				"--management.endpoints.web.exposure.include=prometheus,info,health,metrics --spring.profiles.active=foo,bar")
 				.execute((project) -> assertThat(buildLog(project)).contains(
 						"I haz been run with profile(s) 'foo,bar' and endpoint(s) 'prometheus,info,health,metrics'"));
+	}
+
+	@TestTemplate
+	void whenPomAndCommandLineSpecifyRunArgumentsThenPomOverrides(MavenBuild mavenBuild) {
+		mavenBuild.project("run-arguments").goals("spring-boot:run")
+				.systemProperty("spring-boot.run.arguments",
+						"--management.endpoints.web.exposure.include=one,two,three --spring.profiles.active=test")
+				.execute((project) -> assertThat(buildLog(project))
+						.contains("I haz been run with profile(s) 'foo,bar' and endpoint(s) 'prometheus,info'"));
 	}
 
 	private String buildLog(File project) {

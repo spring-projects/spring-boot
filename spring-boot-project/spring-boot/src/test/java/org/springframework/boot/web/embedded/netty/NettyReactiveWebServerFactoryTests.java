@@ -16,11 +16,12 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Arrays;
 
-import javax.net.ssl.SSLHandshakeException;
-
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
@@ -30,6 +31,7 @@ import reactor.test.StepVerifier;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -64,7 +66,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
-				.satisfies(this::portMatchesRequirement);
+				.satisfies(this::portMatchesRequirement).withCauseInstanceOf(Throwable.class);
 	}
 
 	private void portMatchesRequirement(PortInUseException exception) {
@@ -102,11 +104,31 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
-	void whenSslIsConfiguredWithAnInvalidAliasTheSslHandshakeFails() {
-		Mono<String> result = testSslWithAlias("test-alias-bad");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectErrorMatches((throwable) -> throwable instanceof SSLHandshakeException
-				&& throwable.getMessage().contains("HANDSHAKE_FAILURE")).verify();
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
+		this.webServer.stop();
+	}
+
+	@Disabled("Flaky due to https://github.com/reactor/reactor-netty/issues/1093")
+	@Override
+	protected void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes() {
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,10 +93,10 @@ class ClassPathFileChangeListenerTests {
 	private void testSendsEvent(boolean restart) {
 		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(this.eventPublisher,
 				this.restartStrategy, this.fileSystemWatcher);
-		File folder = new File("s1");
+		File directory = new File("s1");
 		File file = new File("f1");
-		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
-		ChangedFile file2 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
+		ChangedFile file1 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
+		ChangedFile file2 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
 		Set<ChangedFile> files = new LinkedHashSet<>();
 		files.add(file1);
 		files.add(file2);

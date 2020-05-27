@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
@@ -39,6 +40,7 @@ import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
+import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassHierarchicalProperties;
@@ -360,6 +362,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueCharacterProperties.class))
 				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	void constructorParameterPropertyWithEmptyDefaultValueOnProperty() {
+		ConfigurationMetadata metadata = compile(EmptyDefaultValueProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("test.name"));
+		ItemMetadata nameMetadata = metadata.getItems().stream().filter((item) -> item.getName().equals("test.name"))
+				.findFirst().get();
+		assertThat(nameMetadata.getDefaultValue()).isNull();
 	}
 
 	@Test

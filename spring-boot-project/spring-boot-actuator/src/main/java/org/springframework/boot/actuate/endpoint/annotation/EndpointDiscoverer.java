@@ -49,6 +49,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -140,8 +141,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private EndpointBean createEndpointBean(String beanName) {
-		Object bean = this.applicationContext.getBean(beanName);
-		return new EndpointBean(this.applicationContext.getEnvironment(), beanName, bean);
+		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName, false));
+		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
+		return new EndpointBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
 
 	private void addExtensionBeans(Collection<EndpointBean> endpointBeans) {
@@ -159,8 +161,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private ExtensionBean createExtensionBean(String beanName) {
-		Object bean = this.applicationContext.getBean(beanName);
-		return new ExtensionBean(this.applicationContext.getEnvironment(), beanName, bean);
+		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName));
+		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
+		return new ExtensionBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
 
 	private void addExtensionBean(EndpointBean endpointBean, ExtensionBean extensionBean) {
@@ -233,7 +236,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private boolean isExtensionExposed(EndpointBean endpointBean, ExtensionBean extensionBean) {
-		return isFilterMatch(extensionBean.getFilter(), endpointBean) && isExtensionExposed(extensionBean.getBean());
+		return isFilterMatch(extensionBean.getFilter(), endpointBean)
+				&& isExtensionTypeExposed(extensionBean.getBeanType());
 	}
 
 	/**
@@ -242,7 +246,18 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param extensionBean the extension bean
 	 * @return {@code true} if the extension is exposed
 	 */
+	@Deprecated
 	protected boolean isExtensionExposed(Object extensionBean) {
+		return true;
+	}
+
+	/**
+	 * Determine if an extension bean should be exposed. Subclasses can override this
+	 * method to provide additional logic.
+	 * @param extensionBeanType the extension bean type
+	 * @return {@code true} if the extension is exposed
+	 */
+	protected boolean isExtensionTypeExposed(Class<?> extensionBeanType) {
 		return true;
 	}
 
@@ -257,7 +272,18 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param endpointBean the endpoint bean
 	 * @return {@code true} if the endpoint is exposed
 	 */
+	@Deprecated
 	protected boolean isEndpointExposed(Object endpointBean) {
+		return true;
+	}
+
+	/**
+	 * Determine if an endpoint bean should be exposed. Subclasses can override this
+	 * method to provide additional logic.
+	 * @param beanType the endpoint bean type
+	 * @return {@code true} if the endpoint is exposed
+	 */
+	protected boolean isEndpointTypeExposed(Class<?> beanType) {
 		return true;
 	}
 
@@ -272,7 +298,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	@SuppressWarnings("unchecked")
 	private boolean isFilterMatch(Class<?> filter, EndpointBean endpointBean) {
-		if (!isEndpointExposed(endpointBean.getBean())) {
+		if (!isEndpointTypeExposed(endpointBean.getBeanType())) {
 			return false;
 		}
 		if (filter == null) {
@@ -392,7 +418,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final String beanName;
 
-		private final Object bean;
+		private final Class<?> beanType;
+
+		private final Supplier<Object> beanSupplier;
 
 		private final EndpointId id;
 
@@ -402,17 +430,18 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
-		EndpointBean(Environment environment, String beanName, Object bean) {
-			MergedAnnotation<Endpoint> annotation = MergedAnnotations
-					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
+		EndpointBean(Environment environment, String beanName, Class<?> beanType, Supplier<Object> beanSupplier) {
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(beanType, SearchStrategy.TYPE_HIERARCHY)
+					.get(Endpoint.class);
 			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
-					() -> "No @Endpoint id attribute specified for " + bean.getClass().getName());
+					() -> "No @Endpoint id attribute specified for " + beanType.getName());
 			this.beanName = beanName;
-			this.bean = bean;
+			this.beanType = beanType;
+			this.beanSupplier = beanSupplier;
 			this.id = EndpointId.of(environment, id);
 			this.enabledByDefault = annotation.getBoolean("enableByDefault");
-			this.filter = getFilter(this.bean.getClass());
+			this.filter = getFilter(beanType);
 		}
 
 		void addExtension(ExtensionBean extensionBean) {
@@ -432,8 +461,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.beanName;
 		}
 
+		Class<?> getBeanType() {
+			return this.beanType;
+		}
+
 		Object getBean() {
-			return this.bean;
+			return this.beanSupplier.get();
 		}
 
 		EndpointId getId() {
@@ -457,17 +490,20 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final String beanName;
 
-		private final Object bean;
+		private final Class<?> beanType;
+
+		private final Supplier<Object> beanSupplier;
 
 		private final EndpointId endpointId;
 
 		private final Class<?> filter;
 
-		ExtensionBean(Environment environment, String beanName, Object bean) {
-			this.bean = bean;
+		ExtensionBean(Environment environment, String beanName, Class<?> beanType, Supplier<Object> beanSupplier) {
 			this.beanName = beanName;
+			this.beanType = beanType;
+			this.beanSupplier = beanSupplier;
 			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations
-					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(EndpointExtension.class);
+					.from(beanType, SearchStrategy.TYPE_HIERARCHY).get(EndpointExtension.class);
 			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
 			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
 					.from(endpointType, SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
@@ -481,8 +517,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.beanName;
 		}
 
+		Class<?> getBeanType() {
+			return this.beanType;
+		}
+
 		Object getBean() {
-			return this.bean;
+			return this.beanSupplier.get();
 		}
 
 		EndpointId getEndpointId() {

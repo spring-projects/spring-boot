@@ -20,7 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -153,6 +156,36 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		}
 		catch (UnsupportedOperationException ex) {
 			// Probably running the test on Windows
+		}
+	}
+
+	@Test
+	void allLoaderDirectoriesAndFilesUseSameTimestamp() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		Long timestamp = null;
+		repackager.repackage(this.destination, NO_LIBRARIES);
+		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
+			if (entry.getName().startsWith("org/springframework/boot/loader")) {
+				if (timestamp == null) {
+					timestamp = entry.getTime();
+				}
+				else {
+					assertThat(entry.getTime()).withFailMessage("Expected time %d to be equal to %d for entry %s",
+							entry.getTime(), timestamp, entry.getName()).isEqualTo(timestamp);
+				}
+			}
+		}
+	}
+
+	@Test
+	void allEntriesUseProvidedTimestamp() throws IOException {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
+		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
+		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
+			assertThat(entry.getTime()).isEqualTo(timestamp);
 		}
 	}
 

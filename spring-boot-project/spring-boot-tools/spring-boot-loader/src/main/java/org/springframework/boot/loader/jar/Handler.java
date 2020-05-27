@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ public class Handler extends URLStreamHandler {
 	private static final String FILE_PROTOCOL = "file:";
 
 	private static final String SEPARATOR = "!/";
+
+	private static final Pattern SEPARATOR_PATTERN = Pattern.compile(SEPARATOR, Pattern.LITERAL);
 
 	private static final String CURRENT_DIR = "/./";
 
@@ -285,7 +287,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private String canonicalize(String path) {
-		return path.replace(SEPARATOR, "/");
+		return SEPARATOR_PATTERN.matcher(path).replaceAll("/");
 	}
 
 	public JarFile getRootJarFileFromUrl(URL url) throws IOException {

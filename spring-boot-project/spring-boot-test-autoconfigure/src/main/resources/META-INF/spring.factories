@@ -37,12 +37,23 @@ org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,\
-org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureDataNeo4j auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j=\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+
+# AutoConfigureDataR2dbc auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.r2dbc.AutoConfigureDataR2dbc=\
+org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.r2dbc.R2dbcTransactionManagerAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
+org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureDataRedis auto-configuration imports
@@ -157,6 +168,15 @@ org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
+# AutoConfigureWebServiceClient
+org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureWebServiceClient=\
+org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTemplateAutoConfiguration,\
+org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAutoConfiguration
+
+# AutoConfigureMockWebServiceServer
+org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureMockWebServiceServer=\
+org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerAutoConfiguration
+
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
 org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener$PostProcessor
@@ -173,4 +193,5 @@ org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
+org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener

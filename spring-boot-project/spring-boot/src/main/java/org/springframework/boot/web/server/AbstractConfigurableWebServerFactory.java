@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	private Compression compression;
 
 	private String serverHeader;
+
+	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
 	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.
@@ -160,6 +162,20 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	@Override
 	public void setServerHeader(String serverHeader) {
 		this.serverHeader = serverHeader;
+	}
+
+	@Override
+	public void setShutdown(Shutdown shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	/**
+	 * Returns the shutdown configuration that will be applied to the server.
+	 * @return the shutdown configuration
+	 * @since 2.3.0
+	 */
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	/**

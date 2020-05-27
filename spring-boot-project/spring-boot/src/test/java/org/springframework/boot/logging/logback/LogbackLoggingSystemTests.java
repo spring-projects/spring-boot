@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,6 +204,14 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
 				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	void getLoggingConfigurationForLoggerThatDoesNotExistShouldReturnNull() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("doesnotexist");
+		assertThat(configuration).isNull();
 	}
 
 	@Test

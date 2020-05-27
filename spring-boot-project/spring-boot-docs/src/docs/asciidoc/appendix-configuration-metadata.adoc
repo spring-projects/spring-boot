@@ -730,7 +730,7 @@ If you are using an `additional-spring-configuration-metadata.json` file, the `c
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	compileJava.dependsOn(processResources)
+	compileJava.inputs.files(processResources)
 ----
 
 This dependency ensures that the additional metadata is available when the annotation processor runs during compilation.

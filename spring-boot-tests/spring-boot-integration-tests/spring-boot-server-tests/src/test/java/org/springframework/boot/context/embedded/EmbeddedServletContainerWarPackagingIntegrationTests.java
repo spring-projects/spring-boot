@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,6 +100,12 @@ class EmbeddedServletContainerWarPackagingIntegrationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
 				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
+	}
+
+	@TestTemplate
+	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/actuator/war", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	private List<String> readLines(String input) {

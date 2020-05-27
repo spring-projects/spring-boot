@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -46,6 +47,10 @@ import org.springframework.beans.factory.support.BeanDefinitionOverrideException
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.AvailabilityState;
+import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -106,6 +111,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.atLeastOnce;
@@ -408,7 +414,10 @@ class SpringApplicationTests {
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		inOrder.verify(listener)
+				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
 		inOrder.verifyNoMoreInteractions();
 	}
 
@@ -882,7 +891,7 @@ class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-		verifyTestListenerEvents();
+		verifyRegisteredListenerSuccessEvents();
 	}
 
 	@Test
@@ -895,24 +904,21 @@ class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-		verifyTestListenerEvents();
+		verifyRegisteredListenerSuccessEvents();
 	}
 
 	@SuppressWarnings("unchecked")
-	private void verifyTestListenerEvents() {
+	private void verifyRegisteredListenerSuccessEvents() {
 		ApplicationListener<ApplicationEvent> listener = this.context.getBean("testApplicationListener",
 				ApplicationListener.class);
-		verifyListenerEvents(listener, ContextRefreshedEvent.class, ApplicationStartedEvent.class,
-				ApplicationReadyEvent.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void verifyListenerEvents(ApplicationListener<ApplicationEvent> listener,
-			Class<? extends ApplicationEvent>... eventTypes) {
-		for (Class<? extends ApplicationEvent> eventType : eventTypes) {
-			verify(listener).onApplicationEvent(isA(eventType));
-		}
-		verifyNoMoreInteractions(listener);
+		InOrder inOrder = Mockito.inOrder(listener);
+		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(argThat(isAvailabilityChangeEventWithState(LivenessState.CORRECT)));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		inOrder.verify(listener)
+				.onApplicationEvent(argThat(isAvailabilityChangeEventWithState(ReadinessState.ACCEPTING_TRAFFIC)));
+		inOrder.verifyNoMoreInteractions();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -922,8 +928,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.addListeners(listener);
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(application::run);
-		verifyListenerEvents(listener, ApplicationStartingEvent.class, ApplicationEnvironmentPreparedEvent.class,
-				ApplicationContextInitializedEvent.class, ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
+		verifyRegisteredListenerFailedFromApplicationEvents(listener);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -934,8 +939,17 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addListeners(listener);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
-		verifyListenerEvents(listener, ApplicationStartingEvent.class, ApplicationEnvironmentPreparedEvent.class,
-				ApplicationContextInitializedEvent.class, ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
+		verifyRegisteredListenerFailedFromApplicationEvents(listener);
+	}
+
+	private void verifyRegisteredListenerFailedFromApplicationEvents(ApplicationListener<ApplicationEvent> listener) {
+		InOrder inOrder = Mockito.inOrder(listener);
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		inOrder.verifyNoMoreInteractions();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -945,7 +959,8 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.addInitializers((applicationContext) -> applicationContext.addApplicationListener(listener));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(application::run);
-		verifyListenerEvents(listener, ApplicationFailedEvent.class);
+		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		verifyNoMoreInteractions(listener);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -956,7 +971,8 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addInitializers((applicationContext) -> applicationContext.addApplicationListener(listener));
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
-		verifyListenerEvents(listener, ApplicationFailedEvent.class);
+		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		verifyNoMoreInteractions(listener);
 	}
 
 	@Test
@@ -1118,6 +1134,12 @@ class SpringApplicationTests {
 		assertThat(new SpringApplication(LazyInitializationExcludeFilterConfig.class)
 				.run("--spring.main.web-application-type=none", "--spring.main.lazy-initialization=true")
 				.getBean(AtomicInteger.class)).hasValue(1);
+	}
+
+	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
+			S state) {
+		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
+				&& ((AvailabilityChangeEvent<?>) argument).getState().equals(state);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final Class<?> propertySourceClass,

@@ -1,7 +1,8 @@
-FROM ubuntu:bionic-20200112
+FROM ubuntu:bionic-20200403
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
+ADD get-docker-url.sh /get-docker-url.sh
 RUN ./setup.sh java8
 
 ENV JAVA_HOME /opt/openjdk

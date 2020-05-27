@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,8 +204,6 @@ class ReactiveCloudFoundrySecurityServiceTests {
 		});
 		StepVerifier.create(this.securityService.getUaaUrl())
 				.consumeNextWith((uaaUrl) -> assertThat(uaaUrl).isEqualTo(UAA_URL)).expectComplete().verify();
-		// this.securityService.getUaaUrl().block(); //FIXME subscribe again to check that
-		// it isn't called again
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo(CLOUD_CONTROLLER + "/info"));
 		expectRequestCount(1);
 	}

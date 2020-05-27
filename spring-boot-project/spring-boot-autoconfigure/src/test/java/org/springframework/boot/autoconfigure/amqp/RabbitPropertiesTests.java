@@ -60,8 +60,8 @@ class RabbitPropertiesTests {
 	}
 
 	@Test
-	void portDefaultsTo5672() {
-		assertThat(this.properties.getPort()).isEqualTo(5672);
+	void portDefaultsToNull() {
+		assertThat(this.properties.getPort()).isNull();
 	}
 
 	@Test
@@ -74,6 +74,17 @@ class RabbitPropertiesTests {
 	void determinePortReturnsPortOfFirstAddress() {
 		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
+	}
+
+	@Test
+	void determinePortReturnsDefaultPortWhenNoAddresses() {
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
+	}
+
+	@Test
+	void determinePortWithSslReturnsDefaultSslPortWhenNoAddresses() {
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determinePort()).isEqualTo(5671);
 	}
 
 	@Test
@@ -233,6 +244,17 @@ class RabbitPropertiesTests {
 	void determineAddressesReturnsAddressesWithJustHostAndPort() {
 		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
+	}
+
+	@Test
+	void determineAddressesUsesDefaultWhenNoAddressesSet() {
+		assertThat(this.properties.determineAddresses()).isEqualTo("localhost:5672");
+	}
+
+	@Test
+	void determineAddressesWithSslUsesDefaultWhenNoAddressesSet() {
+		this.properties.getSsl().setEnabled(true);
+		assertThat(this.properties.determineAddresses()).isEqualTo("localhost:5671");
 	}
 
 	@Test

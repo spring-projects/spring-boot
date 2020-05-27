@@ -61,6 +61,8 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.projectreactor.netty:reactor-netty")
+	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.cache:cache-api")
@@ -99,6 +101,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-solr")
 	optional("org.springframework.integration:spring-integration-core")
+	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
@@ -107,6 +110,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.undertow:undertow-core")
@@ -190,6 +194,7 @@ task zip(type: Zip) {
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
 		into "pdf"
+		rename { "spring-boot-actuator-web-api.pdf" }
 	}
 	from(asciidoctor.outputDir) {
 		into "html"

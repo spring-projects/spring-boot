@@ -22,11 +22,28 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.1.1"
+	id "com.gradle.enterprise" version "3.2"
 	id "io.spring.gradle-enterprise-conventions" version "0.0.2"
 }
 
 rootProject.name="spring-boot-build"
+
+settings.gradle.projectsLoaded {
+	gradleEnterprise {
+		buildScan {
+			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
+				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			}
+
+			settings.gradle.rootProject.getBuildDir().mkdirs()
+			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "(build scan not generated)"
+
+			buildScanPublished { scan ->
+				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "${scan.buildScanUri}\n"
+			}
+		}
+	}
+}
 
 include "spring-boot-project:spring-boot-dependencies"
 include "spring-boot-project:spring-boot-parent"

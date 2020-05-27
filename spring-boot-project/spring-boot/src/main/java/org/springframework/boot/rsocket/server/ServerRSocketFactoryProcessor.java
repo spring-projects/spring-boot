@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import io.rsocket.RSocketFactory.ServerRSocketFactory;
  * @author Brian Clozel
  * @see RSocketServerFactory
  * @since 2.2.0
+ * @deprecated in favor of {@link RSocketServerCustomizer} as of 2.2.7
  */
 @FunctionalInterface
+@Deprecated
 public interface ServerRSocketFactoryProcessor {
 
 	/**

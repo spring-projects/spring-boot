@@ -38,7 +38,7 @@ public class DependencyVersionTests {
 	}
 
 	@Test
-	void parseWhenMavenLikeVersionWithNumericQualifieShouldReturnNumericQualifierDependencyVersion() {
+	void parseWhenMavenLikeVersionWithNumericQualifierShouldReturnNumericQualifierDependencyVersion() {
 		assertThat(DependencyVersion.parse("1.2.3.4")).isInstanceOf(NumericQualifierDependencyVersion.class);
 	}
 

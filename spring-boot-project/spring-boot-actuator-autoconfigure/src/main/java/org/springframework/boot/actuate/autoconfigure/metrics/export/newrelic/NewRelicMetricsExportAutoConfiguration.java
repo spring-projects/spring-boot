@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.ipc.http.HttpUrlConnectionSender;
+import io.micrometer.newrelic.ClientProviderType;
+import io.micrometer.newrelic.NewRelicClientProvider;
 import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicInsightsAgentClientProvider;
+import io.micrometer.newrelic.NewRelicInsightsApiClientProvider;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -67,11 +71,21 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock) {
-		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
-				.build();
+	public NewRelicClientProvider newRelicClientProvider(NewRelicConfig newRelicConfig) {
+		if (newRelicConfig.clientProviderType() == ClientProviderType.INSIGHTS_AGENT) {
+			return new NewRelicInsightsAgentClientProvider(newRelicConfig);
+		}
+		return new NewRelicInsightsApiClientProvider(newRelicConfig,
+				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()));
 
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock,
+			NewRelicClientProvider newRelicClientProvider) {
+		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock).clientProvider(newRelicClientProvider)
+				.build();
 	}
 
 }

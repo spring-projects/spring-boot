@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -47,26 +45,6 @@ public class OAuth2ResourceServerProperties {
 
 	public Opaquetoken getOpaquetoken() {
 		return this.opaqueToken;
-	}
-
-	@PostConstruct
-	public void validate() {
-		if (this.getOpaquetoken().getIntrospectionUri() != null) {
-			if (this.getJwt().getJwkSetUri() != null) {
-				handleError("jwt.jwk-set-uri");
-			}
-			if (this.getJwt().getIssuerUri() != null) {
-				handleError("jwt.issuer-uri");
-			}
-			if (this.getJwt().getPublicKeyLocation() != null) {
-				handleError("jwt.public-key-location");
-			}
-		}
-	}
-
-	private void handleError(String property) {
-		throw new IllegalStateException(
-				"Only one of " + property + " and opaquetoken.introspection-uri should be configured.");
 	}
 
 	public static class Jwt {

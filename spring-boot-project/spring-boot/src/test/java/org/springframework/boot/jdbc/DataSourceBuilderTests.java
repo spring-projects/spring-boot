@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.h2.Driver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,6 +75,14 @@ class DataSourceBuilderTests {
 	void specificTypeOfDataSource() {
 		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
 		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithSimpleDriverDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(SimpleDriverDataSource.class).build();
+		assertThat(this.dataSource).isInstanceOf(SimpleDriverDataSource.class);
+		assertThat(((SimpleDriverDataSource) this.dataSource).getUrl()).isEqualTo("jdbc:h2:test");
+		assertThat(((SimpleDriverDataSource) this.dataSource).getDriver()).isInstanceOf(Driver.class);
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {

@@ -20,9 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -39,17 +36,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ImageArchive}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageArchiveTests extends AbstractJsonTests {
-
-	static final Instant CREATE_DATE = OffsetDateTime.of(1906, 12, 9, 11, 30, 0, 0, ZoneOffset.UTC).toInstant();
 
 	@Test
 	void fromImageWritesToValidArchiveTar() throws Exception {
 		Image image = Image.of(getContent("image.json"));
 		ImageArchive archive = ImageArchive.from(image, (update) -> {
-			update.withNewLayer(Layer.of((layout) -> layout.folder("/spring", Owner.ROOT)));
-			update.withCreateDate(CREATE_DATE);
+			update.withNewLayer(Layer.of((layout) -> layout.directory("/spring", Owner.ROOT)));
 			update.withTag(ImageReference.of("pack.local/builder/6b7874626575656b6162"));
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -78,7 +73,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	}
 
 	private void assertExpectedConfig(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("/d1872169d781cff5e1aa22d111f636bef0c57e1c358ca3861e3d33a5bdb1b4a5.json");
+		assertThat(entry.getName()).isEqualTo("/682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-config.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, actualJson, false);

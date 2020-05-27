@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,8 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class), null))
+				.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class)))
 				.withMessageContaining("PropertySource must not be null");
-	}
-
-	@Test
-	void createWhenMapperIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SpringConfigurationPropertySource(mock(PropertySource.class), null, null))
-				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test
@@ -62,7 +55,7 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
 
@@ -74,7 +67,7 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("\"key\" from property source \"test\"");
 	}
@@ -87,7 +80,7 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString()).isEqualTo("TestOrigin key");
 	}
 
@@ -97,7 +90,7 @@ class SpringConfigurationPropertySourceTests {
 		source.put("foo.bar", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource,
-				DefaultPropertyMapper.INSTANCE, null);
+				DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
 				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}

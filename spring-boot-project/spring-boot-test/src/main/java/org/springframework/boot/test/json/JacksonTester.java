@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @return the new instance
 	 */
 	public JacksonTester<T> forView(Class<?> view) {
-		return new JacksonTester<>(this.getResourceLoadClass(), this.getType(), this.objectMapper, view);
+		return new JacksonTester<>(getResourceLoadClass(), getType(), this.objectMapper, view);
 	}
 
 	/**

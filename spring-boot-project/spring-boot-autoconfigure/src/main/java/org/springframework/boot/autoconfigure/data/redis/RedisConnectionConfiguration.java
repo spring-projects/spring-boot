@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,9 @@ abstract class RedisConnectionConfiguration {
 			config.setSentinels(createSentinels(sentinelProperties));
 			if (this.properties.getPassword() != null) {
 				config.setPassword(RedisPassword.of(this.properties.getPassword()));
+			}
+			if (sentinelProperties.getPassword() != null) {
+				config.setSentinelPassword(RedisPassword.of(sentinelProperties.getPassword()));
 			}
 			config.setDatabase(this.properties.getDatabase());
 			return config;

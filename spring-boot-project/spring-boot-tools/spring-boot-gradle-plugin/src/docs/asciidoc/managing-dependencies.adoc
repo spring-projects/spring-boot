@@ -1,6 +1,5 @@
 [[managing-dependencies]]
-== Managing dependencies
-
+== Managing Dependencies
 When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically <<reacting-to-other-plugins-dependency-management,import the `spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
 This provides a similar dependency management experience to the one that's enjoyed by Maven users.
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
@@ -20,8 +19,7 @@ include::../gradle/managing-dependencies/dependencies.gradle.kts[tags=dependenci
 
 
 [[managing-dependencies-customizing]]
-=== Customizing managed versions
-
+=== Customizing Managed Versions
 The `spring-boot-dependencies` bom that is automatically imported when the dependency management plugin is applied uses properties to control the versions of the dependencies that it manages.
 Browse the {version-properties-appendix}[`Dependency versions Appendix`] in the Spring Boot reference for a complete list of these properties.
 
@@ -47,7 +45,7 @@ Overriding versions may cause compatibility issues and should be done with care.
 
 
 [[managing-dependencies-using-in-isolation]]
-=== Using Spring Boot's dependency management in isolation
+=== Using Spring Boot's Dependency Management in Isolation
 
 Spring Boot's dependency management can be used in a project without applying Spring Boot's plugin to that project.
 The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to import the bom without having to know its group ID, artifact ID, or version.
@@ -123,6 +121,5 @@ include::../gradle/managing-dependencies/configure-bom-with-plugins.gradle.kts[t
 
 
 [[managing-dependencies-learning-more]]
-=== Learning more
-
+=== Learning More
 To learn more about the capabilities of the dependency management plugin, please refer to its {dependency-management-plugin-documentation}[documentation].

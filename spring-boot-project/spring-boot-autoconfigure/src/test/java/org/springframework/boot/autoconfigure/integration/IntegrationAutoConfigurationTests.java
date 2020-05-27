@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,22 @@ package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
 
+import io.rsocket.transport.ClientTransport;
+import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -38,10 +46,16 @@ import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.handler.MessageProcessor;
+import org.springframework.integration.rsocket.ClientRSocketConnector;
+import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
+import org.springframework.integration.rsocket.ServerRSocketConnector;
+import org.springframework.integration.rsocket.ServerRSocketMessageHandler;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -188,6 +202,33 @@ class IntegrationAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void rsocketSupportEnabled() {
+		this.contextRunner.withUserConfiguration(RSocketServerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
+						RSocketStrategiesAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
+						RSocketRequesterAutoConfiguration.class, IntegrationAutoConfiguration.class))
+				.withPropertyValues("spring.rsocket.server.port=0", "spring.integration.rsocket.client.port=0",
+						"spring.integration.rsocket.client.host=localhost",
+						"spring.integration.rsocket.server.message-mapping-enabled=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ClientRSocketConnector.class).hasBean("clientRSocketConnector")
+							.hasSingleBean(ServerRSocketConnector.class)
+							.hasSingleBean(ServerRSocketMessageHandler.class)
+							.hasSingleBean(RSocketMessageHandler.class);
+
+					ServerRSocketMessageHandler serverRSocketMessageHandler = context
+							.getBean(ServerRSocketMessageHandler.class);
+					assertThat(context).getBean(RSocketMessageHandler.class).isSameAs(serverRSocketMessageHandler);
+
+					ClientRSocketConnector clientRSocketConnector = context.getBean(ClientRSocketConnector.class);
+					ClientTransport clientTransport = (ClientTransport) new DirectFieldAccessor(clientRSocketConnector)
+							.getPropertyValue("clientTransport");
+
+					assertThat(clientTransport).isInstanceOf(TcpClientTransport.class);
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
@@ -216,6 +257,28 @@ class IntegrationAutoConfigurationTests {
 		@Bean
 		MessageSource<?> myMessageSource() {
 			return new MessageProcessorMessageSource(mock(MessageProcessor.class));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RSocketServerConfiguration {
+
+		@Bean
+		IntegrationRSocketEndpoint mockIntegrationRSocketEndpoint() {
+			return new IntegrationRSocketEndpoint() {
+
+				@Override
+				public Mono<Void> handleMessage(Message<?> message) {
+					return null;
+				}
+
+				@Override
+				public String[] getPath() {
+					return new String[] { "/rsocketTestPath" };
+				}
+
+			};
 		}
 
 	}

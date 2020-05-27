@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link BuildRequest}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 public class BuildRequestTests {
 
@@ -54,7 +55,7 @@ public class BuildRequestTests {
 		writeTestJarFile(jarFile);
 		BuildRequest request = BuildRequest.forJarFile(jarFile);
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(request.getBuilder().toString()).isEqualTo(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME);
 		assertThat(request.getApplicationContent(Owner.ROOT)).satisfies(this::hasExpectedJarContent);
 		assertThat(request.getEnv()).isEmpty();
 	}
@@ -65,7 +66,7 @@ public class BuildRequestTests {
 		writeTestJarFile(jarFile);
 		BuildRequest request = BuildRequest.forJarFile(ImageReference.of("test-app"), jarFile);
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/test-app:latest");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(request.getBuilder().toString()).isEqualTo(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME);
 		assertThat(request.getApplicationContent(Owner.ROOT)).satisfies(this::hasExpectedJarContent);
 		assertThat(request.getEnv()).isEmpty();
 	}
@@ -85,7 +86,7 @@ public class BuildRequestTests {
 	}
 
 	@Test
-	void forJarFileWhenJarFileIsFolderThrowsException() {
+	void forJarFileWhenJarFileIsDirectoryThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(this.tempDir))
 				.withMessage("JarFile must be a file");
 	}
@@ -95,6 +96,16 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 				.withBuilder(ImageReference.of("spring/builder"));
 		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/spring/builder:latest");
+	}
+
+	@Test
+	void withCreatorUpdatesCreator() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCreator = request.withCreator(Creator.withVersion("1.0.0"));
+		assertThat(request.getCreator().getName()).isEqualTo("Spring Boot");
+		assertThat(request.getCreator().getVersion()).isEqualTo("");
+		assertThat(withCreator.getCreator().getName()).isEqualTo("Spring Boot");
+		assertThat(withCreator.getCreator().getVersion()).isEqualTo("1.0.0");
 	}
 
 	@Test

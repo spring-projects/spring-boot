@@ -2,6 +2,7 @@ plugins {
 	id "java-platform"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Parent"
@@ -11,14 +12,17 @@ javaPlatform {
 }
 
 dependencies {
-	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	api(enforcedPlatform("org.testcontainers:testcontainers-bom:1.12.5"))
-	
+	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(platform("org.testcontainers:testcontainers-bom:1.14.2"))
+
 	constraints {
 		api("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
 		api("commons-fileupload:commons-fileupload:1.4")
 		api("io.mockk:mockk:1.9.3")
+		api("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.1.RELEASE")
+		api("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot:0.4.1.RELEASE")
 		api("jline:jline:2.11")
+		api("net.java.dev.jna:jna-platform:5.5.0")
 		api("net.sf.jopt-simple:jopt-simple:5.0.4")
 		api("org.apache.commons:commons-compress:1.19")
 		api("org.apache.maven:maven-plugin-api:3.6.3")

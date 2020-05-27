@@ -70,6 +70,14 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 				moduleVersions.put(group.getId() + ":" + module.getName(),
 						getLaterVersionsForModule(group.getId(), module.getName(), library.getVersion()));
 			}
+			for (String bom : group.getBoms()) {
+				moduleVersions.put(group.getId() + ":" + bom,
+						getLaterVersionsForModule(group.getId(), bom, library.getVersion()));
+			}
+			for (String plugin : group.getPlugins()) {
+				moduleVersions.put(group.getId() + ":" + plugin,
+						getLaterVersionsForModule(group.getId(), plugin, library.getVersion()));
+			}
 		}
 		List<DependencyVersion> allVersions = moduleVersions.values().stream().flatMap(SortedSet::stream).distinct()
 				.filter((dependencyVersion) -> isPermitted(dependencyVersion, library.getProhibitedVersions()))

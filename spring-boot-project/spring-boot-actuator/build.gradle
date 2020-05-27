@@ -24,6 +24,8 @@ dependencies {
 	optional("io.micrometer:micrometer-core")
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.prometheus:simpleclient_pushgateway")
+	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-spi")
 	optional("io.reactivex:rxjava-reactive-streams")
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("io.undertow:undertow-servlet") {
@@ -70,6 +72,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
@@ -84,6 +87,7 @@ dependencies {
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }
 

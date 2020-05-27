@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,9 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * @author Andy Wilkinson
  */
 class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
+
+	private static final Runnable NO_VALIDATION = () -> {
+	};
 
 	private static final String META_INF_PREFIX = "META-INF/";
 
@@ -192,7 +195,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	@Override
 	public Iterator<JarEntry> iterator() {
-		return new EntryIterator();
+		return new EntryIterator(NO_VALIDATION);
+	}
+
+	Iterator<JarEntry> iterator(Runnable validator) {
+		return new EntryIterator(validator);
 	}
 
 	boolean containsEntry(CharSequence name) {
@@ -347,17 +354,26 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	/**
 	 * Iterator for contained entries.
 	 */
-	private class EntryIterator implements Iterator<JarEntry> {
+	private final class EntryIterator implements Iterator<JarEntry> {
+
+		private final Runnable validator;
 
 		private int index = 0;
 
+		private EntryIterator(Runnable validator) {
+			this.validator = validator;
+			validator.run();
+		}
+
 		@Override
 		public boolean hasNext() {
+			this.validator.run();
 			return this.index < JarFileEntries.this.size;
 		}
 
 		@Override
 		public JarEntry next() {
+			this.validator.run();
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}

@@ -22,7 +22,9 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<layout>LAYERED_JAR</layout>
+							<layers>
+								<enabled>true</enabled>
+							</layers>
 						</configuration>
 					</execution>
 				</executions>

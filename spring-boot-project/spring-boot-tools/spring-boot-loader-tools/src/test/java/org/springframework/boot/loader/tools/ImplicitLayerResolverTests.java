@@ -34,16 +34,16 @@ class ImplicitLayerResolverTests {
 
 	@Test
 	void iteratorReturnsLayers() {
-		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SNAPSHOT_DEPENDENCIES,
-				StandardLayers.RESOURCES, StandardLayers.APPLICATION);
+		assertThat(this.layers).containsExactly(StandardLayers.DEPENDENCIES, StandardLayers.SPRING_BOOT_LOADER,
+				StandardLayers.SNAPSHOT_DEPENDENCIES, StandardLayers.APPLICATION);
 	}
 
 	@Test
-	void getLayerWhenNameInResourceLocationReturnsResourceLayer() {
-		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
-		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.RESOURCES);
+	void getLayerWhenNameInResourceLocationReturnsApplicationLayer() {
+		assertThat(this.layers.getLayer("META-INF/resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("resources/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("static/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
+		assertThat(this.layers.getLayer("public/logo.gif")).isEqualTo(StandardLayers.APPLICATION);
 	}
 
 	@Test
@@ -58,6 +58,14 @@ class ImplicitLayerResolverTests {
 	void getLayerWhenNameNotInResourceLocationReturnsApplicationLayer() {
 		assertThat(this.layers.getLayer("com/example/Application.class")).isEqualTo(StandardLayers.APPLICATION);
 		assertThat(this.layers.getLayer("com/example/application.properties")).isEqualTo(StandardLayers.APPLICATION);
+	}
+
+	@Test
+	void getLayerWhenLoaderClassReturnsLoaderLayer() {
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Launcher.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+		assertThat(this.layers.getLayer("org/springframework/boot/loader/Utils.class"))
+				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
 	}
 
 	@Test

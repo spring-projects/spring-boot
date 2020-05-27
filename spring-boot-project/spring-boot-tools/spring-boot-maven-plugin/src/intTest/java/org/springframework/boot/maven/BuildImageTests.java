@@ -52,7 +52,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar).isFile();
 			File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
 			assertThat(original).doesNotExist();
-			assertThat(buildLog(project)).contains("Building image").contains("cloudfoundry/cnb:0.0.53-bionic")
+			assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
 					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference.of(ImageName.of("build-image"), "0.0.1.BUILD-SNAPSHOT");
@@ -67,31 +67,58 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomImageName(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-name").goals("package").execute((project) -> {
-			File jar = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(jar).isFile();
-			File original = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar.original");
-			assertThat(original).doesNotExist();
-			assertThat(buildLog(project)).contains("Building image")
-					.contains("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT").contains("Successfully built image");
-			ImageReference imageReference = ImageReference.of("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT");
-			try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
-				container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
-			}
-			finally {
-				removeImage(imageReference);
-			}
-		});
+		mavenBuild.project("build-image-custom-name").goals("package")
+				.systemProperty("spring-boot.build-image.imageName", "example.com/test/property-ignored:pom-preferred")
+				.execute((project) -> {
+					File jar = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar");
+					assertThat(jar).isFile();
+					File original = new File(project,
+							"target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar.original");
+					assertThat(original).doesNotExist();
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image");
+					ImageReference imageReference = ImageReference
+							.of("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT");
+					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+					}
+					finally {
+						removeImage(imageReference);
+					}
+				});
 	}
 
 	@TestTemplate
-	void whenBuildImageIsInvokedWithV1BuilderImage(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-v1-builder").goals("package").execute((project) -> {
-			assertThat(buildLog(project)).contains("Building image").contains("cloudfoundry/cnb:0.0.43-bionic")
-					.contains("docker.io/library/build-image-v1-builder:0.0.1.BUILD-SNAPSHOT")
+	void whenBuildImageIsInvokedWithCommandLineParameters(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image").goals("package")
+				.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
+				.systemProperty("spring-boot.build-image.builder",
+						"gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3")
+				.execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("example.com/test/cmd-property-name:v1")
+							.contains("paketo-buildpacks/builder:full-cf-platform-api-0.3")
+							.contains("Successfully built image");
+					ImageReference imageReference = ImageReference.of("example.com/test/cmd-property-name:v1");
+					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+					}
+					finally {
+						removeImage(imageReference);
+					}
+				});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithCustomBuilderImage(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-custom-builder").goals("package").execute((project) -> {
+			assertThat(buildLog(project)).contains("Building image")
+					.contains("paketo-buildpacks/builder:full-cf-platform-api-0.3")
+					.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference
-					.of("docker.io/library/build-image-v1-builder:0.0.1.BUILD-SNAPSHOT");
+					.of("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT");
 			try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 				container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 			}
@@ -105,7 +132,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void failsWhenBuilderFails(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-builder-error").goals("package")
 				.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
-						.contains("Builder lifecycle 'builder' failed with status code"));
+						.containsPattern("Builder lifecycle '.*' failed with status code"));
 	}
 
 	private void writeLongNameResource(File project) {

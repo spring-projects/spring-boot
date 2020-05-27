@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
@@ -39,6 +40,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class ArtifactsLibraries implements Libraries {
@@ -78,7 +80,8 @@ public class ArtifactsLibraries implements Libraries {
 					name = artifact.getGroupId() + "-" + name;
 					this.log.debug("Renamed to: " + name);
 				}
-				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact)));
+				LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
+				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact)));
 			}
 		}
 	}
@@ -116,6 +119,39 @@ public class ArtifactsLibraries implements Libraries {
 		}
 		sb.append(".").append(artifact.getArtifactHandler().getExtension());
 		return sb.toString();
+	}
+
+	/**
+	 * {@link LibraryCoordinates} backed by a Maven {@link Artifact}.
+	 */
+	private static class ArtifactLibraryCoordinates implements LibraryCoordinates {
+
+		private final Artifact artifact;
+
+		ArtifactLibraryCoordinates(Artifact artifact) {
+			this.artifact = artifact;
+		}
+
+		@Override
+		public String getGroupId() {
+			return this.artifact.getGroupId();
+		}
+
+		@Override
+		public String getArtifactId() {
+			return this.artifact.getArtifactId();
+		}
+
+		@Override
+		public String getVersion() {
+			return this.artifact.getVersion();
+		}
+
+		@Override
+		public String toString() {
+			return this.artifact.toString();
+		}
+
 	}
 
 }

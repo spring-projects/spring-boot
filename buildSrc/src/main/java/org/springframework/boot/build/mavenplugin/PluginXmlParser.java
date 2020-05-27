@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
  * A parser for a Maven plugin's {@code plugin.xml} file.
  *
  * @author Andy Wilkinson
+ * @author Mike Smithson
  */
 class PluginXmlParser {
 
@@ -59,7 +60,7 @@ class PluginXmlParser {
 
 	private String textAt(String path, Node source) throws XPathExpressionException {
 		String text = this.xpath.evaluate(path + "/text()", source);
-		return (text.length() == 0) ? null : text;
+		return text.isEmpty() ? null : text;
 	}
 
 	private List<Mojo> parseMojos(Node plugin) throws XPathExpressionException {
@@ -80,12 +81,12 @@ class PluginXmlParser {
 		Map<String, String> userProperties = new HashMap<>();
 		for (Node parameterConfigurationNode : nodesAt("configuration/*", mojoNode)) {
 			String userProperty = parameterConfigurationNode.getTextContent();
-			if (userProperty != null && userProperty.length() > 0) {
+			if (userProperty != null && !userProperty.isEmpty()) {
 				userProperties.put(parameterConfigurationNode.getNodeName(),
 						userProperty.replace("${", "`").replace("}", "`"));
 			}
 			Node defaultValueAttribute = parameterConfigurationNode.getAttributes().getNamedItem("default-value");
-			if (defaultValueAttribute != null && defaultValueAttribute.getTextContent().length() > 0) {
+			if (defaultValueAttribute != null && !defaultValueAttribute.getTextContent().isEmpty()) {
 				defaultValues.put(parameterConfigurationNode.getNodeName(), defaultValueAttribute.getTextContent());
 			}
 		}
@@ -98,21 +99,20 @@ class PluginXmlParser {
 
 	private Parameter parseParameter(Node parameterNode, Map<String, String> defaultValues,
 			Map<String, String> userProperties) throws XPathExpressionException {
-		Parameter parameter = new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
+		return new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
 				booleanAt("required", parameterNode), booleanAt("editable", parameterNode),
 				format(textAt("description", parameterNode)), defaultValues.get(textAt("name", parameterNode)),
 				userProperties.get(textAt("name", parameterNode)), textAt("since", parameterNode));
-		return parameter;
 	}
 
 	private boolean booleanAt(String path, Node node) throws XPathExpressionException {
-		return Boolean.valueOf(textAt(path, node));
+		return Boolean.parseBoolean(textAt(path, node));
 	}
 
 	private String format(String input) {
 		return input.replace("<code>", "`").replace("</code>", "`").replace("&lt;", "<").replace("&gt;", ">")
-				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)\\}", "`$1`")
-				.replaceAll("\\{@link (.*?)\\}", "`$1`").replaceAll("\\{@literal (.*?)\\}", "`$1`")
+				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)}", "`$1`")
+				.replaceAll("\\{@link (.*?)}", "`$1`").replaceAll("\\{@literal (.*?)}", "`$1`")
 				.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "\\$1[\\$2]");
 	}
 

@@ -52,17 +52,17 @@ class LayerTests {
 	@Test
 	void ofCreatesLayer() throws Exception {
 		Layer layer = Layer.of((layout) -> {
-			layout.folder("/folder", Owner.ROOT);
-			layout.file("/folder/file", Owner.ROOT, Content.of("test"));
+			layout.directory("/directory", Owner.ROOT);
+			layout.file("/directory/file", Owner.ROOT, Content.of("test"));
 		});
 		assertThat(layer.getId().toString())
-				.isEqualTo("sha256:8b8a3cea2ba716da6bbb0a3bf7472f235fa08c71a27cec5fbf2de1cf1baa513f");
+				.isEqualTo("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/folder/");
-			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/folder/file");
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/");
+			assertThat(tarStream.getNextTarEntry().getName()).isEqualTo("/directory/file");
 			assertThat(tarStream.getNextTarEntry()).isNull();
 		}
 	}

@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,12 +47,16 @@ import org.springframework.util.Assert;
  * An image archive that can be loaded into Docker.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  * @see #from(Image, IOConsumer)
  * @see <a href="https://github.com/moby/moby/blob/master/image/spec/v1.2.md">Docker Image
  * Specification</a>
  */
 public class ImageArchive implements TarArchive {
+
+	private static final Instant WINDOWS_EPOCH_PLUS_SECOND = OffsetDateTime.of(1980, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC)
+			.toInstant();
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
 			.withZone(ZoneOffset.UTC);
@@ -248,7 +253,7 @@ public class ImageArchive implements TarArchive {
 
 		private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
 			update.accept(this);
-			Instant createDate = (this.createDate != null) ? this.createDate : Instant.now();
+			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
 			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
 					this.image.getLayers(), Collections.unmodifiableList(this.newLayers));
 		}

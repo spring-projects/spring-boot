@@ -58,9 +58,11 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.53-bionic");
-		ImageReference imageReference = ImageReference.of(ImageName.of(this.gradleBuild.getProjectDir().getName()));
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 		}
@@ -70,13 +72,49 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void buildsImageWithV1Builder() throws IOException {
+	void buildsImageWithCustomName() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("cloudfoundry/cnb:0.0.43-bionic");
-		ImageReference imageReference = ImageReference.of(ImageName.of(this.gradleBuild.getProjectDir().getName()));
+		assertThat(result.getOutput()).contains("example/test-image-name");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-name"));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void buildsImageWithCustomBuilder() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("example/test-image-custom");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-custom"));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void buildsImageWithCommandLineOptions() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=example/test-image-cmd",
+				"--builder=gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("example/test-image-cmd");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-cmd"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 		}
@@ -91,7 +129,7 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains("Builder lifecycle 'builder' failed with status code");
+		assertThat(result.getOutput()).containsPattern("Builder lifecycle '.*' failed with status code");
 	}
 
 	private void writeMainClass() {

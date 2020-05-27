@@ -1,0 +1,8 @@
+^http://exslt.org/common.*
+^http://hsqldb.org.*
+^http://livereload.com/.*
+^http://www.jdotsoft.com.*
+^http://spockframework.org.*
+^http://ganglia.sourceforge.net.*
+^http://schemas.xmlsoap.org.*
+^http://www.liquibase.org/xml/ns/dbchangelog/.*

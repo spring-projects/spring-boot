@@ -1,10 +1,9 @@
 [[build-image]]
 == Packaging OCI Images
-
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
-Images can be built using the `build-image` goal and a local Docker installation.
+Images can be built using the `build-image` goal.
 
-The easiest way to get started is to to invoke `mvn spring-boot:build-image` on a project.
+The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -32,6 +31,32 @@ When the `build-image` repackages the application, it applies the same settings 
 
 
 
+[[build-image-docker-daemon]]
+=== Docker Daemon
+The `build-image` goal requires access to a Docker daemon.
+By default, it will communicate with a Docker daemon over a local connection.
+This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
+
+Environment variables can be set to configure the `build-image` goal to use the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube].
+The following table shows the environment variables and their values:
+
+|===
+| Environment variable | Description
+
+| DOCKER_HOST 
+| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+
+| DOCKER_TLS_VERIFY 
+| Enable secure HTTPS protocol when set to `1` (optional)
+
+| DOCKER_CERT_PATH 
+| Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
+|===
+
+On Linux and macOS, these environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
+
+
+
 [[build-image-customization]]
 === Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
@@ -40,29 +65,34 @@ By default, the plugin chooses a builder image.
 The name of the generated image is deduced from project properties.
 
 The `image` parameter allows to configure how the builder should operate on the project.
-The following table summarizes the available properties and their default values:
+The following table summarizes the available parameters and their default values:
 
 |===
-| Property | Description | Default value
+| Parameter | Description | User property | Default value
 
 | `builder`
 | Name of the Builder image to use.
-| `cloudfoundry/cnb:0.0.53-bionic`
+| `spring-boot.build-image.builder`
+| `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
 
 | `name`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
+| `spring-boot.build-image.imageName`
 | `docker.io/library/${project.artifactId}:${project.version}`
 
 | `env`
 | Environment variables that should be passed to the builder.
 |
+|
 
 | `cleanCache`
 | Whether to clean the cache before building.
+|
 | `false`
 
 | `verboseLogging`
 | Enables verbose logging of builder operations.
+|
 | `false`
 |===
 
@@ -79,7 +109,7 @@ include::goals/build-image.adoc[leveloffset=+1]
 
 [[build-image-example-custom-image-builder]]
 ==== Custom Image Builder
-If you need to customize the builder used to create the image, configure yours as shown in the following example:
+If you need to customize the builder used to create the image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -103,7 +133,20 @@ If you need to customize the builder used to create the image, configure yours a
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
 
-If the builder exposes configuration options, those can be set using the `env` attributes, as shown in the following example:
+The builder can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder
+----
+
+
+
+[[build-image-example-builder-configuration]]
+==== Builder Configuration
+If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
+
+The following example assumes that the default builder defines a `BP_JVM_VERSION` property (typically used to customize the JDK version the image should use):
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -116,9 +159,8 @@ If the builder exposes configuration options, those can be set using the `env` a
 					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
-							<builder>mine/java-cnb-builder</builder>
 							<env>
-								<BP_JAVA_VERSION>13.0.1</BP_JAVA_VERSION>
+								<BP_JVM_VERSION>13.0.1</BP_JVM_VERSION>
 							</env>
 						</image>
 					</configuration>
@@ -128,7 +170,31 @@ If the builder exposes configuration options, those can be set using the `env` a
 	</project>
 ----
 
-The example above assumes that `mine/java-cnb-builder` defines a `BP_JAVA_VERSION` property (typically used to customize the JDK version the image should use).
+If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
+When using the default builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<image>
+							<env>
+								<HTTP_PROXY>http://proxy.example.com</HTTP_PROXY>
+								<HTTPS_PROXY>https://proxy.example.com</HTTPS_PROXY>
+							</env>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
 
 
 
@@ -159,3 +225,11 @@ You can take control over the name, as shown in the following example:
 
 Note that this configuration does not provide an explicit tag so `latest` is used.
 It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.
+
+The image name can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
+----
+

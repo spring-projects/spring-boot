@@ -13,7 +13,8 @@ spring:
                 credentials:
                 - certificate-location: "classpath:saml/certificate.txt"
               entity-id: simplesaml
-              sso-url: https://simplesaml-for-spring-saml/SSOService.php
+              singlesignon:
+                url: https://simplesaml-for-spring-saml/SSOService.php
           okta:
             signing:
               credentials:
@@ -24,4 +25,6 @@ spring:
                 credentials:
                 - certificate-location: "classpath:saml/certificate.txt"
               entity-id: okta-id-1234
-              sso-url: https://okta-for-spring/saml2/idp/SSOService.php
+              singlesignon:
+                url:
+                  https://okta-for-spring/saml2/idp/SSOService.php

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getAddress).to(factory::setAddress);
 		map.from(this.serverProperties.getServlet()::getContextPath).to(factory::setContextPath);
 		map.from(this.serverProperties.getServlet()::getApplicationDisplayName).to(factory::setDisplayName);
+		map.from(this.serverProperties.getServlet()::isRegisterDefaultServlet).to(factory::setRegisterDefaultServlet);
 		map.from(this.serverProperties.getServlet()::getSession).to(factory::setSession);
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
 		map.from(this.serverProperties.getServlet()::getJsp).to(factory::setJsp);
@@ -60,6 +61,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
+		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 	}
 
 }

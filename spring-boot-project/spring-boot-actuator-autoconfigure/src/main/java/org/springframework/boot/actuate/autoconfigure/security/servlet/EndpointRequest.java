@@ -124,14 +124,18 @@ public final class EndpointRequest {
 
 		private volatile RequestMatcher delegate;
 
+		private ManagementPortType managementPortType;
+
 		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
 		}
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			ManagementPortType type = ManagementPortType.get(applicationContext.getEnvironment());
-			return type == ManagementPortType.DIFFERENT
+			if (this.managementPortType == null) {
+				this.managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			}
+			return this.managementPortType == ManagementPortType.DIFFERENT
 					&& !WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
@@ -192,11 +196,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList(endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {

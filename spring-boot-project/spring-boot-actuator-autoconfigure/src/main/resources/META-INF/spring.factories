@@ -2,6 +2,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cache.CachesEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorAutoConfiguration,\
@@ -22,7 +23,6 @@ org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfigur
 org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.influx.InfluxDbHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration,\
@@ -68,6 +68,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.Wavefron
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.r2dbc.ConnectionPoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.jetty.JettyMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration,\
@@ -76,6 +77,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsA
 org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mongo.MongoReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.r2dbc.ConnectionFactoryHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration,\
@@ -103,4 +105,4 @@ org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChil
 org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
 
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.actuate.autoconfigure.metrics.MissingRequiredConfigurationFailureAnalyzer
+org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public enum ApiVersion {
 	private static ApiVersion forType(String type) {
 		if (type.startsWith(MEDIA_TYPE_PREFIX)) {
 			type = type.substring(MEDIA_TYPE_PREFIX.length());
-			int suffixIndex = type.indexOf("+");
+			int suffixIndex = type.indexOf('+');
 			type = (suffixIndex != -1) ? type.substring(0, suffixIndex) : type;
 			try {
 				return valueOf(type.toUpperCase());

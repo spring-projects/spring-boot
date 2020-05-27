@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link EnvironmentPostProcessor} to add devtools properties from the user's home
- * folder.
+ * directory.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -93,7 +93,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
 			Function<File, String> propertySourceNamer) {
-		File home = getHomeFolder();
+		File home = getHomeDirectory();
 		File file = (home != null) ? new File(home, fileName) : null;
 		FileSystemResource resource = (file != null) ? new FileSystemResource(file) : null;
 		if (resource != null && resource.exists() && resource.isFile()) {
@@ -121,7 +121,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 				.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 	}
 
-	protected File getHomeFolder() {
+	protected File getHomeDirectory() {
 		String home = System.getProperty("user.home");
 		if (StringUtils.hasLength(home)) {
 			return new File(home);

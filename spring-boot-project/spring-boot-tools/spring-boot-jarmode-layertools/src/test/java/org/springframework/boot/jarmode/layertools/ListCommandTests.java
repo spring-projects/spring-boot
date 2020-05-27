@@ -16,33 +16,96 @@
 
 package org.springframework.boot.jarmode.layertools;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link ListCommand}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class ListCommandTests {
+
+	@TempDir
+	File temp;
+
+	@Mock
+	private Context context;
+
+	private File jarFile;
+
+	@BeforeEach
+	void setup() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		this.jarFile = createJarFile("test.jar");
+		given(this.context.getJarFile()).willReturn(this.jarFile);
+		this.command = new ListCommand(this.context);
+		this.out = new TestPrintStream(this);
+	}
 
 	private ListCommand command;
 
 	private TestPrintStream out;
 
-	@BeforeEach
-	void setup() {
-		this.command = new ListCommand(mock(Context.class));
-		this.out = new TestPrintStream(this);
-	}
-
 	@Test
 	void listLayersShouldListLayers() {
-		this.command.printLayers(new ImplicitLayers(), this.out);
+		Layers layers = IndexedLayers.get(this.context);
+		this.command.printLayers(layers, this.out);
 		assertThat(this.out).hasSameContentAsResource("list-output.txt");
+	}
+
+	private File createJarFile(String name) throws IOException {
+		File file = new File(this.temp, name);
+		try (ZipOutputStream jarOutputStream = new ZipOutputStream(new FileOutputStream(file))) {
+			writeLayersIndex(jarOutputStream);
+			String entryPrefix = "BOOT-INF/lib/";
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "a/"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "a/a.jar"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "b/"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "b/b.jar"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "c/"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "c/c.jar"));
+			jarOutputStream.closeEntry();
+			jarOutputStream.putNextEntry(new ZipEntry(entryPrefix + "d/"));
+			jarOutputStream.closeEntry();
+		}
+		return file;
+	}
+
+	private void writeLayersIndex(ZipOutputStream out) throws IOException {
+		JarEntry indexEntry = new JarEntry("BOOT-INF/layers.idx");
+		out.putNextEntry(indexEntry);
+		Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+		writer.write("- \"0001\":\n");
+		writer.write("  - \"BOOT-INF/lib/a.jar\"\n");
+		writer.write("  - \"BOOT-INF/lib/b.jar\"\n");
+		writer.write("- \"0002\":\n");
+		writer.write("  - \"BOOT-INF/lib/c.jar\"\n");
+		writer.write("- \"0003\":\n");
+		writer.write("  - \"BOOT-INF/lib/d.jar\"\n");
+		writer.flush();
 	}
 
 }

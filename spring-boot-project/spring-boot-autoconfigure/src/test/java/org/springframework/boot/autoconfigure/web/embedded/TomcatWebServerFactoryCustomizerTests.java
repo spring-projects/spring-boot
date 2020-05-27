@@ -26,11 +26,13 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -111,12 +113,6 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customDisableMaxHttpPostSize() {
-		bind("server.tomcat.max-http-post-size=-1");
-		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
-	}
-
-	@Test
 	void customDisableMaxHttpFormPostSize() {
 		bind("server.tomcat.max-http-form-post-size=-1");
 		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1));
@@ -128,13 +124,6 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getMaxConnections())
 						.isEqualTo(5));
-	}
-
-	@Test
-	void customMaxHttpPostSize() {
-		bind("server.tomcat.max-http-post-size=10000");
-		customizeAndRunServer(
-				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
 	}
 
 	@Test
@@ -288,9 +277,8 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setUseForwardHeaders() {
-		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
-		this.serverProperties.setUseForwardHeaders(true);
+	void setUseNativeForwardHeadersStrategy() {
+		this.serverProperties.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
 		testRemoteIpValveConfigured();
 	}
 
@@ -344,8 +332,8 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	void testCustomizeMinSpareThreads() {
-		bind("server.tomcat.min-spare-threads=10");
-		assertThat(this.serverProperties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+		bind("server.tomcat.threads.min-spare=10");
+		assertThat(this.serverProperties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
 	@Test
@@ -480,7 +468,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void accessLogwithIpv6CanonicalSet() {
+	void accessLogWithIpv6CanonicalSet() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.ipv6-canonical=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getIpv6Canonical()).isTrue();
@@ -490,6 +478,8 @@ class TomcatWebServerFactoryCustomizerTests {
 	void ajpConnectorCanBeCustomized() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setProtocol("AJP/1.3");
+		factory.addConnectorCustomizers(
+				(connector) -> ((AbstractAjpProtocol<?>) connector.getProtocolHandler()).setSecretRequired(false));
 		this.customizer.customize(factory);
 		WebServer server = factory.getWebServer();
 		server.start();

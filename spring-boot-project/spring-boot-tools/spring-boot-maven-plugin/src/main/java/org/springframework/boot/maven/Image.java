@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * Image configuration options.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class Image {
@@ -60,6 +61,14 @@ public class Image {
 	 * If verbose logging is required.
 	 */
 	boolean verboseLogging;
+
+	void setName(String name) {
+		this.name = name;
+	}
+
+	void setBuilder(String builder) {
+		this.builder = builder;
+	}
 
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));

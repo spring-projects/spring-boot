@@ -16,19 +16,19 @@
 
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.data.cassandra.CassandraInternalException;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.cql.CqlOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CassandraHealthIndicator}.
  *
  * @author Oleksii Bondar
+ * @author Stephane Nicoll
  */
 class CassandraHealthIndicatorTests {
 
@@ -45,34 +46,26 @@ class CassandraHealthIndicatorTests {
 	}
 
 	@Test
-	void verifyHealthStatusWhenExhausted() {
+	void healthWithCassandraUp() {
 		CassandraOperations cassandraOperations = mock(CassandraOperations.class);
 		CqlOperations cqlOperations = mock(CqlOperations.class);
-		ResultSet resultSet = mock(ResultSet.class);
 		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
-		given(cqlOperations.queryForResultSet(any(SimpleStatement.class))).willReturn(resultSet);
-		given(resultSet.isFullyFetched()).willReturn(true);
+		given(cqlOperations.queryForObject(any(SimpleStatement.class), eq(String.class))).willReturn("1.0.0");
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("version")).isEqualTo("1.0.0");
 	}
 
 	@Test
-	void verifyHealthStatusWithVersion() {
+	void healthWithCassandraDown() {
 		CassandraOperations cassandraOperations = mock(CassandraOperations.class);
-		CqlOperations cqlOperations = mock(CqlOperations.class);
-		ResultSet resultSet = mock(ResultSet.class);
-		Row row = mock(Row.class);
+		given(cassandraOperations.getCqlOperations()).willThrow(new CassandraInternalException("Connection failed"));
 		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
-		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
-		given(cqlOperations.queryForResultSet(any(SimpleStatement.class))).willReturn(resultSet);
-		given(resultSet.isFullyFetched()).willReturn(false);
-		given(resultSet.one()).willReturn(row);
-		String expectedVersion = "1.0.0";
-		given(row.getString(0)).willReturn(expectedVersion);
 		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo(expectedVersion);
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("error"))
+				.isEqualTo(CassandraInternalException.class.getName() + ": Connection failed");
 	}
 
 }

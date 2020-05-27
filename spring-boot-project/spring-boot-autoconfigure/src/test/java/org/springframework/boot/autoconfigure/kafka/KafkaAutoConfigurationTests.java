@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import javax.security.auth.login.AppConfigurationEntry;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -38,7 +39,6 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +50,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -106,6 +107,7 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.properties.fiz.buz=fix.fox", "spring.kafka.consumer.fetch-min-size=1KB",
 				"spring.kafka.consumer.group-id=bar", "spring.kafka.consumer.heartbeat-interval=234",
 				"spring.kafka.consumer.isolation-level = read-committed",
+				"spring.kafka.consumer.security.protocol = SSL",
 				"spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.LongDeserializer",
 				"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer")
 				.run((context) -> {
@@ -137,6 +139,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get(ConsumerConfig.ISOLATION_LEVEL_CONFIG)).isEqualTo("read_committed");
 					assertThat(configs.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG))
 							.isEqualTo(LongDeserializer.class);
+					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
 					assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
 							.isEqualTo(IntegerDeserializer.class);
 					assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG)).isEqualTo(42);
@@ -156,7 +159,7 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.producer.buffer-memory=4KB", "spring.kafka.producer.compression-type=gzip",
 				"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
 				"spring.kafka.producer.retries=2", "spring.kafka.producer.properties.fiz.buz=fix.fox",
-				"spring.kafka.producer.ssl.key-password=p4",
+				"spring.kafka.producer.security.protocol=SSL", "spring.kafka.producer.ssl.key-password=p4",
 				"spring.kafka.producer.ssl.key-store-location=classpath:ksLocP",
 				"spring.kafka.producer.ssl.key-store-password=p5", "spring.kafka.producer.ssl.key-store-type=PKCS12",
 				"spring.kafka.producer.ssl.trust-store-location=classpath:tsLocP",
@@ -177,6 +180,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get(ProducerConfig.BUFFER_MEMORY_CONFIG)).isEqualTo(4096L);
 					assertThat(configs.get(ProducerConfig.COMPRESSION_TYPE_CONFIG)).isEqualTo("gzip");
 					assertThat(configs.get(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)).isEqualTo(LongSerializer.class);
+					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
 					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
 					assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
 							.endsWith(File.separator + "ksLocP");
@@ -202,7 +206,7 @@ class KafkaAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.kafka.clientId=cid", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 						"spring.kafka.admin.fail-fast=true", "spring.kafka.admin.properties.fiz.buz=fix.fox",
-						"spring.kafka.admin.ssl.key-password=p4",
+						"spring.kafka.admin.security.protocol=SSL", "spring.kafka.admin.ssl.key-password=p4",
 						"spring.kafka.admin.ssl.key-store-location=classpath:ksLocP",
 						"spring.kafka.admin.ssl.key-store-password=p5", "spring.kafka.admin.ssl.key-store-type=PKCS12",
 						"spring.kafka.admin.ssl.trust-store-location=classpath:tsLocP",
@@ -210,10 +214,11 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.admin.ssl.trust-store-type=PKCS12", "spring.kafka.admin.ssl.protocol=TLSv1.2")
 				.run((context) -> {
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
-					Map<String, Object> configs = admin.getConfig();
+					Map<String, Object> configs = admin.getConfigurationProperties();
 					// common
 					assertThat(configs.get(AdminClientConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
 					// admin
+					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
 					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
 					assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
 							.endsWith(File.separator + "ksLocP");
@@ -240,7 +245,7 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cache-max-size-buffering=1KB",
 				"spring.kafka.streams.client-id=override", "spring.kafka.streams.properties.fiz.buz=fix.fox",
 				"spring.kafka.streams.replication-factor=2", "spring.kafka.streams.state-dir=/tmp/state",
-				"spring.kafka.streams.ssl.key-password=p7",
+				"spring.kafka.streams.security.protocol=SSL", "spring.kafka.streams.ssl.key-password=p7",
 				"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
 				"spring.kafka.streams.ssl.key-store-password=p8", "spring.kafka.streams.ssl.key-store-type=PKCS12",
 				"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
@@ -255,6 +260,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG)).isEqualTo(1024);
 					assertThat(configs.get(StreamsConfig.CLIENT_ID_CONFIG)).isEqualTo("override");
 					assertThat(configs.get(StreamsConfig.REPLICATION_FACTOR_CONFIG)).isEqualTo(2);
+					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
 					assertThat(configs.get(StreamsConfig.STATE_DIR_CONFIG)).isEqualTo("/tmp/state");
 					assertThat(configs.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p7");
 					assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
@@ -363,7 +369,7 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
 						"spring.kafka.listener.idle-event-interval=1s", "spring.kafka.listener.monitor-interval=45",
 						"spring.kafka.listener.log-container-config=true",
-						"spring.kafka.listener.missing-topics-fatal=false", "spring.kafka.jaas.enabled=true",
+						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
 				.run((context) -> {
@@ -388,8 +394,8 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.getIdleEventInterval()).isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
-					assertThat(containerProperties.isMissingTopicsFatal()).isFalse();
-					assertThat(ReflectionTestUtils.getField(kafkaListenerContainerFactory, "concurrency")).isEqualTo(3);
+					assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
+					assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 					assertThat(context.getBeansOfType(KafkaJaasLoginModuleInitializer.class)).hasSize(1);
 					KafkaJaasLoginModuleInitializer jaas = context.getBean(KafkaJaasLoginModuleInitializer.class);
@@ -400,17 +406,6 @@ class KafkaAutoConfigurationTests {
 					assertThat(((Map<String, String>) ReflectionTestUtils.getField(jaas, "options")))
 							.containsExactly(entry("useKeyTab", "true"));
 				});
-	}
-
-	@Test
-	void listenerPropertiesMatchDefaults() {
-		this.contextRunner.run((context) -> {
-			Listener listenerProperties = new KafkaProperties().getListener();
-			AbstractKafkaListenerContainerFactory<?, ?, ?> kafkaListenerContainerFactory = (AbstractKafkaListenerContainerFactory<?, ?, ?>) context
-					.getBean(KafkaListenerContainerFactory.class);
-			ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
-			assertThat(containerProperties.isMissingTopicsFatal()).isEqualTo(listenerProperties.isMissingTopicsFatal());
-		});
 	}
 
 	@Test
@@ -569,6 +564,30 @@ class KafkaAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomConsumerFactory() {
+		this.contextRunner.withUserConfiguration(ConsumerFactoryConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(kafkaListenerContainerFactory.getConsumerFactory())
+					.isNotSameAs(context.getBean(ConsumerFactoryConfiguration.class).consumerFactory);
+		});
+	}
+
+	@Test
+	void specificSecurityProtocolOverridesCommonSecurityProtocol() {
+		this.contextRunner.withPropertyValues("spring.kafka.security.protocol=SSL",
+				"spring.kafka.admin.security.protocol=PLAINTEXT").run((context) -> {
+					DefaultKafkaProducerFactory<?, ?> producerFactory = context
+							.getBean(DefaultKafkaProducerFactory.class);
+					Map<String, Object> producerConfigs = producerFactory.getConfigurationProperties();
+					assertThat(producerConfigs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("SSL");
+					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
+					Map<String, Object> configs = admin.getConfigurationProperties();
+					assertThat(configs.get(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG)).isEqualTo("PLAINTEXT");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class MessageConverterConfiguration {
 
@@ -629,6 +648,19 @@ class KafkaAutoConfigurationTests {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConsumerFactoryConfiguration {
+
+		@SuppressWarnings("unchecked")
+		private final ConsumerFactory<String, Object> consumerFactory = mock(ConsumerFactory.class);
+
+		@Bean
+		ConsumerFactory<String, Object> myConsumerFactory() {
+			return this.consumerFactory;
 		}
 
 	}

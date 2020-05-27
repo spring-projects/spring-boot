@@ -43,10 +43,8 @@ class RunningDocumentationTests {
 	@TestTemplate
 	@DisabledForJreRange(min = JRE.JAVA_13)
 	void bootRunMain() throws IOException {
-		// Testing of convention mappings is flakey between 5.2 and 6.0 inclusive
-		// https://github.com/gradle/gradle/issues/11323
-		assertThat(this.gradleBuild.gradleVersion("6.1-rc-2").script("src/docs/gradle/running/boot-run-main")
-				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-main").build("configuredMainClass")
+				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate

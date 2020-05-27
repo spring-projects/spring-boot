@@ -89,7 +89,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		if (this.classPathIndex != null) {
 			urls.addAll(this.classPathIndex.getUrls());
 		}
-		return super.createClassLoader(urls.toArray(new URL[0]));
+		return createClassLoader(urls.toArray(new URL[0]));
 	}
 
 	private int guessClassPathSize() {
@@ -127,7 +127,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	/**
-	 * Determine if the specified entry is a a candidate for further searching.
+	 * Determine if the specified entry is a candidate for further searching.
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a candidate for further searching
 	 */
@@ -139,7 +139,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Determine if the specified entry is a nested item that should be added to the
 	 * classpath.
 	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a nested item (jar or folder)
+	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
 

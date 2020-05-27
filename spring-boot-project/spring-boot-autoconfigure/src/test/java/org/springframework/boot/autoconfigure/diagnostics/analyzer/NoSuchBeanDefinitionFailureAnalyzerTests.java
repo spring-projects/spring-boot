@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -153,8 +154,14 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
-		assertThat(analysis.getDescription())
-				.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
+		assertThat(analysis.getDescription()).containsPattern(determineAnnotationValuePattern());
+	}
+
+	private String determineAnnotationValuePattern() {
+		if (JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.FOURTEEN)) {
+			return "@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)";
+		}
+		return "@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)";
 	}
 
 	@Test

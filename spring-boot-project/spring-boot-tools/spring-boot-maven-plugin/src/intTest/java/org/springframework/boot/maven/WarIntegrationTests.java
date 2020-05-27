@@ -17,9 +17,12 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.FileReader;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,6 +64,20 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 						.hasUnpackEntryWithNameStartingWith("WEB-INF/lib/spring-core-")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context-")
 						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl-"));
+	}
+
+	@TestTemplate
+	void whenWarIsRepackagedWithOutputTimestampTheBuildFailsAsItIsNotSupported(MavenBuild mavenBuild)
+			throws InterruptedException {
+		mavenBuild.project("war-output-timestamp").executeAndFail((project) -> {
+			try {
+				String log = FileCopyUtils.copyToString(new FileReader(new File(project, "target/build.log")));
+				assertThat(log).contains("Reproducible repackaging is not supported with war packaging");
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		});
 	}
 
 }
