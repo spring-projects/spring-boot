@@ -32,6 +32,8 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.core.CollectionFactory;
+
 /**
  * A {@link Task} for generating metadata that describes a starter.
  *
@@ -68,7 +70,7 @@ public class StarterMetadata extends AbstractTask {
 
 	@TaskAction
 	void generateMetadata() throws IOException {
-		Properties properties = new Properties();
+		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.setProperty("name", getProject().getName());
 		properties.setProperty("description", getProject().getDescription());
 		properties.setProperty("dependencies", String.join(",", this.dependencies.getResolvedConfiguration()
