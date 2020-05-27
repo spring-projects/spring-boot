@@ -49,7 +49,7 @@ class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@DynamicPropertySource
 	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.host", redis::getContainerIpAddress);
+		registry.add("spring.redis.host", redis::getHost);
 		registry.add("spring.redis.port", redis::getFirstMappedPort);
 	}
 
