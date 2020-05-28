@@ -46,10 +46,11 @@ public final class ArtifactoryRepository {
 
 	private static String determineArtifactoryRepo(Project project) {
 		String version = project.getVersion().toString();
-		String type = version.substring(version.lastIndexOf('.') + 1);
-		if (type.equals("RELEASE")) {
+		int modifierIndex = version.lastIndexOf('-');
+		if (modifierIndex == -1) {
 			return "release";
 		}
+		String type = version.substring(modifierIndex + 1);
 		if (type.startsWith("M") || type.startsWith("RC")) {
 			return "milestone";
 		}

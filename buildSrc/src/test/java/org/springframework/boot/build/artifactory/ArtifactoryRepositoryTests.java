@@ -32,28 +32,28 @@ public class ArtifactoryRepositoryTests {
 	@Test
 	void whenProjectVersionIsMilestoneThenRepositoryIsMilestone() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3.M1");
+		project.setVersion("1.2.3-M1");
 		assertThat(ArtifactoryRepository.forProject(project).getName()).isEqualTo("milestone");
 	}
 
 	@Test
 	void whenProjectVersionIsReleaseCandidateThenRepositoryIsMilestone() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3.RC1");
+		project.setVersion("1.2.3-RC1");
 		assertThat(ArtifactoryRepository.forProject(project).getName()).isEqualTo("milestone");
 	}
 
 	@Test
 	void whenProjectVersionIsReleaseThenRepositoryIsRelease() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3.RELEASE");
+		project.setVersion("1.2.3");
 		assertThat(ArtifactoryRepository.forProject(project).getName()).isEqualTo("release");
 	}
 
 	@Test
-	void whenProjectVersionIsBuildSnapshotThenRepositoryIsSnapshot() {
+	void whenProjectVersionIsSnapshotThenRepositoryIsSnapshot() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3.BUILD-SNAPSHOT");
+		project.setVersion("1.2.3-SNAPSHOT");
 		assertThat(ArtifactoryRepository.forProject(project).getName()).isEqualTo("snapshot");
 	}
 
