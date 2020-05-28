@@ -110,6 +110,16 @@ class EndpointIdTests {
 	}
 
 	@Test
+	void ofWhenMigratingLegacyNameRemovesHyphens(CapturedOutput output) {
+		EndpointId.resetLoggedWarnings();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.endpoints.migrate-legacy-ids", "true");
+		EndpointId endpointId = EndpointId.of(environment, "foo-bar");
+		assertThat(endpointId.toString()).isEqualTo("foobar");
+		assertThat(output).doesNotContain("contains invalid characters");
+	}
+
+	@Test
 	void equalsAndHashCode() {
 		EndpointId one = EndpointId.of("foobar1");
 		EndpointId two = EndpointId.of("fooBar1");

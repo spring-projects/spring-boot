@@ -173,9 +173,17 @@ class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	void testLegacy() {
+	void testLegacyDot() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/legacy", Map.class));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
+	}
+
+	@Test
+	void testLegacyHyphen() {
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/anotherlegacy", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
 	}
