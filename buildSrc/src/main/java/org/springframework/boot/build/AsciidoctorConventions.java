@@ -158,7 +158,7 @@ class AsciidoctorConventions {
 
 	private String determineGitHubTag(Project project) {
 		String version = "v" + project.getVersion();
-		return (version.endsWith("-SNAPSHOT")) ? "master" : version;
+		return (version.endsWith("-SNAPSHOT")) ? "2.3.x" : version;
 	}
 
 	/**

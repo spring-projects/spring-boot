@@ -12,8 +12,8 @@
 :docinfo: shared,private
 
 :spring-boot-artifactory-repo: snapshot
-:github-tag: master
-:spring-boot-version: current
+:github-tag: 2.3.x
+:spring-boot-version: 2.3.x
 
 :github-repo: spring-projects/spring-boot
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
