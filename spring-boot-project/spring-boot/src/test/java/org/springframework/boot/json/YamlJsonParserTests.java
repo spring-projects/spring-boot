@@ -16,7 +16,7 @@
 
 package org.springframework.boot.json;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -34,7 +34,7 @@ public class YamlJsonParserTests extends AbstractJsonParserTests {
 	}
 
 	@Test
-	public void customTypesAreNotLoaded() throws Exception {
+	void customTypesAreNotLoaded() throws Exception {
 		assertThatExceptionOfType(ConstructorException.class)
 				.isThrownBy(() -> getParser().parseMap("{value: !!java.net.URL [\"http://localhost:9000/\"]}"));
 	}
