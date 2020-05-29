@@ -21,7 +21,7 @@ import java.net.URI;
 import org.springframework.util.Assert;
 
 /**
- * Exception throw when the Docker API fails.
+ * Exception thrown when a call to the Docker API fails.
  *
  * @author Phillip Webb
  * @author Scott Frederick

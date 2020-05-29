@@ -195,10 +195,8 @@ class HttpClientTransportTests {
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
 		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class)))
 				.willThrow(new IOException("test IO exception"));
-		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).isNull()).satisfies(DockerEngineException::getStatusCode)
-				.withMessageContaining("500")
-				.satisfies((ex) -> assertThat(ex.getReasonPhrase()).contains("test IO exception"));
+		assertThatExceptionOfType(DockerConnectionException.class).isThrownBy(() -> this.http.get(this.uri))
+				.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
 	}
 
 	private String writeToString(HttpEntity entity) throws IOException {
