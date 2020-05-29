@@ -137,7 +137,7 @@ abstract class HttpClientTransport implements HttpTransport {
 			return new HttpClientResponse(response);
 		}
 		catch (IOException ex) {
-			throw new DockerEngineException(this.host.toHostString(), request.getURI(), 500, ex.getMessage(), null);
+			throw new DockerConnectionException(this.host.toHostString(), ex);
 		}
 	}
 
