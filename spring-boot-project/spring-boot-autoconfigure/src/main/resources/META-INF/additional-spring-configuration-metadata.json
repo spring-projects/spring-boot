@@ -1964,6 +1964,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "isooffset",
+          "description": "ISO Offset local date-time format."
         }
       ],
       "providers": [
@@ -1982,6 +1986,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local time format"
+        },
+        {
+          "value": "isooffset",
+          "description": "ISO Offset local time format."
         }
       ],
       "providers": [

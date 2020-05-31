@@ -19,7 +19,10 @@ package org.springframework.boot.autoconfigure.web.format;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Gaurav Pareek
  */
 class WebConversionServiceTests {
 
@@ -76,8 +80,17 @@ class WebConversionServiceTests {
 	void isoTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("iso"));
 		LocalTime time = LocalTime.of(12, 45, 23);
+		System.out.println(conversionService.convert(time, String.class));
 		assertThat(conversionService.convert(time, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
+	}
+	
+	@Test
+	void isoOffsetTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("isooffset"));
+		OffsetTime offsetTime =OffsetTime.of(LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
+		assertThat(conversionService.convert(offsetTime, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetTime));
 	}
 
 	@Test
@@ -105,6 +118,15 @@ class WebConversionServiceTests {
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime));
 	}
 
+	@Test
+	void isoOffsetDateTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(
+				new DateTimeFormatters().dateTimeFormat("isooffset"));
+		OffsetDateTime offsetdate =OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
+		assertThat(conversionService.convert(offsetdate, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetdate));
+	}
+	
 	@Test
 	void customDateTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(
