@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
  * {@link DateTimeFormatter Formatters} for dates, times, and date-times.
  *
  * @author Andy Wilkinson
+ * @author Gaurav Pareek
  * @since 2.3.0
  */
 public class DateTimeFormatters {
@@ -43,8 +44,26 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters dateFormat(String pattern) {
+		// switch(pattern) {
+		// case "iso":
+		// this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+		// this.datePattern = "yyyy-MM-dd";
+		// break;
+		// case "isooffset":
+		// this.dateFormatter = DateTimeFormatter.ISO_OFFSET_DATE;
+		// this.datePattern = "yyyy-MM-dd";
+		// break;
+		// default:
+		// this.dateFormatter = formatter(pattern);
+		// this.datePattern = pattern;
+		// break;
+		// }
 		if (isIso(pattern)) {
 			this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+			this.datePattern = "yyyy-MM-dd";
+		}
+		else if (isIsoOffset(pattern)) {
+			this.dateFormatter = DateTimeFormatter.ISO_OFFSET_DATE;
 			this.datePattern = "yyyy-MM-dd";
 		}
 		else {
@@ -60,7 +79,8 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters timeFormat(String pattern) {
-		this.timeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_TIME : formatter(pattern);
+		this.timeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_TIME
+				: (isIsoOffset(pattern) ? DateTimeFormatter.ISO_OFFSET_TIME : formatter(pattern));
 		return this;
 	}
 
@@ -70,7 +90,8 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters dateTimeFormat(String pattern) {
-		this.dateTimeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_DATE_TIME : formatter(pattern);
+		this.dateTimeFormatter = isIso(pattern) ? DateTimeFormatter.ISO_LOCAL_DATE_TIME
+				: (isIsoOffset(pattern) ? DateTimeFormatter.ISO_OFFSET_DATE_TIME : formatter(pattern));
 		return this;
 	}
 
@@ -101,6 +122,10 @@ public class DateTimeFormatters {
 
 	private static boolean isIso(String pattern) {
 		return "iso".equalsIgnoreCase(pattern);
+	}
+
+	private static boolean isIsoOffset(String pattern) {
+		return "isooffset".equalsIgnoreCase(pattern);
 	}
 
 }
