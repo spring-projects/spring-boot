@@ -18,7 +18,7 @@ def find_forward_merge(message_file)
   return nil unless rev
   message = File.read(message_file)
   message.each_line do |line|
-    match = /^(?:Fixes|Closes) gh-(\d+) in ([\d\.]+(?:(?:M|RC)\d)?)$/.match(line)
+    match = /^(?:Fixes|Closes) gh-(\d+) in (\d\.\d\.\d(?:(?:\.|-)(?:M|RC)\d)?)$/.match(line)
     if match then
       issue = match[1]
       milestone = match[2]
