@@ -27,7 +27,6 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -158,16 +157,6 @@ public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServ
 		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
 		assertThat(context.getClearReferencesRmiTargets()).isFalse();
 		assertThat(context.getClearReferencesThreadLocals()).isFalse();
-	}
-
-	@Test
-	@Ignore("gh-19702")
-	public void compressionOfResponseToGetRequest() {
-	}
-
-	@Test
-	@Ignore("gh-19702")
-	public void compressionOfResponseToPostRequest() {
 	}
 
 	@Test
