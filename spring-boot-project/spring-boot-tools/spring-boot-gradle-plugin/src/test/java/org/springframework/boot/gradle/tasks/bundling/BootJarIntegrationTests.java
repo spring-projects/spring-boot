@@ -98,7 +98,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
 			indexedLayers = readLayerIndex(jarFile);
@@ -111,7 +111,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
 		Set<String> expectedSnapshotDependencies = new TreeSet<>();
-		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		expectedSnapshotDependencies.add("BOOT-INF/lib/library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
@@ -140,7 +140,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers.idx")).isNotNull();
@@ -153,7 +153,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
-		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		expectedSnapshotDependencies.add("BOOT-INF/lib/library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
@@ -193,7 +193,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers.idx")).isNotNull();
@@ -209,7 +209,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
-		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		expectedSnapshotDependencies.add("BOOT-INF/lib/library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("subproject-dependencies"))
 				.containsExactlyElementsOf(expectedSubprojectDependencies);
