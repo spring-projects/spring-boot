@@ -100,7 +100,7 @@ The builder can be specified on the command line as well, as shown in this examp
 
 [indent=0]
 ----
-$ gradle bootBuildImage --builder=mine/java-cnb-builder
+	$ gradle bootBuildImage --builder=mine/java-cnb-builder
 ----
 
 
@@ -164,5 +164,5 @@ The image name can be specified on the command line as well, as shown in this ex
 
 [indent=0]
 ----
-$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
+	$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
 ----
