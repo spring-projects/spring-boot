@@ -144,6 +144,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
+	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
 }
 
 compileJava {
