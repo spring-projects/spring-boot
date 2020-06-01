@@ -38,7 +38,6 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -72,18 +71,6 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
 		return new TomcatReactiveWebServerFactory(0);
-	}
-
-	@Override
-	@Test
-	@Disabled("gh-19702")
-	protected void compressionOfResponseToGetRequest() {
-	}
-
-	@Override
-	@Test
-	@Disabled("gh-19702")
-	protected void compressionOfResponseToPostRequest() {
 	}
 
 	@Test
