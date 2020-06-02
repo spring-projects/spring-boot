@@ -75,7 +75,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		MavenExec generatePluginDescriptor = configurePluginDescriptorGenerationTasks(project, generateHelpMojo);
 		DocumentPluginGoals documentPluginGoals = project.getTasks().create("documentPluginGoals",
 				DocumentPluginGoals.class);
-		documentPluginGoals.setPluginXml(generatePluginDescriptor.getOutputs().getFiles().getSingleFile());
+		File pluginXml = new File(generatePluginDescriptor.getOutputs().getFiles().getSingleFile(), "plugin.xml");
+		documentPluginGoals.setPluginXml(pluginXml);
 		documentPluginGoals.setOutputDir(new File(project.getBuildDir(), "docs/generated/goals/"));
 		documentPluginGoals.dependsOn(generatePluginDescriptor);
 		Jar jar = (Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME);
@@ -130,7 +131,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				FormatHelpMojoSource.class);
 		copyFormattedHelpMojoSource.setGenerator(generateHelpMojo);
 		copyFormattedHelpMojoSource.setOutputDir(generatedHelpMojoDir);
-		mainSourceSet.getAllJava().srcDir(generatedHelpMojoDir);
+		mainSourceSet.java((javaSources) -> javaSources.srcDir(generatedHelpMojoDir));
 		project.getTasks().getByName(mainSourceSet.getCompileJavaTaskName()).dependsOn(copyFormattedHelpMojoSource);
 		Copy pluginDescriptorInputs = createCopyPluginDescriptorInputs(project, pluginDescriptorDir, mainSourceSet);
 		pluginDescriptorInputs.dependsOn(mainSourceSet.getClassesTaskName());
@@ -152,7 +153,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	private MavenExec createGeneratePluginDescriptor(Project project, File mavenDir) {
 		MavenExec generatePluginDescriptor = project.getTasks().create("generatePluginDescriptor", MavenExec.class);
 		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor");
-		generatePluginDescriptor.getOutputs().file(new File(mavenDir, "target/classes/META-INF/maven/plugin.xml"));
+		generatePluginDescriptor.getOutputs().dir(new File(mavenDir, "target/classes/META-INF/maven"));
 		generatePluginDescriptor.getInputs().dir(new File(mavenDir, "target/classes/org"));
 		generatePluginDescriptor.setProjectDir(mavenDir);
 		return generatePluginDescriptor;
@@ -164,7 +165,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void includeHelpMojoInJar(Jar jar, JavaExec generateHelpMojo) {
-		jar.from(generateHelpMojo);
+		jar.from(generateHelpMojo).exclude("**/*.java");
 		jar.dependsOn(generateHelpMojo);
 	}
 
