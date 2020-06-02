@@ -226,4 +226,7 @@ do as they were designed before this was clarified.
 | https://github.com/knowm/XChange[XChange]
 | https://github.com/cassandre-tech/cassandre-trading-bot
 
+| https://github.com/ThierrySquirrel[ThierrySquirrel]
+| https://github.com/ThierrySquirrel/rocketmq-spring-boot-starter
+
 |===
