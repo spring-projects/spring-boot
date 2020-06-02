@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.MapPropertySource;
@@ -139,6 +140,30 @@ class SpringConfigurationPropertySourceTests {
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		assertThat(SpringConfigurationPropertySource.from(propertySource))
 				.isInstanceOf(IterableConfigurationPropertySource.class);
+	}
+
+	@Test
+	void containsDescendantOfWhenRandomSourceAndRandomPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomValuePropertySource());
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random")))
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
+	}
+
+	@Test
+	void containsDescendantOfWhenRandomSourceAndRandomPrefixedPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomValuePropertySource());
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random.something")))
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
+	}
+
+	@Test
+	void containsDescendantOfWhenRandomSourceAndNonRandomPropertyReturnsAbsent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomValuePropertySource());
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("abandon.something")))
+				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	/**
