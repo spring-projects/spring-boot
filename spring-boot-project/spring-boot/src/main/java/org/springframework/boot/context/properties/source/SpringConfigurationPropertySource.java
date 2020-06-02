@@ -190,7 +190,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static ConfigurationPropertyState containsDescendantOfForRandom(ConfigurationPropertyName name) {
-		if (name.isAncestorOf(RANDOM) || name.equals(RANDOM)) {
+		if (RANDOM.isAncestorOf(name) || name.equals(RANDOM)) {
 			return ConfigurationPropertyState.PRESENT;
 		}
 		return ConfigurationPropertyState.ABSENT;
