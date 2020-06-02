@@ -888,14 +888,14 @@ You can then configure your Kubernetes infrastructure with the following endpoin
 livenessProbe:
   httpGet:
     path: /actuator/health/liveness
-    port: liveness-port
+    port: management-port
   failureThreshold: ...
   periodSeconds: ...
 
 readinessProbe:
   httpGet:
     path: /actuator/health/readiness
-    port: liveness-port
+    port: management-port
   failureThreshold: ...
   periodSeconds: ...
 ----
