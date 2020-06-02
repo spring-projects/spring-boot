@@ -130,6 +130,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Determine if the specified entry is a candidate for further searching.
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a candidate for further searching
+	 * @since 2.3.0
 	 */
 	protected boolean isSearchCandidate(Archive.Entry entry) {
 		return true;
@@ -149,6 +150,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
 	 * returns {@code false}.
 	 * @return if the {@link #postProcessClassPathArchives(List)} method is implemented
+	 * @since 2.3.0
 	 */
 	protected boolean isPostProcessingClassPathArchives() {
 		return true;
@@ -172,6 +174,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	/**
 	 * Return the root archive.
 	 * @return the root archive
+	 * @since 2.3.0
 	 */
 	protected final Archive getArchive() {
 		return this.archive;

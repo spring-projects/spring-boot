@@ -93,6 +93,7 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	/**
 	 * Return if the archive is exploded (already unpacked).
 	 * @return if the archive is exploded
+	 * @since 2.3.0
 	 */
 	default boolean isExploded() {
 		return false;

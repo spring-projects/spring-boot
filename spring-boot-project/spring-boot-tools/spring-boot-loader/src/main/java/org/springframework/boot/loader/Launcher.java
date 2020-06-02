@@ -169,6 +169,7 @@ public abstract class Launcher {
 	 * {@code true} then only regular JARs are supported and the additional URL and
 	 * ClassLoader support infrastructure can be optimized.
 	 * @return if the jar is exploded.
+	 * @since 2.3.0
 	 */
 	protected boolean isExploded() {
 		return true;
