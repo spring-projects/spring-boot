@@ -900,6 +900,8 @@ readinessProbe:
   periodSeconds: ...
 ----
 
+NOTE: `"management-port"` means the port that the actuator endpoints are available on. It could be the server port if a separate management port has not been configured or the `"management.server.port"` property if that has been explicitly configured.
+
 These health groups are only enabled automatically if the application is <<deployment.adoc#cloud-deployment-kubernetes,running in a Kubernetes environment>>.
 You can enable them in any environment using the configprop:management.health.probes.enabled[] configuration property.
 
