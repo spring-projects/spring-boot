@@ -32,7 +32,6 @@ import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -55,9 +54,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * {@link WebTestClient}. For more fine-grained control of WebTestClient the
  * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} annotation can be used.
  * <p>
- * Typically {@code @WebFluxTest} is used in combination with {@link MockBean @MockBean}
- * or {@link Import @Import} to create any collaborators required by your
- * {@code @Controller} beans.
+ * Typically {@code @WebFluxTest} is used in combination with
+ * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
+ * {@link Import @Import} to create any collaborators required by your {@code @Controller}
+ * beans.
  * <p>
  * If you are looking to load your full application configuration and use WebTestClient,
  * you should consider {@link SpringBootTest @SpringBootTest} combined with
