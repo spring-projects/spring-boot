@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -52,8 +53,6 @@ import org.springframework.util.ObjectUtils;
  * @see SpringIterableConfigurationPropertySource
  */
 class SpringConfigurationPropertySource implements ConfigurationPropertySource {
-
-	private static final ConfigurationPropertyName RANDOM = ConfigurationPropertyName.of("random");
 
 	private final PropertySource<?> propertySource;
 
@@ -184,13 +183,19 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	private static Function<ConfigurationPropertyName, ConfigurationPropertyState> getContainsDescendantOfForSource(
 			PropertySource<?> source) {
 		if (source.getSource() instanceof Random) {
-			return SpringConfigurationPropertySource::containsDescendantOfForRandom;
+			return (name) -> containsDescendantOfForRandom("random", name);
+		}
+		if (source.getSource() instanceof PropertySource<?>
+				&& ((PropertySource<?>) source.getSource()).getSource() instanceof Random) {
+			// Assume wrapped random sources use the source name as the prefix
+			return (name) -> containsDescendantOfForRandom(source.getName(), name);
 		}
 		return null;
 	}
 
-	private static ConfigurationPropertyState containsDescendantOfForRandom(ConfigurationPropertyName name) {
-		if (RANDOM.isAncestorOf(name) || name.equals(RANDOM)) {
+	private static ConfigurationPropertyState containsDescendantOfForRandom(String prefix,
+			ConfigurationPropertyName name) {
+		if (name.getNumberOfElements() > 1 && name.getElement(0, Form.DASHED).equals(prefix)) {
 			return ConfigurationPropertyState.PRESENT;
 		}
 		return ConfigurationPropertyState.ABSENT;
