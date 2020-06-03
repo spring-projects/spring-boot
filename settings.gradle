@@ -36,10 +36,10 @@ settings.gradle.projectsLoaded {
 			}
 
 			settings.gradle.rootProject.getBuildDir().mkdirs()
-			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "(build scan not generated)"
+			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
 
 			buildScanPublished { scan ->
-				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "${scan.buildScanUri}\n"
+				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}
