@@ -166,6 +166,7 @@
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<ojdbc.version>19.3.0.0</ojdbc.version>
 		<okhttp3.version>3.14.8</okhttp3.version>
+		<oracle-database.version>19.3.0.0</oracle-database.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
 		<postgresql.version>42.2.12</postgresql.version>
 		<prometheus-pushgateway.version>0.7.0</prometheus-pushgateway.version>
@@ -732,6 +733,96 @@
 				<groupId>com.microsoft.sqlserver</groupId>
 				<artifactId>mssql-jdbc</artifactId>
 				<version>${mssql-jdbc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.ha</groupId>
+				<artifactId>ons</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.ha</groupId>
+				<artifactId>simplefan</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc10</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc10dms</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc8</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc8dms</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ucp</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc.debug</groupId>
+				<artifactId>ojdbc10_g</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc.debug</groupId>
+				<artifactId>ojdbc10dms_g</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc.debug</groupId>
+				<artifactId>ojdbc8_g</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.jdbc.debug</groupId>
+				<artifactId>ojdbc8dms_g</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.nls</groupId>
+				<artifactId>orai18n</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.observability</groupId>
+				<artifactId>dms</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.security</groupId>
+				<artifactId>oraclepki</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.security</groupId>
+				<artifactId>osdt_cert</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.security</groupId>
+				<artifactId>osdt_core</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.xml</groupId>
+				<artifactId>xdb</artifactId>
+				<version>${oracle-database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle.database.xml</groupId>
+				<artifactId>xmlparserv2</artifactId>
+				<version>${oracle-database.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.oracle.ojdbc</groupId>
