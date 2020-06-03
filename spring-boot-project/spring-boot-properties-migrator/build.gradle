@@ -9,9 +9,8 @@ description = "Spring Boot Properties Migrator"
 
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
