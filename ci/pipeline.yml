@@ -258,7 +258,7 @@ jobs:
           text: >
             :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
             [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-            [<$TEXT_FILE_CONTENT|build scan>]
+            [$TEXT_FILE_CONTENT]
           text_file: git-repo/build/build-scan-uri.txt
           silent: true
           icon_emoji: ":concourse:"
@@ -296,7 +296,7 @@ jobs:
       text: >
         :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
         [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-        [<$TEXT_FILE_CONTENT|build scan>]
+        [$TEXT_FILE_CONTENT]
       text_file: git-repo/build/build-scan-uri.txt
       silent: true
       icon_emoji: ":concourse:"
@@ -358,7 +358,7 @@ jobs:
           text: >
             :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
             [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-            [<$TEXT_FILE_CONTENT|build scan>]
+            [$TEXT_FILE_CONTENT]
           text_file: git-repo/build/build-scan-uri.txt
           silent: true
           icon_emoji: ":concourse:"
@@ -370,7 +370,7 @@ jobs:
       text: >
         :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
         [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-        [<$TEXT_FILE_CONTENT|build scan>]
+        [$TEXT_FILE_CONTENT]
       text_file: git-repo/build/build-scan-uri.txt
       silent: true
       icon_emoji: ":concourse:"
@@ -404,7 +404,7 @@ jobs:
               text: >
                 :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
                 [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-                [<$TEXT_FILE_CONTENT|build scan>]
+                [$TEXT_FILE_CONTENT]
               text_file: git-repo/build/build-scan-uri.txt
               silent: true
               icon_emoji: ":concourse:"
@@ -416,7 +416,7 @@ jobs:
         text: >
           :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
           [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-          [<$TEXT_FILE_CONTENT|build scan>]
+          [$TEXT_FILE_CONTENT]
         text_file: git-repo/build/build-scan-uri.txt
         silent: true
         icon_emoji: ":concourse:"
@@ -447,7 +447,7 @@ jobs:
               text: >
                 :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
                 [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-                [<$TEXT_FILE_CONTENT|build scan>]
+                [$TEXT_FILE_CONTENT]
               text_file: git-repo/build/build-scan-uri.txt
               silent: true
               icon_emoji: ":concourse:"
@@ -457,7 +457,7 @@ jobs:
         text: >
           :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
           [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-          [<$TEXT_FILE_CONTENT|build scan>]
+          [$TEXT_FILE_CONTENT]
         text_file: git-repo/build/build-scan-uri.txt
         silent: true
         icon_emoji: ":concourse:"
