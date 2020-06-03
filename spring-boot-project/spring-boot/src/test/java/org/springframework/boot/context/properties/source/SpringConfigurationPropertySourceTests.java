@@ -146,24 +146,105 @@ class SpringConfigurationPropertySourceTests {
 	void containsDescendantOfWhenRandomSourceAndRandomPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
 				.from(new RandomValuePropertySource());
-		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("random");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
 	}
 
 	@Test
 	void containsDescendantOfWhenRandomSourceAndRandomPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
 				.from(new RandomValuePropertySource());
-		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random.something")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("random.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(source.getConfigurationProperty(name)).isNotNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenRandomSourceWithDifferentNameAndRandomPrefixedPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomValuePropertySource("different"));
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("random.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(source.getConfigurationProperty(name)).isNotNull();
 	}
 
 	@Test
 	void containsDescendantOfWhenRandomSourceAndNonRandomPropertyReturnsAbsent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
 				.from(new RandomValuePropertySource());
-		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("abandon.something")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("abandon.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenWrappedRandomSourceAndRandomPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomWrapperPropertySource());
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenWrappedRandomSourceAndRandomPrefixedPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomWrapperPropertySource());
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom.something.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenWrappedRandomSourceWithMatchingNameAndRandomPrefixedPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomWrapperPropertySource("cachedrandom"));
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom.something.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(source.getConfigurationProperty(name)).isNotNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenWrappedRandomSourceAndRandomDashPrefixedPropertyReturnsPresent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomWrapperPropertySource());
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("cached-random.something.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
+	}
+
+	@Test
+	void containsDescendantOfWhenWrappedRandomSourceAndNonRandomPropertyReturnsAbsent() {
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
+				.from(new RandomWrapperPropertySource());
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("abandon.something.int");
+		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(source.getConfigurationProperty(name)).isNull();
+	}
+
+	static class RandomWrapperPropertySource extends PropertySource<RandomValuePropertySource> {
+
+		private final String prefix;
+
+		RandomWrapperPropertySource() {
+			this("cachedRandom");
+		}
+
+		RandomWrapperPropertySource(String name) {
+			super(name, new RandomValuePropertySource());
+			this.prefix = name + ".";
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			name = name.toLowerCase();
+			if (!name.startsWith(this.prefix)) {
+				return null;
+			}
+			return getSource().getProperty("random." + name.substring(this.prefix.length()));
+		}
+
 	}
 
 	/**
