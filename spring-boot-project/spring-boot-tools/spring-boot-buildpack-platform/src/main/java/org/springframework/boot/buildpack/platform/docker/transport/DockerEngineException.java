@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 import java.net.URI;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Exception thrown when a call to the Docker API fails.
@@ -35,11 +36,15 @@ public class DockerEngineException extends RuntimeException {
 
 	private final Errors errors;
 
-	DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
-		super(buildMessage(host, uri, statusCode, reasonPhrase, errors));
+	private final Message responseMessage;
+
+	DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+			Message responseMessage) {
+		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 		this.errors = errors;
+		this.responseMessage = responseMessage;
 	}
 
 	/**
@@ -51,7 +56,7 @@ public class DockerEngineException extends RuntimeException {
 	}
 
 	/**
-	 * Return the reason phrase returned by the Docker API error.
+	 * Return the reason phrase returned by the Docker API.
 	 * @return the reasonPhrase
 	 */
 	public String getReasonPhrase() {
@@ -59,24 +64,37 @@ public class DockerEngineException extends RuntimeException {
 	}
 
 	/**
-	 * Return the Errors from the body of the Docker API error, or {@code null} if the
-	 * error JSON could not be read.
+	 * Return the errors from the body of the Docker API response, or {@code null} if the
+	 * errors JSON could not be read.
 	 * @return the errors or {@code null}
 	 */
 	public Errors getErrors() {
 		return this.errors;
 	}
 
-	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors) {
-		Assert.notNull(host, "host must not be null");
+	/**
+	 * Return the message from the body of the Docker API response, or {@code null} if the
+	 * message JSON could not be read.
+	 * @return the message or {@code null}
+	 */
+	public Message getResponseMessage() {
+		return this.responseMessage;
+	}
+
+	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+			Message responseMessage) {
+		Assert.notNull(host, "Host must not be null");
 		Assert.notNull(uri, "URI must not be null");
 		StringBuilder message = new StringBuilder(
 				"Docker API call to '" + host + uri + "' failed with status code " + statusCode);
-		if (reasonPhrase != null && !reasonPhrase.isEmpty()) {
-			message.append(" \"" + reasonPhrase + "\"");
+		if (!StringUtils.isEmpty(reasonPhrase)) {
+			message.append(" \"").append(reasonPhrase).append("\"");
+		}
+		if (responseMessage != null && !StringUtils.isEmpty(responseMessage.getMessage())) {
+			message.append(" and message \"").append(responseMessage.getMessage()).append("\"");
 		}
 		if (errors != null && !errors.isEmpty()) {
-			message.append(" " + errors);
+			message.append(" ").append(errors);
 		}
 		return message.toString();
 	}
