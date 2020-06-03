@@ -11,8 +11,7 @@ description = "Spring Boot Test"
 
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
-	implementation(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot"))
 
 	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("com.fasterxml.jackson.core:jackson-databind")

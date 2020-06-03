@@ -16,9 +16,8 @@ configurations {
 
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 

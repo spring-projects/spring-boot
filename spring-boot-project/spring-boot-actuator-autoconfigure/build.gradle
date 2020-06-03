@@ -23,12 +23,11 @@ dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	implementation("org.springframework:spring-core")
-	implementation("org.springframework:spring-context")
 
 	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("ch.qos.logback:logback-classic")

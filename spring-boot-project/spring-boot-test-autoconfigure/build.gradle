@@ -10,10 +10,9 @@ description = "Spring Boot Test AutoConfigure"
 
 dependencies {
 	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-test"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-test"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("javax.json.bind:javax.json.bind-api")
