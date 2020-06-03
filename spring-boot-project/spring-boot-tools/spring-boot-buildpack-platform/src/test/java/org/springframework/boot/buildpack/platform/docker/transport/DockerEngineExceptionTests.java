@@ -49,55 +49,78 @@ class DockerEngineExceptionTests {
 
 	private static final Errors ERRORS = new Errors(Collections.singletonList(new Errors.Error("code", "message")));
 
+	private static final Message NO_MESSAGE = new Message(null);
+
+	private static final Message MESSAGE = new Message("response message");
+
 	@Test
 	void createWhenHostIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DockerEngineException(null, null, 404, null, NO_ERRORS))
-				.withMessage("host must not be null");
+				.isThrownBy(() -> new DockerEngineException(null, null, 404, null, NO_ERRORS, NO_MESSAGE))
+				.withMessage("Host must not be null");
 	}
 
 	@Test
 	void createWhenUriIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DockerEngineException(HOST, null, 404, null, NO_ERRORS))
+				.isThrownBy(() -> new DockerEngineException(HOST, null, 404, null, NO_ERRORS, NO_MESSAGE))
 				.withMessage("URI must not be null");
 	}
 
 	@Test
 	void create() {
-		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", ERRORS);
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", ERRORS, MESSAGE);
 		assertThat(exception.getMessage()).isEqualTo(
-				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" [code: message]");
+				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" and message \"response message\" [code: message]");
 		assertThat(exception.getStatusCode()).isEqualTo(404);
 		assertThat(exception.getReasonPhrase()).isEqualTo("missing");
 		assertThat(exception.getErrors()).isSameAs(ERRORS);
+		assertThat(exception.getResponseMessage()).isSameAs(MESSAGE);
 	}
 
 	@Test
 	void createWhenReasonPhraseIsNull() {
-		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, null, ERRORS);
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, null, ERRORS, MESSAGE);
 		assertThat(exception.getMessage()).isEqualTo(
-				"Docker API call to 'docker://localhost/example' failed with status code 404 [code: message]");
+				"Docker API call to 'docker://localhost/example' failed with status code 404 and message \"response message\" [code: message]");
 		assertThat(exception.getStatusCode()).isEqualTo(404);
 		assertThat(exception.getReasonPhrase()).isNull();
 		assertThat(exception.getErrors()).isSameAs(ERRORS);
+		assertThat(exception.getResponseMessage()).isSameAs(MESSAGE);
 	}
 
 	@Test
 	void createWhenErrorsIsNull() {
-		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", null);
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", null, MESSAGE);
+		assertThat(exception.getMessage()).isEqualTo(
+				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" and message \"response message\"");
 		assertThat(exception.getErrors()).isNull();
 	}
 
 	@Test
 	void createWhenErrorsIsEmpty() {
-		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", NO_ERRORS);
-		assertThat(exception.getMessage())
-				.isEqualTo("Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\"");
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", NO_ERRORS, MESSAGE);
+		assertThat(exception.getMessage()).isEqualTo(
+				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" and message \"response message\"");
 		assertThat(exception.getStatusCode()).isEqualTo(404);
 		assertThat(exception.getReasonPhrase()).isEqualTo("missing");
 		assertThat(exception.getErrors()).isSameAs(NO_ERRORS);
+	}
 
+	@Test
+	void createWhenMessageIsNull() {
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", ERRORS, null);
+		assertThat(exception.getMessage()).isEqualTo(
+				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" [code: message]");
+		assertThat(exception.getResponseMessage()).isNull();
+	}
+
+	@Test
+	void createWhenMessageIsEmpty() {
+		DockerEngineException exception = new DockerEngineException(HOST, URI, 404, "missing", ERRORS, NO_MESSAGE);
+		assertThat(exception.getMessage()).isEqualTo(
+				"Docker API call to 'docker://localhost/example' failed with status code 404 \"missing\" [code: message]");
+		assertThat(exception.getResponseMessage()).isSameAs(NO_MESSAGE);
 	}
 
 }

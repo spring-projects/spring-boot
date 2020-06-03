@@ -181,14 +181,42 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.statusLine.getStatusCode()).willReturn(404);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).hasSize(2));
+				.satisfies((ex) -> {
+					assertThat(ex.getErrors()).hasSize(2);
+					assertThat(ex.getResponseMessage()).isNull();
+				});
 	}
 
 	@Test
-	void executeWhenResponseIsIn500RangeShouldThrowDockerException() {
+	void executeWhenResponseIsIn500RangeWithNoContentShouldThrowDockerException() {
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getErrors()).isNull());
+				.satisfies((ex) -> {
+					assertThat(ex.getErrors()).isNull();
+					assertThat(ex.getResponseMessage()).isNull();
+				});
+	}
+
+	@Test
+	void executeWhenResponseIsIn500RangeWithMessageShouldThrowDockerException() throws IOException {
+		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("message.json"));
+		given(this.statusLine.getStatusCode()).willReturn(500);
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
+				.satisfies((ex) -> {
+					assertThat(ex.getErrors()).isNull();
+					assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+				});
+	}
+
+	@Test
+	void executeWhenResponseIsIn500RangeWithOtherContentShouldThrowDockerException() throws IOException {
+		given(this.entity.getContent()).willReturn(this.content);
+		given(this.statusLine.getStatusCode()).willReturn(500);
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
+				.satisfies((ex) -> {
+					assertThat(ex.getErrors()).isNull();
+					assertThat(ex.getResponseMessage()).isNull();
+				});
 	}
 
 	@Test
