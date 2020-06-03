@@ -46,11 +46,10 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Set filter(Set artifacts) throws ArtifactFilterException {
-		Set result = new HashSet();
-		for (Object artifact : artifacts) {
-			if (!filter((Artifact) artifact)) {
+	public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
+		Set<Artifact> result = new HashSet<>();
+		for (Artifact artifact : artifacts) {
+			if (!filter(artifact)) {
 				result.add(artifact);
 			}
 		}

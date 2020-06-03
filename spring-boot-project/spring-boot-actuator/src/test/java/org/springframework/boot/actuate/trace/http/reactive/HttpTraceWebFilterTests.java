@@ -89,9 +89,10 @@ class HttpTraceWebFilterTests {
 		executeFilter(new ServerWebExchangeDecorator(
 				MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com"))) {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public Mono<Principal> getPrincipal() {
-				return Mono.just(principal);
+			public <T extends Principal> Mono<T> getPrincipal() {
+				return Mono.just((T) principal);
 			}
 
 		}, (exchange) -> {

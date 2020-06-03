@@ -157,7 +157,7 @@ class JavaConventions {
 				args.add("-parameters");
 			}
 			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-				args.add("-Werror");
+				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked"));
 			}
 		});
 	}

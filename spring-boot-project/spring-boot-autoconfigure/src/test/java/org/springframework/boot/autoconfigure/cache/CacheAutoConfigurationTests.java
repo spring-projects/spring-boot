@@ -42,6 +42,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
+import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider.MockCacheManager;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -354,8 +355,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 					CompleteConfiguration<?, ?> defaultCacheConfiguration = context
 							.getBean(CompleteConfiguration.class);
-					verify(cacheManager.getCacheManager()).createCache("one", defaultCacheConfiguration);
-					verify(cacheManager.getCacheManager()).createCache("two", defaultCacheConfiguration);
+					MockCacheManager mockCacheManager = (MockCacheManager) cacheManager.getCacheManager();
+					assertThat(mockCacheManager.getConfigurations()).containsEntry("one", defaultCacheConfiguration)
+							.containsEntry("two", defaultCacheConfiguration);
 				});
 	}
 
