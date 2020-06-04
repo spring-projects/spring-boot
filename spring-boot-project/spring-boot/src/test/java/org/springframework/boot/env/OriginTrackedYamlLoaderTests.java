@@ -17,6 +17,7 @@
 package org.springframework.boot.env;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,14 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(getLocation(empty)).isEqualTo("27:8");
 		assertThat(nullValue.getValue()).isEqualTo("");
 		assertThat(getLocation(nullValue)).isEqualTo("28:13");
+	}
+
+	@Test
+	void processEmptyListAndMap() {
+		OriginTrackedValue emptymap = getValue("emptymap");
+		OriginTrackedValue emptylist = getValue("emptylist");
+		assertThat(emptymap.getValue()).isEqualTo(Collections.EMPTY_MAP);
+		assertThat(emptylist.getValue()).isEqualTo(Collections.EMPTY_LIST);
 	}
 
 	@Test
