@@ -138,6 +138,7 @@ class AsciidoctorConventions {
 
 	private void configureHtmlOnlyAttributes(AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("source-highlighter", "highlightjs");
 		attributes.put("highlightjsdir", "js/highlight");
 		attributes.put("highlightjs-theme", "github");
 		attributes.put("linkcss", true);
