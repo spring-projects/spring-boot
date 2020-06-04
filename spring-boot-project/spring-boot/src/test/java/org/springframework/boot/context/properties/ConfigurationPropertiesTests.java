@@ -257,7 +257,7 @@ class ConfigurationPropertiesTests {
 		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class, "name=parent");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
-		load(new Class[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
+		load(new Class<?>[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
 		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("parent");

@@ -46,13 +46,13 @@ class ConfigurationPropertiesAutoConfigurationTests {
 
 	@Test
 	void processAnnotatedBean() {
-		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
+		load(new Class<?>[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
 	void processAnnotatedBeanNoAutoConfig() {
-		load(new Class[] { SampleBean.class }, "foo.name:test");
+		load(new Class<?>[] { SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}
 

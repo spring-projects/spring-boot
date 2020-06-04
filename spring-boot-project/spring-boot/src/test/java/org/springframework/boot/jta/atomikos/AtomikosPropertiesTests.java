@@ -97,7 +97,7 @@ class AtomikosPropertiesTests {
 	}
 
 	private MapEntry<?, ?>[] defaultOf(Properties defaultSettings, String... keys) {
-		MapEntry<?, ?>[] entries = new MapEntry[keys.length];
+		MapEntry<?, ?>[] entries = new MapEntry<?, ?>[keys.length];
 		for (int i = 0; i < keys.length; i++) {
 			String key = keys[i];
 			entries[i] = entry(key, defaultSettings.get(key));

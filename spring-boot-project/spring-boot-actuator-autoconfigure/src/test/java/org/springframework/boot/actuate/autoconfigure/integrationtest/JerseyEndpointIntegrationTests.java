@@ -47,12 +47,12 @@ class JerseyEndpointIntegrationTests {
 
 	@Test
 	void linksAreProvidedToAllEndpointTypes() {
-		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class });
+		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class });
 	}
 
 	@Test
 	void actuatorEndpointsWhenUserProvidedResourceConfigBeanNotAvailable() {
-		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
+		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class });
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {

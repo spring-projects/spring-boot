@@ -159,7 +159,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	}
 
 	private void updateDependencyResolutionContext(List<Map<String, String>> bomDependencies) {
-		URI[] uris = Grape.getInstance().resolve(null, bomDependencies.toArray(new Map[0]));
+		URI[] uris = Grape.getInstance().resolve(null, bomDependencies.toArray(new Map<?, ?>[0]));
 		DefaultModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
 		for (URI uri : uris) {
 			try {
