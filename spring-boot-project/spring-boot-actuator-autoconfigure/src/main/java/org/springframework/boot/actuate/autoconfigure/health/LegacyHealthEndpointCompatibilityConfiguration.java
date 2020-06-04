@@ -18,12 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,13 +36,14 @@ import org.springframework.util.CollectionUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("deprecation")
-@EnableConfigurationProperties(HealthIndicatorProperties.class)
+@EnableConfigurationProperties(org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorProperties.class)
 class LegacyHealthEndpointCompatibilityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthAggregator healthAggregator(HealthIndicatorProperties healthIndicatorProperties) {
-		OrderedHealthAggregator aggregator = new OrderedHealthAggregator();
+	org.springframework.boot.actuate.health.HealthAggregator healthAggregator(
+			HealthIndicatorProperties healthIndicatorProperties) {
+		org.springframework.boot.actuate.health.OrderedHealthAggregator aggregator = new org.springframework.boot.actuate.health.OrderedHealthAggregator();
 		if (!CollectionUtils.isEmpty(healthIndicatorProperties.getOrder())) {
 			aggregator.setStatusOrder(healthIndicatorProperties.getOrder());
 		}
@@ -54,7 +51,7 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
+	@ConditionalOnMissingBean(org.springframework.boot.actuate.health.HealthIndicatorRegistry.class)
 	HealthContributorRegistryHealthIndicatorRegistryAdapter healthIndicatorRegistry(
 			HealthContributorRegistry healthContributorRegistry) {
 		return new HealthContributorRegistryHealthIndicatorRegistryAdapter(healthContributorRegistry);
@@ -65,7 +62,7 @@ class LegacyHealthEndpointCompatibilityConfiguration {
 	static class LegacyReactiveHealthEndpointCompatibilityConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(ReactiveHealthIndicatorRegistry.class)
+		@ConditionalOnMissingBean(org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry.class)
 		ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter reactiveHealthIndicatorRegistry(
 				ReactiveHealthContributorRegistry reactiveHealthContributorRegistry) {
 			return new ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter(

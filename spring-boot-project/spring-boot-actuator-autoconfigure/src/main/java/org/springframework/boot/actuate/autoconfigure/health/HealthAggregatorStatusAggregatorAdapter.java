@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 
 /**
- * Adapter class to convert a legacy {@link HealthAggregator} to a
+ * Adapter class to convert a legacy
+ * {@link org.springframework.boot.actuate.health.HealthAggregator} to a
  * {@link StatusAggregator}.
  *
  * @author Phillip Webb
@@ -34,9 +34,9 @@ import org.springframework.boot.actuate.health.StatusAggregator;
 @SuppressWarnings("deprecation")
 class HealthAggregatorStatusAggregatorAdapter implements StatusAggregator {
 
-	private HealthAggregator healthAggregator;
+	private org.springframework.boot.actuate.health.HealthAggregator healthAggregator;
 
-	HealthAggregatorStatusAggregatorAdapter(HealthAggregator healthAggregator) {
+	HealthAggregatorStatusAggregatorAdapter(org.springframework.boot.actuate.health.HealthAggregator healthAggregator) {
 		this.healthAggregator = healthAggregator;
 	}
 

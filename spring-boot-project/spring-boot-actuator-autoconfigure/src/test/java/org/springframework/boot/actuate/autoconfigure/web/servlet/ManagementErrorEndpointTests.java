@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -111,7 +112,7 @@ class ManagementErrorEndpointTests {
 		ErrorAttributes attributes = new ErrorAttributes() {
 
 			@Override
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 				return Collections.singletonMap("message", "An error occurred");
 			}
 
@@ -154,7 +155,7 @@ class ManagementErrorEndpointTests {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
 
 			@Override
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 				return Collections.singletonMap("error", "custom error");
 			}
 

@@ -22,18 +22,18 @@ import java.util.Map;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.util.Assert;
 
 /**
  * Adapter class to convert a {@link HealthContributorRegistry} to a legacy
- * {@link HealthIndicatorRegistry}.
+ * {@link org.springframework.boot.actuate.health.HealthIndicatorRegistry}.
  *
  * @author Phillip Webb
  */
 @SuppressWarnings("deprecation")
-class HealthContributorRegistryHealthIndicatorRegistryAdapter implements HealthIndicatorRegistry {
+class HealthContributorRegistryHealthIndicatorRegistryAdapter
+		implements org.springframework.boot.actuate.health.HealthIndicatorRegistry {
 
 	private final HealthContributorRegistry contributorRegistry;
 
