@@ -313,7 +313,7 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
 . An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
 . An `ApplicationReadyEvent` is sent after any application and command-line runners have been called.
-. An `LivenessState` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
+. An `AvailabilityChangeEvent` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
