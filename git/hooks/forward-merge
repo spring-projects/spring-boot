@@ -25,7 +25,7 @@ def find_forward_merge(message_file)
   message = File.read(message_file)
   message.each_line do |line|
     $log.debug "Checking #{line} for message"
-    match = /^(?:Fixes|Closes) gh-(\d+) in ([\d\.]+(?:(?:M|RC)\d)?)$/.match(line)
+    match = /^(?:Fixes|Closes) gh-(\d+) in (\d\.\d\.[\dx](?:[\.\-](?:M|RC)\d)?)$/.match(line)
     if match then
       issue = match[1]
       milestone = match[2]
@@ -60,6 +60,19 @@ def find_milestone(username, password, repository, title)
   request.basic_auth(username, password)
   response = http.request(request)
   milestones = JSON.parse(response.body)
+  if title.end_with?(".x")
+    prefix = title.delete_suffix('.x')
+    $log.debug "Finding latest milestone from candidates starting with #{prefix}"
+    titles = milestones.map { |milestone| milestone['title'] }
+    titles = titles.select{ |title| title.start_with?(prefix) unless title.end_with?('.x')}
+    titles.sort_by { |v| Gem::Version.new(v) }
+    if(titles.empty?)
+      puts "Cannot find latest for milestone #{title}"
+      exit 1
+    end
+    title = titles.last
+    $log.debug "Found latest milestone #{title}"
+  end
   milestones.each do |milestone|
     $log.debug "Considering #{milestone['title']}"
     return milestone['number'] if milestone['title'] == title
