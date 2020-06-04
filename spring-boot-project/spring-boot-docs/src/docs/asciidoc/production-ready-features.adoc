@@ -1377,6 +1377,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for h
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-humio,Humio>>
 - <<production-ready-metrics-export-influx,Influx>>
+- <<production-ready-metrics-export-instana,Instana>>
 - <<production-ready-metrics-export-jmx,JMX>>
 - <<production-ready-metrics-export-kairos,KairosDB>>
 - <<production-ready-metrics-export-newrelic,New Relic>>
@@ -1593,6 +1594,9 @@ The location of the https://www.influxdata.com[Influx server] to use can be prov
 	management.metrics.export.influx.uri=https://influx.example.com:8086
 ----
 
+[[production-ready-metrics-export-instana]]
+==== Instana
+The Instana host agent https://www.instana.com/docs/ecosystem/micrometer/[automatically picks up Micrometer metrics] and transmits them to Instana. No configuration required.
 
 
 [[production-ready-metrics-export-jmx]]
