@@ -66,7 +66,12 @@ public enum JavaVersion {
 	/**
 	 * Java 14.
 	 */
-	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess");
+	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess"),
+
+	/**
+	 * Java 15.
+	 */
+	FIFTEEN("15", CharSequence.class, "isEmpty");
 
 	private final String name;
 
