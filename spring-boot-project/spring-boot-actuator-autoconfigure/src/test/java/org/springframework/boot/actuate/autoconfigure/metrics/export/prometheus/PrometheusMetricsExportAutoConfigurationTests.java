@@ -62,10 +62,18 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.export.prometheus.enabled=false")
+	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
+						.doesNotHaveBean(PrometheusMeterRegistry.class).doesNotHaveBean(PrometheusConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.prometheus.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class)
-						.doesNotHaveBean(CollectorRegistry.class).doesNotHaveBean(PrometheusConfig.class));
+						.doesNotHaveBean(PrometheusConfig.class));
 	}
 
 	@Test

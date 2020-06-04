@@ -52,7 +52,14 @@ class HumioMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
+						.doesNotHaveBean(HumioMeterRegistry.class).doesNotHaveBean(HumioConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.humio.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(HumioMeterRegistry.class)

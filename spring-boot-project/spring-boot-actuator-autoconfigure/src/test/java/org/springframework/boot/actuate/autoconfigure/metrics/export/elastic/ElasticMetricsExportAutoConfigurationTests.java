@@ -51,7 +51,14 @@ class ElasticMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
+						.doesNotHaveBean(ElasticMeterRegistry.class).doesNotHaveBean(ElasticConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.elastic.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(ElasticMeterRegistry.class)
