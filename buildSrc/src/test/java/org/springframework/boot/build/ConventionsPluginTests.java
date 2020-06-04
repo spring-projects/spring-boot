@@ -78,7 +78,7 @@ class ConventionsPluginTests {
 	}
 
 	@Test
-	void testRetryIsConfiguredOnCI() throws IOException {
+	void testRetryIsConfiguredWithThreeRetriesOnCI() throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'java'");
@@ -101,7 +101,7 @@ class ConventionsPluginTests {
 	}
 
 	@Test
-	void testRetryIsNotConfiguredLocally() throws IOException {
+	void testRetryIsConfiguredWithZeroRetriesLocally() throws IOException {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'java'");
@@ -111,11 +111,16 @@ class ConventionsPluginTests {
 			out.println("task retryConfig {");
 			out.println("    doLast {");
 			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
+			out.println("    test.retry {");
+			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
+			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
+			out.println("        }");
 			out.println("    }");
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
-				.contains("Retry plugin applied: false");
+				.contains("Retry plugin applied: true").contains("maxRetries: 0")
+				.contains("failOnPassedAfterRetry: true");
 	}
 
 	private BuildResult runGradle(String... args) {
