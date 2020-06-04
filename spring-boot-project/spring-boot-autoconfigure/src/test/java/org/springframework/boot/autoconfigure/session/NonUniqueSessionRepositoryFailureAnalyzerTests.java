@@ -49,6 +49,7 @@ class NonUniqueSessionRepositoryFailureAnalyzerTests {
 	}
 
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	private final Exception createFailure(Class<? extends SessionRepository<?>>... candidates) {
 		return new NonUniqueSessionRepositoryException(Arrays.asList(candidates));
 	}

@@ -77,6 +77,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * name of a class or a resource name.
 	 */
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	public FilteredClassLoader(Predicate<String>... filters) {
 		this(Arrays.asList(filters), Arrays.asList(filters));
 	}

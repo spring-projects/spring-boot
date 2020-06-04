@@ -77,6 +77,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	private List<ServletContextInitializer> sortedList;
 
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
 		this.initializers = new LinkedMultiValueMap<>();

@@ -49,6 +49,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
 		this.beanFactory = beanFactory;

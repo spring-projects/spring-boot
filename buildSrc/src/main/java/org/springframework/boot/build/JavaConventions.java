@@ -157,7 +157,8 @@ class JavaConventions {
 				args.add("-parameters");
 			}
 			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes"));
+				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+						"-Xlint:varargs"));
 			}
 		});
 	}
