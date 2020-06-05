@@ -31,6 +31,9 @@ do as they were designed before this was clarified.
 | https://qpid.apache.org/components/jms/[Apache Qpid]
 | https://github.com/amqphub/amqp-10-jms-spring-boot
 
+| https://rocketmq.apache.org/[Apache RocketMQ]
+| https://github.com/ThierrySquirrel/rocketmq-spring-boot-starter
+
 | https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
