@@ -1238,7 +1238,7 @@ TIP: To "`reset`" the specific level of the logger (and use the default configur
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports numerous monitoring systems, including:
+Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {micrometer-docs}[numerous monitoring systems], including:
 
 - <<production-ready-metrics-export-appoptics,AppOptics>>
 - <<production-ready-metrics-export-atlas,Atlas>>
