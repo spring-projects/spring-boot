@@ -24,12 +24,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +98,26 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);
 		URL[] expectedFileUrls = expectedFiles.stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactly(expectedFileUrls);
+	}
+
+	@Test
+	void explodedJarDefinedPackagesIncludeManifestAttributes() throws Exception {
+		Manifest manifest = new Manifest();
+		Attributes attributes = manifest.getMainAttributes();
+		attributes.put(Name.MANIFEST_VERSION, "1.0");
+		attributes.put(Name.IMPLEMENTATION_TITLE, "test");
+		File explodedRoot = explode(
+				createJarArchive("archive.jar", manifest, "BOOT-INF", true, Collections.emptyList()));
+		TestCompiler compiler = new TestCompiler(new File(explodedRoot, "BOOT-INF/classes"));
+		File source = new File(this.tempDir, "explodedsample/ExampleClass.java");
+		source.getParentFile().mkdirs();
+		FileCopyUtils.copy(new File("src/test/resources/explodedsample/ExampleClass.txt"), source);
+		compiler.getTask(Collections.singleton(source)).call();
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
+		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+		Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
+		assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");
 	}
 
 	protected final URL[] getExpectedFileUrls(File explodedRoot) {
