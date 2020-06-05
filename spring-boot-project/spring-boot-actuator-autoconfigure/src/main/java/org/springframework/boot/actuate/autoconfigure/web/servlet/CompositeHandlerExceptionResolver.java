@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,13 +52,8 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		if (this.resolvers == null) {
 			this.resolvers = extractResolvers();
 		}
-		ModelAndView resolved = this.resolvers.stream()
-				.map((resolver) -> resolver.resolveException(request, response, handler, ex)).filter(Objects::nonNull)
-				.findFirst().orElse(null);
-		if (resolved != null && resolved.isEmpty()) {
-			request.setAttribute("javax.servlet.error.exception", ex);
-		}
-		return resolved;
+		return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
@@ -66,6 +62,7 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {
+			list.add(new DefaultErrorAttributes());
 			list.add(new DefaultHandlerExceptionResolver());
 		}
 		return list;
