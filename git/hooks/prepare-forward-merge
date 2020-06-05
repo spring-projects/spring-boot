@@ -32,7 +32,7 @@ def rewrite_message(message_file, fixed)
   rewritten_message = ""
   message = File.read(message_file)
   message.each_line do |line|
-    match = /^Merge.*branch\ '(.*)'(?:\ into\ (.*))$/.match(line)
+    match = /^Merge.*branch\ '(.*)'(?:\ into\ (.*))?$/.match(line)
     if match
       from_branch = match[1]
       if from_branch.include? "/"
