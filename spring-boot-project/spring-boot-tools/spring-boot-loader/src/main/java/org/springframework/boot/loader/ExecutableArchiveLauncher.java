@@ -171,11 +171,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return this.archive.isExploded();
 	}
 
-	/**
-	 * Return the root archive.
-	 * @return the root archive
-	 * @since 2.3.0
-	 */
+	@Override
 	protected final Archive getArchive() {
 		return this.archive;
 	}
