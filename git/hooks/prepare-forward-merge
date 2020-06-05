@@ -25,7 +25,7 @@ def get_fixed_issues()
 end
 
 def rewrite_message(message_file, fixed)
-  current_branch = `git rev-parse --abbrev-ref HEAD`
+  current_branch = `git rev-parse --abbrev-ref HEAD`.strip
   if current_branch == "master"
     current_branch = $master_branch
   end
