@@ -38,3 +38,4 @@ transaction-logs
 secrets.yml
 .gradletasknamecache
 .sts4-cache
+.mvn/.gradle-enterprise/gradle-enterprise-workspace-id

@@ -1,0 +1,12 @@
+<extensions>
+    <extension>
+        <groupId>com.gradle</groupId>
+        <artifactId>gradle-enterprise-maven-extension</artifactId>
+        <version>1.5.3</version>
+    </extension>
+    <extension>
+        <groupId>io.spring.ge.conventions</groupId>
+        <artifactId>gradle-enterprise-conventions-maven-extension</artifactId>
+        <version>0.0.5</version>
+    </extension>
+</extensions>

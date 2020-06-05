@@ -250,5 +250,38 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>com.gradle</groupId>
+				<artifactId>gradle-enterprise-maven-extension</artifactId>
+				<!-- There is a build warning because we don't specify the version here. We do this instead of specifying the verison number twice -->
+				<configuration>
+					<gradleEnterprise>
+						<plugins>
+							<plugin>
+								<artifactId>maven-checkstyle-plugin</artifactId>
+								<inputs>
+									<fileSets>
+										<fileSet>
+											<name>allowlist</name>
+											<paths>
+												<path>${main.basedir}/src/checkstyle</path>
+											</paths>
+											<normalization>RELATIVE_PATH</normalization>
+										</fileSet>
+									</fileSets>
+									<properties>
+										<property>
+											<name>propertyExpansion</name>
+											<value>ignoredValue</value>
+										</property>
+									</properties>
+								</inputs>
+							</plugin>
+						</plugins>
+					</gradleEnterprise>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
