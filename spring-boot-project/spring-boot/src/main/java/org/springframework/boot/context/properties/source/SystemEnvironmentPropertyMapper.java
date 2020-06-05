@@ -118,7 +118,9 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		}
 		StringBuilder legacyCompatibleName = new StringBuilder();
 		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			legacyCompatibleName.append((i != 0) ? '.' : "");
+			if (i != 0) {
+				legacyCompatibleName.append('.');
+			}
 			legacyCompatibleName.append(name.getElement(i, Form.DASHED).replace('-', '.'));
 		}
 		return ConfigurationPropertyName.isValid(legacyCompatibleName)
