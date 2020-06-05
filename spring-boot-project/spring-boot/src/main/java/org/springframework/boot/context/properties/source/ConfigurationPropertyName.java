@@ -511,6 +511,18 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
+	 * Return a {@link ConfigurationPropertyName} for the specified string or {@code null}
+	 * if the name is not valid.
+	 * @param name the source name
+	 * @return a {@link ConfigurationPropertyName} instance
+	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
+	 * @since 2.3.1
+	 */
+	public static ConfigurationPropertyName ofIfValid(CharSequence name) {
+		return of(name, true);
+	}
+
+	/**
 	 * Return a {@link ConfigurationPropertyName} for the specified string.
 	 * @param name the source name
 	 * @param returnNullIfInvalid if null should be returned if the name is not valid
