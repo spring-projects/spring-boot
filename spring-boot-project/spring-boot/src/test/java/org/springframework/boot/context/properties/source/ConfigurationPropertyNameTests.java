@@ -211,6 +211,18 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void ofIfValidWhenNameIsValidReturnsName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.ofIfValid("spring.bo-ot");
+		assertThat(name).hasToString("spring.bo-ot");
+	}
+
+	@Test
+	void ofIfValidWhenNameIsNotValidReturnsNull() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.ofIfValid("spring.bo!oot");
+		assertThat(name).isNull();
+	}
+
+	@Test
 	void adaptWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyName.adapt(null, '.'))
 				.withMessageContaining("Name must not be null");

@@ -116,16 +116,11 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		if (!hasDashedEntries(name)) {
 			return false;
 		}
-		StringBuilder legacyCompatibleName = buildLegacyCompatibleName(name);
-		try {
-			return ConfigurationPropertyName.of(legacyCompatibleName).isAncestorOf(candidate);
-		}
-		catch (Exception ex) {
-			return false;
-		}
+		ConfigurationPropertyName legacyCompatibleName = buildLegacyCompatibleName(name);
+		return legacyCompatibleName != null && legacyCompatibleName.isAncestorOf(candidate);
 	}
 
-	private StringBuilder buildLegacyCompatibleName(ConfigurationPropertyName name) {
+	private ConfigurationPropertyName buildLegacyCompatibleName(ConfigurationPropertyName name) {
 		StringBuilder legacyCompatibleName = new StringBuilder();
 		for (int i = 0; i < name.getNumberOfElements(); i++) {
 			if (i != 0) {
@@ -133,7 +128,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 			}
 			legacyCompatibleName.append(name.getElement(i, Form.DASHED).replace('-', '.'));
 		}
-		return legacyCompatibleName;
+		return ConfigurationPropertyName.ofIfValid(legacyCompatibleName);
 	}
 
 	boolean hasDashedEntries(ConfigurationPropertyName name) {
