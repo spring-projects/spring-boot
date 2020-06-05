@@ -6251,24 +6251,26 @@ Most developers use the `spring-boot-starter-test` "`Starter`", which imports bo
 
 [TIP]
 ====
-The starter also brings the vintage engine so that you can run both JUnit 4 and JUnit 5 tests.
-If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, as shown in the following example:
+If you have tests that use JUnit 4, JUnit 5's vintage engine can be used to run them.
+To use the vintage engine, add a dependency on `junit-vintage-engine`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-test</artifactId>
+		<groupId>org.junit.vintage</groupId>
+		<artifactId>junit-vintage-engine</artifactId>
 		<scope>test</scope>
 		<exclusions>
 			<exclusion>
-				<groupId>org.junit.vintage</groupId>
-				<artifactId>junit-vintage-engine</artifactId>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
 			</exclusion>
 		</exclusions>
 	</dependency>
 ----
 ====
+
+`hamcrest-core` is excluded in favor of `org.hamcrest:hamcrest` that is part of `spring-boot-starter-test`.
 
 
 
@@ -6276,7 +6278,7 @@ If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, 
 === Test Scope Dependencies
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
-* https://junit.org/junit5/[JUnit 5] (including the vintage engine for backward compatibility with JUnit 4): The de-facto standard for unit testing Java applications.
+* https://junit.org/junit5/[JUnit 5]: The de-facto standard for unit testing Java applications.
 * {spring-framework-docs}/testing.html#integration-testing[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://assertj.github.io/doc/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
@@ -8099,10 +8101,6 @@ Note that some features (such as detecting the default value or deprecated items
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
 This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
-
-JUnit 5 is the default and the vintage engine is provided for backward compatibility with JUnit 4.
-If you don't use it, exclude `org.junit.vintage:junit-vintage-engine`.
-You also need to {junit5-docs}/#writing-tests-test-instance-lifecycle-changing-default[switch test instance lifecycle to "per-class"].
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
 If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testing-spring-boot-applications-mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
