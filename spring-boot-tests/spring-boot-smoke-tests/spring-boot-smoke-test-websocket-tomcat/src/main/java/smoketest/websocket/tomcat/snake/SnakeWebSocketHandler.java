@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,18 +79,15 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		String payload = message.getPayload();
-		if ("west".equals(payload)) {
-			this.snake.setDirection(Direction.WEST);
-		}
-		else if ("north".equals(payload)) {
-			this.snake.setDirection(Direction.NORTH);
-		}
-		else if ("east".equals(payload)) {
-			this.snake.setDirection(Direction.EAST);
-		}
-		else if ("south".equals(payload)) {
-			this.snake.setDirection(Direction.SOUTH);
+		switch (message.getPayload()) {
+			case "west":
+				this.snake.setDirection(Direction.WEST);
+			case "north":
+				this.snake.setDirection(Direction.NORTH);
+			case "east":
+				this.snake.setDirection(Direction.EAST);
+			case "south":
+				this.snake.setDirection(Direction.SOUTH);
 		}
 	}
 
