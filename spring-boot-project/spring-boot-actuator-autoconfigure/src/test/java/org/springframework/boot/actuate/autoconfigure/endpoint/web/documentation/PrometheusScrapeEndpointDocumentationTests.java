@@ -43,7 +43,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 
 	@Test
 	void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus"));
+		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus/all"));
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 				.perform(get("/actuator/prometheus").param("includedNames",
 						"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
 				.andExpect(status().isOk())
-				.andDo(document("prometheus", requestParameters(parameterWithName("includedNames")
+				.andDo(document("prometheus/names", requestParameters(parameterWithName("includedNames")
 						.description("Restricts the samples to those that match the names. Optional.").optional())));
 	}
 
