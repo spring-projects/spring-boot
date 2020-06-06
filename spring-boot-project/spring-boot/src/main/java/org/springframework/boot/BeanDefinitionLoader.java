@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,8 +32,6 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -41,9 +40,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,6 +52,7 @@ import org.springframework.util.StringUtils;
  * {@link SpringApplication} for the types of sources that are supported.
  *
  * @author Phillip Webb
+ * @author Vladislav Kisel
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
@@ -153,7 +153,7 @@ class BeanDefinitionLoader {
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			load(loader);
 		}
-		if (isComponent(source)) {
+		if (isEligible(source)) {
 			this.annotatedReader.register(source);
 			return 1;
 		}
@@ -273,16 +273,23 @@ class BeanDefinitionLoader {
 		return Package.getPackage(source.toString());
 	}
 
-	private boolean isComponent(Class<?> type) {
-		// This has to be a bit of a guess. The only way to be sure that this type is
-		// eligible is to make a bean definition out of it and try to instantiate it.
-		if (MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
-			return true;
-		}
-		// Nested anonymous classes are not eligible for registration, nor are groovy
-		// closures
-		return !type.getName().matches(".*\\$_.*closure.*") && !type.isAnonymousClass()
-				&& type.getConstructors() != null && type.getConstructors().length != 0;
+	/**
+	 * Check whether the bean is eligible for registration.
+	 * @param type candidate bean type
+	 * @return true if the given bean type is eligible for registration, i.e. not a groovy
+	 * closure nor an anonymous class
+	 */
+	private boolean isEligible(Class<?> type) {
+		return !(type.isAnonymousClass() || isGroovyClosure(type) || hasNoConstructors(type));
+	}
+
+	private boolean isGroovyClosure(Class<?> type) {
+		return type.getName().matches(".*\\$_.*closure.*");
+	}
+
+	private boolean hasNoConstructors(Class<?> type) {
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		return ObjectUtils.isEmpty(constructors);
 	}
 
 	/**
