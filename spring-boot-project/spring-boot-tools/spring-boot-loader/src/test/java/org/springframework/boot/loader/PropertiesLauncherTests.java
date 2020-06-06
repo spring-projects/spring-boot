@@ -19,12 +19,14 @@ package org.springframework.boot.loader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -39,10 +41,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.boot.loader.jar.Handler;
+import org.springframework.boot.loader.jar.JarFile;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -65,14 +70,15 @@ class PropertiesLauncherTests {
 	private CapturedOutput output;
 
 	@BeforeEach
-	void setup(CapturedOutput capturedOutput) {
+	void setup(CapturedOutput capturedOutput) throws Exception {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
+		clearHandlerCache();
 		System.setProperty("loader.home", new File("src/test/resources").getAbsolutePath());
 		this.output = capturedOutput;
 	}
 
 	@AfterEach
-	void close() {
+	void close() throws Exception {
 		Thread.currentThread().setContextClassLoader(this.contextClassLoader);
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");
@@ -81,6 +87,19 @@ class PropertiesLauncherTests {
 		System.clearProperty("loader.config.location");
 		System.clearProperty("loader.system");
 		System.clearProperty("loader.classLoader");
+		clearHandlerCache();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void clearHandlerCache() throws Exception {
+		Map<File, JarFile> rootFileCache = ((SoftReference<Map<File, JarFile>>) ReflectionTestUtils
+				.getField(Handler.class, "rootFileCache")).get();
+		if (rootFileCache != null) {
+			for (JarFile rootJarFile : rootFileCache.values()) {
+				rootJarFile.close();
+			}
+			rootFileCache.clear();
+		}
 	}
 
 	@Test
@@ -290,7 +309,6 @@ class PropertiesLauncherTests {
 
 	@Test
 	void testUserSpecifiedConfigPathWins() throws Exception {
-
 		System.setProperty("loader.config.name", "foo");
 		System.setProperty("loader.config.location", "classpath:bar.properties");
 		PropertiesLauncher launcher = new PropertiesLauncher();
@@ -352,6 +370,23 @@ class PropertiesLauncherTests {
 		assertThat(archives.size()).isEqualTo(1);
 		File archiveRoot = (File) ReflectionTestUtils.getField(archives.get(0), "root");
 		assertThat(archiveRoot).isEqualTo(loaderPath);
+	}
+
+	@Test // gh-21575
+	void loadResourceFromJarFile() throws Exception {
+		File jarFile = new File(this.tempDir, "app.jar");
+		TestJarCreator.createTestJar(jarFile);
+		System.setProperty("loader.home", this.tempDir.getAbsolutePath());
+		System.setProperty("loader.path", "app.jar");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		try {
+			launcher.launch(new String[0]);
+		}
+		catch (Exception ex) {
+		}
+		URL resource = new URL("jar:" + jarFile.toURI() + "!/nested.jar!/3.dat");
+		byte[] bytes = FileCopyUtils.copyToByteArray(resource.openStream());
+		assertThat(bytes).isNotEmpty();
 	}
 
 	private void waitFor(String value) throws Exception {

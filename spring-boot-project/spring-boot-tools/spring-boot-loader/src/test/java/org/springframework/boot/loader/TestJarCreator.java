@@ -49,7 +49,6 @@ public abstract class TestJarCreator {
 			writeEntry(jarOutputStream, "d/9.dat", 9);
 			writeDirEntry(jarOutputStream, "special/");
 			writeEntry(jarOutputStream, "special/\u00EB.dat", '\u00EB');
-
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("space nested.jar", unpackNested, jarOutputStream);
@@ -79,7 +78,6 @@ public abstract class TestJarCreator {
 		CRC32 crc32 = new CRC32();
 		crc32.update(nestedJarData);
 		nestedEntry.setCrc(crc32.getValue());
-
 		nestedEntry.setMethod(ZipEntry.STORED);
 		jarOutputStream.putNextEntry(nestedEntry);
 		jarOutputStream.write(nestedJarData);
