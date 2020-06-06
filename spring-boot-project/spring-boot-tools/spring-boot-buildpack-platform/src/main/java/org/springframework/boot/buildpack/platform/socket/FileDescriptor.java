@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.util.function.IntConsumer;
 
 /**
- * Provides access to an opaque to the underling file system representation of an open
- * file.
+ * Provides access to the underlying file system representation of an open file.
  *
  * @author Phillip Webb
  * @see #acquire()
