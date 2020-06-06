@@ -438,7 +438,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Sets if the underling {@link ClientHttpRequestFactory} should buffer the
+	 * Sets if the underlying {@link ClientHttpRequestFactory} should buffer the
 	 * {@linkplain ClientHttpRequest#getBody() request body} internally.
 	 * @param bufferRequestBody value of the bufferRequestBody parameter
 	 * @return a new builder instance.
