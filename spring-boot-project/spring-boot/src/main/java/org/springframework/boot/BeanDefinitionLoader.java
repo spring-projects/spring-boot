@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilte
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -151,7 +153,7 @@ class BeanDefinitionLoader {
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			load(loader);
 		}
-		if (isComponent(source)) {
+		if (isEligible(source)) {
 			this.annotatedReader.register(source);
 			return 1;
 		}
@@ -277,8 +279,17 @@ class BeanDefinitionLoader {
 	 * @return true if the given bean type is eligible for registration, i.e. not a groovy
 	 * closure nor an anonymous class
 	 */
-	private boolean isComponent(Class<?> type) {
-		return !type.getName().matches(".*\\$_.*closure.*") && !type.isAnonymousClass();
+	private boolean isEligible(Class<?> type) {
+		return !(type.isAnonymousClass() || isGroovyClosure(type) || hasNoConstructors(type));
+	}
+
+	private boolean isGroovyClosure(Class<?> type) {
+		return type.getName().matches(".*\\$_.*closure.*");
+	}
+
+	private boolean hasNoConstructors(Class<?> type) {
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		return ObjectUtils.isEmpty(constructors);
 	}
 
 	/**

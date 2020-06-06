@@ -58,6 +58,7 @@ class BeanDefinitionLoaderTests {
 	@Test
 	void anonymousClassNotLoaded() {
 		MyComponent myComponent = new MyComponent() {
+
 		};
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, myComponent.getClass());
 		assertThat(loader.load()).isEqualTo(0);

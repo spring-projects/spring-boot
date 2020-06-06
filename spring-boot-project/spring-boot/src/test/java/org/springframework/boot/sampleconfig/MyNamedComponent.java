@@ -22,7 +22,6 @@ import javax.inject.Named;
 public class MyNamedComponent {
 
 	MyNamedComponent() {
-
 	}
 
 }
