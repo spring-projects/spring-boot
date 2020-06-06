@@ -172,7 +172,7 @@ public abstract class Launcher {
 	 * @since 2.3.0
 	 */
 	protected boolean isExploded() {
-		return true;
+		return false;
 	}
 
 	/**
