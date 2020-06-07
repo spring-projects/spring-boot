@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.logging;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author HaiTao Zhang
  * @author Madhura Bhave
+ * @author Vladislav Kisel
  */
 class LoggersEndpointTests {
 
@@ -119,25 +121,47 @@ class LoggersEndpointTests {
 
 	@Test
 	void configureLogLevelShouldSetLevelOnLoggingSystem() {
-		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", LogLevel.DEBUG);
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", LogLevel.DEBUG, null);
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
+	void configureLogLevelShouldSetAndRollbackLevelOnLoggingSystem() {
+		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
+				.willReturn(new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO));
+
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", LogLevel.DEBUG,
+				Duration.ofMillis(1));
+
+		verify(this.loggingSystem).getLoggerConfiguration("ROOT");
+		verify(this.loggingSystem).setLogLevelDelayed("ROOT", LogLevel.INFO, Duration.ofMillis(1));
+		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
+	}
+
+	@Test
+	void configureLogLevelShouldSetAndRollbackLevelOnLoggingGroup() {
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", LogLevel.TRACE,
+				Duration.ofMillis(1));
+
+		verify(this.loggingSystem).setLogLevelDelayed("test.member", LogLevel.DEBUG, Duration.ofMillis(1));
+		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.TRACE);
+	}
+
+	@Test
 	void configureLogLevelWithNullSetsLevelOnLoggingSystemToNull() {
-		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", null);
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("ROOT", null, null);
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 	@Test
 	void configureLogLevelInLoggerGroupShouldSetLevelOnLoggingSystem() {
-		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", LogLevel.DEBUG);
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", LogLevel.DEBUG, null);
 		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.DEBUG);
 	}
 
 	@Test
 	void configureLogLevelWithNullInLoggerGroupShouldSetLevelOnLoggingSystem() {
-		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", null);
+		new LoggersEndpoint(this.loggingSystem, this.loggerGroups).configureLogLevel("test", null, null);
 		verify(this.loggingSystem).setLogLevel("test.member", null);
 	}
 

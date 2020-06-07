@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -114,6 +115,23 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("loggers/set", requestFields(fieldWithPath("configuredLevel")
 						.description("Level for the logger. May be omitted to clear the level.").optional())));
+		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
+	}
+
+	@Test
+	void setLogLevelAndAutomaticallyRollback() throws Exception {
+		this.mockMvc
+				.perform(post("/actuator/loggers/com.example")
+						.content("{\"configuredLevel\":\"debug\", \"rollbackAfter\":\"20ms\"}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNoContent())
+				.andDo(MockMvcRestDocumentation.document("loggers/set", requestFields(
+						fieldWithPath("configuredLevel")
+								.description("Level for the logger. May be omitted to clear the level.").optional(),
+						fieldWithPath("rollbackAfter").description(
+								"\"Automatically rollback to the previous value after a given delay. May be omitted.\"")
+								.optional())));
+		verify(this.loggingSystem).setLogLevelDelayed("com.example", null, Duration.ofMillis(20));
 		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
 	}
 

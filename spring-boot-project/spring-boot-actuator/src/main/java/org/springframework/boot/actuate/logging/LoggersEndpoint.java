@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.logging;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import org.springframework.util.Assert;
  * @author Ben Hale
  * @author Phillip Webb
  * @author HaiTao Zhang
+ * @author Vladislav Kisel
  * @since 2.0.0
  */
 @Endpoint(id = "loggers")
@@ -96,12 +98,22 @@ public class LoggersEndpoint {
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel,
+			@Nullable Duration rollbackAfter) {
 		Assert.notNull(name, "Name must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null && group.hasMembers()) {
+			if (rollbackAfter != null) {
+				group.configureLogLevel(group.getConfiguredLevel(),
+						(String n, LogLevel l) -> this.loggingSystem.setLogLevelDelayed(n, l, rollbackAfter));
+			}
 			group.configureLogLevel(configuredLevel, this.loggingSystem::setLogLevel);
 			return;
+		}
+		if (rollbackAfter != null) {
+			LoggerConfiguration currentConfiguration = this.loggingSystem.getLoggerConfiguration(name);
+			LogLevel currentLevel = (currentConfiguration != null) ? currentConfiguration.getConfiguredLevel() : null;
+			this.loggingSystem.setLogLevelDelayed(name, currentLevel, rollbackAfter);
 		}
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}

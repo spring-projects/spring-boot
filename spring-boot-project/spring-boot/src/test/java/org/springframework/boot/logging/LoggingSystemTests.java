@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.logging;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link LoggingSystem}.
  *
  * @author Andy Wilkinson
+ * @author Vladislav Kisel
  */
 class LoggingSystemTests {
 
@@ -55,7 +60,21 @@ class LoggingSystemTests {
 				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfigurations());
 	}
 
+	@Test
+	void setLoggerLevelDelayed() throws InterruptedException {
+		StubLoggingSystem loggingSystem = new StubLoggingSystem();
+
+		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
+		loggingSystem.setLogLevelDelayed("ROOT", LogLevel.DEBUG, Duration.ofMillis(20));
+
+		assertThat(loggingSystem.loggerNameToLevel.get("ROOT")).isEqualTo(LogLevel.INFO);
+		Thread.sleep(30);
+		assertThat(loggingSystem.loggerNameToLevel.get("ROOT")).isEqualTo(LogLevel.DEBUG);
+	}
+
 	private static final class StubLoggingSystem extends LoggingSystem {
+
+		Map<String, LogLevel> loggerNameToLevel = new HashMap<>();
 
 		@Override
 		public void beforeInitialize() {
@@ -64,7 +83,7 @@ class LoggingSystemTests {
 
 		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
-			// Stub implementation
+			this.loggerNameToLevel.put(loggerName, level);
 		}
 
 	}

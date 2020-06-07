@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,18 @@
 package org.springframework.boot.logging;
 
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @author Vladislav Kisel
  * @since 1.0.0
  */
 public abstract class LoggingSystem {
@@ -66,6 +72,8 @@ public abstract class LoggingSystem {
 		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}
+
+	protected TaskScheduler scheduler = new LoggingSystemTaskScheduler();
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
@@ -120,6 +128,18 @@ public abstract class LoggingSystem {
 	 */
 	public void setLogLevel(String loggerName, LogLevel level) {
 		throw new UnsupportedOperationException("Unable to set log level");
+	}
+
+	/**
+	 * Sets the logging level for a given logger after a given {@code delay}.
+	 * @param loggerName the name of the logger to set ({@code null} can be used for the
+	 * root logger).
+	 * @param level the log level ({@code null} can be used to remove any custom level for
+	 * the logger and use the default configuration instead)
+	 * @param delay delay before the logger is set
+	 */
+	public void setLogLevelDelayed(String loggerName, LogLevel level, Duration delay) {
+		this.scheduler.scheduleWithFixedDelay(() -> setLogLevel(loggerName, level), delay);
 	}
 
 	/**
@@ -195,6 +215,20 @@ public abstract class LoggingSystem {
 		@Override
 		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
+		}
+
+	}
+
+	static class LoggingSystemTaskScheduler extends ThreadPoolTaskScheduler {
+
+		LoggingSystemTaskScheduler() {
+			setPoolSize(1);
+			setThreadGroupName("logging-system-task-scheduler");
+		}
+
+		@Override
+		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
+			return Executors.newSingleThreadScheduledExecutor(this::newThread);
 		}
 
 	}
