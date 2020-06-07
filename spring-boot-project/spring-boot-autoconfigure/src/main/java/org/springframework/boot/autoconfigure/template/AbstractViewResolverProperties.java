@@ -60,7 +60,7 @@ public abstract class AbstractViewResolverProperties {
 	private Charset charset = DEFAULT_CHARSET;
 
 	/**
-	 * White list of view names that can be resolved.
+	 * The view names that can be resolved.
 	 */
 	private String[] viewNames;
 

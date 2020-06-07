@@ -316,7 +316,7 @@ Rather, pick only the properties that you need.
 	spring.freemarker.settings.*= # Well-known FreeMarker keys which are passed to FreeMarker's Configuration.
 	spring.freemarker.suffix=.ftl # Suffix that gets appended to view names when building a URL.
 	spring.freemarker.template-loader-path=classpath:/templates/ # Comma-separated list of template paths.
-	spring.freemarker.view-names= # White list of view names that can be resolved.
+	spring.freemarker.view-names= # The view names that can be resolved.
 
 	# GROOVY TEMPLATES ({spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateProperties.java[GroovyTemplateProperties])
 	spring.groovy.template.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
@@ -334,7 +334,7 @@ Rather, pick only the properties that you need.
 	spring.groovy.template.request-context-attribute= # Name of the RequestContext attribute for all views.
 	spring.groovy.template.resource-loader-path=classpath:/templates/ # Template path.
 	spring.groovy.template.suffix=.tpl # Suffix that gets appended to view names when building a URL.
-	spring.groovy.template.view-names= # White list of view names that can be resolved.
+	spring.groovy.template.view-names= # The view names that can be resolved.
 
 	# SPRING HATEOAS ({spring-boot-autoconfigure-module-code}/hateoas/HateoasProperties.java[HateoasProperties])
 	spring.hateoas.use-hal-as-default-json-media-type=true # Whether application/hal+json responses should be sent to requests that accept application/json.
@@ -422,7 +422,7 @@ Rather, pick only the properties that you need.
 	spring.mustache.prefix=classpath:/templates/ # Prefix to apply to template names.
 	spring.mustache.request-context-attribute= # Name of the RequestContext attribute for all views.
 	spring.mustache.suffix=.mustache # Suffix to apply to template names.
-	spring.mustache.view-names= # White list of view names that can be resolved.
+	spring.mustache.view-names= # The view names that can be resolved.
 
 	# SPRING MVC ({spring-boot-autoconfigure-module-code}/web/servlet/WebMvcProperties.java[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
