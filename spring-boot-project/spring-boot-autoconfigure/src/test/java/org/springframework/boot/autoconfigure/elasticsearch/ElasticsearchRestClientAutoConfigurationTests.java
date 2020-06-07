@@ -20,10 +20,16 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -47,6 +53,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Vedran Pavic
+ * @author Evgeniy Cheban
  */
 @Testcontainers(disabledWithoutDocker = true)
 class ElasticsearchRestClientAutoConfigurationTests {
@@ -163,6 +170,69 @@ class ElasticsearchRestClientAutoConfigurationTests {
 					client.index(index, RequestOptions.DEFAULT);
 					GetRequest getRequest = new GetRequest("test").id("1");
 					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
+				});
+	}
+
+	@Test
+	void configureUriWithUsernameOnly() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://user@localhost:9200")
+				.run((context) -> {
+					RestClient client = context.getBean(RestClient.class);
+					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+							.containsExactly("http://localhost:9200");
+					assertThat(client).extracting("client")
+							.extracting("credentialsProvider",
+									InstanceOfAssertFactories.type(CredentialsProvider.class))
+							.satisfies((credentialsProvider) -> {
+								Credentials credentials = credentialsProvider
+										.getCredentials(new AuthScope("localhost", 9200));
+								assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
+								assertThat(credentials.getPassword()).isNull();
+							});
+				});
+	}
+
+	@Test
+	void configureUriWithUsernameAndEmptyPassword() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://user:@localhost:9200")
+				.run((context) -> {
+					RestClient client = context.getBean(RestClient.class);
+					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+							.containsExactly("http://localhost:9200");
+					assertThat(client).extracting("client")
+							.extracting("credentialsProvider",
+									InstanceOfAssertFactories.type(CredentialsProvider.class))
+							.satisfies((credentialsProvider) -> {
+								Credentials credentials = credentialsProvider
+										.getCredentials(new AuthScope("localhost", 9200));
+								assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
+								assertThat(credentials.getPassword()).isEmpty();
+							});
+				});
+	}
+
+	@Test
+	void configureUriWithUsernameAndPasswordWhenUsernameAndPasswordPropertiesSet() {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.rest.uris=http://user:password@localhost:9200,localhost:9201",
+						"spring.elasticsearch.rest.username=admin", "spring.elasticsearch.rest.password=admin")
+				.run((context) -> {
+					RestClient client = context.getBean(RestClient.class);
+					assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+							.containsExactly("http://localhost:9200", "http://localhost:9201");
+					assertThat(client).extracting("client")
+							.extracting("credentialsProvider",
+									InstanceOfAssertFactories.type(CredentialsProvider.class))
+							.satisfies((credentialsProvider) -> {
+								Credentials uriCredentials = credentialsProvider
+										.getCredentials(new AuthScope("localhost", 9200));
+								assertThat(uriCredentials.getUserPrincipal().getName()).isEqualTo("user");
+								assertThat(uriCredentials.getPassword()).isEqualTo("password");
+								Credentials defaultCredentials = credentialsProvider
+										.getCredentials(new AuthScope("localhost", 9201));
+								assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("admin");
+								assertThat(defaultCredentials.getPassword()).isEqualTo("admin");
+							});
 				});
 	}
 
