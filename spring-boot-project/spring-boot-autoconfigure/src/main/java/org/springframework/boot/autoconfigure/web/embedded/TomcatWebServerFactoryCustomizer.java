@@ -183,8 +183,7 @@ public class TomcatWebServerFactoryCustomizer
 			if (StringUtils.hasLength(remoteIpHeader)) {
 				valve.setRemoteIpHeader(remoteIpHeader);
 			}
-			// The internal proxies default to a white list of "safe" internal IP
-			// addresses
+			// The internal proxies default to a list of "safe" internal IP addresses
 			valve.setInternalProxies(tomcatProperties.getInternalProxies());
 			try {
 				valve.setHostHeader(tomcatProperties.getHostHeader());
