@@ -17,13 +17,13 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Elasticsearch rest client infrastructure configurations.
@@ -75,9 +76,25 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		private HttpHost createHttpHost(String uri) {
-			URI parsedUri = URI.create(uri);
-			String userInfo = parsedUri.getUserInfo();
-			return HttpHost.create((userInfo != null) ? uri.replace(userInfo + "@", "") : uri);
+			try {
+				return createHttpHost(URI.create(uri));
+			}
+			catch (IllegalArgumentException ex) {
+				return HttpHost.create(uri);
+			}
+		}
+
+		private HttpHost createHttpHost(URI uri) {
+			if (!StringUtils.hasLength(uri.getUserInfo())) {
+				return HttpHost.create(uri.toString());
+			}
+			try {
+				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
+						uri.getQuery(), uri.getFragment()).toString());
+			}
+			catch (URISyntaxException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}
@@ -132,30 +149,7 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
-			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			builder.setDefaultCredentialsProvider(credentialsProvider);
-			this.properties.getUris().stream().map(URI::create).filter((uri) -> uri.getUserInfo() != null)
-					.forEach((uri) -> {
-						AuthScope authScope = new AuthScope(uri.getHost(), uri.getPort());
-						Credentials credentials = createCredentials(uri.getUserInfo());
-						credentialsProvider.setCredentials(authScope, credentials);
-					});
-			map.from(this.properties::getUsername).whenHasText().to((username) -> {
-				Credentials credentials = new UsernamePasswordCredentials(this.properties.getUsername(),
-						this.properties.getPassword());
-				credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-			});
-		}
-
-		private Credentials createCredentials(String usernameAndPassword) {
-			int delimiter = usernameAndPassword.indexOf(":");
-			if (delimiter == -1) {
-				return new UsernamePasswordCredentials(usernameAndPassword, null);
-			}
-
-			String username = usernameAndPassword.substring(0, delimiter);
-			String password = usernameAndPassword.substring(delimiter + 1);
-			return new UsernamePasswordCredentials(username, password);
+			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
 		}
 
 		@Override
@@ -164,6 +158,49 @@ class ElasticsearchRestClientConfigurations {
 					.to(builder::setConnectTimeout);
 			map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(builder::setSocketTimeout);
+		}
+
+	}
+
+	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
+
+		PropertiesCredentialsProvider(ElasticsearchRestClientProperties properties) {
+			if (StringUtils.hasText(properties.getUsername())) {
+				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
+						properties.getPassword());
+				setCredentials(AuthScope.ANY, credentials);
+			}
+			properties.getUris().stream().map(this::toUri).filter(this::hasUserInfo)
+					.forEach(this::addUserInfoCredentials);
+		}
+
+		private URI toUri(String uri) {
+			try {
+				return URI.create(uri);
+			}
+			catch (IllegalArgumentException ex) {
+				return null;
+			}
+		}
+
+		private boolean hasUserInfo(URI uri) {
+			return uri != null && StringUtils.hasLength(uri.getUserInfo());
+		}
+
+		private void addUserInfoCredentials(URI uri) {
+			AuthScope authScope = new AuthScope(uri.getHost(), uri.getPort());
+			Credentials credentials = createUserInfoCredentials(uri.getUserInfo());
+			setCredentials(authScope, credentials);
+		}
+
+		private Credentials createUserInfoCredentials(String userInfo) {
+			int delimiter = userInfo.indexOf(":");
+			if (delimiter == -1) {
+				return new UsernamePasswordCredentials(userInfo, null);
+			}
+			String username = userInfo.substring(0, delimiter);
+			String password = userInfo.substring(delimiter + 1);
+			return new UsernamePasswordCredentials(username, password);
 		}
 
 	}

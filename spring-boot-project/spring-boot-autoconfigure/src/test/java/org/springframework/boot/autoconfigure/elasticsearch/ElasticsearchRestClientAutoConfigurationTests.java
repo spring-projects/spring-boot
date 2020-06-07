@@ -228,7 +228,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 										.getCredentials(new AuthScope("localhost", 9200));
 								assertThat(uriCredentials.getUserPrincipal().getName()).isEqualTo("user");
 								assertThat(uriCredentials.getPassword()).isEqualTo("password");
-
 								Credentials defaultCredentials = credentialsProvider
 										.getCredentials(new AuthScope("localhost", 9201));
 								assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("admin");
