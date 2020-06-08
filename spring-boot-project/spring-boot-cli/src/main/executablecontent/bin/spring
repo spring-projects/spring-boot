@@ -100,7 +100,7 @@ if [ ! -d "${SPRING_HOME}" ]; then
 fi
 
 [[ "${cygwin}" == "true" ]] && SPRINGPATH=$(cygpath "${SPRING_HOME}") || SPRINGPATH=$SPRING_HOME
-CLASSPATH=.:${SPRINGPATH}/bin
+CLASSPATH=${SPRINGPATH}/bin
 if [ -d "${SPRINGPATH}/ext" ]; then
 	CLASSPATH=$CLASSPATH:${SPRINGPATH}/ext
 fi
