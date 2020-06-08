@@ -2472,11 +2472,19 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 
 
 
-[[boot-features-error-handling-websphere]]
-CAUTION:When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
-The request can only be forwarded to the correct error page if the response has not already been committed.
+[[boot-features-error-handling-war-deployment]]
+===== Error handling in a war deployment
+When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
+This is necessary as the Servlet specification does not provide an API for registering error pages.
+Depending on the container that you are deploying your war file to and the technologies that your application uses, some additional configuration may be required.
+
+The error page filter can only forward the request to the correct error page if the response has not already been committed.
 By default, WebSphere Application Server 8.0 and later commits the response upon successful completion of a servlet's service method.
 You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`.
+
+If you are using Spring Security and want to access the principal in an error page, you must configure Spring Security's filter to be invoked on error dispatches.
+To do so, set the `spring.security.filter.dispatcher-types` property to `async, error, forward, request`.
+
 
 
 
