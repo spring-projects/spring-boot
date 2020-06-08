@@ -69,7 +69,8 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		if (!this.statusMappings.containsKey(null) && Enum.class.isAssignableFrom(stateType)) {
 			EnumSet elements = EnumSet.allOf((Class) stateType);
 			for (Object element : elements) {
-				Assert.isTrue(this.statusMappings.containsKey(element), "StatusMappings does not include " + element);
+				Assert.isTrue(this.statusMappings.containsKey(element),
+						() -> "StatusMappings does not include " + element);
 			}
 		}
 	}
@@ -81,7 +82,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		if (status == null) {
 			status = this.statusMappings.get(null);
 		}
-		Assert.state(status != null, "No mapping provided for " + state);
+		Assert.state(status != null, () -> "No mapping provided for " + state);
 		builder.status(status);
 	}
 
