@@ -894,19 +894,20 @@ You can then configure your Kubernetes infrastructure with the following endpoin
 livenessProbe:
   httpGet:
     path: /actuator/health/liveness
-    port: management-port
+    port: <actuator-port>
   failureThreshold: ...
   periodSeconds: ...
 
 readinessProbe:
   httpGet:
     path: /actuator/health/readiness
-    port: management-port
+    port: <actuator-port>
   failureThreshold: ...
   periodSeconds: ...
 ----
 
-NOTE: `"management-port"` means the port that the actuator endpoints are available on. It could be the server port if a separate management port has not been configured or the `"management.server.port"` property if that has been explicitly configured.
+NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
+It could be the main web server port, or a separate management port if the `"management.server.port"` property has been set.
 
 These health groups are only enabled automatically if the application is <<deployment.adoc#cloud-deployment-kubernetes,running in a Kubernetes environment>>.
 You can enable them in any environment using the configprop:management.health.probes.enabled[] configuration property.
