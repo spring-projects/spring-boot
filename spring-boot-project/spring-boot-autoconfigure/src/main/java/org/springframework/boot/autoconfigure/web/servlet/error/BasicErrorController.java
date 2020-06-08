@@ -172,7 +172,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the errors attribute should be included
 	 */
 	protected boolean isIncludeBindingErrors(HttpServletRequest request, MediaType produces) {
-		switch (getErrorProperties().getIncludeMessage()) {
+		switch (getErrorProperties().getIncludeBindingErrors()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
