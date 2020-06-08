@@ -751,13 +751,19 @@ To configure the severity order, add the following property to your application 
 	management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
 ----
 
-The HTTP status code in the response reflects the overall health status (for example, `UP` maps to 200, while `OUT_OF_SERVICE` and `DOWN` map to 503).
+The HTTP status code in the response reflects the overall health status.
+By default, `OUT_OF_SERVICE` and `DOWN` map to 503.
+Any unmapped health statuses, including `UP`, map to 200.
 You might also want to register custom status mappings if you access the health endpoint over HTTP.
-For example, the following property maps `FATAL` to 503 (service unavailable):
+Configuring a custom mapping disables the defaults mappings for `DOWN` and `OUT_OF_SERVICE`.
+If you want to retain the default mappings they must be configured explicitly alongside any custom mappings.
+For example, the following property maps `FATAL` to 503 (service unavailable) and retains the default mappings for `DOWN` and `OUT_OF_SERVICE`:
 
 [source,properties,indent=0,configprops]
 ----
+	management.endpoint.health.status.http-mapping.down=503
 	management.endpoint.health.status.http-mapping.fatal=503
+	management.endpoint.health.status.http-mapping.out-of-service=503
 ----
 
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
@@ -861,7 +867,7 @@ It's also possible to override the `show-details` and `roles` properties if requ
 	management.endpoint.health.group.custom.roles=admin
 	management.endpoint.health.group.custom.status.order=fatal,up
 	management.endpoint.health.group.custom.status.http-mapping.fatal=500
-
+	management.endpoint.health.group.custom.status.http-mapping.out-of-service=500
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
