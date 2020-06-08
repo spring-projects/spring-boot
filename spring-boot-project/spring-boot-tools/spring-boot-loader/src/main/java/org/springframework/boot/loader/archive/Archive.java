@@ -21,6 +21,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
@@ -89,6 +93,36 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	@Deprecated
 	@Override
 	Iterator<Entry> iterator();
+
+	/**
+	 * Performs the given action for each element of the {@code Iterable} until all
+	 * elements have been processed or the action throws an exception.
+	 * @see Iterable#forEach
+	 * @deprecated since 2.3.0 in favor of using
+	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 */
+	@Deprecated
+	@Override
+	default void forEach(Consumer<? super Entry> action) {
+		Objects.requireNonNull(action);
+		for (Entry entry : this) {
+			action.accept(entry);
+		}
+	}
+
+	/**
+	 * Creates a {@link Spliterator} over the elements described by this {@code Iterable}.
+	 * @see Iterable#spliterator
+	 * @deprecated since 2.3.0 in favor of using
+	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 */
+	@Deprecated
+	@Override
+	default Spliterator<Entry> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
 
 	/**
 	 * Return if the archive is exploded (already unpacked).
