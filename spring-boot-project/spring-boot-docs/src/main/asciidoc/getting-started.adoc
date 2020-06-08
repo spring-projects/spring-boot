@@ -43,7 +43,7 @@ Explicit build support is provided for the following build tools:
 | 3.3+
 
 | Gradle
-| 4.4+
+| 4.x (4.4 and later) and 5.x
 |===
 
 
@@ -197,7 +197,7 @@ In those cases, see <<using-boot-maven-without-a-parent>> for an alternative sol
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4.4 and later.
+Spring Boot is compatible with Gradle 4.x (4.4 and later) and 5.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
