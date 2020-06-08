@@ -55,6 +55,7 @@ public class CassandraReactiveDataAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public ReactiveSessionFactory reactiveCassandraSessionFactory(ReactiveSession reactiveCassandraSession) {
 		return new DefaultReactiveSessionFactory(reactiveCassandraSession);
 	}
