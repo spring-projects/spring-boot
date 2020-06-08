@@ -205,50 +205,89 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	void testBindingExceptionForMachineClientWithMessageAndErrorsParamTrue() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param",
-				"--server.error.include-binding-errors=on-param");
-		bindingExceptionWithMessageAndErrors("?message=true&errors=true");
+	void testBindingExceptionForMachineClientWithErrorsParamTrue() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithErrors("?errors=true");
 	}
 
 	@Test
-	void testBindingExceptionForMachineClientWithMessageAndErrorsParamFalse() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param",
-				"--server.error.include-binding-errors=on-param");
-		bindingExceptionWithoutMessageAndErrors("?message=false&errors=false");
+	void testBindingExceptionForMachineClientWithErrorsParamFalse() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithoutErrors("?errors=false");
 	}
 
 	@Test
-	void testBindingExceptionForMachineClientWithMessageAndErrorsParamAbsent() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param",
-				"--server.error.include-binding-errors=on-param");
-		bindingExceptionWithoutMessageAndErrors("");
+	void testBindingExceptionForMachineClientWithErrorsParamAbsent() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithoutErrors("");
 	}
 
 	@Test
-	void testBindingExceptionForMachineClientAlwaysMessageAndErrors() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always",
-				"--server.error.include-binding-errors=always");
-		bindingExceptionWithMessageAndErrors("?message=false&errors=false");
+	void testBindingExceptionForMachineClientAlwaysErrors() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=always");
+		bindingExceptionWithErrors("?errors=false");
 	}
 
 	@Test
-	void testBindingExceptionForMachineClientNeverMessageAndErrors() {
-		load("--server.error.include-exception=true", "--server.error.include-message=never",
-				"--server.error.include-binding-errors=never");
-		bindingExceptionWithoutMessageAndErrors("?message=true&errors=true");
+	void testBindingExceptionForMachineClientNeverErrors() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=never");
+		bindingExceptionWithoutErrors("?errors=true");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamTrue() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithMessage("?message=true");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamFalse() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithoutMessage("?message=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamAbsent() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithoutMessage("");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientAlwaysMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		bindingExceptionWithMessage("?message=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientNeverMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=never");
+		bindingExceptionWithoutMessage("?message=true");
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private void bindingExceptionWithMessageAndErrors(String param) {
+	private void bindingExceptionWithErrors(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class,
-				"Validation failed for object='test'. Error count: 1", "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
 		assertThat(entity.getBody().containsKey("errors")).isTrue();
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private void bindingExceptionWithoutMessageAndErrors(String param) {
+	private void bindingExceptionWithoutErrors(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
+		assertThat(entity.getBody().containsKey("errors")).isFalse();
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	private void bindingExceptionWithMessage(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class,
+				"Validation failed for object='test'. Error count: 1", "/bind");
+		assertThat(entity.getBody().containsKey("errors")).isFalse();
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	private void bindingExceptionWithoutMessage(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
 		assertThat(entity.getBody().containsKey("errors")).isFalse();
