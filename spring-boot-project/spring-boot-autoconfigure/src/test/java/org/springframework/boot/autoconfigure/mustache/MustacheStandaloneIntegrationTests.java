@@ -68,14 +68,14 @@ class MustacheStandaloneIntegrationTests {
 
 	@Test
 	void environmentCollectorCompoundKeyWithBean() {
-		assertThat(this.compiler.compile("Hello: {{foo.name}}")
-				.execute(Collections.singletonMap("foo", new Foo()))).isEqualTo("Hello: Foo");
+		assertThat(this.compiler.compile("Hello: {{foo.name}}").execute(Collections.singletonMap("foo", new Foo())))
+				.isEqualTo("Hello: Foo");
 	}
 
 	@Test
 	void environmentCollectorCompoundKeyWithBeanPrefersEnvironment() {
-		assertThat(this.compiler.compile("Hello: {{bar.name}}")
-				.execute(Collections.singletonMap("bar", new Foo()))).isEqualTo("Hello: Bar");
+		assertThat(this.compiler.compile("Hello: {{bar.name}}").execute(Collections.singletonMap("bar", new Foo())))
+				.isEqualTo("Hello: Bar");
 	}
 
 	@Test
@@ -94,17 +94,19 @@ class MustacheStandaloneIntegrationTests {
 	static class Application {
 
 	}
-	
+
 	static class Foo {
+
 		private String name = "Foo";
 
-		public String getName() {
-			return name;
+		String getName() {
+			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 }

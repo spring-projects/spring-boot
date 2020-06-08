@@ -43,9 +43,9 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 
 	@Override
 	public VariableFetcher createFetcher(Object ctx, String name) {
-		VariableFetcher fetcher = super.createFetcher(ctx, name);
-		if (fetcher != null) {
-			return new PropertyVariableFetcher(fetcher);
+		VariableFetcher nativeFetcher = super.createFetcher(ctx, name);
+		if (nativeFetcher != null) {
+			return new PropertyVariableFetcher(nativeFetcher);
 		}
 		if (this.environment.containsProperty(name)) {
 			return new PropertyVariableFetcher();
@@ -53,6 +53,9 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 		return null;
 	}
 
+	/**
+	 * {@link VariableFetcher} that also checks the {@link Environment}.
+	 */
 	private class PropertyVariableFetcher implements VariableFetcher {
 
 		private final VariableFetcher nativeFetcher;
@@ -61,29 +64,29 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements En
 			this.nativeFetcher = null;
 		}
 
-		PropertyVariableFetcher(VariableFetcher nativeFetcher) {
-			this.nativeFetcher = nativeFetcher;
+		PropertyVariableFetcher(VariableFetcher delegate) {
+			this.nativeFetcher = delegate;
 		}
 
 		@Override
 		public Object get(Object ctx, String name) {
-			Object result;
-			if (this.nativeFetcher != null) {
-				try {
-					result = this.nativeFetcher.get(ctx, name);
-					if (result != null && result != Template.NO_FETCHER_FOUND) {
-						return result;
-					}
-				}
-				catch (Exception ex) {
-					// fall through
-				}
+			Object result = getFromNativeFetcher(ctx, name);
+			result = (result != null) ? result : getFromEnvironment(name);
+			return (result != null) ? result : Template.NO_FETCHER_FOUND;
+		}
+
+		private Object getFromNativeFetcher(Object ctx, String name) {
+			try {
+				Object result = (this.nativeFetcher != null) ? this.nativeFetcher.get(ctx, name) : null;
+				return (result != Template.NO_FETCHER_FOUND) ? result : null;
 			}
-			result = MustacheEnvironmentCollector.this.environment.getProperty(name);
-			if (result == null) {
-				return Template.NO_FETCHER_FOUND;
+			catch (Exception ex) {
+				return null;
 			}
-			return result;
+		}
+
+		private Object getFromEnvironment(String name) {
+			return MustacheEnvironmentCollector.this.environment.getProperty(name);
 		}
 
 	}
