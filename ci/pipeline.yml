@@ -256,8 +256,7 @@ jobs:
       - put: slack-alert
         params:
           text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+            :concourse-failed: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>]
             [$TEXT_FILE_CONTENT]
           text_file: git-repo/build/build-scan-uri.txt
           silent: true
@@ -286,16 +285,14 @@ jobs:
       - put: slack-alert
         params:
           text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+            :concourse-failed: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>]
           silent: true
           icon_emoji: ":concourse:"
           username: concourse-ci
   - put: slack-alert
     params:
       text: >
-        :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-        [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+        :concourse-succeeded: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>]
         [$TEXT_FILE_CONTENT]
       text_file: git-repo/build/build-scan-uri.txt
       silent: true
@@ -356,8 +353,7 @@ jobs:
       - put: slack-alert
         params:
           text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+            :concourse-failed: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>]
             [$TEXT_FILE_CONTENT]
           text_file: git-repo/build/build-scan-uri.txt
           silent: true
@@ -368,8 +364,7 @@ jobs:
   - put: slack-alert
     params:
       text: >
-        :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-        [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+        :concourse-succeeded: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>]
         [$TEXT_FILE_CONTENT]
       text_file: git-repo/build/build-scan-uri.txt
       silent: true
@@ -402,8 +397,7 @@ jobs:
           - put: slack-alert
             params:
               text: >
-                :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-                [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+                :concourse-failed: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>]
                 [$TEXT_FILE_CONTENT]
               text_file: git-repo/build/build-scan-uri.txt
               silent: true
@@ -414,8 +408,7 @@ jobs:
     - put: slack-alert
       params:
         text: >
-          :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-          [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+          :concourse-succeeded: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>]
           [$TEXT_FILE_CONTENT]
         text_file: git-repo/build/build-scan-uri.txt
         silent: true
@@ -445,8 +438,7 @@ jobs:
           - put: slack-alert
             params:
               text: >
-                :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-                [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+                :concourse-failed: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>]
                 [$TEXT_FILE_CONTENT]
               text_file: git-repo/build/build-scan-uri.txt
               silent: true
@@ -455,8 +447,7 @@ jobs:
     - put: slack-alert
       params:
         text: >
-          :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-          [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+          :concourse-succeeded: [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>]
           [$TEXT_FILE_CONTENT]
         text_file: git-repo/build/build-scan-uri.txt
         silent: true
