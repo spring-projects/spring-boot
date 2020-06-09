@@ -4,7 +4,7 @@ anchors:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-  docker-resource-source: &docker-resource-source 
+  docker-resource-source: &docker-resource-source
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
@@ -52,8 +52,7 @@ anchors:
         "zip.deployed": "false"
   slack-fail-params: &slack-fail-params
     text: >
-      :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-      [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+      :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
       [$TEXT_FILE_CONTENT]
     text_file: git-repo/build/build-scan-uri.txt
     silent: true
@@ -61,8 +60,7 @@ anchors:
     username: concourse-ci
   slack-success-params: &slack-success-params
     text: >
-      :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-      [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+      :concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>
       [$TEXT_FILE_CONTENT]
     text_file: git-repo/build/build-scan-uri.txt
     silent: true
@@ -97,7 +95,7 @@ resources:
 - name: git-repo-windows
   type: git
   icon: github-circle
-  source: 
+  source:
     <<: *git-repo-resource-source
     git_config:
     - name: core.autocrlf
