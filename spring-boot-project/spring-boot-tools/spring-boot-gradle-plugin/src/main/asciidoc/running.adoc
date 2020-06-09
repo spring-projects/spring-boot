@@ -89,6 +89,15 @@ See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.Stri
 
 
 
+[[running-your-application-passing-system-properties]]
+=== Passing System properties to your application
+Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
+The values can be parameterized and passed as properties on the command line using the `-P` flag.
+
+See {gradle-api}/org/gradle/api/tasks/JavaExec.html#systemProperty-java.lang.String-java.lang.Object-[the javadoc for `JavaExec.systemProperty`] for further details.
+
+
+
 [[running-your-application-reloading-resources]]
 === Reloading resources
 If devtools has been added to your project it will automatically monitor your application for changes.
