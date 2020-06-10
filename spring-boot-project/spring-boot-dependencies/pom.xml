@@ -51,7 +51,7 @@
 		<commons-lang3.version>3.8.1</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.6.2</commons-pool2.version>
-		<couchbase-client.version>2.7.14</couchbase-client.version>
+		<couchbase-client.version>2.7.15</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<dependency-management-plugin.version>1.0.9.RELEASE</dependency-management-plugin.version>
 		<derby.version>10.14.2.0</derby.version>
