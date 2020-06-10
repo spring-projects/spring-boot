@@ -109,6 +109,7 @@ org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebClientAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityConfiguration
 
