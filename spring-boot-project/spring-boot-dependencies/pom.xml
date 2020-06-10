@@ -133,7 +133,7 @@
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.12</lombok.version>
 		<mariadb.version>2.3.0</mariadb.version>
-		<micrometer.version>1.1.13</micrometer.version>
+		<micrometer.version>1.1.14</micrometer.version>
 		<mimepull.version>1.9.13</mimepull.version>
 		<mockito.version>2.23.4</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
