@@ -24,11 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -73,7 +71,13 @@ public abstract class LoggingSystem {
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}
 
-	protected TaskScheduler scheduler = new LoggingSystemTaskScheduler();
+	protected AsyncTaskExecutor executor;
+
+	public LoggingSystem() {
+		SimpleAsyncTaskExecutor simpleExecutor = new SimpleAsyncTaskExecutor();
+		simpleExecutor.setConcurrencyLimit(1);
+		this.executor = simpleExecutor;
+	}
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
@@ -139,7 +143,7 @@ public abstract class LoggingSystem {
 	 * @param delay delay before the logger is set
 	 */
 	public void setLogLevelDelayed(String loggerName, LogLevel level, Duration delay) {
-		this.scheduler.scheduleWithFixedDelay(() -> setLogLevel(loggerName, level), delay);
+		this.executor.execute(() -> setLogLevel(loggerName, level), delay.toMillis());
 	}
 
 	/**
@@ -215,20 +219,6 @@ public abstract class LoggingSystem {
 		@Override
 		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
-		}
-
-	}
-
-	static class LoggingSystemTaskScheduler extends ThreadPoolTaskScheduler {
-
-		LoggingSystemTaskScheduler() {
-			setPoolSize(1);
-			setThreadGroupName("logging-system-task-scheduler");
-		}
-
-		@Override
-		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
-			return Executors.newSingleThreadScheduledExecutor(this::newThread);
 		}
 
 	}
