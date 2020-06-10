@@ -80,10 +80,17 @@ public class CassandraAutoConfiguration {
 	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
 			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
+		configureAuthentication(properties, builder);
 		configureSsl(properties, builder);
 		builder.withKeyspace(properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
+	}
+
+	private void configureAuthentication(CassandraProperties properties, CqlSessionBuilder builder) {
+		if (properties.getUsername() != null) {
+			builder.withAuthCredentials(properties.getUsername(), properties.getPassword());
+		}
 	}
 
 	private void configureSsl(CassandraProperties properties, CqlSessionBuilder builder) {
