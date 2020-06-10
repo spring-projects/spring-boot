@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -99,7 +100,9 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS256);
+					assertThat(keySelector)
+							.extracting("jwsAlgs", InstanceOfAssertFactories.iterable(JWSAlgorithm.class))
+							.containsExactly(JWSAlgorithm.RS256);
 				});
 	}
 
@@ -112,7 +115,9 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS384);
+					assertThat(keySelector)
+							.extracting("jwsAlgs", InstanceOfAssertFactories.iterable(JWSAlgorithm.class))
+							.containsExactly(JWSAlgorithm.RS384);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}
