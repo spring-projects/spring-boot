@@ -165,7 +165,7 @@
 		<netty-tcnative.version>2.0.30.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<ojdbc.version>19.3.0.0</ojdbc.version>
-		<okhttp3.version>3.14.8</okhttp3.version>
+		<okhttp3.version>3.14.9</okhttp3.version>
 		<oracle-database.version>19.3.0.0</oracle-database.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
 		<postgresql.version>42.2.12</postgresql.version>
