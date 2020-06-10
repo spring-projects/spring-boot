@@ -29,6 +29,7 @@ resources:
     branch: ((branch))
 - name: git-repo-windows
   type: git
+  icon: github-circle
   source:
     uri: ((github-repo))
     username: ((github-username))
