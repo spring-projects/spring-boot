@@ -149,7 +149,7 @@ bom {
 			]
 		}
 	}
-	library("Caffeine", "2.8.2") {
+	library("Caffeine", "2.8.4") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
