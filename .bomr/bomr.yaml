@@ -12,10 +12,6 @@ bomr:
         versions:
           # 10.15 requires Java 9
           - '[10.15,)'
-      - project: maven-shade-plugin
-        versions:
-          # https://github.com/spring-projects/spring-boot/issues/21128
-          - '3.2.3'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for
