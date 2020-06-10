@@ -7,7 +7,7 @@ anchors:
   docker-resource-source: &docker-resource-source 
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: ((branch))
+    tag: ((milestone))
   build-project-task-params: &build-project-task-params
     privileged: true
     timeout: ((task-timeout))
