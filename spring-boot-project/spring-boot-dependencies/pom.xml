@@ -118,7 +118,7 @@
 		<javax-validation.version>2.0.1.Final</javax-validation.version>
 		<javax-websocket.version>1.1</javax-websocket.version>
 		<jaxen.version>1.2.0</jaxen.version>
-		<jaybird.version>3.0.8</jaybird.version>
+		<jaybird.version>3.0.9</jaybird.version>
 		<jboss-logging.version>3.4.1.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
