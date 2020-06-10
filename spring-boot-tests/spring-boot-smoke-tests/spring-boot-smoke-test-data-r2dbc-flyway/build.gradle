@@ -11,7 +11,10 @@ dependencies {
 
 	runtimeOnly("io.r2dbc:r2dbc-postgresql")
 	runtimeOnly("org.flywaydb:flyway-core")
-	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:postgresql") {
+		exclude group: "org.osgi"
+		exclude group: "com.github.waffle", module: "waffle-jna"
+	}
 	runtimeOnly("org.springframework:spring-jdbc")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
