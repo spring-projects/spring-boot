@@ -41,7 +41,7 @@
 		<aspectj.version>1.9.5</aspectj.version>
 		<assertj.version>3.13.2</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
-		<awaitility.version>4.0.2</awaitility.version>
+		<awaitility.version>4.0.3</awaitility.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.10.11</byte-buddy.version>
 		<caffeine.version>2.8.4</caffeine.version>
