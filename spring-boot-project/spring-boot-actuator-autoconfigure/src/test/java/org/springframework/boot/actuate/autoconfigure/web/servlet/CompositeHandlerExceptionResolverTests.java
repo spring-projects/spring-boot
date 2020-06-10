@@ -67,7 +67,6 @@ class CompositeHandlerExceptionResolverTests {
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null, exception);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.isEmpty()).isTrue();
-		assertThat(this.request.getAttribute("javax.servlet.error.exception")).isSameAs(exception);
 	}
 
 	private void load(Class<?>... configs) {
