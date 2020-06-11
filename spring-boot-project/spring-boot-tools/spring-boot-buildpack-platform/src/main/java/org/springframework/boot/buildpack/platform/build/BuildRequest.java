@@ -84,8 +84,9 @@ public class BuildRequest {
 	 */
 	public BuildRequest withBuilder(ImageReference builder) {
 		Assert.notNull(builder, "Builder must not be null");
-		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedForm(), this.creator, this.env,
-				this.cleanCache, this.verboseLogging);
+		builder = (builder.getDigest() != null) ? builder : builder.inTaggedForm();
+		return new BuildRequest(this.name, this.applicationContent, builder, this.creator, this.env, this.cleanCache,
+				this.verboseLogging);
 	}
 
 	/**
