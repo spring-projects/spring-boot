@@ -205,27 +205,23 @@ jobs:
   - get: spring-boot-ci-image
   - in_parallel:
     - task: detect-jdk8-update
+      image: spring-boot-ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
         <<: *github-task-params
         JDK_VERSION: java8
-      image: spring-boot-ci-image
     - task: detect-jdk11-update
+      image: spring-boot-ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
         <<: *github-task-params
         JDK_VERSION: java11
-      image: spring-boot-ci-image
     - task: detect-jdk14-update
+      image: spring-boot-ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
-        GITHUB_REPO: spring-boot
-        GITHUB_ORGANIZATION: spring-projects
-        GITHUB_PASSWORD: ((github-password))
-        GITHUB_USERNAME: ((github-username))
+        <<: *github-task-params
         JDK_VERSION: java14
-        MILESTONE: ((milestone))
-      image: spring-boot-ci-image
 - name: detect-ubuntu-image-updates
   plan:
   - get: git-repo
@@ -234,10 +230,10 @@ jobs:
   - get: spring-boot-ci-image
   - do:
     - task: detect-ubuntu-image-updates
+      image: spring-boot-ci-image
       file: git-repo/ci/tasks/detect-ubuntu-image-updates.yml
       params:
         <<: *github-task-params
-      image: spring-boot-ci-image
 - name: detect-docker-updates
   plan:
   - get: git-repo
@@ -246,10 +242,10 @@ jobs:
   - get: spring-boot-ci-image
   - do:
     - task: detect-docker-updates
+      image: spring-boot-ci-image
       file: git-repo/ci/tasks/detect-docker-updates.yml
       params:
         <<: *github-task-params
-      image: spring-boot-ci-image
 - name: build
   serial: true
   public: true
@@ -261,21 +257,21 @@ jobs:
     params: { state: "pending", commit: "git-repo" }
   - do:
     - task: build-project
-      <<: *build-project-task-params
       image: spring-boot-ci-image
+      <<: *build-project-task-params
     - in_parallel:
       - task: build-smoke-tests
-        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
         timeout: ((task-timeout))
+      - task: build-integration-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
         timeout: ((task-timeout))
+      - task: build-deployment-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
+        timeout: ((task-timeout))
     on_failure:
       do:
       - put: repo-status-build
@@ -320,22 +316,22 @@ jobs:
         path: git-repo
         status: pending
     - task: build-project
-      timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
+      timeout: ((task-timeout))
     - in_parallel:
       - task: build-smoke-tests
-        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
         timeout: ((task-timeout))
+      - task: build-integration-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
         timeout: ((task-timeout))
+      - task: build-deployment-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
+        timeout: ((task-timeout))
     on_success:
       put: git-pull-request
       params:
@@ -357,21 +353,21 @@ jobs:
     params: { state: "pending", commit: "git-repo" }
   - do:
     - task: build-project
-      <<: *build-project-task-params
       image: spring-boot-jdk11-ci-image
+      <<: *build-project-task-params
     - in_parallel:
       - task: build-smoke-tests
-        timeout: ((task-timeout))
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
-      - task: build-integration-tests
         timeout: ((task-timeout))
+      - task: build-integration-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
         timeout: ((task-timeout))
+      - task: build-deployment-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
+        timeout: ((task-timeout))
     on_failure:
       do:
       - put: repo-status-jdk11-build
