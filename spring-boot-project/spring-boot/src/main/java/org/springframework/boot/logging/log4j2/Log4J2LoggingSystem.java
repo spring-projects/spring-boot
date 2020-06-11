@@ -242,9 +242,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		for (Logger logger : getLoggerContext().getLoggers()) {
 			addLogger(loggers, logger.getName());
 		}
-		getLoggerContext().getConfiguration().getLoggers().keySet().forEach((name) -> {
-			addLogger(loggers, name);
-		});
+		getLoggerContext().getConfiguration().getLoggers().keySet().forEach((name) -> addLogger(loggers, name));
 		return loggers;
 	}
 
