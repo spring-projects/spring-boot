@@ -109,6 +109,7 @@ class DefaultLogbackConfiguration {
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
+		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
