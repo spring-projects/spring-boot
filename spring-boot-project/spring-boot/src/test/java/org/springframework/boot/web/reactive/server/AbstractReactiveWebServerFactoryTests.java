@@ -359,7 +359,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	protected void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
+	void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
 			throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
