@@ -1,7 +1,7 @@
 {
   "User" : "root",
   "Image" : "pack.local/ephemeral-builder",
-  "Cmd" : [ "/lifecycle/creator", "-app", "/workspace", "-platform", "/platform", "-run-image", "docker.io/cloudfoundry/run", "-layers", "/layers", "-cache-dir", "/cache", "-launch-cache", "/launch-cache", "-daemon", "-skip-restore", "docker.io/library/my-application:latest" ],
+  "Cmd" : [ "/lifecycle/creator", "-app", "/workspace", "-platform", "/platform", "-run-image", "docker.io/cloudfoundry/run:latest", "-layers", "/layers", "-cache-dir", "/cache", "-launch-cache", "/launch-cache", "-daemon", "-skip-restore", "docker.io/library/my-application:latest" ],
   "Labels" : {
     "author" : "spring-boot"
   },

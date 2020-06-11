@@ -183,4 +183,15 @@ class BootBuildImageTests {
 		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("test/builder");
 	}
 
+	@Test
+	void whenNoRunImageIsConfiguredThenRequestUsesDefaultRunImage() {
+		assertThat(this.buildImage.createRequest().getRunImage()).isNull();
+	}
+
+	@Test
+	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
+		this.buildImage.setRunImage("example.com/test/run:1.0");
+		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
+	}
+
 }

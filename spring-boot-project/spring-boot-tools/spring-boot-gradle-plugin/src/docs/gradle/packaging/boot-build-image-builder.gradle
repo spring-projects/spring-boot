@@ -10,5 +10,6 @@ bootJar {
 // tag::builder[]
 bootBuildImage {
 	builder = "mine/java-cnb-builder"
+	runImage = "mine/java-cnb-run"
 }
 // end::builder[]

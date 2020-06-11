@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link Image}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageTests {
 
@@ -58,6 +59,7 @@ class ImageTests {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
 		assertThat(request.getBuilder().toString()).contains("paketo-buildpacks/builder");
+		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
@@ -69,6 +71,14 @@ class ImageTests {
 		image.builder = "springboot/builder:2.2.x";
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/springboot/builder:2.2.x");
+	}
+
+	@Test
+	void getBuildRequestWhenHasRunImageUsesRunImage() {
+		Image image = new Image();
+		image.runImage = "springboot/run:latest";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getRunImage().toString()).isEqualTo("docker.io/springboot/run:latest");
 	}
 
 	@Test

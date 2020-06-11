@@ -50,6 +50,11 @@ The following table summarizes the available properties and their default values
 | Name of the Builder image to use.
 | `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
 
+| `runImage`
+| `--runImage`
+| Name of the run image to use.
+| No default value, indicating the run image specified in Builder metadata should be used.
+
 | `imageName`
 | `--imageName`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
@@ -79,8 +84,8 @@ The following table summarizes the available properties and their default values
 
 
 [[build-image-example-custom-image-builder]]
-==== Custom Image Builder
-If you need to customize the builder used to create the image, configure the task as shown in the following example:
+==== Custom Image Builder and Run Image
+If you need to customize the builder used to create the image or the run image used to launch the built image, configure the task as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -94,13 +99,13 @@ include::../gradle/packaging/boot-build-image-builder.gradle[tags=builder]
 include::../gradle/packaging/boot-build-image-builder.gradle.kts[tags=builder]
 ----
 
-This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
+This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`, and the run image named `mine/java-cnb-run` and the tag `latest`.
 
-The builder can be specified on the command line as well, as shown in this example:
+The builder and run image can be specified on the command line as well, as shown in this example:
 
 [indent=0]
 ----
-$ gradle bootBuildImage --builder=mine/java-cnb-builder
+$ gradle bootBuildImage --builder=mine/java-cnb-builder --runImage=mine/java-cnb-run
 ----
 
 

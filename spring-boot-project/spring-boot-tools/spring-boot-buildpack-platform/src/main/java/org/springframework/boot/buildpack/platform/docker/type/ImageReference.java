@@ -27,6 +27,7 @@ import org.springframework.util.ObjectUtils;
  * A reference to a Docker image of the form {@code "imagename[:tag|@digest]"}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  * @see ImageName
  * @see <a href=
@@ -152,7 +153,19 @@ public final class ImageReference {
 	 */
 	public ImageReference inTaggedForm() {
 		Assert.state(this.digest == null, () -> "Image reference '" + this + "' cannot contain a digest");
-		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, this.digest);
+		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, null);
+	}
+
+	/**
+	 * Return an {@link ImageReference} containing either a tag or a digest. If neither
+	 * the digest or the tag has been defined then tag {@code latest} is used.
+	 * @return the image reference in tagged or digest form
+	 */
+	public ImageReference inTaggedOrDigestForm() {
+		if (this.digest != null) {
+			return this;
+		}
+		return inTaggedForm();
 	}
 
 	/**

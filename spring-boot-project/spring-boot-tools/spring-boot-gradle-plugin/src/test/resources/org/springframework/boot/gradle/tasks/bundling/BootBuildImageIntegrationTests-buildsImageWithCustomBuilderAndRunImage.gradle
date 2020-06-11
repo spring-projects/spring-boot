@@ -1,0 +1,13 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootBuildImage {
+	imageName = "example/test-image-custom"
+	builder = "gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3"
+	runImage = "gcr.io/paketo-buildpacks/run:full-cnb-cf"
+}
