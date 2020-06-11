@@ -168,7 +168,7 @@
 		<okhttp3.version>3.14.9</okhttp3.version>
 		<oracle-database.version>19.3.0.0</oracle-database.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
-		<postgresql.version>42.2.13</postgresql.version>
+		<postgresql.version>42.2.14</postgresql.version>
 		<prometheus-pushgateway.version>0.7.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.2</quartz.version>
 		<querydsl.version>4.2.2</querydsl.version>
