@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
-import io.rsocket.AbstractRSocket;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
@@ -202,7 +201,7 @@ class NettyRSocketServerFactoryTests {
 
 		@Override
 		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
-			return Mono.just(new AbstractRSocket() {
+			return Mono.just(new RSocket() {
 				@Override
 				public Mono<Payload> requestResponse(Payload payload) {
 					return Mono.just(DefaultPayload.create(payload));
