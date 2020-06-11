@@ -29,11 +29,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -531,7 +529,7 @@ public class PropertiesLauncher extends Launcher {
 
 		private final List<Archive> classPathArchives;
 
-		private final Map<File, JarFileArchive> jarFileArchives = new LinkedHashMap<>();
+		private final List<JarFileArchive> jarFileArchives = new ArrayList<>();
 
 		ClassPathArchives() throws Exception {
 			this.classPathArchives = new ArrayList<>();
@@ -666,11 +664,8 @@ public class PropertiesLauncher extends Launcher {
 		}
 
 		private JarFileArchive getJarFileArchive(File file) throws IOException {
-			JarFileArchive archive = this.jarFileArchives.get(file);
-			if (archive == null) {
-				archive = new JarFileArchive(file);
-				this.jarFileArchives.put(file, archive);
-			}
+			JarFileArchive archive = new JarFileArchive(file);
+			this.jarFileArchives.add(archive);
 			return archive;
 		}
 
@@ -680,7 +675,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 
 		void close() throws IOException {
-			for (JarFileArchive archive : this.jarFileArchives.values()) {
+			for (JarFileArchive archive : this.jarFileArchives) {
 				archive.close();
 			}
 		}

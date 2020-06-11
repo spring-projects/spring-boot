@@ -389,6 +389,10 @@ class PropertiesLauncherTests {
 			this.launcher.launch(new String[0]);
 		}
 		catch (Exception ex) {
+			// Expected ClassNotFoundException
+			LaunchedURLClassLoader classLoader = (LaunchedURLClassLoader) Thread.currentThread()
+					.getContextClassLoader();
+			classLoader.close();
 		}
 		URL resource = new URL("jar:" + jarFile.toURI() + "!/nested.jar!/3.dat");
 		byte[] bytes = FileCopyUtils.copyToByteArray(resource.openStream());
