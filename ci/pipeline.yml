@@ -48,6 +48,24 @@ anchors:
       properties:
         "zip.type": "docs"
         "zip.deployed": "false"
+  slack-fail-params: &slack-fail-params
+    text: >
+      :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
+      [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+      [$TEXT_FILE_CONTENT]
+    text_file: git-repo/build/build-scan-uri.txt
+    silent: true
+    icon_emoji: ":concourse:"
+    username: concourse-ci
+  slack-success-params: &slack-success-params
+    text: >
+      :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
+      [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
+      [$TEXT_FILE_CONTENT]
+    text_file: git-repo/build/build-scan-uri.txt
+    silent: true
+    icon_emoji: ":concourse:"
+    username: concourse-ci
 resource_types:
 - name: artifactory-resource
   type: docker-image
@@ -267,14 +285,7 @@ jobs:
         params: { state: "failure", commit: "git-repo" }
       - put: slack-alert
         params:
-          text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-            [$TEXT_FILE_CONTENT]
-          text_file: git-repo/build/build-scan-uri.txt
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
+          <<: *slack-fail-params
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
   - put: artifactory-repo
@@ -286,22 +297,10 @@ jobs:
       do:
       - put: slack-alert
         params:
-          text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
+          <<: *slack-fail-params
   - put: slack-alert
     params:
-      text: >
-        :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-        [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-        [$TEXT_FILE_CONTENT]
-      text_file: git-repo/build/build-scan-uri.txt
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
+      <<: *slack-success-params
 - name: build-pull-requests
   serial: true
   public: true
@@ -349,26 +348,12 @@ jobs:
         params: { state: "failure", commit: "git-repo" }
       - put: slack-alert
         params:
-          text: >
-            :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-            [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-            [$TEXT_FILE_CONTENT]
-          text_file: git-repo/build/build-scan-uri.txt
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
+          <<: *slack-fail-params
   - put: repo-status-jdk11-build
     params: { state: "success", commit: "git-repo" }
   - put: slack-alert
     params:
-      text: >
-        :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-        [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-        [$TEXT_FILE_CONTENT]
-      text_file: git-repo/build/build-scan-uri.txt
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
+      <<: *slack-success-params
 - name: jdk14-build
   serial: true
   public: true
@@ -388,26 +373,12 @@ jobs:
             params: { state: "failure", commit: "git-repo" }
           - put: slack-alert
             params:
-              text: >
-                :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-                [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-                [$TEXT_FILE_CONTENT]
-              text_file: git-repo/build/build-scan-uri.txt
-              silent: true
-              icon_emoji: ":concourse:"
-              username: concourse-ci
+              <<: *slack-fail-params
     - put: repo-status-jdk14-build
       params: { state: "success", commit: "git-repo" }
     - put: slack-alert
       params:
-        text: >
-          :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-          [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-          [$TEXT_FILE_CONTENT]
-        text_file: git-repo/build/build-scan-uri.txt
-        silent: true
-        icon_emoji: ":concourse:"
-        username: concourse-ci
+          <<: *slack-success-params
 - name: windows-build
   serial: true
   plan:
@@ -431,24 +402,10 @@ jobs:
         do:
           - put: slack-alert
             params:
-              text: >
-                :concourse-failed: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!
-                [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-                [$TEXT_FILE_CONTENT]
-              text_file: git-repo/build/build-scan-uri.txt
-              silent: true
-              icon_emoji: ":concourse:"
-              username: concourse-ci
+              <<: *slack-fail-params
     - put: slack-alert
       params:
-        text: >
-          :concourse-succeeded: ${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!
-          [<https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|build log>]
-          [$TEXT_FILE_CONTENT]
-        text_file: git-repo/build/build-scan-uri.txt
-        silent: true
-        icon_emoji: ":concourse:"
-        username: concourse-ci
+        <<: *slack-success-params
 - name: stage-milestone
   serial: true
   plan:
