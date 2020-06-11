@@ -381,14 +381,7 @@ jobs:
     - do:
       - task: build-project
         image: spring-boot-jdk14-ci-image
-        file: git-repo/ci/tasks/build-project.yml
-        privileged: true
-        timeout: ((task-timeout))
-        params:
-          BRANCH: ((branch))
-          GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
-          GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+        <<: *build-project-task-params
       on_failure:
         do:
           - put: repo-status-jdk14-build
