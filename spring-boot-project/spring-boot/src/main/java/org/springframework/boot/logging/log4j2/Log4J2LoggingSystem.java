@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Level;
@@ -31,11 +34,11 @@ import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.message.Message;
 
 import org.springframework.boot.logging.LogFile;
@@ -221,30 +224,65 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
+		Map<String, LoggerConfig> allLoggers = getAllLoggers();
 		List<LoggerConfiguration> result = new ArrayList<>();
-		Configuration configuration = getLoggerContext().getConfiguration();
-		for (LoggerConfig loggerConfig : configuration.getLoggers().values()) {
-			result.add(convertLoggerConfiguration(loggerConfig));
-		}
+		allLoggers.forEach((key, value) -> result.add(convertLoggerConfiguration(value, key)));
 		result.sort(CONFIGURATION_COMPARATOR);
 		return result;
 	}
 
-	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		return convertLoggerConfiguration(getLoggerConfig(loggerName));
+	private Map<String, LoggerConfig> getAllLoggers() {
+		Collection<Logger> loggers = getLoggerContext().getLoggers();
+		Map<String, LoggerConfig> configuredLoggers = getLoggerContext().getConfiguration().getLoggers();
+		Map<String, LoggerConfig> result = new LinkedHashMap<>();
+		for (Logger logger : loggers) {
+			String name = logger.getName();
+			while (name != null) {
+				result.putIfAbsent(name, getLoggerContext().getConfiguration().getLoggerConfig(name));
+				name = getSubName(name);
+			}
+		}
+		configuredLoggers.keySet().forEach((name) -> {
+			String currentName = name;
+			while (currentName != null) {
+				result.putIfAbsent(currentName, getLoggerContext().getConfiguration().getLoggerConfig(currentName));
+				currentName = getSubName(currentName);
+			}
+		});
+		return result;
 	}
 
-	private LoggerConfiguration convertLoggerConfiguration(LoggerConfig loggerConfig) {
+	private String getSubName(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+		int nested = name.lastIndexOf('$');
+		if (nested != -1) {
+			return name.substring(0, nested);
+		}
+		return NameUtil.getSubName(name);
+	}
+
+	@Override
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		LoggerConfig loggerConfig = getAllLoggers().get(loggerName);
+		if (loggerConfig == null) {
+			return null;
+		}
+		return convertLoggerConfiguration(loggerConfig, loggerName);
+	}
+
+	private LoggerConfiguration convertLoggerConfiguration(LoggerConfig loggerConfig, String name) {
 		if (loggerConfig == null) {
 			return null;
 		}
 		LogLevel level = LEVELS.convertNativeToSystem(loggerConfig.getLevel());
-		String name = loggerConfig.getName();
 		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
 			name = ROOT_LOGGER_NAME;
 		}
-		return new LoggerConfiguration(name, level, level);
+		boolean isLoggerConfigured = loggerConfig.getName().equals(name);
+		LogLevel configuredLevel = (isLoggerConfigured) ? level : null;
+		return new LoggerConfiguration(name, configuredLevel, level);
 	}
 
 	@Override
