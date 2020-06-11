@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
@@ -124,11 +123,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			}
 		});
 		this.webServer.stop();
-	}
-
-	@Disabled("Flaky due to https://github.com/reactor/reactor-netty/issues/1093")
-	@Override
-	protected void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes() {
 	}
 
 	protected Mono<String> testSslWithAlias(String alias) {
