@@ -24,8 +24,9 @@ import java.util.Set;
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.sonatype.SonatypeProperties;
 import io.spring.concourse.releasescripts.sonatype.SonatypeService;
-import io.spring.concourse.releasescripts.system.ConsoleLogger;
 import org.awaitility.core.ConditionTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
@@ -45,6 +46,8 @@ import static org.awaitility.Awaitility.waitAtMost;
 @Component
 public class BintrayService {
 
+	private static final Logger logger = LoggerFactory.getLogger(BintrayService.class);
+
 	private static final String BINTRAY_URL = "https://api.bintray.com/";
 
 	private static final String GRADLE_PLUGIN_REQUEST = "[ { \"name\": \"gradle-plugin\", \"values\": [\"org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin\"] } ]";
@@ -56,8 +59,6 @@ public class BintrayService {
 	private final SonatypeProperties sonatypeProperties;
 
 	private final SonatypeService sonatypeService;
-
-	private static final ConsoleLogger console = new ConsoleLogger();
 
 	public BintrayService(RestTemplateBuilder builder, BintrayProperties bintrayProperties,
 			SonatypeProperties sonatypeProperties, SonatypeService sonatypeService) {
@@ -77,15 +78,18 @@ public class BintrayService {
 	}
 
 	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout,
-			Duration pollDelay) {
+			Duration pollInterval) {
+		logger.debug("Checking if distribution is complete");
 		RequestEntity<Void> request = getRequest(releaseInfo, 0);
 		try {
-			waitAtMost(timeout).with().pollDelay(pollDelay).until(() -> {
+			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
+				logger.debug("Checking bintray");
 				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
 				return hasPublishedAll(published, requiredDigets);
 			});
 		}
 		catch (ConditionTimeoutException ex) {
+			logger.debug("Timeout checking bintray");
 			return false;
 		}
 		return true;
@@ -93,13 +97,22 @@ public class BintrayService {
 
 	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigets) {
 		if (published == null || published.length == 0) {
+			logger.debug("Bintray returned no published files");
 			return false;
 		}
 		Set<String> remaining = new HashSet<>(requiredDigets);
 		for (PackageFile publishedFile : published) {
+			logger.debug(
+					"Found published file " + publishedFile.getName() + " with digest " + publishedFile.getSha256());
 			remaining.remove(publishedFile.getSha256());
 		}
-		return remaining.isEmpty();
+		if (remaining.isEmpty()) {
+			logger.debug("Found all required digests");
+			return true;
+		}
+		logger.debug("Some digests have not been published:");
+		remaining.forEach(logger::debug);
+		return false;
 	}
 
 	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
@@ -113,6 +126,7 @@ public class BintrayService {
 	 * @param releaseInfo the release information
 	 */
 	public void publishGradlePlugin(ReleaseInfo releaseInfo) {
+		logger.debug("Publishing Gradle Pluging");
 		RequestEntity<String> requestEntity = RequestEntity
 				.post(URI.create(BINTRAY_URL + "packages/" + this.bintrayProperties.getSubject() + "/"
 						+ this.bintrayProperties.getRepo() + "/" + releaseInfo.getGroupId() + "/versions/"
@@ -120,9 +134,10 @@ public class BintrayService {
 				.contentType(MediaType.APPLICATION_JSON).body(GRADLE_PLUGIN_REQUEST);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
+			logger.debug("Publishing Gradle Pluging complete");
 		}
 		catch (HttpClientErrorException ex) {
-			console.log("Failed to add attribute to gradle plugin.");
+			logger.info("Failed to add attribute to gradle plugin.");
 			throw ex;
 		}
 	}
@@ -132,8 +147,9 @@ public class BintrayService {
 	 * @param releaseInfo the release information
 	 */
 	public void syncToMavenCentral(ReleaseInfo releaseInfo) {
-		console.log("Calling Bintray to sync to Sonatype");
+		logger.info("Calling Bintray to sync to Sonatype");
 		if (this.sonatypeService.artifactsPublished(releaseInfo)) {
+			logger.info("Artifacts already published");
 			return;
 		}
 		RequestEntity<SonatypeProperties> requestEntity = RequestEntity
@@ -143,9 +159,10 @@ public class BintrayService {
 				.contentType(MediaType.APPLICATION_JSON).body(this.sonatypeProperties);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
+			logger.debug("Sync complete");
 		}
 		catch (HttpClientErrorException ex) {
-			console.log("Failed to sync.");
+			logger.info("Failed to sync.");
 			throw ex;
 		}
 	}

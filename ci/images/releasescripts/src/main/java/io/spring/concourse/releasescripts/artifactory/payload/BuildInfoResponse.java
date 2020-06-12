@@ -18,6 +18,7 @@ package io.spring.concourse.releasescripts.artifactory.payload;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,11 +92,11 @@ public class BuildInfoResponse {
 
 		}
 
-		public Set<String> getArtifactDigests() {
+		public Set<String> getArtifactDigests(Predicate<Artifact> predicate) {
 			return Arrays.stream(this.modules).flatMap((module) -> {
 				Artifact[] artifacts = module.getArtifacts();
 				return (artifacts != null) ? Arrays.stream(artifacts) : Stream.empty();
-			}).map(Artifact::getSha256).collect(Collectors.toSet());
+			}).filter(predicate).map(Artifact::getSha256).collect(Collectors.toSet());
 		}
 
 	}

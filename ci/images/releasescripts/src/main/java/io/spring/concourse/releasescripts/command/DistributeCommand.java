@@ -26,7 +26,11 @@ import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.ReleaseType;
 import io.spring.concourse.releasescripts.artifactory.ArtifactoryService;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
+import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse.Artifact;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse.BuildInfo;
+import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -40,6 +44,8 @@ import org.springframework.util.Assert;
 @Component
 public class DistributeCommand implements Command {
 
+	private static final Logger logger = LoggerFactory.getLogger(DistributeCommand.class);
+
 	private final ArtifactoryService artifactoryService;
 
 	private final ObjectMapper objectMapper;
@@ -51,20 +57,30 @@ public class DistributeCommand implements Command {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running 'distribute' command");
 		List<String> nonOptionArgs = args.getNonOptionArgs();
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		Assert.state(nonOptionArgs.size() == 3, "Release type or build info not specified");
 		String releaseType = nonOptionArgs.get(1);
 		ReleaseType type = ReleaseType.from(releaseType);
 		if (!ReleaseType.RELEASE.equals(type)) {
+			logger.info("Skipping distribution of " + type + " type");
 			return;
 		}
 		String buildInfoLocation = nonOptionArgs.get(2);
+		logger.debug("Loading build-info from " + buildInfoLocation);
 		byte[] content = Files.readAllBytes(new File(buildInfoLocation).toPath());
 		BuildInfoResponse buildInfoResponse = this.objectMapper.readValue(content, BuildInfoResponse.class);
 		BuildInfo buildInfo = buildInfoResponse.getBuildInfo();
-		Set<String> artifactDigests = buildInfo.getArtifactDigests();
+		logger.debug("Loading build info:");
+		for (Module module : buildInfo.getModules()) {
+			logger.debug(module.getId());
+			for (Artifact artifact : module.getArtifacts()) {
+				logger.debug(artifact.getSha256() + " " + artifact.getName());
+			}
+		}
 		ReleaseInfo releaseInfo = ReleaseInfo.from(buildInfo);
+		Set<String> artifactDigests = buildInfo.getArtifactDigests((artifact) -> !artifact.getName().endsWith(".zip"));
 		this.artifactoryService.distribute(type.getRepo(), releaseInfo, artifactDigests);
 	}
 

@@ -133,7 +133,8 @@ class ArtifactoryServiceTests {
 	@SuppressWarnings("unchecked")
 	void distributeWhenSuccessful() throws Exception {
 		ReleaseInfo releaseInfo = getReleaseInfo();
-		given(this.bintrayService.isDistributionComplete(eq(releaseInfo), (Set<String>) any(), any())).willReturn(true);
+		given(this.bintrayService.isDistributionComplete(eq(releaseInfo), (Set<String>) any(), any())).willReturn(false,
+				true);
 		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(

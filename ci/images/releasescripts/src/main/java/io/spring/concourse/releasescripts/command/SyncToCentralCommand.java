@@ -25,6 +25,8 @@ import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.ReleaseType;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
 import io.spring.concourse.releasescripts.bintray.BintrayService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,8 @@ import org.springframework.util.Assert;
  */
 @Component
 public class SyncToCentralCommand implements Command {
+
+	private static final Logger logger = LoggerFactory.getLogger(SyncToCentralCommand.class);
 
 	private static final String SYNC_TO_CENTRAL_COMMAND = "syncToCentral";
 
@@ -56,6 +60,7 @@ public class SyncToCentralCommand implements Command {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running 'sync to central' command");
 		List<String> nonOptionArgs = args.getNonOptionArgs();
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		Assert.state(nonOptionArgs.size() == 3, "Release type or build info not specified");
