@@ -17,17 +17,18 @@
 package io.spring.concourse.releasescripts.bintray;
 
 import java.net.URI;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.sonatype.SonatypeProperties;
 import io.spring.concourse.releasescripts.sonatype.SonatypeService;
-import io.spring.concourse.releasescripts.system.ConsoleLogger;
 import org.awaitility.core.ConditionTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,8 @@ import static org.awaitility.Awaitility.waitAtMost;
 @Component
 public class BintrayService {
 
+	private static final Logger logger = LoggerFactory.getLogger(BintrayService.class);
+
 	private static final String BINTRAY_URL = "https://api.bintray.com/";
 
 	private static final String GRADLE_PLUGIN_REQUEST = "[ { \"name\": \"gradle-plugin\", \"values\": [\"org.springframework.boot:org.springframework.boot:spring-boot-gradle-plugin\"] } ]";
@@ -56,8 +59,6 @@ public class BintrayService {
 	private final SonatypeProperties sonatypeProperties;
 
 	private final SonatypeService sonatypeService;
-
-	private static final ConsoleLogger console = new ConsoleLogger();
 
 	public BintrayService(RestTemplateBuilder builder, BintrayProperties bintrayProperties,
 			SonatypeProperties sonatypeProperties, SonatypeService sonatypeService) {
@@ -72,30 +73,46 @@ public class BintrayService {
 		this.restTemplate = builder.build();
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo) {
-		RequestEntity<Void> allFilesRequest = getRequest(releaseInfo, 1);
-		Object[] allFiles = waitAtMost(5, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
-			try {
-				return this.restTemplate.exchange(allFilesRequest, Object[].class).getBody();
-			}
-			catch (HttpClientErrorException ex) {
-				if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
-					throw ex;
-				}
-				return null;
-			}
-		}, Objects::nonNull);
-		RequestEntity<Void> publishedFilesRequest = getRequest(releaseInfo, 0);
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout) {
+		return isDistributionComplete(releaseInfo, requiredDigets, timeout, Duration.ofSeconds(20));
+	}
+
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout,
+			Duration pollInterval) {
+		logger.debug("Checking if distribution is complete");
+		RequestEntity<Void> request = getRequest(releaseInfo, 0);
 		try {
-			waitAtMost(120, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
-				Object[] publishedFiles = this.restTemplate.exchange(publishedFilesRequest, Object[].class).getBody();
-				return allFiles.length == publishedFiles.length;
+			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
+				logger.debug("Checking bintray");
+				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
+				return hasPublishedAll(published, requiredDigets);
 			});
 		}
 		catch (ConditionTimeoutException ex) {
+			logger.debug("Timeout checking bintray");
 			return false;
 		}
 		return true;
+	}
+
+	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigets) {
+		if (published == null || published.length == 0) {
+			logger.debug("Bintray returned no published files");
+			return false;
+		}
+		Set<String> remaining = new HashSet<>(requiredDigets);
+		for (PackageFile publishedFile : published) {
+			logger.debug(
+					"Found published file " + publishedFile.getName() + " with digest " + publishedFile.getSha256());
+			remaining.remove(publishedFile.getSha256());
+		}
+		if (remaining.isEmpty()) {
+			logger.debug("Found all required digests");
+			return true;
+		}
+		logger.debug("Some digests have not been published:");
+		remaining.forEach(logger::debug);
+		return false;
 	}
 
 	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
@@ -109,6 +126,7 @@ public class BintrayService {
 	 * @param releaseInfo the release information
 	 */
 	public void publishGradlePlugin(ReleaseInfo releaseInfo) {
+		logger.debug("Publishing Gradle Pluging");
 		RequestEntity<String> requestEntity = RequestEntity
 				.post(URI.create(BINTRAY_URL + "packages/" + this.bintrayProperties.getSubject() + "/"
 						+ this.bintrayProperties.getRepo() + "/" + releaseInfo.getGroupId() + "/versions/"
@@ -116,9 +134,10 @@ public class BintrayService {
 				.contentType(MediaType.APPLICATION_JSON).body(GRADLE_PLUGIN_REQUEST);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
+			logger.debug("Publishing Gradle Pluging complete");
 		}
 		catch (HttpClientErrorException ex) {
-			console.log("Failed to add attribute to gradle plugin.");
+			logger.info("Failed to add attribute to gradle plugin.");
 			throw ex;
 		}
 	}
@@ -128,8 +147,9 @@ public class BintrayService {
 	 * @param releaseInfo the release information
 	 */
 	public void syncToMavenCentral(ReleaseInfo releaseInfo) {
-		console.log("Calling Bintray to sync to Sonatype");
+		logger.info("Calling Bintray to sync to Sonatype");
 		if (this.sonatypeService.artifactsPublished(releaseInfo)) {
+			logger.info("Artifacts already published");
 			return;
 		}
 		RequestEntity<SonatypeProperties> requestEntity = RequestEntity
@@ -139,9 +159,10 @@ public class BintrayService {
 				.contentType(MediaType.APPLICATION_JSON).body(this.sonatypeProperties);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
+			logger.debug("Sync complete");
 		}
 		catch (HttpClientErrorException ex) {
-			console.log("Failed to sync.");
+			logger.info("Failed to sync.");
 			throw ex;
 		}
 	}
