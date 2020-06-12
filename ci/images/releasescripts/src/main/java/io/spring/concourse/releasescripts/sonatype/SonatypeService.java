@@ -58,9 +58,9 @@ public class SonatypeService {
 	 */
 	public boolean artifactsPublished(ReleaseInfo releaseInfo) {
 		try {
-			ResponseEntity<Object> entity = this.restTemplate
+			ResponseEntity<?> entity = this.restTemplate
 					.getForEntity(String.format(SONATYPE_REPOSITORY_URI + "%s/spring-boot-%s.jar.sha1",
-							releaseInfo.getVersion(), releaseInfo.getVersion()), Object.class);
+							releaseInfo.getVersion(), releaseInfo.getVersion()), byte[].class);
 			if (HttpStatus.OK.equals(entity.getStatusCode())) {
 				logger.info("Already published to Sonatype.");
 				return true;
