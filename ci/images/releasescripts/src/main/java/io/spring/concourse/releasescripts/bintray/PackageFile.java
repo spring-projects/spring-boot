@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.releasescripts.system;
-
-import org.slf4j.helpers.MessageFormatter;
+package io.spring.concourse.releasescripts.bintray;
 
 /**
- * Simple console logger used to output progress messages.
+ * Details for a single packaged file.
  *
- * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public class ConsoleLogger {
+public class PackageFile {
 
-	public void log(String message, Object... args) {
-		System.err.println(MessageFormatter.arrayFormat(message, args).getMessage());
+	private String name;
+
+	private String sha256;
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getSha256() {
+		return this.sha256;
 	}
 
 }
