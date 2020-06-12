@@ -17,6 +17,8 @@
 package io.spring.concourse.releasescripts.artifactory;
 
 import java.net.URI;
+import java.time.Duration;
+import java.util.Set;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
@@ -113,8 +115,12 @@ public class ArtifactoryService {
 	 * Deploy builds from Artifactory to Bintray.
 	 * @param sourceRepo the source repo in Artifactory.
 	 * @param releaseInfo the resease info
+	 * @param artifactDigests the artifact digests
 	 */
-	public void distribute(String sourceRepo, ReleaseInfo releaseInfo) {
+	public void distribute(String sourceRepo, ReleaseInfo releaseInfo, Set<String> artifactDigests) {
+		if (this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(2))) {
+			console.log("Distribution already complete");
+		}
 		DistributionRequest request = new DistributionRequest(new String[] { sourceRepo });
 		RequestEntity<DistributionRequest> requestEntity = RequestEntity
 				.post(URI.create(DISTRIBUTION_URL + releaseInfo.getBuildName() + "/" + releaseInfo.getBuildNumber()))
@@ -126,7 +132,7 @@ public class ArtifactoryService {
 			console.log("Failed to distribute.");
 			throw ex;
 		}
-		if (!this.bintrayService.isDistributionComplete(releaseInfo)) {
+		if (!this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(60))) {
 			throw new DistributionTimeoutException("Distribution timed out.");
 		}
 

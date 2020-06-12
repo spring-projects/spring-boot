@@ -19,12 +19,14 @@ package io.spring.concourse.releasescripts.command;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.ReleaseType;
 import io.spring.concourse.releasescripts.artifactory.ArtifactoryService;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
+import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse.BuildInfo;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -38,12 +40,12 @@ import org.springframework.util.Assert;
 @Component
 public class DistributeCommand implements Command {
 
-	private final ArtifactoryService service;
+	private final ArtifactoryService artifactoryService;
 
 	private final ObjectMapper objectMapper;
 
-	public DistributeCommand(ArtifactoryService service, ObjectMapper objectMapper) {
-		this.service = service;
+	public DistributeCommand(ArtifactoryService artifactoryService, ObjectMapper objectMapper) {
+		this.artifactoryService = artifactoryService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -60,8 +62,10 @@ public class DistributeCommand implements Command {
 		String buildInfoLocation = nonOptionArgs.get(2);
 		byte[] content = Files.readAllBytes(new File(buildInfoLocation).toPath());
 		BuildInfoResponse buildInfoResponse = this.objectMapper.readValue(content, BuildInfoResponse.class);
-		ReleaseInfo releaseInfo = ReleaseInfo.from(buildInfoResponse.getBuildInfo());
-		this.service.distribute(type.getRepo(), releaseInfo);
+		BuildInfo buildInfo = buildInfoResponse.getBuildInfo();
+		Set<String> artifactDigests = buildInfo.getArtifactDigests();
+		ReleaseInfo releaseInfo = ReleaseInfo.from(buildInfo);
+		this.artifactoryService.distribute(type.getRepo(), releaseInfo, artifactDigests);
 	}
 
 }

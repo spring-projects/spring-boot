@@ -17,8 +17,9 @@
 package io.spring.concourse.releasescripts.bintray;
 
 import java.net.URI;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.sonatype.SonatypeProperties;
@@ -27,7 +28,6 @@ import io.spring.concourse.releasescripts.system.ConsoleLogger;
 import org.awaitility.core.ConditionTimeoutException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -72,30 +72,34 @@ public class BintrayService {
 		this.restTemplate = builder.build();
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo) {
-		RequestEntity<Void> allFilesRequest = getRequest(releaseInfo, 1);
-		Object[] allFiles = waitAtMost(5, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
-			try {
-				return this.restTemplate.exchange(allFilesRequest, Object[].class).getBody();
-			}
-			catch (HttpClientErrorException ex) {
-				if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
-					throw ex;
-				}
-				return null;
-			}
-		}, Objects::nonNull);
-		RequestEntity<Void> publishedFilesRequest = getRequest(releaseInfo, 0);
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout) {
+		return isDistributionComplete(releaseInfo, requiredDigets, timeout, Duration.ofSeconds(20));
+	}
+
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout,
+			Duration pollDelay) {
+		RequestEntity<Void> request = getRequest(releaseInfo, 0);
 		try {
-			waitAtMost(120, TimeUnit.MINUTES).with().pollDelay(20, TimeUnit.SECONDS).until(() -> {
-				Object[] publishedFiles = this.restTemplate.exchange(publishedFilesRequest, Object[].class).getBody();
-				return allFiles.length == publishedFiles.length;
+			waitAtMost(timeout).with().pollDelay(pollDelay).until(() -> {
+				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
+				return hasPublishedAll(published, requiredDigets);
 			});
 		}
 		catch (ConditionTimeoutException ex) {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigets) {
+		if (published == null || published.length == 0) {
+			return false;
+		}
+		Set<String> remaining = new HashSet<>(requiredDigets);
+		for (PackageFile publishedFile : published) {
+			remaining.remove(publishedFile.getSha256());
+		}
+		return remaining.isEmpty();
 	}
 
 	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
