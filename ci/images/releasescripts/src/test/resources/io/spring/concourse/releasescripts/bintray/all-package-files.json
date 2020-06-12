@@ -8,7 +8,7 @@
     "owner": "jfrog",
     "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
     "size": 1234,
-    "sha1": "602e20176706d3cc7535f01ffdbe91b270ae5012"
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5012"
   },
   {
     "name": "nutcracker-1.1.pom",
@@ -19,7 +19,7 @@
     "owner": "jfrog",
     "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
     "size": 1234,
-    "sha1": "602e20176706d3cc7535f01ffdbe91b270ae5012"
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5013"
   },
   {
     "name": "nutcracker-1.1.jar",
@@ -30,6 +30,6 @@
     "owner": "jfrog",
     "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
     "size": 1234,
-    "sha1": "602e20176706d3cc7535f01ffdbe91b270ae5012"
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5014"
   }
 ]

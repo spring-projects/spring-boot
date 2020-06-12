@@ -16,6 +16,8 @@
 
 package io.spring.concourse.releasescripts.command;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.releasescripts.ReleaseInfo;
@@ -54,7 +56,7 @@ class DistributeCommandTests {
 	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		this.command = new DistributeCommand(this.service, objectMapper);
+		this.command = new DistributeCommand(this.service, this.objectMapper);
 	}
 
 	@Test
@@ -76,15 +78,20 @@ class DistributeCommandTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void distributeWhenReleaseTypeReleaseShouldCallService() throws Exception {
-		ArgumentCaptor<ReleaseInfo> captor = ArgumentCaptor.forClass(ReleaseInfo.class);
+		ArgumentCaptor<ReleaseInfo> releaseInfoCaptor = ArgumentCaptor.forClass(ReleaseInfo.class);
+		ArgumentCaptor<Set<String>> artifactDigestCaptor = ArgumentCaptor.forClass(Set.class);
 		this.command.run(new DefaultApplicationArguments("distribute", "RELEASE", getBuildInfoLocation()));
-		verify(this.service).distribute(eq(ReleaseType.RELEASE.getRepo()), captor.capture());
-		ReleaseInfo releaseInfo = captor.getValue();
+		verify(this.service).distribute(eq(ReleaseType.RELEASE.getRepo()), releaseInfoCaptor.capture(),
+				artifactDigestCaptor.capture());
+		ReleaseInfo releaseInfo = releaseInfoCaptor.getValue();
 		assertThat(releaseInfo.getBuildName()).isEqualTo("example");
 		assertThat(releaseInfo.getBuildNumber()).isEqualTo("example-build-1");
 		assertThat(releaseInfo.getGroupId()).isEqualTo("org.example.demo");
 		assertThat(releaseInfo.getVersion()).isEqualTo("2.2.0");
+		Set<String> artifactDigests = artifactDigestCaptor.getValue();
+		assertThat(artifactDigests).containsExactly("aaaaaaaaa85f5c5093721f3ed0edda8ff8290yyyyyyyyyy");
 	}
 
 	private String getBuildInfoLocation() throws Exception {
