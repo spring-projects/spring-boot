@@ -46,9 +46,6 @@ class SonatypeServiceTests {
 	private SonatypeService service;
 
 	@Autowired
-	private SonatypeProperties properties;
-
-	@Autowired
 	private MockRestServiceServer server;
 
 	@AfterEach

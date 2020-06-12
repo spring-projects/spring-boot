@@ -112,6 +112,7 @@ public class ArtifactoryService {
 	/**
 	 * Deploy builds from Artifactory to Bintray.
 	 * @param sourceRepo the source repo in Artifactory.
+	 * @param releaseInfo the resease info
 	 */
 	public void distribute(String sourceRepo, ReleaseInfo releaseInfo) {
 		DistributionRequest request = new DistributionRequest(new String[] { sourceRepo });
