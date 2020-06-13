@@ -1472,6 +1472,10 @@
       "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
     },
     {
+      "name": "spring.r2dbc.pool.validationDepth",
+      "defaultValue": "local"
+    },
+    {
       "name": "spring.rabbitmq.cache.connection.mode",
       "defaultValue": "channel"
     },

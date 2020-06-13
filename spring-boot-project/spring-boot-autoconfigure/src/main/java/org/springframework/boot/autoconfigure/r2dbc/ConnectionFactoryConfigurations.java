@@ -68,7 +68,6 @@ abstract class ConnectionFactoryConfigurations {
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
 			ConnectionFactory connectionFactory = createConnectionFactory(properties, resourceLoader.getClassLoader(),
 					customizers.orderedStream().collect(Collectors.toList()));
-
 			R2dbcProperties.Pool pool = properties.getPool();
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory)
 					.initialSize(pool.getInitialSize()).maxSize(pool.getMaxSize()).maxIdleTime(pool.getMaxIdleTime())
@@ -79,7 +78,6 @@ abstract class ConnectionFactoryConfigurations {
 			if (StringUtils.hasText(pool.getValidationQuery())) {
 				builder.validationQuery(pool.getValidationQuery());
 			}
-
 			return new ConnectionPool(builder.build());
 		}
 

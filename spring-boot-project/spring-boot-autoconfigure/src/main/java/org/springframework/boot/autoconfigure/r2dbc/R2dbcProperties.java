@@ -144,17 +144,17 @@ public class R2dbcProperties {
 		/**
 		 * Max lifetime.
 		 */
-		private Duration maxLifeTime = Duration.ZERO;
+		private Duration maxLifeTime = Duration.ofMinutes(0L);
 
 		/**
 		 * Max acquire time.
 		 */
-		private Duration maxAcquireTime = Duration.ZERO;
+		private Duration maxAcquireTime = Duration.ofMinutes(0L);
 
 		/**
 		 * Max create connection time.
 		 */
-		private Duration maxCreateConnectionTime = Duration.ZERO;
+		private Duration maxCreateConnectionTime = Duration.ofMinutes(0L);
 
 		/**
 		 * Initial connection pool size.
