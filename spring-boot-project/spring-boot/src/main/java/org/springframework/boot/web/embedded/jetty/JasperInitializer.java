@@ -55,7 +55,7 @@ class JasperInitializer extends AbstractLifeCycle {
 		for (String className : INITIALIZER_CLASSES) {
 			try {
 				Class<?> initializerClass = ClassUtils.forName(className, null);
-				return (ServletContainerInitializer) initializerClass.newInstance();
+				return (ServletContainerInitializer) initializerClass.getDeclaredConstructor().newInstance();
 			}
 			catch (Exception ex) {
 				// Ignore

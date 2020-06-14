@@ -87,7 +87,7 @@ final class EnvironmentConverter {
 
 	private StandardEnvironment createEnvironment(Class<? extends StandardEnvironment> type) {
 		try {
-			return type.newInstance();
+			return type.getDeclaredConstructor().newInstance();
 		}
 		catch (Exception ex) {
 			return new StandardEnvironment();

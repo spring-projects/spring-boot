@@ -28,7 +28,7 @@ public class SummaryGeneratingListener extends ReflectiveWrapper {
 
 	public SummaryGeneratingListener(ClassLoader classLoader) throws Throwable {
 		super(classLoader, "org.junit.platform.launcher.listeners.SummaryGeneratingListener");
-		this.instance = this.type.newInstance();
+		this.instance = this.type.getDeclaredConstructor().newInstance();
 	}
 
 	public TestExecutionSummary getSummary() throws Throwable {
