@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ class H2ConsoleAutoConfigurationTests {
 		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
 		assertThat(registrationBean.getInitParameters()).doesNotContainKey("trace");
 		assertThat(registrationBean.getInitParameters()).doesNotContainKey("webAllowOthers");
+		assertThat(registrationBean.getInitParameters()).doesNotContainKey("webAdminPassword");
 	}
 
 	@Test
@@ -114,13 +115,15 @@ class H2ConsoleAutoConfigurationTests {
 	void customInitParameters() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues.of("spring.h2.console.enabled:true", "spring.h2.console.settings.trace=true",
-				"spring.h2.console.settings.webAllowOthers=true").applyTo(this.context);
+				"spring.h2.console.settings.webAllowOthers=true", "spring.h2.console.settings.webAdminPassword=abcd")
+				.applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		ServletRegistrationBean<?> registrationBean = this.context.getBean(ServletRegistrationBean.class);
 		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
 		assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
 		assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers", "");
+		assertThat(registrationBean.getInitParameters()).containsEntry("webAdminPassword", "abcd");
 	}
 
 	@Test
