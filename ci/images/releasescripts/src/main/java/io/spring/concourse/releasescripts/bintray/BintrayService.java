@@ -73,11 +73,11 @@ public class BintrayService {
 		this.restTemplate = builder.build();
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout) {
-		return isDistributionComplete(releaseInfo, requiredDigets, timeout, Duration.ofSeconds(20));
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout) {
+		return isDistributionComplete(releaseInfo, requiredDigests, timeout, Duration.ofSeconds(20));
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout,
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout,
 			Duration pollInterval) {
 		logger.debug("Checking if distribution is complete");
 		RequestEntity<Void> request = getRequest(releaseInfo, 0);
@@ -85,7 +85,7 @@ public class BintrayService {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
 				logger.debug("Checking bintray");
 				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
-				return hasPublishedAll(published, requiredDigets);
+				return hasPublishedAll(published, requiredDigests);
 			});
 		}
 		catch (ConditionTimeoutException ex) {
@@ -95,12 +95,12 @@ public class BintrayService {
 		return true;
 	}
 
-	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigets) {
+	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigests) {
 		if (published == null || published.length == 0) {
 			logger.debug("Bintray returned no published files");
 			return false;
 		}
-		Set<String> remaining = new HashSet<>(requiredDigets);
+		Set<String> remaining = new HashSet<>(requiredDigests);
 		for (PackageFile publishedFile : published) {
 			logger.debug(
 					"Found published file " + publishedFile.getName() + " with digest " + publishedFile.getSha256());
