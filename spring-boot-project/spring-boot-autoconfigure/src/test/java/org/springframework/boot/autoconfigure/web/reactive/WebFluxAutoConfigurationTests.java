@@ -444,11 +444,12 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void welcomePageHandlerMapping() {
-		this.contextRunner.withPropertyValues("spring.resources.static-locations=classpath:/welcome-page/").run((context) -> {
-			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
-			assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
-					.extracting("order").isEqualTo(1);
-		});
+		this.contextRunner.withPropertyValues("spring.resources.static-locations=classpath:/welcome-page/")
+				.run((context) -> {
+					assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
+					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
+							.extracting("order").isEqualTo(1);
+				});
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
