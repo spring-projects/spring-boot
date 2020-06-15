@@ -48,8 +48,6 @@ class Lifecycle implements Closeable {
 
 	private final BuildRequest request;
 
-	private final ImageReference runImageReference;
-
 	private final EphemeralBuilder builder;
 
 	private final LifecycleVersion lifecycleVersion;
@@ -73,15 +71,12 @@ class Lifecycle implements Closeable {
 	 * @param log build output log
 	 * @param docker the Docker API
 	 * @param request the request to process
-	 * @param runImageReference a reference to run image that should be used
 	 * @param builder the ephemeral builder used to run the phases
 	 */
-	Lifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReference,
-			EphemeralBuilder builder) {
+	Lifecycle(BuildLog log, DockerApi docker, BuildRequest request, EphemeralBuilder builder) {
 		this.log = log;
 		this.docker = docker;
 		this.request = request;
-		this.runImageReference = runImageReference;
 		this.builder = builder;
 		this.lifecycleVersion = LifecycleVersion.parse(builder.getBuilderMetadata().getLifecycle().getVersion());
 		this.platformVersion = ApiVersion.parse(builder.getBuilderMetadata().getLifecycle().getApi().getPlatform());
@@ -125,7 +120,7 @@ class Lifecycle implements Closeable {
 		phase.withLogLevelArg();
 		phase.withArgs("-app", Directory.APPLICATION);
 		phase.withArgs("-platform", Directory.PLATFORM);
-		phase.withArgs("-run-image", this.runImageReference);
+		phase.withArgs("-run-image", this.request.getRunImage());
 		phase.withArgs("-layers", Directory.LAYERS);
 		phase.withArgs("-cache-dir", Directory.CACHE);
 		phase.withArgs("-launch-cache", Directory.LAUNCH_CACHE);

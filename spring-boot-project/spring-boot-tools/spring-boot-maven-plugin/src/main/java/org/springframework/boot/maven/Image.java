@@ -48,6 +48,11 @@ public class Image {
 	String builder;
 
 	/**
+	 * The run image used to launch the built image.
+	 */
+	String runImage;
+
+	/**
 	 * Environment properties that should be passed to the builder.
 	 */
 	Map<String, String> env;
@@ -70,6 +75,10 @@ public class Image {
 		this.builder = builder;
 	}
 
+	void setRunImage(String runImage) {
+		this.runImage = runImage;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -85,6 +94,9 @@ public class Image {
 	private BuildRequest customize(BuildRequest request) {
 		if (StringUtils.hasText(this.builder)) {
 			request = request.withBuilder(ImageReference.of(this.builder));
+		}
+		if (StringUtils.hasText(this.runImage)) {
+			request = request.withRunImage(ImageReference.of(this.runImage));
 		}
 		if (this.env != null && !this.env.isEmpty()) {
 			request = request.withEnv(this.env);

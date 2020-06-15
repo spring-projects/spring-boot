@@ -107,6 +107,47 @@ class BuilderTests {
 	}
 
 	@Test
+	void buildInvokesBuilderWithRunImageInDigestForm() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image-with-run-image-digest.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of(
+				"docker.io/cloudfoundry/run:@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d")),
+				any())).willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest();
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+	}
+
+	@Test
+	void buildInvokesBuilderWithRunImageFromRequest() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("example.com/custom/run:latest")), any()))
+				.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+	}
+
+	@Test
 	void buildWhenStackIdDoesNotMatchThrowsException() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
@@ -175,8 +216,7 @@ class BuilderTests {
 	private BuildRequest getTestRequest() {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
-		BuildRequest request = BuildRequest.of(name, (owner) -> content);
-		return request;
+		return BuildRequest.of(name, (owner) -> content);
 	}
 
 	private Image loadImage(String name) throws IOException {

@@ -43,13 +43,13 @@ The following table shows the environment variables and their values:
 |===
 | Environment variable | Description
 
-| DOCKER_HOST 
+| DOCKER_HOST
 | URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
 
-| DOCKER_TLS_VERIFY 
+| DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
 
-| DOCKER_CERT_PATH 
+| DOCKER_CERT_PATH
 | Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
 |===
 
@@ -64,7 +64,7 @@ The builder includes multiple {buildpacks-reference}/concepts/components/buildpa
 By default, the plugin chooses a builder image.
 The name of the generated image is deduced from project properties.
 
-The `image` parameter allows to configure how the builder should operate on the project.
+The `image` parameter allows configuration of the builder and how it should operate on the project.
 The following table summarizes the available parameters and their default values:
 
 |===
@@ -74,6 +74,11 @@ The following table summarizes the available parameters and their default values
 | Name of the Builder image to use.
 | `spring-boot.build-image.builder`
 | `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
+
+| `runImage`
+| Name of the run image to use.
+| `spring-boot.build-image.runImage`
+| No default value, indicating the run image specified in Builder metadata should be used.
 
 | `name`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
@@ -109,7 +114,7 @@ include::goals/build-image.adoc[leveloffset=+1]
 
 [[build-image-example-custom-image-builder]]
 ==== Custom Image Builder
-If you need to customize the builder used to create the image, configure the plugin as shown in the following example:
+If you need to customize the builder used to create the image or the run image used to launch the built image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -123,6 +128,7 @@ If you need to customize the builder used to create the image, configure the plu
 					<configuration>
 						<image>
 							<builder>mine/java-cnb-builder</builder>
+							<runImage>mine/java-cnb-run</runImage>
 						</image>
 					</configuration>
 				</plugin>
@@ -131,13 +137,13 @@ If you need to customize the builder used to create the image, configure the plu
 	</project>
 ----
 
-This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`.
+This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`, and the run image named `mine/java-cnb-run` and the tag `latest`.
 
-The builder can be specified on the command line as well, as shown in this example:
+The builder and run image can be specified on the command line as well, as shown in this example:
 
 [indent=0]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder -Dspring-boot.build-image.runImage=mine/java-cnb-run
 ----
 
 

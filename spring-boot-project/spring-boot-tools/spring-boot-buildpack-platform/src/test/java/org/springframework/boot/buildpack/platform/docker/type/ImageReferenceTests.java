@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link ImageReference}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageReferenceTests {
 
@@ -221,6 +222,26 @@ class ImageReferenceTests {
 	void inTaggedFormWhenHasTagUsesTag() {
 		ImageReference reference = ImageReference.of("ubuntu:bionic");
 		assertThat(reference.inTaggedForm().toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+	}
+
+	@Test
+	void inTaggedOrDigestFormWhenHasDigestUsesDigest() {
+		ImageReference reference = ImageReference
+				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo(
+				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void inTaggedOrDigestFormWhenHasTagUsesTag() {
+		ImageReference reference = ImageReference.of("ubuntu:bionic");
+		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+	}
+
+	@Test
+	void inTaggedOrDigestFormWhenHasNoTagOrDigestUsesLatest() {
+		ImageReference reference = ImageReference.of("ubuntu");
+		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo("docker.io/library/ubuntu:latest");
 	}
 
 	@Test

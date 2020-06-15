@@ -61,6 +61,8 @@ public class BootBuildImage extends DefaultTask {
 
 	private String builder;
 
+	private String runImage;
+
 	private Map<String, String> environment = new HashMap<>();
 
 	private boolean cleanCache;
@@ -131,6 +133,26 @@ public class BootBuildImage extends DefaultTask {
 	@Option(option = "builder", description = "The name of the builder image to use")
 	public void setBuilder(String builder) {
 		this.builder = builder;
+	}
+
+	/**
+	 * Returns the run image that will be included in the built image. When {@code null},
+	 * the run image bundled with the builder will be used.
+	 * @return the run image
+	 */
+	@Input
+	@Optional
+	public String getRunImage() {
+		return this.runImage;
+	}
+
+	/**
+	 * Sets the run image that will be included in the built image.
+	 * @param runImage the run image
+	 */
+	@Option(option = "runImage", description = "The name of the run image to use")
+	public void setRunImage(String runImage) {
+		this.runImage = runImage;
 	}
 
 	/**
@@ -228,6 +250,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customize(BuildRequest request) {
 		request = customizeBuilder(request);
+		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
 		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
@@ -238,6 +261,13 @@ public class BootBuildImage extends DefaultTask {
 	private BuildRequest customizeBuilder(BuildRequest request) {
 		if (StringUtils.hasText(this.builder)) {
 			return request.withBuilder(ImageReference.of(this.builder));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeRunImage(BuildRequest request) {
+		if (StringUtils.hasText(this.runImage)) {
+			return request.withRunImage(ImageReference.of(this.runImage));
 		}
 		return request;
 	}
