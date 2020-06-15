@@ -62,6 +62,7 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.server.support.RouterFunctionMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.resource.CachingResourceResolver;
 import org.springframework.web.reactive.resource.CachingResourceTransformer;
@@ -108,6 +109,7 @@ class WebFluxAutoConfigurationTests {
 			assertThat(context).getBeans(RequestMappingHandlerMapping.class).hasSize(1);
 			assertThat(context).getBeans(RequestMappingHandlerAdapter.class).hasSize(1);
 			assertThat(context).getBeans(RequestedContentTypeResolver.class).hasSize(1);
+			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(1);
 			assertThat(context.getBean("resourceHandlerMapping", HandlerMapping.class)).isNotNull();
 		});
 	}
@@ -438,6 +440,15 @@ class WebFluxAutoConfigurationTests {
 					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
 					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
 				});
+	}
+
+	@Test
+	void welcomePageHandlerMapping() {
+		this.contextRunner.withPropertyValues("spring.resources.static-locations=classpath:/welcome-page/").run((context) -> {
+			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
+			assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
+					.extracting("order").isEqualTo(1);
+		});
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
