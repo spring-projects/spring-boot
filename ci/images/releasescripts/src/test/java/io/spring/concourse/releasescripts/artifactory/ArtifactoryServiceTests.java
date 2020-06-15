@@ -63,9 +63,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @EnableConfigurationProperties(ArtifactoryProperties.class)
 class ArtifactoryServiceTests {
 
-	private static final Duration SHORT_TIMEOUT = Duration.ofMinutes(2);
-
-	private static final Duration LONG_TIMEOUT = Duration.ofMinutes(60);
+	private static final Duration TIMEOUT = Duration.ofMinutes(60);
 
 	@Autowired
 	private ArtifactoryService service;
@@ -133,8 +131,8 @@ class ArtifactoryServiceTests {
 	@SuppressWarnings("unchecked")
 	void distributeWhenSuccessful() throws Exception {
 		ReleaseInfo releaseInfo = getReleaseInfo();
-		given(this.bintrayService.isDistributionComplete(eq(releaseInfo), (Set<String>) any(), any())).willReturn(false,
-				true);
+		given(this.bintrayService.isDistributionStarted(eq(releaseInfo))).willReturn(false);
+		given(this.bintrayService.isDistributionComplete(eq(releaseInfo), (Set<String>) any(), any())).willReturn(true);
 		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(
@@ -146,8 +144,7 @@ class ArtifactoryServiceTests {
 		this.service.distribute("libs-release-local", releaseInfo, artifactDigests);
 		this.server.verify();
 		InOrder ordered = inOrder(this.bintrayService);
-		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, SHORT_TIMEOUT);
-		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, LONG_TIMEOUT);
+		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, TIMEOUT);
 	}
 
 	@Test
@@ -165,7 +162,7 @@ class ArtifactoryServiceTests {
 		assertThatExceptionOfType(HttpClientErrorException.class)
 				.isThrownBy(() -> this.service.distribute("libs-release-local", releaseInfo, artifactDigests));
 		this.server.verify();
-		verify(this.bintrayService, times(1)).isDistributionComplete(releaseInfo, artifactDigests, SHORT_TIMEOUT);
+		verify(this.bintrayService, times(1)).isDistributionStarted(releaseInfo);
 		verifyNoMoreInteractions(this.bintrayService);
 	}
 
@@ -189,8 +186,7 @@ class ArtifactoryServiceTests {
 				.isThrownBy(() -> this.service.distribute("libs-release-local", releaseInfo, artifactDigests));
 		this.server.verify();
 		InOrder ordered = inOrder(this.bintrayService);
-		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, SHORT_TIMEOUT);
-		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, LONG_TIMEOUT);
+		ordered.verify(this.bintrayService).isDistributionComplete(releaseInfo, artifactDigests, TIMEOUT);
 	}
 
 	private ReleaseInfo getReleaseInfo() {
