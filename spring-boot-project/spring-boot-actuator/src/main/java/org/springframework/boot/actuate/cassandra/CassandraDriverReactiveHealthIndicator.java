@@ -29,9 +29,6 @@ import org.springframework.util.Assert;
  * Simple implementation of a {@link ReactiveHealthIndicator} returning status information
  * for Cassandra data stores.
  *
- * This health indicator is automatically used when Spring Data Cassandra is not present,
- * but the Cassandra driver is.
- *
  * @author Alexandre Dutra
  * @since 2.4.0
  */

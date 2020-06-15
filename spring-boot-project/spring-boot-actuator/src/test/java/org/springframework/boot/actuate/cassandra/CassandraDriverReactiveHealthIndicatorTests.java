@@ -58,7 +58,6 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		given(session.executeReactive(any(SimpleStatement.class))).willReturn(results);
 		doAnswer(mockReactiveResultSetBehavior(row)).when(results).subscribe(any());
 		given(row.getString(0)).willReturn("6.0.0");
-
 		CassandraDriverReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraDriverReactiveHealthIndicator(
 				session);
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
@@ -74,7 +73,6 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mock(CqlSession.class);
 		given(session.executeReactive(any(SimpleStatement.class)))
 				.willThrow(new DriverTimeoutException("Test Exception"));
-
 		CassandraDriverReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraDriverReactiveHealthIndicator(
 				session);
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();

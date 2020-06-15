@@ -655,7 +655,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
@@ -830,7 +830,7 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverReactiveHealthIndicator.java[`CassandraDriverReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
