@@ -402,7 +402,7 @@ jobs:
       params: { state: "success", commit: "git-repo" }
     - put: slack-alert
       params:
-       <<: *slack-success-params
+        <<: *slack-success-params
 - name: jdk15-build
   serial: true
   public: true

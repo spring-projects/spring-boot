@@ -32,14 +32,14 @@ public class HandlerFunctionDescription {
 		this.className = getHandlerFunctionClassName(handlerFunction);
 	}
 
-	public String getClassName() {
-		return this.className;
-	}
-
-	private String getHandlerFunctionClassName(HandlerFunction<?> handlerFunction) {
+	private static String getHandlerFunctionClassName(HandlerFunction<?> handlerFunction) {
 		Class<?> functionClass = handlerFunction.getClass();
 		String canonicalName = functionClass.getCanonicalName();
-		return canonicalName != null ? canonicalName : functionClass.getName();
+		return (canonicalName != null) ? canonicalName : functionClass.getName();
+	}
+
+	public String getClassName() {
+		return this.className;
 	}
 
 }
