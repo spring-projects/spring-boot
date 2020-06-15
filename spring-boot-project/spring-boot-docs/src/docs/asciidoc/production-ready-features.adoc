@@ -1879,7 +1879,7 @@ By default, Spring MVC-related metrics are tagged with the following information
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide one or more `@Bean`s that implement `WebMvcTagsContributor`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebMvcTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 
@@ -1913,7 +1913,7 @@ By default, WebFlux-related metrics are tagged with the following information:
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide one or more `@Bean`s that implement `WebFluxTagsContributor`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebFluxTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 
