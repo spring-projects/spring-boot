@@ -63,6 +63,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.support.RouterFunctionMapping;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
@@ -101,12 +102,18 @@ public class WebFluxAutoConfiguration {
 	public static class WelcomePageConfiguration {
 
 		@Bean
-		public RouterFunction<ServerResponse> welcomePageRouterFunction(ApplicationContext applicationContext,
+		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
 				WebFluxProperties webFluxProperties, ResourceProperties resourceProperties) {
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
 					new TemplateAvailabilityProviders(applicationContext), applicationContext,
 					resourceProperties.getStaticLocations(), webFluxProperties.getStaticPathPattern());
-			return factory.createRouterFunction();
+			RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
+			if (routerFunction != null) {
+				RouterFunctionMapping routerFunctionMapping = new RouterFunctionMapping(routerFunction);
+				routerFunctionMapping.setOrder(1);
+				return routerFunctionMapping;
+			}
+			return null;
 		}
 
 	}
