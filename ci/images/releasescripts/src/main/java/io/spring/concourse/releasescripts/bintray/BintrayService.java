@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -73,6 +74,22 @@ public class BintrayService {
 		this.restTemplate = builder.build();
 	}
 
+	public boolean isDistributionStarted(ReleaseInfo releaseInfo) {
+		logger.debug("Checking if distribution is started");
+		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 1);
+		try {
+			logger.debug("Checking bintray");
+			this.restTemplate.exchange(request, PackageFile[].class).getBody();
+			return true;
+		}
+		catch (HttpClientErrorException ex) {
+			if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
+				throw ex;
+			}
+			return false;
+		}
+	}
+
 	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout) {
 		return isDistributionComplete(releaseInfo, requiredDigests, timeout, Duration.ofSeconds(20));
 	}
@@ -80,7 +97,7 @@ public class BintrayService {
 	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout,
 			Duration pollInterval) {
 		logger.debug("Checking if distribution is complete");
-		RequestEntity<Void> request = getRequest(releaseInfo, 0);
+		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 0);
 		try {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
 				logger.debug("Checking bintray");
@@ -115,7 +132,7 @@ public class BintrayService {
 		return false;
 	}
 
-	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
+	private RequestEntity<Void> getPackageFilesRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
 		return RequestEntity.get(URI.create(BINTRAY_URL + "packages/" + this.bintrayProperties.getSubject() + "/"
 				+ this.bintrayProperties.getRepo() + "/" + releaseInfo.getGroupId() + "/versions/"
 				+ releaseInfo.getVersion() + "/files?include_unpublished=" + includeUnpublished)).build();

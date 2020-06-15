@@ -124,26 +124,27 @@ public class ArtifactoryService {
 	 */
 	public void distribute(String sourceRepo, ReleaseInfo releaseInfo, Set<String> artifactDigests) {
 		logger.debug("Attempting distribute via Artifactory");
-		if (this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(2))) {
-			logger.info("Distribution already complete");
-			return;
+		if (!this.bintrayService.isDistributionStarted(releaseInfo)) {
+			startDistribute(sourceRepo, releaseInfo);
 		}
+		if (!this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(60))) {
+			throw new DistributionTimeoutException("Distribution timed out.");
+		}
+	}
+
+	private void startDistribute(String sourceRepo, ReleaseInfo releaseInfo) {
 		DistributionRequest request = new DistributionRequest(new String[] { sourceRepo });
 		RequestEntity<DistributionRequest> requestEntity = RequestEntity
 				.post(URI.create(DISTRIBUTION_URL + releaseInfo.getBuildName() + "/" + releaseInfo.getBuildNumber()))
 				.contentType(MediaType.APPLICATION_JSON).body(request);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
-			logger.debug("Distribution call completed");
+			logger.debug("Distribute call completed");
 		}
 		catch (HttpClientErrorException ex) {
 			logger.info("Failed to distribute.");
 			throw ex;
 		}
-		if (!this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(60))) {
-			throw new DistributionTimeoutException("Distribution timed out.");
-		}
-
 	}
 
 	private PromotionRequest getPromotionRequest(String targetRepo) {
