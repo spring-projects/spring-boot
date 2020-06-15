@@ -5,7 +5,7 @@ pluginManagement {
 		maven {
 			url 'https://repo.spring.io/plugins-release'
 		}
-		if (version.endsWith('BUILD-SNAPSHOT')) {
+		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
 	}
