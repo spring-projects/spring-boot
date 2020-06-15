@@ -4,18 +4,18 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.integration-test"
-	id "org.springframework.boot.internal-dependency-management"
     id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Developer Tools"
 
 configurations {
-	intTestDependencies
+	intTestDependencies {
+		extendsFrom dependencyManagement
+	}
 }
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
@@ -32,7 +32,6 @@ dependencies {
 
 	intTestRuntimeOnly("org.springframework:spring-web")
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("javax.servlet:javax.servlet-api")
 	optional("org.apache.derby:derby")
 	optional("org.hibernate:hibernate-core")

@@ -5,12 +5,17 @@ plugins {
 
 description = "Spring Boot war smoke test"
 
+configurations {
+	providedCompile {
+		extendsFrom dependencyManagement
+	}
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
-	providedCompile(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	providedCompile("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))

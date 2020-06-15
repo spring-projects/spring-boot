@@ -17,6 +17,7 @@ package org.springframework.boot.build;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,8 +26,12 @@ import java.util.function.Consumer;
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.bundling.Jar;
@@ -36,6 +41,7 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 
 /**
@@ -60,6 +66,7 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@code Implementation-Title}
  * <li>{@code Implementation-Version}
  * </ul>
+ * <li>{@code spring-boot-parent} is used for dependency management</li>
  * </ul>
  *
  * <p/>
@@ -80,6 +87,7 @@ class JavaConventions {
 			configureJavadocConventions(project);
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
+			configureDependencyManagement(project);
 		});
 	}
 
@@ -162,6 +170,24 @@ class JavaConventions {
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
 				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+	}
+
+	private void configureDependencyManagement(Project project) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		Configuration dependencyManagement = configurations.create("dependencyManagement", (configuration) -> {
+			configuration.setVisible(false);
+			configuration.setCanBeConsumed(false);
+			configuration.setCanBeResolved(false);
+		});
+		configurations
+				.matching((configuration) -> configuration.getName().endsWith("Classpath")
+						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
+		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
+				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+		dependencyManagement.getDependencies().add(springBootParent);
+		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
+				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
 	}
 
 }

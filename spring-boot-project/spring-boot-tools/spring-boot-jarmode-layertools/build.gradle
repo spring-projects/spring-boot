@@ -2,14 +2,11 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Layers Tools"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-parent")))
-
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	implementation("org.springframework:spring-core")
 
@@ -17,4 +14,3 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
 }
-

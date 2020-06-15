@@ -6,7 +6,6 @@ plugins {
 description = "Spring Boot Data R2DBC with Liquibase smoke test"
 
 dependencies {
-	implementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-r2dbc"))
 
 	runtimeOnly("io.r2dbc:r2dbc-postgresql")

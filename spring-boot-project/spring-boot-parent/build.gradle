@@ -2,7 +2,6 @@ plugins {
 	id "java-platform"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Parent"

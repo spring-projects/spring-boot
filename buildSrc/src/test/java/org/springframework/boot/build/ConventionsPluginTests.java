@@ -51,6 +51,17 @@ class ConventionsPluginTests {
 	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
+		File settingsFile = new File(this.projectDir, "settings.gradle");
+		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
+			out.println("include ':spring-boot-project:spring-boot-parent'");
+		}
+		File springBootParent = new File(this.projectDir, "spring-boot-project/spring-boot-parent/build.gradle");
+		springBootParent.getParentFile().mkdirs();
+		try (PrintWriter out = new PrintWriter(new FileWriter(springBootParent))) {
+			out.println("plugins {");
+			out.println("    id 'java-platform'");
+			out.println("}");
+		}
 	}
 
 	@Test
