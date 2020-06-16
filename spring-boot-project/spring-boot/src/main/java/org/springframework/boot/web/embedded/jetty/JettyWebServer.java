@@ -132,9 +132,10 @@ public class JettyWebServer implements WebServer {
 					}
 
 				});
-				// Start the server so that the ServletContext is available
-				this.server.start();
 				this.server.setStopAtShutdown(false);
+				if (this.autoStart) {
+					start();
+				}
 			}
 			catch (Throwable ex) {
 				// Ensure process isn't left running
@@ -160,9 +161,6 @@ public class JettyWebServer implements WebServer {
 				return;
 			}
 			this.server.setConnectors(this.connectors);
-			if (!this.autoStart) {
-				return;
-			}
 			try {
 				this.server.start();
 				for (Handler handler : this.server.getHandlers()) {
