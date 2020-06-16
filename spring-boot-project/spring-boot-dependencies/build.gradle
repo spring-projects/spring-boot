@@ -310,13 +310,6 @@ bom {
 			]
 		}
 	}
-	library("Flatten Maven Plugin", "1.2.2") {
-		group("org.codehaus.mojo") {
-			plugins = [
-				"flatten-maven-plugin"
-			]
-		}
-	}
 	library("Flyway", "6.4.4") {
 		group("org.flywaydb") {
 			modules = [
