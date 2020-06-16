@@ -84,7 +84,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
-			Charset charset = getCharset(contentType).orElse(getDefaultCharset());
+			Charset charset = getCharset(contentType).orElseGet(this::getDefaultCharset);
 			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
 				template.execute(model, writer);
 				writer.flush();

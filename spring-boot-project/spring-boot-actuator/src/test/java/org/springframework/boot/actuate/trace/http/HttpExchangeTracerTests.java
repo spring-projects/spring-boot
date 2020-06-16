@@ -318,7 +318,7 @@ class HttpExchangeTracerTests {
 		@Override
 		protected void postProcessRequestHeaders(Map<String, List<String>> headers) {
 			headers.remove("to-remove");
-			headers.putIfAbsent("to-add", Collections.singletonList("42"));
+			headers.computeIfAbsent("to-add", (key) -> Collections.singletonList("42"));
 		}
 
 	}
