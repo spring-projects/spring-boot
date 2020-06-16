@@ -81,6 +81,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
+	@Deprecated
 	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));

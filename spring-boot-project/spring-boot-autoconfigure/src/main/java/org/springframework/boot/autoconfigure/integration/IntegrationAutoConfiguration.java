@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.integration;
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
-import io.rsocket.RSocketFactory;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -156,8 +155,9 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration RSocket configuration.
 	 */
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, RSocketFactory.class })
+	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, io.rsocket.RSocketFactory.class })
 	@Conditional(IntegrationRSocketConfiguration.AnyRSocketChannelAdapterAvailable.class)
 	protected static class IntegrationRSocketConfiguration {
 

@@ -18,6 +18,7 @@ package org.springframework.boot.build;
 
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.gradle.api.Project;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
@@ -40,8 +41,12 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * it.
  * <li>The poms of all {@link MavenPublication Maven publications} are customized to meet
  * Maven Central's requirements.
- * <li>If the {@link JavaPlugin Java plugin} has also been applied, creation of Javadoc
- * and source jars is enabled.
+ * <li>If the {@link JavaPlugin Java plugin} has also been applied:
+ * <ul>
+ * <li>Creation of Javadoc and source jars is enabled.
+ * <li>Publication metadata (poms and Gradle module metadata) is configured to use
+ * resolved versions.
+ * </ul>
  * </ul>
  *
  * <p/>
@@ -62,13 +67,19 @@ class MavenPublishingConventions {
 				});
 			}
 			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> customizePom(mavenPublication.getPom(), project));
+					.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 				extension.withJavadocJar();
 				extension.withSourcesJar();
 			});
 		});
+	}
+
+	private void customizeMavenPublication(MavenPublication publication, Project project) {
+		customizePom(publication.getPom(), project);
+		project.getPlugins().withType(JavaPlugin.class)
+				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
@@ -80,6 +91,13 @@ class MavenPublishingConventions {
 		pom.developers(this::customizeDevelopers);
 		pom.scm(this::customizeScm);
 		pom.issueManagement(this::customizeIssueManagement);
+	}
+
+	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
+		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
+				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
+		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_RUNTIME,
+				(mappingStrategy) -> mappingStrategy.fromResolutionResult()));
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {

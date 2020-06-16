@@ -2,19 +2,16 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Test AutoConfigure"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("javax.json.bind:javax.json.bind-api")
 	optional("javax.servlet:javax.servlet-api")
 	optional("javax.transaction:javax.transaction-api")

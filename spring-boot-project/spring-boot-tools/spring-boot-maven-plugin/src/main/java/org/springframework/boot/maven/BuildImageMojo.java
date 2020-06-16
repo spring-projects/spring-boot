@@ -94,7 +94,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private String classifier;
 
 	/**
-	 * Image configuration, with `builder`, `name`, `env`, `cleanCache` and
+	 * Image configuration, with `builder`, `runImage`, `name`, `env`, `cleanCache` and
 	 * `verboseLogging` options.
 	 * @since 2.3.0
 	 */
@@ -114,6 +114,14 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	 */
 	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
 	String imageBuilder;
+
+	/**
+	 * Alias for {@link Image#runImage} to support configuration via command-line
+	 * property.
+	 * @since 2.3.1
+	 */
+	@Parameter(property = "spring-boot.build-image.runImage", readonly = true)
+	String runImage;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -148,6 +156,9 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.builder == null && this.imageBuilder != null) {
 			image.setBuilder(this.imageBuilder);
+		}
+		if (image.runImage == null && this.runImage != null) {
+			image.setRunImage(this.runImage);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}

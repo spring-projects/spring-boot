@@ -12,5 +12,6 @@ tasks.getByName<BootJar>("bootJar") {
 // tag::builder[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
 	builder = "mine/java-cnb-builder"
+	runImage = "mine/java-cnb-run"
 }
 // end::builder[]

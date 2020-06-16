@@ -17,6 +17,7 @@ package org.springframework.boot.build;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,9 +25,14 @@ import java.util.function.Consumer;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.bundling.Jar;
@@ -36,6 +42,7 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 
 /**
@@ -50,7 +57,13 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters} and, when
+ * compiling with Java 8, to:
+ * <ul>
+ * <li>Treat warnings as errors
+ * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
+ * warnings
+ * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
  * files and the following manifest entries:
  * <ul>
@@ -60,6 +73,7 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@code Implementation-Title}
  * <li>{@code Implementation-Version}
  * </ul>
+ * <li>{@code spring-boot-parent} is used for dependency management</li>
  * </ul>
  *
  * <p/>
@@ -80,6 +94,7 @@ class JavaConventions {
 			configureJavadocConventions(project);
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
+			configureDependencyManagement(project);
 		});
 	}
 
@@ -141,6 +156,10 @@ class JavaConventions {
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
+			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+						"-Xlint:varargs"));
+			}
 		});
 	}
 
@@ -162,6 +181,24 @@ class JavaConventions {
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
 				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+	}
+
+	private void configureDependencyManagement(Project project) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		Configuration dependencyManagement = configurations.create("dependencyManagement", (configuration) -> {
+			configuration.setVisible(false);
+			configuration.setCanBeConsumed(false);
+			configuration.setCanBeResolved(false);
+		});
+		configurations
+				.matching((configuration) -> configuration.getName().endsWith("Classpath")
+						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
+		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
+				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+		dependencyManagement.getDependencies().add(springBootParent);
+		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
+				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
 	}
 
 }

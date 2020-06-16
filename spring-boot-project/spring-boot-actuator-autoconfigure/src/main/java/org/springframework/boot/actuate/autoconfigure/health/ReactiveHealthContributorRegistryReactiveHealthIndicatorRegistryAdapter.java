@@ -23,18 +23,17 @@ import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.util.Assert;
 
 /**
  * Adapter class to convert a {@link ReactiveHealthContributorRegistry} to a legacy
- * {@link ReactiveHealthIndicatorRegistry}.
+ * {@link org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry}.
  *
  * @author Phillip Webb
  */
 @SuppressWarnings("deprecation")
 class ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter
-		implements ReactiveHealthIndicatorRegistry {
+		implements org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry {
 
 	private final ReactiveHealthContributorRegistry contributorRegistry;
 

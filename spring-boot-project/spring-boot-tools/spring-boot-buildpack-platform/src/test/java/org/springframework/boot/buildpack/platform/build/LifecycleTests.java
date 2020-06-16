@@ -150,7 +150,7 @@ class LifecycleTests {
 	private BuildRequest getTestRequest() {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
-		return BuildRequest.of(name, (owner) -> content);
+		return BuildRequest.of(name, (owner) -> content).withRunImage(ImageReference.of("cloudfoundry/run"));
 	}
 
 	private Lifecycle createLifecycle() throws IOException {
@@ -159,8 +159,7 @@ class LifecycleTests {
 
 	private Lifecycle createLifecycle(BuildRequest request) throws IOException {
 		EphemeralBuilder builder = mockEphemeralBuilder();
-		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, ImageReference.of("cloudfoundry/run"),
-				builder);
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, builder);
 	}
 
 	private EphemeralBuilder mockEphemeralBuilder() throws IOException {
@@ -208,9 +207,8 @@ class LifecycleTests {
 
 	static class TestLifecycle extends Lifecycle {
 
-		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, ImageReference runImageReference,
-				EphemeralBuilder builder) {
-			super(log, docker, request, runImageReference, builder);
+		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, EphemeralBuilder builder) {
+			super(log, docker, request, builder);
 		}
 
 		@Override

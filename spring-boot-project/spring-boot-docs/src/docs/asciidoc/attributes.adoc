@@ -86,6 +86,7 @@
 :spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
+:spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/site/docs/{spring-security-version}/reference/html5/

@@ -233,9 +233,10 @@ class JettyWebServerFactoryCustomizerTests {
 		assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
 		QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
 		Jetty defaultProperties = new Jetty();
-		assertThat(queuedThreadPool.getMinThreads()).isEqualTo(defaultProperties.getMinThreads());
-		assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(defaultProperties.getMaxThreads());
-		assertThat(queuedThreadPool.getIdleTimeout()).isEqualTo(defaultProperties.getThreadIdleTimeout().toMillis());
+		assertThat(queuedThreadPool.getMinThreads()).isEqualTo(defaultProperties.getThreads().getMin());
+		assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(defaultProperties.getThreads().getMax());
+		assertThat(queuedThreadPool.getIdleTimeout())
+				.isEqualTo(defaultProperties.getThreads().getIdleTimeout().toMillis());
 	}
 
 	private CustomRequestLog getRequestLog(JettyWebServer server) {

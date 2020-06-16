@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -333,8 +332,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	@Override
-	public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, final Object bean,
-			String beanName) throws BeansException {
+	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)
+			throws BeansException {
 		ReflectionUtils.doWithFields(bean.getClass(), (field) -> postProcessField(bean, field));
 		return pvs;
 	}

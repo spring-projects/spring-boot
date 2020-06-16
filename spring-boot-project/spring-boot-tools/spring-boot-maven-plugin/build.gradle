@@ -2,7 +2,6 @@ plugins {
 	id "org.asciidoctor.jvm.convert"
 	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
-	id "org.springframework.boot.internal-dependency-management"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -14,8 +13,6 @@ configurations {
 }
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-parent")))
-
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
 
@@ -24,7 +21,6 @@ dependencies {
 	implementation("org.apache.maven.shared:maven-common-artifact-filters")
 	implementation("org.apache.maven:maven-plugin-api")
 
-	intTestImplementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -33,7 +29,6 @@ dependencies {
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
 
-	optional(platform(project(":spring-boot-project:spring-boot-parent")))
 	optional("org.apache.maven.plugins:maven-shade-plugin")
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")

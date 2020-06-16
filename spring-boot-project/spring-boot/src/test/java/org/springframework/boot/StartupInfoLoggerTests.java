@@ -47,10 +47,10 @@ class StartupInfoLoggerTests {
 		new StartupInfoLogger(getClass()).logStarting(this.log);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
-		assertThat(captor.getValue().toString()).matches("Starting " + getClass().getSimpleName() + " using Java "
+		assertThat(captor.getValue().toString()).contains("Starting " + getClass().getSimpleName() + " using Java "
 				+ System.getProperty("java.version") + " on " + InetAddress.getLocalHost().getHostName() + " with PID "
-				+ new ApplicationPid() + " \\(started by " + System.getProperty("user.name") + " in "
-				+ System.getProperty("user.dir") + "\\)");
+				+ new ApplicationPid() + " (started by " + System.getProperty("user.name") + " in "
+				+ System.getProperty("user.dir") + ")");
 	}
 
 	@Test

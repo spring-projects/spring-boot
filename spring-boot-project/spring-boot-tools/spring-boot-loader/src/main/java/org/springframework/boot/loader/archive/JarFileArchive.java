@@ -81,6 +81,7 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
+	@Deprecated
 	public Iterator<Entry> iterator() {
 		return new EntryIterator(this.jarFile.iterator(), null, null);
 	}

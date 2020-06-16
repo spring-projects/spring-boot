@@ -66,7 +66,7 @@ bom {
 			]
 		}
 	}
-	library("Artemis", "2.12.0") {
+	library("Artemis", "2.13.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
@@ -117,7 +117,7 @@ bom {
 			]
 		}
 	}
-	library("Awaitility", "4.0.2") {
+	library("Awaitility", "4.0.3") {
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
@@ -141,7 +141,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.10.10") {
+	library("Byte Buddy", "1.10.11") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -149,7 +149,7 @@ bom {
 			]
 		}
 	}
-	library("Caffeine", "2.8.2") {
+	library("Caffeine", "2.8.4") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
@@ -215,7 +215,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.0.4") {
+	library("Couchbase Client", "3.0.5") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -247,7 +247,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.1.7") {
+	library("Dropwizard Metrics", "4.1.9") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -270,7 +270,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.6.2") {
+	library("Elasticsearch", "7.7.1") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -310,14 +310,7 @@ bom {
 			]
 		}
 	}
-	library("Flatten Maven Plugin", "1.2.2") {
-		group("org.codehaus.mojo") {
-			plugins = [
-				"flatten-maven-plugin"
-			]
-		}
-	}
-	library("Flyway", "6.4.1") {
+	library("Flyway", "6.4.4") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -362,7 +355,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "2.5.11") {
+	library("Groovy", "2.5.12") {
 		group("org.codehaus.groovy") {
 			modules = [
 				"groovy",
@@ -435,7 +428,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.4.15.Final") {
+	library("Hibernate", "5.4.17.Final") {
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
@@ -476,7 +469,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.40.0") {
+	library("HtmlUnit", "2.41.0") {
 		group("net.sourceforge.htmlunit") {
 			modules = [
 				"htmlunit" {
@@ -566,7 +559,7 @@ bom {
 			]
 		}
 	}
-	library("InfluxDB Java", "2.18") {
+	library("InfluxDB Java", "2.19") {
 		group("org.influxdb") {
 			modules = [
 				"influxdb-java"
@@ -769,7 +762,7 @@ bom {
 			]
 		}
 	}
-	library("Javax Money", "1.0.3") {
+	library("Javax Money", "1.1") {
 		group("javax.money") {
 			modules = [
 				"money-api"
@@ -811,7 +804,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "3.0.8") {
+	library("Jaybird", "3.0.9") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird-jdk17",
@@ -847,7 +840,7 @@ bom {
 			]
 		}
 	}
-	library("Jersey", "2.30.1") {
+	library("Jersey", "2.31") {
 		group("org.glassfish.jersey") {
 			imports = [
 				"jersey-bom"
@@ -868,14 +861,14 @@ bom {
 			]
 		}
 	}
-	library("Jetty Reactive HTTPClient", "1.1.2") {
+	library("Jetty Reactive HTTPClient", "1.1.3") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
 			]
 		}
 	}
-	library("Jetty", "9.4.28.v20200408") {
+	library("Jetty", "9.4.30.v20200611") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
@@ -889,7 +882,7 @@ bom {
 			]
 		}
 	}
-	library("Johnzon", "1.2.5") {
+	library("Johnzon", "1.2.7") {
 		group("org.apache.johnzon") {
 			modules = [
 				"johnzon-core",
@@ -998,21 +991,21 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Coroutines", "1.3.6") {
+	library("Kotlin Coroutines", "1.3.7") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
 			]
 		}
 	}
-	library("Lettuce", "5.3.0.RELEASE") {
+	library("Lettuce", "5.3.1.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
 			]
 		}
 	}
-	library("Liquibase", "3.8.9") {
+	library("Liquibase", "3.10.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-core" {
@@ -1021,7 +1014,7 @@ bom {
 			]
 		}
 	}
-	library("Log4j2", "2.13.2") {
+	library("Log4j2", "2.13.3") {
 		group("org.apache.logging.log4j") {
 			modules = [
 				"log4j-to-slf4j"
@@ -1176,7 +1169,7 @@ bom {
 			]
 		}
 	}
-	library("Maven War Plugin", "3.2.3") {
+	library("Maven War Plugin", "3.3.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-war-plugin"
@@ -1211,7 +1204,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.0.3") {
+	library("MongoDB", "4.0.4") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
@@ -1245,7 +1238,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j OGM", "3.2.11") {
+	library("Neo4j OGM", "3.2.12") {
 		group("org.neo4j") {
 			modules = [
 				"neo4j-ogm-api",
@@ -1258,14 +1251,14 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.49.Final") {
+	library("Netty", "4.1.50.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.30.Final") {
+	library("Netty tcNative", "2.0.31.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative-boringssl-static"
@@ -1279,7 +1272,7 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "7.1.1") {
+	library("OAuth2 OIDC SDK", "7.5") {
 		group("com.nimbusds") {
 			modules = [
 				"oauth2-oidc-sdk"
@@ -1310,7 +1303,7 @@ bom {
 			]
 		}
 	}
-	library("OkHttp3", "3.14.8") {
+	library("OkHttp3", "3.14.9") {
 		group("com.squareup.okhttp3") {
 			modules = [
 				"logging-interceptor",
@@ -1325,7 +1318,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "19.3.0.0") {
+	library("Oracle Database", "19.6.0.0") {
 		group("com.oracle.database.ha") {
 			modules = [
 				"ons",
@@ -1380,7 +1373,7 @@ bom {
 			]
 		}
 	}
-	library("Postgresql", "42.2.12") {
+	library("Postgresql", "42.2.14") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1418,7 +1411,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Arabba-SR3") {
+	library("R2DBC Bom", "Arabba-SR5") {
 		group("io.r2dbc") {
 			imports = [
 					"r2dbc-bom"
@@ -1459,7 +1452,7 @@ bom {
 			]
 		}
 	}
-	library("RSocket", "1.0.0") {
+	library("RSocket", "1.0.1") {
 		group("io.rsocket") {
 			imports = [
 				"rsocket-bom"
@@ -1588,14 +1581,14 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "2.40.0") {
+	library("Selenium HtmlUnit", "2.41.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
 			]
 		}
 	}
-	library("SendGrid", "4.4.8") {
+	library("SendGrid", "4.6.0") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
@@ -1652,7 +1645,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.2.6.RELEASE") {
+	library("Spring AMQP", "2.2.7.RELEASE") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1662,7 +1655,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.2.2.RELEASE") {
+	library("Spring Batch", "4.2.4.RELEASE") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1700,7 +1693,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.5.0.RELEASE") {
+	library("Spring Kafka", "2.5.2.RELEASE") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1731,7 +1724,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Retry", "1.2.5.RELEASE") {
+	library("Spring Retry", "1.3.0") {
 		group("org.springframework.retry") {
 			modules = [
 				"spring-retry"
@@ -1813,7 +1806,7 @@ bom {
 			]
 		}
 	}
-	library("Tomcat", "9.0.35") {
+	library("Tomcat", "9.0.36") {
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
@@ -1837,7 +1830,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.1.0.Final") {
+	library("Undertow", "2.1.3.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",

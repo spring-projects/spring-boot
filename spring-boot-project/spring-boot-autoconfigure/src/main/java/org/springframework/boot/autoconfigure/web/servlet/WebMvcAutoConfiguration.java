@@ -82,7 +82,6 @@ import org.springframework.validation.Validator;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
-import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -499,13 +498,14 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@Override
+		@SuppressWarnings("deprecation")
 		public ContentNegotiationManager mvcContentNegotiationManager() {
 			ContentNegotiationManager manager = super.mvcContentNegotiationManager();
 			List<ContentNegotiationStrategy> strategies = manager.getStrategies();
 			ListIterator<ContentNegotiationStrategy> iterator = strategies.listIterator();
 			while (iterator.hasNext()) {
 				ContentNegotiationStrategy strategy = iterator.next();
-				if (strategy instanceof PathExtensionContentNegotiationStrategy) {
+				if (strategy instanceof org.springframework.web.accept.PathExtensionContentNegotiationStrategy) {
 					iterator.set(new OptionalPathExtensionContentNegotiationStrategy(strategy));
 				}
 			}
@@ -577,12 +577,15 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-	 * Decorator to make {@link PathExtensionContentNegotiationStrategy} optional
-	 * depending on a request attribute.
+	 * Decorator to make
+	 * {@link org.springframework.web.accept.PathExtensionContentNegotiationStrategy}
+	 * optional depending on a request attribute.
 	 */
 	static class OptionalPathExtensionContentNegotiationStrategy implements ContentNegotiationStrategy {
 
-		private static final String SKIP_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP";
+		@SuppressWarnings("deprecation")
+		private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class
+				.getName() + ".SKIP";
 
 		private final ContentNegotiationStrategy delegate;
 

@@ -5,7 +5,6 @@ plugins {
 description = "Starter for testing Spring Boot applications with libraries including JUnit Jupiter, Hamcrest and Mockito"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))

@@ -158,6 +158,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
 	}
 
+	@SuppressWarnings("deprecation")
 	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
 		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
 		config.setUrlPathHelper(null);
@@ -215,6 +216,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				HttpServletRequest.class, HttpServletResponse.class));
 	}
 
+	@SuppressWarnings("deprecation")
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
 		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
 		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(), builderConfig.getPathMatcher(),

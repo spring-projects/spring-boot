@@ -82,6 +82,7 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@Override
+	@Deprecated
 	public String getErrorPath() {
 		return null;
 	}

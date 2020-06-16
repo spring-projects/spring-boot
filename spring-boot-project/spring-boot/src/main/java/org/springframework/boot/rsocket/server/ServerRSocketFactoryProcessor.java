@@ -16,10 +16,9 @@
 
 package org.springframework.boot.rsocket.server;
 
-import io.rsocket.RSocketFactory.ServerRSocketFactory;
-
 /**
- * Processor that allows for custom modification of a {@link ServerRSocketFactory
+ * Processor that allows for custom modification of a
+ * {@link io.rsocket.RSocketFactory.ServerRSocketFactory
  * RSocketFactory.ServerRSocketFactory} before it is used.
  *
  * @author Brian Clozel
@@ -37,6 +36,6 @@ public interface ServerRSocketFactoryProcessor {
 	 * @param factory the factory to process
 	 * @return the processed factory instance
 	 */
-	ServerRSocketFactory process(ServerRSocketFactory factory);
+	io.rsocket.RSocketFactory.ServerRSocketFactory process(io.rsocket.RSocketFactory.ServerRSocketFactory factory);
 
 }

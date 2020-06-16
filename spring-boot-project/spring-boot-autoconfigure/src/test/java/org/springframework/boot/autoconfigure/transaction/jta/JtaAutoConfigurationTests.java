@@ -47,9 +47,6 @@ import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;
 import org.springframework.boot.jta.atomikos.AtomikosDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.jta.atomikos.AtomikosProperties;
-import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
-import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
-import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +68,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Nishant Raut
  */
-@SuppressWarnings("deprecation")
+// @SuppressWarnings("deprecation")
 class JtaAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -123,7 +120,7 @@ class JtaAutoConfigurationTests {
 		this.context.getBean(TransactionManager.class);
 		this.context.getBean(XADataSourceWrapper.class);
 		this.context.getBean(XAConnectionFactoryWrapper.class);
-		this.context.getBean(BitronixDependentBeanFactoryPostProcessor.class);
+		this.context.getBean(org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor.class);
 		this.context.getBean(JtaTransactionManager.class);
 	}
 
@@ -178,7 +175,8 @@ class JtaAutoConfigurationTests {
 				"spring.jta.bitronix.connectionfactory.maxPoolSize:10").applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
-		PoolingConnectionFactoryBean connectionFactory = this.context.getBean(PoolingConnectionFactoryBean.class);
+		org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean connectionFactory = this.context
+				.getBean(org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean.class);
 		assertThat(connectionFactory.getMinPoolSize()).isEqualTo(5);
 		assertThat(connectionFactory.getMaxPoolSize()).isEqualTo(10);
 	}
@@ -205,7 +203,8 @@ class JtaAutoConfigurationTests {
 				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
-		PoolingDataSourceBean dataSource = this.context.getBean(PoolingDataSourceBean.class);
+		org.springframework.boot.jta.bitronix.PoolingDataSourceBean dataSource = this.context
+				.getBean(org.springframework.boot.jta.bitronix.PoolingDataSourceBean.class);
 		assertThat(dataSource.getMinPoolSize()).isEqualTo(5);
 		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}

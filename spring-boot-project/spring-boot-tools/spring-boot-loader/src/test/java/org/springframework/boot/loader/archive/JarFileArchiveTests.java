@@ -148,6 +148,7 @@ class JarFileArchiveTests {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
 		try (JarFileArchive zip64Archive = new JarFileArchive(file)) {
+			@SuppressWarnings("deprecation")
 			Iterator<Entry> entries = zip64Archive.iterator();
 			for (int i = 0; i < 65537; i++) {
 				assertThat(entries.hasNext()).as(i + "nth file is present").isTrue();

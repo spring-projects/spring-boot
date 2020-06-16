@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import io.rsocket.RSocketFactory;
-import io.rsocket.RSocketFactory.ServerRSocketFactory;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
@@ -39,7 +37,6 @@ import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 
@@ -62,7 +59,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private Duration lifecycleTimeout;
 
-	private List<ServerRSocketFactoryProcessor> socketFactoryProcessors = new ArrayList<>();
+	@SuppressWarnings("deprecation")
+	private List<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> socketFactoryProcessors = new ArrayList<>();
 
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
@@ -90,29 +88,32 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	/**
-	 * Set {@link ServerRSocketFactoryProcessor}s that should be called to process the
-	 * {@link ServerRSocketFactory} while building the server. Calling this method will
-	 * replace any existing processors.
+	 * Set {@link org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor}s
+	 * that should be called to process the
+	 * {@link io.rsocket.RSocketFactory.ServerRSocketFactory} while building the server.
+	 * Calling this method will replace any existing processors.
 	 * @param socketFactoryProcessors processors to apply before the server starts
 	 * @deprecated in favor of {@link #setRSocketServerCustomizers(Collection)} as of
 	 * 2.2.7
 	 */
 	@Deprecated
 	public void setSocketFactoryProcessors(
-			Collection<? extends ServerRSocketFactoryProcessor> socketFactoryProcessors) {
+			Collection<? extends org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> socketFactoryProcessors) {
 		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
 		this.socketFactoryProcessors = new ArrayList<>(socketFactoryProcessors);
 	}
 
 	/**
-	 * Add {@link ServerRSocketFactoryProcessor}s that should be called to process the
-	 * {@link ServerRSocketFactory} while building the server.
+	 * Add {@link org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor}s
+	 * that should be called to process the
+	 * {@link io.rsocket.RSocketFactory.ServerRSocketFactory} while building the server.
 	 * @param socketFactoryProcessors processors to apply before the server starts
 	 * @deprecated in favor of
 	 * {@link #addRSocketServerCustomizers(RSocketServerCustomizer...)} as of 2.2.7
 	 */
 	@Deprecated
-	public void addSocketFactoryProcessors(ServerRSocketFactoryProcessor... socketFactoryProcessors) {
+	public void addSocketFactoryProcessors(
+			org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor... socketFactoryProcessors) {
 		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
 		this.socketFactoryProcessors.addAll(Arrays.asList(socketFactoryProcessors));
 	}
@@ -154,7 +155,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		io.rsocket.core.RSocketServer server = io.rsocket.core.RSocketServer.create(socketAcceptor);
-		RSocketFactory.ServerRSocketFactory factory = new ServerRSocketFactory(server);
+		io.rsocket.RSocketFactory.ServerRSocketFactory factory = new io.rsocket.RSocketFactory.ServerRSocketFactory(
+				server);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 		this.socketFactoryProcessors.forEach((processor) -> processor.process(factory));
 		Mono<CloseableChannel> starter = server.bind(transport);

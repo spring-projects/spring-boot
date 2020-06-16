@@ -10,7 +10,9 @@ description = "Spring Boot Docs"
 
 configurations {
 	actuatorApiDocumentation
-	asciidoctorExtensions
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
@@ -40,7 +42,6 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
-	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
@@ -189,6 +190,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
 					"spring-data-solr-version": versionConstraints["org.springframework.data:spring-data-solr"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-security-version": versionConstraints["org.springframework.security:spring-security-core"],
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]

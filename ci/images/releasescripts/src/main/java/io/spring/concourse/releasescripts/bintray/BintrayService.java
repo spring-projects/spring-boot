@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -73,19 +74,35 @@ public class BintrayService {
 		this.restTemplate = builder.build();
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout) {
-		return isDistributionComplete(releaseInfo, requiredDigets, timeout, Duration.ofSeconds(20));
+	public boolean isDistributionStarted(ReleaseInfo releaseInfo) {
+		logger.debug("Checking if distribution is started");
+		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 1);
+		try {
+			logger.debug("Checking bintray");
+			this.restTemplate.exchange(request, PackageFile[].class).getBody();
+			return true;
+		}
+		catch (HttpClientErrorException ex) {
+			if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
+				throw ex;
+			}
+			return false;
+		}
 	}
 
-	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigets, Duration timeout,
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout) {
+		return isDistributionComplete(releaseInfo, requiredDigests, timeout, Duration.ofSeconds(20));
+	}
+
+	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout,
 			Duration pollInterval) {
 		logger.debug("Checking if distribution is complete");
-		RequestEntity<Void> request = getRequest(releaseInfo, 0);
+		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 0);
 		try {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
 				logger.debug("Checking bintray");
 				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
-				return hasPublishedAll(published, requiredDigets);
+				return hasPublishedAll(published, requiredDigests);
 			});
 		}
 		catch (ConditionTimeoutException ex) {
@@ -95,12 +112,12 @@ public class BintrayService {
 		return true;
 	}
 
-	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigets) {
+	private boolean hasPublishedAll(PackageFile[] published, Set<String> requiredDigests) {
 		if (published == null || published.length == 0) {
 			logger.debug("Bintray returned no published files");
 			return false;
 		}
-		Set<String> remaining = new HashSet<>(requiredDigets);
+		Set<String> remaining = new HashSet<>(requiredDigests);
 		for (PackageFile publishedFile : published) {
 			logger.debug(
 					"Found published file " + publishedFile.getName() + " with digest " + publishedFile.getSha256());
@@ -115,7 +132,7 @@ public class BintrayService {
 		return false;
 	}
 
-	private RequestEntity<Void> getRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
+	private RequestEntity<Void> getPackageFilesRequest(ReleaseInfo releaseInfo, int includeUnpublished) {
 		return RequestEntity.get(URI.create(BINTRAY_URL + "packages/" + this.bintrayProperties.getSubject() + "/"
 				+ this.bintrayProperties.getRepo() + "/" + releaseInfo.getGroupId() + "/versions/"
 				+ releaseInfo.getVersion() + "/files?include_unpublished=" + includeUnpublished)).build();

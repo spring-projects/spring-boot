@@ -655,7 +655,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
@@ -830,7 +830,7 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverReactiveHealthIndicator.java[`CassandraDriverReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
@@ -1820,7 +1820,7 @@ Spring Boot registers the following core metrics when applicable:
 ** Number of classes loaded/unloaded
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer metrics
+* Kafka consumer and producer metrics
 * Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
@@ -1879,7 +1879,7 @@ By default, Spring MVC-related metrics are tagged with the following information
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide one or more `@Bean`s that implement `WebMvcTagsContributor`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebMvcTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 
@@ -1913,7 +1913,7 @@ By default, WebFlux-related metrics are tagged with the following information:
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide one or more `@Bean`s that implement `WebFluxTagsContributor`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebFluxTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 
@@ -2066,6 +2066,13 @@ You can enable that on the auto-configured `EntityManagerFactory` as shown in th
 [[production-ready-metrics-rabbitmq]]
 ==== RabbitMQ Metrics
 Auto-configuration will enable the instrumentation of all available RabbitMQ connection factories with a metric named `rabbitmq`.
+
+
+
+[[production-ready-metrics-kafka]]
+==== Kafka Metrics
+Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory respectively.
+For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 
 

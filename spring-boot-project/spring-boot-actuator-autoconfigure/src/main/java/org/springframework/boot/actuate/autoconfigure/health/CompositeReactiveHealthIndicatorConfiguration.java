@@ -19,11 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -40,15 +36,16 @@ import org.springframework.core.ResolvableType;
 public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends ReactiveHealthIndicator, S> {
 
 	@Autowired
-	private HealthAggregator healthAggregator;
+	private org.springframework.boot.actuate.health.HealthAggregator healthAggregator;
 
 	protected ReactiveHealthIndicator createHealthIndicator(Map<String, S> beans) {
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
-		ReactiveHealthIndicatorRegistry registry = new DefaultReactiveHealthIndicatorRegistry();
+		org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry registry = new org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry();
 		beans.forEach((name, source) -> registry.register(name, createHealthIndicator(source)));
-		return new CompositeReactiveHealthIndicator(this.healthAggregator, registry);
+		return new org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator(this.healthAggregator,
+				registry);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoCo
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointId;
-import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -208,7 +207,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
-					List<EndpointId> endpointIds = endpoints.stream().map(ExposableEndpoint::getEndpointId)
+					List<EndpointId> endpointIds = endpoints.stream().map(ExposableWebEndpoint::getEndpointId)
 							.collect(Collectors.toList());
 					assertThat(endpointIds).contains(EndpointId.of("test"));
 				});

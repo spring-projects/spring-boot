@@ -54,10 +54,6 @@ gradlePlugin {
 			id = "org.springframework.boot.conventions"
 			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
 		}
-		dependencyManagementPlugin {
-			id = "org.springframework.boot.internal-dependency-management"
-			implementationClass = "org.springframework.boot.build.InternalDependencyManagementPlugin"
-		}
 		deployedPlugin {
 			id = "org.springframework.boot.deployed"
 			implementationClass = "org.springframework.boot.build.DeployedPlugin"
