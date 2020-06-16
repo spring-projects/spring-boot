@@ -1325,7 +1325,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "19.3.0.0") {
+	library("Oracle Database", "19.6.0.0") {
 		group("com.oracle.database.ha") {
 			modules = [
 				"ons",
