@@ -769,7 +769,7 @@ bom {
 			]
 		}
 	}
-	library("Javax Money", "1.0.3") {
+	library("Javax Money", "1.1") {
 		group("javax.money") {
 			modules = [
 				"money-api"
