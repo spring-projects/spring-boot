@@ -145,13 +145,13 @@ class ServerPropertiesTests {
 		assertThat(accesslog.isRenameOnRotate()).isTrue();
 		assertThat(accesslog.isIpv6Canonical()).isTrue();
 		assertThat(accesslog.isRequestAttributesEnabled()).isTrue();
-		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
-		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
-		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getRemoteip().getRemoteIpHeader()).isEqualTo("Remote-Ip");
+		assertThat(tomcat.getRemoteip().getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
+		assertThat(tomcat.getRemoteip().getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
-		assertThat(tomcat.getUseRelativeRedirects()).isTrue();
+		assertThat(tomcat.isUseRelativeRedirects()).isTrue();
 	}
 
 	@Test
@@ -444,13 +444,13 @@ class ServerPropertiesTests {
 
 	@Test
 	void tomcatInternalProxiesMatchesDefault() {
-		assertThat(this.properties.getTomcat().getInternalProxies())
+		assertThat(this.properties.getTomcat().getRemoteip().getInternalProxies())
 				.isEqualTo(new RemoteIpValve().getInternalProxies());
 	}
 
 	@Test
 	void tomcatUseRelativeRedirectsDefaultsToFalse() {
-		assertThat(this.properties.getTomcat().getUseRelativeRedirects()).isFalse();
+		assertThat(this.properties.getTomcat().isUseRelativeRedirects()).isFalse();
 	}
 
 	@Test

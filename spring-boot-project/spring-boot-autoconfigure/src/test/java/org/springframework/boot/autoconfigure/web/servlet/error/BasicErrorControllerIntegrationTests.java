@@ -136,6 +136,7 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	void testErrorForMachineClientAlwaysParamsWithoutMessage() {
 		load("--server.error.include-exception=true", "--server.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/noMessage"), Map.class);

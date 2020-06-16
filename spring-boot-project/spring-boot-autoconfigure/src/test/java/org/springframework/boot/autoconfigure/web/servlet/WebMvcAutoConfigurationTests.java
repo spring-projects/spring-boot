@@ -77,7 +77,6 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
-import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -744,6 +743,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void defaultPathMatching() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
@@ -754,6 +754,7 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	@Deprecated
+	@SuppressWarnings("deprecation")
 	void useSuffixPatternMatch() {
 		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
 				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
@@ -807,12 +808,15 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void contentNegotiationStrategySkipsPathExtension() throws Exception {
 		ContentNegotiationStrategy delegate = mock(ContentNegotiationStrategy.class);
 		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy(
 				delegate);
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute(PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP", Boolean.TRUE);
+		request.setAttribute(
+				org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP",
+				Boolean.TRUE);
 		ServletWebRequest webRequest = new ServletWebRequest(request);
 		List<MediaType> mediaTypes = strategy.resolveMediaTypes(webRequest);
 		assertThat(mediaTypes).containsOnly(MediaType.ALL);
@@ -1128,6 +1132,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomConfigurer implements WebMvcConfigurer {
 
 		@Override
+		@SuppressWarnings("deprecation")
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			configurer.favorPathExtension(true);
 		}

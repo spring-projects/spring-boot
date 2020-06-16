@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -56,7 +57,13 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters} and, when
+ * compiling with Java 8, to:
+ * <ul>
+ * <li>Treat warnings as errors
+ * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
+ * warnings
+ * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
  * files and the following manifest entries:
  * <ul>
@@ -148,6 +155,10 @@ class JavaConventions {
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
+			}
+			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+						"-Xlint:varargs"));
 			}
 		});
 	}

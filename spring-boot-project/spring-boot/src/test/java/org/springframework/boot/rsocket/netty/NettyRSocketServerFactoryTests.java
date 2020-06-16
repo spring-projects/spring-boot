@@ -25,7 +25,6 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
-import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
@@ -37,7 +36,6 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -131,20 +129,20 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	void serverProcessors() {
 		NettyRSocketServerFactory factory = getFactory();
-		ServerRSocketFactoryProcessor[] processors = new ServerRSocketFactoryProcessor[2];
+		org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor[] processors = new org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor[2];
 		for (int i = 0; i < processors.length; i++) {
-			processors[i] = mock(ServerRSocketFactoryProcessor.class);
-			given(processors[i].process(any(RSocketFactory.ServerRSocketFactory.class)))
+			processors[i] = mock(org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor.class);
+			given(processors[i].process(any(io.rsocket.RSocketFactory.ServerRSocketFactory.class)))
 					.will((invocation) -> invocation.getArgument(0));
 		}
 		factory.setSocketFactoryProcessors(Arrays.asList(processors));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		InOrder ordered = inOrder((Object[]) processors);
-		for (ServerRSocketFactoryProcessor processor : processors) {
-			ordered.verify(processor).process(any(RSocketFactory.ServerRSocketFactory.class));
+		for (org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor processor : processors) {
+			ordered.verify(processor).process(any(io.rsocket.RSocketFactory.ServerRSocketFactory.class));
 		}
 	}
 
@@ -200,6 +198,7 @@ class NettyRSocketServerFactoryTests {
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
 
 		@Override
+		@SuppressWarnings("deprecation")
 		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
 			return Mono.just(new RSocket() {
 				@Override
