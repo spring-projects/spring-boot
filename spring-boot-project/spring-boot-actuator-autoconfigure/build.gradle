@@ -5,22 +5,21 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
     id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	asciidoctorExtensions
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
 	documentation
 }
 
 dependencies {
-	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
 	api(project(":spring-boot-project:spring-boot"))
@@ -29,7 +28,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("ch.qos.logback:logback-classic")
 	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")

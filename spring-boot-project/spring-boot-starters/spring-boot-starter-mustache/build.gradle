@@ -5,7 +5,6 @@ plugins {
 description = "Starter for building web applications using Mustache views"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("com.samskivert:jmustache")
 }

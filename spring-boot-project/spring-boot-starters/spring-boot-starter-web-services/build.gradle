@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using Spring Web Services"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 	api("com.sun.xml.messaging.saaj:saaj-impl")
 	api("jakarta.xml.ws:jakarta.xml.ws-api") {

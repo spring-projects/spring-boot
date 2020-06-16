@@ -10,7 +10,9 @@ description = "Spring Boot Docs"
 
 configurations {
 	actuatorApiDocumentation
-	asciidoctorExtensions
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
@@ -40,7 +42,6 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
-	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))

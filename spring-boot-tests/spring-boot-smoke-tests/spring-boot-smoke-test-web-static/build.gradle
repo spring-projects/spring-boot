@@ -5,6 +5,12 @@ plugins {
 
 description = "Spring Boot web static smoke test"
 
+configurations {
+	providedRuntime {
+		extendsFrom dependencyManagement
+	}
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
