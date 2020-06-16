@@ -45,6 +45,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -88,17 +89,16 @@ class LiveReloadServerTests {
 	void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
-		Thread.sleep(200);
-		assertThat(handler.getMessages().get(0)).contains("http://livereload.com/protocols/official-7");
-		assertThat(handler.getMessages().get(1)).contains("command\":\"reload\"");
+		await().atMost(Duration.ofSeconds(1)).until(handler::getMessages,
+				(msgs) -> msgs.get(0).contains("http://livereload.com/protocols/official-7")
+						&& msgs.get(1).contains("command\":\"reload\""));
 	}
 
 	@Test
 	void pingPong() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.sendMessage(new PingMessage());
-		Thread.sleep(200);
-		assertThat(handler.getPongCount()).isEqualTo(1);
+		await().atMost(Duration.ofSeconds(1)).until(handler::getPongCount, is(1));
 	}
 
 	@Test
@@ -117,8 +117,7 @@ class LiveReloadServerTests {
 	void serverClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.stop();
-		Thread.sleep(200);
-		assertThat(handler.getCloseStatus().getCode()).isEqualTo(1006);
+		await().atMost(Duration.ofSeconds(1)).until(() -> handler.getCloseStatus().getCode(), is(1006));
 	}
 
 	private LiveReloadWebSocketHandler connect() throws Exception {
