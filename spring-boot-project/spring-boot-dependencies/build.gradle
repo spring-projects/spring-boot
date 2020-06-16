@@ -811,7 +811,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "3.0.8") {
+	library("Jaybird", "3.0.9") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird-jdk17",
