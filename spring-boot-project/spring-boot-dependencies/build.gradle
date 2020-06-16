@@ -1176,7 +1176,7 @@ bom {
 			]
 		}
 	}
-	library("Maven War Plugin", "3.2.3") {
+	library("Maven War Plugin", "3.3.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-war-plugin"
