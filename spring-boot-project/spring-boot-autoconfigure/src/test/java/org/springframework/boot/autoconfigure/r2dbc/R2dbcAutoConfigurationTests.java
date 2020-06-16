@@ -63,16 +63,13 @@ class R2dbcAutoConfigurationTests {
 
 	@Test
 	void configureWithUrlAndPoolPropertiesApplyProperties() {
-		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName(),
-				"spring.r2dbc.pool.initial-size=5",
-				"spring.r2dbc.pool.max-size=15",
-				"spring.r2dbc.pool.max-idle-time=1ms",
-				"spring.r2dbc.pool.max-life-time=2s",
-				"spring.r2dbc.pool.max-acquire-time=3m",
-				"spring.r2dbc.pool.max-create-connection-time=4h",
-				"spring.r2dbc.pool.validation-query=SELECT 1",
-				"spring.r2dbc.pool.validation-depth=remote"
-				).run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName(),
+						"spring.r2dbc.pool.initial-size=5", "spring.r2dbc.pool.max-size=15",
+						"spring.r2dbc.pool.max-idle-time=1ms", "spring.r2dbc.pool.max-life-time=2s",
+						"spring.r2dbc.pool.max-acquire-time=3m", "spring.r2dbc.pool.max-create-connection-time=4h",
+						"spring.r2dbc.pool.validation-query=SELECT 1", "spring.r2dbc.pool.validation-depth=remote")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
 							.hasSingleBean(R2dbcProperties.class);
 					PoolMetrics poolMetrics = context.getBean(ConnectionPool.class).getMetrics().get();
