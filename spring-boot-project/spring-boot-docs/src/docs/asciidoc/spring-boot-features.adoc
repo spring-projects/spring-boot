@@ -7925,7 +7925,7 @@ If you do it that way, the library is not provided and, by default, Spring Boot 
 
 Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
 If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
-It is recommended to add the following dependency in a module that contains auto-configurations and exclude it in the `spring-boot-maven-plugin` to prevent the repacking task from adding the dependency to the build:
+It is recommended to add the following dependency in a module that contains auto-configurations and exclude it in the `spring-boot-maven-plugin` to prevent the repacking task from adding the dependency into the fat jar:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
