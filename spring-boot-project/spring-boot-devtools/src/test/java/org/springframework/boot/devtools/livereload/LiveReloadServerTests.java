@@ -90,7 +90,7 @@ class LiveReloadServerTests {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
 		await().atMost(Duration.ofSeconds(1)).until(handler::getMessages,
-				msgs -> msgs.get(0).contains("http://livereload.com/protocols/official-7")
+				(msgs) -> msgs.get(0).contains("http://livereload.com/protocols/official-7")
 						&& msgs.get(1).contains("command\":\"reload\""));
 	}
 
