@@ -86,11 +86,15 @@ class MavenPublishingConventions {
 		pom.getUrl().set("https://spring.io/projects/spring-boot");
 		pom.getName().set(project.provider(project::getName));
 		pom.getDescription().set(project.provider(project::getDescription));
-		pom.organization(this::customizeOrganization);
+		if (!isUserInherited(project)) {
+			pom.organization(this::customizeOrganization);
+		}
 		pom.licenses(this::customizeLicences);
 		pom.developers(this::customizeDevelopers);
-		pom.scm(this::customizeScm);
-		pom.issueManagement(this::customizeIssueManagement);
+		pom.scm((scm) -> customizeScm(scm, project));
+		if (!isUserInherited(project)) {
+			pom.issueManagement(this::customizeIssueManagement);
+		}
 	}
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
@@ -121,15 +125,22 @@ class MavenPublishingConventions {
 		});
 	}
 
-	private void customizeScm(MavenPomScm scm) {
-		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
-		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
+	private void customizeScm(MavenPomScm scm, Project project) {
+		if (!isUserInherited(project)) {
+			scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
+			scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
+		}
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
 	}
 
 	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
 		issueManagement.getSystem().set("GitHub");
 		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
+	}
+
+	private boolean isUserInherited(Project project) {
+		return "spring-boot-starter-parent".equals(project.getName())
+				|| "spring-boot-dependencies".equals(project.getName());
 	}
 
 }
