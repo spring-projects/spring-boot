@@ -32,7 +32,6 @@ import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverOption;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
-import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultProgrammaticDriverConfigLoaderBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -109,7 +108,7 @@ public class CassandraAutoConfiguration {
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
-				() -> cassandraConfiguration(properties), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
+				() -> cassandraConfiguration(properties));
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -131,9 +130,7 @@ public class CassandraAutoConfiguration {
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).to(
 				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
-		ConfigFactory.invalidateCaches();
-		return ConfigFactory.defaultOverrides().withFallback(options.build())
-				.withFallback(ConfigFactory.defaultReference()).resolve();
+		return options.build();
 	}
 
 	private void mapConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
@@ -206,8 +203,7 @@ public class CassandraAutoConfiguration {
 		private final Map<String, String> options = new LinkedHashMap<>();
 
 		private CassandraDriverOptions add(DriverOption option, String value) {
-			String key = createKeyFor(option);
-			this.options.put(key, value);
+			this.options.put(option.getPath(), value);
 			return this;
 		}
 
@@ -221,17 +217,13 @@ public class CassandraAutoConfiguration {
 
 		private CassandraDriverOptions add(DriverOption option, List<String> values) {
 			for (int i = 0; i < values.size(); i++) {
-				this.options.put(String.format("%s.%s", createKeyFor(option), i), values.get(i));
+				this.options.put(String.format("%s.%s", option.getPath(), i), values.get(i));
 			}
 			return this;
 		}
 
 		private Config build() {
 			return ConfigFactory.parseMap(this.options, "Environment");
-		}
-
-		private static String createKeyFor(DriverOption option) {
-			return String.format("%s.%s", DefaultDriverConfigLoader.DEFAULT_ROOT_PATH, option.getPath());
 		}
 
 	}
