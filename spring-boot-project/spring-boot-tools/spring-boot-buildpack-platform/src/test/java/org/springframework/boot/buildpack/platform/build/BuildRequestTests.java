@@ -100,9 +100,9 @@ public class BuildRequestTests {
 	@Test
 	void withBuilderWhenHasDigestUpdatesBuilder() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withBuilder(ImageReference
-				.of("spring/builder:@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
+				.of("spring/builder@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
 		assertThat(request.getBuilder().toString()).isEqualTo(
-				"docker.io/spring/builder:@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+				"docker.io/spring/builder@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
@@ -115,9 +115,9 @@ public class BuildRequestTests {
 	@Test
 	void withRunImageWhenHasDigestUpdatesRunImage() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withRunImage(ImageReference
-				.of("example.com/custom/run-image:@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
+				.of("example.com/custom/run-image@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
 		assertThat(request.getRunImage().toString()).isEqualTo(
-				"example.com/custom/run-image:@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+				"example.com/custom/run-image@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
