@@ -6,12 +6,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 def getConfigMetadataInputStreams() {
-	def mainMetadata = getClass().getClassLoader().getResources("META-INF/spring-configuration-metadata.json")
-	def additionalMetadata = getClass().getClassLoader().getResources("META-INF/additional-spring-configuration-metadata.json")
-	def streams = []
-	streams += mainMetadata.collect { new UrlResource(it).getInputStream() }
-	streams += additionalMetadata.collect { new UrlResource(it).getInputStream() }
-	return streams
+	return getClass().getClassLoader().getResources("META-INF/spring-configuration-metadata.json")
+			.collect { new UrlResource(it).getInputStream() }
 }
 
 def generateConfigMetadataDocumentation() {
