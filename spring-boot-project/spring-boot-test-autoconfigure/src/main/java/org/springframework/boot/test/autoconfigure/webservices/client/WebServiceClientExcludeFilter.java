@@ -36,7 +36,7 @@ public final class WebServiceClientExcludeFilter
 
 	protected WebServiceClientExcludeFilter(Class<?> testClass) {
 		super(testClass);
-		this.components = getAnnotation().getValue("components", Class[].class).orElse(new Class[0]);
+		this.components = getAnnotation().getValue("components", Class[].class).orElseGet(() -> new Class<?>[0]);
 	}
 
 	@Override

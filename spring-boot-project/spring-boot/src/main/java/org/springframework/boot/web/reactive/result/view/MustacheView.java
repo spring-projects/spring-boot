@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
-			Charset charset = getCharset(contentType).orElse(getDefaultCharset());
+			Charset charset = getCharset(contentType).orElseGet(this::getDefaultCharset);
 			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
 				template.execute(model, writer);
 				writer.flush();
