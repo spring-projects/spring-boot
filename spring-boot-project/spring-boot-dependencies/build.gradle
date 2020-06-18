@@ -932,6 +932,13 @@ bom {
 			]
 		}
 	}
+	library("Json-smart", "2.3") {
+		group("net.minidev") {
+			modules = [
+				"json-smart"
+			]
+		}
+	}
 	library("JsonAssert", "1.5.0") {
 		group("org.skyscreamer") {
 			modules = [
