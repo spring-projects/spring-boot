@@ -111,6 +111,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		File file = new File(tmpDir() + "/spring.log");
+		assertThat(output).doesNotContain("LOGBACK:");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(getLineWithText(output, "Hello world")).contains("INFO");
 		assertThat(file.exists()).isTrue();
