@@ -170,8 +170,6 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * this method will load candidates using {@link SpringFactoriesLoader} with
 	 * {@link #getSpringFactoriesLoaderFactoryClass()}.
 	 * @param metadata the source metadata
-	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
-	 * attributes}
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata) {
