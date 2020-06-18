@@ -123,9 +123,8 @@ class HazelcastClientConfiguration {
 					MethodType.methodType(void.class, InputStream.class, int.class));
 			MethodHandle configRecognizerConstructor = MethodHandles.publicLookup()
 					.findConstructor(configRecognizerClass, MethodType.methodType(void.class));
-			MethodHandle isRecognizedMethod = MethodHandles.publicLookup().findVirtual(
-					abstractConfigRecognizerClass, "isRecognized",
-					MethodType.methodType(boolean.class, configStreamClass));
+			MethodHandle isRecognizedMethod = MethodHandles.publicLookup().findVirtual(abstractConfigRecognizerClass,
+					"isRecognized", MethodType.methodType(boolean.class, configStreamClass));
 
 			Object configStream = configStreamConstructor.invoke(resource.getInputStream(), 4096);
 			Object configRecognizer = configRecognizerConstructor.invoke();
