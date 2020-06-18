@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link ImageName}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageNameTests {
 
@@ -99,11 +100,13 @@ class ImageNameTests {
 	void hashCodeAndEquals() {
 		ImageName n1 = ImageName.of("ubuntu");
 		ImageName n2 = ImageName.of("library/ubuntu");
-		ImageName n3 = ImageName.of("docker.io/library/ubuntu");
-		ImageName n4 = ImageName.of("index.docker.io/library/ubuntu");
-		ImageName n5 = ImageName.of("alpine");
-		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode()).isEqualTo(n4.hashCode());
-		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isEqualTo(n3).isEqualTo(n4).isNotEqualTo(n5);
+		ImageName n3 = ImageName.of("docker.io/ubuntu");
+		ImageName n4 = ImageName.of("docker.io/library/ubuntu");
+		ImageName n5 = ImageName.of("index.docker.io/library/ubuntu");
+		ImageName n6 = ImageName.of("alpine");
+		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode()).isEqualTo(n4.hashCode())
+				.isEqualTo(n5.hashCode());
+		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isEqualTo(n3).isEqualTo(n4).isNotEqualTo(n6);
 	}
 
 }

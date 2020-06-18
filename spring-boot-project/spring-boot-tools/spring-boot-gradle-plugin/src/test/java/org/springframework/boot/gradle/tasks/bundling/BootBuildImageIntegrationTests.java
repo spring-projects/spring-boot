@@ -135,6 +135,16 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).containsPattern("Builder lifecycle '.*' failed with status code");
 	}
 
+	@TestTemplate
+	void failsWithInvalidImageName() {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--imageName=example/Invalid-Image-Name");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
+				.containsPattern("example/Invalid-Image-Name");
+	}
+
 	private void writeMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/example");
 		examplePackage.mkdirs();
