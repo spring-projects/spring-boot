@@ -17,12 +17,13 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.config.XmlClientConfigBuilder;
-import com.hazelcast.client.config.YamlClientConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -95,26 +96,43 @@ class HazelcastClientConfiguration {
 				Resource resource = context.getResourceLoader().getResource(configLocation);
 				if (resource.exists()) {
 					try {
-						validateHazelcastClientConfig(resource);
-						return ConditionOutcome.match(startConditionMessage().foundExactly("property "
-								+ springHazelcastConfigProperty));
-					} catch (Exception e) {
-						return super.getResourceOutcome(context, metadata);
+						if (validateHazelcastClientConfig(resource)) {
+							return ConditionOutcome.match(
+									startConditionMessage().foundExactly("property " + springHazelcastConfigProperty));
+						}
+					}
+					catch (Throwable ex) {
+						return super.getMatchOutcome(context, metadata);
 					}
 				}
 			}
+
 			return super.getResourceOutcome(context, metadata);
 		}
 
-		private void validateHazelcastClientConfig(Resource resource)
-				throws IOException {
-			URL configUrl = resource.getURL();
-			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml")) {
-				new YamlClientConfigBuilder(configUrl).build();
-			} else if (configFileName.endsWith(".xml")) {
-				new XmlClientConfigBuilder(configUrl).build();
-			}
+		private boolean validateHazelcastClientConfig(Resource resource) throws Throwable {
+			// To provide support for both Hazelcast 3 and Hazelcast 4 at the same time,
+			// this method dynamically checks if the Hazelcast 4 specific classes are
+			// on the classpath and then resolves the right classes.
+			Class<?> configStreamClass = Class.forName("com.hazelcast.config.ConfigStream");
+			Class<?> abstractConfigRecognizerClass = Class
+					.forName("com.hazelcast.internal.config.AbstractConfigRecognizer");
+			Class<?> configRecognizerClass = Class.forName("com.hazelcast.client.config.ClientConfigRecognizer");
+
+			MethodHandle configStreamConstructor = MethodHandles.publicLookup().findConstructor(configStreamClass,
+					MethodType.methodType(void.class, InputStream.class, int.class));
+			MethodHandle configRecognizerConstructor = MethodHandles.publicLookup()
+					.findConstructor(configRecognizerClass, MethodType.methodType(void.class));
+			MethodHandle isRecognizedMethod = MethodHandles.publicLookup().findVirtual(
+					abstractConfigRecognizerClass, "isRecognized",
+					MethodType.methodType(boolean.class, configStreamClass));
+
+			Object configStream = configStreamConstructor.invoke(resource.getInputStream(), 4096);
+			Object configRecognizer = configRecognizerConstructor.invoke();
+
+			return (boolean) isRecognizedMethod.invoke(configRecognizer, configStream);
 		}
+
 	}
+
 }
