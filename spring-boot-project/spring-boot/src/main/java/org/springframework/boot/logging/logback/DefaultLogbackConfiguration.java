@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,7 @@ class DefaultLogbackConfiguration {
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config,
 			String logFile) {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
+		rollingPolicy.setContext(config.getContext());
 		rollingPolicy.setCleanHistoryOnStart(
 				this.patterns.getProperty("logging.file.clean-history-on-start", Boolean.class, false));
 		rollingPolicy.setFileNamePattern(
