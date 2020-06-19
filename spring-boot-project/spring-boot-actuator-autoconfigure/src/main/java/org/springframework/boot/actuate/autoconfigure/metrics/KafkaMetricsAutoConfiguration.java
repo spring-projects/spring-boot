@@ -43,6 +43,7 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -76,7 +77,7 @@ public class KafkaMetricsAutoConfiguration {
 
 		@Bean
 		StreamsBuilderFactoryBeanCustomizer kafkaStreamsProducerMetrics(MeterRegistry meterRegistry) {
-			return (factoryBean) -> factoryBean.setListener(new KafkaStreamsMicrometerListener(meterRegistry));
+			return (factoryBean) -> factoryBean.addListener(new KafkaStreamsMicrometerListener(meterRegistry));
 		}
 
 	}

@@ -30,7 +30,6 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.MicrometerConsumerListener;
 import org.springframework.kafka.core.MicrometerProducerListener;
 import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,9 +73,8 @@ class KafkaMetricsAutoConfigurationTests {
 				.withPropertyValues("spring.application.name=my-test-app").with(MetricsRun.simple()).run((context) -> {
 					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
 							.getBean(StreamsBuilderFactoryBean.class);
-					StreamsBuilderFactoryBean.Listener listener = (StreamsBuilderFactoryBean.Listener) ReflectionTestUtils
-							.getField(streamsBuilderFactoryBean, "listener");
-					assertThat(listener).isInstanceOf(KafkaStreamsMicrometerListener.class);
+					assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1)
+							.hasOnlyElementsOfTypes(KafkaStreamsMicrometerListener.class);
 				});
 	}
 
@@ -87,9 +85,7 @@ class KafkaMetricsAutoConfigurationTests {
 				.withPropertyValues("spring.application.name=my-test-app").run((context) -> {
 					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
 							.getBean(StreamsBuilderFactoryBean.class);
-					StreamsBuilderFactoryBean.Listener listener = (StreamsBuilderFactoryBean.Listener) ReflectionTestUtils
-							.getField(streamsBuilderFactoryBean, "listener");
-					assertThat(listener).isNotInstanceOf(KafkaStreamsMicrometerListener.class);
+					assertThat(streamsBuilderFactoryBean.getListeners()).isEmpty();
 				});
 	}
 
