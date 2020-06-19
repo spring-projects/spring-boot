@@ -75,7 +75,7 @@ public class KafkaMetricsAutoConfiguration {
 	static class KafkaStreamsMetricsAutoConfiguration {
 
 		@Bean
-		public StreamsBuilderFactoryBeanCustomizer kafkaStreamsProducerMetrics(MeterRegistry meterRegistry) {
+		StreamsBuilderFactoryBeanCustomizer kafkaStreamsProducerMetrics(MeterRegistry meterRegistry) {
 			return (factoryBean) -> factoryBean.setListener(new KafkaStreamsMicrometerListener(meterRegistry));
 		}
 
