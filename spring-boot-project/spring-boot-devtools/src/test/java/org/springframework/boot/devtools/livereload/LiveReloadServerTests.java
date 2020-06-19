@@ -23,6 +23,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -89,16 +90,18 @@ class LiveReloadServerTests {
 	void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
-		await().atMost(Duration.ofSeconds(1)).until(handler::getMessages,
-				(msgs) -> msgs.get(0).contains("http://livereload.com/protocols/official-7")
-						&& msgs.get(1).contains("command\":\"reload\""));
+		List<String> messages = await().atMost(Duration.ofSeconds(10)).until(handler::getMessages,
+				(msgs) -> msgs.size() == 2);
+		assertThat(messages.get(0)).contains("http://livereload.com/protocols/official-7");
+		assertThat(messages.get(1)).contains("command\":\"reload\"");
+
 	}
 
 	@Test
 	void pingPong() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.sendMessage(new PingMessage());
-		await().atMost(Duration.ofSeconds(1)).until(handler::getPongCount, is(1));
+		await().atMost(Duration.ofSeconds(10)).until(handler::getPongCount, is(1));
 	}
 
 	@Test
@@ -117,7 +120,9 @@ class LiveReloadServerTests {
 	void serverClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.stop();
-		await().atMost(Duration.ofSeconds(1)).until(() -> handler.getCloseStatus().getCode(), is(1006));
+		CloseStatus closeStatus = await().atMost(Duration.ofSeconds(10)).until(handler::getCloseStatus,
+				Objects::nonNull);
+		assertThat(closeStatus.getCode()).isEqualTo(1006);
 	}
 
 	private LiveReloadWebSocketHandler connect() throws Exception {
