@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private final long timeToLive;
 
-	private final Map<ApiVersion, CachedResponse> cachedResponses;
+	private final Map<CacheKey, CachedResponse> cachedResponses;
 
 	/**
 	 * Create a new instance with the target {@link OperationInvoker} to use to compute
@@ -78,19 +79,17 @@ public class CachingOperationInvoker implements OperationInvoker {
 		}
 		long accessTime = System.currentTimeMillis();
 		ApiVersion contextApiVersion = context.getApiVersion();
-		CachedResponse cached = this.cachedResponses.get(contextApiVersion);
+		CacheKey cacheKey = new CacheKey(contextApiVersion, context.getSecurityContext().getPrincipal());
+		CachedResponse cached = this.cachedResponses.get(cacheKey);
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
 			Object response = this.invoker.invoke(context);
 			cached = createCachedResponse(response, accessTime);
-			this.cachedResponses.put(contextApiVersion, cached);
+			this.cachedResponses.put(cacheKey, cached);
 		}
 		return cached.getResponse();
 	}
 
 	private boolean hasInput(InvocationContext context) {
-		if (context.getSecurityContext().getPrincipal() != null) {
-			return true;
-		}
 		Map<String, Object> arguments = context.getArguments();
 		if (!ObjectUtils.isEmpty(arguments)) {
 			return arguments.values().stream().anyMatch(Objects::nonNull);
@@ -163,6 +162,41 @@ public class CachingOperationInvoker implements OperationInvoker {
 				return ((Flux<?>) response).cache(Duration.ofMillis(timeToLive));
 			}
 			return response;
+		}
+
+	}
+
+	private static final class CacheKey {
+
+		private final ApiVersion apiVersion;
+
+		private final Principal principal;
+
+		private CacheKey(ApiVersion apiVersion, Principal principal) {
+			this.principal = principal;
+			this.apiVersion = apiVersion;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			CacheKey other = (CacheKey) obj;
+			return this.apiVersion.equals(other.apiVersion)
+					&& ObjectUtils.nullSafeEquals(this.principal, other.principal);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + this.apiVersion.hashCode();
+			result = prime * result + ObjectUtils.nullSafeHashCode(this.principal);
+			return result;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import kotlin.reflect.KFunction;
 import kotlin.reflect.KParameter;
@@ -34,6 +36,7 @@ import org.springframework.core.KotlinDetector;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.util.Assert;
 
 /**
@@ -65,7 +68,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		for (ConstructorParameter parameter : parameters) {
 			Object arg = parameter.bind(propertyBinder);
 			bound = bound || arg != null;
-			arg = (arg != null) ? arg : parameter.getDefaultValue(context.getConverter());
+			arg = (arg != null) ? arg : getDefaultValue(context, parameter);
 			args.add(arg);
 		}
 		context.clearConfigurationProperty();
@@ -82,9 +85,61 @@ class ValueObjectBinder implements DataObjectBinder {
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<Object> args = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
-			args.add(parameter.getDefaultValue(context.getConverter()));
+			args.add(getDefaultValue(context, parameter));
 		}
 		return valueObject.instantiate(args);
+	}
+
+	private <T> T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
+		ResolvableType type = parameter.getType();
+		Annotation[] annotations = parameter.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof DefaultValue) {
+				String[] defaultValue = ((DefaultValue) annotation).value();
+				if (defaultValue.length == 0) {
+					return getNewInstanceIfPossible(context, type);
+				}
+				return convertDefaultValue(context.getConverter(), defaultValue, type, annotations);
+			}
+		}
+		return null;
+	}
+
+	private <T> T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
+			Annotation[] annotations) {
+		try {
+			return converter.convert(defaultValue, type, annotations);
+		}
+		catch (ConversionException ex) {
+			// Try again in case ArrayToObjectConverter is not in play
+			if (defaultValue.length == 1) {
+				return converter.convert(defaultValue[0], type, annotations);
+			}
+			throw ex;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getNewInstanceIfPossible(Binder.Context context, ResolvableType type) {
+		Class<T> resolved = (Class<T>) type.resolve();
+		Assert.state(resolved == null || isEmptyDefaultValueAllowed(resolved),
+				() -> "Parameter of type " + type + " must have a non-empty default value.");
+		T instance = create(Bindable.of(type), context);
+		if (instance != null) {
+			return instance;
+		}
+		return (resolved != null) ? BeanUtils.instantiateClass(resolved) : null;
+	}
+
+	private boolean isEmptyDefaultValueAllowed(Class<?> type) {
+		if (type.isPrimitive() || type.isEnum() || isAggregate(type) || type.getName().startsWith("java.lang")) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isAggregate(Class<?> type) {
+		return type.isArray() || Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -228,17 +283,16 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.annotations = annotations;
 		}
 
-		Object getDefaultValue(BindConverter converter) {
-			for (Annotation annotation : this.annotations) {
-				if (annotation instanceof DefaultValue) {
-					return converter.convert(((DefaultValue) annotation).value(), this.type, this.annotations);
-				}
-			}
-			return null;
-		}
-
 		Object bind(DataObjectPropertyBinder propertyBinder) {
 			return propertyBinder.bindProperty(this.name, Bindable.of(this.type).withAnnotations(this.annotations));
+		}
+
+		Annotation[] getAnnotations() {
+			return this.annotations;
+		}
+
+		ResolvableType getType() {
+			return this.type;
 		}
 
 	}

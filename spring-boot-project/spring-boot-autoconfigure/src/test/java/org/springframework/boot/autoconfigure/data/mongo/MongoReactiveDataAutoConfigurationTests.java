@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,8 +48,14 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	void gridFsTemplateExists() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class));
+	void whenNoGridFsDatabaseIsConfiguredTheGridFsTemplateUsesTheMainDatabase() {
+		this.contextRunner.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("test"));
+	}
+
+	@Test
+	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid")
+				.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
 	}
 
 	@Test
@@ -54,6 +63,14 @@ class MongoReactiveDataAutoConfigurationTests {
 		ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
 				.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
+	}
+
+	private String grisFsTemplateDatabaseName(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
+		ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
+		ReactiveMongoDatabaseFactory factory = (ReactiveMongoDatabaseFactory) ReflectionTestUtils.getField(template,
+				"dbFactory");
+		return factory.getMongoDatabase().block().getName();
 	}
 
 }

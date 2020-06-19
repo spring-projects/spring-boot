@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param endpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
+	@SuppressWarnings("deprecation")
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
 		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
@@ -102,6 +103,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 
+	@SuppressWarnings("deprecation")
 	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping, String[] patterns) {
 		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(patterns, null, null,
 				useSuffixPatternMatch(), useTrailingSlashMatch(), null);

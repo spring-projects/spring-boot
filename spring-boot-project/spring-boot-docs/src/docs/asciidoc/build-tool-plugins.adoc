@@ -14,153 +14,17 @@ If you are just getting started, you might want to read "`<<using-spring-boot.ad
 The Spring Boot Maven Plugin provides Spring Boot support in Maven, letting you package executable jar or war archives and run an application "`in-place`".
 To use it, you must use Maven 3.2 (or later).
 
-NOTE: See the {spring-boot-maven-plugin-docs}[Spring Boot Maven Plugin Documentation] for complete plugin documentation.
+Please refer to the plugin's documentation to learn more:
 
-
-
-[[build-tool-plugins-include-maven-plugin]]
-=== Including the Plugin
-To use the Spring Boot Maven Plugin, include the appropriate XML in the `plugins` section of your `pom.xml`, as shown in the following example:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-		<modelVersion>4.0.0</modelVersion>
-		<!-- ... -->
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{spring-boot-version}</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>repackage</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
-----
-
-The preceding configuration repackages a jar or war that is built during the `package` phase of the Maven lifecycle.
-The following example shows both the repackaged jar as well as the original jar in the `target` directory:
-
-[indent=0]
-----
-	$ mvn package
-	$ ls target/*.jar
-	target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original
-----
-
-
-If you do not include the `<execution/>` configuration, as shown in the prior example, you can run the plugin on its own (but only if the package goal is used as well), as shown in the following example:
-
-[indent=0]
-----
-	$ mvn package spring-boot:repackage
-	$ ls target/*.jar
-	target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original
-----
-
-If you use a milestone or snapshot release, you also need to add the appropriate `pluginRepository` elements, as shown in the following listing:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<url>https://repo.spring.io/snapshot</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<url>https://repo.spring.io/milestone</url>
-		</pluginRepository>
-	</pluginRepositories>
-----
-
-
-
-[[build-tool-plugins-maven-packaging]]
-=== Packaging Executable Jar and War Files
-Once `spring-boot-maven-plugin` has been included in your `pom.xml`, it automatically tries to rewrite archives to make them executable by using the `spring-boot:repackage` goal.
-You should configure your project to build a jar or war (as appropriate) by using the usual `packaging` element, as shown in the following example:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-		<!-- ... -->
-		<packaging>jar</packaging>
-		<!-- ... -->
-	</project>
-----
-
-Your existing archive is enhanced by Spring Boot during the `package` phase.
-The main class that you want to launch can be specified either by using a configuration option, as shown below, or by adding a `Main-Class` attribute to the manifest.
-If you do not specify a main class, the plugin searches for a class with a `public static void main(String[] args)` method.
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<plugin>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-maven-plugin</artifactId>
-		<configuration>
-			<mainClass>com.example.app.Main</mainClass>
-		</configuration>
-	</plugin>
-----
-
-
-To build and run a project artifact, you can type the following:
-
-[indent=0]
-----
-	$ mvn package
-	$ java -jar target/mymodule-0.0.1-SNAPSHOT.jar
-----
-
-To build a war file that is both executable and deployable into an external container, you need to mark the embedded container dependencies as "`provided`", as shown in the following example:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-		<!-- ... -->
-		<packaging>war</packaging>
-		<!-- ... -->
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-web</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-tomcat</artifactId>
-				<scope>provided</scope>
-			</dependency>
-			<!-- ... -->
-		</dependencies>
-	</project>
-----
-
-TIP: See the "`<<howto.adoc#howto-create-a-deployable-war-file>>`" section for more details on how to create a deployable war file.
-
-Advanced configuration options and examples are available in the {spring-boot-maven-plugin-docs}[plugin info page].
-
+* Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
+* {spring-boot-maven-plugin-api}[API]
 
 
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle Plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
-It requires Gradle 6.x (5.6 is also supported but this support is deprecated and will be removed in a future release).
+It requires Gradle 6 (6.3 or later).
+Gradle 5.6.x is also supported but this support is deprecated and will be removed in a future release.
 Please refer to the plugin's documentation to learn more:
 
 * Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
@@ -187,7 +51,7 @@ You need to remember to start Ant using the `-lib` option, as shown in the follo
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ ant -lib <folder containing spring-boot-antlib-{spring-boot-version}.jar>
+	$ ant -lib <directory containing spring-boot-antlib-{spring-boot-version}.jar>
 ----
 
 TIP: The "`Using Spring Boot`" section includes a more complete example of <<using-spring-boot.adoc#using-boot-ant, using Apache Ant with `spring-boot-antlib`>>.
@@ -204,7 +68,7 @@ Once the `spring-boot-antlib` namespace has been declared, the following additio
 
 
 [[spring-boot-ant-exejar]]
-==== `spring-boot:exejar`
+==== Using the "`exejar`" Task
 You can use the `exejar` task to create a Spring Boot executable jar.
 The following attributes are supported by the task:
 
@@ -272,7 +136,7 @@ This section shows two examples of Ant tasks.
 
 
 [[spring-boot-ant-findmainclass]]
-=== `spring-boot:findmainclass`
+=== Using the "`findmainclass`" Task
 The `findmainclass` task is used internally by `exejar` to locate a class declaring a `main`.
 If necessary, you can also use this task directly in your build.
 The following attributes are supported:

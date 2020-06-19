@@ -21,8 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.HandlerMapping;
@@ -39,12 +39,13 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Michael McFadyen
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  */
 class WebFluxTagsTests {
 
 	private MockServerWebExchange exchange;
 
-	private PathPatternParser parser = new PathPatternParser();
+	private final PathPatternParser parser = new PathPatternParser();
 
 	@BeforeEach
 	void setup() {
@@ -53,10 +54,34 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring"));
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				this.parser.parse("/spring/"));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
+		assertThat(tag.getValue()).isEqualTo("/spring/");
+	}
+
+	@Test
+	void uriTagValueIsRootWhenBestMatchingPatternIsEmpty() {
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse(""));
+		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+		Tag tag = WebFluxTags.uri(this.exchange);
+		assertThat(tag.getValue()).isEqualTo("root");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashRemoveTrailingSlash() {
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				this.parser.parse("/spring/"));
+		Tag tag = WebFluxTags.uri(this.exchange, true);
 		assertThat(tag.getValue()).isEqualTo("/spring");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashKeepSingleSlash() {
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/"));
+		Tag tag = WebFluxTags.uri(this.exchange, true);
+		assertThat(tag.getValue()).isEqualTo("/");
 	}
 
 	@Test
@@ -75,7 +100,7 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagToleratesCustomResponseStatus() {
-		this.exchange.getResponse().setStatusCodeValue(601);
+		this.exchange.getResponse().setRawStatusCode(601);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("root");
 	}
@@ -123,9 +148,9 @@ class WebFluxTagsTests {
 	void outcomeTagIsSuccessWhenResponseStatusIsAvailableFromUnderlyingServer() {
 		ServerWebExchange exchange = mock(ServerWebExchange.class);
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
-		AbstractServerHttpResponse response = mock(AbstractServerHttpResponse.class);
+		ServerHttpResponse response = mock(ServerHttpResponse.class);
 		given(response.getStatusCode()).willReturn(HttpStatus.OK);
-		given(response.getStatusCodeValue()).willReturn(null);
+		given(response.getRawStatusCode()).willReturn(null);
 		given(exchange.getRequest()).willReturn(request);
 		given(exchange.getResponse()).willReturn(response);
 		Tag tag = WebFluxTags.outcome(exchange);
@@ -169,14 +194,14 @@ class WebFluxTagsTests {
 
 	@Test
 	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
-		this.exchange.getResponse().setStatusCodeValue(490);
+		this.exchange.getResponse().setRawStatusCode(490);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
-		this.exchange.getResponse().setStatusCodeValue(701);
+		this.exchange.getResponse().setRawStatusCode(701);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}

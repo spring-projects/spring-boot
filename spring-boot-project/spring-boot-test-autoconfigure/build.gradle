@@ -2,26 +2,23 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Test AutoConfigure"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-test"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-test"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
-
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("javax.json.bind:javax.json.bind-api")
 	optional("javax.servlet:javax.servlet-api")
 	optional("javax.transaction:javax.transaction-api")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
+	optional("com.sun.xml.messaging.saaj:saaj-impl")
 	optional("io.rest-assured:rest-assured")
 	optional("net.sourceforge.htmlunit:htmlunit")
 	optional("org.hibernate:hibernate-core")
@@ -45,6 +42,8 @@ dependencies {
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-test")
+	optional("org.springframework.ws:spring-ws-core")
+	optional("org.springframework.ws:spring-ws-test")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
@@ -66,6 +65,7 @@ dependencies {
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.aspectj:aspectjweaver")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.jooq:jooq")

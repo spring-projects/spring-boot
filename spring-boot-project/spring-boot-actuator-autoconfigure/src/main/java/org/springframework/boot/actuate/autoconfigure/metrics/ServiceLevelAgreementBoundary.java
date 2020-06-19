@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,15 @@ import java.time.Duration;
 import io.micrometer.core.instrument.Meter;
 
 /**
- * A service level agreement boundary for use when configuring Micrometer. Can be
- * specified as either a {@link Long} (applicable to timers and distribution summaries) or
- * a {@link Duration} (applicable to only timers).
+ * A boundary for a service-level agreement (SLA) for use when configuring Micrometer. Can
+ * be specified as either a {@link Long} (applicable to timers and distribution summaries)
+ * or a {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated as of 2.3.0 in favor of {@link ServiceLevelObjectiveBoundary}
  */
+@Deprecated
 public final class ServiceLevelAgreementBoundary {
 
 	private final MeterValue value;
@@ -43,7 +45,8 @@ public final class ServiceLevelAgreementBoundary {
 	 * @return the value or {@code null} if the value cannot be applied
 	 */
 	public Long getValue(Meter.Type meterType) {
-		return this.value.getValue(meterType);
+		Double value = this.value.getValue(meterType);
+		return (value != null) ? value.longValue() : null;
 	}
 
 	/**

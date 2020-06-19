@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,9 +54,7 @@ public class TomcatServletWebServerFactoryCustomizer
 		if (tomcatProperties.getRedirectContextRoot() != null) {
 			customizeRedirectContextRoot(factory, tomcatProperties.getRedirectContextRoot());
 		}
-		if (tomcatProperties.getUseRelativeRedirects() != null) {
-			customizeUseRelativeRedirects(factory, tomcatProperties.getUseRelativeRedirects());
-		}
+		customizeUseRelativeRedirects(factory, tomcatProperties.isUseRelativeRedirects());
 		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
 	}
 

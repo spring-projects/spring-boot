@@ -100,7 +100,7 @@ class ExtractCommand extends Command {
 
 	private void mkDirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("Unable to create folder " + file);
+			throw new IOException("Unable to create directory " + file);
 		}
 	}
 

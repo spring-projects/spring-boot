@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World" })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World", "bar.name=Bar" })
 class MustacheStandaloneIntegrationTests {
 
 	@Autowired
@@ -61,13 +61,51 @@ class MustacheStandaloneIntegrationTests {
 	}
 
 	@Test
+	void environmentCollectorCompoundKeyStandardMap() {
+		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
+				.execute(Collections.singletonMap("world", "World"))).isEqualTo("Hello: There");
+	}
+
+	@Test
+	void environmentCollectorCompoundKeyWithBean() {
+		assertThat(this.compiler.compile("Hello: {{foo.name}}").execute(Collections.singletonMap("foo", new Foo())))
+				.isEqualTo("Hello: Foo");
+	}
+
+	@Test
+	void environmentCollectorCompoundKeyWithBeanPrefersEnvironment() {
+		assertThat(this.compiler.compile("Hello: {{bar.name}}").execute(Collections.singletonMap("bar", new Foo())))
+				.isEqualTo("Hello: Bar");
+	}
+
+	@Test
 	void environmentCollectorSimpleKey() {
 		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
+	}
+
+	@Test
+	void environmentCollectorSimpleKeyMap() {
+		assertThat(this.compiler.compile("Hello: {{foo}}").execute(Collections.singletonMap("world", "Foo")))
+				.isEqualTo("Hello: World");
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ MustacheAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Application {
+
+	}
+
+	static class Foo {
+
+		private String name = "Foo";
+
+		String getName() {
+			return this.name;
+		}
+
+		void setName(String name) {
+			this.name = name;
+		}
 
 	}
 

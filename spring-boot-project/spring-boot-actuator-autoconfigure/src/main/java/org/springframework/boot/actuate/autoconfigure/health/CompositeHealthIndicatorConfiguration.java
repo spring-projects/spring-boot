@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.core.ResolvableType;
 
 /**
  * Base class for configurations that can combine source beans using a
- * {@link CompositeHealthIndicator}.
+ * {@link org.springframework.boot.actuate.health.CompositeHealthIndicator}.
  *
  * @param <H> the health indicator type
  * @param <S> the bean source type
@@ -40,15 +36,15 @@ import org.springframework.core.ResolvableType;
 public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndicator, S> {
 
 	@Autowired
-	private HealthAggregator healthAggregator;
+	private org.springframework.boot.actuate.health.HealthAggregator healthAggregator;
 
 	protected HealthIndicator createHealthIndicator(Map<String, S> beans) {
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
-		HealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
+		org.springframework.boot.actuate.health.HealthIndicatorRegistry registry = new org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry();
 		beans.forEach((name, source) -> registry.register(name, createHealthIndicator(source)));
-		return new CompositeHealthIndicator(this.healthAggregator, registry);
+		return new org.springframework.boot.actuate.health.CompositeHealthIndicator(this.healthAggregator, registry);
 	}
 
 	@SuppressWarnings("unchecked")

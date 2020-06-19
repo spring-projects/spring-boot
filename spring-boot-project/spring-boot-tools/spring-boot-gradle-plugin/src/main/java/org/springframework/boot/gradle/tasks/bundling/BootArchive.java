@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,15 +118,21 @@ public interface BootArchive extends Task {
 	 * {@code false}.
 	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
 	 * not
+	 * @deprecated since 2.3.0 in favour of configuring a classpath that does not include
+	 * development-only dependencies
 	 */
 	@Input
+	@Deprecated
 	boolean isExcludeDevtools();
 
 	/**
 	 * Sets whether or not the Devtools jar should be excluded.
 	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
 	 * {@code false} if not
+	 * @deprecated since 2.3.0 in favour of configuring a classpath that does not include
+	 * development-only dependencies
 	 */
+	@Deprecated
 	void setExcludeDevtools(boolean excludeDevtools);
 
 }

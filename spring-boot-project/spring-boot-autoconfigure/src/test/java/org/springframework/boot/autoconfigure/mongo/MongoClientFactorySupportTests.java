@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link MongoClientFactorySupport}.
  *
+ * @param <T> the mongo client type
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
@@ -51,9 +52,9 @@ import static org.mockito.Mockito.verify;
  */
 abstract class MongoClientFactorySupportTests<T> {
 
-	private MongoProperties properties = new MongoProperties();
+	private final MongoProperties properties = new MongoProperties();
 
-	private MockEnvironment environment = new MockEnvironment();
+	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	void canBindCharArrayPassword() {
@@ -129,6 +130,13 @@ abstract class MongoClientFactorySupportTests<T> {
 	}
 
 	@Test
+	void replicaSetCanBeCustomized() {
+		this.properties.setReplicaSetName("test");
+		T client = createMongoClient();
+		assertThat(getClientSettings(client).getClusterSettings().getRequiredReplicaSetName()).isEqualTo("test");
+	}
+
+	@Test
 	void databaseCanBeCustomized() {
 		this.properties.setDatabase("foo");
 		this.properties.setUsername("user");
@@ -193,7 +201,15 @@ abstract class MongoClientFactorySupportTests<T> {
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret".toCharArray());
 		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
+				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
+	}
+
+	@Test
+	void uriCannotBeSetWithReplicaSetName() {
+		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
+		this.properties.setReplicaSetName("test");
+		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
+				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
 	}
 
 	@Test
@@ -202,7 +218,7 @@ abstract class MongoClientFactorySupportTests<T> {
 		this.properties.setHost("localhost");
 		this.properties.setPort(4567);
 		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
+				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
 	}
 
 	@Test
@@ -265,6 +281,10 @@ abstract class MongoClientFactorySupportTests<T> {
 		assertThat(properties.isAutoIndexCreation()).isTrue();
 	}
 
+	private List<ServerAddress> getAllAddresses(T client) {
+		return getClientSettings(client).getClusterSettings().getHosts();
+	}
+
 	protected T createMongoClient() {
 		return createMongoClient(this.properties, this.environment, null, null);
 	}
@@ -282,8 +302,6 @@ abstract class MongoClientFactorySupportTests<T> {
 			List<MongoClientSettingsBuilderCustomizer> customizers, MongoClientSettings settings);
 
 	protected abstract MongoClientSettings getClientSettings(T client);
-
-	protected abstract List<ServerAddress> getAllAddresses(T client);
 
 	protected void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);

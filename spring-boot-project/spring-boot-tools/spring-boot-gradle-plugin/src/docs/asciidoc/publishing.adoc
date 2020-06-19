@@ -1,10 +1,10 @@
 [[publishing-your-application]]
-== Publishing your application
+== Publishing your Application
 
 
 
 [[publishing-your-application-maven]]
-=== Publishing with the `maven` plugin
+=== Publishing with the Maven Plugin
 When the {maven-plugin}[`maven` plugin] is applied, an `Upload` task for the `bootArchives` configuration named `uploadBootArchives` is automatically created.
 By default, the `bootArchives` configuration contains the archive produced by the `bootJar` or `bootWar` task.
 The `uploadBootArchives` task can be configured to publish the archive to a Maven repository:
@@ -24,7 +24,7 @@ include::../gradle/publishing/maven.gradle.kts[tags=upload]
 
 
 [[publishing-your-application-maven-publish]]
-=== Publishing with the `maven-publish` plugin
+=== Publishing with the Maven-publish Plugin
 To publish your Spring Boot jar or war, add it to the publication using the `artifact` method on `MavenPublication`.
 Pass the task that produces that artifact that you wish to publish to the `artifact` method.
 For example, to publish the artifact produced by the default `bootJar` task:
@@ -44,7 +44,7 @@ include::../gradle/publishing/maven-publish.gradle.kts[tags=publishing]
 
 
 [[publishing-your-application-distribution]]
-=== Distributing with the `application` plugin
+=== Distributing with the Application Plugin
 When the {application-plugin}[`application` plugin] is applied a distribution named `boot` is created.
 This distribution contains the archive produced by the `bootJar` or `bootWar` task and scripts to launch it on Unix-like platforms and Windows.
 Zip and tar distributions can be built by the `bootDistZip` and `bootDistTar` tasks respectively.

@@ -89,7 +89,7 @@ public class GradleBuild {
 	}
 
 	void after() {
-		GradleBuild.this.script = null;
+		this.script = null;
 		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
@@ -127,8 +127,8 @@ public class GradleBuild {
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
-			if (this.gradleVersion != null && this.expectDeprecationWarnings != null
-					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0) {
+			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
+					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
 				assertThat(result.getOutput()).doesNotContain("Deprecated").doesNotContain("deprecated");
 			}
 			return result;
@@ -167,6 +167,8 @@ public class GradleBuild {
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
+		allArguments.add("--warning-mode");
+		allArguments.add("all");
 		return gradleRunner.withArguments(allArguments);
 	}
 

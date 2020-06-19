@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.web.servlet.context;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.DispatcherType;
@@ -45,6 +49,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
@@ -54,7 +59,10 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -134,12 +142,14 @@ class ServletWebServerApplicationContextTests {
 	@Test
 	void ServletWebServerInitializedEventPublished() {
 		addWebServerFactoryBean();
-		this.context.registerBeanDefinition("listener", new RootBeanDefinition(MockListener.class));
+		this.context.registerBeanDefinition("listener", new RootBeanDefinition(TestApplicationListener.class));
 		this.context.refresh();
-		ServletWebServerInitializedEvent event = this.context.getBean(MockListener.class).getEvent();
-		assertThat(event).isNotNull();
-		assertThat(event.getSource().getPort() >= 0).isTrue();
-		assertThat(event.getApplicationContext()).isEqualTo(this.context);
+		List<ApplicationEvent> events = this.context.getBean(TestApplicationListener.class).receivedEvents();
+		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
+				ContextRefreshedEvent.class);
+		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
+		assertThat(initializedEvent.getSource().getPort() >= 0).isTrue();
+		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
 	}
 
 	@Test
@@ -159,6 +169,28 @@ class ServletWebServerApplicationContextTests {
 		MockServletWebServerFactory factory = getWebServerFactory();
 		this.context.close();
 		verify(factory.getWebServer()).stop();
+	}
+
+	@Test
+	void applicationIsUnreadyDuringShutdown() {
+		TestApplicationListener listener = new TestApplicationListener();
+		addWebServerFactoryBean();
+		this.context.refresh();
+		this.context.addApplicationListener(listener);
+		this.context.close();
+		assertThat(listener.receivedEvents()).hasSize(2).extracting("class").contains(AvailabilityChangeEvent.class,
+				ContextClosedEvent.class);
+	}
+
+	@Test
+	void whenContextIsNotActiveThenCloseDoesNotChangeTheApplicationAvailability() {
+		addWebServerFactoryBean();
+		TestApplicationListener listener = new TestApplicationListener();
+		this.context.addApplicationListener(listener);
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh);
+		this.context.close();
+		assertThat(listener.receivedEvents()).isEmpty();
 	}
 
 	@Test
@@ -468,17 +500,21 @@ class ServletWebServerApplicationContextTests {
 		return object;
 	}
 
-	static class MockListener implements ApplicationListener<ServletWebServerInitializedEvent> {
+	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-		private ServletWebServerInitializedEvent event;
+		private Deque<ApplicationEvent> events = new ArrayDeque<>();
 
 		@Override
-		public void onApplicationEvent(ServletWebServerInitializedEvent event) {
-			this.event = event;
+		public void onApplicationEvent(ApplicationEvent event) {
+			this.events.add(event);
 		}
 
-		ServletWebServerInitializedEvent getEvent() {
-			return this.event;
+		List<ApplicationEvent> receivedEvents() {
+			List<ApplicationEvent> receivedEvents = new ArrayList<>();
+			while (!this.events.isEmpty()) {
+				receivedEvents.add(this.events.pollFirst());
+			}
+			return receivedEvents;
 		}
 
 	}
@@ -502,6 +538,14 @@ class ServletWebServerApplicationContextTests {
 
 		ServletRequest getRequest() {
 			return this.request;
+		}
+
+	}
+
+	static class RefreshFailure {
+
+		RefreshFailure() {
+			throw new RuntimeException("Fail refresh");
 		}
 
 	}

@@ -15,6 +15,7 @@ sourceSets {
 }
 
 dependencies {
+	testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 	testImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("javax.validation:validation-api")

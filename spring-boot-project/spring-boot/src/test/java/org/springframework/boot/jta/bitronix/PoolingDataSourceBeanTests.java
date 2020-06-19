@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class PoolingDataSourceBeanTests {
 
 	private PoolingDataSourceBean bean = new PoolingDataSourceBean();

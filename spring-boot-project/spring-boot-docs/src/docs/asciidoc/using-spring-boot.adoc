@@ -27,8 +27,8 @@ When you upgrade Spring Boot itself, these dependencies are upgraded as well in 
 
 NOTE: You can still specify a version and override Spring Boot's recommendations if you need to do so.
 
-The curated list contains all the spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
-The list is available as a standard <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>> that can be used with both <<using-boot-maven-parent-pom,Maven>> and <<using-boot-gradle,Gradle>>.
+The curated list contains all the Spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
+The list is available as a standard Bills of Materials (`spring-boot-dependencies`) that can be used with both <<using-boot-maven,Maven>> and <<using-boot-gradle,Gradle>>.
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework.
 We **highly** recommend that you not specify its version.
@@ -37,127 +37,10 @@ We **highly** recommend that you not specify its version.
 
 [[using-boot-maven]]
 === Maven
-Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
-The parent project provides the following features:
+To learn about using Spring Boot with Maven, please refer to the documentation for Spring Boot's Maven plugin:
 
-* Java 1.8 as the default compiler level.
-* UTF-8 source encoding.
-* A <<using-boot-dependency-management,Dependency Management section>>, inherited from the spring-boot-dependencies pom, that manages the versions of common dependencies.
-This dependency management lets you omit <version> tags for those dependencies when used in your own pom.
-* An execution of the {spring-boot-maven-plugin-docs}#goals-repackage[`repackage` goal] with a `repackage` execution id.
-* Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin], https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
-* Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
-
-Note that, since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
-(You can override that by setting a Maven property called `resource.delimiter`.)
-
-
-
-[[using-boot-maven-parent-pom]]
-==== Inheriting the Starter Parent
-To configure your project to inherit from the `spring-boot-starter-parent`, set the `parent` as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<!-- Inherit defaults from Spring Boot -->
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{spring-boot-version}</version>
-	</parent>
-----
-
-NOTE: You should need to specify only the Spring Boot version number on this dependency.
-If you import additional starters, you can safely omit the version number.
-
-With that setup, you can also override individual dependencies by overriding a property in your own project.
-For instance, to upgrade to another Spring Data release train, you would add the following to your `pom.xml`:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<spring-data-releasetrain.version>Fowler-SR2</spring-data-releasetrain.version>
-	</properties>
-----
-
-TIP: Check out the <<howto.adoc#howto-customize-dependency-versions, Customize Dependency Versions "`How-to`">> for more information.
-
-
-
-[[using-boot-maven-without-a-parent]]
-==== Using Spring Boot without the Parent POM
-Not everyone likes inheriting from the `spring-boot-starter-parent` POM.
-You may have your own corporate standard parent that you need to use or you may prefer to explicitly declare all your Maven configuration.
-
-If you do not want to use the `spring-boot-starter-parent`, you can still keep the benefit of the dependency management (but not the plugin management) by using a `scope=import` dependency, as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<!-- Import dependency management from Spring Boot -->
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>{spring-boot-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-----
-
-The preceding sample setup does not let you override individual dependencies by using a property, as explained above.
-To achieve the same result, you need to add an entry in the `dependencyManagement` of your project **before** the `spring-boot-dependencies` entry.
-For instance, to upgrade to another Spring Data release train, you could add the following element to your `pom.xml`:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<dependencyManagement>
-		<dependencies>
-			<!-- Override Spring Data release train provided by Spring Boot -->
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Fowler-SR2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>{spring-boot-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-----
-
-NOTE: In the preceding example, we specify a _BOM_, but any dependency type can be overridden in the same way.
-
-
-
-[[using-boot-maven-plugin]]
-==== Using the Spring Boot Maven Plugin
-Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> that can package the project as an executable jar.
-Add the plugin to your `<plugins>` section if you want to use it, as shown in the following example:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-----
-
-NOTE: If you use the Spring Boot starter parent pom, you need to add only the plugin.
-There is no need to configure it unless you want to change the settings defined in the parent.
+* Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
+* {spring-boot-maven-plugin-api}[API]
 
 
 
@@ -650,12 +533,6 @@ To include devtools support, add the module dependency to your build, as shown i
 .Gradle
 [source,groovy,indent=0,subs="attributes"]
 ----
-	configurations {
-		developmentOnly
-		runtimeClasspath {
-			extendsFrom developmentOnly
-		}
-	}
 	dependencies {
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
 	}
@@ -665,11 +542,12 @@ NOTE: Developer tools are automatically disabled when running a fully packaged a
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
 If that does not apply to you (i.e. if you run your application from a container), consider excluding devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
 
-TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly` configuration in Gradle (as shown above) is a best practice that prevents devtools from being transitively applied to other modules that use your project.
+TIP: Flagging the dependency as optional in Maven or using the `developmentOnly` configuration in Gradle (as shown above) prevents devtools from being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default.
-If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the `excludeDevtools` build property to include it.
-The property is supported with both the Maven and Gradle plugins.
+If you want to use a <<using-boot-devtools-remote,certain remote devtools feature>>, you need to include it.
+When using the Maven plugin, set the `excludeDevtools` property to `false`.
+When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
 
 
@@ -700,7 +578,7 @@ TIP: For a complete list of the properties that are applied by the devtools, see
 === Automatic Restart
 Applications that use `spring-boot-devtools` automatically restart whenever files on the classpath change.
 This can be a useful feature when working in an IDE, as it gives a very fast feedback loop for code changes.
-By default, any entry on the classpath that points to a folder is monitored for changes.
+By default, any entry on the classpath that points to a directory is monitored for changes.
 Note that certain resources, such as static assets and view templates, <<using-boot-devtools-restart-exclude, do not need to restart the application>>.
 
 .Triggering a restart
@@ -889,7 +767,7 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 
 [[using-boot-devtools-globalsettings]]
 === Global Settings
-You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder:
+You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` directory:
 
 . `spring-boot-devtools.properties`
 . `spring-boot-devtools.yaml`
@@ -904,10 +782,32 @@ For example, to configure restart to always use a <<using-boot-devtools-restart-
 	spring.devtools.restart.trigger-file=.reloadtrigger
 ----
 
-NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` folder is searched for the presence of a `.spring-boot-devtools.properties` file.
+NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` directory is searched for the presence of a `.spring-boot-devtools.properties` file.
 This allows you to share the devtools global configuration with applications that are on an older version of Spring Boot that does not support the `$HOME/.config/spring-boot` location.
 
-NOTE: Profiles activated in the above files will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
+[NOTE]
+====
+Profiles are not supported in devtools properties/yaml files.
+
+Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
+Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.profile` sub-documents in YAML files are not supported.
+====
+
+
+
+[[configuring-file-system-watcher]]
+==== Configuring File System Watcher
+{spring-boot-devtools-module-code}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
+Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
+If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
+
+[source,properties,indent=0,configprops]
+----
+	spring.devtools.restart.poll-interval=2s
+	spring.devtools.restart.quiet-period=1s
+----
+
+The monitored classpath directories are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.
 
 
 
@@ -994,31 +894,17 @@ Any updated resource is pushed to the remote application and (_if required_) tri
 This can be helpful if you iterate on a feature that uses a cloud service that you do not have locally.
 Generally, remote updates and restarts are much quicker than a full rebuild and deploy cycle.
 
-NOTE: Files are only monitored when the remote client is running.
-If you change a file before starting the remote client, it is not pushed to the remote server.
-
-
-
-[[configuring-file-system-watcher]]
-==== Configuring File System Watcher
-{spring-boot-devtools-module-code}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
-The changes are then uploaded to the remote application.
 On a slower development environment, it may happen that the quiet period is not enough, and the changes in the classes may be split into batches.
 The server is restarted after the first batch of class changes is uploaded.
 The next batch can’t be sent to the application, since the server is restarting.
 
 This is typically manifested by a warning in the `RemoteSpringApplication` logs about failing to upload some of the classes, and a consequent retry.
 But it may also lead to application code inconsistency and failure to restart after the first batch of changes is uploaded.
+If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment.
+See the <<configuring-file-system-watcher>> section for configuring these properties.
 
-If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
-
-[source,properties,indent=0,configprops]
-----
-	spring.devtools.restart.poll-interval=2s
-	spring.devtools.restart.quiet-period=1s
-----
-
-The monitored classpath folders are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.
+NOTE: Files are only monitored when the remote client is running.
+If you change a file before starting the remote client, it is not pushed to the remote server.
 
 
 

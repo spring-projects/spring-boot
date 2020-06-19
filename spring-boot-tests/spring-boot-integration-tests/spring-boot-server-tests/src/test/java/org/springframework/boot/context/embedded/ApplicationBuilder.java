@@ -59,11 +59,11 @@ class ApplicationBuilder {
 	}
 
 	File buildApplication() throws Exception {
-		File containerFolder = new File(this.temp.toFile(), this.container);
-		if (containerFolder.exists()) {
-			return new File(containerFolder, "app/target/app-0.0.1." + this.packaging);
+		File containerDirectory = new File(this.temp.toFile(), this.container);
+		if (containerDirectory.exists()) {
+			return new File(containerDirectory, "app/target/app-0.0.1." + this.packaging);
 		}
-		return doBuildApplication(containerFolder);
+		return doBuildApplication(containerDirectory);
 	}
 
 	String getPackaging() {
@@ -74,15 +74,15 @@ class ApplicationBuilder {
 		return this.container;
 	}
 
-	private File doBuildApplication(File containerFolder) throws IOException, MavenInvocationException {
+	private File doBuildApplication(File containerDirectory) throws IOException, MavenInvocationException {
 		File resourcesJar = createResourcesJar();
-		File appFolder = new File(containerFolder, "app");
-		appFolder.mkdirs();
-		File settingsXml = writeSettingsXml(appFolder);
-		writePom(appFolder, resourcesJar);
-		copyApplicationSource(appFolder);
-		packageApplication(appFolder, settingsXml);
-		return new File(appFolder, "target/app-0.0.1." + this.packaging);
+		File appDirectory = new File(containerDirectory, "app");
+		appDirectory.mkdirs();
+		File settingsXml = writeSettingsXml(appDirectory);
+		writePom(appDirectory, resourcesJar);
+		copyApplicationSource(appDirectory);
+		packageApplication(appDirectory, settingsXml);
+		return new File(appDirectory, "target/app-0.0.1." + this.packaging);
 	}
 
 	private File createResourcesJar() throws IOException {
@@ -106,23 +106,23 @@ class ApplicationBuilder {
 		}
 	}
 
-	private void writePom(File appFolder, File resourcesJar) throws IOException {
+	private void writePom(File appDirectory, File resourcesJar) throws IOException {
 		Map<String, Object> context = new HashMap<>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
-		try (FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
+		try (FileWriter out = new FileWriter(new File(appDirectory, "pom.xml"));
 				FileReader templateReader = new FileReader("src/test/resources/pom-template.xml")) {
 			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context, out);
 		}
 	}
 
-	private File writeSettingsXml(File appFolder) throws IOException {
+	private File writeSettingsXml(File appDirectory) throws IOException {
 		Map<String, Object> context = new HashMap<>();
 		context.put("repository", new File("build/test-repository").toURI().toURL());
 		context.put("localRepository", new File("build/local-m2-repository").getAbsolutePath());
-		File settingsXml = new File(appFolder, "settings.xml");
+		File settingsXml = new File(appDirectory, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
 				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
 			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context, out);
@@ -130,8 +130,8 @@ class ApplicationBuilder {
 		return settingsXml;
 	}
 
-	private void copyApplicationSource(File appFolder) throws IOException {
-		File examplePackage = new File(appFolder, "src/main/java/com/example");
+	private void copyApplicationSource(File appDirectory) throws IOException {
+		File examplePackage = new File(appDirectory, "src/main/java/com/example");
 		examplePackage.mkdirs();
 		FileCopyUtils.copy(new File("src/test/java/com/example/ResourceHandlingApplication.java"),
 				new File(examplePackage, "ResourceHandlingApplication.java"));
@@ -142,15 +142,32 @@ class ApplicationBuilder {
 					new File(examplePackage, "JettyServerCustomizerConfig.java"));
 		}
 		if ("war".equals(this.packaging)) {
-			File srcMainWebapp = new File(appFolder, "src/main/webapp");
+			File srcMainWebapp = new File(appDirectory, "src/main/webapp");
 			srcMainWebapp.mkdirs();
 			FileCopyUtils.copy("webapp resource", new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
 		}
+		copyAutoConfigurationFiles(appDirectory);
+		return;
 	}
 
-	private void packageApplication(File appFolder, File settingsXml) throws MavenInvocationException {
+	private void copyAutoConfigurationFiles(File appDirectory) throws IOException {
+		File autoConfigPackage = new File(appDirectory, "src/main/java/com/autoconfig");
+		autoConfigPackage.mkdirs();
+		FileCopyUtils.copy(new File("src/test/java/com/autoconfig/ExampleAutoConfiguration.java"),
+				new File(autoConfigPackage, "ExampleAutoConfiguration.java"));
+		File srcMainResources = new File(appDirectory, "src/main/resources");
+		srcMainResources.mkdirs();
+		File metaInf = new File(srcMainResources, "META-INF");
+		metaInf.mkdirs();
+		FileCopyUtils.copy(new File("src/test/resources/META-INF/spring.factories"),
+				new File(metaInf, "spring.factories"));
+		FileCopyUtils.copy(new File("src/test/resources/application.yml"),
+				new File(srcMainResources, "application.yml"));
+	}
+
+	private void packageApplication(File appDirectory, File settingsXml) throws MavenInvocationException {
 		InvocationRequest invocation = new DefaultInvocationRequest();
-		invocation.setBaseDirectory(appFolder);
+		invocation.setBaseDirectory(appDirectory);
 		invocation.setGoals(Collections.singletonList("package"));
 		if (settingsXml != null) {
 			invocation.setUserSettingsFile(settingsXml);

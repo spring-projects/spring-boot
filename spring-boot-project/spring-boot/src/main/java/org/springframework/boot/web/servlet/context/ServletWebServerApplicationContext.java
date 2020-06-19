@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -48,7 +50,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
@@ -85,6 +86,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Scott Frederick
  * @since 2.0.0
  * @see AnnotationConfigServletWebServerApplicationContext
  * @see XmlServletWebServerApplicationContext
@@ -141,7 +143,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			stopAndReleaseWebServer();
+			WebServer webServer = this.webServer;
+			if (webServer != null) {
+				webServer.stop();
+			}
 			throw ex;
 		}
 	}
@@ -158,18 +163,11 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	@Override
-	protected void finishRefresh() {
-		super.finishRefresh();
-		WebServer webServer = startWebServer();
-		if (webServer != null) {
-			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
+	protected void doClose() {
+		if (this.isActive()) {
+			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
 		}
-	}
-
-	@Override
-	protected void onClose() {
-		super.onClose();
-		stopAndReleaseWebServer();
+		super.doClose();
 	}
 
 	private void createWebServer() {
@@ -178,6 +176,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		if (webServer == null && servletContext == null) {
 			ServletWebServerFactory factory = getWebServerFactory();
 			this.webServer = factory.getWebServer(getSelfInitializer());
+			getBeanFactory().registerSingleton("webServerGracefulShutdown",
+					new WebServerGracefulShutdownLifecycle(this.webServer));
+			getBeanFactory().registerSingleton("webServerStartStop",
+					new WebServerStartStopLifecycle(this, this.webServer));
 		}
 		else if (servletContext != null) {
 			try {
@@ -270,7 +272,6 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			}
 			return;
 		}
-		Log logger = LogFactory.getLog(ContextLoader.class);
 		servletContext.log("Initializing Spring embedded WebApplicationContext");
 		try {
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this);
@@ -288,27 +289,6 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			logger.error("Context initialization failed", ex);
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
 			throw ex;
-		}
-	}
-
-	private WebServer startWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			webServer.start();
-		}
-		return webServer;
-	}
-
-	private void stopAndReleaseWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			try {
-				webServer.stop();
-				this.webServer = null;
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
 		}
 	}
 

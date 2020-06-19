@@ -218,7 +218,7 @@ To use Spring property placeholders together with automatic expansion, escape th
 
 
 [[howto-externalize-configuration]]
-=== Externalize the Configuration of `SpringApplication`
+=== Externalize the Configuration of SpringApplication
 A `SpringApplication` has bean properties (mainly setters), so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
@@ -605,7 +605,7 @@ To enable that support, your application needs to have two additional dependenci
 Spring Boot ships by default with Tomcat 9.0.x which supports HTTP/2 out of the box when using JDK 9 or later.
 Alternatively, HTTP/2 can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
 
-The library folder must be made available, if not already, to the JVM library path.
+The library directory must be made available, if not already, to the JVM library path.
 You can do so with a JVM argument such as `-Djava.library.path=/usr/local/opt/tomcat-native/lib`.
 More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
 
@@ -794,7 +794,7 @@ There are also non-standard headers, like `X-Forwarded-Host`, `X-Forwarded-Port`
 If the proxy adds the commonly used `X-Forwarded-For` and `X-Forwarded-Proto` headers, setting `server.forward-headers-strategy` to `NATIVE` is enough to support those.
 With this option, the Web servers themselves natively support this feature; you can check their specific documentation to learn about specific behavior.
 
-If this is not enough, Spring Framework provides a {spring-framework-docs}web.html#filters-forwarded-headers[ForwardedHeaderFilter].
+If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
 You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
@@ -1831,7 +1831,7 @@ If you use Spring Data, you need to configure `@EnableJpaRepositories` according
 
 
 [[howto-use-traditional-persistence-xml]]
-=== Use a Traditional `persistence.xml` File
+=== Use a Traditional persistence.xml File
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the persistence unit name there.
 
@@ -1937,7 +1937,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 
 [[howto-initialize-a-database-using-spring-jdbc]]
-=== Initialize a Database
+=== Initialize a Database using basic SQL scripts
 Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of `spring.datasource.platform`.
@@ -1946,7 +1946,7 @@ For example, you might choose to set it to the vendor name of the database (`hsq
 
 [NOTE]
 ====
-Spring Boot automatically creates the schema of an embedded `DataSource`.
+When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.
 This behavior can be customized by using the configprop:spring.datasource.initialization-mode[] property.
 For instance, if you want to always initialize the `DataSource` regardless of its type:
 
@@ -1954,14 +1954,41 @@ For instance, if you want to always initialize the `DataSource` regardless of it
 ----
 	spring.datasource.initialization-mode=always
 ----
+
+In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
+Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.ddl-auto=none
+----
+
+If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you cannot use basic SQL scripts to create and initialize the schema.
+In this situation, if `schema.sql` and `data.sql` are present, they will be ignored.
+It is not possible to use a Database Migration Tool to manage schema creation, and a basic SQL script to initialize it.
 ====
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting `spring.datasource.continue-on-error`.
 
-NOTE: In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
-Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
+
+
+[[howto-initialize-a-database-using-r2dbc]]
+=== Initialize a Database Using R2DBC
+If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
+
+If you are using Spring Data R2DBC, you can initialize the database on startup using simple SQL scripts as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/r2dbc/R2dbcDatabaseInitializationExample.java[tag=configuration]
+----
+
+Alternatively, you can configure either <<howto-execute-flyway-database-migrations-on-startup,Flyway>> or <<howto-execute-liquibase-database-migrations-on-startup,Liquibase>> to configure a `DataSource` for you for the duration of the migration.
+Both these libraries offer properties to set the `url`, `username` and `password` of the database to migrate.
+
+NOTE: When choosing this option, `org.springframework:spring-jdbc` is still a required dependency.
 
 
 
@@ -1992,7 +2019,7 @@ Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Fly
 To automatically run Flyway database migrations on startup, add the `org.flywaydb:flyway-core` to your classpath.
 
 Typically, migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an underscore-separated version, such as '`1`' or '`2_1`').
-By default, they are in a folder called `classpath:db/migration`, but you can modify that location by setting `spring.flyway.locations`.
+By default, they are in a directory called `classpath:db/migration`, but you can modify that location by setting `spring.flyway.locations`.
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
@@ -2009,7 +2036,7 @@ Assume the following:
 	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
 
-Rather than using `db/migration`, the preceding configuration sets the folder to use according to the type of the database (such as `db/migration/mysql` for MySQL).
+Rather than using `db/migration`, the preceding configuration sets the directory to use according to the type of the database (such as `db/migration/mysql` for MySQL).
 The list of supported databases is available in {spring-boot-module-code}/jdbc/DatabaseDriver.java[`DatabaseDriver`].
 
 Migrations can also be written in Java.
@@ -2022,7 +2049,7 @@ Spring Boot calls `Flyway.migrate()` to perform the database migration.
 If you would like more control, provide a `@Bean` that implements {spring-boot-autoconfigure-module-code}/flyway/FlywayMigrationStrategy.java[`FlywayMigrationStrategy`].
 
 Flyway supports SQL and Java https://flywaydb.org/documentation/callbacks.html[callbacks].
-To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` folder.
+To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
 To use Java-based callbacks, create one or more beans that implement `Callback`.
 Any such beans are automatically registered with `Flyway`.
 They can be ordered by using `@Order` or by implementing `Ordered`.
@@ -2053,6 +2080,13 @@ With that setup, migrations in `dev/db/migration` run only when the `dev` profil
 ==== Execute Liquibase Database Migrations on Startup
 To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
 
+[NOTE]
+====
+When you add the `org.liquibase:liquibase-core` to your classpath, database migrations run by default for both during application startup and before your tests run.
+This behavior can be customized by using the configprop:spring.liquibase.enabled[] property, setting different values in the `main` and `test` configurations.
+It is not possible to use two different ways to initialize the database (e.g. Liquibase for application startup, JPA for test runs).
+====
+
 By default, the master change log is read from `db/changelog/db.changelog-master.yaml`, but you can change the location by setting `spring.liquibase.change-log`.
 In addition to YAML, Liquibase also supports JSON, XML, and SQL change log formats.
 
@@ -2061,7 +2095,7 @@ If you need to use a different `DataSource`, you can create one and mark its `@B
 If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
 Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
-If any of the three properties has not be set, the value of its equivalent `spring.datasource` property will be used.
+If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
 
@@ -2198,15 +2232,32 @@ See also the section on "`<<spring-boot-features.adoc#boot-features-error-handli
 
 
 [[howto-sanitize-sensible-values]]
-=== Sanitize sensible values
+[[howto-sanitize-sensitive-values]]
+=== Sanitize Sensitive Values
 Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching a certain pattern are sanitized by default (i.e. their values are replaced by `+******+`).
 
 The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize` and `management.endpoint.configprops.keys-to-sanitize` respectively.
 
 Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command", "uri", "uris", "address" or "addresses" is sanitized.
-Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+*credentials.*+`).
+Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+.*credentials.*+`).
 
 If any of the keys to sanitize are URI format (i.e. `<scheme>://<username>:<password>@<host>:<port>/`), only the password part is sanitized.
+
+
+
+[[howto-map-health-indicators-to-metrics]]
+=== Map Health Indicators to Micrometer Metrics
+Spring Boot health indicators return a `Status` type to indicate the overall system health.
+If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics via Micrometer.
+By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.
+To export these, you'll need to convert these states to some set of numbers so that they can be used with a Micrometer `Gauge`.
+
+The following example shows one way to write such an exporter:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/actuate/metrics/MetricsHealthMicrometerExportExample.java[tag=configuration]
+----
 
 
 
@@ -2382,7 +2433,7 @@ The following example does the same with Gradle:
 	}
 ----
 
-TIP: See the {spring-boot-gradle-plugin-docs}/#integrating-with-actuator-build-info[Spring Boot Gradle Plugin documentation] for more details.
+TIP: See the {spring-boot-gradle-plugin-docs}#integrating-with-actuator-build-info[Spring Boot Gradle Plugin documentation] for more details.
 
 
 
@@ -2410,7 +2461,7 @@ Gradle users can achieve the same result by using the https://plugins.gradle.org
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.5.1"
+		id "com.gorylenko.gradle-git-properties" version "2.2.2"
 	}
 ----
 
@@ -2422,24 +2473,15 @@ Using this format lets the time be parsed into a `Date` and its format, when ser
 
 [[howto-customize-dependency-versions]]
 === Customize Dependency Versions
-If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies` (for instance, `spring-boot-starter-parent`) but you want to override a specific third-party dependency, you can add appropriate `<properties>` elements.
-Browse the <<appendix-dependency-versions.adoc#dependency-versions-properties, `Version properties`>> for a complete list of version properties.
-For example, to pick a different `slf4j` version, you would add the following property:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<slf4j.version>1.7.5<slf4j.version>
-	</properties>
-----
-
-NOTE: Doing so only works if your Maven project inherits (directly or indirectly) from `spring-boot-dependencies`.
-If you have added `spring-boot-dependencies` in your own `dependencyManagement` section with `<scope>import</scope>`, you have to redefine the artifact yourself instead of overriding the property.
+The `spring-boot-dependencies` POM manages the versions of common dependencies.
+The Spring Boot plugins for Maven and Gradle allow these managed dependency versions to be customized using build properties.
 
 WARNING: Each Spring Boot release is designed and tested against this specific set of third-party dependencies.
 Overriding versions may cause compatibility issues.
 
-To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}/#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
+To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}#using[this section] of the Maven plugin's documentation.
+
+To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
 
 
 
@@ -2483,7 +2525,7 @@ However, you must additionally add an `<executions>` section, as follows:
 	</build>
 ----
 
-See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] for full usage details.
+See the {spring-boot-maven-plugin-docs}#repackage[plugin documentation] for full usage details.
 
 
 
@@ -2602,7 +2644,7 @@ See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more det
 
 
 [[howto-build-an-executable-archive-with-ant]]
-=== Build an Executable Archive from Ant without Using `spring-boot-antlib`
+=== Build an Executable Archive from Ant without Using spring-boot-antlib
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 
@@ -2905,3 +2947,48 @@ The following example shows how to do so in Gradle:
 		// ...
 	}
 ----
+
+
+
+[[howto-testcontainers]]
+===  Use Testcontainers for integration testing
+The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
+It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
+Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
+Testcontainers can be used in a Spring Boot test as follows:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+@SpringBootTest
+@Testcontainers
+class ExampleIntegrationTests {
+
+    @Container
+    static Neo4jContainer<?> neo4j = new Neo4jContainer<>();
+
+}
+----
+
+This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
+In most cases, you will need to configure the application using details from the running container, such as container IP or port.
+
+This can be done with a static `@DynamicPropertySource` method that allows adding adding dynamic property values to the Spring Environment.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+@SpringBootTest
+@Testcontainers
+class ExampleIntegrationTests {
+
+    @Container
+    static Neo4jContainer<?> neo4j = new Neo4jContainer<>();
+
+    @DynamicPropertySource
+    static void neo4jProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+    }
+
+}
+----
+
+The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.

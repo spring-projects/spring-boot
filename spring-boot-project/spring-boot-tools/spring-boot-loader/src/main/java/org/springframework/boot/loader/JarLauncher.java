@@ -19,7 +19,6 @@ package org.springframework.boot.loader;
 import java.io.IOException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
@@ -37,17 +36,13 @@ import org.springframework.boot.loader.archive.ExplodedArchive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	private static final Pattern CLASSES_PATTERN = Pattern.compile("BOOT-INF\\/(layers\\/.*\\/)?classes/");
-
-	private static final Pattern LIBS_PATTERN = Pattern.compile("BOOT-INF\\/(layers\\/.*\\/)?lib\\/.+");
-
 	private static final String DEFAULT_CLASSPATH_INDEX_LOCATION = "BOOT-INF/classpath.idx";
 
 	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
 		if (entry.isDirectory()) {
-			return CLASSES_PATTERN.matcher(entry.getName()).matches();
+			return entry.getName().equals("BOOT-INF/classes/");
 		}
-		return LIBS_PATTERN.matcher(entry.getName()).matches();
+		return entry.getName().startsWith("BOOT-INF/lib/");
 	};
 
 	public JarLauncher() {

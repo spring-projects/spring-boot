@@ -30,6 +30,8 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.core.CollectionFactory;
+
 /**
  * A {@link Task} for generating metadata describing a project's auto-configuration
  * classes.
@@ -73,7 +75,7 @@ public class AutoConfigurationMetadata extends AbstractTask {
 	}
 
 	private Properties readAutoConfiguration() throws IOException {
-		Properties autoConfiguration = new Properties();
+		Properties autoConfiguration = CollectionFactory.createSortedProperties(true);
 		Properties springFactories = readSpringFactories(
 				new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
 		autoConfiguration.setProperty("autoConfigurationClassNames",

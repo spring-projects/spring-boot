@@ -42,6 +42,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.core.CollectionFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -91,7 +92,7 @@ public class TestSliceMetadata extends AbstractTask {
 	}
 
 	private Properties readTestSlices() throws IOException {
-		Properties testSlices = new Properties();
+		Properties testSlices = CollectionFactory.createSortedProperties(true);
 		try (URLClassLoader classLoader = new URLClassLoader(
 				StreamSupport.stream(this.sourceSet.getRuntimeClasspath().spliterator(), false).map(this::toURL)
 						.toArray(URL[]::new))) {

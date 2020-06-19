@@ -36,28 +36,30 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link Image}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageTests {
 
 	@Test
 	void getBuildRequestWhenNameIsNullDeducesName() {
-		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
 	}
 
 	@Test
-	void getBuildEquestWhenNameIsSetUsesName() {
+	void getBuildRequestWhenNameIsSetUsesName() {
 		Image image = new Image();
 		image.name = "demo";
-		BuildRequest request = image.getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/demo:latest");
 	}
 
 	@Test
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
-		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/cloudfoundry/cnb:0.0.53-bionic");
+		assertThat(request.getBuilder().toString()).contains("paketo-buildpacks/builder");
+		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
@@ -67,15 +69,23 @@ class ImageTests {
 	void getBuildRequestWhenHasBuilderUsesBuilder() {
 		Image image = new Image();
 		image.builder = "springboot/builder:2.2.x";
-		BuildRequest request = image.getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/springboot/builder:2.2.x");
+	}
+
+	@Test
+	void getBuildRequestWhenHasRunImageUsesRunImage() {
+		Image image = new Image();
+		image.runImage = "springboot/run:latest";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getRunImage().toString()).isEqualTo("docker.io/springboot/run:latest");
 	}
 
 	@Test
 	void getBuildRequestWhenHasEnvUsesEnv() {
 		Image image = new Image();
 		image.env = Collections.singletonMap("test", "test");
-		BuildRequest request = image.getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getEnv()).containsExactly(entry("test", "test"));
 	}
 
@@ -83,7 +93,7 @@ class ImageTests {
 	void getBuildRequestWhenHasCleanCacheUsesCleanCache() {
 		Image image = new Image();
 		image.cleanCache = true;
-		BuildRequest request = image.getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.isCleanCache()).isTrue();
 	}
 
@@ -91,7 +101,7 @@ class ImageTests {
 	void getBuildRequestWhenHasVerboseLoggingUsesVerboseLogging() {
 		Image image = new Image();
 		image.verboseLogging = true;
-		BuildRequest request = image.getBuildRequest(createArtifact(), mockAplicationContent());
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.isVerboseLogging()).isTrue();
 	}
 
@@ -100,7 +110,7 @@ class ImageTests {
 				"jar", null, new DefaultArtifactHandler());
 	}
 
-	private Function<Owner, TarArchive> mockAplicationContent() {
+	private Function<Owner, TarArchive> mockApplicationContent() {
 		return (owner) -> null;
 	}
 

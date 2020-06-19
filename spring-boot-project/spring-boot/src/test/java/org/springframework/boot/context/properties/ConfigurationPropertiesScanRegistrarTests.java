@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 			new MockEnvironment(), null);
 
 	@Test
-	void registerBeanDefintionsShouldScanForConfigurationProperties() throws IOException {
+	void registerBeanDefinitionsShouldScanForConfigurationProperties() throws IOException {
 		this.registrar.registerBeanDefinitions(getAnnotationMetadata(ConfigurationPropertiesScanConfiguration.class),
 				this.beanFactory);
 		BeanDefinition bingDefinition = this.beanFactory.getBeanDefinition(
@@ -70,7 +70,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 	}
 
 	@Test
-	void scanWhenBasePackagesAndBasePackcageClassesProvidedShouldUseThat() throws IOException {
+	void scanWhenBasePackagesAndBasePackageClassesProvidedShouldUseThat() throws IOException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(

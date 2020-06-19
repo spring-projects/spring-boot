@@ -2,6 +2,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.availability.AvailabilityProbesAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cache.CachesEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorAutoConfiguration,\
@@ -104,4 +105,4 @@ org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChil
 org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
 
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.actuate.autoconfigure.metrics.MissingRequiredConfigurationFailureAnalyzer
+org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer

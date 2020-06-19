@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 
 	private final ResourceLoader resourceLoader;
 
-	private File emptyRootFolder;
+	private File emptyRootDirectory;
 
 	public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
@@ -91,16 +91,16 @@ public class SpringBootMockServletContext extends MockServletContext {
 			// Liquibase assumes that "/" always exists, if we don't have a directory
 			// use a temporary location.
 			try {
-				if (this.emptyRootFolder == null) {
+				if (this.emptyRootDirectory == null) {
 					synchronized (this) {
-						File tempFolder = File.createTempFile("spr", "servlet");
-						tempFolder.delete();
-						tempFolder.mkdirs();
-						tempFolder.deleteOnExit();
-						this.emptyRootFolder = tempFolder;
+						File tempDirectory = File.createTempFile("spr", "servlet");
+						tempDirectory.delete();
+						tempDirectory.mkdirs();
+						tempDirectory.deleteOnExit();
+						this.emptyRootDirectory = tempDirectory;
 					}
 				}
-				return this.emptyRootFolder.toURI().toURL();
+				return this.emptyRootDirectory.toURI().toURL();
 			}
 			catch (IOException ex) {
 				// Ignore

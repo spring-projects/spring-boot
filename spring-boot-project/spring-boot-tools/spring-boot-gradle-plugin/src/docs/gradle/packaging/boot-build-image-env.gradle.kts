@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "{version}"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
 tasks.getByName<BootJar>("bootJar") {
@@ -11,6 +11,6 @@ tasks.getByName<BootJar>("bootJar") {
 
 // tag::env[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
-	environment = ["BP_JAVA_VERSION" : "13.0.1"]
+	environment = ["BP_JVM_VERSION" : "13.0.1"]
 }
 // end::env[]

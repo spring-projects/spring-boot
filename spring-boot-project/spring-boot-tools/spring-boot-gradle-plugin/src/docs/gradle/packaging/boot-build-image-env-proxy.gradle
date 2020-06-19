@@ -1,0 +1,17 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::env[]
+bootBuildImage {
+	environment = [
+			"HTTP_PROXY" : "http://proxy.example.com",
+			"HTTPS_PROXY": "https://proxy.example.com"
+	]
+}
+// end::env[]

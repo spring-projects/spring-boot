@@ -39,6 +39,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.LongTaskTimingHandlerInterceptor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -56,6 +57,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -182,6 +184,14 @@ class WebMvcMetricsAutoConfigurationTests {
 						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
+	@Test
+	void whenTagContributorsAreDefinedThenTagsProviderUsesThem() {
+		this.contextRunner.withUserConfiguration(TagsContributorsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+			assertThat(context.getBean(DefaultWebMvcTagsProvider.class)).extracting("contributors").asList().hasSize(2);
+		});
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
 		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
 	}
@@ -204,6 +214,21 @@ class WebMvcMetricsAutoConfigurationTests {
 		@Bean
 		TestWebMvcTagsProvider tagsProvider() {
 			return new TestWebMvcTagsProvider();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TagsContributorsConfiguration {
+
+		@Bean
+		WebMvcTagsContributor tagContributorOne() {
+			return mock(WebMvcTagsContributor.class);
+		}
+
+		@Bean
+		WebMvcTagsContributor tagContributorTwo() {
+			return mock(WebMvcTagsContributor.class);
 		}
 
 	}

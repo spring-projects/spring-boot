@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class JarFileArchive implements Archive {
 
 	private URL url;
 
-	private File tempUnpackFolder;
+	private File tempUnpackDirectory;
 
 	public JarFileArchive(File file) throws IOException {
 		this(file, file.toURI().toURL());
@@ -81,6 +81,7 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
+	@Deprecated
 	public Iterator<Entry> iterator() {
 		return new EntryIterator(this.jarFile.iterator(), null, null);
 	}
@@ -109,31 +110,31 @@ public class JarFileArchive implements Archive {
 		if (name.lastIndexOf('/') != -1) {
 			name = name.substring(name.lastIndexOf('/') + 1);
 		}
-		File file = new File(getTempUnpackFolder(), name);
+		File file = new File(getTempUnpackDirectory(), name);
 		if (!file.exists() || file.length() != jarEntry.getSize()) {
 			unpack(jarEntry, file);
 		}
 		return new JarFileArchive(file, file.toURI().toURL());
 	}
 
-	private File getTempUnpackFolder() {
-		if (this.tempUnpackFolder == null) {
-			File tempFolder = new File(System.getProperty("java.io.tmpdir"));
-			this.tempUnpackFolder = createUnpackFolder(tempFolder);
+	private File getTempUnpackDirectory() {
+		if (this.tempUnpackDirectory == null) {
+			File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
+			this.tempUnpackDirectory = createUnpackDirectory(tempDirectory);
 		}
-		return this.tempUnpackFolder;
+		return this.tempUnpackDirectory;
 	}
 
-	private File createUnpackFolder(File parent) {
+	private File createUnpackDirectory(File parent) {
 		int attempts = 0;
 		while (attempts++ < 1000) {
 			String fileName = new File(this.jarFile.getName()).getName();
-			File unpackFolder = new File(parent, fileName + "-spring-boot-libs-" + UUID.randomUUID());
-			if (unpackFolder.mkdirs()) {
-				return unpackFolder;
+			File unpackDirectory = new File(parent, fileName + "-spring-boot-libs-" + UUID.randomUUID());
+			if (unpackDirectory.mkdirs()) {
+				return unpackDirectory;
 			}
 		}
-		throw new IllegalStateException("Failed to create unpack folder in directory '" + parent + "'");
+		throw new IllegalStateException("Failed to create unpack directory in directory '" + parent + "'");
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {

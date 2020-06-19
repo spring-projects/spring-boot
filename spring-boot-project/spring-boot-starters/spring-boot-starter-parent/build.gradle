@@ -27,7 +27,7 @@ publishing.publications.withType(MavenPublication) {
 				delegate."project.reporting.outputEncoding"('UTF-8')
 			}
 		}
-		root.issueManagement.plus {
+		root.scm.plus {
 			build {
 				resources {
 					resource {
@@ -122,13 +122,6 @@ publishing.publications.withType(MavenPublication) {
 							}
 						}
 						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('exec-maven-plugin')
-							configuration {
-								delegate.mainClass('${start-class}')
-							}
-						}
-						plugin {
 							delegate.groupId('org.apache.maven.plugins')
 							delegate.artifactId('maven-resources-plugin')
 							configuration {
@@ -202,17 +195,17 @@ publishing.publications.withType(MavenPublication) {
 									}
 									configuration {
 										transformers {
-											transformer {
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
 												delegate.resource('META-INF/spring.handlers')
 											}
-											transformer {
+											transformer(implementation: 'org.springframework.boot.maven.PropertiesMergingResourceTransformer') {
 												delegate.resource('META-INF/spring.factories')
 											}
-											transformer {
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
 												delegate.resource('META-INF/spring.schemas')
 											}
-											delegate.transformer('')
-											transformer {
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ServicesResourceTransformer')
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
 												delegate.mainClass('${start-class}')
 											}
 										}

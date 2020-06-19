@@ -27,11 +27,10 @@ import org.springframework.util.ObjectUtils;
  * A reference to a Docker image of the form {@code "imagename[:tag|@digest]"}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  * @see ImageName
- * @see <a href=
- * "https://stackoverflow.com/questions/37861791/how-are-docker-image-names-parsed">How
- * are Docker image names parsed?</a>
+ * @see ImageReferenceParser
  */
 public final class ImageReference {
 
@@ -152,7 +151,19 @@ public final class ImageReference {
 	 */
 	public ImageReference inTaggedForm() {
 		Assert.state(this.digest == null, () -> "Image reference '" + this + "' cannot contain a digest");
-		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, this.digest);
+		return new ImageReference(this.name, (this.tag != null) ? this.tag : LATEST, null);
+	}
+
+	/**
+	 * Return an {@link ImageReference} containing either a tag or a digest. If neither
+	 * the digest or the tag has been defined then tag {@code latest} is used.
+	 * @return the image reference in tagged or digest form
+	 */
+	public ImageReference inTaggedOrDigestForm() {
+		if (this.digest != null) {
+			return this;
+		}
+		return inTaggedForm();
 	}
 
 	/**
@@ -167,7 +178,7 @@ public final class ImageReference {
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {
-			return ImageReference.of(filename);
+			return of(filename);
 		}
 		String name = filename.substring(0, firstDot);
 		String version = filename.substring(firstDot + 1);
@@ -213,8 +224,9 @@ public final class ImageReference {
 	 */
 	public static ImageReference of(String value) {
 		Assert.hasText(value, "Value must not be null");
-		String[] domainAndValue = ImageName.split(value);
-		return of(domainAndValue[0], domainAndValue[1]);
+		ImageReferenceParser parser = ImageReferenceParser.of(value);
+		ImageName name = new ImageName(parser.getDomain(), parser.getName());
+		return new ImageReference(name, parser.getTag(), parser.getDigest());
 	}
 
 	/**
@@ -245,23 +257,6 @@ public final class ImageReference {
 	 * @return a new image reference
 	 */
 	public static ImageReference of(ImageName name, String tag, String digest) {
-		return new ImageReference(name, tag, digest);
-	}
-
-	private static ImageReference of(String domain, String value) {
-		String digest = null;
-		int lastAt = value.indexOf('@');
-		if (lastAt != -1) {
-			digest = value.substring(lastAt + 1);
-			value = value.substring(0, lastAt);
-		}
-		String tag = null;
-		int firstColon = value.indexOf(':');
-		if (firstColon != -1) {
-			tag = value.substring(firstColon + 1);
-			value = value.substring(0, firstColon);
-		}
-		ImageName name = new ImageName(domain, value);
 		return new ImageReference(name, tag, digest);
 	}
 

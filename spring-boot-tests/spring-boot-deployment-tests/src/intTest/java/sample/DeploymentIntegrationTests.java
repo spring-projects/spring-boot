@@ -48,7 +48,7 @@ class DeploymentIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("deployedApplications")
-	void home(DeployedApplication app) throws Exception {
+	void home(DeployedApplication app) {
 		app.test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -58,7 +58,7 @@ class DeploymentIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("deployedApplications")
-	void health(DeployedApplication application) throws Exception {
+	void health(DeployedApplication application) {
 		application.test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -66,11 +66,21 @@ class DeploymentIntegrationTests {
 		});
 	}
 
+	@ParameterizedTest
+	@MethodSource("deployedApplications")
+	void conditionalOnWarShouldBeTrue(DeployedApplication application) throws Exception {
+		application.test((rest) -> {
+			ResponseEntity<String> response = rest.getForEntity("/actuator/war", String.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+			assertThat(response.getBody()).isEqualTo("{\"hello\":\"world\"}");
+		});
+	}
+
 	static List<DeployedApplication> deployedApplications() {
 		return Arrays.asList(new DeployedApplication("open-liberty:19.0.0.9-webProfile8", "/config/dropins", 9080),
 				new DeployedApplication("tomcat:9.0.29-jdk8-openjdk", "/usr/local/tomcat/webapps", 8080),
 				new DeployedApplication("tomee:11-jre-8.0.0-M3-webprofile", "/usr/local/tomee/webapps", 8080),
-				new DeployedApplication("jboss/wildfly:18.0.1.Final", "/opt/jboss/wildfly/standalone/deployments/",
+				new DeployedApplication("jboss/wildfly:18.0.1.Final", "/opt/jboss/wildfly/standalone/deployments",
 						8080));
 	}
 
@@ -93,8 +103,8 @@ class DeploymentIntegrationTests {
 					this.port)) {
 				container.start();
 				TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-						.rootUri("http://" + container.getContainerIpAddress() + ":"
-								+ container.getMappedPort(this.port) + "/spring-boot")
+						.rootUri("http://" + container.getHost() + ":" + container.getMappedPort(this.port)
+								+ "/spring-boot")
 						.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 								.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
 				try {

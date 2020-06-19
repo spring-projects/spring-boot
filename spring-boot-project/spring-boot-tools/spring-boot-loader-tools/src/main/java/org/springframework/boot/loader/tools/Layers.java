@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * Interface to provide information about layers to the {@link Repackager}.
@@ -36,16 +37,25 @@ public interface Layers extends Iterable<Layer> {
 	/**
 	 * Return the jar layers in the order that they should be added (starting with the
 	 * least frequently changed layer).
+	 * @return the layers iterator
 	 */
 	@Override
 	Iterator<Layer> iterator();
 
 	/**
+	 * Return a stream of the jar layers in the order that they should be added (starting
+	 * with the least frequently changed layer).
+	 * @return the layers stream
+	 */
+	Stream<Layer> stream();
+
+	/**
 	 * Return the layer that contains the given resource name.
-	 * @param resourceName the name of the resource (for example a {@code .class} file).
+	 * @param applicationResource the name of an application resource (for example a
+	 * {@code .class} file).
 	 * @return the layer that contains the resource (must never be {@code null})
 	 */
-	Layer getLayer(String resourceName);
+	Layer getLayer(String applicationResource);
 
 	/**
 	 * Return the layer that contains the given library.

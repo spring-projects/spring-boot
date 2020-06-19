@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,9 @@ import org.springframework.util.StringUtils;
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
  * if their names end with a set of configurable values (default "password" and "secret").
- * Configure property names by using {@code endpoints.configprops.keys_to_sanitize} in
- * your Spring Boot application configuration.
+ * Configure property names by using
+ * {@code management.endpoint.configprops.keys-to-sanitize} in your Spring Boot
+ * application configuration.
  *
  * @author Christian Dupuis
  * @author Dave Syer
@@ -186,7 +187,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param prefix the prefix
 	 * @return the serialized instance
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));

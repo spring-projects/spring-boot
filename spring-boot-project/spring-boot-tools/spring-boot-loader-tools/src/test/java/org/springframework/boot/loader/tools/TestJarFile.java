@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,15 @@ public class TestJarFile {
 
 	private final byte[] buffer = new byte[4096];
 
-	private final File temporaryFolder;
+	private final File temporaryDirectory;
 
 	private final File jarSource;
 
 	private final List<ZipEntrySource> entries = new ArrayList<>();
 
-	public TestJarFile(File temporaryFolder) throws IOException {
-		this.temporaryFolder = temporaryFolder;
-		this.jarSource = new File(temporaryFolder, "jar-source");
+	public TestJarFile(File temporaryDirectory) throws IOException {
+		this.temporaryDirectory = temporaryDirectory;
+		this.jarSource = new File(temporaryDirectory, "jar-source");
 	}
 
 	public void addClass(String filename, Class<?> classToCopy) throws IOException {
@@ -120,7 +120,7 @@ public class TestJarFile {
 	}
 
 	public File getFile(String extension) throws IOException {
-		File file = new File(this.temporaryFolder, UUID.randomUUID() + "." + extension);
+		File file = new File(this.temporaryDirectory, UUID.randomUUID() + "." + extension);
 		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[0]), file);
 		return file;
 	}

@@ -13,6 +13,7 @@ NOTE: Property contributions can come from additional jar files on your classpat
 Also, you can define your own properties.
 
 
+
 == Core properties
 
 include::config-docs/core.adoc[]

@@ -45,8 +45,8 @@ class ImageConfigTests extends AbstractJsonTests {
 	@Test
 	void getLabelsReturnsLabels() throws Exception {
 		ImageConfig imageConfig = getImageConfig();
-		Map<String, String> lables = imageConfig.getLabels();
-		assertThat(lables).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
+		Map<String, String> labels = imageConfig.getLabels();
+		assertThat(labels).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
 	}
 
 	@Test

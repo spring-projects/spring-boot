@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package org.springframework.boot.rsocket.server;
 
-import io.rsocket.RSocketFactory.ServerRSocketFactory;
-
 /**
- * Processor that allows for custom modification of a {@link ServerRSocketFactory
+ * Processor that allows for custom modification of a
+ * {@link io.rsocket.RSocketFactory.ServerRSocketFactory
  * RSocketFactory.ServerRSocketFactory} before it is used.
  *
  * @author Brian Clozel
  * @see RSocketServerFactory
  * @since 2.2.0
+ * @deprecated in favor of {@link RSocketServerCustomizer} as of 2.2.7
  */
 @FunctionalInterface
+@Deprecated
 public interface ServerRSocketFactoryProcessor {
 
 	/**
@@ -35,6 +36,6 @@ public interface ServerRSocketFactoryProcessor {
 	 * @param factory the factory to process
 	 * @return the processed factory instance
 	 */
-	ServerRSocketFactory process(ServerRSocketFactory factory);
+	io.rsocket.RSocketFactory.ServerRSocketFactory process(io.rsocket.RSocketFactory.ServerRSocketFactory factory);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,7 +154,7 @@ class TypeUtils {
 		if (((TypeElement) this.types.asElement(type)).getQualifiedName().contentEquals(Collection.class.getName())) {
 			DeclaredType declaredType = (DeclaredType) type;
 			// raw type, just "Collection"
-			if (declaredType.getTypeArguments().size() == 0) {
+			if (declaredType.getTypeArguments().isEmpty()) {
 				return this.types.getDeclaredType(this.env.getElementUtils().getTypeElement(Object.class.getName()));
 			}
 			// return type argument to Collection<...>

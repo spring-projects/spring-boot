@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,8 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.resources.chain.cache", "false");
 		properties.put("spring.template.provider.cache", "false");
 		properties.put("spring.mvc.log-resolved-exception", "true");
+		properties.put("server.error.include-binding-errors", "ALWAYS");
+		properties.put("server.error.include-message", "ALWAYS");
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
 		properties.put("spring.reactor.debug", "true");

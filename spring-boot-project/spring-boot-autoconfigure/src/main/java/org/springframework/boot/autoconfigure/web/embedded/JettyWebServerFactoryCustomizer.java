@@ -77,17 +77,16 @@ public class JettyWebServerFactoryCustomizer
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Jetty jettyProperties = properties.getJetty();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
-		factory.setThreadPool(determineThreadPool(jettyProperties));
+		ServerProperties.Jetty.Threads threadProperties = jettyProperties.getThreads();
+		factory.setThreadPool(determineThreadPool(jettyProperties.getThreads()));
 		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
-		propertyMapper.from(jettyProperties::getSelectors).whenNonNull().to(factory::setSelectors);
+		propertyMapper.from(threadProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
+		propertyMapper.from(threadProperties::getSelectors).whenNonNull().to(factory::setSelectors);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive).to((maxHttpHeaderSize) -> factory
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
 		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
 				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
@@ -141,12 +140,12 @@ public class JettyWebServerFactoryCustomizer
 		});
 	}
 
-	private ThreadPool determineThreadPool(ServerProperties.Jetty properties) {
+	private ThreadPool determineThreadPool(ServerProperties.Jetty.Threads properties) {
 		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
-		int maxThreadCount = (properties.getMaxThreads() > 0) ? properties.getMaxThreads() : 200;
-		int minThreadCount = (properties.getMinThreads() > 0) ? properties.getMinThreads() : 8;
-		int threadIdleTimeout = (properties.getThreadIdleTimeout() != null)
-				? (int) properties.getThreadIdleTimeout().toMillis() : 60000;
+		int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
+		int minThreadCount = (properties.getMin() > 0) ? properties.getMin() : 8;
+		int threadIdleTimeout = (properties.getIdleTimeout() != null) ? (int) properties.getIdleTimeout().toMillis()
+				: 60000;
 		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
 	}
 

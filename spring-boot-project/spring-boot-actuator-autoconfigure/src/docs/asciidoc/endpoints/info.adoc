@@ -28,7 +28,7 @@ Spring Boot provides `build` and `git` contributions.
 
 
 [[info-retrieving-response-structure-build]]
-==== `build` Response Structure
+==== Build Response Structure
 
 The following table describe the structure of the `build` section of the response:
 
@@ -38,7 +38,7 @@ include::{snippets}/info/response-fields-beneath-build.adoc[]
 
 
 [[info-retrieving-response-structure-git]]
-==== `git` Response Structure
+==== Git Response Structure
 
 The following table describes the structure of the `git` section of the response:
 

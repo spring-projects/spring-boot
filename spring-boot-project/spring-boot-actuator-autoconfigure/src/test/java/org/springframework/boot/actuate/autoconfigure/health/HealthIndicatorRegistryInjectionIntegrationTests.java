@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test to ensure that the legacy {@link HealthIndicatorRegistry} can still be
+ * Integration test to ensure that the legacy
+ * {@link org.springframework.boot.actuate.health.HealthIndicatorRegistry} can still be
  * injected.
  *
  * @author Phillip Webb
@@ -57,16 +55,17 @@ public class HealthIndicatorRegistryInjectionIntegrationTests {
 			CompositeMeterRegistryAutoConfiguration.class, MetricsAutoConfiguration.class })
 	static class Config {
 
-		Config(HealthAggregator healthAggregator, HealthIndicatorRegistry healthIndicatorRegistry,
+		Config(org.springframework.boot.actuate.health.HealthAggregator healthAggregator,
+				org.springframework.boot.actuate.health.HealthIndicatorRegistry healthIndicatorRegistry,
 				MeterRegistry registry) {
-			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(healthAggregator,
-					healthIndicatorRegistry);
-			Gauge.builder("health", healthIndicator, this::getGuageValue)
+			org.springframework.boot.actuate.health.CompositeHealthIndicator healthIndicator = new org.springframework.boot.actuate.health.CompositeHealthIndicator(
+					healthAggregator, healthIndicatorRegistry);
+			Gauge.builder("health", healthIndicator, this::getGaugeValue)
 					.description("Spring boot health indicator.  3=UP, 2=OUT_OF_SERVICE, 1=DOWN, 0=UNKNOWN")
 					.strongReference(true).register(registry);
 		}
 
-		private double getGuageValue(CompositeHealthIndicator health) {
+		private double getGaugeValue(org.springframework.boot.actuate.health.CompositeHealthIndicator health) {
 			Status status = health.health().getStatus();
 			switch (status.getCode()) {
 			case "UP":

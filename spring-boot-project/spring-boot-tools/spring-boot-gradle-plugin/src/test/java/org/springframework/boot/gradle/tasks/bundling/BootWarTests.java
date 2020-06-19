@@ -81,6 +81,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
+	@Deprecated
 	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
@@ -93,12 +94,12 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged() throws IOException {
-		File webappFolder = new File(this.temp, "src/main/webapp");
-		webappFolder.mkdirs();
-		File orgFolder = new File(webappFolder, "org");
-		orgFolder.mkdir();
-		new File(orgFolder, "foo.txt").createNewFile();
-		getTask().from(webappFolder);
+		File webappDirectory = new File(this.temp, "src/main/webapp");
+		webappDirectory.mkdirs();
+		File orgDirectory = new File(webappDirectory, "org");
+		orgDirectory.mkdir();
+		new File(orgDirectory, "foo.txt").createNewFile();
+		getTask().from(webappDirectory);
 		getTask().setMainClassName("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {

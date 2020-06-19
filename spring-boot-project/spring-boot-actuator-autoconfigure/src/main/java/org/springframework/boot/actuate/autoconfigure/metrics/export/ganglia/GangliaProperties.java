@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import info.ganglia.gmetric4j.gmetric.GMetric;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Ganglia
@@ -47,7 +48,7 @@ public class GangliaProperties {
 	/**
 	 * Base time unit used to report rates.
 	 */
-	private TimeUnit rateUnits = TimeUnit.SECONDS;
+	private TimeUnit rateUnits;
 
 	/**
 	 * Base time unit used to report durations.
@@ -57,7 +58,7 @@ public class GangliaProperties {
 	/**
 	 * Ganglia protocol version. Must be either 3.1 or 3.0.
 	 */
-	private String protocolVersion = "3.1";
+	private String protocolVersion;
 
 	/**
 	 * UDP addressing mode, either unicast or multicast.
@@ -96,10 +97,13 @@ public class GangliaProperties {
 		this.step = step;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "No longer used by Micrometer.")
 	public TimeUnit getRateUnits() {
 		return this.rateUnits;
 	}
 
+	@Deprecated
 	public void setRateUnits(TimeUnit rateUnits) {
 		this.rateUnits = rateUnits;
 	}
@@ -112,10 +116,13 @@ public class GangliaProperties {
 		this.durationUnits = durationUnits;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "No longer used by Micrometer.")
 	public String getProtocolVersion() {
 		return this.protocolVersion;
 	}
 
+	@Deprecated
 	public void setProtocolVersion(String protocolVersion) {
 		this.protocolVersion = protocolVersion;
 	}

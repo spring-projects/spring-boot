@@ -29,15 +29,16 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
-import org.springframework.boot.buildpack.platform.docker.DockerException;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
-import org.springframework.boot.gradle.plugin.VersionExtractor;
+import org.springframework.boot.gradle.util.VersionExtractor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,7 +51,7 @@ import org.springframework.util.StringUtils;
  */
 public class BootBuildImage extends DefaultTask {
 
-	private static final String OPENJDK_BUILDPACK_JAVA_VERSION_KEY = "BP_JAVA_VERSION";
+	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
 	private RegularFileProperty jar;
 
@@ -59,6 +60,8 @@ public class BootBuildImage extends DefaultTask {
 	private String imageName;
 
 	private String builder;
+
+	private String runImage;
 
 	private Map<String, String> environment = new HashMap<>();
 
@@ -107,6 +110,7 @@ public class BootBuildImage extends DefaultTask {
 	 * Sets the name of the image that will be built.
 	 * @param imageName name of the image
 	 */
+	@Option(option = "imageName", description = "The name of the image to generate")
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
 	}
@@ -126,8 +130,29 @@ public class BootBuildImage extends DefaultTask {
 	 * Sets the builder that will be used to build the image.
 	 * @param builder the builder
 	 */
+	@Option(option = "builder", description = "The name of the builder image to use")
 	public void setBuilder(String builder) {
 		this.builder = builder;
+	}
+
+	/**
+	 * Returns the run image that will be included in the built image. When {@code null},
+	 * the run image bundled with the builder will be used.
+	 * @return the run image
+	 */
+	@Input
+	@Optional
+	public String getRunImage() {
+		return this.runImage;
+	}
+
+	/**
+	 * Sets the run image that will be included in the built image.
+	 * @param runImage the run image
+	 */
+	@Option(option = "runImage", description = "The name of the run image to use")
+	public void setRunImage(String runImage) {
+		this.runImage = runImage;
 	}
 
 	/**
@@ -200,7 +225,7 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	@TaskAction
-	void buildImage() throws DockerException, IOException {
+	void buildImage() throws DockerEngineException, IOException {
 		Builder builder = new Builder();
 		BuildRequest request = createRequest();
 		builder.build(request);
@@ -225,6 +250,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customize(BuildRequest request) {
 		request = customizeBuilder(request);
+		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
 		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
@@ -239,12 +265,19 @@ public class BootBuildImage extends DefaultTask {
 		return request;
 	}
 
+	private BuildRequest customizeRunImage(BuildRequest request) {
+		if (StringUtils.hasText(this.runImage)) {
+			return request.withRunImage(ImageReference.of(this.runImage));
+		}
+		return request;
+	}
+
 	private BuildRequest customizeEnvironment(BuildRequest request) {
 		if (this.environment != null && !this.environment.isEmpty()) {
 			request = request.withEnv(this.environment);
 		}
-		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(OPENJDK_BUILDPACK_JAVA_VERSION_KEY)) {
-			request = request.withEnv(OPENJDK_BUILDPACK_JAVA_VERSION_KEY, translateTargetJavaVersion());
+		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
+			request = request.withEnv(BUILDPACK_JVM_VERSION_KEY, translateTargetJavaVersion());
 		}
 		return request;
 	}

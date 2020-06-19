@@ -4,6 +4,7 @@ inputs:
 - name: git-repo
 outputs:
 - name: distribution-repository
+- name: git-repo
 caches:
 - path: gradle
 - path: embedmongo

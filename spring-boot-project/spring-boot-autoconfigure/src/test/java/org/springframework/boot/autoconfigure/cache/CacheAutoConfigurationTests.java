@@ -26,10 +26,6 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
-import com.couchbase.client.java.Bucket;
-import com.couchbase.client.java.bucket.BucketManager;
-import com.couchbase.client.spring.cache.CouchbaseCache;
-import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.hazelcast.cache.HazelcastCachingProvider;
@@ -46,6 +42,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
+import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider.MockCacheManager;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -66,6 +63,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.couchbase.CouchbaseClientFactory;
+import org.springframework.data.couchbase.cache.CouchbaseCache;
+import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -220,8 +220,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 					Cache cache = cacheManager.getCache("foo");
 					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
-					assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(context.getBean("bucket"));
+					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(0);
 				});
 	}
 
@@ -235,8 +234,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 					Cache cache = cacheManager.getCache("foo");
 					assertThat(cache).isInstanceOf(CouchbaseCache.class);
-					assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2);
-					assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(context.getBean("bucket"));
+					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(2);
 				});
 	}
 
@@ -357,8 +355,9 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 					CompleteConfiguration<?, ?> defaultCacheConfiguration = context
 							.getBean(CompleteConfiguration.class);
-					verify(cacheManager.getCacheManager()).createCache("one", defaultCacheConfiguration);
-					verify(cacheManager.getCacheManager()).createCache("two", defaultCacheConfiguration);
+					MockCacheManager mockCacheManager = (MockCacheManager) cacheManager.getCacheManager();
+					assertThat(mockCacheManager.getConfigurations()).containsEntry("one", defaultCacheConfiguration)
+							.containsEntry("two", defaultCacheConfiguration);
 				});
 	}
 
@@ -725,11 +724,8 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	static class CouchbaseCacheConfiguration {
 
 		@Bean
-		Bucket bucket() {
-			BucketManager bucketManager = mock(BucketManager.class);
-			Bucket bucket = mock(Bucket.class);
-			given(bucket.bucketManager()).willReturn(bucketManager);
-			return bucket;
+		CouchbaseClientFactory couchbaseClientFactory() {
+			return mock(CouchbaseClientFactory.class);
 		}
 
 	}

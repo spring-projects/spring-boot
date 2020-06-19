@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,6 @@ import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
-import org.apache.maven.model.building.ModelSource;
-import org.apache.maven.model.building.UrlModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.apache.maven.model.resolution.UnresolvableModelException;
@@ -161,13 +159,13 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	}
 
 	private void updateDependencyResolutionContext(List<Map<String, String>> bomDependencies) {
-		URI[] uris = Grape.getInstance().resolve(null, bomDependencies.toArray(new Map[0]));
+		URI[] uris = Grape.getInstance().resolve(null, bomDependencies.toArray(new Map<?, ?>[0]));
 		DefaultModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
 		for (URI uri : uris) {
 			try {
 				DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
 				request.setModelResolver(new GrapeModelResolver());
-				request.setModelSource(new UrlModelSource(uri.toURL()));
+				request.setModelSource(new org.apache.maven.model.building.UrlModelSource(uri.toURL()));
 				request.setSystemProperties(System.getProperties());
 				Model model = modelBuilder.build(request).getEffectiveModel();
 				this.resolutionContext.addDependencyManagement(new MavenModelDependencyManagement(model));
@@ -197,25 +195,28 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	private static class GrapeModelResolver implements ModelResolver {
 
 		@Override
-		public ModelSource resolveModel(Parent parent) throws UnresolvableModelException {
+		public org.apache.maven.model.building.ModelSource resolveModel(Parent parent)
+				throws UnresolvableModelException {
 			return resolveModel(parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
 		}
 
 		@Override
-		public ModelSource resolveModel(Dependency dependency) throws UnresolvableModelException {
+		public org.apache.maven.model.building.ModelSource resolveModel(Dependency dependency)
+				throws UnresolvableModelException {
 			return resolveModel(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
 		}
 
 		@Override
-		public ModelSource resolveModel(String groupId, String artifactId, String version)
-				throws UnresolvableModelException {
+		public org.apache.maven.model.building.ModelSource resolveModel(String groupId, String artifactId,
+				String version) throws UnresolvableModelException {
 			Map<String, String> dependency = new HashMap<>();
 			dependency.put("group", groupId);
 			dependency.put("module", artifactId);
 			dependency.put("version", version);
 			dependency.put("type", "pom");
 			try {
-				return new UrlModelSource(Grape.getInstance().resolve(null, dependency)[0].toURL());
+				return new org.apache.maven.model.building.UrlModelSource(
+						Grape.getInstance().resolve(null, dependency)[0].toURL());
 			}
 			catch (MalformedURLException ex) {
 				throw new UnresolvableModelException(ex.getMessage(), groupId, artifactId, version);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,9 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link #getRestTemplate()}.
  * <p>
  * If you are using the
- * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
- * annotation, a {@link TestRestTemplate} is automatically available and can be
- * {@code @Autowired} into your test. If you need customizations (for example to adding
+ * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest} annotation
+ * with an embedded server, a {@link TestRestTemplate} is automatically available and can
+ * be {@code @Autowired} into your test. If you need customizations (for example to adding
  * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer

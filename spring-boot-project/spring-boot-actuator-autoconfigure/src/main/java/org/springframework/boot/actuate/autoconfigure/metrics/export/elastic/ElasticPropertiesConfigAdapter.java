@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,11 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.elastic";
+	}
+
+	@Override
 	public String host() {
 		return get(ElasticProperties::getHost, ElasticConfig.super::host);
 	}
@@ -45,6 +50,11 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	@Override
 	public String indexDateFormat() {
 		return get(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
+	}
+
+	@Override
+	public String indexDateSeparator() {
+		return get(ElasticProperties::getIndexDateSeparator, ElasticConfig.super::indexDateSeparator);
 	}
 
 	@Override
@@ -65,6 +75,11 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 	@Override
 	public String password() {
 		return get(ElasticProperties::getPassword, ElasticConfig.super::password);
+	}
+
+	@Override
+	public String pipeline() {
+		return get(ElasticProperties::getPipeline, ElasticConfig.super::pipeline);
 	}
 
 }

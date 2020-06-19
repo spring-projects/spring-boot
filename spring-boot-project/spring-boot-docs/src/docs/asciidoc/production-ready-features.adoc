@@ -48,10 +48,10 @@ Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
 
-Each individual endpoint can be <<production-ready-endpoints-enabling-endpoints, enabled or disabled>>.
-This controls whether or not the endpoint is created and its bean exists in the application context.
-To be remotely accessible an endpoint also has to be <<production-ready-endpoints-exposing-endpoints, exposed via JMX or HTTP>>.
-Most applications choose HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
+Each individual endpoint can be <<production-ready-endpoints-enabling-endpoints, enabled or disabled>> and <<production-ready-endpoints-exposing-endpoints, exposed (made remotely accessible) over HTTP or JMX>>.
+An endpoint is considered to be available when it is both enabled and exposed.
+The built-in endpoints will only be auto-configured when they are available.
+Most applications choose exposure via HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
 The following technology-agnostic endpoints are available:
@@ -147,7 +147,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
   Requires a dependency on `micrometer-registry-prometheus`.
 |===
 
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}html/[HTML] or {spring-boot-actuator-restapi}pdf/spring-boot-actuator-web-api.pdf[PDF]).
+To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
@@ -363,7 +363,7 @@ A typical Spring Security configuration might look something like the following 
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
-See the API documentation ({spring-boot-actuator-restapi}html[HTML] or {spring-boot-actuator-restapi}pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
+See the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]) for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
@@ -405,8 +405,6 @@ The following example sets the time-to-live of the `beans` endpoint's cache to 1
 ----
 
 NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the endpoint that is being configured.
-
-NOTE: When making an authenticated HTTP request, the `Principal` is considered as input to the endpoint and, therefore, the response will not be cached.
 
 
 
@@ -649,7 +647,7 @@ If no `HealthIndicator` returns a status that is known to the `StatusAggregator`
 TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
 
 
-
+[[production-ready-health-indicators]]
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
 
@@ -657,17 +655,17 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
-| {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
-| Checks for low disk space.
-
 | {spring-boot-actuator-module-code}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
 | Checks that a connection to `DataSource` can be obtained.
+
+| {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
+| Checks for low disk space.
 
 | {spring-boot-actuator-module-code}/elasticsearch/ElasticSearchRestHealthContributorAutoConfiguration.java[`ElasticSearchRestHealthContributorAutoConfiguration`]
 | Checks that an Elasticsearch cluster is up.
@@ -684,6 +682,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
 | Checks that an LDAP server is up.
 
+| {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
+| Exposes the "Liveness" application availability state.
+
 | {spring-boot-actuator-module-code}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
 | Checks that a mail server is up.
 
@@ -698,6 +699,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 | {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
+
+| {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
+| Exposes the "Readiness" application availability state.
 
 | {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
@@ -751,13 +755,19 @@ To configure the severity order, add the following property to your application 
 	management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
 ----
 
-The HTTP status code in the response reflects the overall health status (for example, `UP` maps to 200, while `OUT_OF_SERVICE` and `DOWN` map to 503).
+The HTTP status code in the response reflects the overall health status.
+By default, `OUT_OF_SERVICE` and `DOWN` map to 503.
+Any unmapped health statuses, including `UP`, map to 200.
 You might also want to register custom status mappings if you access the health endpoint over HTTP.
-For example, the following property maps `FATAL` to 503 (service unavailable):
+Configuring a custom mapping disables the defaults mappings for `DOWN` and `OUT_OF_SERVICE`.
+If you want to retain the default mappings they must be configured explicitly alongside any custom mappings.
+For example, the following property maps `FATAL` to 503 (service unavailable) and retains the default mappings for `DOWN` and `OUT_OF_SERVICE`:
 
 [source,properties,indent=0,configprops]
 ----
+	management.endpoint.health.status.http-mapping.down=503
 	management.endpoint.health.status.http-mapping.fatal=503
+	management.endpoint.health.status.http-mapping.out-of-service=503
 ----
 
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
@@ -820,7 +830,7 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 |===
 | Name | Description
 
-| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`]
+| {spring-boot-actuator-module-code}/cassandra/CassandraReactiveHealthIndicator.java[`CassandraReactiveHealthIndicator`] or {spring-boot-actuator-module-code}/cassandra/CassandraDriverReactiveHealthIndicator.java[`CassandraDriverReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
@@ -837,10 +847,9 @@ TIP: If necessary, reactive indicators replace the regular ones.
 Also, any `HealthIndicator` that is not handled explicitly is wrapped automatically.
 
 
-
+[[production-ready-health-groups]]
 ==== Health Groups
 It's sometimes useful to organize health indicators into groups that can be used for different purposes.
-For example, if you deploy your application to Kubernetes, you may want one different sets of health indicators for your "`liveness`" and "`readiness`" probes.
 
 To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
@@ -861,10 +870,138 @@ It's also possible to override the `show-details` and `roles` properties if requ
 	management.endpoint.health.group.custom.roles=admin
 	management.endpoint.health.group.custom.status.order=fatal,up
 	management.endpoint.health.group.custom.status.http-mapping.fatal=500
-
+	management.endpoint.health.group.custom.status.http-mapping.out-of-service=500
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
+
+
+
+[[production-ready-kubernetes-probes]]
+=== Kubernetes Probes
+Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
+Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet will call those probes and react to the result.
+
+Spring Boot manages your <<spring-boot-features.adoc#boot-features-application-availability,Application Availability State>> out-of-the-box.
+If deployed in a Kubernetes environment, actuator will gather the "Liveness" and "Readiness" information from the `ApplicationAvailability` interface and use that information in dedicated <<production-ready-health-indicators,Health Indicators>>: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
+These indicators will be shown on the global health endpoint (`"/actuator/health"`).
+They will also be exposed as separate HTTP Probes using <<production-ready-health-groups, Health Groups>>: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
+
+You can then configure your Kubernetes infrastructure with the following endpoint information:
+
+[source,yml,indent=0]
+----
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: <actuator-port>
+  failureThreshold: ...
+  periodSeconds: ...
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: <actuator-port>
+  failureThreshold: ...
+  periodSeconds: ...
+----
+
+NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
+It could be the main web server port, or a separate management port if the `"management.server.port"` property has been set.
+
+These health groups are only enabled automatically if the application is <<deployment.adoc#cloud-deployment-kubernetes,running in a Kubernetes environment>>.
+You can enable them in any environment using the configprop:management.health.probes.enabled[] configuration property.
+
+NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
+The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<production-ready-features.adoc#production-ready-kubernetes-probes-lifecycle,how Probes behave during the application lifecycle>>.
+
+WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
+In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
+
+
+
+[[production-ready-kubernetes-probes-external-state]]
+==== Checking external state with Kubernetes Probes
+Actuator configures the "liveness" and "readiness" probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
+You can, for example, configure additional Health Indicators:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.readiness.include=readinessState,customCheck
+----
+
+By default, Spring Boot does not add other Health Indicators to these groups.
+
+The "`liveness`" Probe should not depend on health checks for external systems.
+If the <<spring-boot-features.adoc#boot-features-application-availability-liveness-state,Liveness State of an application>> is broken, Kubernetes will try to solve that problem by restarting the application instance.
+This means that if an external system fails (e.g. a database, a Web API, an external cache), Kubernetes might restart all application instances and create cascading failures.
+
+As for the "`readiness`" Probe, the choice of checking external systems must be made carefully by the application developers, i.e. Spring Boot does not include any additional health checks in the readiness probe.
+If the <<spring-boot-features.adoc#boot-features-application-availability-readiness-state,Readiness State of an application instance>> is unready, Kubernetes will not route traffic to that instance.
+Some external systems might not be shared by application instances, in which case they could quite naturally be included in a readiness probe.
+Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
+Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: include it in the readiness probe and expect that the application is taken out of service when the external service is down, or leave it out and deal with failures higher up the stack, e.g. using a circuit breaker in the caller.
+
+NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `NodePort` will not accept any incoming connections.
+There is no HTTP error response (503 etc.) since there is no connection.
+A Service with `type=LoadBalancer` might or might not accept connections, depending on the provider.
+A Service that has an explicit https://kubernetes.io/docs/concepts/services-networking/ingress/[Ingress] will also respond in a way that depends on the implementation - the ingress service itself will have to decide how to handle the "connection refused" from downstream.
+HTTP 503 is quite likely in the case of both load balancer and ingress.
+
+Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling] it may react differently to applications being taken out of the load-balancer, depending on its autoscaler configuration.
+
+
+
+[[production-ready-kubernetes-probes-lifecycle]]
+==== Application lifecycle and Probes states
+An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
+Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>.
+
+When a Spring Boot application starts:
+
+[cols="3,2,2,6"]
+|===
+|Application startup phase |Liveness State |Readiness State |Notes
+
+|Starting
+|`BROKEN`
+|`REFUSING_TRAFFIC`
+|Kubernetes checks the "liveness" Probe and restarts the application if it takes too long.
+
+|Started
+|`CORRECT`
+|`REFUSING_TRAFFIC`
+|The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
+
+|Ready
+|`CORRECT`
+|`ACCEPTING_TRAFFIC`
+|Startup tasks are finished. The application is receiving traffic.
+|===
+
+When a Spring Boot application shuts down:
+
+[cols="3,2,2,6"]
+|===
+|Application shutdown phase |Liveness State |Readiness State |Notes
+
+|Running
+|live
+|ready
+|Shutdown has been requested.
+
+|Graceful shutdown
+|live
+|unready
+|If enabled, <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown processes in-flight requests>>.
+
+|Shutdown complete
+|broken
+|unready
+|The application context is closed and the application cannot serve traffic.
+|===
+
+TIP: Check out the <<deployment.adoc#cloud-deployment-kubernetes-container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
 
 
 
@@ -1000,6 +1137,8 @@ For example, `health` is exposed as `/actuator/health`.
 
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 If both Jersey and Spring MVC are available, Spring MVC will be used.
+
+NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the API documentation ({spring-boot-actuator-restapi}/html[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
@@ -1170,6 +1309,10 @@ For example, with Maven, you would add the following dependency:
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the configprop:management.endpoints.web.exposure.include[] property.
 You can then access it by using `/actuator/jolokia` on your management HTTP server.
 
+NOTE: The Jolokia endpoint exposes Jolokia's servlet as an actuator endpoint.
+As a result, it is specific to servlet environments such as Spring MVC and Jersey.
+The endpoint will not be available in a WebFlux application.
+
 
 
 [[production-ready-customizing-jolokia]]
@@ -1232,7 +1375,7 @@ TIP: To "`reset`" the specific level of the logger (and use the default configur
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports numerous monitoring systems, including:
+Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {micrometer-docs}[numerous monitoring systems], including:
 
 - <<production-ready-metrics-export-appoptics,AppOptics>>
 - <<production-ready-metrics-export-atlas,Atlas>>
@@ -1517,6 +1660,15 @@ You can also change the interval at which metrics are sent to New Relic:
 	management.metrics.export.newrelic.step=30s
 ----
 
+By default, metrics are published via REST calls but it also possible to use the Java Agent API if you have it on the classpath:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.newrelic.client-provider-type=insights-agent
+----
+
+Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
+
 
 
 [[production-ready-metrics-export-prometheus]]
@@ -1668,7 +1820,7 @@ Spring Boot registers the following core metrics when applicable:
 ** Number of classes loaded/unloaded
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer metrics (<<production-ready-jmx,JMX support>> should be enabled)
+* Kafka consumer and producer metrics
 * Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
@@ -1727,7 +1879,8 @@ By default, Spring MVC-related metrics are tagged with the following information
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebMvcTagsContributor`.
+To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 
 
@@ -1760,7 +1913,8 @@ By default, WebFlux-related metrics are tagged with the following information:
 | Request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
+To add to the default tags, provide one or more ``@Bean``s that implement `WebFluxTagsContributor`.
+To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 
 
@@ -1915,6 +2069,13 @@ Auto-configuration will enable the instrumentation of all available RabbitMQ con
 
 
 
+[[production-ready-metrics-kafka]]
+==== Kafka Metrics
+Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory respectively.
+For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
+
+
+
 [[production-ready-metrics-custom]]
 === Registering custom metrics
 To register custom metrics, inject `MeterRegistry` into your component, as shown in the following example:
@@ -1989,8 +2150,8 @@ The following properties allow per-meter customization:
 | configprop:management.metrics.distribution.percentiles[]
 | Publish percentile values computed in your application
 
-| configprop:management.metrics.distribution.sla[]
-| Publish a cumulative histogram with buckets defined by your SLAs.
+| configprop:management.metrics.distribution.slo[]
+| Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
 For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.

@@ -176,12 +176,22 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
-	 * Additional folders besides the classes directory that should be added to the
+	 * Additional directories besides the classes directory that should be added to the
+	 * classpath.
+	 * @since 1.0.0
+	 * @deprecated since 2.3.0 in favor of {@code directories}
+	 */
+	@Deprecated
+	@Parameter(property = "spring-boot.run.folders")
+	private String[] folders;
+
+	/**
+	 * Additional directories besides the classes directory that should be added to the
 	 * classpath.
 	 * @since 1.0.0
 	 */
-	@Parameter(property = "spring-boot.run.folders")
-	private String[] folders;
+	@Parameter(property = "spring-boot.run.directories")
+	private String[] directories;
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
@@ -238,10 +248,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private boolean hasJvmArgs() {
 		return (this.jvmArguments != null && !this.jvmArguments.isEmpty())
 				|| (this.systemPropertyVariables != null && !this.systemPropertyVariables.isEmpty());
-	}
-
-	private boolean hasEnvVariables() {
-		return (this.environmentVariables != null && !this.environmentVariables.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {
@@ -444,7 +450,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addUserDefinedFolders(urls);
+			addUserDefinedDirectories(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -455,10 +461,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addUserDefinedFolders(List<URL> urls) throws MalformedURLException {
+	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
 		if (this.folders != null) {
 			for (String folder : this.folders) {
 				urls.add(new File(folder).toURI().toURL());
+			}
+		}
+		if (this.directories != null) {
+			for (String directory : this.directories) {
+				urls.add(new File(directory).toURI().toURL());
 			}
 		}
 	}

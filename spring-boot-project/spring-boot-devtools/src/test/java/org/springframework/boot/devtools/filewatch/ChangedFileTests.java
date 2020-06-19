@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,45 +37,44 @@ class ChangedFileTests {
 	File tempDir;
 
 	@Test
-	void sourceFolderMustNotBeNull() throws Exception {
+	void sourceDirectoryMustNotBeNull() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
-				.withMessageContaining("SourceFolder must not be null");
+				.withMessageContaining("SourceDirectory must not be null");
 	}
 
 	@Test
 	void fileMustNotBeNull() throws Exception {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "folder"), null, Type.ADD))
+				.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	void typeMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "folder"), null))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	void getFile() throws Exception {
 		File file = new File(this.tempDir, "file");
-		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "folder"), file, Type.ADD);
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), file, Type.ADD);
 		assertThat(changedFile.getFile()).isEqualTo(file);
 	}
 
 	@Test
 	void getType() throws Exception {
-		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "folder"), new File(this.tempDir, "file"),
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), new File(this.tempDir, "file"),
 				Type.DELETE);
 		assertThat(changedFile.getType()).isEqualTo(Type.DELETE);
 	}
 
 	@Test
 	void getRelativeName() throws Exception {
-		File subFolder = new File(this.tempDir, "A");
-		File file = new File(subFolder, "B.txt");
+		File subDirectory = new File(this.tempDir, "A");
+		File file = new File(subDirectory, "B.txt");
 		ChangedFile changedFile = new ChangedFile(this.tempDir, file, Type.ADD);
 		assertThat(changedFile.getRelativeName()).isEqualTo("A/B.txt");
 	}

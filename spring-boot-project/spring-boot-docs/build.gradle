@@ -6,9 +6,13 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
+description = "Spring Boot Docs"
+
 configurations {
 	actuatorApiDocumentation
-	asciidoctorExtensions
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
@@ -25,10 +29,19 @@ repositories {
 	}
 }
 
+sourceSets {
+	main
+}
+
+plugins.withType(EclipsePlugin) {
+	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
+		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
+	}
+}
+
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
-	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-parent")))
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
@@ -46,6 +59,32 @@ dependencies {
 
 	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
+	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
+	implementation("com.zaxxer:HikariCP")
+	implementation("io.micrometer:micrometer-core")
+	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("jakarta.servlet:jakarta.servlet-api")
+	implementation("org.apache.commons:commons-dbcp2")
+	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.tomcat.embed:tomcat-embed-core")
+	implementation("org.assertj:assertj-core")
+	implementation("org.glassfish.jersey.core:jersey-server")
+	implementation("org.hibernate:hibernate-jcache")
+	implementation("org.springframework:spring-test")
+	implementation("org.springframework:spring-web")
+	implementation("org.springframework:spring-webflux")
+	implementation("org.springframework.data:spring-data-redis")
+	implementation("org.springframework.data:spring-data-r2dbc")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.restdocs:spring-restdocs-restassured")
+	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
+	implementation("org.springframework.security:spring-security-config")
+	implementation("org.springframework.security:spring-security-web")
+	implementation("org.junit.jupiter:junit-jupiter")
+
 	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
@@ -58,9 +97,11 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 task javadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
+		Set<String> excludedProjects = ['spring-boot-antlib', 'spring-boot-configuration-metadata', 'spring-boot-configuration-processor',
+				'spring-boot-gradle-plugin', 'spring-boot-jarmode-layertools', 'spring-boot-maven-plugin']
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { it.name != "spring-boot-maven-plugin" && it.name != "spring-boot-gradle-plugin" }
+			.findAll { !excludedProjects.contains(it.name) }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
@@ -149,6 +190,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
 					"spring-data-solr-version": versionConstraints["org.springframework.data:spring-data-solr"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-security-version": versionConstraints["org.springframework.security:spring-security-core"],
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
@@ -157,19 +199,18 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 
 asciidoctor {
 	sources {
-		include "*.htmlsingleadoc"
+		include "*.singleadoc"
 	}
 }
 
 asciidoctorPdf {
 	sources {
-		include "*.pdfadoc"
+		include "*.singleadoc"
 	}
 }
 
 task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
-		include "*.htmladoc"
 		include "*.adoc"
 	}
 }
@@ -241,6 +282,8 @@ task zip(type: Zip) {
 	}
 	from(asciidoctorPdf.outputDir) {
 		into "reference/pdf"
+		include "index.pdf"
+		rename { "spring-boot-reference.pdf" }
 	}
 	from(asciidoctorMultipage.outputDir) {
 		into "reference/html"

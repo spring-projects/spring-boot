@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,23 @@ package org.springframework.boot.web.servlet.error;
 import org.springframework.stereotype.Controller;
 
 /**
- * Marker interface used to indicate that a {@link Controller @Controller} is used to
- * render errors. Primarily used to know the error paths that will not need to be secured.
+ * Marker interface used to identify a {@link Controller @Controller} that should be used
+ * to render errors.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @FunctionalInterface
 public interface ErrorController {
 
 	/**
-	 * Returns the path of the error page.
+	 * The return value from this method is not used; the property `server.error.path`
+	 * must be set to override the default error page path.
 	 * @return the error path
+	 * @deprecated since 2.3.0 in favor of setting the property `server.error.path`
 	 */
+	@Deprecated
 	String getErrorPath();
 
 }

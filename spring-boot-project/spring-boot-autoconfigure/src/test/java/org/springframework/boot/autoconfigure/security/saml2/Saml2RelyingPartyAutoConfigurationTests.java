@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
+import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -79,15 +80,32 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValues()).run((context) -> {
 			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
 			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-			assertThat(registration.getIdpWebSsoUrl())
+			assertThat(registration.getProviderDetails().getWebSsoUrl())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php");
-			assertThat(registration.getRemoteIdpEntityId())
+			assertThat(registration.getProviderDetails().getEntityId())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php");
 			assertThat(registration.getAssertionConsumerServiceUrlTemplate())
 					.isEqualTo("{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
+			assertThat(registration.getProviderDetails().getBinding()).isEqualTo(Saml2MessageBinding.POST);
+			assertThat(registration.getProviderDetails().isSignAuthNRequest()).isEqualTo(false);
 			assertThat(registration.getSigningCredentials()).isNotNull();
 			assertThat(registration.getVerificationCredentials()).isNotNull();
 		});
+	}
+
+	@Test
+	void autoConfigurationWhenSignRequestsTrueAndNoSigningCredentialsShouldThrowException() {
+		this.contextRunner.withPropertyValues(getPropertyValuesWithoutSigningCredentials(true)).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure()).hasMessageContaining(
+					"Signing credentials must not be empty when authentication requests require signing.");
+		});
+	}
+
+	@Test
+	void autoConfigurationWhenSignRequestsFalseAndNoSigningCredentialsShouldNotThrowException() {
+		this.contextRunner.withPropertyValues(getPropertyValuesWithoutSigningCredentials(false))
+				.run((context) -> assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class));
 	}
 
 	@Test
@@ -112,11 +130,22 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
 	}
 
+	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests) {
+		return new String[] { PREFIX
+				+ ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
+				PREFIX + ".foo.identityprovider.singlesignon.sign-request=" + signRequests,
+				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
+	}
+
 	private String[] getPropertyValues() {
 		return new String[] {
 				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
 				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
-				PREFIX + ".foo.identityprovider.sso-url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
+				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}

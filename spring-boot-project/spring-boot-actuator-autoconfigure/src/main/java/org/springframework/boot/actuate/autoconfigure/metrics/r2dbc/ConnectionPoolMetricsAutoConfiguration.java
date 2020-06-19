@@ -46,13 +46,17 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
 		R2dbcAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionPool.class, MeterRegistry.class })
-@ConditionalOnBean({ ConnectionPool.class, MeterRegistry.class })
+@ConditionalOnBean({ ConnectionFactory.class, MeterRegistry.class })
 public class ConnectionPoolMetricsAutoConfiguration {
 
 	@Autowired
-	public void bindConnectionPoolsToRegistry(Map<String, ConnectionPool> connectionPools, MeterRegistry registry) {
-		connectionPools.forEach((beanName,
-				connectionPool) -> new ConnectionPoolMetrics(connectionPool, beanName, Tags.empty()).bindTo(registry));
+	public void bindConnectionPoolsToRegistry(Map<String, ConnectionFactory> connectionFactories,
+			MeterRegistry registry) {
+		connectionFactories.forEach((beanName, connectionFactory) -> {
+			if (connectionFactory instanceof ConnectionPool) {
+				new ConnectionPoolMetrics((ConnectionPool) connectionFactory, beanName, Tags.empty()).bindTo(registry);
+			}
+		});
 	}
 
 }

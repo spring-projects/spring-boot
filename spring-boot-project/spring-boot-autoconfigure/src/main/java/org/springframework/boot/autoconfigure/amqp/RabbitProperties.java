@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
@@ -45,15 +46,20 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
 
+	private static final int DEFAULT_PORT = 5672;
+
+	private static final int DEFAULT_PORT_SECURE = 5671;
+
 	/**
-	 * RabbitMQ host.
+	 * RabbitMQ host. Ignored if an address is set.
 	 */
 	private String host = "localhost";
 
 	/**
-	 * RabbitMQ port.
+	 * RabbitMQ port. Ignored if an address is set. Default to 5672, or 5671 if SSL is
+	 * enabled.
 	 */
-	private int port = 5672;
+	private Integer port;
 
 	/**
 	 * Login user to authenticate to the broker.
@@ -76,7 +82,8 @@ public class RabbitProperties {
 	private String virtualHost;
 
 	/**
-	 * Comma-separated list of addresses to which the client should connect.
+	 * Comma-separated list of addresses to which the client should connect. When set, the
+	 * host and port are ignored.
 	 */
 	private String addresses;
 
@@ -143,7 +150,7 @@ public class RabbitProperties {
 		this.host = host;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
@@ -156,13 +163,16 @@ public class RabbitProperties {
 	 */
 	public int determinePort() {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return getPort();
+			Integer port = getPort();
+			if (port != null) {
+				return port;
+			}
+			return (Optional.ofNullable(getSsl().getEnabled()).orElse(false)) ? DEFAULT_PORT_SECURE : DEFAULT_PORT;
 		}
-		Address address = this.parsedAddresses.get(0);
-		return address.port;
+		return this.parsedAddresses.get(0).port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
@@ -177,7 +187,7 @@ public class RabbitProperties {
 	 */
 	public String determineAddresses() {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return this.host + ":" + this.port;
+			return this.host + ":" + determinePort();
 		}
 		List<String> addressStrings = new ArrayList<>();
 		for (Address parsedAddress : this.parsedAddresses) {
@@ -194,7 +204,7 @@ public class RabbitProperties {
 	private List<Address> parseAddresses(String addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
 		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
-			parsedAddresses.add(new Address(address, getSsl().isEnabled()));
+			parsedAddresses.add(new Address(address, Optional.ofNullable(getSsl().getEnabled()).orElse(false)));
 		}
 		return parsedAddresses;
 	}
@@ -327,9 +337,10 @@ public class RabbitProperties {
 	public class Ssl {
 
 		/**
-		 * Whether to enable SSL support.
+		 * Whether to enable SSL support. Determined automatically if an address is
+		 * provided with the protocol (amqp:// vs. amqps://).
 		 */
-		private boolean enabled;
+		private Boolean enabled;
 
 		/**
 		 * Path to the key store that holds the SSL certificate.
@@ -376,7 +387,7 @@ public class RabbitProperties {
 		 */
 		private boolean verifyHostname = true;
 
-		public boolean isEnabled() {
+		public Boolean getEnabled() {
 			return this.enabled;
 		}
 
@@ -385,17 +396,18 @@ public class RabbitProperties {
 		 * enabled flag if no addresses have been set.
 		 * @return whether ssl is enabled
 		 * @see #setAddresses(String)
-		 * @see #isEnabled()
+		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
+			boolean defaultEnabled = Optional.ofNullable(getEnabled()).orElse(false);
 			if (CollectionUtils.isEmpty(RabbitProperties.this.parsedAddresses)) {
-				return isEnabled();
+				return defaultEnabled;
 			}
 			Address address = RabbitProperties.this.parsedAddresses.get(0);
-			return address.determineSslEnabled(isEnabled());
+			return address.determineSslEnabled(defaultEnabled);
 		}
 
-		public void setEnabled(boolean enabled) {
+		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
@@ -953,11 +965,7 @@ public class RabbitProperties {
 
 		private static final String PREFIX_AMQP = "amqp://";
 
-		private static final int DEFAULT_PORT = 5672;
-
 		private static final String PREFIX_AMQP_SECURE = "amqps://";
-
-		private static final int DEFAULT_PORT_SECURE = 5671;
 
 		private String host;
 

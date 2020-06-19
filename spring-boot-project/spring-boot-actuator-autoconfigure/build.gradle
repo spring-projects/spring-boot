@@ -5,33 +5,31 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
     id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	asciidoctorExtensions
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
 	documentation
 }
 
 dependencies {
-	asciidoctorExtensions(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	implementation("org.springframework:spring-core")
-	implementation("org.springframework:spring-context")
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("ch.qos.logback:logback-classic")
+	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
@@ -101,6 +99,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-solr")
 	optional("org.springframework.integration:spring-integration-core")
+	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
@@ -143,6 +142,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
+	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
 }
 
 compileJava {
@@ -193,6 +193,7 @@ task zip(type: Zip) {
 	duplicatesStrategy "fail"
 	from(asciidoctorPdf.outputDir) {
 		into "pdf"
+		rename { "spring-boot-actuator-web-api.pdf" }
 	}
 	from(asciidoctor.outputDir) {
 		into "html"

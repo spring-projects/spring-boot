@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
 /**
  * Base class for setup that is common to MongoDB client factories.
  *
+ * @param <T> the mongo client type
  * @author Christoph Strobl
  * @author Scott Frederick
  * @since 2.3.0
@@ -68,14 +69,15 @@ public abstract class MongoClientFactorySupport<T> {
 		applyUuidRepresentation(settingsBuilder);
 		applyHostAndPort(settingsBuilder);
 		applyCredentials(settingsBuilder);
+		applyReplicaSet(settingsBuilder);
 		customize(settingsBuilder);
 		return settingsBuilder.build();
 	}
 
 	private void validateConfiguration() {
-		if (hasCustomAddress() || hasCustomCredentials()) {
+		if (hasCustomAddress() || hasCustomCredentials() || hasReplicaSet()) {
 			Assert.state(this.properties.getUri() == null,
-					"Invalid mongo configuration, either uri or host/port/credentials must be specified");
+					"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
 		}
 	}
 
@@ -109,6 +111,13 @@ public abstract class MongoClientFactorySupport<T> {
 		}
 	}
 
+	private void applyReplicaSet(Builder builder) {
+		if (hasReplicaSet()) {
+			builder.applyToClusterSettings(
+					(cluster) -> cluster.requiredReplicaSetName(this.properties.getReplicaSetName()));
+		}
+	}
+
 	private void customize(MongoClientSettings.Builder builder) {
 		for (MongoClientSettingsBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
@@ -135,6 +144,10 @@ public abstract class MongoClientFactorySupport<T> {
 
 	private boolean hasCustomCredentials() {
 		return this.properties.getUsername() != null && this.properties.getPassword() != null;
+	}
+
+	private boolean hasReplicaSet() {
+		return this.properties.getReplicaSetName() != null;
 	}
 
 	private boolean hasCustomAddress() {

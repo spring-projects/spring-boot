@@ -4,7 +4,6 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -12,12 +11,9 @@ description = "Spring Boot AutoConfigure"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("com.atomikos:transactions-jdbc")
 	optional("com.atomikos:transactions-jta")
-	optional("com.couchbase.client:couchbase-spring-cache")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -28,6 +24,7 @@ dependencies {
 	optional("com.hazelcast:hazelcast-client")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")
+	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.samskivert:jmustache")
 	optional("com.sun.mail:jakarta.mail")
 	optional("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
@@ -104,6 +101,7 @@ dependencies {
 	optional("org.springframework.integration:spring-integration-core")
 	optional("org.springframework.integration:spring-integration-jdbc")
 	optional("org.springframework.integration:spring-integration-jmx")
+	optional("org.springframework.integration:spring-integration-rsocket")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-tx")
@@ -150,7 +148,6 @@ dependencies {
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
 	optional("redis.clients:jedis")
 
-	testImplementation(platform(project(":spring-boot-project:spring-boot-parent")))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("ch.qos.logback:logback-classic")

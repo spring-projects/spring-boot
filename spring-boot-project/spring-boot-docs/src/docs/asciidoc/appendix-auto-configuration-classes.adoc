@@ -10,7 +10,7 @@ Remember to also look at the conditions report in your application for more deta
 
 
 [[auto-configuration-classes-from-autoconfigure-module]]
-== `spring-boot-autoconfigure`
+== spring-boot-autoconfigure
 The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
 
 include::auto-configuration-classes/spring-boot-autoconfigure.adoc[]
@@ -18,7 +18,7 @@ include::auto-configuration-classes/spring-boot-autoconfigure.adoc[]
 
 
 [[auto-configuration-classes-from-actuator]]
-== `spring-boot-actuator-autoconfigure`
+== spring-boot-actuator-autoconfigure
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 
 include::auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]

@@ -29,7 +29,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile">
-		<javac srcdir="src/main/java" destdir="build/ant/classes" classpathref="compile.classpath" fork="true" includeantruntime="false" />
+		<javac srcdir="src/main/java" destdir="build/ant/classes" classpathref="compile.classpath" fork="true" includeantruntime="false" source="8" target="8" compiler="javac1.8"/>
 	</target>
 
 	<target name="clean" description="cleans all created files/dirs">

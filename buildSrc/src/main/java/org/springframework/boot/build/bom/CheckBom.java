@@ -69,9 +69,14 @@ public class CheckBom extends DefaultTask {
 				.collect(Collectors.toSet());
 		Set<String> unused = new TreeSet<>();
 		for (String exclusion : exclusions) {
-			if (!resolved.contains(exclusion) && exclusion.endsWith(":*")) {
-				String group = exclusion.substring(0, exclusion.indexOf(':') + 1);
-				if (resolved.stream().noneMatch((candidate) -> candidate.startsWith(group))) {
+			if (!resolved.contains(exclusion)) {
+				if (exclusion.endsWith(":*")) {
+					String group = exclusion.substring(0, exclusion.indexOf(':') + 1);
+					if (resolved.stream().noneMatch((candidate) -> candidate.startsWith(group))) {
+						unused.add(exclusion);
+					}
+				}
+				else {
 					unused.add(exclusion);
 				}
 			}

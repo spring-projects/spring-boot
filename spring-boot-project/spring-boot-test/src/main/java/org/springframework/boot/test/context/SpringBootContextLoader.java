@@ -23,10 +23,6 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -81,8 +77,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
-
-	private static final String[] NO_ARGS = new String[0];
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
@@ -149,16 +143,22 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * empty array.
 	 * @param config the source context configuration
 	 * @return the application arguments to use
+	 * @deprecated since 2.2.7
 	 * @see SpringApplication#run(String...)
 	 */
+	@Deprecated
 	protected String[] getArgs(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
-				.getValue("args", String[].class).orElse(NO_ARGS);
+		return SpringBootTestArgs.get(config.getContextCustomizers());
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
-		TestPropertyValues.of("spring.profiles.active=" + StringUtils.arrayToCommaDelimitedString(profiles))
-				.applyTo(environment);
+		environment.setActiveProfiles(profiles);
+		// Also add as properties to override any application.properties
+		String[] pairs = new String[profiles.length];
+		for (int i = 0; i < profiles.length; i++) {
+			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+		}
+		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
@@ -166,24 +166,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
 		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
-		if (!isEmbeddedWebEnvironment(config) && !hasCustomServerPort(properties)) {
-			properties.add("server.port=-1");
-		}
 		return StringUtils.toStringArray(properties);
 	}
 
 	private void disableJmx(List<String> properties) {
 		properties.add("spring.jmx.enabled=false");
-	}
-
-	private boolean hasCustomServerPort(List<String> properties) {
-		Binder binder = new Binder(convertToConfigurationPropertySource(properties));
-		return binder.bind("server.port", Bindable.of(String.class)).isBound();
-	}
-
-	private ConfigurationPropertySource convertToConfigurationPropertySource(List<String> properties) {
-		return new MapConfigurationPropertySource(
-				TestPropertySourceUtils.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
 	}
 
 	/**

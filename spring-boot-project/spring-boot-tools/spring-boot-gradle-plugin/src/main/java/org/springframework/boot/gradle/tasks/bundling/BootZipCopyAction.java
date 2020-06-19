@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,18 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.zip.UnixStat;
@@ -34,11 +41,21 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
+import org.gradle.api.java.archives.Attributes;
+import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.WorkResult;
+import org.gradle.api.tasks.WorkResults;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.Layer;
+import org.springframework.boot.loader.tools.LayersIndex;
+import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link CopyAction} for creating a Spring Boot zip archive (typically a jar or war).
@@ -46,6 +63,7 @@ import org.springframework.boot.loader.tools.FileUtils;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class BootZipCopyAction implements CopyAction {
 
@@ -54,9 +72,13 @@ class BootZipCopyAction implements CopyAction {
 
 	private final File output;
 
+	private final Manifest manifest;
+
 	private final boolean preserveFileTimestamps;
 
 	private final boolean includeDefaultLoader;
+
+	private final String layerToolsLocation;
 
 	private final Spec<FileTreeElement> requiresUnpack;
 
@@ -64,54 +86,65 @@ class BootZipCopyAction implements CopyAction {
 
 	private final LaunchScriptConfiguration launchScript;
 
+	private final Spec<FileCopyDetails> librarySpec;
+
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
 	private final String encoding;
 
-	BootZipCopyAction(File output, boolean preserveFileTimestamps, boolean includeDefaultLoader,
-			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
-			LaunchScriptConfiguration launchScript, Function<FileCopyDetails, ZipCompression> compressionResolver,
-			String encoding) {
+	private final LayerResolver layerResolver;
+
+	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, boolean includeDefaultLoader,
+			String layerToolsLocation, Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
+			LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
+			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
+			LayerResolver layerResolver) {
 		this.output = output;
+		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
 		this.includeDefaultLoader = includeDefaultLoader;
+		this.layerToolsLocation = layerToolsLocation;
 		this.requiresUnpack = requiresUnpack;
 		this.exclusions = exclusions;
 		this.launchScript = launchScript;
+		this.librarySpec = librarySpec;
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
+		this.layerResolver = layerResolver;
 	}
 
 	@Override
-	public WorkResult execute(CopyActionProcessingStream stream) {
+	public WorkResult execute(CopyActionProcessingStream copyActions) {
 		try {
-			writeArchive(stream);
-			return () -> true;
+			writeArchive(copyActions);
+			return WorkResults.didWork(true);
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to create " + this.output, ex);
 		}
 	}
 
-	private void writeArchive(CopyActionProcessingStream stream) throws IOException {
-		OutputStream outputStream = new FileOutputStream(this.output);
+	private void writeArchive(CopyActionProcessingStream copyActions) throws IOException {
+		OutputStream output = new FileOutputStream(this.output);
 		try {
-			writeLaunchScriptIfNecessary(outputStream);
-			ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(outputStream);
-			try {
-				if (this.encoding != null) {
-					zipOutputStream.setEncoding(this.encoding);
-				}
-				Processor processor = new Processor(zipOutputStream);
-				stream.process(processor::process);
-				processor.finish();
-			}
-			finally {
-				closeQuietly(zipOutputStream);
-			}
+			writeArchive(copyActions, output);
 		}
 		finally {
-			closeQuietly(outputStream);
+			closeQuietly(output);
+		}
+	}
+
+	private void writeArchive(CopyActionProcessingStream copyActions, OutputStream output) throws IOException {
+		writeLaunchScriptIfNecessary(output);
+		ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(output);
+		try {
+			setEncodingIfNecessary(zipOutput);
+			Processor processor = new Processor(zipOutput);
+			copyActions.process(processor::process);
+			processor.finish();
+		}
+		finally {
+			closeQuietly(zipOutput);
 		}
 	}
 
@@ -131,6 +164,12 @@ class BootZipCopyAction implements CopyAction {
 		}
 	}
 
+	private void setEncodingIfNecessary(ZipArchiveOutputStream zipOutputStream) {
+		if (this.encoding != null) {
+			zipOutputStream.setEncoding(this.encoding);
+		}
+	}
+
 	private void closeQuietly(OutputStream outputStream) {
 		try {
 			outputStream.close();
@@ -144,17 +183,24 @@ class BootZipCopyAction implements CopyAction {
 	 */
 	private class Processor {
 
-		private ZipArchiveOutputStream outputStream;
+		private final ZipArchiveOutputStream out;
 
-		private Spec<FileTreeElement> writtenLoaderEntries;
+		private final LayersIndex layerIndex;
 
-		Processor(ZipArchiveOutputStream outputStream) {
-			this.outputStream = outputStream;
+		private LoaderZipEntries.WrittenEntries writtenLoaderEntries;
+
+		private final Set<String> writtenDirectories = new LinkedHashSet<>();
+
+		private final Set<String> writtenLibraries = new LinkedHashSet<>();
+
+		Processor(ZipArchiveOutputStream out) {
+			this.out = out;
+			this.layerIndex = (BootZipCopyAction.this.layerResolver != null)
+					? new LayersIndex(BootZipCopyAction.this.layerResolver.getLayers()) : null;
 		}
 
 		void process(FileCopyDetails details) {
-			if (BootZipCopyAction.this.exclusions.isSatisfiedBy(details)
-					|| (this.writtenLoaderEntries != null && this.writtenLoaderEntries.isSatisfiedBy(details))) {
+			if (skipProcessing(details)) {
 				return;
 			}
 			try {
@@ -171,8 +217,64 @@ class BootZipCopyAction implements CopyAction {
 			}
 		}
 
+		private boolean skipProcessing(FileCopyDetails details) {
+			return BootZipCopyAction.this.exclusions.isSatisfiedBy(details)
+					|| (this.writtenLoaderEntries != null && this.writtenLoaderEntries.isWrittenDirectory(details));
+		}
+
+		private void processDirectory(FileCopyDetails details) throws IOException {
+			String name = details.getRelativePath().getPathString();
+			ZipArchiveEntry entry = new ZipArchiveEntry(name + '/');
+			prepareEntry(entry, name, getTime(details), UnixStat.FILE_FLAG | details.getMode());
+			this.out.putArchiveEntry(entry);
+			this.out.closeArchiveEntry();
+			this.writtenDirectories.add(name);
+		}
+
+		private void processFile(FileCopyDetails details) throws IOException {
+			String name = details.getRelativePath().getPathString();
+			ZipArchiveEntry entry = new ZipArchiveEntry(name);
+			prepareEntry(entry, name, getTime(details), UnixStat.FILE_FLAG | details.getMode());
+			ZipCompression compression = BootZipCopyAction.this.compressionResolver.apply(details);
+			if (compression == ZipCompression.STORED) {
+				prepareStoredEntry(details, entry);
+			}
+			this.out.putArchiveEntry(entry);
+			details.copyTo(this.out);
+			this.out.closeArchiveEntry();
+			if (BootZipCopyAction.this.librarySpec.isSatisfiedBy(details)) {
+				this.writtenLibraries.add(name.substring(name.lastIndexOf('/') + 1));
+			}
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(details);
+				this.layerIndex.add(layer, name);
+			}
+		}
+
+		private void writeParentDirectoriesIfNecessary(String name, Long time) throws IOException {
+			String parentDirectory = getParentDirectory(name);
+			if (parentDirectory != null && this.writtenDirectories.add(parentDirectory)) {
+				ZipArchiveEntry entry = new ZipArchiveEntry(parentDirectory + '/');
+				prepareEntry(entry, parentDirectory, time, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+				this.out.putArchiveEntry(entry);
+				this.out.closeArchiveEntry();
+			}
+		}
+
+		private String getParentDirectory(String name) {
+			int lastSlash = name.lastIndexOf('/');
+			if (lastSlash == -1) {
+				return null;
+			}
+			return name.substring(0, lastSlash);
+		}
+
 		void finish() throws IOException {
 			writeLoaderEntriesIfNecessary(null);
+			writeJarToolsIfNecessary();
+			writeClassPathIndexIfNecessary();
+			// We must write the layer index last
+			writeLayersIndexIfNecessary();
 		}
 
 		private void writeLoaderEntriesIfNecessary(FileCopyDetails details) throws IOException {
@@ -180,12 +282,17 @@ class BootZipCopyAction implements CopyAction {
 				return;
 			}
 			if (isInMetaInf(details)) {
-				// Don't write loader entries until after META-INF folder (see gh-16698)
+				// Always write loader entries after META-INF directory (see gh-16698)
 				return;
 			}
-			LoaderZipEntries loaderEntries = new LoaderZipEntries(
-					BootZipCopyAction.this.preserveFileTimestamps ? null : CONSTANT_TIME_FOR_ZIP_ENTRIES);
-			this.writtenLoaderEntries = loaderEntries.writeTo(this.outputStream);
+			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime());
+			this.writtenLoaderEntries = loaderEntries.writeTo(this.out);
+			if (BootZipCopyAction.this.layerResolver != null) {
+				for (String name : this.writtenLoaderEntries.getFiles()) {
+					Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
+					this.layerIndex.add(layer, name);
+				}
+			}
 		}
 
 		private boolean isInMetaInf(FileCopyDetails details) {
@@ -196,43 +303,162 @@ class BootZipCopyAction implements CopyAction {
 			return segments.length > 0 && "META-INF".equals(segments[0]);
 		}
 
-		private void processDirectory(FileCopyDetails details) throws IOException {
-			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(details.getRelativePath().getPathString() + '/');
-			archiveEntry.setUnixMode(UnixStat.DIR_FLAG | details.getMode());
-			archiveEntry.setTime(getTime(details));
-			this.outputStream.putArchiveEntry(archiveEntry);
-			this.outputStream.closeArchiveEntry();
+		private void writeJarToolsIfNecessary() throws IOException {
+			if (BootZipCopyAction.this.layerToolsLocation != null) {
+				writeJarModeLibrary(BootZipCopyAction.this.layerToolsLocation, JarModeLibrary.LAYER_TOOLS);
+			}
 		}
 
-		private void processFile(FileCopyDetails details) throws IOException {
-			String relativePath = details.getRelativePath().getPathString();
-			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(relativePath);
-			archiveEntry.setUnixMode(UnixStat.FILE_FLAG | details.getMode());
-			archiveEntry.setTime(getTime(details));
-			ZipCompression compression = BootZipCopyAction.this.compressionResolver.apply(details);
-			if (compression == ZipCompression.STORED) {
-				prepareStoredEntry(details, archiveEntry);
+		private void writeJarModeLibrary(String location, JarModeLibrary library) throws IOException {
+			String name = location + library.getName();
+			writeEntry(name, ZipEntryContentWriter.fromInputStream(library.openStream()), false,
+					(entry) -> prepareStoredEntry(library.openStream(), entry));
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
+				this.layerIndex.add(layer, name);
 			}
-			this.outputStream.putArchiveEntry(archiveEntry);
-			details.copyTo(this.outputStream);
-			this.outputStream.closeArchiveEntry();
+		}
+
+		private void writeClassPathIndexIfNecessary() throws IOException {
+			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
+			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
+			if (classPathIndex != null) {
+				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
+						.collect(Collectors.toList());
+				writeEntry(classPathIndex, ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines),
+						true);
+			}
+		}
+
+		private void writeLayersIndexIfNecessary() throws IOException {
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
+				String name = (String) manifestAttributes.get("Spring-Boot-Layers-Index");
+				Assert.state(StringUtils.hasText(name), "Missing layer index manifest attribute");
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
+				this.layerIndex.add(layer, name);
+				writeEntry(name, this.layerIndex::writeTo, false);
+			}
+		}
+
+		private void writeEntry(String name, ZipEntryContentWriter entryWriter, boolean addToLayerIndex)
+				throws IOException {
+			writeEntry(name, entryWriter, addToLayerIndex, ZipEntryCustomizer.NONE);
+		}
+
+		private void writeEntry(String name, ZipEntryContentWriter entryWriter, boolean addToLayerIndex,
+				ZipEntryCustomizer entryCustomizer) throws IOException {
+			ZipArchiveEntry entry = new ZipArchiveEntry(name);
+			prepareEntry(entry, name, getTime(), UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+			entryCustomizer.customize(entry);
+			this.out.putArchiveEntry(entry);
+			entryWriter.writeTo(this.out);
+			this.out.closeArchiveEntry();
+			if (addToLayerIndex && BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
+				this.layerIndex.add(layer, name);
+			}
+		}
+
+		private void prepareEntry(ZipArchiveEntry entry, String name, Long time, int mode) throws IOException {
+			writeParentDirectoriesIfNecessary(name, time);
+			entry.setUnixMode(mode);
+			if (time != null) {
+				entry.setTime(time);
+			}
 		}
 
 		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {
-			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
-			archiveEntry.setSize(details.getSize());
-			archiveEntry.setCompressedSize(details.getSize());
-			Crc32OutputStream crcStream = new Crc32OutputStream();
-			details.copyTo(crcStream);
-			archiveEntry.setCrc(crcStream.getCrc());
+			prepareStoredEntry(details.open(), archiveEntry);
 			if (BootZipCopyAction.this.requiresUnpack.isSatisfiedBy(details)) {
 				archiveEntry.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
 			}
 		}
 
-		private long getTime(FileCopyDetails details) {
-			return BootZipCopyAction.this.preserveFileTimestamps ? details.getLastModified()
-					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
+		private void prepareStoredEntry(InputStream input, ZipArchiveEntry archiveEntry) throws IOException {
+			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
+			Crc32OutputStream crcStream = new Crc32OutputStream();
+			int size = FileCopyUtils.copy(input, crcStream);
+			archiveEntry.setSize(size);
+			archiveEntry.setCompressedSize(size);
+			archiveEntry.setCrc(crcStream.getCrc());
+		}
+
+		private Long getTime() {
+			return getTime(null);
+		}
+
+		private Long getTime(FileCopyDetails details) {
+			if (!BootZipCopyAction.this.preserveFileTimestamps) {
+				return CONSTANT_TIME_FOR_ZIP_ENTRIES;
+			}
+			if (details != null) {
+				return details.getLastModified();
+			}
+			return null;
+		}
+
+	}
+
+	/**
+	 * Callback interface used to customize a {@link ZipArchiveEntry}.
+	 */
+	@FunctionalInterface
+	private interface ZipEntryCustomizer {
+
+		ZipEntryCustomizer NONE = (entry) -> {
+		};
+
+		/**
+		 * Customize the entry.
+		 * @param entry the entry to customize
+		 * @throws IOException on IO error
+		 */
+		void customize(ZipArchiveEntry entry) throws IOException;
+
+	}
+
+	/**
+	 * Callback used to write a zip entry data.
+	 */
+	@FunctionalInterface
+	private interface ZipEntryContentWriter {
+
+		/**
+		 * Write the entry data.
+		 * @param out the output stream used to write the data
+		 * @throws IOException on IO error
+		 */
+		void writeTo(ZipArchiveOutputStream out) throws IOException;
+
+		/**
+		 * Create a new {@link ZipEntryContentWriter} that will copy content from the
+		 * given {@link InputStream}.
+		 * @param in the source input stream
+		 * @return a new {@link ZipEntryContentWriter} instance
+		 */
+		static ZipEntryContentWriter fromInputStream(InputStream in) {
+			return (out) -> {
+				StreamUtils.copy(in, out);
+				in.close();
+			};
+		}
+
+		/**
+		 * Create a new {@link ZipEntryContentWriter} that will copy content from the
+		 * given lines.
+		 * @param encoding the required character encoding
+		 * @param lines the lines to write
+		 * @return a new {@link ZipEntryContentWriter} instance
+		 */
+		static ZipEntryContentWriter fromLines(String encoding, Collection<String> lines) {
+			return (out) -> {
+				OutputStreamWriter writer = new OutputStreamWriter(out, encoding);
+				for (String line : lines) {
+					writer.append(line).append("\n");
+				}
+				writer.flush();
+			};
 		}
 
 	}

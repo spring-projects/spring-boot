@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,12 +171,12 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	@Test
 	void determineImportsShouldNotSetPackageImport() throws Exception {
-		Class<?> packageImportClass = ClassUtils.resolveClassName(
-				"org.springframework.boot.autoconfigure.AutoConfigurationPackages.PackageImport", null);
+		Class<?> packageImportsClass = ClassUtils.resolveClassName(
+				"org.springframework.boot.autoconfigure.AutoConfigurationPackages.PackageImports", null);
 		Set<Object> selectedImports = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		for (Object selectedImport : selectedImports) {
-			assertThat(selectedImport).isNotInstanceOf(packageImportClass);
+			assertThat(selectedImport).isNotInstanceOf(packageImportsClass);
 		}
 	}
 

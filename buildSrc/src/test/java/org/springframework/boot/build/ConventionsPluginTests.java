@@ -21,9 +21,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +51,17 @@ class ConventionsPluginTests {
 	void setup(@TempDir File projectDir) throws IOException {
 		this.projectDir = projectDir;
 		this.buildFile = new File(this.projectDir, "build.gradle");
+		File settingsFile = new File(this.projectDir, "settings.gradle");
+		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
+			out.println("include ':spring-boot-project:spring-boot-parent'");
+		}
+		File springBootParent = new File(this.projectDir, "spring-boot-project/spring-boot-parent/build.gradle");
+		springBootParent.getParentFile().mkdirs();
+		try (PrintWriter out = new PrintWriter(new FileWriter(springBootParent))) {
+			out.println("plugins {");
+			out.println("    id 'java-platform'");
+			out.println("}");
+		}
 	}
 
 	@Test
@@ -74,8 +88,59 @@ class ConventionsPluginTests {
 		}
 	}
 
-	private void runGradle(String... args) {
-		GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withPluginClasspath().build();
+	@Test
+	void testRetryIsConfiguredWithThreeRetriesOnCI() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("description 'Test'");
+			out.println("task retryConfig {");
+			out.println("    doLast {");
+			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
+			out.println("    test.retry {");
+			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
+			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
+			out.println("        }");
+			out.println("    }");
+			out.println("}");
+		}
+		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
+				.contains("Retry plugin applied: true").contains("maxRetries: 3")
+				.contains("failOnPassedAfterRetry: true");
+	}
+
+	@Test
+	void testRetryIsConfiguredWithZeroRetriesLocally() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("description 'Test'");
+			out.println("task retryConfig {");
+			out.println("    doLast {");
+			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
+			out.println("    test.retry {");
+			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
+			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
+			out.println("        }");
+			out.println("    }");
+			out.println("}");
+		}
+		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
+				.contains("Retry plugin applied: true").contains("maxRetries: 0")
+				.contains("failOnPassedAfterRetry: true");
+	}
+
+	private BuildResult runGradle(String... args) {
+		return runGradle(Collections.emptyMap(), args);
+	}
+
+	private BuildResult runGradle(Map<String, String> environment, String... args) {
+		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
+				.withPluginClasspath().build();
 	}
 
 }

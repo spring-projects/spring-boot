@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  */
 public final class ChangedFile {
 
-	private final File sourceFolder;
+	private final File sourceDirectory;
 
 	private final File file;
 
@@ -38,15 +38,15 @@ public final class ChangedFile {
 
 	/**
 	 * Create a new {@link ChangedFile} instance.
-	 * @param sourceFolder the source folder
+	 * @param sourceDirectory the source directory
 	 * @param file the file
 	 * @param type the type of change
 	 */
-	public ChangedFile(File sourceFolder, File file, Type type) {
-		Assert.notNull(sourceFolder, "SourceFolder must not be null");
+	public ChangedFile(File sourceDirectory, File file, Type type) {
+		Assert.notNull(sourceDirectory, "SourceDirectory must not be null");
 		Assert.notNull(file, "File must not be null");
 		Assert.notNull(type, "Type must not be null");
-		this.sourceFolder = sourceFolder;
+		this.sourceDirectory = sourceDirectory;
 		this.file = file;
 		this.type = type;
 	}
@@ -68,17 +68,17 @@ public final class ChangedFile {
 	}
 
 	/**
-	 * Return the name of the file relative to the source folder.
+	 * Return the name of the file relative to the source directory.
 	 * @return the relative name
 	 */
 	public String getRelativeName() {
-		File folder = this.sourceFolder.getAbsoluteFile();
+		File directory = this.sourceDirectory.getAbsoluteFile();
 		File file = this.file.getAbsoluteFile();
-		String folderName = StringUtils.cleanPath(folder.getPath());
+		String directoryName = StringUtils.cleanPath(directory.getPath());
 		String fileName = StringUtils.cleanPath(file.getPath());
-		Assert.state(fileName.startsWith(folderName),
-				() -> "The file " + fileName + " is not contained in the source folder " + folderName);
-		return fileName.substring(folderName.length() + 1);
+		Assert.state(fileName.startsWith(directoryName),
+				() -> "The file " + fileName + " is not contained in the source directory " + directoryName);
+		return fileName.substring(directoryName.length() + 1);
 	}
 
 	@Override

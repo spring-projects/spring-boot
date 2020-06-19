@@ -42,7 +42,9 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @author Andy Wilkinson
  * @since 1.2.0
+ * @deprecated since 2.3.0 as the Bitronix project is no longer being maintained
  */
+@Deprecated
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
 public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware, InitializingBean {

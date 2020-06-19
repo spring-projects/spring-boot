@@ -25,6 +25,7 @@ import java.io.InputStream;
  * Encapsulates information about a single library that may be packed into the archive.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.1.2
  * @see Libraries
  */
@@ -35,6 +36,8 @@ public class Library {
 	private final File file;
 
 	private final LibraryScope scope;
+
+	private final LibraryCoordinates coordinates;
 
 	private final boolean unpackRequired;
 
@@ -66,9 +69,23 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
+		this(name, file, scope, null, unpackRequired);
+	}
+
+	/**
+	 * Create a new {@link Library}.
+	 * @param name the name of the library as it should be written or {@code null} to use
+	 * the file name
+	 * @param file the source file
+	 * @param scope the scope of the library
+	 * @param coordinates the library coordinates or {@code null}
+	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 */
+	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired) {
 		this.name = (name != null) ? name : file.getName();
 		this.file = file;
 		this.scope = scope;
+		this.coordinates = coordinates;
 		this.unpackRequired = unpackRequired;
 	}
 
@@ -103,6 +120,14 @@ public class Library {
 	 */
 	public LibraryScope getScope() {
 		return this.scope;
+	}
+
+	/**
+	 * Return the {@linkplain LibraryCoordinates coordinates} of the library.
+	 * @return the coordinates
+	 */
+	public LibraryCoordinates getCoordinates() {
+		return this.coordinates;
 	}
 
 	/**

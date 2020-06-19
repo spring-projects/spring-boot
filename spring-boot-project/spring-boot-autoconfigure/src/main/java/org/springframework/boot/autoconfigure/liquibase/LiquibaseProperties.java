@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Marcel Overdijk
  * @author Eddú Meléndez
+ * @author Ferenc Gratzer
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
@@ -37,7 +38,13 @@ public class LiquibaseProperties {
 	/**
 	 * Change log configuration path.
 	 */
-	private String changeLog = "classpath:db/changelog/db.changelog-master.yaml";
+	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
+
+	/**
+	 * Whether to clear all checksums in the current changelog, so they will be
+	 * recalculated upon the next update.
+	 */
+	private boolean clearChecksums;
 
 	/**
 	 * Comma-separated list of runtime contexts to use.
@@ -185,6 +192,14 @@ public class LiquibaseProperties {
 
 	public void setDropFirst(boolean dropFirst) {
 		this.dropFirst = dropFirst;
+	}
+
+	public boolean isClearChecksums() {
+		return this.clearChecksums;
+	}
+
+	public void setClearChecksums(boolean clearChecksums) {
+		this.clearChecksums = clearChecksums;
 	}
 
 	public boolean isEnabled() {

@@ -9,11 +9,9 @@ plugins {
 description = "Spring Boot Actuator"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot"))
 
-	implementation(project(":spring-boot-project:spring-boot"))
-
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
@@ -87,6 +85,7 @@ dependencies {
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }
 

@@ -145,7 +145,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 		if (this.username != null && this.password != null) {
 			builder.credentials(this.username, this.password);
 		}
-		builder.autoIndex(this.getAutoIndex().getName());
+		builder.autoIndex(getAutoIndex().getName());
 		if (this.useNativeTypes) {
 			builder.useNativeTypes();
 		}

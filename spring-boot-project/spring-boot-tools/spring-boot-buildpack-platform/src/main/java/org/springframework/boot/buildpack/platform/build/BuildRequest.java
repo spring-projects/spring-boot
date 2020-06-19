@@ -36,13 +36,17 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	private static final ImageReference DEFAULT_BUILDER = ImageReference.of("cloudfoundry/cnb:0.0.53-bionic");
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "gcr.io/paketo-buildpacks/builder:base-platform-api-0.3";
+
+	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_NAME);
 
 	private final ImageReference name;
 
 	private final Function<Owner, TarArchive> applicationContent;
 
 	private final ImageReference builder;
+
+	private final ImageReference runImage;
 
 	private final Creator creator;
 
@@ -58,6 +62,7 @@ public class BuildRequest {
 		this.name = name.inTaggedForm();
 		this.applicationContent = applicationContent;
 		this.builder = DEFAULT_BUILDER;
+		this.runImage = null;
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
 		this.verboseLogging = false;
@@ -65,10 +70,12 @@ public class BuildRequest {
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
-			Creator creator, Map<String, String> env, boolean cleanCache, boolean verboseLogging) {
+			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
+			boolean verboseLogging) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
+		this.runImage = runImage;
 		this.creator = creator;
 		this.env = env;
 		this.cleanCache = cleanCache;
@@ -82,19 +89,29 @@ public class BuildRequest {
 	 */
 	public BuildRequest withBuilder(ImageReference builder) {
 		Assert.notNull(builder, "Builder must not be null");
-		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedForm(), this.creator, this.env,
-				this.cleanCache, this.verboseLogging);
+		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with an updated builder.
+	 * Return a new {@link BuildRequest} with an updated run image.
+	 * @param runImageName the run image to use
+	 * @return an updated build request
+	 */
+	public BuildRequest withRunImage(ImageReference runImageName) {
+		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
+				this.creator, this.env, this.cleanCache, this.verboseLogging);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated creator.
 	 * @param creator the new {@code Creator} to use
 	 * @return an updated build request
 	 */
 	public BuildRequest withCreator(Creator creator) {
 		Assert.notNull(creator, "Creator must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, creator, this.env, this.cleanCache,
-				this.verboseLogging);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
+				this.cleanCache, this.verboseLogging);
 	}
 
 	/**
@@ -108,12 +125,12 @@ public class BuildRequest {
 		Assert.hasText(value, "Value must not be empty");
 		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator,
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with an additional env variables.
+	 * Return a new {@link BuildRequest} with additional env variables.
 	 * @param env the additional variables
 	 * @return an updated build request
 	 */
@@ -121,27 +138,27 @@ public class BuildRequest {
 		Assert.notNull(env, "Env must not be null");
 		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator,
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with an specific clean cache settings.
+	 * Return a new {@link BuildRequest} with an updated clean cache setting.
 	 * @param cleanCache if the cache should be cleaned
 	 * @return an updated build request
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator, this.env, cleanCache,
-				this.verboseLogging);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				cleanCache, this.verboseLogging);
 	}
 
 	/**
-	 * Return a new {@link BuildRequest} with an specific verbose logging settings.
+	 * Return a new {@link BuildRequest} with an updated verbose logging setting.
 	 * @param verboseLogging if verbose logging should be used
 	 * @return an updated build request
 	 */
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.creator, this.env,
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, verboseLogging);
 	}
 
@@ -170,6 +187,14 @@ public class BuildRequest {
 	 */
 	public ImageReference getBuilder() {
 		return this.builder;
+	}
+
+	/**
+	 * Return the run image that should be used, if provided.
+	 * @return the run image
+	 */
+	public ImageReference getRunImage() {
+		return this.runImage;
 	}
 
 	/**

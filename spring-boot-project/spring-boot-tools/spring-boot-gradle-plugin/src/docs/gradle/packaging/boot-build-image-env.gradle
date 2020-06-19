@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '{version}'
+	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
 bootJar {
@@ -9,6 +9,6 @@ bootJar {
 
 // tag::env[]
 bootBuildImage {
-	environment = ["BP_JAVA_VERSION" : "13.0.1"]
+	environment = ["BP_JVM_VERSION" : "13.0.1"]
 }
 // end::env[]

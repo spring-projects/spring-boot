@@ -5,7 +5,7 @@ pluginManagement {
 		maven {
 			url 'https://repo.spring.io/plugins-release'
 		}
-		if (version.endsWith('BUILD-SNAPSHOT')) {
+		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
 	}
@@ -22,8 +22,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.1.1"
-	id "io.spring.gradle-enterprise-conventions" version "0.0.2"
+	id "com.gradle.enterprise" version "3.3.3"
+	id "io.spring.gradle-enterprise-conventions" version "0.0.3"
 }
 
 rootProject.name="spring-boot-build"
@@ -33,6 +33,13 @@ settings.gradle.projectsLoaded {
 		buildScan {
 			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
 				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			}
+
+			settings.gradle.rootProject.getBuildDir().mkdirs()
+			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
+
+			buildScanPublished { scan ->
+				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}

@@ -140,7 +140,9 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String path : paths) {
 					try {
-						return DependencyCustomizer.this.loader.getResource(path) != null;
+						if (DependencyCustomizer.this.loader.getResource(path) == null) {
+							return false;
+						}
 					}
 					catch (Exception ex) {
 						// swallow exception and continue

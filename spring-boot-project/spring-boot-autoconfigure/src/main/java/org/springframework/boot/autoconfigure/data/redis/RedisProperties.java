@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -301,6 +301,11 @@ public class RedisProperties {
 		 */
 		private List<String> nodes;
 
+		/**
+		 * Password for authenticating with sentinel(s).
+		 */
+		private String password;
+
 		public String getMaster() {
 			return this.master;
 		}
@@ -315,6 +320,14 @@ public class RedisProperties {
 
 		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 	}
@@ -354,6 +367,8 @@ public class RedisProperties {
 		 */
 		private Pool pool;
 
+		private final Cluster cluster = new Cluster();
+
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
@@ -368,6 +383,51 @@ public class RedisProperties {
 
 		public void setPool(Pool pool) {
 			this.pool = pool;
+		}
+
+		public Cluster getCluster() {
+			return this.cluster;
+		}
+
+		public static class Cluster {
+
+			private final Refresh refresh = new Refresh();
+
+			public Refresh getRefresh() {
+				return this.refresh;
+			}
+
+			public static class Refresh {
+
+				/**
+				 * Cluster topology refresh period.
+				 */
+				private Duration period;
+
+				/**
+				 * Whether adaptive topology refreshing using all available refresh
+				 * triggers should be used.
+				 */
+				private boolean adaptive;
+
+				public Duration getPeriod() {
+					return this.period;
+				}
+
+				public void setPeriod(Duration period) {
+					this.period = period;
+				}
+
+				public boolean isAdaptive() {
+					return this.adaptive;
+				}
+
+				public void setAdaptive(boolean adaptive) {
+					this.adaptive = adaptive;
+				}
+
+			}
+
 		}
 
 	}

@@ -51,13 +51,6 @@ public abstract class PushRegistryPropertiesConfigAdapterTests<P extends PushReg
 	}
 
 	@Test
-	void whenPropertiesNumThreadsIsSetAdapterNumThreadsReturnsIt() {
-		P properties = createProperties();
-		properties.setNumThreads(42);
-		assertThat(createConfigAdapter(properties).numThreads()).isEqualTo(42);
-	}
-
-	@Test
 	void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
 		P properties = createProperties();
 		properties.setBatchSize(10042);

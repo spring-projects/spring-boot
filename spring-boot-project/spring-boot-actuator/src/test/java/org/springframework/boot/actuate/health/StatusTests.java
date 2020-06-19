@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import com.couchbase.client.deps.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,7 +72,7 @@ class StatusTests {
 		Status status = new Status("spring", "boot");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(status);
-		assertThat(json).isEqualTo("{\"code\":\"spring\",\"description\":\"boot\"}");
+		assertThat(json).isEqualTo("{\"description\":\"boot\",\"status\":\"spring\"}");
 	}
 
 }

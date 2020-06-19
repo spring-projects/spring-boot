@@ -1,0 +1,28 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::layered[]
+bootJar {
+	layered {
+		application {
+			intoLayer("spring-boot-loader") {
+				include "org/springframework/boot/loader/**"
+			}
+			intoLayer("application")
+		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include "*:*:*SNAPSHOT"
+			}
+			intoLayer("dependencies")
+		}
+		layerOrder = ["dependencies", "spring-boot-loader", "snapshot-dependencies", "application"]
+	}
+}
+// end::layered[]

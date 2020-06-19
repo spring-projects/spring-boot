@@ -111,8 +111,8 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
-		File folder = unpack(getLayer(builder.getArchive(), 0), "env");
-		assertThat(new File(folder, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
+		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
+		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 	}
 
 	private TarArchiveInputStream getLayer(ImageArchive archive, int index) throws Exception {
@@ -126,11 +126,11 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	private File unpack(TarArchiveInputStream archive, String name) throws Exception {
-		File folder = new File(this.temp, name);
-		folder.mkdirs();
+		File directory = new File(this.temp, name);
+		directory.mkdirs();
 		ArchiveEntry entry = archive.getNextEntry();
 		while (entry != null) {
-			File file = new File(folder, entry.getName());
+			File file = new File(directory, entry.getName());
 			if (entry.isDirectory()) {
 				file.mkdirs();
 			}
@@ -142,7 +142,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 			}
 			entry = archive.getNextEntry();
 		}
-		return folder;
+		return directory;
 	}
 
 }

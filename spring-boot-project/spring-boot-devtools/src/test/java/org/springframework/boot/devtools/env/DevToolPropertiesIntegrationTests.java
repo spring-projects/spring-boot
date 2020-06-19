@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,8 +106,10 @@ class DevToolPropertiesIntegrationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String property = environment.getProperty("server.error.include-stacktrace");
-		assertThat(property).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
+		assertThat(includeStackTrace).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		String includeMessage = environment.getProperty("server.error.include-message");
+		assertThat(includeMessage).isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString());
 	}
 
 	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)

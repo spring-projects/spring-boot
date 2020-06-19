@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,9 +113,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new DurationToStringConverter());
 		registry.addConverter(new NumberToDurationConverter());
 		registry.addConverter(new DurationToNumberConverter());
+		registry.addConverter(new StringToPeriodConverter());
+		registry.addConverter(new PeriodToStringConverter());
+		registry.addConverter(new NumberToPeriodConverter());
 		registry.addConverter(new StringToDataSizeConverter());
 		registry.addConverter(new NumberToDataSizeConverter());
 		registry.addConverter(new StringToFileConverter());
+		registry.addConverter(new InputStreamSourceToByteArrayConverter());
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
 		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
 	}

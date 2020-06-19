@@ -33,33 +33,10 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 	$ java -cp BOOT-INF/classes:BOOT-INF/lib/* com.example.MyApplication
 ----
 
-More efficient container images can also be created by copying the dependencies to the image as a separate layer from the application classes and resources (which normally change more frequently).
-There is more than one way to achieve this layer separation.
-For example, using a `Dockerfile` you could express it in this form:
+NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
+The jar contains a `classpath.idx` file which is used by the `JarLauncher` when constructing the classpath.
 
-[indent=0]
-----
-	FROM openjdk:8-jdk-alpine AS builder
-	WORKDIR target/dependency
-	ARG APPJAR=target/*.jar
-	COPY ${APPJAR} app.jar
-	RUN jar -xf ./app.jar
-
-	FROM openjdk:8-jre-alpine
-	VOLUME /tmp
-	ARG DEPENDENCY=target/dependency
-	COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-	COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
-	COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
-	ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.MyApplication"]
-----
-
-Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
-
-[indent=0]
-----
-	docker build --build-arg APPJAR=path/to/myapp.jar .
-----
+More efficient container images can also be created by <<spring-boot-features.adoc#building-docker-images,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
 
 
 
@@ -183,6 +160,40 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 
 
 
+[[cloud-deployment-kubernetes]]
+=== Kubernetes
+Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
+You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
+
+Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-availability,manage the state of your application>> and export it with <<production-ready-features.adoc#production-ready-kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+
+
+
+[[cloud-deployment-kubernetes-container-lifecycle]]
+==== Kubernetes Container Lifecycle
+When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
+Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
+
+You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
+This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
+The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
+
+[source,yml,indent=0]
+----
+spec:
+  containers:
+  - name: example-container
+    image: example-image
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sh", "-c", "sleep 10"]
+----
+
+Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+
+
+
 [[cloud-deployment-heroku]]
 === Heroku
 Heroku is another popular PaaS platform.
@@ -254,10 +265,7 @@ For more details, refer to https://devcenter.heroku.com/articles/deploying-sprin
 
 [[cloud-deployment-openshift]]
 === OpenShift
-https://www.openshift.com/[OpenShift] is the Red Hat public (and enterprise) extension of the Kubernetes container orchestration platform.
-Similarly to Kubernetes, OpenShift has many options for installing Spring Boot based applications.
-
-OpenShift has many resources describing how to deploy Spring Boot applications, including:
+https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
 * https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]
@@ -502,7 +510,7 @@ Spring Boot application can be easily started as Unix/Linux services by using ei
 
 
 [[deployment-initd-service]]
-==== Installation as an `init.d` Service (System V)
+==== Installation as an init.d Service (System V)
 If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install, fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your application can be used as an `init.d` service.
 To do so, symlink the jar to `init.d` to support the standard `start`, `stop`, `restart`, and `status` commands.
 
@@ -540,7 +548,7 @@ For example, on Debian, you could use the following command:
 
 
 [[deployment-initd-service-securing]]
-===== Securing an `init.d` Service
+===== Securing an init.d Service
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
@@ -591,7 +599,7 @@ Use `chmod` so that the file can only be read by the owner and use `chown` to ma
 
 
 [[deployment-systemd-service]]
-==== Installation as a `systemd` Service
+==== Installation as a systemd Service
 `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 Although you can continue to use `init.d` scripts with `systemd`, it is also possible to launch Spring Boot applications by using `systemd` '`service`' scripts.
 
@@ -645,7 +653,7 @@ It often makes sense to customize elements of the start script as it is written 
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
 
-To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}/#packaging-executable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
+To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
 
 The following property substitutions are supported with the default script:
 

@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using Spring Framework's caching support"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework:spring-context-support")
 }

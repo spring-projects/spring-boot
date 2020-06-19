@@ -15,24 +15,19 @@
  */
 package org.springframework.boot.actuate.autoconfigure.cassandra;
 
-import java.util.Map;
-
 import com.datastax.oss.driver.api.core.CqlSession;
 import reactor.core.publisher.Flux;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorConfigurations.CassandraReactiveDriverConfiguration;
+import org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorConfigurations.CassandraReactiveOperationsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -43,18 +38,10 @@ import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ CqlSession.class, ReactiveCassandraOperations.class, Flux.class })
-@ConditionalOnBean(ReactiveCassandraOperations.class)
+@ConditionalOnClass({ CqlSession.class, Flux.class })
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)
-public class CassandraReactiveHealthContributorAutoConfiguration extends
-		CompositeReactiveHealthContributorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
-
-	@Bean
-	@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
-	public ReactiveHealthContributor cassandraHealthContributor(
-			Map<String, ReactiveCassandraOperations> reactiveCassandraOperations) {
-		return createContributor(reactiveCassandraOperations);
-	}
+@Import({ CassandraReactiveOperationsConfiguration.class, CassandraReactiveDriverConfiguration.class })
+public class CassandraReactiveHealthContributorAutoConfiguration {
 
 }

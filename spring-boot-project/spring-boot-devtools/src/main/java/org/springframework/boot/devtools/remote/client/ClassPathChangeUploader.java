@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,9 +144,9 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 	private ClassLoaderFiles getClassLoaderFiles(ClassPathChangedEvent event) throws IOException {
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		for (ChangedFiles changedFiles : event.getChangeSet()) {
-			String sourceFolder = changedFiles.getSourceFolder().getAbsolutePath();
+			String sourceDirectory = changedFiles.getSourceDirectory().getAbsolutePath();
 			for (ChangedFile changedFile : changedFiles) {
-				files.addFile(sourceFolder, changedFile.getRelativeName(), asClassLoaderFile(changedFile));
+				files.addFile(sourceDirectory, changedFile.getRelativeName(), asClassLoaderFile(changedFile));
 			}
 		}
 		return files;
