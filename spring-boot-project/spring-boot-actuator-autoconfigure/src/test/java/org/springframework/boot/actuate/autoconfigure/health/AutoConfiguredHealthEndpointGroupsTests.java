@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AutoConfiguredHealthEndpointGroups}.
  *
  * @author Phillip Webb
+ * @author Leo Li
  */
 class AutoConfiguredHealthEndpointGroupsTests {
 
@@ -318,6 +319,16 @@ class AutoConfiguredHealthEndpointGroupsTests {
 			return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 		}
 
+	}
+
+	@Test
+	void createWhenNoDefinedGroupsShowDetails() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always",
+				"management.endpoint.health.group.a.include=*").run((context) -> {
+					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+					HealthEndpointGroup groupA = groups.get("a");
+					assertThat(groupA.showDetails(SecurityContext.NONE)).isTrue();
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)

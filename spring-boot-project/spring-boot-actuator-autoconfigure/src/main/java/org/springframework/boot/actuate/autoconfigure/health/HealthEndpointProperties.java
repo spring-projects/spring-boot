@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for {@link HealthEndpoint}.
  *
  * @author Phillip Webb
+ * @author Leo Li
  * @since 2.0.0
  */
 @ConfigurationProperties("management.endpoint.health")
@@ -56,6 +57,11 @@ public class HealthEndpointProperties extends HealthProperties {
 		 */
 		private Set<String> exclude;
 
+		/**
+		 * The default value of this field should be null for group.
+		 */
+		private Show showDetails;
+
 		public Set<String> getInclude() {
 			return this.include;
 		}
@@ -70,6 +76,16 @@ public class HealthEndpointProperties extends HealthProperties {
 
 		public void setExclude(Set<String> exclude) {
 			this.exclude = exclude;
+		}
+
+		@Override
+		public Show getShowDetails() {
+			return this.showDetails;
+		}
+
+		@Override
+		public void setShowDetails(Show showDetails) {
+			this.showDetails = showDetails;
 		}
 
 	}
