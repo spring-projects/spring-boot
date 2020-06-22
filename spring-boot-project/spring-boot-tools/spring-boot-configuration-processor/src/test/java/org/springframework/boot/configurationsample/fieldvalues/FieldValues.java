@@ -109,7 +109,7 @@ public class FieldValues {
 
 	private Integer[] integerArray = new Integer[] { 42, 24 };
 
-	private FieldValues[] unknownArray = new FieldValues[] { new FieldValues() };
+	private UnknownElementType[] unknownArray = new UnknownElementType[] { new UnknownElementType() };
 
 	private Duration durationNone;
 
