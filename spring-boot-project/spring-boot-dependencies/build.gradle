@@ -627,7 +627,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Servlet", "4.0.3") {
+	library("Jakarta Servlet", "4.0.4") {
 		group("jakarta.servlet") {
 			modules = [
 				"jakarta.servlet-api"
