@@ -287,6 +287,7 @@ public class SpringApplication {
 	}
 
 	/**
+	 * SpringBoot启动的核心方法
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
