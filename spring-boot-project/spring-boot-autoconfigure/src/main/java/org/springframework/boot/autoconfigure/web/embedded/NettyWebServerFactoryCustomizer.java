@@ -79,8 +79,8 @@ public class NettyWebServerFactoryCustomizer
 	}
 
 	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
-		factory.addServerCustomizers((httpServer) -> httpServer.tcpConfiguration((tcpServer) -> tcpServer
-				.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectionTimeout.toMillis())));
+		factory.addServerCustomizers((httpServer) -> httpServer.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+				(int) connectionTimeout.toMillis()));
 	}
 
 }
