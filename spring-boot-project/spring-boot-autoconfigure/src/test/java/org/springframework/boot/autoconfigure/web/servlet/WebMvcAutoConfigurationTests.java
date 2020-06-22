@@ -277,8 +277,12 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void noLocaleResolver() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LocaleResolver.class));
+	void defaultLocaleResolver() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(LocaleResolver.class);
+			LocaleResolver localeResolver = context.getBean(LocaleResolver.class);
+			assertThat(((AcceptHeaderLocaleResolver) localeResolver).getDefaultLocale()).isNull();
+		});
 	}
 
 	@Test

@@ -284,18 +284,6 @@ public class WebMvcAutoConfiguration {
 			return resolver;
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
-		public LocaleResolver localeResolver() {
-			if (this.mvcProperties.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
-				return new FixedLocaleResolver(this.mvcProperties.getLocale());
-			}
-			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
-			return localeResolver;
-		}
-
 		@Override
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
@@ -418,6 +406,19 @@ public class WebMvcAutoConfiguration {
 			welcomePageHandlerMapping.setInterceptors(getInterceptors(mvcConversionService, mvcResourceUrlProvider));
 			welcomePageHandlerMapping.setCorsConfigurations(getCorsConfigurations());
 			return welcomePageHandlerMapping;
+		}
+
+		@Override
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale", matchIfMissing = true)
+		public LocaleResolver localeResolver() {
+			if (this.mvcProperties.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
+				return new FixedLocaleResolver(this.mvcProperties.getLocale());
+			}
+			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
+			return localeResolver;
 		}
 
 		private Optional<Resource> getWelcomePage() {

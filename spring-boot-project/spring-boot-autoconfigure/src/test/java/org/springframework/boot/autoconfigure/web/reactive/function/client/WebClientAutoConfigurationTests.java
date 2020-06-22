@@ -28,6 +28,7 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ClientHttpResponse;
@@ -87,6 +88,7 @@ class WebClientAutoConfigurationTests {
 	void shouldGetPrototypeScopedBean() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
 			ClientHttpResponse response = mock(ClientHttpResponse.class);
+			given(response.getHeaders()).willReturn(new HttpHeaders());
 			ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
 			given(firstConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
 			WebClient.Builder firstBuilder = context.getBean(WebClient.Builder.class);

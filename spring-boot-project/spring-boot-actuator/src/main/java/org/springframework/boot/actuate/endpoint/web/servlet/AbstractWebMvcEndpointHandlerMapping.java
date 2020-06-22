@@ -59,12 +59,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
-import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
-import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -161,7 +158,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	@SuppressWarnings("deprecation")
 	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
 		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
-		config.setUrlPathHelper(null);
 		config.setPathMatcher(null);
 		config.setSuffixPatternMatch(false);
 		config.setTrailingSlashMatch(true);
@@ -195,32 +191,19 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
-		PatternsRequestCondition patterns = patternsRequestConditionForPattern(path);
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-				RequestMethod.valueOf(predicate.getHttpMethod().name()));
-		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				StringUtils.toStringArray(predicate.getConsumes()));
-		ProducesRequestCondition produces = new ProducesRequestCondition(
-				StringUtils.toStringArray(predicate.getProduces()));
-		return new RequestMappingInfo(null, patterns, methods, null, null, consumes, produces, null);
+		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path))
+				.methods(RequestMethod.valueOf(predicate.getHttpMethod().name()))
+				.consumes(predicate.getConsumes().toArray(new String[0]))
+				.produces(predicate.getProduces().toArray(new String[0])).build();
 	}
 
 	private void registerLinksMapping() {
-		PatternsRequestCondition patterns = patternsRequestConditionForPattern("");
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(RequestMethod.GET);
-		ProducesRequestCondition produces = new ProducesRequestCondition(this.endpointMediaTypes.getProduced()
-				.toArray(StringUtils.toStringArray(this.endpointMediaTypes.getProduced())));
-		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null, null, produces, null);
+		RequestMappingInfo mapping = RequestMappingInfo.paths(this.endpointMapping.createSubPath(""))
+				.methods(RequestMethod.GET).produces(this.endpointMediaTypes.getProduced().toArray(new String[0]))
+				.options(builderConfig).build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
 				HttpServletRequest.class, HttpServletResponse.class));
-	}
-
-	@SuppressWarnings("deprecation")
-	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
-		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
-		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(), builderConfig.getPathMatcher(),
-				builderConfig.useSuffixPatternMatch(), builderConfig.useTrailingSlashMatch());
 	}
 
 	@Override
@@ -332,7 +315,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			String[] pathTokens = tokenize(request, HandlerMapping.LOOKUP_PATH, true);
+			String[] pathTokens = tokenize(request, UrlPathHelper.PATH_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
 			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");
