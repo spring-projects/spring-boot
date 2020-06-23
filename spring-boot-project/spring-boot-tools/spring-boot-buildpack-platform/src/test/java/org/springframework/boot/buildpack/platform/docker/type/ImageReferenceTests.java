@@ -103,6 +103,16 @@ class ImageReferenceTests {
 	}
 
 	@Test
+	void ofDomainPortAndTag() {
+		ImageReference reference = ImageReference.of("repo.example.com:8080/library/ubuntu:v1");
+		assertThat(reference.getDomain()).isEqualTo("repo.example.com:8080");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isEqualTo("v1");
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference.toString()).isEqualTo("repo.example.com:8080/library/ubuntu:v1");
+	}
+
+	@Test
 	void ofNameAndDigest() {
 		ImageReference reference = ImageReference
 				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
