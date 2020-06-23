@@ -185,8 +185,10 @@ public class BomPlugin implements Plugin<Project> {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
 					String groupId = findChild(dependency, "groupId").text();
 					String artifactId = findChild(dependency, "artifactId").text();
-					findChild(dependency, "version")
-							.setValue("${" + this.bom.getArtifactVersionProperty(groupId, artifactId) + "}");
+					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId);
+					if (versionProperty != null) {
+						findChild(dependency, "version").setValue("${" + versionProperty + "}");
+					}
 				}
 			}
 		}
