@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AutoConfiguredHealthEndpointGroups}.
  *
  * @author Phillip Webb
+ * @author Leo Li
  */
 class AutoConfiguredHealthEndpointGroupsTests {
 
@@ -305,6 +306,16 @@ class AutoConfiguredHealthEndpointGroupsTests {
 					assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(503);
 					assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
 					assertThat(groupB.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
+				});
+	}
+
+	@Test
+	void createWhenGroupWithNoShowDetailsOverrideInheritsShowDetails() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always",
+				"management.endpoint.health.group.a.include=*").run((context) -> {
+					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+					HealthEndpointGroup groupA = groups.get("a");
+					assertThat(groupA.showDetails(SecurityContext.NONE)).isTrue();
 				});
 	}
 
