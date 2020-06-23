@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,23 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HealthEndpointProperties extends HealthProperties {
 
 	/**
+	 * When to show full health details.
+	 */
+	private Show showDetails = Show.NEVER;
+
+	/**
 	 * Health endpoint groups.
 	 */
 	private Map<String, Group> group = new LinkedHashMap<>();
+
+	@Override
+	public Show getShowDetails() {
+		return this.showDetails;
+	}
+
+	public void setShowDetails(Show showDetails) {
+		this.showDetails = showDetails;
+	}
 
 	public Map<String, Group> getGroup() {
 		return this.group;
@@ -58,7 +72,8 @@ public class HealthEndpointProperties extends HealthProperties {
 		private Set<String> exclude;
 
 		/**
-		 * The default value of this field should be null for group.
+		 * When to show full health details. Defaults to the value of
+		 * 'management.endpoint.health.show-details'.
 		 */
 		private Show showDetails;
 
@@ -83,7 +98,6 @@ public class HealthEndpointProperties extends HealthProperties {
 			return this.showDetails;
 		}
 
-		@Override
 		public void setShowDetails(Show showDetails) {
 			this.showDetails = showDetails;
 		}
