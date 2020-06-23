@@ -128,6 +128,13 @@ class OriginTrackedYamlLoaderTests {
 		assertThatExceptionOfType(ConstructorException.class).isThrownBy(this.loader::load);
 	}
 
+	@Test
+	void emptyDocumentes() {
+		this.loader = new OriginTrackedYamlLoader(new ClassPathResource("test-empty-yaml.yml", getClass()));
+		List<Map<String, Object>> loaded = this.loader.load();
+		assertThat(loaded).isEmpty();
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();

@@ -19,6 +19,7 @@ package org.springframework.boot.env;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,15 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 * {@link Constructor} that tracks property origins.
 	 */
 	private class OriginTrackingConstructor extends SafeConstructor {
+
+		@Override
+		public Object getData() throws NoSuchElementException {
+			Object data = super.getData();
+			if (data instanceof CharSequence && ((CharSequence) data).length() == 0) {
+				return null;
+			}
+			return data;
+		}
 
 		@Override
 		protected Object constructObject(Node node) {
