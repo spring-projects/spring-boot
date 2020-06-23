@@ -670,13 +670,55 @@ Locations will be processed in the order that they are defined, with later impor
 [TIP]
 ====
 Spring Boot includes pluggable API that allows various different location addresses to be supported.
-By default you can import Java Properties and YAML.
+By default you can import Java Properties, YAML and volume mounts.
 
 Third-party jars can offer support for additional technologies (there's no requirement for files to be local).
 For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
 
 If you want to support your own locations, see the `ConfigDataLocationResolver` and `ConfigDataLoader` classes in the `org.springframework.boot.context.config` package.
 ====
+
+
+
+[[boot-features-external-config-files-voumemounts]]
+==== Using Volume Mount Properties
+When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
+It's not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
+
+As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
+For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
+
+There are two common volume mount patterns that can be use:
+
+. A single file contains a complete set of properties (usually written as YAML).
+. Multiple files are written to a directory with the filename becoming the '`key`' and the contents becoming the '`value`'.
+
+For the first case, you can import the YAML or Properties file directly using `spring.config.import` as described <<boot-features-external-config-files-importing,above>>.
+For the second case, you need to use the `volumemount:` prefix so that Spring Boot knows it needs to expose all the files as properties.
+
+As an example, let's imagine that Kubernetes has mounted the following volume:
+
+[source,indent=0]
+----
+	etc/
+	  config/
+	    myapp/
+	      username
+	      password
+----
+
+The contents of the `username` file would be a config value, and the contents of `password` would be a secret.
+
+To import these properties, you can add the following to your `application.properties` file:
+
+[source,properties,indent=0]
+----
+spring.config.import=volumemount:/etc/config
+----
+
+You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
+
+TIP: Volume mounted values can be bound to both string `String` and `byte[]` types depending on the contents expected.
 
 
 
