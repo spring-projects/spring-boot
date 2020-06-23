@@ -1,45 +1,167 @@
 plugins {
-	id "java-platform"
+	id "org.springframework.boot.bom"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 }
 
 description = "Spring Boot Parent"
 
-javaPlatform {
-	allowDependencies()
+bom {
+	upgrade {
+		policy = "same-major-version"
+		gitHub {
+			issueLabels = ["type: task"]
+		}
+	}
+	library("Android JSON", "0.0.20131108.vaadin1") {
+		group("com.vaadin.external.google") {
+			modules = [
+				"android-json"
+			]
+		}
+	}
+	library("Commons Compress", "1.19") {
+		group("org.apache.commons") {
+			modules = [
+				"commons-compress"
+			]
+		}
+	}
+	library("Commons FileUpload", "1.4") {
+		group("commons-fileupload") {
+			modules = [
+				"commons-fileupload"
+			]
+		}
+	}
+	library("JLine", "2.11") {
+		group("jline") {
+			modules = [
+				"jline"
+			]
+		}
+	}
+	library("JNA", "5.5.0") {
+		group("net.java.dev.jna") {
+			modules = [
+				"jna-platform"
+			]
+		}
+	}
+	library("JOpt Simple", "5.0.4") {
+		group("net.sf.jopt-simple") {
+			modules = [
+				"jopt-simple"
+			]
+		}
+	}
+	library("Maven", "3.6.3") {
+		group("org.apache.maven") {
+			modules = [
+				"maven-plugin-api",
+				"maven-resolver-provider",
+				"maven-settings-builder"
+			]
+		}
+	}
+	library("Maven Common Artifact Filters", "3.1.0") {
+		group("org.apache.maven.shared") {
+			modules = [
+				"maven-common-artifact-filters"
+			]
+		}
+	}
+	library("Maven Invoker", "3.0.1") {
+		group("org.apache.maven.shared") {
+			modules = [
+				"maven-invoker"
+			]
+		}
+	}
+	library("Maven Plugin Tools", "3.6.0") {
+		group("org.apache.maven.plugin-tools") {
+			modules = [
+				"maven-plugin-annotations"
+			]
+		}
+	}
+	library("Maven Resolver", "1.4.1") {
+		group("org.apache.maven.resolver") {
+			modules = [
+				"maven-resolver-connector-basic",
+				"maven-resolver-impl",
+				"maven-resolver-transport-file",
+				"maven-resolver-transport-http"
+			]
+		}
+	}
+	library("Maven Shade Plugin", "3.2.1") {
+		group("org.apache.maven.plugins") {
+			modules = [
+				"maven-shade-plugin"
+			]
+		}
+	}
+	library("MockK", "1.9.3") {
+		group("io.mockk") {
+			modules = [
+				"mockk"
+			]
+		}
+	}
+	library("Plexus Build API", "0.0.7") {
+		group("org.sonatype.plexus") {
+			modules = [
+				"plexus-build-api"
+			]
+		}
+	}
+	library("Plexus Sec Dispatcher", "1.4") {
+		group("org.sonatype.plexus") {
+			modules = [
+				"plexus-sec-dispatcher"
+			]
+		}
+	}
+	library("Sisu", "2.6.0") {
+		group("org.sonatype.sisu") {
+			modules = [
+				"sisu-inject-plexus"
+			]
+		}
+	}
+	library("Spock Framework", "1.3-groovy-2.5") {
+		group("org.spockframework") {
+			modules = [
+				"spock-core",
+				"spock-spring"
+			]
+		}
+	}
+	library("TestNG", "6.14.3") {
+		group("org.testng") {
+			modules = [
+				"testng"
+			]
+		}
+	}
+	library("Spring Asciidoctor Extensions", "0.4.3.RELEASE") {
+		group("io.spring.asciidoctor") {
+			modules = [
+				"spring-asciidoctor-extensions-block-switch",
+				"spring-asciidoctor-extensions-spring-boot"
+			]
+		}
+	}
+	library("Testcontainers", "1.14.2") {
+		group("org.testcontainers") {
+			imports = [
+				"testcontainers-bom"
+			]
+		}
+	}
 }
 
 dependencies {
 	api(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	api(enforcedPlatform("org.testcontainers:testcontainers-bom:1.14.2"))
-
-	constraints {
-		api("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
-		api("commons-fileupload:commons-fileupload:1.4")
-		api("io.mockk:mockk:1.9.3")
-		api("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.3.RELEASE")
-		api("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot:0.4.3.RELEASE")
-		api("jline:jline:2.11")
-		api("net.java.dev.jna:jna-platform:5.5.0")
-		api("net.sf.jopt-simple:jopt-simple:5.0.4")
-		api("org.apache.commons:commons-compress:1.19")
-		api("org.apache.maven:maven-plugin-api:3.6.3")
-		api("org.apache.maven:maven-resolver-provider:3.6.3")
-		api("org.apache.maven:maven-settings-builder:3.6.3")
-		api("org.apache.maven.resolver:maven-resolver-connector-basic:1.4.1")
-		api("org.apache.maven.resolver:maven-resolver-impl:1.4.1")
-		api("org.apache.maven.resolver:maven-resolver-transport-file:1.4.1")
-		api("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1")
-		api("org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.0")
-		api("org.apache.maven.plugins:maven-shade-plugin:3.2.1")
-		api("org.apache.maven.shared:maven-common-artifact-filters:3.1.0")
-		api("org.apache.maven.shared:maven-invoker:3.0.1")
-		api("org.sonatype.plexus:plexus-build-api:0.0.7")
-		api("org.sonatype.plexus:plexus-sec-dispatcher:1.4")
-		api("org.sonatype.sisu:sisu-inject-plexus:2.6.0")
-		api("org.spockframework:spock-core:1.3-groovy-2.5")
-		api("org.spockframework:spock-spring:1.3-groovy-2.5")
-		api("org.testng:testng:6.14.3")
-	}
 }
