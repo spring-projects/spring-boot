@@ -1719,7 +1719,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "Dragonfruit-RELEASE") {
+	library("Spring Session Bom", "2020.0.0-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
