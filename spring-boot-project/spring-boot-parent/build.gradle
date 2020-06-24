@@ -35,6 +35,9 @@ bom {
 		}
 	}
 	library("JLine", "2.11") {
+		prohibit("[2.12,)") {
+			because "it contains breaking changes"
+		}
 		group("jline") {
 			modules = [
 				"jline"
