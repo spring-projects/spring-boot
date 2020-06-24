@@ -99,7 +99,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS256);
+					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlgs",
+							Collections.singleton(JWSAlgorithm.RS256));
 				});
 	}
 
@@ -112,7 +113,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
 					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS384);
+					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlgs",
+							Collections.singleton(JWSAlgorithm.RS384));
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}
