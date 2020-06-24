@@ -26,7 +26,7 @@ import reactor.test.StepVerifier;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.redis.RedisConnectionFailureException;
-import org.springframework.data.redis.connection.ReactiveClusterServerCommands;
+import org.springframework.data.redis.connection.ClusterInfo;
 import org.springframework.data.redis.connection.ReactiveRedisClusterConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -68,18 +68,22 @@ class RedisReactiveHealthIndicatorTests {
 
 	@Test
 	void redisClusterIsUp() {
-		Properties info = new Properties();
-		info.put("127.0.0.1:7002.redis_version", "2.8.9");
-		ReactiveRedisConnection redisConnection = mock(ReactiveRedisClusterConnection.class);
+		Properties clusterProperties = new Properties();
+		clusterProperties.setProperty("cluster_size", "4");
+		clusterProperties.setProperty("cluster_slots_ok", "4");
+		clusterProperties.setProperty("cluster_slots_fail", "0");
+		ReactiveRedisClusterConnection redisConnection = mock(ReactiveRedisClusterConnection.class);
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
-		ReactiveClusterServerCommands commands = mock(ReactiveClusterServerCommands.class);
-		given(commands.info()).willReturn(Mono.just(info));
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		given(redisConnection.clusterGetClusterInfo()).willReturn(Mono.just(new ClusterInfo(clusterProperties)));
+		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
+		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
+		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("version");
-			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
+			assertThat(h.getDetails().get("cluster_size")).isEqualTo(4L);
+			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
+			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
 		}).verifyComplete();
 		verify(redisConnection).closeLater();
 	}
