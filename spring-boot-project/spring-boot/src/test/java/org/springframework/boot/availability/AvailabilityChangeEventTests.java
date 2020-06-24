@@ -105,7 +105,7 @@ class AvailabilityChangeEventTests {
 
 			@Override
 			String getDescription() {
-				return "I have aslo been overridden";
+				return "I have also been overridden";
 			}
 
 		};
