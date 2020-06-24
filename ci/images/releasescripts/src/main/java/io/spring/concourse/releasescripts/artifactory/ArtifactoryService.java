@@ -107,7 +107,7 @@ public class ArtifactoryService {
 			ResponseEntity<BuildInfoResponse> entity = this.restTemplate
 					.getForEntity(BUILD_INFO_URL + buildName + "/" + buildNumber, BuildInfoResponse.class);
 			BuildInfoResponse.Status status = entity.getBody().getBuildInfo().getStatuses()[0];
-			logger.debug("Reutned repository " + status.getRepository() + " expecting " + targetRepo);
+			logger.debug("Returned repository " + status.getRepository() + " expecting " + targetRepo);
 			return status.getRepository().equals(targetRepo);
 		}
 		catch (HttpClientErrorException ex) {
