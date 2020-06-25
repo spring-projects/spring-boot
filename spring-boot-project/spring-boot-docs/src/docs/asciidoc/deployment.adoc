@@ -11,7 +11,7 @@ This section covers some of the more common deployment scenarios.
 
 [[containers-deployment]]
 == Deploying to Containers
-If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
+If you are running your application from a container, you can use an runnable jar, but it is also often an advantage to explode it and run it in a different way.
 Certain PaaS implementations may also choose to unpack archives before they run.
 For example, Cloud Foundry operates this way.
 The simplest way to run an unpacked archive is by starting the appropriate launcher, as follows:
@@ -42,7 +42,7 @@ More efficient container images can also be created by <<spring-boot-features.ad
 
 [[cloud-deployment]]
 == Deploying to the Cloud
-Spring Boot's executable jars are ready-made for most popular cloud PaaS (Platform-as-a-Service) providers.
+Spring Boot's runnable jars are ready-made for most popular cloud PaaS (Platform-as-a-Service) providers.
 These providers tend to require that you "`bring your own container`".
 They manage application processes (not Java applications specifically), so they need an intermediary layer that adapts _your_ application to the _cloud's_ notion of a running process.
 
@@ -53,7 +53,7 @@ A buildpack is pluggable, but ideally you should be able to get by with as few c
 This reduces the footprint of functionality that is not under your control.
 It minimizes divergence between development and production environments.
 
-Ideally, your application, like a Spring Boot executable jar, has everything that it needs to run packaged within it.
+Ideally, your application, like a Spring Boot runnable jar, has everything that it needs to run packaged within it.
 
 In this section, we look at what it takes to get the <<getting-started.adoc#getting-started-first-application, simple application that we developed>> in the "`Getting Started`" section up and running in the Cloud.
 
@@ -63,7 +63,7 @@ In this section, we look at what it takes to get the <<getting-started.adoc#gett
 === Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is specified.
 The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack] has excellent support for Spring applications, including Spring Boot.
-You can deploy stand-alone executable jar applications as well as traditional `.war` packaged applications.
+You can deploy stand-alone runnable jar applications as well as traditional `.war` packaged applications.
 
 Once you have built your application (by using, for example, `mvn clean package`) and have https://docs.cloudfoundry.org/cf-cli/install-go-cli.html[installed the `cf` command line tool], deploy your application by using the `cf push` command, substituting the path to your compiled `.jar`.
 Be sure to have https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[logged in with your `cf` command line client] before pushing an application.
@@ -174,7 +174,7 @@ Spring Boot helps you to <<spring-boot-features.adoc#boot-features-application-a
 When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
 Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
 
-You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
+You can configure a sleep command in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
 The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
 
@@ -276,7 +276,7 @@ https://www.openshift.com/[OpenShift] has many resources describing how to deplo
 
 [[cloud-deployment-aws]]
 === Amazon Web Services (AWS)
-Amazon Web Services offers multiple ways to install Spring Boot-based applications, either as traditional web applications (war) or as executable jar files with an embedded web server.
+Amazon Web Services offers multiple ways to install Spring Boot-based applications, either as traditional web applications (war) or as runnable jar files with an embedded web server.
 The options include:
 
 * AWS Elastic Beanstalk
@@ -352,7 +352,7 @@ There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elasti
 
 [[cloud-deployment-boxfuse]]
 === Boxfuse and Amazon Web Services
-https://boxfuse.com/[Boxfuse] works by turning your Spring Boot executable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
+https://boxfuse.com/[Boxfuse] works by turning your Spring Boot runnable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
 Boxfuse comes with deep integration for Spring Boot and uses the information from your Spring Boot configuration file to automatically configure ports and health check URLs.
 Boxfuse leverages this information both for the images it produces as well as for all the resources it provisions (instances, security groups, elastic load balancers, and so on).
 
@@ -367,7 +367,7 @@ See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentatio
 If there is a https://boxfuse.com/docs/commandline/#configuration[`boxfuse.conf`] file present in the current directory, it is considered.
 
 TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup.
-If your executable jar or war contains an https://boxfuse.com/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the properties it contains.
+If your runnable jar or war contains an https://boxfuse.com/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the properties it contains.
 
 At this point, `boxfuse` creates an image for your application, uploads it, and configures and starts the necessary resources on AWS, resulting in output similar to the following example:
 
@@ -456,20 +456,20 @@ Then deploy with `mvn appengine:deploy` (if you need to authenticate first, the 
 
 [[deployment-install]]
 == Installing Spring Boot Applications
-In addition to running Spring Boot applications by using `java -jar`, it is also possible to make fully executable applications for Unix systems.
-A fully executable jar can be executed like any other executable binary or it can be <<deployment-service,registered with `init.d` or `systemd`>>.
+In addition to running Spring Boot applications by using `java -jar`, it is also possible to make fully runnable applications for Unix systems.
+A fully runnable jar can be run like any other runnable binary or it can be <<deployment-service,registered with `init.d` or `systemd`>>.
 This makes it very easy to install and manage Spring Boot applications in common production environments.
 
-CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
+CAUTION: Fully runnable jars work by embedding an extra script at the front of the file.
 Currently, some tools do not accept this format, so you may not always be able to use this technique.
-For example, `jar -xf` may silently fail to extract a jar or war that has been made fully executable.
-It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
+For example, `jar -xf` may silently fail to extract a jar or war that has been made fully runnable.
+It is recommended that you make your jar or war fully runnable only if you intend to run it directly, rather than running it with `java -jar` or deploying it to a servlet container.
 
-CAUTION: A zip64-format jar file cannot be made fully executable.
-Attempting to do so will result in a jar file that is reported as corrupt when executed directly or with `java -jar`.
-A standard-format jar file that contains one or more zip64-format nested jars can be fully executable.
+CAUTION: A zip64-format jar file cannot be made fully runnable.
+Attempting to do so will result in a jar file that is reported as corrupt when runned directly or with `java -jar`.
+A standard-format jar file that contains one or more zip64-format nested jars can be fully runnable.
 
-To create a '`fully executable`' jar with Maven, use the following plugin configuration:
+To create a "`fully runnable`" jar with Maven, use the following plugin configuration:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -511,7 +511,7 @@ Spring Boot application can be easily started as Unix/Linux services by using ei
 
 [[deployment-initd-service]]
 ==== Installation as an init.d Service (System V)
-If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install, fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your application can be used as an `init.d` service.
+If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment-install, fully runnable jar>>, and you do not use a custom `embeddedLaunchScript`, your application can be used as an `init.d` service.
 To do so, symlink the jar to `init.d` to support the standard `start`, `stop`, `restart`, and `status` commands.
 
 The script supports the following features:
@@ -552,7 +552,7 @@ For example, on Debian, you could use the following command:
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
-When executed as root, as is the case when root is being used to start an init.d service, the default executable script runs the application as the user specified in the `RUN_AS_USER` environment variable.
+When run as root, as is the case when root is being used to start an init.d service, the default runnable script runs the application as the user specified in the `RUN_AS_USER` environment variable.
 When the environment variable is not set, the user who owns the jar file is used instead.
 You should never run a Spring Boot application as `root`, so `RUN_AS_USER` should never be root and your application's jar file should never be owned by root.
 Instead, create a specific user to run your application and set the `RUN_AS_USER` environment variable or use `chown` to make it the owner of the jar file, as shown in the following example:
@@ -562,13 +562,13 @@ Instead, create a specific user to run your application and set the `RUN_AS_USER
 	$ chown bootapp:bootapp your-app.jar
 ----
 
-In this case, the default executable script runs the application as the `bootapp` user.
+In this case, the default runnable script runs the application as the `bootapp` user.
 
 TIP: To reduce the chances of the application's user account being compromised, you should consider preventing it from using a login shell.
 For example, you can set the account's shell to `/usr/sbin/nologin`.
 
 You should also take steps to prevent the modification of your application's jar file.
-Firstly, configure its permissions so that it cannot be written and can only be read or executed by its owner, as shown in the following example:
+Firstly, configure its permissions so that it cannot be written and can only be read or run by its owner, as shown in the following example:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -653,7 +653,7 @@ It often makes sense to customize elements of the start script as it is written 
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
 
-To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
+To customize written elements, use the `embeddedLaunchScriptProperties` option of the Spring Boot Maven plugin or the {spring-boot-gradle-plugin-docs}#packaging-runnable-configuring-launch-script[`properties` property of the Spring Boot Gradle plugin's `launchScript`].
 
 The following property substitutions are supported with the default script:
 
@@ -799,7 +799,7 @@ The following environment properties are supported with the default script:
 | The arguments to pass to the program (the Spring Boot app).
 
 | `JAVA_HOME`
-| The location of the `java` executable is discovered by using the `PATH` by default, but you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
+| The location of the `java` runnable is discovered by using the `PATH` by default, but you can set it explicitly if there is an runnable file at `$JAVA_HOME/bin/java`.
 
 | `JAVA_OPTS`
 | Options that are passed to the JVM when it is launched.

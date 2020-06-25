@@ -24,5 +24,5 @@ The reference documentation has the following appendices:
 <<appendix-configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> :: Metadata used to describe configuration properties.
 <<appendix-auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
 <<appendix-test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> :: Test-autoconfiguration annotations used to test slices of your application.
-<<appendix-executable-jar-format.adoc#executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
+<<appendix-runnable-jar-format.adoc#runnable-jar,Runnable Jars>> :: Spring Boot's runnable jars, their launchers, and their format.
 <<appendix-dependency-versions.adoc#dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.

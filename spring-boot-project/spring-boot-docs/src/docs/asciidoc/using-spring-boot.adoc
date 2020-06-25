@@ -56,7 +56,7 @@ To learn about using Spring Boot with Gradle, please refer to the documentation 
 [[using-boot-ant]]
 ===  Ant
 It is possible to build a Spring Boot project using Apache Ant+Ivy.
-The `spring-boot-antlib` "`AntLib`" module is also available to help Ant create executable jars.
+The `spring-boot-antlib` "`AntLib`" module is also available to help Ant create runnable jars.
 
 To declare dependencies, a typical `ivy.xml` file looks something like the following example:
 
@@ -114,7 +114,7 @@ A typical `build.xml` looks like the following example:
 	</project>
 ----
 
-TIP: If you do not want to use the `spring-boot-antlib` module, see the _<<howto.adoc#howto-build-an-executable-archive-with-ant>>_ "`How-to`" .
+TIP: If you do not want to use the `spring-boot-antlib` module, see the _<<howto.adoc#howto-build-an-runnable-archive-with-ant>>_ "`How-to`" .
 
 
 
@@ -444,7 +444,7 @@ STS users can use the `Relaunch` button rather than the `Run` button to ensure t
 
 [[using-boot-running-as-a-packaged-application]]
 === Running as a Packaged Application
-If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using `java -jar`, as shown in the following example:
+If you use the Spring Boot Maven or Gradle plugins to create an runnable jar, you can run your application using `java -jar`, as shown in the following example:
 
 [indent=0,subs="attributes"]
 ----
@@ -910,7 +910,7 @@ If you change a file before starting the remote client, it is not pushed to the 
 
 [[using-boot-packaging-for-production]]
 == Packaging Your Application for Production
-Executable jars can be used for production deployment.
+Runnable jars can be used for production deployment.
 As they are self-contained, they are also ideally suited for cloud-based deployment.
 
 For additional "`production ready`" features, such as health, auditing, and metric REST or JMX end-points, consider adding `spring-boot-actuator`.

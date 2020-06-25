@@ -797,7 +797,7 @@ The following table shows the default status mappings for the built-in statuses:
 ==== Reactive Health Indicators
 For reactive applications, such as those using Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
 Similar to a traditional `HealthContributor`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] and {spring-boot-actuator-module-code}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
-Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
+Regular `HealthContributors` that do not check against a reactive API are run on the elastic scheduler.
 
 TIP: In a reactive application, The `ReactiveHealthContributorRegistry` should be used to register and unregister health indicators at runtime.
 If you need to register a regular `HealthContributor`, you should wrap it using `ReactiveHealthContributor#adapt`.

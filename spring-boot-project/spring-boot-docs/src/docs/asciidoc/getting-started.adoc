@@ -106,7 +106,7 @@ Windows users with https://chocolatey.org/[Chocolatey] can run `choco install ma
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`.
 Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more <<using-spring-boot.adoc#using-boot-starter,"`Starters`">>.
-Spring Boot also provides an optional <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> to create executable jars.
+Spring Boot also provides an optional <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> to create runnable jars.
 
 More details on getting started with Spring Boot and Maven can be found in the {spring-boot-maven-plugin-docs}#getting-started[Getting Started section] of the Maven plugin's reference guide.
 
@@ -120,7 +120,7 @@ If you do not already have Gradle installed, you can follow the instructions at 
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more <<using-spring-boot.adoc#using-boot-starter, "`Starters`">>.
-Spring Boot provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>> that can be used to simplify dependency declarations and to create executable jars.
+Spring Boot provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>> that can be used to simplify dependency declarations and to create runnable jars.
 
 .Gradle Wrapper
 ****
@@ -236,7 +236,7 @@ If you are on a Mac and use https://www.macports.org/[MacPorts], you can install
 ==== Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
 You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
-On a Debian system, the system-wide scripts are in `/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
+On a Debian system, the system-wide scripts are in `/shell-completion/bash` and all scripts in that directory are run when a new shell starts.
 For example, to run the script manually if you have installed by using SDKMAN!, use the following commands:
 
 [indent=0]
@@ -587,12 +587,12 @@ To gracefully exit the application, press `ctrl-c`.
 
 
 
-[[getting-started-first-application-executable-jar]]
-=== Creating an Executable Jar
-We finish our example by creating a completely self-contained executable jar file that we could run in production.
-Executable jars (sometimes called "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
+[[getting-started-first-application-runnable-jar]]
+=== Creating a Runnable Jar
+We finish our example by creating a completely self-contained runnable jar file that we could run in production.
+Runnable jars (sometimes called "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
 
-.Executable jars and Java
+.Runnable jars and Java
 ****
 Java does not provide a standard way to load nested jar files (jar files that are themselves contained within a jar).
 This can be problematic if you are looking to distribute a self-contained application.
@@ -602,10 +602,10 @@ An uber jar packages all the classes from all the application's dependencies int
 The problem with this approach is that it becomes hard to see which libraries are in your application.
 It can also be problematic if the same filename is used (but with different content) in multiple jars.
 
-Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<appendix-runnable-jar-format.adoc#runnable-jar, different approach>> and lets you actually nest jars directly.
 ****
 
-To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
+To create an runnable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
 To do so, insert the following lines just below the `dependencies` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]

@@ -236,7 +236,7 @@ Doing so lets you use multiple files from a single directory, as shown in the fo
 
 [[cli-jar]]
 === Packaging Your Application
-You can use the `jar` command to package your application into a self-contained executable jar file, as shown in the following example:
+You can use the `jar` command to package your application into a self-contained runnable jar file, as shown in the following example:
 
 [indent=0]
 ----

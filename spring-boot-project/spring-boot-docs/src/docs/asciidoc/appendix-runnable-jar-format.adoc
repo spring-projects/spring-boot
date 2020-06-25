@@ -1,16 +1,16 @@
 [appendix]
-[[executable-jar]]
-= The Executable Jar Format
+[[runnable-jar]]
+= The Runnable Jar Format
 include::attributes.adoc[]
 
-The `spring-boot-loader` modules lets Spring Boot support executable jar and war files.
-If you use the Maven plugin or the Gradle plugin, executable jars are automatically generated, and you generally do not need to know the details of how they work.
+The `spring-boot-loader` modules lets Spring Boot support runnable jar and war files.
+If you use the Maven plugin or the Gradle plugin, runnable jars are automatically generated, and you generally do not need to know the details of how they work.
 
-If you need to create executable jars from a different build system or if you are just curious about the underlying technology, this appendix provides some background.
+If you need to create runnable jars from a different build system or if you are just curious about the underlying technology, this appendix provides some background.
 
 
 
-[[executable-jar-nested-jars]]
+[[runnable-jar-nested-jars]]
 == Nested JARs
 Java does not provide any standard way to load nested jar files (that is, jar files that are themselves contained within a jar).
 This can be problematic if you need to distribute a self-contained application that can be run from the command line without unpacking.
@@ -23,8 +23,8 @@ Spring Boot takes a different approach and lets you actually nest jars directly.
 
 
 
-[[executable-jar-jar-file-structure]]
-=== The Executable Jar File Structure
+[[runnable-jar-jar-file-structure]]
+=== The Runnable Jar File Structure
 Spring Boot Loader-compatible jar files should be structured in the following way:
 
 [indent=0]
@@ -53,8 +53,8 @@ Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 
-[[executable-jar-war-file-structure]]
-=== The Executable War File Structure
+[[runnable-jar-war-file-structure]]
+=== The Runnable War File Structure
 Spring Boot Loader-compatible war files should be structured in the following way:
 
 [indent=0]
@@ -87,7 +87,7 @@ Any dependencies that are required when running embedded but are not required wh
 
 
 
-[[executable-jar-war-index-files]]
+[[runnable-jar-war-index-files]]
 === Index Files
 Spring Boot Loader-compatible jar and war archives can include additional index files under the `BOOT-INF/` directory.
 A `classpath.idx` file can be provided for both jars and wars, it provides the ordering that jars should be added to the classpath.
@@ -98,7 +98,7 @@ These files, however, are _not_ parsed internally as YAML and they must be writt
 
 
 
-[[executable-jar-war-index-files-classpath]]
+[[runnable-jar-war-index-files-classpath]]
 === Classpath Index
 The classpath index file can be provided in `BOOT-INF/classpath.idx`.
 It provides a list of jar names (not including the directory) in the order that they should be added to the classpath.
@@ -130,7 +130,7 @@ The index file would look like this:
 
 
 
-[[executable-jar-war-index-files-layers]]
+[[runnable-jar-war-index-files-layers]]
 === Layer Index
 The classpath index file can be provided in `BOOT-INF/layers.idx`.
 It provides a list of layers and the parts of the jar that should be contained within them.
@@ -154,7 +154,7 @@ A typical example of a layers index would be:
 
 
 
-[[executable-jar-jarfile]]
+[[runnable-jar-jarfile]]
 == Spring Boot's "`JarFile`" Class
 The core class used to support loading nested jars is `org.springframework.boot.loader.jar.JarFile`.
 It lets you load jar content from a standard jar file or from nested child jar data.
@@ -181,7 +181,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 
 
 
-[[executable-jar-jarfile-compatibility]]
+[[runnable-jar-jarfile-compatibility]]
 === Compatibility with the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.
@@ -189,9 +189,9 @@ The `getURL()` method returns a `URL` that opens a connection compatible with `j
 
 
 
-[[executable-jar-launching]]
-== Launching Executable Jars
-The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that is used as an executable jar's main entry point.
+[[runnable-jar-launching]]
+== Launching Runnable Jars
+The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that is used as an runnable jar's main entry point.
 It is the actual `Main-Class` in your jar file, and it is used to setup an appropriate `URLClassLoader` and ultimately call your `main()` method.
 
 There are three launcher subclasses (`JarLauncher`, `WarLauncher`, and `PropertiesLauncher`).
@@ -204,12 +204,12 @@ You can add additional locations by setting an environment variable called `LOAD
 
 
 
-[[executable-jar-launcher-manifest]]
+[[runnable-jar-launcher-manifest]]
 === Launcher Manifest
 You need to specify an appropriate `Launcher` as the `Main-Class` attribute of `META-INF/MANIFEST.MF`.
 The actual class that you want to launch (that is, the class that contains a `main` method) should be specified in the `Start-Class` attribute.
 
-The following example shows a typical `MANIFEST.MF` for an executable jar file:
+The following example shows a typical `MANIFEST.MF` for an runnable jar file:
 
 [indent=0]
 ----
@@ -230,7 +230,7 @@ The classpath is deduced from the nested jars.
 
 
 
-[[executable-jar-property-launcher-features]]
+[[runnable-jar-property-launcher-features]]
 == PropertiesLauncher Features
 `PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
 The following table describes these properties:
@@ -314,13 +314,13 @@ The following rules apply to working with `PropertiesLauncher`:
 
 
 
-[[executable-jar-restrictions]]
-== Executable Jar Restrictions
+[[runnable-jar-restrictions]]
+== Runnable Jar Restrictions
 You need to consider the following restrictions when working with a Spring Boot Loader packaged application:
 
 
 
-[[executable-jar-zip-entry-compression]]
+[[runnable-jar-zip-entry-compression]]
 * Zip entry compression:
 The `ZipEntry` for a nested jar must be saved by using the `ZipEntry.STORED` method.
 This is required so that we can seek directly to individual content within the nested jar.
@@ -328,7 +328,7 @@ The content of the nested jar file itself can still be compressed, as can any ot
 
 
 
-[[executable-jar-system-classloader]]
+[[runnable-jar-system-classloader]]
 * System classLoader:
 Launched applications should use `Thread.getContextClassLoader()` when loading classes (most libraries and frameworks do so by default).
 Trying to load nested jar classes with `ClassLoader.getSystemClassLoader()` fails.
@@ -337,7 +337,7 @@ For this reason, you should consider a different logging implementation.
 
 
 
-[[executable-jar-alternatives]]
+[[runnable-jar-alternatives]]
 == Alternative Single Jar Solutions
 If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the following alternatives:
 
@@ -345,4 +345,3 @@ If the preceding restrictions mean that you cannot use Spring Boot Loader, consi
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
 * https://sourceforge.net/projects/one-jar/[OneJar]
 * https://imperceptiblethoughts.com/shadow/[Gradle Shadow Plugin]
-
