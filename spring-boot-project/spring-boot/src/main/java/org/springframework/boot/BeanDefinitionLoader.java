@@ -159,18 +159,20 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private int load(Resource source) {
+	private void load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
-			return this.groovyReader.loadBeanDefinitions(source);
+			this.groovyReader.loadBeanDefinitions(source);
 		}
-		return this.xmlReader.loadBeanDefinitions(source);
+		else {
+			this.xmlReader.loadBeanDefinitions(source);
+		}
 	}
 
-	private int load(Package source) {
-		return this.scanner.scan(source.getName());
+	private void load(Package source) {
+		this.scanner.scan(source.getName());
 	}
 
 	private void load(CharSequence source) {
