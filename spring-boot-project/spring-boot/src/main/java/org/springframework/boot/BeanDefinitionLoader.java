@@ -120,51 +120,43 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Load the sources into the reader.
-	 * @return the number of loaded beans
 	 */
-	int load() {
-		int count = 0;
+	void load() {
 		for (Object source : this.sources) {
-			count += load(source);
+			load(source);
 		}
-		return count;
 	}
 
-	private int load(Object source) {
+	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?>) {
-			return load((Class<?>) source);
+			load((Class<?>) source);
+			return;
 		}
 		if (source instanceof Resource) {
-			return load((Resource) source);
+			load((Resource) source);
+			return;
 		}
 		if (source instanceof Package) {
-			return load((Package) source);
+			load((Package) source);
+			return;
 		}
 		if (source instanceof CharSequence) {
-			return load((CharSequence) source);
+			load((CharSequence) source);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
 	}
 
-	private int load(Class<?> source) {
+	private void load(Class<?> source) {
 		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
-			load(loader);
+			((GroovyBeanDefinitionReader) this.groovyReader).beans(loader.getBeans());
 		}
 		if (isEligible(source)) {
 			this.annotatedReader.register(source);
-			return 1;
 		}
-		return 0;
-	}
-
-	private int load(GroovyBeanDefinitionSource source) {
-		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
-		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		return after - before;
 	}
 
 	private int load(Resource source) {
@@ -181,34 +173,39 @@ class BeanDefinitionLoader {
 		return this.scanner.scan(source.getName());
 	}
 
-	private int load(CharSequence source) {
+	private void load(CharSequence source) {
 		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
-			return load(ClassUtils.forName(resolvedSource, null));
+			load(ClassUtils.forName(resolvedSource, null));
+			return;
 		}
 		catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-		// Attempt as resources
-		Resource[] resources = findResources(resolvedSource);
-		int loadCount = 0;
-		boolean atLeastOneResourceExists = false;
-		for (Resource resource : resources) {
-			if (isLoadCandidate(resource)) {
-				atLeastOneResourceExists = true;
-				loadCount += load(resource);
-			}
-		}
-		if (atLeastOneResourceExists) {
-			return loadCount;
+		// Attempt as Resources
+		if (loadAsResources(resolvedSource)) {
+			return;
 		}
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
-			return load(packageResource);
+			load(packageResource);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
+	}
+
+	private boolean loadAsResources(String resolvedSource) {
+		boolean foundCandidate = false;
+		Resource[] resources = findResources(resolvedSource);
+		for (Resource resource : resources) {
+			if (isLoadCandidate(resource)) {
+				foundCandidate = true;
+				load(resource);
+			}
+		}
+		return foundCandidate;
 	}
 
 	private boolean isGroovyPresent() {
