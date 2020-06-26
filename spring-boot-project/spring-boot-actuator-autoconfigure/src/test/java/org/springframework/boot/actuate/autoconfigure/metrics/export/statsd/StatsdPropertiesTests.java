@@ -36,6 +36,7 @@ class StatsdPropertiesTests {
 		assertThat(properties.getFlavor()).isEqualTo(config.flavor());
 		assertThat(properties.getHost()).isEqualTo(config.host());
 		assertThat(properties.getPort()).isEqualTo(config.port());
+		assertThat(properties.getProtocol()).isEqualTo(config.protocol());
 		assertThat(properties.getMaxPacketLength()).isEqualTo(config.maxPacketLength());
 		assertThat(properties.getPollingFrequency()).isEqualTo(config.pollingFrequency());
 		assertThat(properties.isPublishUnchangedMeters()).isEqualTo(config.publishUnchangedMeters());

@@ -1764,12 +1764,13 @@ You can also change the interval at which metrics are sent to Stackdriver:
 ==== StatsD
 The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
 By default, metrics are exported to a {micrometer-registry-docs}/statsd[StatsD] agent running on your local machine.
-The StatsD agent host and port to use can be provided using:
+The StatsD agent host,port, and protocol to use can be provided using:
 
 [source,properties,indent=0,configprops]
 ----
 	management.metrics.export.statsd.host=statsd.example.com
 	management.metrics.export.statsd.port=9125
+	management.metrics.export.statsd.protocol=udp
 ----
 
 You can also change the StatsD line protocol to use (default to Datadog):
