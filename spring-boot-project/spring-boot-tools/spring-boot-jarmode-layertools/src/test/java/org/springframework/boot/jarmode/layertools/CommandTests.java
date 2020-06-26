@@ -30,11 +30,13 @@ import org.springframework.boot.jarmode.layertools.Command.Parameters;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Command}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class CommandTests {
 
@@ -75,6 +77,20 @@ class CommandTests {
 		assertThat(command.getRunOptions()).containsEntry(VERBOSE_FLAG, null);
 		assertThat(command.getRunOptions()).containsEntry(LOG_LEVEL_OPTION, "test1");
 		assertThat(command.getRunParameters()).containsExactly("test2", "test3");
+	}
+
+	@Test
+	void runWithUnknownOptionThrowsException() {
+		TestCommand command = new TestCommand("test", VERBOSE_FLAG, LOG_LEVEL_OPTION);
+		assertThatExceptionOfType(UnknownOptionException.class).isThrownBy(() -> run(command, "--invalid"))
+				.withMessage("--invalid");
+	}
+
+	@Test
+	void runWithOptionMissingRequiredValueThrowsException() {
+		TestCommand command = new TestCommand("test", VERBOSE_FLAG, LOG_LEVEL_OPTION);
+		assertThatExceptionOfType(MissingValueException.class)
+				.isThrownBy(() -> run(command, "--verbose", "--log-level")).withMessage("--log-level");
 	}
 
 	@Test
