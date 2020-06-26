@@ -53,6 +53,7 @@ class FlywayPropertiesTests {
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
+		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
 		assertThat(properties.getTable()).isEqualTo(configuration.getTable());
 		assertThat(properties.getBaselineDescription()).isEqualTo(configuration.getBaselineDescription());
 		assertThat(MigrationVersion.fromVersion(properties.getBaselineVersion()))
