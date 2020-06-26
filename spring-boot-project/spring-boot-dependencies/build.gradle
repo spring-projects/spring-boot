@@ -1299,51 +1299,10 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "19.6.0.0") {
-		group("com.oracle.database.ha") {
-			modules = [
-				"ons",
-				"simplefan"
-			]
-		}
+	library("Oracle Database", "19.7.0.0") {
 		group("com.oracle.database.jdbc") {
-			modules = [
-				"ojdbc10",
-				"ojdbc10dms",
-				"ojdbc8",
-				"ojdbc8dms",
-				"ucp"
-			]
-		}
-		group("com.oracle.database.jdbc.debug") {
-			modules = [
-				"ojdbc10_g",
-				"ojdbc10dms_g",
-				"ojdbc8_g",
-				"ojdbc8dms_g"
-			]
-		}
-		group("com.oracle.database.nls") {
-			modules = [
-				"orai18n"
-			]
-		}
-		group("com.oracle.database.observability") {
-			modules = [
-				"dms"
-			]
-		}
-		group("com.oracle.database.security") {
-			modules = [
-				"oraclepki",
-				"osdt_cert",
-				"osdt_core"
-			]
-		}
-		group("com.oracle.database.xml") {
-			modules = [
-				"xdb",
-				"xmlparserv2"
+			imports = [
+				"ojdbc-bom"
 			]
 		}
 	}
