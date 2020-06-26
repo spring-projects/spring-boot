@@ -254,7 +254,7 @@
 			<plugin>
 				<groupId>com.gradle</groupId>
 				<artifactId>gradle-enterprise-maven-extension</artifactId>
-				<!-- There is a build warning because we don't specify the version here. We do this instead of specifying the verison number twice -->
+				<version>1.5.2</version>
 				<configuration>
 					<gradleEnterprise>
 						<plugins>
