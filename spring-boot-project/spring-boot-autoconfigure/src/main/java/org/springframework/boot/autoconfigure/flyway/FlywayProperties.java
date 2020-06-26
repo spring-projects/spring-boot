@@ -75,8 +75,8 @@ public class FlywayProperties {
 	private List<String> schemas = new ArrayList<>();
 
 	/**
-	 * Whether Flyway should attempt to create the schemas
-	 * specified in the schemas property.
+	 * Whether Flyway should attempt to create the schemas specified in the schemas
+	 * property.
 	 */
 	private boolean createSchemas = true;
 

@@ -222,8 +222,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
 		}
 
-		private void configureCreateSchemas(FluentConfiguration configuration,
-				boolean createSchemas) {
+		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
 			try {
 				configuration.createSchemas(createSchemas);
 			}
