@@ -464,6 +464,10 @@
       "defaultValue": "datadog"
     },
     {
+      "name": "management.metrics.export.statsd.protocol",
+      "defaultValue": "udp"
+    },
+    {
       "name": "management.metrics.export.statsd.queue-size",
       "defaultValue": 2147483647,
       "deprecation": {
