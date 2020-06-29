@@ -8183,8 +8183,8 @@ If you put jar files in the layer before your application classes, Docker often 
 
 === Layering Docker Images
 To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports adding a layer index file to the jar.
-The `layers.idx` file lists all the files in the jar along with the layer that the file should go in.
-The list of files in the index is ordered based on the order in which the layers should be added.
+It provides a list of layers and the parts of the jar that should be contained within them.
+The list of layers in the index is ordered based on the order in which the layers should be added to the Docker/OCI image.
 Out-of-the-box, the following layers are supported:
 
 * `dependencies` (for regular released dependencies)
@@ -8196,14 +8196,17 @@ The following shows an example of a `layers.idx` file:
 
 [source]
 ----
-dependencies BOOT-INF/lib/library1.jar
-dependencies BOOT-INF/lib/library2.jar
-spring-boot-loader org/springframework/boot/loader/JarLauncher.class
-spring-boot-loader org/springframework/boot/loader/jar/JarEntry.class
-...
-snapshot-dependencies BOOT-INF/lib/library3-SNAPSHOT.jar
-application META-INF/MANIFEST.MF
-application BOOT-INF/classes/a/b/C.class
+- "dependencies":
+  - BOOT-INF/lib/library1.jar
+  - BOOT-INF/lib/library2.jar
+- "spring-boot-loader":
+  - org/springframework/boot/loader/JarLauncher.class
+  - org/springframework/boot/loader/jar/JarEntry.class
+- "snapshot-dependencies":
+  - BOOT-INF/lib/library3-SNAPSHOT.jar
+- "application":
+  - META-INF/MANIFEST.MF
+  - BOOT-INF/classes/a/b/C.class
 ----
 
 This layering is designed to separate code based on how likely it is to change between application builds.
