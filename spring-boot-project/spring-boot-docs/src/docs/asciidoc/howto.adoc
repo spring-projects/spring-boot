@@ -2972,7 +2972,7 @@ class ExampleIntegrationTests {
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
 In most cases, you will need to configure the application using details from the running container, such as container IP or port.
 
-This can be done with a static `@DynamicPropertySource` method that allows adding adding dynamic property values to the Spring Environment.
+This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
