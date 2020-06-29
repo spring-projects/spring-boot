@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.statsd.StatsdProtocol;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
@@ -63,6 +64,11 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	@Override
 	public int port() {
 		return get(StatsdProperties::getPort, StatsdConfig.super::port);
+	}
+
+	@Override
+	public StatsdProtocol protocol() {
+		return get(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
 	}
 
 	@Override
