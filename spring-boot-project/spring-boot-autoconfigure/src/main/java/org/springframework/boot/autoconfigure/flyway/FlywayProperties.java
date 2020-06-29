@@ -75,6 +75,12 @@ public class FlywayProperties {
 	private List<String> schemas = new ArrayList<>();
 
 	/**
+	 * Whether Flyway should attempt to create the schemas specified in the schemas
+	 * property.
+	 */
+	private boolean createSchemas = true;
+
+	/**
 	 * Name of the schema history table that will be used by Flyway.
 	 */
 	private String table = "flyway_schema_history";
@@ -341,6 +347,14 @@ public class FlywayProperties {
 
 	public void setSchemas(List<String> schemas) {
 		this.schemas = schemas;
+	}
+
+	public boolean isCreateSchemas() {
+		return this.createSchemas;
+	}
+
+	public void setCreateSchemas(boolean createSchemas) {
+		this.createSchemas = createSchemas;
 	}
 
 	public String getTable() {
