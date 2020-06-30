@@ -1946,10 +1946,6 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local date format."
-        },
-        {
-          "value": "isooffset",
-          "description": "ISO Offset local date format."
         }
       ],
       "providers": [
