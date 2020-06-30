@@ -198,7 +198,6 @@ class NettyRSocketServerFactoryTests {
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
 			return Mono.just(new RSocket() {
 				@Override
