@@ -20,12 +20,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -88,12 +88,9 @@ class WebConversionServiceTests {
 	@Test
 	void isoOffsetTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("isooffset"));
-		OffsetDateTime offsetdate =OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
-		System.out.println(offsetdate);
-		System.out.println(conversionService.convert(offsetdate, String.class));
-		System.out.println(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetdate));
-		assertThat(conversionService.convert(offsetdate, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetdate));
+		OffsetTime offsetTime =OffsetTime.of(LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
+		assertThat(conversionService.convert(offsetTime, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetTime));
 	}
 
 	@Test
