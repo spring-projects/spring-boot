@@ -142,6 +142,17 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 				});
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	void emptyFilterDispatcherTypesDoNotThrowException() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=").run((context) -> {
+					FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
+					Object dispatcherTypes = ReflectionTestUtils.getField(registration, "dispatcherTypes");
+					assertThat((EnumSet<DispatcherType>) dispatcherTypes).isEmpty();
+				});
+	}
+
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredCookieSerializer() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
