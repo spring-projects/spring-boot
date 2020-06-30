@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.web.format;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Gaurav Pareek
  */
 class WebConversionServiceTests {
 
@@ -53,7 +57,7 @@ class WebConversionServiceTests {
 		assertThat(conversionService.convert(date, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
 	}
-	
+
 	@Test
 	void customDateFormatWithJavaUtilDate() {
 		customDateFormat(Date.from(ZonedDateTime.of(2018, 1, 1, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant()));
@@ -76,17 +80,18 @@ class WebConversionServiceTests {
 	void isoTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("iso"));
 		LocalTime time = LocalTime.of(12, 45, 23);
+		System.out.println(conversionService.convert(time, String.class));
 		assertThat(conversionService.convert(time, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
 	}
 	
-		@Test
+	@Test
 	void isoOffsetTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("isooffset"));
 		OffsetDateTime offsetdate =OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
-//		System.out.println(offsetdate);
-//		System.out.println(conversionService.convert(offsetdate, String.class));
-//		System.out.println(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetdate));
+		System.out.println(offsetdate);
+		System.out.println(conversionService.convert(offsetdate, String.class));
+		System.out.println(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetdate));
 		assertThat(conversionService.convert(offsetdate, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetdate));
 	}
@@ -115,7 +120,7 @@ class WebConversionServiceTests {
 		assertThat(conversionService.convert(dateTime, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime));
 	}
-	
+
 	@Test
 	void isoOffsetDateTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(
@@ -124,7 +129,7 @@ class WebConversionServiceTests {
 		assertThat(conversionService.convert(offsetdate, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetdate));
 	}
-
+	
 	@Test
 	void customDateTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(
