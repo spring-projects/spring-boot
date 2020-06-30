@@ -238,8 +238,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		private final Supplier<Collection<ProtocolResolver>> protocolResolvers;
 
 		ApplicationContextResourceLoader(Supplier<Collection<ProtocolResolver>> protocolResolvers) {
-			// Use the restart class loader
-			super(Thread.currentThread().getContextClassLoader());
+			super(null);
 			this.protocolResolvers = protocolResolvers;
 		}
 
