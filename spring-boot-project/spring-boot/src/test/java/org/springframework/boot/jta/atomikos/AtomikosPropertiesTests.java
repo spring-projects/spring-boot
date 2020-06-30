@@ -53,7 +53,7 @@ class AtomikosPropertiesTests {
 		this.properties.setLogBaseName("logBaseName");
 		this.properties.setLogBaseDir("logBaseDir");
 		this.properties.setCheckpointInterval(4);
-		this.properties.setThreadedTwoPhaseCommit(true);
+		this.properties.setThrowOnHeuristic(true);
 		this.properties.getRecovery().setForgetOrphanedLogEntriesDelay(Duration.ofMillis(2000));
 		this.properties.getRecovery().setDelay(Duration.ofMillis(3000));
 		this.properties.getRecovery().setMaxRetries(10);
@@ -72,11 +72,11 @@ class AtomikosPropertiesTests {
 		assertProperty("com.atomikos.icatch.log_base_name", "logBaseName");
 		assertProperty("com.atomikos.icatch.log_base_dir", "logBaseDir");
 		assertProperty("com.atomikos.icatch.checkpoint_interval", "4");
-		assertProperty("com.atomikos.icatch.threaded_2pc", "true");
 		assertProperty("com.atomikos.icatch.forget_orphaned_log_entries_delay", "2000");
 		assertProperty("com.atomikos.icatch.recovery_delay", "3000");
 		assertProperty("com.atomikos.icatch.oltp_max_retries", "10");
 		assertProperty("com.atomikos.icatch.oltp_retry_interval", "4000");
+		assertProperty("com.atomikos.icatch.throw_on_heuristic", "true");
 	}
 
 	@Test
@@ -88,9 +88,10 @@ class AtomikosPropertiesTests {
 				"com.atomikos.icatch.enable_logging", "com.atomikos.icatch.serial_jta_transactions",
 				"com.atomikos.icatch.allow_subtransactions", "com.atomikos.icatch.force_shutdown_on_vm_exit",
 				"com.atomikos.icatch.default_max_wait_time_on_shutdown", "com.atomikos.icatch.log_base_name",
-				"com.atomikos.icatch.checkpoint_interval", "com.atomikos.icatch.threaded_2pc",
-				"com.atomikos.icatch.forget_orphaned_log_entries_delay", "com.atomikos.icatch.oltp_max_retries",
-				"com.atomikos.icatch.oltp_retry_interval"));
+				"com.atomikos.icatch.checkpoint_interval", "com.atomikos.icatch.forget_orphaned_log_entries_delay",
+				"com.atomikos.icatch.oltp_max_retries", "com.atomikos.icatch.oltp_retry_interval",
+				"com.atomikos.icatch.allow_subtransactions", "com.atomikos.icatch.default_max_wait_time_on_shutdown",
+				"com.atomikos.icatch.throw_on_heuristic"));
 		assertThat(properties).contains(entry("com.atomikos.icatch.recovery_delay",
 				defaultSettings.get("com.atomikos.icatch.default_jta_timeout")));
 		assertThat(properties).hasSize(15);
@@ -107,7 +108,6 @@ class AtomikosPropertiesTests {
 
 	private Properties loadDefaultSettings() {
 		try {
-
 			return PropertiesLoaderUtils.loadProperties(new ClassPathResource("transactions-defaults.properties"));
 		}
 		catch (Exception ex) {

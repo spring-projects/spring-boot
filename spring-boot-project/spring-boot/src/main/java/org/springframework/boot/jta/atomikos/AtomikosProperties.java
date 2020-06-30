@@ -105,13 +105,9 @@ public class AtomikosProperties {
 	 */
 	private long checkpointInterval = 500;
 
-	/**
-	 * Whether to use different (and concurrent) threads for two-phase commit on the
-	 * participating resources.
-	 */
-	private boolean threadedTwoPhaseCommit;
-
 	private final Recovery recovery = new Recovery();
+
+	private boolean throwOnHeuristic = false;
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -299,20 +295,16 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies whether or not to use different (and concurrent) threads for two-phase
-	 * commit on the participating resources. Setting this to {@literal true} implies that
-	 * the commit is more efficient since waiting for acknowledgements is done in
-	 * parallel. Defaults to {@literal true}. If you set this to {@literal false}, then
-	 * commits will happen in the order that resources are accessed within the
-	 * transaction.
-	 * @param threadedTwoPhaseCommit if threaded two phase commits should be used
+	 * Should heuristic exceptions be thrown to the application or not? Defaults to false.
+	 * Enable this if you are doing transactions that cross different microservices.
+	 * @param throwOnHeuristic if heuristic should throw 
 	 */
-	public void setThreadedTwoPhaseCommit(boolean threadedTwoPhaseCommit) {
-		this.threadedTwoPhaseCommit = threadedTwoPhaseCommit;
+	public void setThrowOnHeuristic(boolean throwOnHeuristic) {
+		this.throwOnHeuristic = throwOnHeuristic;
 	}
 
-	public boolean isThreadedTwoPhaseCommit() {
-		return this.threadedTwoPhaseCommit;
+	public boolean isThrowOnHeuristic() {
+		return this.throwOnHeuristic;
 	}
 
 	public Recovery getRecovery() {
@@ -339,7 +331,7 @@ public class AtomikosProperties {
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
-		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
+		set(properties, "throw_on_heuristic", isThrowOnHeuristic());
 		Recovery recovery = getRecovery();
 		set(properties, "forget_orphaned_log_entries_delay", recovery.getForgetOrphanedLogEntriesDelay());
 		set(properties, "recovery_delay", recovery.getDelay());
