@@ -2026,6 +2026,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset date-time format."
         }
       ],
       "providers": [
@@ -2044,6 +2048,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset time format."
         }
       ],
       "providers": [
