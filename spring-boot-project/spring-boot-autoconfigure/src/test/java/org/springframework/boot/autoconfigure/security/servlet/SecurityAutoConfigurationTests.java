@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,6 +161,19 @@ class SecurityAutoConfigurationTests {
 					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
 							.getField(bean, "dispatcherTypes");
 					assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE, DispatcherType.ERROR);
+				});
+	}
+
+	@Test
+	void emptyFilterDispatcherTypesDoNotThrowException() {
+		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:")
+				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
+					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
+							DelegatingFilterProxyRegistrationBean.class);
+					@SuppressWarnings("unchecked")
+					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(bean, "dispatcherTypes");
+					assertThat(dispatcherTypes).isEmpty();
 				});
 	}
 
