@@ -44,26 +44,8 @@ public class DateTimeFormatters {
 	 * @return {@code this} for chained method invocation
 	 */
 	public DateTimeFormatters dateFormat(String pattern) {
-		// switch(pattern) {
-		// case "iso":
-		// this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-		// this.datePattern = "yyyy-MM-dd";
-		// break;
-		// case "isooffset":
-		// this.dateFormatter = DateTimeFormatter.ISO_OFFSET_DATE;
-		// this.datePattern = "yyyy-MM-dd";
-		// break;
-		// default:
-		// this.dateFormatter = formatter(pattern);
-		// this.datePattern = pattern;
-		// break;
-		// }
 		if (isIso(pattern)) {
 			this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-			this.datePattern = "yyyy-MM-dd";
-		}
-		else if (isIsoOffset(pattern)) {
-			this.dateFormatter = DateTimeFormatter.ISO_OFFSET_DATE;
 			this.datePattern = "yyyy-MM-dd";
 		}
 		else {
