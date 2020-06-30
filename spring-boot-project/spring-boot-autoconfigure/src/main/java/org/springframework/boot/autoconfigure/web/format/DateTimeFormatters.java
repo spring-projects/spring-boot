@@ -107,7 +107,7 @@ public class DateTimeFormatters {
 	}
 
 	private static boolean isIsoOffset(String pattern) {
-		return "isooffset".equalsIgnoreCase(pattern);
+		return "isooffset".equalsIgnoreCase(pattern) || "iso-offset".equalsIgnoreCase(pattern);
 	}
 
 }

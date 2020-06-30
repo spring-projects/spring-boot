@@ -80,15 +80,23 @@ class WebConversionServiceTests {
 	void isoTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("iso"));
 		LocalTime time = LocalTime.of(12, 45, 23);
-		System.out.println(conversionService.convert(time, String.class));
 		assertThat(conversionService.convert(time, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
 	}
-	
+
 	@Test
 	void isoOffsetTimeFormat() {
-		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("isooffset"));
-		OffsetTime offsetTime =OffsetTime.of(LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
+		isoOffsetTimeFormat(new DateTimeFormatters().timeFormat("isooffset"));
+	}
+
+	@Test
+	void hyphenatedIsoOffsetTimeFormat() {
+		isoOffsetTimeFormat(new DateTimeFormatters().timeFormat("iso-offset"));
+	}
+
+	private void isoOffsetTimeFormat(DateTimeFormatters formatters) {
+		WebConversionService conversionService = new WebConversionService(formatters);
+		OffsetTime offsetTime = OffsetTime.of(LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30));
 		assertThat(conversionService.convert(offsetTime, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetTime));
 	}
@@ -120,13 +128,22 @@ class WebConversionServiceTests {
 
 	@Test
 	void isoOffsetDateTimeFormat() {
-		WebConversionService conversionService = new WebConversionService(
-				new DateTimeFormatters().dateTimeFormat("isooffset"));
-		OffsetDateTime offsetdate =OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30)); 
+		isoOffsetDateTimeFormat(new DateTimeFormatters().dateTimeFormat("isooffset"));
+	}
+
+	@Test
+	void hyphenatedIsoOffsetDateTimeFormat() {
+		isoOffsetDateTimeFormat(new DateTimeFormatters().dateTimeFormat("iso-offset"));
+	}
+
+	private void isoOffsetDateTimeFormat(DateTimeFormatters formatters) {
+		WebConversionService conversionService = new WebConversionService(formatters);
+		OffsetDateTime offsetdate = OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23),
+				ZoneOffset.ofHoursMinutes(1, 30));
 		assertThat(conversionService.convert(offsetdate, String.class))
 				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetdate));
 	}
-	
+
 	@Test
 	void customDateTimeFormat() {
 		WebConversionService conversionService = new WebConversionService(
