@@ -33,8 +33,7 @@ import org.springframework.util.ResourceUtils;
  */
 class StringToFileConverter implements Converter<String, File> {
 
-	private static final ResourceLoader resourceLoader = new DefaultResourceLoader(
-			StringToFileConverter.class.getClassLoader());
+	private static final ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
 	@Override
 	public File convert(String source) {

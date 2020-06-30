@@ -47,7 +47,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 
 	private String charSet = "UTF-8";
 
-	private ResourceLoader resourceLoader = new DefaultResourceLoader(getClass().getClassLoader());
+	private ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
 	public MustacheResourceTemplateLoader() {
 	}
