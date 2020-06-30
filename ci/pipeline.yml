@@ -90,7 +90,6 @@ resources:
     git_config:
     - name: core.autocrlf
       value: true
-  icon: github-circle
 - name: git-pull-request
   type: pull-request
   icon: source-pull
