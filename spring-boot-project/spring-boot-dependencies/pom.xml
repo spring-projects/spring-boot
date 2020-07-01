@@ -173,7 +173,7 @@
 		<quartz.version>2.3.2</quartz.version>
 		<querydsl.version>4.2.2</querydsl.version>
 		<rabbit-amqp-client.version>5.7.3</rabbit-amqp-client.version>
-		<reactor-bom.version>Dysprosium-BUILD-SNAPSHOT</reactor-bom.version>
+		<reactor-bom.version>Dysprosium-SR9</reactor-bom.version>
 		<rest-assured.version>3.3.0</rest-assured.version>
 		<reactive-streams.version>1.0.3</reactive-streams.version>
 		<rsocket.version>1.0.1</rsocket.version>
