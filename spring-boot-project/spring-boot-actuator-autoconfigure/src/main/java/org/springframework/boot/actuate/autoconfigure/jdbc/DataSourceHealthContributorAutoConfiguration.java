@@ -64,6 +64,8 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class DataSourceHealthContributorAutoConfiguration extends
 		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
 
+	private boolean ignoreRoutingDataSources = false;
+
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
@@ -81,6 +83,12 @@ public class DataSourceHealthContributorAutoConfiguration extends
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources) {
+		if (ignoreRoutingDataSources) {
+			Map<String, DataSource> filteredDatasources = dataSources.entrySet().stream()
+					.filter(e -> !(e.getValue() instanceof AbstractRoutingDataSource))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			return createContributor(filteredDatasources);
+		}
 		return createContributor(dataSources);
 	}
 
