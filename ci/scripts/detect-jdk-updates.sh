@@ -1,5 +1,11 @@
 #!/bin/bash
-set -e
+
+report_error() {
+	echo "Script exited with error $1 on line $2"
+	exit 1;
+}
+
+trap 'report_error $? $LINENO' ERR
 
 case "$JDK_VERSION" in
 	java8)
