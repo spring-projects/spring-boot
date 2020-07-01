@@ -16,8 +16,6 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
-import java.util.Map;
-
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.util.Assert;
@@ -27,6 +25,7 @@ import org.springframework.util.StringUtils;
  * A Stack ID.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class StackId {
 
@@ -75,8 +74,7 @@ class StackId {
 	 * @return the extracted stack ID
 	 */
 	private static StackId fromImageConfig(ImageConfig imageConfig) {
-		Map<String, String> labels = imageConfig.getLabels();
-		String value = (labels != null) ? labels.get(LABEL_NAME) : null;
+		String value = imageConfig.getLabels().get(LABEL_NAME);
 		Assert.state(StringUtils.hasText(value), () -> "Missing '" + LABEL_NAME + "' stack label");
 		return new StackId(value);
 	}

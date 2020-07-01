@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Andy Wilkinson
  */
 class BuilderMetadataTests extends AbstractJsonTests {
 
@@ -69,8 +71,9 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		Image image = mock(Image.class);
 		ImageConfig imageConfig = mock(ImageConfig.class);
 		given(image.getConfig()).willReturn(imageConfig);
+		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("alpha", "a"));
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(image))
-				.withMessage("No 'io.buildpacks.builder.metadata' label found in image config");
+				.withMessage("No 'io.buildpacks.builder.metadata' label found in image config labels 'alpha'");
 	}
 
 	@Test
