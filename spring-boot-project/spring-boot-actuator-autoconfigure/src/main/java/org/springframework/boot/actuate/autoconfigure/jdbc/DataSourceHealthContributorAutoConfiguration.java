@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -61,6 +62,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)
 public class DataSourceHealthContributorAutoConfiguration extends
 		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
 
@@ -80,7 +82,14 @@ public class DataSourceHealthContributorAutoConfiguration extends
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
-	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources) {
+	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
+			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
+		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
+			Map<String, DataSource> filteredDatasources = dataSources.entrySet().stream()
+					.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			return createContributor(filteredDatasources);
+		}
 		return createContributor(dataSources);
 	}
 

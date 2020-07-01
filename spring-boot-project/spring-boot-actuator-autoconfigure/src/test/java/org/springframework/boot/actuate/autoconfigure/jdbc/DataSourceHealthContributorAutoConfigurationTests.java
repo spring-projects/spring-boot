@@ -83,9 +83,27 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
+	void runWithRoutingAndEmbeddedDataSourceShouldNotIncludeRoutingDataSourceWhenIgnored() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
+				.withPropertyValues("management.health.db.ignore-routing-datasources:true").run((context) -> {
+					assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
+					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
+					assertThat(context).doesNotHaveBean(RoutingDataSourceHealthIndicator.class);
+				});
+	}
+
+	@Test
 	void runWithOnlyRoutingDataSourceShouldIncludeRoutingDataSource() {
 		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(RoutingDataSourceHealthIndicator.class));
+	}
+
+	@Test
+	void runWithOnlyRoutingDataSourceShouldCrashWhenIgnored() {
+		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
+				.withPropertyValues("management.health.db.ignore-routing-datasources:true")
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasRootCauseInstanceOf(IllegalArgumentException.class));
 	}
 
 	@Test
