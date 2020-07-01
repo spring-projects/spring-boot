@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.ldap;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.ldap.LdapProperties.Template;
 import org.springframework.ldap.core.LdapTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,18 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class LdapPropertiesTests {
 
-	private final LdapProperties properties = new LdapProperties();
-
 	@Test
 	void ldapTemplatePropertiesUseConsistentLdapTemplateDefaultValues() {
+		Template templateProperties = new LdapProperties().getTemplate();
 		LdapTemplate ldapTemplate = new LdapTemplate();
-
 		assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException",
-				this.properties.isIgnorePartialResultException());
+				templateProperties.isIgnorePartialResultException());
 		assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException",
-				this.properties.isIgnoreNameNotFoundException());
+				templateProperties.isIgnoreNameNotFoundException());
 		assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException",
-				this.properties.isIgnoreSizeLimitExceededException());
+				templateProperties.isIgnoreSizeLimitExceededException());
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -66,21 +67,7 @@ public class LdapProperties {
 	 */
 	private final Map<String, String> baseEnvironment = new HashMap<>();
 
-	/**
-	 * Whether PartialResultException should be ignored in searches via the LdapTemplate.
-	 */
-	private boolean ignorePartialResultException = false;
-
-	/**
-	 * Whether NameNotFoundException should be ignored in searches via the LdapTemplate.
-	 */
-	private boolean ignoreNameNotFoundException = false;
-
-	/**
-	 * Whether SizeLimitExceededException should be ignored in searches via the
-	 * LdapTemplate.
-	 */
-	private boolean ignoreSizeLimitExceededException = true;
+	private Template template = new Template();
 
 	public String[] getUrls() {
 		return this.urls;
@@ -126,28 +113,8 @@ public class LdapProperties {
 		return this.baseEnvironment;
 	}
 
-	public boolean isIgnorePartialResultException() {
-		return this.ignorePartialResultException;
-	}
-
-	public void setIgnorePartialResultException(boolean ignorePartialResultException) {
-		this.ignorePartialResultException = ignorePartialResultException;
-	}
-
-	public boolean isIgnoreNameNotFoundException() {
-		return this.ignoreNameNotFoundException;
-	}
-
-	public void setIgnoreNameNotFoundException(boolean ignoreNameNotFoundException) {
-		this.ignoreNameNotFoundException = ignoreNameNotFoundException;
-	}
-
-	public boolean isIgnoreSizeLimitExceededException() {
-		return this.ignoreSizeLimitExceededException;
-	}
-
-	public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
-		this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public String[] determineUrls(Environment environment) {
@@ -164,6 +131,55 @@ public class LdapProperties {
 			return Integer.parseInt(localPort);
 		}
 		return DEFAULT_PORT;
+	}
+
+	/**
+	 * {@link LdapTemplate settings}.
+	 */
+	public static class Template {
+
+		/**
+		 * Whether PartialResultException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignorePartialResultException = false;
+
+		/**
+		 * Whether NameNotFoundException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignoreNameNotFoundException = false;
+
+		/**
+		 * Whether SizeLimitExceededException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignoreSizeLimitExceededException = true;
+
+		public boolean isIgnorePartialResultException() {
+			return this.ignorePartialResultException;
+		}
+
+		public void setIgnorePartialResultException(boolean ignorePartialResultException) {
+			this.ignorePartialResultException = ignorePartialResultException;
+		}
+
+		public boolean isIgnoreNameNotFoundException() {
+			return this.ignoreNameNotFoundException;
+		}
+
+		public void setIgnoreNameNotFoundException(boolean ignoreNameNotFoundException) {
+			this.ignoreNameNotFoundException = ignoreNameNotFoundException;
+		}
+
+		public boolean isIgnoreSizeLimitExceededException() {
+			return this.ignoreSizeLimitExceededException;
+		}
+
+		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
+			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
 	}
 
 }

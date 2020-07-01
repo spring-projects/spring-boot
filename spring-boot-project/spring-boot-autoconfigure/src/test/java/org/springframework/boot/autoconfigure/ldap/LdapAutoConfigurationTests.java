@@ -122,10 +122,11 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
-	void templateWithCustomConfigurationExists() {
+	void templateConfigurationCanBeCustomized() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389",
-				"spring.ldap.ignorePartialResultException=true", "spring.ldap.ignoreNameNotFoundException=true",
-				"spring.ldap.ignoreSizeLimitExceededException=false").run((context) -> {
+				"spring.ldap.template.ignorePartialResultException=true",
+				"spring.ldap.template.ignoreNameNotFoundException=true",
+				"spring.ldap.template.ignoreSizeLimitExceededException=false").run((context) -> {
 					assertThat(context).hasSingleBean(LdapTemplate.class);
 					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
 					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", true);
