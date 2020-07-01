@@ -22,6 +22,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,6 +40,7 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
@@ -68,7 +70,9 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	@Bean
 	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
-			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean) {
+			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean,
+			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(factoryBean));
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
