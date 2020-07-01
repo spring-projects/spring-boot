@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
  * The {@link Owner} that should perform the build.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class BuildOwner implements Owner {
 
@@ -49,13 +50,14 @@ class BuildOwner implements Owner {
 
 	private long getValue(Map<String, String> env, String name) {
 		String value = env.get(name);
-		Assert.state(StringUtils.hasText(value), () -> "Missing '" + name + "' value from the builder environment");
+		Assert.state(StringUtils.hasText(value),
+				() -> "Missing '" + name + "' value from the builder environment '" + env + "'");
 		try {
 			return Long.parseLong(value);
 		}
 		catch (NumberFormatException ex) {
-			throw new IllegalStateException("Malformed '" + name + "' value '" + value + "' in the builder environment",
-					ex);
+			throw new IllegalStateException(
+					"Malformed '" + name + "' value '" + value + "' in the builder environment '" + env + "'", ex);
 		}
 	}
 
