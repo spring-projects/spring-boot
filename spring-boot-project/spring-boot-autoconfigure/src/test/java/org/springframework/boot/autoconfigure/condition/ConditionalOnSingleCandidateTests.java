@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConditionalOnSingleCandidate @ConditionalOnSingleCandidate}.
@@ -35,117 +35,114 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class ConditionalOnSingleCandidateTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	void singleCandidateNoCandidate() {
-		load(OnBeanSingleCandidateConfiguration.class);
-		assertThat(this.context.containsBean("baz")).isFalse();
+		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
 	}
 
 	@Test
 	void singleCandidateOneCandidate() {
-		load(FooConfiguration.class, OnBeanSingleCandidateConfiguration.class);
-		assertThat(this.context.containsBean("baz")).isTrue();
-		assertThat(this.context.getBean("baz")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(AlphaConfiguration.class, OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("consumer");
+					assertThat(context.getBean("consumer")).isEqualTo("alpha");
+				});
+	}
+
+	@Test
+	void singleCandidateOneScopedProxyCandidate() {
+		this.contextRunner
+				.withUserConfiguration(AlphaScopedProxyConfiguration.class, OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("consumer");
+					assertThat(context.getBean("consumer").toString()).isEqualTo("alpha");
+				});
 	}
 
 	@Test
 	void singleCandidateInAncestorsOneCandidateInCurrent() {
-		load();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(FooConfiguration.class, OnBeanSingleCandidateInAncestorsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isFalse();
-		child.close();
+		this.contextRunner.run((parent) -> this.contextRunner
+				.withUserConfiguration(AlphaConfiguration.class, OnBeanSingleCandidateInAncestorsConfiguration.class)
+				.withParent(parent).run((child) -> assertThat(child).doesNotHaveBean("consumer")));
 	}
 
 	@Test
 	void singleCandidateInAncestorsOneCandidateInParent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInAncestorsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
+		this.contextRunner.withUserConfiguration(AlphaConfiguration.class)
+				.run((parent) -> this.contextRunner
+						.withUserConfiguration(OnBeanSingleCandidateInAncestorsConfiguration.class).withParent(parent)
+						.run((child) -> {
+							assertThat(child).hasBean("consumer");
+							assertThat(child.getBean("consumer")).isEqualTo("alpha");
+						}));
 	}
 
 	@Test
 	void singleCandidateInAncestorsOneCandidateInGrandparent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.setParent(this.context);
-		parent.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInAncestorsConfiguration.class);
-		child.setParent(parent);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
-		parent.close();
+		this.contextRunner.withUserConfiguration(AlphaConfiguration.class)
+				.run((grandparent) -> this.contextRunner.withParent(grandparent)
+						.run((parent) -> this.contextRunner
+								.withUserConfiguration(OnBeanSingleCandidateInAncestorsConfiguration.class)
+								.withParent(parent).run((child) -> {
+									assertThat(child).hasBean("consumer");
+									assertThat(child.getBean("consumer")).isEqualTo("alpha");
+								})));
 	}
 
 	@Test
 	void singleCandidateMultipleCandidates() {
-		load(FooConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
-		assertThat(this.context.containsBean("baz")).isFalse();
+		this.contextRunner
+				.withUserConfiguration(AlphaConfiguration.class, BravoConfiguration.class,
+						OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
 	}
 
 	@Test
 	void singleCandidateMultipleCandidatesOnePrimary() {
-		load(FooPrimaryConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
-		assertThat(this.context.containsBean("baz")).isTrue();
-		assertThat(this.context.getBean("baz")).isEqualTo("foo");
+		this.contextRunner.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoConfiguration.class,
+				OnBeanSingleCandidateConfiguration.class).run((context) -> {
+					assertThat(context).hasBean("consumer");
+					assertThat(context.getBean("consumer")).isEqualTo("alpha");
+				});
 	}
 
 	@Test
 	void singleCandidateMultipleCandidatesMultiplePrimary() {
-		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class, OnBeanSingleCandidateConfiguration.class);
-		assertThat(this.context.containsBean("baz")).isFalse();
+		this.contextRunner
+				.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoPrimaryConfiguration.class,
+						OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
 	}
 
 	@Test
 	void invalidAnnotationTwoTypes() {
-		assertThatIllegalStateException().isThrownBy(() -> load(OnBeanSingleCandidateTwoTypesConfiguration.class))
-				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateTwoTypesConfiguration.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasCauseInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+		});
 	}
 
 	@Test
 	void invalidAnnotationNoType() {
-		assertThatIllegalStateException().isThrownBy(() -> load(OnBeanSingleCandidateNoTypeConfiguration.class))
-				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
+		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateNoTypeConfiguration.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasCauseInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
+		});
 	}
 
 	@Test
 	void singleCandidateMultipleCandidatesInContextHierarchy() {
-		load(FooPrimaryConfiguration.class, BarConfiguration.class);
-		try (AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext()) {
-			child.setParent(this.context);
-			child.register(OnBeanSingleCandidateConfiguration.class);
-			child.refresh();
-			assertThat(child.containsBean("baz")).isTrue();
-			assertThat(child.getBean("baz")).isEqualTo("foo");
-		}
-	}
-
-	private void load(Class<?>... classes) {
-		if (classes.length > 0) {
-			this.context.register(classes);
-		}
-		this.context.refresh();
+		this.contextRunner.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoConfiguration.class)
+				.run((parent) -> this.contextRunner.withUserConfiguration(OnBeanSingleCandidateConfiguration.class)
+						.withParent(parent).run((child) -> {
+							assertThat(child).hasBean("consumer");
+							assertThat(child.getBean("consumer")).isEqualTo("alpha");
+						}));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -153,7 +150,7 @@ class ConditionalOnSingleCandidateTests {
 	static class OnBeanSingleCandidateConfiguration {
 
 		@Bean
-		String baz(String s) {
+		CharSequence consumer(CharSequence s) {
 			return s;
 		}
 
@@ -164,7 +161,7 @@ class ConditionalOnSingleCandidateTests {
 	static class OnBeanSingleCandidateInAncestorsConfiguration {
 
 		@Bean
-		String baz(String s) {
+		CharSequence consumer(CharSequence s) {
 			return s;
 		}
 
@@ -183,43 +180,54 @@ class ConditionalOnSingleCandidateTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class FooConfiguration {
+	static class AlphaConfiguration {
 
 		@Bean
-		String foo() {
-			return "foo";
+		String alpha() {
+			return "alpha";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class FooPrimaryConfiguration {
+	static class AlphaPrimaryConfiguration {
 
 		@Bean
 		@Primary
-		String foo() {
-			return "foo";
+		String alpha() {
+			return "alpha";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class BarConfiguration {
+	static class AlphaScopedProxyConfiguration {
 
 		@Bean
-		String bar() {
-			return "bar";
+		@Scope(proxyMode = ScopedProxyMode.INTERFACES)
+		String alpha() {
+			return "alpha";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class BarPrimaryConfiguration {
+	static class BravoConfiguration {
+
+		@Bean
+		String bravo() {
+			return "bravo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BravoPrimaryConfiguration {
 
 		@Bean
 		@Primary
-		String bar() {
-			return "bar";
+		String bravo() {
+			return "bravo";
 		}
 
 	}
