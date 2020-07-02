@@ -27,10 +27,12 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
@@ -103,7 +105,12 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	protected CopyAction createCopyAction() {
 		if (this.layered != null) {
-			LayerResolver layerResolver = new LayerResolver(getConfigurations(), this.layered, this::isLibrary);
+			JavaPluginConvention javaPluginConvention = getProject().getConvention()
+					.findPlugin(JavaPluginConvention.class);
+			Iterable<SourceSet> sourceSets = (javaPluginConvention != null) ? javaPluginConvention.getSourceSets()
+					: Collections.emptySet();
+			LayerResolver layerResolver = new LayerResolver(sourceSets, getConfigurations(), this.layered,
+					this::isLibrary);
 			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
 			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
 		}
