@@ -87,6 +87,11 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void layersWithCustomSourceSet() throws IOException {
+		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
 	void implicitLayers() throws IOException {
 		writeMainClass();
 		writeResource();
