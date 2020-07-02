@@ -68,6 +68,7 @@ dependencies {
 	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.kafka:kafka-clients")
+	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
