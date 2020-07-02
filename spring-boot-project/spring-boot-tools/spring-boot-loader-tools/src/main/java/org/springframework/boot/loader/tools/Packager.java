@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
@@ -69,6 +70,8 @@ public abstract class Packager {
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
+	private static final Pattern SPRING_BOOT_STARTER_JAR_PATTERN = Pattern.compile("spring-boot-starter-.*\\.jar");
 
 	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
@@ -461,7 +464,7 @@ public abstract class Packager {
 
 		WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
-				if (isZip(library::openStream)) {
+				if (isZip(library::openStream) && !isSpringBootStarterJar(library)) {
 					addLibrary(library);
 				}
 			});
@@ -477,6 +480,13 @@ public abstract class Packager {
 				Library existing = this.libraries.putIfAbsent(path, library);
 				Assert.state(existing == null, () -> "Duplicate library " + library.getName());
 			}
+		}
+
+		private boolean isSpringBootStarterJar(Library library) {
+			if (SPRING_BOOT_STARTER_JAR_PATTERN.matcher(library.getName()).matches()) {
+				return JarFileUtils.hasManifestAttribute(library.getFile(), "Spring-Boot-Starter");
+			}
+			return false;
 		}
 
 		@Override

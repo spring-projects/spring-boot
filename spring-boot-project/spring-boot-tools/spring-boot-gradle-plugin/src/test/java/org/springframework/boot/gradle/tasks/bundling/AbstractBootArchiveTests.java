@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -370,6 +371,17 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
+	void springBootStarterJarIsExcluded() throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		this.task.classpath(springBootJarFile("spring-boot-starter-web-0.1.2.jar"));
+		executeTask();
+		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getEntry(this.libPath + "spring-boot-starter-web-0.1.2.jar")).isNull();
+		}
+	}
+
+	@Test
 	@Deprecated
 	void devtoolsJarCanBeIncluded() throws IOException {
 		this.task.setMainClassName("com.example.Main");
@@ -425,6 +437,20 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
 			new Manifest().write(jar);
+			jar.closeEntry();
+		}
+		return file;
+	}
+
+	protected File springBootJarFile(String name) throws IOException {
+		File file = newFile(name);
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
+			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			Manifest manifest = new Manifest();
+			Attributes attributes = manifest.getMainAttributes();
+			attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+			attributes.putValue("Spring-Boot-Starter", name);
+			manifest.write(jar);
 			jar.closeEntry();
 		}
 		return file;

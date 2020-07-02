@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -583,10 +584,39 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(getPackagedEntry("BOOT-INF/classes/META-INF/test.kotlin_module")).isNotNull();
 	}
 
+	@Test
+	void springBootStarterJarIsExcluded() throws IOException {
+		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
+		File libraryOne = createSpringBootJarFile("spring-boot-starter-web-0.1.2.jar");
+		P packager = createPackager();
+		execute(packager, (callback) -> callback.library(new Library(libraryOne, LibraryScope.COMPILE, false)));
+		assertThat(getPackagedEntryNames()).doesNotContain("BOOT-INF/lib/" + libraryOne.getName());
+	}
+
 	private File createLibrary() throws IOException {
 		TestJarFile library = new TestJarFile(this.tempDir);
 		library.addClass("com/example/library/Library.class", ClassWithoutMainMethod.class);
 		return library.getFile();
+	}
+
+	protected File createSpringBootJarFile(String name) throws IOException {
+		File file = newFile(name);
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
+			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			Manifest manifest = new Manifest();
+			Attributes attributes = manifest.getMainAttributes();
+			attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+			attributes.putValue("Spring-Boot-Starter", name);
+			manifest.write(jar);
+			jar.closeEntry();
+		}
+		return file;
+	}
+
+	protected File newFile(String name) throws IOException {
+		File file = new File(this.tempDir, name);
+		file.createNewFile();
+		return file;
 	}
 
 	protected final P createPackager() throws IOException {
