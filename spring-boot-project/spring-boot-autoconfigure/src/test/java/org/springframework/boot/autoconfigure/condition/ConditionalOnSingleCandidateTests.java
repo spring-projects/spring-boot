@@ -22,6 +22,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,6 +49,16 @@ class ConditionalOnSingleCandidateTests {
 				.run((context) -> {
 					assertThat(context).hasBean("consumer");
 					assertThat(context.getBean("consumer")).isEqualTo("alpha");
+				});
+	}
+
+	@Test
+	void singleCandidateOneScopedProxyCandidate() {
+		this.contextRunner
+				.withUserConfiguration(AlphaScopedProxyConfiguration.class, OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("consumer");
+					assertThat(context.getBean("consumer").toString()).isEqualTo("alpha");
 				});
 	}
 
@@ -138,7 +150,7 @@ class ConditionalOnSingleCandidateTests {
 	static class OnBeanSingleCandidateConfiguration {
 
 		@Bean
-		String consumer(String s) {
+		CharSequence consumer(CharSequence s) {
 			return s;
 		}
 
@@ -149,7 +161,7 @@ class ConditionalOnSingleCandidateTests {
 	static class OnBeanSingleCandidateInAncestorsConfiguration {
 
 		@Bean
-		String consumer(String s) {
+		CharSequence consumer(CharSequence s) {
 			return s;
 		}
 
@@ -182,6 +194,17 @@ class ConditionalOnSingleCandidateTests {
 
 		@Bean
 		@Primary
+		String alpha() {
+			return "alpha";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AlphaScopedProxyConfiguration {
+
+		@Bean
+		@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 		String alpha() {
 			return "alpha";
 		}
