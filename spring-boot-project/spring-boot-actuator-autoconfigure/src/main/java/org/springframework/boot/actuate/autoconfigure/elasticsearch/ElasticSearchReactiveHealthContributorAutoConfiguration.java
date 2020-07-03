@@ -40,7 +40,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
  * {@link ReactiveElasticsearchClient}.
  *
  * @author Aleksander Lech
- * @since 2.3
+ * @since 2.3.2
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveElasticsearchClient.class, Flux.class })
