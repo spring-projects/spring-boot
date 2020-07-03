@@ -53,6 +53,7 @@ dependencies {
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
@@ -80,6 +81,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-test")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
 
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
