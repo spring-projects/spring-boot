@@ -116,7 +116,7 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 		if (handler instanceof HandlerWrapper) {
 			return findWebAppContext(((HandlerWrapper) handler).getHandler());
 		}
-		throw new IllegalStateException("No WebAppCotext found");
+		throw new IllegalStateException("No WebAppContext found");
 	}
 
 }
