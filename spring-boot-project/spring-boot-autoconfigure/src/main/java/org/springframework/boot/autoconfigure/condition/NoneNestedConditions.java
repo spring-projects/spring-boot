@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Condition;
  * be used to create composite conditions, for example:
  *
  * <pre class="code">
- * static class OnNeitherJndiNorProperty extends NoneOfNestedConditions {
+ * static class OnNeitherJndiNorProperty extends NoneNestedConditions {
  *
  *    OnNeitherJndiNorProperty() {
  *        super(ConfigurationPhase.PARSE_CONFIGURATION);
