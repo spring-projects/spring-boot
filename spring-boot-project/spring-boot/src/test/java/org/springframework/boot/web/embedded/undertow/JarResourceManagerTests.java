@@ -45,7 +45,6 @@ class JarResourceManagerTests {
 		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jar))) {
 			out.putNextEntry(new ZipEntry("hello.txt"));
 			out.write("hello".getBytes());
-			out.close();
 		}
 		this.resourceManager = new JarResourceManager(jar);
 	}
