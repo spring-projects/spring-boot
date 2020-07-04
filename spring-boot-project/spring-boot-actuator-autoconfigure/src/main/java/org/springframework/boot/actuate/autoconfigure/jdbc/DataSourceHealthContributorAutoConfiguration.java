@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
@@ -64,7 +65,8 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class DataSourceHealthContributorAutoConfiguration extends
 		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
 
-	private boolean ignoreRoutingDataSources = false;
+	@Value("${management.health.db.ignore-routing-datasources:false}")
+	private boolean ignoreRoutingDataSources;
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
@@ -83,9 +85,9 @@ public class DataSourceHealthContributorAutoConfiguration extends
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources) {
-		if (ignoreRoutingDataSources) {
+		if (this.ignoreRoutingDataSources) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet().stream()
-					.filter(e -> !(e.getValue() instanceof AbstractRoutingDataSource))
+					.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
 		}

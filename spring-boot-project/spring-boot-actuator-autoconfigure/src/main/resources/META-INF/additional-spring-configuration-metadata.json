@@ -117,6 +117,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.db.ignore-routing-datasources",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore the creation of health indicators for AbstractRoutingDatasource s",
+      "defaultValue": false
+    },
+    {
       "name": "management.health.defaults.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable default health indicators.",
