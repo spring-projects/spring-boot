@@ -73,7 +73,7 @@ public class KafkaMetricsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ KafkaStreamsMetrics.class, StreamsBuilderFactoryBean.class })
-	static class KafkaStreamsMetricsAutoConfiguration {
+	static class KafkaStreamsMetricsConfiguration {
 
 		@Bean
 		StreamsBuilderFactoryBeanCustomizer kafkaStreamsProducerMetrics(MeterRegistry meterRegistry) {
