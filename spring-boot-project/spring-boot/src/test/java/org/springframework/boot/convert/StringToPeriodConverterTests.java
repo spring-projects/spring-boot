@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Edson Chávez
  */
-public class StringToPeriodConverterTest {
+class StringToPeriodConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenIso8601ShouldReturnPeriod(ConversionService conversionService) {
