@@ -1170,6 +1170,13 @@ bom {
 			]
 		}
 	}
+	library("Neo4j", "4.1.0") {
+		group("org.neo4j.driver") {
+			modules = [
+				"neo4j-java-driver"
+			]
+		}
+	}
 	library("Neo4j OGM", "3.2.12") {
 		group("org.neo4j") {
 			modules = [
