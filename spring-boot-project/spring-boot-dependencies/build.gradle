@@ -1174,6 +1174,13 @@ bom {
 			]
 		}
 	}
+	library("Neo4j", "4.1.0") {
+		group("org.neo4j.driver") {
+			modules = [
+				"neo4j-java-driver"
+			]
+		}
+	}
 	library("Neo4j OGM", "3.2.12") {
 		group("org.neo4j") {
 			modules = [
@@ -1432,6 +1439,7 @@ bom {
 				"spring-boot-starter-logging",
 				"spring-boot-starter-mail",
 				"spring-boot-starter-mustache",
+				"spring-boot-starter-neo4j",
 				"spring-boot-starter-oauth2-client",
 				"spring-boot-starter-oauth2-resource-server",
 				"spring-boot-starter-quartz",
