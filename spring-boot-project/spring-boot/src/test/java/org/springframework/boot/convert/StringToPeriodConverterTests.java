@@ -56,6 +56,14 @@ class StringToPeriodConverterTests {
 	}
 
 	@ConversionServiceTest
+	void convertWhenSimpleWeeksShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10w")).isEqualTo(Period.ofWeeks(10));
+		assertThat(convert(conversionService, "10W")).isEqualTo(Period.ofWeeks(10));
+		assertThat(convert(conversionService, "+10w")).isEqualTo(Period.ofWeeks(10));
+		assertThat(convert(conversionService, "-10W")).isEqualTo(Period.ofWeeks(-10));
+	}
+
+	@ConversionServiceTest
 	void convertWhenSimpleMonthsShouldReturnPeriod(ConversionService conversionService) {
 		assertThat(convert(conversionService, "10m")).isEqualTo(Period.ofMonths(10));
 		assertThat(convert(conversionService, "10M")).isEqualTo(Period.ofMonths(10));
@@ -80,9 +88,18 @@ class StringToPeriodConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnPeriod(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10", ChronoUnit.DAYS, null)).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "+10", ChronoUnit.DAYS, null)).isEqualTo(Period.ofDays(10));
+		assertThat(convert(conversionService, "-10", ChronoUnit.DAYS, null)).isEqualTo(Period.ofDays(-10));
+		assertThat(convert(conversionService, "10", ChronoUnit.WEEKS, null)).isEqualTo(Period.ofWeeks(10));
+		assertThat(convert(conversionService, "+10", ChronoUnit.WEEKS, null)).isEqualTo(Period.ofWeeks(10));
+		assertThat(convert(conversionService, "-10", ChronoUnit.WEEKS, null)).isEqualTo(Period.ofWeeks(-10));
 		assertThat(convert(conversionService, "10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(10));
 		assertThat(convert(conversionService, "+10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(10));
 		assertThat(convert(conversionService, "-10", ChronoUnit.MONTHS, null)).isEqualTo(Period.ofMonths(-10));
+		assertThat(convert(conversionService, "10", ChronoUnit.YEARS, null)).isEqualTo(Period.ofYears(10));
+		assertThat(convert(conversionService, "+10", ChronoUnit.YEARS, null)).isEqualTo(Period.ofYears(10));
+		assertThat(convert(conversionService, "-10", ChronoUnit.YEARS, null)).isEqualTo(Period.ofYears(-10));
 	}
 
 	private Period convert(ConversionService conversionService, String source) {

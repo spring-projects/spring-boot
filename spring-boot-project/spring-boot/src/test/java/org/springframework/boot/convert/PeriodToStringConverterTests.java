@@ -71,6 +71,13 @@ class PeriodToStringConverterTests {
 		assertThat(converted).isEqualTo("1y3d");
 	}
 
+	@ConversionServiceTest
+	void convertWithWeekUnitShouldConvertToStringInDays(ConversionService conversionService) {
+		String converted = (String) conversionService.convert(Period.ofWeeks(53),
+				MockPeriodTypeDescriptor.get(null, PeriodStyle.SIMPLE), TypeDescriptor.valueOf(String.class));
+		assertThat(converted).isEqualTo("371d");
+	}
+
 	static Stream<? extends Arguments> conversionServices() throws Exception {
 		return ConversionServiceArguments.with(new PeriodToStringConverter());
 	}
