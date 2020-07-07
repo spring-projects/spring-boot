@@ -43,8 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles({ "test1", "test2" })
-@ContextConfiguration(loader = SpringBootTestWithActiveProfilesAndSytemEnvironmentPropertyTests.Loader.class)
-public class SpringBootTestWithActiveProfilesAndSytemEnvironmentPropertyTests {
+@ContextConfiguration(loader = SpringBootTestWithActiveProfilesAndSystemEnvironmentPropertyTests.Loader.class)
+public class SpringBootTestWithActiveProfilesAndSystemEnvironmentPropertyTests {
 
 	@Autowired
 	private Environment environment;

@@ -57,7 +57,7 @@ class SoftReferenceConfigurationPropertyCacheTests {
 	}
 
 	@Test
-	void enableEnablesCachingWithUnlimtedTimeToLive() {
+	void enableEnablesCachingWithUnlimitedTimeToLive() {
 		this.cache.enable();
 		get(this.cache).assertCounts(0, 0);
 		tick(Duration.ofDays(300));
