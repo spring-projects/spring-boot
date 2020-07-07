@@ -29,7 +29,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DataSourceHealthIndicatorProperties {
 
 	/**
-	 * Whether to ignore the creation of health indicators for AbstractRoutingDatasource.
+	 * Whether to ignore AbstractRoutingDataSources when creating database health
+	 * indicators.
 	 */
 	private boolean ignoreRoutingDataSources = false;
 
