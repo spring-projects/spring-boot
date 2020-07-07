@@ -76,8 +76,7 @@ public abstract class MongoClientFactorySupport<T> {
 
 	private void validateConfiguration() {
 		if (hasCustomAddress() || hasCustomCredentials() || hasReplicaSet()) {
-			Assert.state(this.properties.getUri() == null,
-					"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
+			Assert.isTrue(!hasCustomAddress() && this.properties.getUri() == null, "Invalid mongo uri configuration");
 		}
 	}
 
