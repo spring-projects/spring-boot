@@ -30,7 +30,6 @@ import java.time.temporal.ChronoUnit;
  *
  * @author Eddú Meléndez
  * @author Edson Chávez
- * @author Vladislav Kisel
  * @since 2.3.0
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER })

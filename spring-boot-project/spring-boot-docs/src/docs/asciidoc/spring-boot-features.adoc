@@ -1426,7 +1426,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
+include::{code-examples}/context/properties/bind/javabean/AppSystemProperties.java[tag=example]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1444,6 +1444,14 @@ These are:
 * `d` for days
 
 The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/constructor/AppSystemProperties.java[tag=example]
+----
+
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DurationUnit`) if it isn't milliseconds.
 Doing so gives a transparent upgrade path while supporting a much richer format.
@@ -1482,7 +1490,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
+include::{code-examples}/context/properties/bind/javabean/AppIoProperties.java[tag=example]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1498,6 +1506,13 @@ These are:
 * `TB` for terabytes
 
 The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/constructor/AppIoProperties.java[tag=example]
+----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
 Doing so gives a transparent upgrade path while supporting a much richer format.

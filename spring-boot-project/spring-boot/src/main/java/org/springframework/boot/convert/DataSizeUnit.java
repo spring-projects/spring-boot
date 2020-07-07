@@ -30,7 +30,6 @@ import org.springframework.util.unit.DataUnit;
  * {@link DataSize}.
  *
  * @author Stephane Nicoll
- * @author Vladislav Kisel
  * @since 2.1.0
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER })

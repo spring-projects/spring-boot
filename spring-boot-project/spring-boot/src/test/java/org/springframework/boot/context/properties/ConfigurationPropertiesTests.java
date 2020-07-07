@@ -135,14 +135,6 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void testConverting() {
-		load(BasicConfiguration.class, "name=foo");
-		assertThat(this.context.getBeanNamesForType(BasicProperties.class)).hasSize(1);
-		assertThat(this.context.containsBean(BasicProperties.class.getName())).isTrue();
-		assertThat(this.context.getBean(BasicProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
 	void loadShouldBindNested() {
 		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
 		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
@@ -776,19 +768,19 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenBindingToConstructorParametersWithConversionShouldBind() {
+	void loadWhenBindingToConstructorParametersWithCustomDataUnitShouldBind() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new HashMap<>();
-		source.put("test.size", "2");
-		source.put("test.duration", "5");
-		source.put("test.period", "6");
+		source.put("test.duration", "12");
+		source.put("test.size", "13");
+		source.put("test.period", "14");
 		sources.addLast(new MapPropertySource("test", source));
-		load(ConstructorParameterWithConversionConfiguration.class);
-		ConstructorParameterWithConversionProperties bean = this.context
-				.getBean(ConstructorParameterWithConversionProperties.class);
-		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(2));
-		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(5));
-		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(6));
+		load(ConstructorParameterWithUnitConfiguration.class);
+		ConstructorParameterWithUnitProperties bean = this.context
+				.getBean(ConstructorParameterWithUnitProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(13));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(14));
 	}
 
 	@Test // gh-17831
@@ -807,13 +799,13 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenBindingToConstructorParametersWithConversionAndDefaultValuesShouldBind() {
-		load(ConstructorParameterWithConversionConfiguration.class);
-		ConstructorParameterWithConversionProperties bean = this.context
-				.getBean(ConstructorParameterWithConversionProperties.class);
-		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
-		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
+	void loadWhenBindingToConstructorParametersWithDefaultDataUnitShouldBind() {
+		load(ConstructorParameterWithUnitConfiguration.class);
+		ConstructorParameterWithUnitProperties bean = this.context
+				.getBean(ConstructorParameterWithUnitProperties.class);
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
 	}
 
 	@Test
@@ -1974,33 +1966,32 @@ class ConfigurationPropertiesTests {
 
 	@ConstructorBinding
 	@ConfigurationProperties(prefix = "test")
-	@Validated
-	static class ConstructorParameterWithConversionProperties {
-
-		private final DataSize size;
+	static class ConstructorParameterWithUnitProperties {
 
 		private final Duration duration;
 
+		private final DataSize size;
+
 		private final Period period;
 
-		ConstructorParameterWithConversionProperties(@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period,
+		ConstructorParameterWithUnitProperties(@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration,
 				@DefaultValue("3") @DataSizeUnit(DataUnit.MEGABYTES) DataSize size,
-				@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration) {
+				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period) {
 			this.size = size;
 			this.duration = duration;
 			this.period = period;
 		}
 
-		Period getPeriod() {
-			return this.period;
+		Duration getDuration() {
+			return this.duration;
 		}
 
 		DataSize getSize() {
 			return this.size;
 		}
 
-		Duration getDuration() {
-			return this.duration;
+		Period getPeriod() {
+			return this.period;
 		}
 
 	}
@@ -2035,8 +2026,8 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@EnableConfigurationProperties(ConstructorParameterWithConversionProperties.class)
-	static class ConstructorParameterWithConversionConfiguration {
+	@EnableConfigurationProperties(ConstructorParameterWithUnitProperties.class)
+	static class ConstructorParameterWithUnitConfiguration {
 
 	}
 

@@ -29,7 +29,6 @@ import java.time.temporal.ChronoUnit;
  * {@link Duration}.
  *
  * @author Phillip Webb
- * @author Vladislav Kisel
  * @since 2.0.0
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
