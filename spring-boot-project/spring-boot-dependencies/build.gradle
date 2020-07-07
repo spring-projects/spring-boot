@@ -108,7 +108,7 @@ bom {
 			]
 		}
 	}
-	library("Atomikos", "5.0.6") {
+	library("Atomikos", "5.0.8") {
 		group("com.atomikos") {
 			modules = [
 				"transactions-jdbc",
