@@ -36,6 +36,8 @@ import org.springframework.core.KotlinDetector;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.util.Assert;
 
@@ -245,7 +247,8 @@ class ValueObjectBinder implements DataObjectBinder {
 			Parameter[] parameters = constructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.length);
 			for (int i = 0; i < parameters.length; i++) {
-				String name = names[i];
+				String name = MergedAnnotations.from(parameters[i]).get(Name.class)
+						.getValue(MergedAnnotation.VALUE, String.class).orElse(names[i]);
 				ResolvableType parameterType = ResolvableType.forMethodParameter(new MethodParameter(constructor, i),
 						type);
 				Annotation[] annotations = parameters[i].getDeclaredAnnotations();

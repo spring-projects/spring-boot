@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link ValueObjectBinder}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class ValueObjectBinderTests {
 
@@ -330,6 +331,17 @@ class ValueObjectBinderTests {
 		PathBean bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getName()).isEqualTo("test");
 		assertThat(bound.getPath()).isEqualTo(Paths.get("default_value"));
+	}
+
+	@Test
+	void bindToAnnotationNamedParameter() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.import", "test");
+		this.sources.add(source);
+		Bindable<NamedParameter> target = Bindable.of(NamedParameter.class);
+		NamedParameter bound = this.binder.bindOrCreate("test", target);
+		assertThat(bound.getImportName()).isEqualTo("test");
+
 	}
 
 	private void noConfigurationProperty(BindException ex) {
@@ -726,6 +738,20 @@ class ValueObjectBinderTests {
 
 		Path getPath() {
 			return this.path;
+		}
+
+	}
+
+	static class NamedParameter {
+
+		private final String importName;
+
+		NamedParameter(@Name("import") String importName) {
+			this.importName = importName;
+		}
+
+		String getImportName() {
+			return this.importName;
 		}
 
 	}
