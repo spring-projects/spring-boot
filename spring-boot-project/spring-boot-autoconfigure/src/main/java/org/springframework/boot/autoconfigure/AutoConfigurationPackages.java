@@ -141,10 +141,7 @@ public abstract class AutoConfigurationPackages {
 		PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 					.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
-			List<String> packageNames = new ArrayList<>();
-			for (String basePackage : attributes.getStringArray("basePackages")) {
-				packageNames.add(basePackage);
-			}
+			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
 				packageNames.add(basePackageClass.getPackage().getName());
 			}
