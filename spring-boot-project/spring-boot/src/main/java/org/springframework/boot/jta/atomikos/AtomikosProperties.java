@@ -297,7 +297,7 @@ public class AtomikosProperties {
 	/**
 	 * Should heuristic exceptions be thrown to the application or not? Defaults to false.
 	 * Enable this if you are doing transactions that cross different microservices.
-	 * @param throwOnHeuristic if heuristic should throw 
+	 * @param throwOnHeuristic if heuristic should throw
 	 */
 	public void setThrowOnHeuristic(boolean throwOnHeuristic) {
 		this.throwOnHeuristic = throwOnHeuristic;
