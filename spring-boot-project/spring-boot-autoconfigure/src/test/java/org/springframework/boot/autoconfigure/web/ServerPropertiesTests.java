@@ -538,7 +538,8 @@ class ServerPropertiesTests {
 	}
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
-		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL).newInstance();
+		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
+				.getDeclaredConstructor().newInstance();
 	}
 
 	private void bind(String name, String value) {
