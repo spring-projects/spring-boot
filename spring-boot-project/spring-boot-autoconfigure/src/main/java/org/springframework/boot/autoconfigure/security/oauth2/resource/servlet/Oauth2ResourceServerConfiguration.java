@@ -20,9 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
 /**
  * Configuration classes for OAuth2 Resource Server These should be {@code @Import} in a
@@ -33,7 +30,7 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 class Oauth2ResourceServerConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ JwtAuthenticationToken.class, JwtDecoder.class })
+	@ConditionalOnClass(JwtDecoder.class)
 	@Import({ OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
 			OAuth2ResourceServerJwtConfiguration.OAuth2WebSecurityConfigurerAdapter.class })
 	static class JwtConfiguration {
@@ -41,7 +38,6 @@ class Oauth2ResourceServerConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, OpaqueTokenIntrospector.class })
 	@Import({ OAuth2ResourceServerOpaqueTokenConfiguration.OpaqueTokenIntrospectionClientConfiguration.class,
 			OAuth2ResourceServerOpaqueTokenConfiguration.OAuth2WebSecurityConfigurerAdapter.class })
 	static class OpaqueTokenConfiguration {
