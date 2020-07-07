@@ -49,7 +49,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.FilterChainProxy;
@@ -257,21 +256,25 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationShouldBeConditionalOnJwtAuthenticationTokenClass() {
+	void autoConfigurationShouldBeConditionalOnResourceServerClass() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
-				.withClassLoader(new FilteredClassLoader(JwtAuthenticationToken.class))
-				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
+				.withClassLoader(new FilteredClassLoader(BearerTokenAuthenticationToken.class)).run((context) -> {
+					assertThat(context).doesNotHaveBean(OAuth2ResourceServerAutoConfiguration.class);
+					assertThat(getBearerTokenFilter(context)).isNull();
+				});
 	}
 
 	@Test
-	void autoConfigurationShouldBeConditionalOnJwtDecoderClass() {
+	void autoConfigurationForJwtShouldBeConditionalOnJwtDecoderClass() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
-				.withClassLoader(new FilteredClassLoader(JwtDecoder.class))
-				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
+				.withClassLoader(new FilteredClassLoader(JwtDecoder.class)).run((context) -> {
+					assertThat(context).hasSingleBean(OAuth2ResourceServerAutoConfiguration.class);
+					assertThat(getBearerTokenFilter(context)).isNull();
+				});
 	}
 
 	@Test
