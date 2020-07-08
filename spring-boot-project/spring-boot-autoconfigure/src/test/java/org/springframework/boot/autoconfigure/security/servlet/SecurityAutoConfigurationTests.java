@@ -16,10 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.EnumSet;
-
 import javax.servlet.DispatcherType;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -44,7 +43,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -143,11 +141,9 @@ class SecurityAutoConfigurationTests {
 				.run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
 							DelegatingFilterProxyRegistrationBean.class);
-					@SuppressWarnings("unchecked")
-					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
-							.getField(bean, "dispatcherTypes");
-					assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR,
-							DispatcherType.REQUEST);
+					assertThat(bean)
+							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+							.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST);
 				});
 	}
 
@@ -157,10 +153,9 @@ class SecurityAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
 							DelegatingFilterProxyRegistrationBean.class);
-					@SuppressWarnings("unchecked")
-					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
-							.getField(bean, "dispatcherTypes");
-					assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE, DispatcherType.ERROR);
+					assertThat(bean)
+							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+							.containsOnly(DispatcherType.INCLUDE, DispatcherType.ERROR);
 				});
 	}
 
@@ -170,10 +165,9 @@ class SecurityAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
 							DelegatingFilterProxyRegistrationBean.class);
-					@SuppressWarnings("unchecked")
-					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
-							.getField(bean, "dispatcherTypes");
-					assertThat(dispatcherTypes).isEmpty();
+					assertThat(bean)
+							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+							.isEmpty();
 				});
 	}
 
