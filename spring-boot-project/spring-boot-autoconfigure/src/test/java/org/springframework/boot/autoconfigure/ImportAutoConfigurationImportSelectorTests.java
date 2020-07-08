@@ -25,22 +25,19 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ImportAutoConfigurationImportSelector}.
@@ -54,12 +51,10 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Mock
-	private Environment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());
@@ -80,10 +75,11 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	void propertyExclusionsAreNotApplied() throws Exception {
-		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarker.class);
-		this.importSelector.selectImports(annotationMetadata);
-		verifyNoInteractions(this.environment);
+	void propertyExclusionsAreApplied() throws IOException {
+		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(ThymeleafAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -288,7 +284,9 @@ class ImportAutoConfigurationImportSelectorTests {
 	@interface MetaImportAutoConfiguration {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class)
-		Class<?>[] exclude() default {};
+		Class<?>[] exclude() default {
+
+		};
 
 	}
 
@@ -308,7 +306,9 @@ class ImportAutoConfigurationImportSelectorTests {
 	@interface SelfAnnotating {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
-		Class<?>[] excludeAutoConfiguration() default {};
+		Class<?>[] excludeAutoConfiguration() default {
+
+		};
 
 	}
 

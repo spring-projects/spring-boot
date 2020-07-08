@@ -233,13 +233,23 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return excluded;
 	}
 
-	private List<String> getExcludeAutoConfigurationsProperty() {
-		if (getEnvironment() instanceof ConfigurableEnvironment) {
-			Binder binder = Binder.get(getEnvironment());
+	/**
+	 * Returns the auto-configurations excluded by the
+	 * {@code spring.autoconfigure.exclude} property.
+	 * @return excluded auto-configurations
+	 * @since 2.3.2
+	 */
+	protected List<String> getExcludeAutoConfigurationsProperty() {
+		Environment environment = getEnvironment();
+		if (environment == null) {
+			return Collections.emptyList();
+		}
+		if (environment instanceof ConfigurableEnvironment) {
+			Binder binder = Binder.get(environment);
 			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class).map(Arrays::asList)
 					.orElse(Collections.emptyList());
 		}
-		String[] excludes = getEnvironment().getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
+		String[] excludes = environment.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
 		return (excludes != null) ? Arrays.asList(excludes) : Collections.emptyList();
 	}
 
