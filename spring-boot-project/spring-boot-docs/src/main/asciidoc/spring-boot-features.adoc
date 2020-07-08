@@ -367,8 +367,8 @@ Properties are considered in the following order:
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
-. Application properties outside of your packaged jar (`application.properties` and YAML variants).
-. Application properties packaged inside your jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-application-property-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-application-property-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
