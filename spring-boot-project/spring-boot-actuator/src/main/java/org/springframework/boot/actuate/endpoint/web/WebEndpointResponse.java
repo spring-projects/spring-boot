@@ -17,11 +17,8 @@
 package org.springframework.boot.actuate.endpoint.web;
 
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -75,7 +72,7 @@ public final class WebEndpointResponse<T> {
 	private final T body;
 
 	private final int status;
-	private final Optional<MultiValueMap<String, String>> headers;
+	private final MultiValueMap<String, String> headers;
 
 	/**
 	 * Creates a new {@code WebEndpointResponse} with no body and a 200 (OK) status.
@@ -121,7 +118,7 @@ public final class WebEndpointResponse<T> {
 	 * @param status  the HTTP status
 	 * @param headers the additional headers
 	 */
-	public WebEndpointResponse(T body, int status, Optional<MultiValueMap<String, String>> headers) {
+	public WebEndpointResponse(T body, int status, MultiValueMap<String, String> headers) {
 		this.body = body;
 		this.status = status;
 		this.headers = headers;
@@ -150,8 +147,8 @@ public final class WebEndpointResponse<T> {
 	 *
 	 * @return an {@link Optional} of additional headers to set
 	 */
-	public Optional<MultiValueMap<String, String>> getHeaders() {
-		return headers;
+	public MultiValueMap<String, String> getHeaders() {
+		return headers == null ? Collections.emptyMap() : headers;
 	}
 
 }
