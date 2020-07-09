@@ -1,5 +1,5 @@
 plugins {
-	id "java-base"
+	id "java"
 	id "org.asciidoctor.jvm.convert"
 	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
@@ -29,8 +29,12 @@ repositories {
 	}
 }
 
-sourceSets {
-	main
+jar {
+	enabled = false
+}
+
+javadoc {
+	enabled = false
 }
 
 plugins.withType(EclipsePlugin) {
@@ -87,6 +91,15 @@ dependencies {
 
 	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("org.springframework:spring-jdbc")
+
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
@@ -94,7 +107,7 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
 
-task javadoc(type: Javadoc) {
+task aggregatedJavadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
 		Set<String> excludedProjects = ['spring-boot-antlib', 'spring-boot-configuration-metadata', 'spring-boot-configuration-processor',
@@ -288,7 +301,7 @@ task zip(type: Zip) {
 	from(asciidoctorMultipage.outputDir) {
 		into "reference/html"
 	}
-	from(javadoc) {
+	from(aggregatedJavadoc) {
 		into "api"
 	}
 	into("gradle-plugin") {
