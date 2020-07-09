@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public final class HttpTrace {
 
 	private volatile Long timeTaken;
 
+	private final long startNanoTime;
+
 	/**
 	 * Creates a fully-configured {@code HttpTrace} instance. Primarily for use by
 	 * {@link HttpTraceRepository} implementations when recreating a trace from a
@@ -67,11 +69,13 @@ public final class HttpTrace {
 		this.principal = principal;
 		this.session = session;
 		this.timeTaken = timeTaken;
+		this.startNanoTime = 0;
 	}
 
 	HttpTrace(TraceableRequest request) {
 		this.request = new Request(request);
 		this.timestamp = Instant.now();
+		this.startNanoTime = System.nanoTime();
 	}
 
 	public Instant getTimestamp() {
@@ -116,6 +120,10 @@ public final class HttpTrace {
 
 	void setTimeTaken(long timeTaken) {
 		this.timeTaken = timeTaken;
+	}
+
+	long getStartNanoTime() {
+		return this.startNanoTime;
 	}
 
 	/**
