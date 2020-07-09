@@ -23,11 +23,11 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -39,7 +39,7 @@ import org.springframework.core.CollectionFactory;
  *
  * @author Andy Wilkinson
  */
-public class StarterMetadata extends AbstractTask {
+public class StarterMetadata extends DefaultTask {
 
 	private Configuration dependencies;
 

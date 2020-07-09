@@ -30,10 +30,10 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentStarters extends AbstractTask {
+public class DocumentStarters extends DefaultTask {
 
 	private final Configuration starters;
 

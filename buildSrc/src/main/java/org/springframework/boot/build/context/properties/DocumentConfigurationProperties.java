@@ -19,9 +19,9 @@ package org.springframework.boot.build.context.properties;
 import java.io.File;
 import java.io.IOException;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -33,7 +33,7 @@ import org.springframework.boot.build.context.properties.DocumentOptions.Builder
  *
  * @author Andy Wilkinson
  */
-public class DocumentConfigurationProperties extends AbstractTask {
+public class DocumentConfigurationProperties extends DefaultTask {
 
 	private FileCollection configurationPropertyMetadata;
 

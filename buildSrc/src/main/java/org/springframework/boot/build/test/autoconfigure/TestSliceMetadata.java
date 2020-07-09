@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class TestSliceMetadata extends AbstractTask {
+public class TestSliceMetadata extends DefaultTask {
 
 	private SourceSet sourceSet;
 
