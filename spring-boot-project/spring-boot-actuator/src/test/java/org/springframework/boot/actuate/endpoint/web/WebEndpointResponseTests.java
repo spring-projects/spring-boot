@@ -32,6 +32,7 @@ class WebEndpointResponseTests {
 		WebEndpointResponse<Object> response = new WebEndpointResponse<>();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getBody()).isNull();
+		assertThat(response.getHeaders()).isNull();
 	}
 
 	@Test
