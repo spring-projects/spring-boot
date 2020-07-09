@@ -29,9 +29,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -44,7 +44,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentTestSlices extends AbstractTask {
+public class DocumentTestSlices extends DefaultTask {
 
 	private FileCollection testSlices;
 
