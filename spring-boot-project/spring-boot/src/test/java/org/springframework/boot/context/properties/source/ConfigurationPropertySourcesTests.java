@@ -127,20 +127,24 @@ class ConfigurationPropertySourcesTests {
 
 	@Test // gh-20625
 	void environmentPropertyAccessWhenImmutableShouldBePerformant() {
-		testPropertySourcePerformance(true, 1000);
+		long baseline = testPropertySourcePerformance(false);
+		long immutable = testPropertySourcePerformance(true);
+		assertThat(immutable).isLessThan(baseline / 2);
 	}
 
 	@Test // gh-20625
 	void environmentPropertyAccessWhenMutableWithCacheShouldBePerformant() {
 		StandardEnvironment environment = createPerformanceTestEnvironment(false);
+		long uncached = testPropertySourcePerformance(environment);
 		ConfigurationPropertyCaching.get(environment).enable();
-		testPropertySourcePerformance(environment, 1000);
+		long cached = testPropertySourcePerformance(environment);
+		assertThat(cached).isLessThan(uncached / 2);
 	}
 
 	@Test // gh-20625
 	@Disabled("for manual testing")
 	void environmentPropertyAccessWhenMutableShouldBeTolerable() {
-		testPropertySourcePerformance(false, 5000);
+		assertThat(testPropertySourcePerformance(false)).isLessThan(5000);
 	}
 
 	@Test // gh-21416
@@ -158,9 +162,9 @@ class ConfigurationPropertySourcesTests {
 		assertThat(total).isLessThan(1000);
 	}
 
-	private void testPropertySourcePerformance(boolean immutable, int maxTime) {
+	private long testPropertySourcePerformance(boolean immutable) {
 		StandardEnvironment environment = createPerformanceTestEnvironment(immutable);
-		testPropertySourcePerformance(environment, maxTime);
+		return testPropertySourcePerformance(environment);
 	}
 
 	private StandardEnvironment createPerformanceTestEnvironment(boolean immutable) {
@@ -173,14 +177,14 @@ class ConfigurationPropertySourcesTests {
 		return environment;
 	}
 
-	private void testPropertySourcePerformance(StandardEnvironment environment, int maxTime) {
+	private long testPropertySourcePerformance(StandardEnvironment environment) {
 		long start = System.nanoTime();
 		for (int i = 0; i < 1000; i++) {
 			environment.getProperty("missing" + i);
 		}
 		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 		assertThat(environment.getProperty("test-10-property-80")).isEqualTo("test-10-property-80-value");
-		assertThat(total).isLessThan(maxTime);
+		return total;
 	}
 
 	static class TestPropertySource extends MapPropertySource implements OriginLookup<String> {
