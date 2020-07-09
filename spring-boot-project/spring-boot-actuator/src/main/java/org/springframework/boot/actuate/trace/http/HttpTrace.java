@@ -46,7 +46,7 @@ public final class HttpTrace {
 
 	private volatile Long timeTaken;
 
-	private final transient long nanoTime;
+	private final long startNanoTime;
 
 	/**
 	 * Creates a fully-configured {@code HttpTrace} instance. Primarily for use by
@@ -69,13 +69,13 @@ public final class HttpTrace {
 		this.principal = principal;
 		this.session = session;
 		this.timeTaken = timeTaken;
-		this.nanoTime = 0;
+		this.startNanoTime = 0;
 	}
 
 	HttpTrace(TraceableRequest request) {
 		this.request = new Request(request);
 		this.timestamp = Instant.now();
-		this.nanoTime = System.nanoTime();
+		this.startNanoTime = System.nanoTime();
 	}
 
 	public Instant getTimestamp() {
@@ -122,8 +122,8 @@ public final class HttpTrace {
 		this.timeTaken = timeTaken;
 	}
 
-	long getNanoTime() {
-		return this.nanoTime;
+	long getStartNanoTime() {
+		return this.startNanoTime;
 	}
 
 	/**
