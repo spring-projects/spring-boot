@@ -47,6 +47,7 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -766,6 +767,24 @@ class WebMvcAutoConfigurationTests {
 					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
 					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
 				});
+	}
+
+	@Test
+	void usePathPatternParser() {
+		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.matching-strategy:path_pattern_parser")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.usesPathPatterns()).isTrue();
+				});
+	}
+
+	@Test
+	void incompatiblePathMatchingConfiguration() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.pathmatch.matching-strategy:path_pattern_parser",
+						"spring.mvc.pathmatch.use-suffix-pattern:true")
+				.run((context) -> assertThat(context.getStartupFailure()).getRootCause()
+						.isInstanceOf(IncompatibleConfigurationException.class));
 	}
 
 	@Test
