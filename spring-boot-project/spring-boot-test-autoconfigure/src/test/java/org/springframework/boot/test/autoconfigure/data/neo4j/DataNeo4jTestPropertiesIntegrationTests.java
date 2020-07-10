@@ -49,7 +49,7 @@ class DataNeo4jTestPropertiesIntegrationTests {
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}
 
 	@Test

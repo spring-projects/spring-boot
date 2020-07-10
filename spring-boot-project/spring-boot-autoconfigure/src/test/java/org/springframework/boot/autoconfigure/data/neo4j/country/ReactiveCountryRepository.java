@@ -16,34 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j.country;
 
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 
-import java.io.Serializable;
-
-@Node
-public class Country implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String name;
-
-	public Country(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
-	}
+public interface ReactiveCountryRepository extends ReactiveNeo4jRepository<Country, Long> {
 
 }

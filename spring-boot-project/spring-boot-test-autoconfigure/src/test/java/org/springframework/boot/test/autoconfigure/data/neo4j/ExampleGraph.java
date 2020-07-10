@@ -16,17 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Property;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 
 /**
  * Example graph used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
+ * @author Michael J. Simons
  */
-@NodeEntity
+@Node
 public class ExampleGraph {
 
 	@Id
@@ -35,6 +36,10 @@ public class ExampleGraph {
 
 	@Property
 	private String description;
+
+	public ExampleGraph(String description) {
+		this.description = description;
+	}
 
 	public Long getId() {
 		return this.id;

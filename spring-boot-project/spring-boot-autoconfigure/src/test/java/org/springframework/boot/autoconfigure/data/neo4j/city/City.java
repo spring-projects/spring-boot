@@ -18,13 +18,12 @@ package org.springframework.boot.autoconfigure.data.neo4j.city;
 
 import java.io.Serializable;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 
-@NodeEntity
+@Node
 public class City implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -40,9 +39,6 @@ public class City implements Serializable {
 	private Country country;
 
 	private String map;
-
-	public City() {
-	}
 
 	public City(String name, Country country) {
 		this.name = name;
