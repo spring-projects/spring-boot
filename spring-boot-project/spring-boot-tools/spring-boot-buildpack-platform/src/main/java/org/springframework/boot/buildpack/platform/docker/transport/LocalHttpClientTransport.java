@@ -50,6 +50,8 @@ import org.springframework.boot.buildpack.platform.system.Environment;
  */
 final class LocalHttpClientTransport extends HttpClientTransport {
 
+	private static final String UNIX_SOCKET_PREFIX = "unix://";
+
 	private static final String DOCKER_HOST = "DOCKER_HOST";
 
 	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
@@ -60,9 +62,15 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	static LocalHttpClientTransport create(Environment environment) {
 		HttpClientBuilder builder = HttpClients.custom();
-		builder.setConnectionManager(new LocalConnectionManager(environment.get(DOCKER_HOST)));
+		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
 		return new LocalHttpClientTransport(builder.build());
+	}
+
+	private static String socketFilePath(Environment environment) {
+		String host = environment.get(DOCKER_HOST);
+		return (host != null && host.startsWith(UNIX_SOCKET_PREFIX)) ? host.substring(UNIX_SOCKET_PREFIX.length())
+				: host;
 	}
 
 	/**
