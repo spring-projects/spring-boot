@@ -16,25 +16,29 @@
 
 package org.springframework.boot.actuate.neo4j;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.exception.CypherException;
-import org.neo4j.ogm.model.Result;
-import org.neo4j.ogm.session.Session;
-import org.neo4j.ogm.session.SessionFactory;
-
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.SessionConfig;
+import org.neo4j.driver.Values;
+import org.neo4j.driver.exceptions.ServiceUnavailableException;
+import org.neo4j.driver.exceptions.SessionExpiredException;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Neo4jHealthIndicator}.
@@ -43,48 +47,126 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Michael Simons
  */
-class Neo4jHealthIndicatorTests {
+@ExtendWith(MockitoExtension.class)
+class Neo4jHealthIndicatorTests extends Neo4jHealthIndicatorTestBase {
 
+	@Mock
 	private Session session;
 
-	private Neo4jHealthIndicator neo4jHealthIndicator;
-
-	@BeforeEach
-	void before() {
-		this.session = mock(Session.class);
-		SessionFactory sessionFactory = mock(SessionFactory.class);
-		given(sessionFactory.openSession()).willReturn(this.session);
-		this.neo4jHealthIndicator = new Neo4jHealthIndicator(sessionFactory);
-	}
+	@Mock
+	private Result statementResult;
 
 	@Test
-	void neo4jUp() {
-		Result result = mock(Result.class);
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willReturn(result);
-		Map<String, Object> expectedCypherDetails = new HashMap<>();
-		String edition = "community";
-		String version = "4.0.0";
-		expectedCypherDetails.put("edition", edition);
-		expectedCypherDetails.put("version", version);
-		List<Map<String, Object>> queryResults = new ArrayList<>();
-		queryResults.add(expectedCypherDetails);
-		given(result.queryResults()).willReturn(queryResults);
-		Health health = this.neo4jHealthIndicator.health();
+	void shouldWorkWithoutDatabaseName() {
+		when(this.serverInfo.version()).thenReturn("4711");
+		when(this.serverInfo.address()).thenReturn("Zu Hause");
+		when(this.resultSummary.server()).thenReturn(this.serverInfo);
+		when(this.resultSummary.database()).thenReturn(this.databaseInfo);
+
+		when(this.databaseInfo.name()).thenReturn(null);
+
+		when(record.get("edition")).thenReturn(Values.value("some edition"));
+		when(this.statementResult.single()).thenReturn(this.record);
+		when(this.statementResult.consume()).thenReturn(this.resultSummary);
+		when(this.session.run(anyString())).thenReturn(this.statementResult);
+
+		when(this.driver.session(any(SessionConfig.class))).thenReturn(this.session);
+
+		Neo4jHealthIndicator healthIndicator = new Neo4jHealthIndicator(this.driver);
+		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		Map<String, Object> details = health.getDetails();
-		String editionFromDetails = details.get("edition").toString();
-		String versionFromDetails = details.get("version").toString();
-		assertThat(editionFromDetails).isEqualTo(edition);
-		assertThat(versionFromDetails).isEqualTo(version);
+		assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
+		assertThat(health.getDetails()).doesNotContainKey("database");
+		assertThat(health.getDetails()).containsEntry("edition", "some edition");
 	}
 
 	@Test
-	void neo4jDown() {
-		CypherException cypherException = new CypherException("Neo.ClientError.Statement.SyntaxError",
-				"Error executing Cypher");
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willThrow(cypherException);
-		Health health = this.neo4jHealthIndicator.health();
+	void shouldWorkWithEmptyDatabaseName() {
+		when(this.serverInfo.version()).thenReturn("4711");
+		when(this.serverInfo.address()).thenReturn("Zu Hause");
+		when(this.resultSummary.server()).thenReturn(this.serverInfo);
+		when(this.resultSummary.database()).thenReturn(this.databaseInfo);
+
+		when(this.databaseInfo.name()).thenReturn("");
+
+		when(record.get("edition")).thenReturn(Values.value("some edition"));
+		when(this.statementResult.single()).thenReturn(this.record);
+		when(this.statementResult.consume()).thenReturn(this.resultSummary);
+		when(this.session.run(anyString())).thenReturn(this.statementResult);
+
+		when(driver.session(any(SessionConfig.class))).thenReturn(this.session);
+
+		Neo4jHealthIndicator healthIndicator = new Neo4jHealthIndicator(this.driver);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
+		assertThat(health.getDetails()).doesNotContainKey("database");
+		assertThat(health.getDetails()).containsEntry("edition", "some edition");
+	}
+
+	@Test
+	void neo4jIsUp() {
+
+		prepareSharedMocks();
+
+		when(this.statementResult.single()).thenReturn(this.record);
+		when(this.statementResult.consume()).thenReturn(this.resultSummary);
+		when(this.session.run(anyString())).thenReturn(this.statementResult);
+
+		when(this.driver.session(any(SessionConfig.class))).thenReturn(this.session);
+
+		Neo4jHealthIndicator healthIndicator = new Neo4jHealthIndicator(this.driver);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
+		assertThat(health.getDetails()).containsEntry("database", "n/a");
+		assertThat(health.getDetails()).containsEntry("edition", "ultimate collectors edition");
+
+		verify(session).close();
+		verifyNoMoreInteractions(this.driver, this.session, this.statementResult, this.resultSummary, this.serverInfo,
+				this.databaseInfo);
+	}
+
+	@Test
+	void neo4jSessionIsExpiredOnce() {
+
+		AtomicInteger cnt = new AtomicInteger(0);
+
+		prepareSharedMocks();
+		when(this.statementResult.single()).thenReturn(this.record);
+		when(this.statementResult.consume()).thenReturn(this.resultSummary);
+		when(this.session.run(anyString())).thenAnswer(invocation -> {
+			if (cnt.compareAndSet(0, 1)) {
+				throw new SessionExpiredException("Session expired");
+			}
+			return Neo4jHealthIndicatorTests.this.statementResult;
+		});
+		when(driver.session(any(SessionConfig.class))).thenReturn(this.session);
+
+		Neo4jHealthIndicator healthIndicator = new Neo4jHealthIndicator(this.driver);
+		Health health = healthIndicator.health();
+
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
+
+		verify(this.session, times(2)).close();
+		verifyNoMoreInteractions(this.driver, this.session, this.statementResult, this.resultSummary, this.serverInfo,
+				this.databaseInfo);
+	}
+
+	@Test
+	void neo4jSessionIsDown() {
+
+		when(driver.session(any(SessionConfig.class))).thenThrow(ServiceUnavailableException.class);
+
+		Neo4jHealthIndicator healthIndicator = new Neo4jHealthIndicator(driver);
+		Health health = healthIndicator.health();
+
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).containsKeys("error");
+
+		verifyNoMoreInteractions(this.driver, this.session, this.statementResult, this.resultSummary, this.serverInfo,
+				this.databaseInfo);
 	}
 
 }
