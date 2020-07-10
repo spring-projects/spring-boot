@@ -16,111 +16,61 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.util.List;
+import java.util.Set;
 
-import org.neo4j.ogm.session.SessionFactory;
-import org.neo4j.ogm.session.event.EventListener;
+import org.neo4j.driver.Driver;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.autoconfigure.domain.EntityScanner;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
-import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.data.neo4j.core.convert.Neo4jConversions;
+import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
+import org.springframework.data.neo4j.core.schema.Node;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j. Automatic
+ * configuration of base infrastructure that imports configuration for both imperative and
+ * reactive Neo4j repositories. Depends on the configured Neo4j driver.
  *
  * @author Michael Hunger
  * @author Josh Long
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @author Michael Simons
+ * @author Michael J Simons
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ SessionFactory.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
-@EnableConfigurationProperties(Neo4jProperties.class)
-@Import(Neo4jBookmarkManagementConfiguration.class)
+@ConditionalOnBean(Driver.class)
+@EnableConfigurationProperties(Neo4jDataProperties.class)
+@AutoConfigureBefore(TransactionAutoConfiguration.class)
+@Import({ Neo4jImperativeDataConfiguration.class, Neo4jReactiveDataConfiguration.class })
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(PlatformTransactionManager.class)
-	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(sessionFactory);
-		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
-		return transactionManager;
+	@ConditionalOnMissingBean
+	public Neo4jConversions neo4jConversions() {
+		return new Neo4jConversions();
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(SessionFactory.class)
-	static class Neo4jOgmSessionFactoryConfiguration {
+	@Bean
+	@ConditionalOnMissingBean
+	public Neo4jMappingContext neo4jMappingContext(ApplicationContext applicationContext,
+			Neo4jConversions neo4jConversions) throws ClassNotFoundException {
 
-		@Bean
-		@ConditionalOnMissingBean
-		org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-			return properties.createConfiguration();
-		}
+		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class);
+		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
+		context.setInitialEntitySet(initialEntityClasses);
 
-		@Bean
-		SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration, BeanFactory beanFactory,
-				ObjectProvider<EventListener> eventListeners) {
-			SessionFactory sessionFactory = new SessionFactory(configuration, getPackagesToScan(beanFactory));
-			eventListeners.orderedStream().forEach(sessionFactory::register);
-			return sessionFactory;
-		}
-
-		private String[] getPackagesToScan(BeanFactory beanFactory) {
-			List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
-			if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
-				packages = AutoConfigurationPackages.get(beanFactory);
-			}
-			return StringUtils.toStringArray(packages);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnClass({ WebMvcConfigurer.class, OpenSessionInViewInterceptor.class })
-	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true")
-	static class Neo4jWebConfiguration {
-
-		@Bean
-		OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
-			return new OpenSessionInViewInterceptor();
-		}
-
-		@Bean
-		WebMvcConfigurer neo4jOpenSessionInViewInterceptorConfigurer(OpenSessionInViewInterceptor interceptor) {
-			return new WebMvcConfigurer() {
-
-				@Override
-				public void addInterceptors(InterceptorRegistry registry) {
-					registry.addWebRequestInterceptor(interceptor);
-				}
-
-			};
-		}
-
+		return context;
 	}
 
 }

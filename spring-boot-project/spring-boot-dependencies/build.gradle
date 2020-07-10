@@ -1177,19 +1177,6 @@ bom {
 			]
 		}
 	}
-	library("Neo4j OGM", "3.2.12") {
-		group("org.neo4j") {
-			modules = [
-				"neo4j-ogm-api",
-				"neo4j-ogm-bolt-driver",
-				"neo4j-ogm-bolt-native-types",
-				"neo4j-ogm-core",
-				"neo4j-ogm-embedded-driver",
-				"neo4j-ogm-embedded-native-types",
-				"neo4j-ogm-http-driver"
-			]
-		}
-	}
 	library("Netty", "4.1.50.Final") {
 		group("io.netty") {
 			imports = [
@@ -1563,7 +1550,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2020.0.0-M1") {
+	library("Spring Data Bom", "2020.0.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"

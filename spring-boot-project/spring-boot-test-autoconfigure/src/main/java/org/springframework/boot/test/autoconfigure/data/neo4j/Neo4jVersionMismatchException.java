@@ -16,26 +16,37 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.springframework.data.neo4j.core.Neo4jTemplate;
-import org.springframework.stereotype.Service;
-
 /**
- * Example service used with {@link DataNeo4jTest @DataNeo4jTest} tests.
+ * An exception that is thrown when a version of Neo4j is present that does not match the
+ * requirements of a test setup.
  *
- * @author Eddú Meléndez
  * @author Michael J. Simons
+ * @since 2.4.0
  */
-@Service
-public class ExampleService {
+public final class Neo4jVersionMismatchException extends RuntimeException {
 
-	private final Neo4jTemplate neo4jTemplate;
+	/**
+	 * The required version.
+	 */
+	private final String requiredVersion;
 
-	public ExampleService(Neo4jTemplate neo4jTemplate) {
-		this.neo4jTemplate = neo4jTemplate;
+	/**
+	 * The actual version of Neo4j present.
+	 */
+	private final String actualVersion;
+
+	public Neo4jVersionMismatchException(String message, String requiredVersion, String actualVersion) {
+		super(message);
+		this.requiredVersion = requiredVersion;
+		this.actualVersion = actualVersion;
 	}
 
-	public boolean hasNode(Class<?> clazz) {
-		return this.neo4jTemplate.count(clazz) == 1;
+	public String getRequiredVersion() {
+		return this.requiredVersion;
+	}
+
+	public String getActualVersion() {
+		return this.actualVersion;
 	}
 
 }

@@ -14,36 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.neo4j.country;
+package org.springframework.boot.autoconfigure.data.neo4j.city;
 
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 
-import java.io.Serializable;
-
-@Node
-public class Country implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String name;
-
-	public Country(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
-	}
+public interface ReactiveCityRepository extends ReactiveNeo4jRepository<City, Long> {
 
 }

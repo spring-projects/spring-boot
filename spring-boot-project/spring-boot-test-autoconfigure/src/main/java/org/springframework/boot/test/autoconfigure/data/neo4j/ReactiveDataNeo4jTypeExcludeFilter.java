@@ -24,23 +24,19 @@ import org.neo4j.driver.Driver;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
-import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 
 /**
- * {@link TypeExcludeFilter} for {@link DataNeo4jTest @DataNeo4jTest}.
+ * {@link TypeExcludeFilter} for {@link ReactiveDataNeo4jTest @ReactiveDataNeo4jTest}.
  *
- * @author Eddú Meléndez
  * @author Michael J. Simons
- * @since 2.2.1
  */
-public final class DataNeo4jTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataNeo4jTest> {
+final class ReactiveDataNeo4jTypeExcludeFilter
+		extends StandardAnnotationCustomizableTypeExcludeFilter<ReactiveDataNeo4jTest> {
 
-	DataNeo4jTypeExcludeFilter(Class<?> testClass) {
+	ReactiveDataNeo4jTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 
@@ -49,9 +45,6 @@ public final class DataNeo4jTypeExcludeFilter extends StandardAnnotationCustomiz
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
 		includes.add(Driver.class);
-		includes.add(Neo4jClient.class);
-		includes.add(Neo4jTemplate.class);
-		includes.add(Neo4jRepository.class);
 		includes.add(ReactiveNeo4jClient.class);
 		includes.add(ReactiveNeo4jTemplate.class);
 		includes.add(ReactiveNeo4jRepository.class);
