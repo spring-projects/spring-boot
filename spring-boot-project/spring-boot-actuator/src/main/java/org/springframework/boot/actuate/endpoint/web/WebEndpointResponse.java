@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.endpoint.web;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Optional;
-
 /**
  * A {@code WebEndpointResponse} can be returned by an operation on a
  * {@link EndpointWebExtension @EndpointWebExtension} to provide additional, web-specific
@@ -72,6 +70,7 @@ public final class WebEndpointResponse<T> {
 	private final T body;
 
 	private final int status;
+
 	private final MultiValueMap<String, String> headers;
 
 	/**
@@ -84,7 +83,6 @@ public final class WebEndpointResponse<T> {
 	/**
 	 * Creates a new {@code WebEndpointResponse} with no body and the given
 	 * {@code status}.
-	 *
 	 * @param status the HTTP status
 	 */
 	public WebEndpointResponse(int status) {
@@ -94,7 +92,6 @@ public final class WebEndpointResponse<T> {
 	/**
 	 * Creates a new {@code WebEndpointResponse} with then given body and a 200 (OK)
 	 * status.
-	 *
 	 * @param body the body
 	 */
 	public WebEndpointResponse(T body) {
@@ -103,8 +100,7 @@ public final class WebEndpointResponse<T> {
 
 	/**
 	 * Creates a new {@code WebEndpointResponse} with then given body and status.
-	 *
-	 * @param body   the body
+	 * @param body the body
 	 * @param status the HTTP status
 	 */
 	public WebEndpointResponse(T body, int status) {
@@ -112,10 +108,9 @@ public final class WebEndpointResponse<T> {
 	}
 
 	/**
-	 * * Creates a new {@code WebEndpointResponse} with then given body, status and {@link Optional } headers.
-	 *
-	 * @param body    the body
-	 * @param status  the HTTP status
+	 * Creates a new {@code WebEndpointResponse} with then given body, status and headers.
+	 * @param body the body
+	 * @param status the HTTP status
 	 * @param headers the additional headers
 	 */
 	public WebEndpointResponse(T body, int status, MultiValueMap<String, String> headers) {
@@ -126,7 +121,6 @@ public final class WebEndpointResponse<T> {
 
 	/**
 	 * Returns the body for the response.
-	 *
 	 * @return the body
 	 */
 	public T getBody() {
@@ -135,7 +129,6 @@ public final class WebEndpointResponse<T> {
 
 	/**
 	 * Returns the status for the response.
-	 *
 	 * @return the status
 	 */
 	public int getStatus() {
@@ -144,8 +137,7 @@ public final class WebEndpointResponse<T> {
 
 	/**
 	 * Returns the headers for the response
-	 *
-	 * @return an {@link Optional} of additional headers to set
+	 * @return an of additional headers to set
 	 */
 	public MultiValueMap<String, String> getHeaders() {
 		return headers == null ? Collections.emptyMap() : headers;

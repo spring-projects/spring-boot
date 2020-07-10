@@ -102,16 +102,15 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	/**
 	 * Creates a new {@code AbstractWebFluxEndpointHandlerMapping} that provides mappings
 	 * for the operations of the given {@code webEndpoints}.
-	 *
-	 * @param endpointMapping            the base mapping for all endpoints
-	 * @param endpoints                  the web endpoints
-	 * @param endpointMediaTypes         media types consumed and produced by the endpoints
-	 * @param corsConfiguration          the CORS configuration for the endpoints
+	 * @param endpointMapping the base mapping for all endpoints
+	 * @param endpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints
 	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public AbstractWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-												 Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-												 CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
@@ -144,7 +143,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		if (operation.getType() == OperationType.WRITE) {
 			registerMapping(createRequestMappingInfo(operation), new WriteOperationHandler((reactiveWebOperation)),
 					this.handleWriteMethod);
-		} else {
+		}
+		else {
 			registerMapping(createRequestMappingInfo(operation), new ReadOperationHandler((reactiveWebOperation)),
 					this.handleReadMethod);
 		}
@@ -153,14 +153,13 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	/**
 	 * Hook point that allows subclasses to wrap the {@link ReactiveWebOperation} before
 	 * it's called. Allows additional features, such as security, to be added.
-	 *
-	 * @param endpoint             the source endpoint
-	 * @param operation            the source operation
+	 * @param endpoint the source endpoint
+	 * @param operation the source operation
 	 * @param reactiveWebOperation the reactive web operation to wrap
 	 * @return a wrapped reactive web operation
 	 */
 	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
-															ReactiveWebOperation reactiveWebOperation) {
+			ReactiveWebOperation reactiveWebOperation) {
 		return reactiveWebOperation;
 	}
 
@@ -211,14 +210,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	/**
 	 * Return the Handler providing actuator links at the root endpoint.
-	 *
 	 * @return the links handler
 	 */
 	protected abstract LinksHandler getLinksHandler();
 
 	/**
 	 * Return the web endpoints being mapped.
-	 *
 	 * @return the endpoints
 	 */
 	public Collection<ExposableWebEndpoint> getEndpoints() {
@@ -364,11 +361,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
 			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-			return new ResponseEntity<>(
-					webEndpointResponse.getBody(),
+			return new ResponseEntity<>(webEndpointResponse.getBody(),
 					webEndpointResponse.getHeaders().isEmpty() ? null : webEndpointResponse.getHeaders(),
-					HttpStatus.valueOf(webEndpointResponse.getStatus())
-			);
+					HttpStatus.valueOf(webEndpointResponse.getStatus()));
 		}
 
 		@Override
@@ -391,7 +386,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@ResponseBody
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
-												 @RequestBody(required = false) Map<String, String> body) {
+				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(exchange, body);
 		}
 
