@@ -51,6 +51,15 @@ class HttpTransportTests {
 	}
 
 	@Test
+	void createWhenDockerHostVariableIsUnixSchemePrefixedFileReturnsLocal(@TempDir Path tempDir) throws IOException {
+		String dummySocketFilePath = "unix://"
+				+ Files.createTempFile(tempDir, "http-transport", null).toAbsolutePath().toString();
+		Map<String, String> environment = Collections.singletonMap("DOCKER_HOST", dummySocketFilePath);
+		HttpTransport transport = HttpTransport.create(environment::get);
+		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);
+	}
+
+	@Test
 	void createWhenDoesNotHaveDockerHostVariableReturnsLocal() {
 		HttpTransport transport = HttpTransport.create((name) -> null);
 		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);

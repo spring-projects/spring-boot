@@ -40,6 +40,8 @@ import org.springframework.util.Assert;
  */
 final class RemoteHttpClientTransport extends HttpClientTransport {
 
+	private static final String UNIX_SOCKET_PREFIX = "unix://";
+
 	private static final String DOCKER_HOST = "DOCKER_HOST";
 
 	private static final String DOCKER_TLS_VERIFY = "DOCKER_TLS_VERIFY";
@@ -63,8 +65,9 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	}
 
 	private static boolean isLocalFileReference(String host) {
+		String filePath = host.startsWith(UNIX_SOCKET_PREFIX) ? host.substring(UNIX_SOCKET_PREFIX.length()) : host;
 		try {
-			return Files.exists(Paths.get(host));
+			return Files.exists(Paths.get(filePath));
 		}
 		catch (Exception ex) {
 			return false;
