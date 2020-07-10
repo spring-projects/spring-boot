@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.actuate.neo4j;
+
+import org.neo4j.driver.summary.ResultSummary;
+
 /**
- * Auto-configuration for actuator Neo4J concerns.
+ * A holder for a {@link ResultSummary result summary} and database edition.
+ *
+ * @author Michael J. Simons
  */
-package org.springframework.boot.actuate.autoconfigure.neo4j;
+final class ResultSummaryWithEdition {
+
+	final ResultSummary resultSummary;
+
+	final String edition;
+
+	ResultSummaryWithEdition(ResultSummary resultSummary, String edition) {
+		this.resultSummary = resultSummary;
+		this.edition = edition;
+	}
+
+}
