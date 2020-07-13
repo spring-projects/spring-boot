@@ -319,9 +319,9 @@ Application events are sent in the following order, as your application runs:
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
 In addition to these, the following events are also published after `ApplicationPreparedEvent` and before `ApplicationStartedEvent`:
 
-. A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
-. A `WebServerInitializedEvent` is sent after the `WebServer` is ready.
+- A `WebServerInitializedEvent` is sent after the `WebServer` is ready.
   `ServletWebServerInitializedEvent` and `ReactiveWebServerInitializedEvent` are the servlet and reactive variants respectively.
+- A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
 
 TIP: You often need not use application events, but it can be handy to know that they exist.
 Internally, Spring Boot uses events to handle a variety of tasks.
