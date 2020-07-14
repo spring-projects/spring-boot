@@ -24,8 +24,8 @@ import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -83,8 +83,8 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 
 	static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(ConfigurationBeanFactoryMetadata.class);
+			BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(
+					ConfigurationBeanFactoryMetadata.class, ConfigurationBeanFactoryMetadata::new).getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationBeanFactoryMetadata.BEAN_NAME, definition);
 		}
