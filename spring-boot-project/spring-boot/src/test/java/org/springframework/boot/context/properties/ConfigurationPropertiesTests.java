@@ -63,7 +63,6 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -781,13 +780,6 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(13));
 		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(14));
-	}
-
-	@Test // gh-17831
-	void loadWhenBindingConstructorParametersViaImportShouldThrowException() {
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(() -> load(ImportConstructorParameterPropertiesConfiguration.class))
-				.withMessageContaining("@EnableConfigurationProperties or @ConfigurationPropertiesScan must be used");
 	}
 
 	@Test
@@ -1993,13 +1985,6 @@ class ConfigurationPropertiesTests {
 		Period getPeriod() {
 			return this.period;
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties
-	@Import(ConstructorParameterProperties.class)
-	static class ImportConstructorParameterPropertiesConfiguration {
 
 	}
 
