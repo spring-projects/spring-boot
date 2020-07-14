@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.r2dbc;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.time.Duration;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -62,10 +63,24 @@ class R2dbcAutoConfigurationTests {
 	@Test
 	void configureWithUrlAndPoolPropertiesApplyProperties() {
 		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName(),
-				"spring.r2dbc.pool.max-size=15").run((context) -> {
-					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class);
-					PoolMetrics poolMetrics = context.getBean(ConnectionPool.class).getMetrics().get();
+				"spring.r2dbc.pool.max-size=15", "spring.r2dbc.pool.max-acquire-time=3m").run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
+							.hasSingleBean(R2dbcProperties.class);
+					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
+					PoolMetrics poolMetrics = connectionPool.getMetrics().get();
 					assertThat(poolMetrics.getMaxAllocatedSize()).isEqualTo(15);
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofMinutes(3));
+				});
+	}
+
+	@Test
+	void configureWithUrlAndDefaultDoNotOverrideDefaultTimeouts() {
+		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName())
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
+							.hasSingleBean(R2dbcProperties.class);
+					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ZERO);
 				});
 	}
 
