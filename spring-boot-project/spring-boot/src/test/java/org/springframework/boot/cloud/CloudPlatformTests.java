@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -135,6 +137,44 @@ class CloudPlatformTests {
 				Collections.singletonMap("spring.main.cloud-platform", "kubernetes"));
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
+	}
+
+	@Test
+	void isEnforcedWhenEnvironmentPropertyMatchesReturnsTrue() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.main.cloud-platform", "kubernetes");
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(environment)).isTrue();
+	}
+
+	@Test
+	void isEnforcedWhenEnvironmentPropertyDoesNotMatchReturnsFalse() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.main.cloud-platform", "heroku");
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(environment)).isFalse();
+	}
+
+	@Test
+	void isEnforcedWhenEnvironmentPropertyIsMissingatchReturnsFalse() {
+		MockEnvironment environment = new MockEnvironment();
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(environment)).isFalse();
+	}
+
+	@Test
+	void isEnforcedWhenBinderPropertyMatchesReturnsTrue() {
+		Binder binder = new Binder(new MockConfigurationPropertySource("spring.main.cloud-platform", "kubernetes"));
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isTrue();
+	}
+
+	@Test
+	void isEnforcedWhenBinderPropertyDoesNotMatchReturnsFalse() {
+		Binder binder = new Binder(new MockConfigurationPropertySource("spring.main.cloud-platform", "heroku"));
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
+	}
+
+	@Test
+	void isEnforcedWhenBinderPropertyIsMissingatchReturnsFalse() {
+		Binder binder = new Binder(new MockConfigurationPropertySource());
+		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
