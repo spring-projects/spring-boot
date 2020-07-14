@@ -29,7 +29,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -198,7 +197,7 @@ class ConfigurationPropertiesBinder {
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			AbstractBeanDefinition definition = BeanDefinitionBuilder
 					.genericBeanDefinition(ConfigurationPropertiesBinder.class,
-							() -> ((DefaultListableBeanFactory) registry)
+							() -> ((BeanFactory) registry)
 									.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class).create())
 					.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
