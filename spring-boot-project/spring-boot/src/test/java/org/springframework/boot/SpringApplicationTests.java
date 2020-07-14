@@ -320,6 +320,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void specificApplicationContextClass() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(StaticApplicationContext.class);
@@ -328,6 +329,16 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	void specificApplicationContextFactory() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextFactory(
+				ApplicationContextFactory.forContextClass(StaticApplicationContext.class));
+		this.context = application.run();
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
 	void specificWebApplicationContextClassDetectWebApplicationType() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(AnnotationConfigServletWebApplicationContext.class);
@@ -335,6 +346,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void specificReactiveApplicationContextClassDetectReactiveApplicationType() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(AnnotationConfigReactiveWebApplicationContext.class);
@@ -342,6 +354,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void nonWebNorReactiveApplicationContextClassDetectNoneApplicationType() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(StaticApplicationContext.class);
@@ -876,7 +889,8 @@ class SpringApplicationTests {
 	@Test
 	void registerShutdownHook() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(SpyApplicationContext.class);
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
 		this.context = application.run();
 		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
 		verify(applicationContext.getApplicationContext()).registerShutdownHook();
@@ -885,7 +899,8 @@ class SpringApplicationTests {
 	@Test
 	void registerListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class);
-		application.setApplicationContextClass(SpyApplicationContext.class);
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
@@ -898,7 +913,8 @@ class SpringApplicationTests {
 	void registerListenerWithCustomMulticaster() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class,
 				Multicaster.class);
-		application.setApplicationContextClass(SpyApplicationContext.class);
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
@@ -978,7 +994,8 @@ class SpringApplicationTests {
 	@Test
 	void registerShutdownHookOff() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextClass(SpyApplicationContext.class);
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
 		application.setRegisterShutdownHook(false);
 		this.context = application.run();
 		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
