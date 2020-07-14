@@ -405,6 +405,11 @@ public final class ConditionMessage {
 			protected Object applyToItem(Object item) {
 				return item;
 			}
+
+			@Override
+			public Collection<?> applyTo(Collection<?> items) {
+				return items;
+			}
 		},
 
 		QUOTE {
@@ -415,7 +420,7 @@ public final class ConditionMessage {
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {
-			List<Object> result = new ArrayList<>();
+			List<Object> result = new ArrayList<>(items.size());
 			for (Object item : items) {
 				result.add(applyToItem(item));
 			}
