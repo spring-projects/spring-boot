@@ -137,7 +137,7 @@ public class R2dbcProperties {
 	public static class Pool {
 
 		/**
-		 * Idle timeout.
+		 * Maximum amount of time that a connection is allowed to sit idle in the pool.
 		 */
 		private Duration maxIdleTime = Duration.ofMinutes(30);
 
