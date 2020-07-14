@@ -752,7 +752,11 @@
       "name": "spring.profiles",
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included."
+      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included.",
+      "deprecation": {
+        "replacement": "spring.config.import.on-profile",
+        "level": "warning"
+      }
     },
     {
       "name": "spring.profiles.active",
@@ -779,6 +783,24 @@
       "description": "Enable trace logs.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false
+    },
+    {
+      "name": "spring.config.import",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Import additional config data.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
+      "name": "spring.config.activate.on-cloud-platform",
+      "type": "org.springframework.boot.cloud.CloudPlatform",
+      "description": "The cloud platform that required for the document to be included",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
+      "name": "spring.config.import.on-profile",
+      "type": "java.lang.String[]",
+      "description": "Profile expressions that should match for the document to be included",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     }
   ],
   "hints": [
@@ -859,6 +881,25 @@
       "providers": [
         {
           "name": "spring-profile-name"
+        }
+      ]
+    },
+    {
+      "name": "spring.config.import",
+      "values": [
+        {
+          "value": "file:"
+        },
+        {
+          "value": "classpath:"
+        },
+        {
+          "value": "volumemount:"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
         }
       ]
     }

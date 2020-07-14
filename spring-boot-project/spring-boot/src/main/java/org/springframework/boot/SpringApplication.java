@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -237,7 +236,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private Set<String> additionalProfiles = new HashSet<>();
+	private Set<String> additionalProfiles = Collections.emptySet();
 
 	private boolean allowBeanDefinitionOverriding;
 
@@ -352,6 +351,7 @@ public class SpringApplication {
 		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(environment);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
+		configureAdditionalProfiles(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
@@ -527,9 +527,16 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
-		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
+	}
+
+	private void configureAdditionalProfiles(ConfigurableEnvironment environment) {
+		if (!CollectionUtils.isEmpty(this.additionalProfiles)) {
+			Set<String> profiles = new LinkedHashSet<>(Arrays.asList(environment.getActiveProfiles()));
+			if (!profiles.containsAll(this.additionalProfiles)) {
+				profiles.addAll(this.additionalProfiles);
+				environment.setActiveProfiles(StringUtils.toStringArray(profiles));
+			}
+		}
 	}
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
@@ -1043,7 +1050,15 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.additionalProfiles = new LinkedHashSet<>(Arrays.asList(profiles));
+		this.additionalProfiles = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(profiles)));
+	}
+
+	/**
+	 * Return an immutable set of any additional profiles in use.
+	 * @return the additional profiles
+	 */
+	public Set<String> getAdditionalProfiles() {
+		return this.additionalProfiles;
 	}
 
 	/**

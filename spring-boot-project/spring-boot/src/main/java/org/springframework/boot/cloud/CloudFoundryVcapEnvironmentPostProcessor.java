@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
@@ -92,14 +94,36 @@ import org.springframework.util.StringUtils;
 public class CloudFoundryVcapEnvironmentPostProcessor
 		implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationPreparedEvent> {
 
-	private static final DeferredLog logger = new DeferredLog();
-
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
+	private final Log logger;
+
+	private final boolean switchableLogger;
+
 	// Before ConfigFileApplicationListener so values there can use these ones
-	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
+	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 1;
+
+	/**
+	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #CloudFoundryVcapEnvironmentPostProcessor(Log)}
+	 */
+	@Deprecated
+	public CloudFoundryVcapEnvironmentPostProcessor() {
+		this.logger = new DeferredLog();
+		this.switchableLogger = true;
+	}
+
+	/**
+	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
+	 * @param logger the logger to use
+	 */
+	public CloudFoundryVcapEnvironmentPostProcessor(Log logger) {
+		this.logger = logger;
+		this.switchableLogger = false;
+	}
 
 	public void setOrder(int order) {
 		this.order = order;
@@ -128,9 +152,17 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		}
 	}
 
+	/**
+	 * Event listener used to switch logging.
+	 * @deprecated since 2.4.0 in favor of only using {@link EnvironmentPostProcessor}
+	 * callbacks
+	 */
+	@Deprecated
 	@Override
 	public void onApplicationEvent(ApplicationPreparedEvent event) {
-		logger.switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
+		if (this.switchableLogger) {
+			((DeferredLog) this.logger).switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
+		}
 	}
 
 	private void addWithPrefix(Properties properties, Properties other, String prefix) {
@@ -148,7 +180,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
-			logger.error("Could not parse VCAP_APPLICATION", ex);
+			this.logger.error("Could not parse VCAP_APPLICATION", ex);
 		}
 		return properties;
 	}
@@ -161,7 +193,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {
-			logger.error("Could not parse VCAP_SERVICES", ex);
+			this.logger.error("Could not parse VCAP_SERVICES", ex);
 		}
 		return properties;
 	}

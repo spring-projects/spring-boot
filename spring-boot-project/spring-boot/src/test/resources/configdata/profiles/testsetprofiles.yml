@@ -1,0 +1,10 @@
+---
+spring:
+  profiles:
+    active: dev
+my:
+  property: fromyamlfile
+---
+spring.config.activate.on-profile: dev
+my:
+  property: fromdevprofile

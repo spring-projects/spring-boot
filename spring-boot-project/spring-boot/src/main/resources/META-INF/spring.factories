@@ -3,6 +3,14 @@ org.springframework.boot.env.PropertySourceLoader=\
 org.springframework.boot.env.PropertiesPropertySourceLoader,\
 org.springframework.boot.env.YamlPropertySourceLoader
 
+# ConfigData Location Resolvers
+org.springframework.boot.context.config.ConfigDataLocationResolver=\
+org.springframework.boot.context.config.ResourceConfigDataLocationResolver
+
+# ConfigData Loaders
+org.springframework.boot.context.config.ConfigDataLoader=\
+org.springframework.boot.context.config.ResourceConfigDataLoader
+
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
 org.springframework.boot.context.event.EventPublishingRunListener
@@ -23,18 +31,19 @@ org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.ClearCachesApplicationListener,\
 org.springframework.boot.builder.ParentContextCloserApplicationListener,\
-org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
 org.springframework.boot.context.config.AnsiOutputApplicationListener,\
-org.springframework.boot.context.config.ConfigFileApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
 org.springframework.boot.context.logging.ClasspathLoggingApplicationListener,\
 org.springframework.boot.context.logging.LoggingApplicationListener,\
+org.springframework.boot.env.EnvironmentPostProcessorApplicationListener,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
+org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor,\
+org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor
 org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,\
 org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor,\
 org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor

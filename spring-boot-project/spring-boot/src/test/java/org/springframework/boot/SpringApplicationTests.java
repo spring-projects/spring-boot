@@ -587,8 +587,8 @@ class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run("--spring.profiles.active=bar,spam");
-		// Command line should always come last
-		assertThat(environment.getActiveProfiles()).containsExactly("foo", "bar", "spam");
+		// Since Boot 2.4 additional should always be last
+		assertThat(environment.getActiveProfiles()).containsExactly("bar", "spam", "foo");
 	}
 
 	@Test

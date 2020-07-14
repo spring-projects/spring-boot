@@ -1,0 +1,12 @@
+---
+my:
+  property: fromyamlfile
+  other: notempty
+---
+spring.config.activate.on-profile: thedefault
+my:
+  property: fromdefaultprofile
+---
+spring.config.activate.on-profile: other
+my:
+  property: fromotherprofile

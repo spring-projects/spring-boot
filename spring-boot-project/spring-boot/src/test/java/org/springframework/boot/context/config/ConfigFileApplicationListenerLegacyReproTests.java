@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.context.config;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Profiles;
@@ -31,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class ReproTests {
+@ExtendWith(UseLegacyProcessing.class)
+class ConfigFileApplicationListenerLegacyReproTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -46,7 +50,6 @@ class ReproTests {
 	void enableProfileViaApplicationProperties() {
 		// gh-308
 		SpringApplication application = new SpringApplication(Config.class);
-
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
