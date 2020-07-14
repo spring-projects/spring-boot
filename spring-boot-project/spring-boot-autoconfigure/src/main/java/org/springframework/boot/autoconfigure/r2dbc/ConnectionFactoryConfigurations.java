@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -69,15 +70,16 @@ abstract class ConnectionFactoryConfigurations {
 			ConnectionFactory connectionFactory = createConnectionFactory(properties, resourceLoader.getClassLoader(),
 					customizers.orderedStream().collect(Collectors.toList()));
 			R2dbcProperties.Pool pool = properties.getPool();
-			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory)
-					.initialSize(pool.getInitialSize()).maxSize(pool.getMaxSize()).maxIdleTime(pool.getMaxIdleTime())
-					.maxLifeTime(pool.getMaxLifeTime()).maxAcquireTime(pool.getMaxAcquireTime())
-					.maxCreateConnectionTime(pool.getMaxCreateConnectionTime())
-					.validationDepth(pool.getValidationDepth());
-
-			if (StringUtils.hasText(pool.getValidationQuery())) {
-				builder.validationQuery(pool.getValidationQuery());
-			}
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
+			map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
+			map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);
+			map.from(pool.getMaxAcquireTime()).to(builder::maxAcquireTime);
+			map.from(pool.getMaxCreateConnectionTime()).to(builder::maxCreateConnectionTime);
+			map.from(pool.getInitialSize()).to(builder::initialSize);
+			map.from(pool.getMaxSize()).to(builder::maxSize);
+			map.from(pool.getValidationQuery()).whenHasText().to(builder::validationQuery);
+			map.from(pool.getValidationDepth()).to(builder::validationDepth);
 			return new ConnectionPool(builder.build());
 		}
 

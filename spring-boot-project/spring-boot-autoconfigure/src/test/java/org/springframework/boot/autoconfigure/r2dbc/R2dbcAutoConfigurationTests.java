@@ -29,7 +29,6 @@ import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Option;
-import io.r2dbc.spi.ValidationDepth;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -63,27 +62,25 @@ class R2dbcAutoConfigurationTests {
 
 	@Test
 	void configureWithUrlAndPoolPropertiesApplyProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName(),
-						"spring.r2dbc.pool.initial-size=5", "spring.r2dbc.pool.max-size=15",
-						"spring.r2dbc.pool.max-idle-time=1ms", "spring.r2dbc.pool.max-life-time=2s",
-						"spring.r2dbc.pool.max-acquire-time=3m", "spring.r2dbc.pool.max-create-connection-time=4h",
-						"spring.r2dbc.pool.validation-query=SELECT 1", "spring.r2dbc.pool.validation-depth=remote")
+		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName(),
+				"spring.r2dbc.pool.max-size=15", "spring.r2dbc.pool.max-acquire-time=3m").run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
+							.hasSingleBean(R2dbcProperties.class);
+					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
+					PoolMetrics poolMetrics = connectionPool.getMetrics().get();
+					assertThat(poolMetrics.getMaxAllocatedSize()).isEqualTo(15);
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofMinutes(3));
+				});
+	}
+
+	@Test
+	void configureWithUrlAndDefaultDoNotOverrideDefaultTimeouts() {
+		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName())
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class)
 							.hasSingleBean(R2dbcProperties.class);
-					PoolMetrics poolMetrics = context.getBean(ConnectionPool.class).getMetrics().get();
-					assertThat(poolMetrics.getMaxAllocatedSize()).isEqualTo(15);
-
-					R2dbcProperties properties = context.getBean(R2dbcProperties.class);
-					assertThat(properties.getPool().getInitialSize()).isEqualTo(5);
-					assertThat(properties.getPool().getMaxSize()).isEqualTo(15);
-					assertThat(properties.getPool().getMaxIdleTime()).isEqualTo(Duration.ofMillis(1));
-					assertThat(properties.getPool().getMaxLifeTime()).isEqualTo(Duration.ofSeconds(2));
-					assertThat(properties.getPool().getMaxAcquireTime()).isEqualTo(Duration.ofMinutes(3));
-					assertThat(properties.getPool().getMaxCreateConnectionTime()).isEqualTo(Duration.ofHours(4));
-					assertThat(properties.getPool().getValidationQuery()).isEqualTo("SELECT 1");
-					assertThat(properties.getPool().getValidationDepth()).isEqualTo(ValidationDepth.REMOTE);
+					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
+					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ZERO);
 				});
 	}
 

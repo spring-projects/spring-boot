@@ -142,19 +142,21 @@ public class R2dbcProperties {
 		private Duration maxIdleTime = Duration.ofMinutes(30);
 
 		/**
-		 * Max lifetime.
+		 * Maximum lifetime of a connection in the pool. By default, connections have an
+		 * infinite lifetime.
 		 */
-		private Duration maxLifeTime = Duration.ofMinutes(0L);
+		private Duration maxLifeTime;
 
 		/**
-		 * Max acquire time.
+		 * Maximum time to acquire a connection from the pool. By default, wait
+		 * indefinitely.
 		 */
-		private Duration maxAcquireTime = Duration.ofMinutes(0L);
+		private Duration maxAcquireTime;
 
 		/**
-		 * Max create connection time.
+		 * Maximum time to wait to create a new connection. By default, wait indefinitely.
 		 */
-		private Duration maxCreateConnectionTime = Duration.ofMinutes(0L);
+		private Duration maxCreateConnectionTime;
 
 		/**
 		 * Initial connection pool size.
