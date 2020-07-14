@@ -16,8 +16,9 @@
 
 package org.springframework.boot.autoconfigure.websocket.reactive;
 
-import org.apache.tomcat.websocket.server.WsContextListener;
+import java.util.Collections;
 
+import org.apache.tomcat.websocket.server.WsSci;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
@@ -33,7 +34,8 @@ public class TomcatWebSocketReactiveWebServerCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.addContextCustomizers((context) -> context.addApplicationListener(WsContextListener.class.getName()));
+		factory.addContextCustomizers((context) ->
+				context.addServletContainerInitializer(new WsSci(), Collections.emptySet()));
 	}
 
 	@Override
