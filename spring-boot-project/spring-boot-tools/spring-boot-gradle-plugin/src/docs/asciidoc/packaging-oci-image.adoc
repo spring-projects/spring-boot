@@ -4,7 +4,8 @@ The plugin can create an https://github.com/opencontainers/image-spec[OCI image]
 Images can be built using the `bootBuildImage` task.
 The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
-
+NOTE: The `bootBuildImage` task can not be used with a <<packaging-executable-configuring-launch-script, fully executable Spring Boot archive>> that includes a launch script.
+Disable launch script configuration in the `bootJar` task when building a jar file that is intended to be used with `bootBuildImage`.
 
 [[build-image-docker-daemon]]
 === Docker Daemon

@@ -127,6 +127,15 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void failsWithLaunchScript() {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("not compatible with buildpacks");
+	}
+
+	@TestTemplate
 	void failsWithBuilderError() {
 		writeMainClass();
 		writeLongNameResource();
