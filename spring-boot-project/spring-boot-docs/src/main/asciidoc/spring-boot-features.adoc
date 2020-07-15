@@ -7313,6 +7313,9 @@ For example, if you provide web-specific configuration, your class may need to b
 If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
 That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
 
+As with standard `@Configuration` classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
+The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any `@DependsOn` relationships.
+
 
 
 [[boot-features-condition-annotations]]
