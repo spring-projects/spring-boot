@@ -235,6 +235,7 @@ public class BuildRequest {
 	 * @return a new build request instance
 	 */
 	public static BuildRequest forJarFile(File jarFile) {
+		assertJarFile(jarFile);
 		return forJarFile(ImageReference.forJarFile(jarFile).inTaggedForm(), jarFile);
 	}
 
