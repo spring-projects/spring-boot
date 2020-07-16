@@ -1396,12 +1396,77 @@ public class ServerProperties {
 		 */
 		private Duration connectionTimeout;
 
+		/**
+		 * The maximum chunk size that can be decoded for the HTTP request.
+		 */
+		private DataSize maxChunkSize;
+
+		/**
+		 * The maximum length that can be decoded for the HTTP request's initial line.
+		 */
+		private DataSize maxInitialLineLength;
+
+		/**
+		 * Configure whether or not to validate headers when decoding requests.
+		 */
+		private Boolean validateHeaders;
+
+		/**
+		 * The maximum length of the content of the HTTP/2.0 clear-text upgrade request.
+		 */
+		private DataSize h2cMaxContentLength;
+
+		/**
+		 * The initial buffer size for HTTP request decoding.
+		 */
+		private DataSize initialBufferSize;
+
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
 
 		public void setConnectionTimeout(Duration connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
+		}
+
+		public DataSize getMaxChunkSize() {
+			return this.maxChunkSize;
+		}
+
+		public void setMaxChunkSize(DataSize maxChunkSize) {
+			this.maxChunkSize = maxChunkSize;
+		}
+
+		public DataSize getMaxInitialLineLength() {
+			return this.maxInitialLineLength;
+		}
+
+		public void setMaxInitialLineLength(DataSize maxInitialLineLength) {
+			this.maxInitialLineLength = maxInitialLineLength;
+		}
+
+		public Boolean getValidateHeaders() {
+			return this.validateHeaders;
+		}
+
+		public void setValidateHeaders(Boolean validateHeaders) {
+			this.validateHeaders = validateHeaders;
+		}
+
+		public DataSize getH2cMaxContentLength() {
+			return this.h2cMaxContentLength;
+		}
+
+		public void setH2cMaxContentLength(DataSize h2cMaxContentLength) {
+			this.h2cMaxContentLength = h2cMaxContentLength;
+		}
+
+		public DataSize getInitialBufferSize() {
+			return this.initialBufferSize;
+		}
+
+		public void setInitialBufferSize(DataSize initialBufferSize) {
+			this.initialBufferSize = initialBufferSize;
 		}
 
 	}

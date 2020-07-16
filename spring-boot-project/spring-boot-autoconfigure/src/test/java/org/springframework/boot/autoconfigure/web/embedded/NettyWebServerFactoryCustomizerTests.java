@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
+import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -33,6 +34,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,6 +107,35 @@ class NettyWebServerFactoryCustomizerTests {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 1000);
+	}
+
+	@Test
+	void setHttpRequestDecoder() {
+		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
+		nettyProperties.setValidateHeaders(true);
+		nettyProperties.setInitialBufferSize(DataSize.ofBytes(512));
+		nettyProperties.setH2cMaxContentLength(DataSize.ofKilobytes(1));
+		nettyProperties.setMaxChunkSize(DataSize.ofKilobytes(16));
+		nettyProperties.setMaxInitialLineLength(DataSize.ofKilobytes(32));
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory, times(1)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getValue();
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
+		assertThat(decoder.validateHeaders()).isTrue();
+		assertThat(decoder.initialBufferSize()).isEqualTo(nettyProperties.getInitialBufferSize().toBytes());
+		assertThat(decoder.h2cMaxContentLength()).isEqualTo(nettyProperties.getH2cMaxContentLength().toBytes());
+		assertThat(decoder.maxChunkSize()).isEqualTo(nettyProperties.getMaxChunkSize().toBytes());
+		assertThat(decoder.maxInitialLineLength()).isEqualTo(nettyProperties.getMaxInitialLineLength().toBytes());
+	}
+
+	@Test
+	void shouldNotSetAnyHttpRequestDecoderProperties() {
+		this.serverProperties.setMaxHttpHeaderSize(null);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory, never()).addServerCustomizers(this.customizerCaptor.capture());
 	}
 
 	private void verifyConnectionTimeout(NettyReactiveWebServerFactory factory, Integer expected) {
