@@ -27,6 +27,8 @@ import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskExecutionException;
 
 import org.springframework.boot.build.artifactory.ArtifactoryRepository;
@@ -50,6 +52,7 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 	}
 
 	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFile getArchive() {
 		return this.archive.get();
 	}
@@ -59,6 +62,7 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 	}
 
 	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public File getTemplate() {
 		return this.template;
 	}

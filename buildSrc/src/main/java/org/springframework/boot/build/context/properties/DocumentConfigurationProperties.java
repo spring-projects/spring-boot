@@ -24,6 +24,8 @@ import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.context.properties.DocumentOptions.Builder;
@@ -40,6 +42,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	private File outputDir;
 
 	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getConfigurationPropertyMetadata() {
 		return this.configurationPropertyMetadata;
 	}

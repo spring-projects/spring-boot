@@ -39,6 +39,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
@@ -62,8 +63,10 @@ public class TestSliceMetadata extends DefaultTask {
 	private File outputFile;
 
 	public TestSliceMetadata() {
-		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir());
-		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs());
+		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir())
+				.withPathSensitivity(PathSensitivity.RELATIVE);
+		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs())
+				.withPathSensitivity(PathSensitivity.RELATIVE);
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
