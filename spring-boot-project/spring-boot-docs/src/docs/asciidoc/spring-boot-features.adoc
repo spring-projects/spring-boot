@@ -8176,11 +8176,13 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 
 
 
-
+[[boot-features-container-images]]
 == Building Container Images
-Spring Boot applications can be containerized either by <<building-docker-images,packaging them into Docker images>>, or by <<using-buildpacks,using Buildpacks to create docker compatible container images that you can run anywhere>>.
+Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create docker compatible container images that you can run anywhere>>.
 
-[[building-docker-images]]
+
+
+[[boot-features-container-images-docker]]
 === Building Docker images
 A typical Spring Boot fat jar can be converted into a Docker image by adding just a few lines to a Dockerfile that can be used to build the image.
 However, there are various downsides to copying and running the fat jar as is in the docker image.
@@ -8188,6 +8190,8 @@ There’s always a certain amount of overhead when running a fat jar without unp
 The other issue is that putting your application's code and all its dependencies in one layer in the Docker image is sub-optimal.
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
+
+
 
 ==== Layering Docker Images
 To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports adding a layer index file to the jar.
@@ -8284,7 +8288,7 @@ Of course, a Dockerfile can be written without using the jarmode.
 You can use some combination of `unzip` and `mv` to move things to the right layer but jarmode simplifies that.
 
 
-[[using-buildpacks]]
+[[boot-features-container-images-buildpacks]]
 === Buildpacks
 Dockerfiles are just one way to build docker images.
 Another way to build docker images is directly from your Maven or Gradle plugin, using buildpacks.
