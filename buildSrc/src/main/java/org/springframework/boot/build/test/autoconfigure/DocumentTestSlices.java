@@ -34,6 +34,8 @@ import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.util.ClassUtils;
@@ -51,6 +53,7 @@ public class DocumentTestSlices extends DefaultTask {
 	private File outputFile;
 
 	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getTestSlices() {
 		return this.testSlices;
 	}
