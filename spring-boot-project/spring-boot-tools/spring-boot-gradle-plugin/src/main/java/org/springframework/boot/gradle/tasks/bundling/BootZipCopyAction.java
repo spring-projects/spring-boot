@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
@@ -50,10 +49,10 @@ import org.gradle.api.tasks.WorkResults;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.loader.tools.JarFileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
+import org.springframework.boot.loader.tools.PackageExcludeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -68,8 +67,6 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  */
 class BootZipCopyAction implements CopyAction {
-
-	static final Pattern SPRING_BOOT_STARTER_JAR_PATTERN = Pattern.compile("spring-boot-starter-.*\\.jar");
 
 	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
 			.getTimeInMillis();
@@ -98,11 +95,13 @@ class BootZipCopyAction implements CopyAction {
 
 	private final LayerResolver layerResolver;
 
+	private final PackageExcludeFilter packageExcludeFilter;
+
 	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, boolean includeDefaultLoader,
 			String layerToolsLocation, Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
-			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
-			LayerResolver layerResolver) {
+			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding, LayerResolver layerResolver,
+			PackageExcludeFilter packageExcludeFilter) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -115,6 +114,7 @@ class BootZipCopyAction implements CopyAction {
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
 		this.layerResolver = layerResolver;
+		this.packageExcludeFilter = packageExcludeFilter;
 	}
 
 	@Override
@@ -236,7 +236,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void processFile(FileCopyDetails details) throws IOException {
-			if (isSpringBootStarterJar(details)) {
+			if (BootZipCopyAction.this.packageExcludeFilter.isExcluded(details.getSourceName(), details.getFile())) {
 				return;
 			}
 			String name = details.getRelativePath().getPathString();
@@ -256,13 +256,6 @@ class BootZipCopyAction implements CopyAction {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(details);
 				this.layerIndex.add(layer, name);
 			}
-		}
-
-		private boolean isSpringBootStarterJar(FileCopyDetails details) {
-			if (SPRING_BOOT_STARTER_JAR_PATTERN.matcher(details.getSourceName()).matches()) {
-				return JarFileUtils.hasManifestAttribute(details.getFile(), "Spring-Boot-Starter");
-			}
-			return false;
 		}
 
 		private void writeParentDirectoriesIfNecessary(String name, Long time) throws IOException {

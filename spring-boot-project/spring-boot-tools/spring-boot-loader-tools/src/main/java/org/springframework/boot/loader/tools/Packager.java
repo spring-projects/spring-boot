@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
@@ -71,8 +70,6 @@ public abstract class Packager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private static final Pattern SPRING_BOOT_STARTER_JAR_PATTERN = Pattern.compile("spring-boot-starter-.*\\.jar");
-
 	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
@@ -89,17 +86,30 @@ public abstract class Packager {
 
 	private boolean includeRelevantJarModeJars = true;
 
+	private PackageExcludeFilter excludeFilter;
+
+	/**
+	 * Create a new {@link Packager} instance.
+	 * @param source the source JAR file to package
+	 * @param layoutFactory the layout factory to use or {@code null}
+	 * @param excludeFilter the package exclude filter to use or {@code null}
+	 */
+	protected Packager(File source, LayoutFactory layoutFactory, PackageExcludeFilter excludeFilter) {
+		Assert.notNull(source, "Source file must not be null");
+		Assert.isTrue(source.exists() && source.isFile(),
+				"Source must refer to an existing file, got " + source.getAbsolutePath());
+		this.source = source.getAbsoluteFile();
+		this.layoutFactory = layoutFactory;
+		this.excludeFilter = excludeFilter;
+	}
+
 	/**
 	 * Create a new {@link Packager} instance.
 	 * @param source the source JAR file to package
 	 * @param layoutFactory the layout factory to use or {@code null}
 	 */
 	protected Packager(File source, LayoutFactory layoutFactory) {
-		Assert.notNull(source, "Source file must not be null");
-		Assert.isTrue(source.exists() && source.isFile(),
-				"Source must refer to an existing file, got " + source.getAbsolutePath());
-		this.source = source.getAbsoluteFile();
-		this.layoutFactory = layoutFactory;
+		this(source, layoutFactory, PackageExcludeFilter.DEFAULT);
 	}
 
 	/**
@@ -464,7 +474,7 @@ public abstract class Packager {
 
 		WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
-				if (isZip(library::openStream) && !isSpringBootStarterJar(library)) {
+				if (isZip(library::openStream) && !isExcluded(library)) {
 					addLibrary(library);
 				}
 			});
@@ -482,11 +492,8 @@ public abstract class Packager {
 			}
 		}
 
-		private boolean isSpringBootStarterJar(Library library) {
-			if (SPRING_BOOT_STARTER_JAR_PATTERN.matcher(library.getName()).matches()) {
-				return JarFileUtils.hasManifestAttribute(library.getFile(), "Spring-Boot-Starter");
-			}
-			return false;
+		private boolean isExcluded(Library library) {
+			return Packager.this.excludeFilter.isExcluded(library.getName(), library.getFile());
 		}
 
 		@Override

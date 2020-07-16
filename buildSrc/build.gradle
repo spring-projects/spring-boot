@@ -74,6 +74,10 @@ gradlePlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
 		}
+		packageExcludePlugin {
+			id = "org.springframework.boot.package-exclude"
+			implementationClass = "org.springframework.boot.build.PackageExcludePlugin"
+		}
 		starterPlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
