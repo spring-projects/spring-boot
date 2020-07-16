@@ -36,7 +36,7 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
 The jar contains a `classpath.idx` file which is used by the `JarLauncher` when constructing the classpath.
 
-More efficient container images can also be created by <<spring-boot-features.adoc#building-docker-images,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
+More efficient container images can also be created by <<spring-boot-features.adoc#boot-features-container-images-docker,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
 
 
 
