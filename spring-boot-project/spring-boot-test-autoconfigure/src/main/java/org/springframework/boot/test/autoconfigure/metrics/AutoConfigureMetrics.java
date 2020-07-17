@@ -25,8 +25,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that can be applied to a test class to enable auto-configuration for metrics
- * exporters. By default, all metrics exporters other than the in-memory
- * {@code SimpleMetricsExportAutoConfiguration} are disabled.
+ * exporters.
  *
  * @author Chris Bono
  * @since 2.4.0

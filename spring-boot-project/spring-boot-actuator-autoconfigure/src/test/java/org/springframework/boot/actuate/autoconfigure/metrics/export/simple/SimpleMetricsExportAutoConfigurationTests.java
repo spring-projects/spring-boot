@@ -49,7 +49,14 @@ class SimpleMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void backsOffWhenSpecificallyDisabled() {
+	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
+						.doesNotHaveBean(SimpleMeterRegistry.class).doesNotHaveBean(SimpleConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.simple.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
