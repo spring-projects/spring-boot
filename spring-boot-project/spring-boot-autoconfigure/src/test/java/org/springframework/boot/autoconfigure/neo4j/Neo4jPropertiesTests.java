@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -31,12 +28,17 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
 import org.neo4j.driver.internal.retry.RetrySettings;
+
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.DriverSettings;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.PoolSettings;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.TrustSettings;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.TrustSettings.Strategy;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * @author Michael J. Simons
@@ -61,7 +63,7 @@ class Neo4jPropertiesTests {
 	@Test
 	void noAuthenticationShouldWork() {
 		Authentication authentication = new Authentication();
-		assertThat(asAuthToken(authentication)).isEqualTo(AuthTokens.none());
+		assertThat(Neo4jAutoConfiguration.asAuthToken(authentication)).isEqualTo(AuthTokens.none());
 	}
 
 	@Test
@@ -70,7 +72,7 @@ class Neo4jPropertiesTests {
 		authentication.setUsername("Farin");
 		authentication.setPassword("Urlaub");
 
-		assertThat(asAuthToken(authentication)).isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
+		assertThat(Neo4jAutoConfiguration.asAuthToken(authentication)).isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
 	}
 
 	@Test
@@ -80,7 +82,8 @@ class Neo4jPropertiesTests {
 		authentication.setPassword("Urlaub");
 		authentication.setRealm("Die Ärzte");
 
-		assertThat(asAuthToken(authentication)).isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Die Ärzte"));
+		assertThat(Neo4jAutoConfiguration.asAuthToken(authentication))
+				.isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Die Ärzte"));
 	}
 
 	@Test
@@ -88,7 +91,7 @@ class Neo4jPropertiesTests {
 		Authentication authentication = new Authentication();
 		authentication.setKerberosTicket("AABBCCDDEE");
 
-		assertThat(asAuthToken(authentication)).isEqualTo(AuthTokens.kerberos("AABBCCDDEE"));
+		assertThat(Neo4jAutoConfiguration.asAuthToken(authentication)).isEqualTo(AuthTokens.kerberos("AABBCCDDEE"));
 	}
 
 	@Test
@@ -98,7 +101,7 @@ class Neo4jPropertiesTests {
 		authentication.setKerberosTicket("AABBCCDDEE");
 
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
-				.isThrownBy(() -> asAuthToken(authentication)).withMessage(
+				.isThrownBy(() -> Neo4jAutoConfiguration.asAuthToken(authentication)).withMessage(
 						"Property org.neo4j.driver.authentication with value 'username=Farin,kerberos-ticket=AABBCCDDEE' is invalid: Cannot specify both username and kerberos ticket.");
 	}
 
@@ -124,18 +127,18 @@ class Neo4jPropertiesTests {
 
 		driverProperties = new Neo4jProperties();
 		driverProperties.getPool().setLogLeakedSessions(true);
-		assertThat(asDriverConfig(driverProperties).logLeakedSessions()).isTrue();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).logLeakedSessions()).isTrue();
 
 		driverProperties = new Neo4jProperties();
 		driverProperties.getPool().setLogLeakedSessions(false);
-		assertThat(asDriverConfig(driverProperties).logLeakedSessions()).isFalse();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).logLeakedSessions()).isFalse();
 	}
 
 	@Test
 	void maxConnectionPoolSizeSettingsShouldWork() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
 		driverProperties.getPool().setMaxConnectionPoolSize(4711);
-		assertThat(asDriverConfig(driverProperties).maxConnectionPoolSize()).isEqualTo(4711);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).maxConnectionPoolSize()).isEqualTo(4711);
 	}
 
 	@Test
@@ -143,27 +146,30 @@ class Neo4jPropertiesTests {
 		Neo4jProperties driverProperties;
 
 		driverProperties = new Neo4jProperties();
-		assertThat(asDriverConfig(driverProperties).idleTimeBeforeConnectionTest()).isEqualTo(-1);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).idleTimeBeforeConnectionTest())
+				.isEqualTo(-1);
 
 		driverProperties = new Neo4jProperties();
 		driverProperties.getPool().setIdleTimeBeforeConnectionTest(Duration.ofSeconds(23));
-		assertThat(asDriverConfig(driverProperties).idleTimeBeforeConnectionTest()).isEqualTo(23_000);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).idleTimeBeforeConnectionTest())
+				.isEqualTo(23_000);
 	}
 
 	@Test
 	void connectionAcquisitionTimeoutSettingsShouldWork() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
 		driverProperties.getPool().setConnectionAcquisitionTimeout(Duration.ofSeconds(23));
-		assertThat(asDriverConfig(driverProperties).connectionAcquisitionTimeoutMillis()).isEqualTo(23_000);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).connectionAcquisitionTimeoutMillis())
+				.isEqualTo(23_000);
 	}
 
 	@Test
 	void enableMetricsShouldWork() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
-		assertThat(asDriverConfig(driverProperties).isMetricsEnabled()).isFalse();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).isMetricsEnabled()).isFalse();
 
 		driverProperties.getPool().setMetricsEnabled(true);
-		assertThat(asDriverConfig(driverProperties).isMetricsEnabled()).isTrue();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).isMetricsEnabled()).isTrue();
 	}
 
 	@Test
@@ -187,11 +193,11 @@ class Neo4jPropertiesTests {
 
 		driverProperties = new Neo4jProperties();
 		driverProperties.getConfig().setEncrypted(true);
-		assertThat(asDriverConfig(driverProperties).encrypted()).isTrue();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).encrypted()).isTrue();
 
 		driverProperties = new Neo4jProperties();
 		driverProperties.getConfig().setEncrypted(false);
-		assertThat(asDriverConfig(driverProperties).encrypted()).isFalse();
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).encrypted()).isFalse();
 	}
 
 	@Test
@@ -200,7 +206,7 @@ class Neo4jPropertiesTests {
 		TrustSettings trustSettings = new TrustSettings();
 		trustSettings.setStrategy(Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 		driverProperties.getConfig().setTrustSettings(trustSettings);
-		assertThat(asDriverConfig(driverProperties).trustStrategy().strategy())
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).trustStrategy().strategy())
 				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 	}
 
@@ -208,7 +214,7 @@ class Neo4jPropertiesTests {
 	void connectionTimeoutSettingsShouldWork() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
 		driverProperties.getConfig().setConnectionTimeout(Duration.ofSeconds(23));
-		assertThat(asDriverConfig(driverProperties).connectionTimeoutMillis()).isEqualTo(23_000);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).connectionTimeoutMillis()).isEqualTo(23_000);
 	}
 
 	@Test
@@ -222,14 +228,15 @@ class Neo4jPropertiesTests {
 	void serverAddressResolverClassSettingsShouldWork() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
 		driverProperties.getConfig().setServerAddressResolverClass(TestServerAddressResolver.class);
-		assertThat(asDriverConfig(driverProperties).resolver()).isNotNull()
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).resolver()).isNotNull()
 				.isInstanceOf(TestServerAddressResolver.class);
 	}
 
 	@Test
 	void shouldUseSpringJclLogging() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
-		assertThat(asDriverConfig(driverProperties).logging()).isNotNull().isInstanceOf(Neo4jSpringJclLogging.class);
+		assertThat(Neo4jAutoConfiguration.asDriverConfig(driverProperties).logging()).isNotNull()
+				.isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	@Test
@@ -237,7 +244,7 @@ class Neo4jPropertiesTests {
 		TrustSettings settings = new TrustSettings();
 		settings.setStrategy(Strategy.TRUST_ALL_CERTIFICATES);
 
-		assertThat(toInternalRepresentation(settings).strategy())
+		assertThat(Neo4jAutoConfiguration.toInternalRepresentation(settings).strategy())
 				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_ALL_CERTIFICATES);
 	}
 
@@ -247,7 +254,7 @@ class Neo4jPropertiesTests {
 		settings.setStrategy(Strategy.TRUST_ALL_CERTIFICATES);
 		settings.setHostnameVerificationEnabled(true);
 
-		assertThat(toInternalRepresentation(settings).isHostnameVerificationEnabled()).isTrue();
+		assertThat(Neo4jAutoConfiguration.toInternalRepresentation(settings).isHostnameVerificationEnabled()).isTrue();
 	}
 
 	@Test
@@ -256,7 +263,7 @@ class Neo4jPropertiesTests {
 		TrustSettings settings = new TrustSettings();
 		settings.setStrategy(Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 
-		assertThat(toInternalRepresentation(settings).strategy())
+		assertThat(Neo4jAutoConfiguration.toInternalRepresentation(settings).strategy())
 				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 	}
 
@@ -268,7 +275,7 @@ class Neo4jPropertiesTests {
 		settings.setStrategy(Strategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
 		settings.setCertFile(certFile);
 
-		Config.TrustStrategy trustStrategy = toInternalRepresentation(settings);
+		Config.TrustStrategy trustStrategy = Neo4jAutoConfiguration.toInternalRepresentation(settings);
 		assertThat(trustStrategy.strategy())
 				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
 		assertThat(trustStrategy.certFile()).isEqualTo(certFile);
@@ -280,7 +287,7 @@ class Neo4jPropertiesTests {
 		settings.setStrategy(Strategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
 
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
-				.isThrownBy(() -> toInternalRepresentation(settings)).withMessage(
+				.isThrownBy(() -> Neo4jAutoConfiguration.toInternalRepresentation(settings)).withMessage(
 						"Property org.neo4j.driver.config.trust-settings with value 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES' is invalid: Configured trust strategy requires a certificate file.");
 	}
 
@@ -293,19 +300,19 @@ class Neo4jPropertiesTests {
 	@ParameterizedTest
 	@ValueSource(strings = { "bolt", "Bolt", "neo4j", "Neo4J" })
 	void shouldDetectSimpleSchemes(String aSimpleScheme) {
-		assertThat(isSimpleScheme(aSimpleScheme)).isTrue();
+		assertThat(Neo4jAutoConfiguration.isSimpleScheme(aSimpleScheme)).isTrue();
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "bolt+s", "Bolt+ssc", "neo4j+s", "Neo4J+ssc" })
 	void shouldDetectAdvancedSchemes(String anAdvancedScheme) {
-		assertThat(isSimpleScheme(anAdvancedScheme)).isFalse();
+		assertThat(Neo4jAutoConfiguration.isSimpleScheme(anAdvancedScheme)).isFalse();
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "bolt+routing", "bolt+x", "neo4j+wth" })
 	void shouldFailEarlyOnInvalidSchemes(String invalidScheme) {
-		assertThatIllegalArgumentException().isThrownBy(() -> isSimpleScheme(invalidScheme))
+		assertThatIllegalArgumentException().isThrownBy(() -> Neo4jAutoConfiguration.isSimpleScheme(invalidScheme))
 				.withMessage("'%s' is not a supported scheme.", invalidScheme);
 	}
 
