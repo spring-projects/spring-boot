@@ -73,7 +73,7 @@ class DataJpaTestIntegrationTests {
 		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"), Long.class);
 		assertThat(id).isNotNull();
 		String reference = this.jdbcTemplate.queryForObject("SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?",
-				new Object[] { id }, String.class);
+				String.class, id);
 		assertThat(reference).isEqualTo("123");
 	}
 

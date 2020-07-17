@@ -519,7 +519,7 @@ class ServerPropertiesTests {
 			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
 			String message = failure.get().getCause().getMessage();
-			int defaultMaxPostSize = Integer.valueOf(message.substring(message.lastIndexOf(' ')).trim());
+			int defaultMaxPostSize = Integer.parseInt(message.substring(message.lastIndexOf(' ')).trim());
 			assertThat(this.properties.getJetty().getMaxHttpFormPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
 		}
 		finally {
@@ -538,7 +538,8 @@ class ServerPropertiesTests {
 	}
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
-		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL).newInstance();
+		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
+				.getDeclaredConstructor().newInstance();
 	}
 
 	private void bind(String name, String value) {

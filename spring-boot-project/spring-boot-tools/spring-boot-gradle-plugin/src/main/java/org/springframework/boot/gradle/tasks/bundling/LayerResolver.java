@@ -17,8 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,6 +28,7 @@ import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.SourceSet;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
@@ -53,9 +52,9 @@ class LayerResolver {
 
 	private final Spec<FileCopyDetails> librarySpec;
 
-	LayerResolver(Iterable<Configuration> configurations, LayeredSpec layeredConfiguration,
-			Spec<FileCopyDetails> librarySpec) {
-		this.resolvedDependencies = new ResolvedDependencies(configurations);
+	LayerResolver(Iterable<SourceSet> sourceSets, Iterable<Configuration> configurations,
+			LayeredSpec layeredConfiguration, Spec<FileCopyDetails> librarySpec) {
+		this.resolvedDependencies = new ResolvedDependencies(sourceSets, configurations);
 		this.layeredConfiguration = layeredConfiguration;
 		this.librarySpec = librarySpec;
 	}
@@ -96,19 +95,41 @@ class LayerResolver {
 	 */
 	private static class ResolvedDependencies {
 
-		private static final Set<String> DEPRECATED_FOR_RESOLUTION_CONFIGURATIONS = Collections
-				.unmodifiableSet(new HashSet<>(Arrays.asList("archives", "compile", "compileOnly", "default", "runtime",
-						"testCompile", "testCompileOnly", "testRuntime")));
+		private final Set<String> deprecatedForResolutionConfigurationNames;
 
 		private final Map<Configuration, ResolvedConfigurationDependencies> configurationDependencies = new LinkedHashMap<>();
 
-		ResolvedDependencies(Iterable<Configuration> configurations) {
+		ResolvedDependencies(Iterable<SourceSet> sourceSets, Iterable<Configuration> configurations) {
+			this.deprecatedForResolutionConfigurationNames = deprecatedForResolutionConfigurationNames(sourceSets);
 			configurations.forEach(this::processConfiguration);
+		}
+
+		@SuppressWarnings("deprecation")
+		private Set<String> deprecatedForResolutionConfigurationNames(Iterable<SourceSet> sourceSets) {
+			Set<String> configurationNames = new HashSet<>();
+			configurationNames.add("archives");
+			configurationNames.add("default");
+			for (SourceSet sourceSet : sourceSets) {
+				try {
+					configurationNames.add(sourceSet.getCompileConfigurationName());
+				}
+				catch (NoSuchMethodError ex) {
+					// Continue
+				}
+				configurationNames.add(sourceSet.getCompileOnlyConfigurationName());
+				try {
+					configurationNames.add(sourceSet.getRuntimeConfigurationName());
+				}
+				catch (NoSuchMethodError ex) {
+					// Continue
+				}
+			}
+			return configurationNames;
 		}
 
 		private void processConfiguration(Configuration configuration) {
 			if (configuration.isCanBeResolved()
-					&& !DEPRECATED_FOR_RESOLUTION_CONFIGURATIONS.contains(configuration.getName())) {
+					&& !this.deprecatedForResolutionConfigurationNames.contains(configuration.getName())) {
 				this.configurationDependencies.put(configuration,
 						new ResolvedConfigurationDependencies(configuration.getResolvedConfiguration()));
 			}

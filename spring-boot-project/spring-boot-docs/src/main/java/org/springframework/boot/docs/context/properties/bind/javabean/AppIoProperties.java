@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,43 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.context.properties.bind;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+package org.springframework.boot.docs.context.properties.bind.javabean;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
 
 /**
  * A {@link ConfigurationProperties @ConfigurationProperties} example that uses
- * {@link Duration}.
+ * {@link DataSize}.
  *
  * @author Stephane Nicoll
  */
 // tag::example[]
-@ConfigurationProperties("app.system")
-public class AppSystemProperties {
+@ConfigurationProperties("app.io")
+public class AppIoProperties {
 
-	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration sessionTimeout = Duration.ofSeconds(30);
+	@DataSizeUnit(DataUnit.MEGABYTES)
+	private DataSize bufferSize = DataSize.ofMegabytes(2);
 
-	private Duration readTimeout = Duration.ofMillis(1000);
+	private DataSize sizeThreshold = DataSize.ofBytes(512);
 
-	public Duration getSessionTimeout() {
-		return this.sessionTimeout;
+	public DataSize getBufferSize() {
+		return this.bufferSize;
 	}
 
-	public void setSessionTimeout(Duration sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
+	public void setBufferSize(DataSize bufferSize) {
+		this.bufferSize = bufferSize;
 	}
 
-	public Duration getReadTimeout() {
-		return this.readTimeout;
+	public DataSize getSizeThreshold() {
+		return this.sizeThreshold;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
-		this.readTimeout = readTimeout;
+	public void setSizeThreshold(DataSize sizeThreshold) {
+		this.sizeThreshold = sizeThreshold;
 	}
 
 }

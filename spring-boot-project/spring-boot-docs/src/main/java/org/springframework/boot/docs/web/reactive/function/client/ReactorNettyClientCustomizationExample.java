@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.docs.web.reactive.function.client;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +38,10 @@ public class ReactorNettyClientCustomizationExample {
 	// tag::custom-http-connector[]
 	@Bean
 	ClientHttpConnector clientHttpConnector(ReactorResourceFactory resourceFactory) {
-		TcpClient tcpClient = TcpClient.create(resourceFactory.getConnectionProvider())
+		HttpClient httpClient = HttpClient.create(resourceFactory.getConnectionProvider())
 				.runOn(resourceFactory.getLoopResources()).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
 				.doOnConnected((connection) -> connection.addHandlerLast(new ReadTimeoutHandler(60)));
-		return new ReactorClientHttpConnector(HttpClient.from(tcpClient));
+		return new ReactorClientHttpConnector(httpClient);
 	}
 	// end::custom-http-connector[]
 

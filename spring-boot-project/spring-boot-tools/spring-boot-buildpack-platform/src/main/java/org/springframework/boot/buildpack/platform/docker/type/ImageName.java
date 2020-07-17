@@ -16,6 +16,9 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.util.Assert;
 
 /**
@@ -25,10 +28,11 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @since 2.3.0
  * @see ImageReference
- * @see ImageReferenceParser
  * @see #of(String)
  */
 public class ImageName {
+
+	private static final Pattern PATTERN = Regex.IMAGE_NAME.compile();
 
 	private static final String DEFAULT_DOMAIN = "docker.io";
 
@@ -42,10 +46,10 @@ public class ImageName {
 
 	private final String string;
 
-	ImageName(String domain, String name) {
-		Assert.hasText(name, "Name must not be empty");
+	ImageName(String domain, String path) {
+		Assert.hasText(path, "Path must not be empty");
 		this.domain = getDomainOrDefault(domain);
-		this.name = getNameWithDefaultPath(this.domain, name);
+		this.name = getNameWithDefaultPath(this.domain, path);
 		this.string = this.domain + "/" + this.name;
 	}
 
@@ -128,8 +132,12 @@ public class ImageName {
 	 */
 	public static ImageName of(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		ImageReferenceParser parser = ImageReferenceParser.of(value);
-		return new ImageName(parser.getDomain(), parser.getName());
+		Matcher matcher = PATTERN.matcher(value);
+		Assert.isTrue(matcher.matches(),
+				() -> "Unable to parse name \"" + value + "\". "
+						+ "Image name must be in the form '[domainHost:port/][path/]name', "
+						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+		return new ImageName(matcher.group("domain"), matcher.group("path"));
 	}
 
 }

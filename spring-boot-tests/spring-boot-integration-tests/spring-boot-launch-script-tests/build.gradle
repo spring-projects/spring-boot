@@ -11,8 +11,10 @@ configurations {
 }
 
 dependencies {
-	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-parent", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
 
 	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

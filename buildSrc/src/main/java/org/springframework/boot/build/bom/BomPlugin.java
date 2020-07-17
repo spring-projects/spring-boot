@@ -16,28 +16,13 @@
 
 package org.springframework.boot.build.bom;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import groovy.util.Node;
 import groovy.xml.QName;
-import org.gradle.api.Action;
-import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
@@ -45,18 +30,11 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
-import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
-import org.gradle.api.tasks.Sync;
-import org.gradle.api.tasks.TaskExecutionException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.bomr.UpgradeBom;
-import org.springframework.boot.build.mavenplugin.MavenExec;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * {@link Plugin} for defining a bom. Dependencies are added as constraints in the
@@ -78,43 +56,12 @@ public class BomPlugin implements Plugin<Project> {
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
-		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project.getDependencies());
+		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project.getDependencies(),
+				project);
 		project.getTasks().create("bomrCheck", CheckBom.class, bom);
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
 		new PublishingCustomizer(project, bom).customize();
-		Configuration effectiveBomConfiguration = project.getConfigurations().create("effectiveBom");
-		project.getTasks().matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
-				.all((task) -> {
-					Sync syncBom = project.getTasks().create("syncBom", Sync.class);
-					syncBom.dependsOn(task);
-					File generatedBomDir = new File(project.getBuildDir(), "generated/bom");
-					syncBom.setDestinationDir(generatedBomDir);
-					syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
-					try {
-						String settingsXmlContent = FileCopyUtils
-								.copyToString(new InputStreamReader(
-										getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
-										StandardCharsets.UTF_8))
-								.replace("localRepositoryPath",
-										new File(project.getBuildDir(), "local-m2-repository").getAbsolutePath());
-						syncBom.from(project.getResources().getText().fromString(settingsXmlContent),
-								(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
-					}
-					catch (IOException ex) {
-						throw new GradleException("Failed to prepare settings.xml", ex);
-					}
-					MavenExec generateEffectiveBom = project.getTasks().create("generateEffectiveBom", MavenExec.class);
-					generateEffectiveBom.setProjectDir(generatedBomDir);
-					File effectiveBom = new File(project.getBuildDir(),
-							"generated/effective-bom/" + project.getName() + "-effective-bom.xml");
-					generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
-							"-Doutput=" + effectiveBom);
-					generateEffectiveBom.dependsOn(syncBom);
-					generateEffectiveBom.getOutputs().file(effectiveBom);
-					generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
-					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
-							(artifact) -> artifact.builtBy(generateEffectiveBom));
-				});
+
 	}
 
 	private void createApiEnforcedConfiguration(Project project) {
@@ -185,8 +132,10 @@ public class BomPlugin implements Plugin<Project> {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
 					String groupId = findChild(dependency, "groupId").text();
 					String artifactId = findChild(dependency, "artifactId").text();
-					findChild(dependency, "version")
-							.setValue("${" + this.bom.getArtifactVersionProperty(groupId, artifactId) + "}");
+					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId);
+					if (versionProperty != null) {
+						findChild(dependency, "version").setValue("${" + versionProperty + "}");
+					}
 				}
 			}
 		}
@@ -270,40 +219,6 @@ public class BomPlugin implements Plugin<Project> {
 				}
 			}
 			return false;
-		}
-
-	}
-
-	private static final class StripUnrepeatableOutputAction implements Action<Task> {
-
-		private final File effectiveBom;
-
-		private StripUnrepeatableOutputAction(File xmlFile) {
-			this.effectiveBom = xmlFile;
-		}
-
-		@Override
-		public void execute(Task task) {
-			try {
-				Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.effectiveBom);
-				XPath xpath = XPathFactory.newInstance().newXPath();
-				NodeList comments = (NodeList) xpath.evaluate("//comment()", document, XPathConstants.NODESET);
-				for (int i = 0; i < comments.getLength(); i++) {
-					org.w3c.dom.Node comment = comments.item(i);
-					comment.getParentNode().removeChild(comment);
-				}
-				org.w3c.dom.Node build = (org.w3c.dom.Node) xpath.evaluate("/project/build", document,
-						XPathConstants.NODE);
-				build.getParentNode().removeChild(build);
-				org.w3c.dom.Node reporting = (org.w3c.dom.Node) xpath.evaluate("/project/reporting", document,
-						XPathConstants.NODE);
-				reporting.getParentNode().removeChild(reporting);
-				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(document),
-						new StreamResult(this.effectiveBom));
-			}
-			catch (Exception ex) {
-				throw new TaskExecutionException(task, ex);
-			}
 		}
 
 	}

@@ -30,13 +30,14 @@ import org.springframework.util.ObjectUtils;
  * @author Scott Frederick
  * @since 2.3.0
  * @see ImageName
- * @see ImageReferenceParser
  */
 public final class ImageReference {
 
-	private static final String LATEST = "latest";
+	private static final Pattern PATTERN = Regex.IMAGE_REFERENCE.compile();
 
-	private static final Pattern TRAILING_VERSION_PATTERN = Pattern.compile("^(.*)(\\-\\d+)$");
+	private static final Pattern JAR_VERSION_PATTERN = Pattern.compile("^(.*)(\\-\\d+)$");
+
+	private static final String LATEST = "latest";
 
 	private final ImageName name;
 
@@ -182,7 +183,7 @@ public final class ImageReference {
 		}
 		String name = filename.substring(0, firstDot);
 		String version = filename.substring(firstDot + 1);
-		Matcher matcher = TRAILING_VERSION_PATTERN.matcher(name);
+		Matcher matcher = JAR_VERSION_PATTERN.matcher(name);
 		if (matcher.matches()) {
 			name = matcher.group(1);
 			version = matcher.group(2).substring(1) + "." + version;
@@ -224,9 +225,13 @@ public final class ImageReference {
 	 */
 	public static ImageReference of(String value) {
 		Assert.hasText(value, "Value must not be null");
-		ImageReferenceParser parser = ImageReferenceParser.of(value);
-		ImageName name = new ImageName(parser.getDomain(), parser.getName());
-		return new ImageReference(name, parser.getTag(), parser.getDigest());
+		Matcher matcher = PATTERN.matcher(value);
+		Assert.isTrue(matcher.matches(),
+				() -> "Unable to parse image reference \"" + value + "\". "
+						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
+						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+		ImageName name = new ImageName(matcher.group("domain"), matcher.group("path"));
+		return new ImageReference(name, matcher.group("tag"), matcher.group("digest"));
 	}
 
 	/**

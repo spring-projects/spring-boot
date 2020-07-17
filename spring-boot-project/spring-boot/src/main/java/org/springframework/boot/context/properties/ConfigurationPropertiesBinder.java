@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -186,17 +187,20 @@ class ConfigurationPropertiesBinder {
 
 	static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(ConfigurationPropertiesBinder.Factory.class);
+			AbstractBeanDefinition definition = BeanDefinitionBuilder
+					.genericBeanDefinition(ConfigurationPropertiesBinder.Factory.class,
+							ConfigurationPropertiesBinder.Factory::new)
+					.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
 		}
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			GenericBeanDefinition definition = new GenericBeanDefinition();
-			definition.setBeanClass(ConfigurationPropertiesBinder.class);
+			AbstractBeanDefinition definition = BeanDefinitionBuilder
+					.genericBeanDefinition(ConfigurationPropertiesBinder.class,
+							() -> ((BeanFactory) registry)
+									.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class).create())
+					.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			definition.setFactoryBeanName(FACTORY_BEAN_NAME);
-			definition.setFactoryMethodName("create");
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
 		}
 	}

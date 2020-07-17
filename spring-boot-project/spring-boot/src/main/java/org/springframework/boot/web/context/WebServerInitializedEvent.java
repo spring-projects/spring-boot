@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Event to be published after the application context is refreshed and the
- * {@link WebServer} is ready. Useful for obtaining the local port of a running server.
+ * Event to be published when the {@link WebServer} is ready. Useful for obtaining the
+ * local port of a running server.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll

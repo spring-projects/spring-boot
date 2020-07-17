@@ -132,7 +132,7 @@ The index file would look like this:
 
 [[executable-jar-war-index-files-layers]]
 === Layer Index
-The classpath index file can be provided in `BOOT-INF/layers.idx`.
+The layers index file can be provided in `BOOT-INF/layers.idx`.
 It provides a list of layers and the parts of the jar that should be contained within them.
 Layers are written in the order that they should be added to the Docker/OCI image.
 Layers names are written as quoted strings prefixed with dash space (`"-&#183;"`) and with a colon (`":"`) suffix.

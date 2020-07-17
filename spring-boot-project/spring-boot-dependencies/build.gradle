@@ -7,6 +7,7 @@ plugins {
 description = "Spring Boot Dependencies"
 
 bom {
+	effectiveBomArtifact()
 	upgrade {
 		policy = "same-major-version"
 		gitHub {
@@ -141,7 +142,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.10.11") {
+	library("Byte Buddy", "1.10.12") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -159,7 +160,7 @@ bom {
 			]
 		}
 	}
-	library("Cassandra Driver", "4.6.1") {
+	library("Cassandra Driver", "4.7.2") {
 		group("com.datastax.oss") {
 			imports = [
 				"java-driver-bom"
@@ -310,7 +311,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "6.4.4") {
+	library("Flyway", "6.5.0") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -357,34 +358,8 @@ bom {
 	}
 	library("Groovy", "2.5.12") {
 		group("org.codehaus.groovy") {
-			modules = [
-				"groovy",
-				"groovy-ant",
-				"groovy-backports-compat23",
-				"groovy-bsf",
-				"groovy-cli-commons",
-				"groovy-cli-picocli",
-				"groovy-console",
-				"groovy-datetime",
-				"groovy-dateutil",
-				"groovy-docgenerator",
-				"groovy-groovydoc",
-				"groovy-groovysh",
-				"groovy-jaxb",
-				"groovy-jmx",
-				"groovy-json",
-				"groovy-json-direct",
-				"groovy-jsr223",
-				"groovy-macro",
-				"groovy-nio",
-				"groovy-servlet",
-				"groovy-sql",
-				"groovy-swing",
-				"groovy-templates",
-				"groovy-test",
-				"groovy-test-junit5",
-				"groovy-testng",
-				"groovy-xml"
+			imports = [
+				"groovy-bom"
 			]
 		}
 	}
@@ -411,7 +386,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "3.12.7") {
+	library("Hazelcast", "3.12.8") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
@@ -428,7 +403,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.4.17.Final") {
+	library("Hibernate", "5.4.18.Final") {
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
@@ -509,53 +484,10 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "10.1.8.Final") {
+	library("Infinispan", "11.0.1.Final") {
 		group("org.infinispan") {
-			modules = [
-				'infinispan-api',
-				'infinispan-cachestore-jdbc',
-				'infinispan-cachestore-jpa',
-				'infinispan-cachestore-remote',
-				'infinispan-cachestore-rest',
-				'infinispan-cachestore-rocksdb',
-				'infinispan-cdi-common',
-				'infinispan-cdi-embedded',
-				'infinispan-cdi-remote',
-				'infinispan-client-hotrod',
-				'infinispan-client-rest',
-				'infinispan-clustered-counter',
-				'infinispan-clustered-lock',
-				'infinispan-commons',
-				'infinispan-component-annotations',
-				'infinispan-core',
-				'infinispan-directory-provider',
-				'infinispan-hibernate-cache-v53',
-				'infinispan-jboss-marshalling',
-				'infinispan-jcache',
-				'infinispan-jcache-commons',
-				'infinispan-jcache-remote',
-				'infinispan-key-value-store-client',
-				'infinispan-lucene-directory',
-				'infinispan-objectfilter',
-				'infinispan-osgi',
-				'infinispan-persistence-soft-index',
-				'infinispan-query',
-				'infinispan-query-core',
-				'infinispan-query-dsl',
-				'infinispan-remote-query-client',
-				'infinispan-remote-query-server',
-				'infinispan-scripting',
-				'infinispan-server-core',
-				'infinispan-server-hotrod',
-				'infinispan-server-memcached',
-				'infinispan-server-rest',
-				'infinispan-server-router',
-				'infinispan-spring5-common',
-				'infinispan-spring5-embedded',
-				'infinispan-spring5-remote',
-				'infinispan-tasks',
-				'infinispan-tasks-api',
-				'infinispan-tools'
+			imports = [
+				"infinispan-bom"
 			]
 		}
 	}
@@ -566,7 +498,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.11.0") {
+	library("Jackson Bom", "2.11.1") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -627,7 +559,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Servlet", "4.0.3") {
+	library("Jakarta Servlet", "4.0.4") {
 		group("jakarta.servlet") {
 			modules = [
 				"jakarta.servlet-api"
@@ -861,7 +793,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty Reactive HTTPClient", "1.1.3") {
+	library("Jetty Reactive HTTPClient", "1.1.4") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
@@ -1047,7 +979,7 @@ bom {
 			]
 		}
 	}
-	library("MariaDB", "2.6.0") {
+	library("MariaDB", "2.6.1") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
@@ -1152,10 +1084,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Shade Plugin", "3.2.2") {
-		prohibit("3.2.3") {
-			because "https://github.com/spring-projects/spring-boot/issues/21128"
-		}
+	library("Maven Shade Plugin", "3.2.4") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-shade-plugin"
@@ -1183,7 +1112,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.5.1") {
+	library("Micrometer", "1.5.2") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1325,51 +1254,10 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "19.6.0.0") {
-		group("com.oracle.database.ha") {
-			modules = [
-				"ons",
-				"simplefan"
-			]
-		}
+	library("Oracle Database", "19.7.0.0") {
 		group("com.oracle.database.jdbc") {
-			modules = [
-				"ojdbc10",
-				"ojdbc10dms",
-				"ojdbc8",
-				"ojdbc8dms",
-				"ucp"
-			]
-		}
-		group("com.oracle.database.jdbc.debug") {
-			modules = [
-				"ojdbc10_g",
-				"ojdbc10dms_g",
-				"ojdbc8_g",
-				"ojdbc8dms_g"
-			]
-		}
-		group("com.oracle.database.nls") {
-			modules = [
-				"orai18n"
-			]
-		}
-		group("com.oracle.database.observability") {
-			modules = [
-				"dms"
-			]
-		}
-		group("com.oracle.database.security") {
-			modules = [
-				"oraclepki",
-				"osdt_cert",
-				"osdt_core"
-			]
-		}
-		group("com.oracle.database.xml") {
-			modules = [
-				"xdb",
-				"xmlparserv2"
+			imports = [
+				"ojdbc-bom"
 			]
 		}
 	}
@@ -1439,7 +1327,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "Dysprosium-SR7") {
+	library("Reactor Bom", "2020.0.0-M1") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1652,7 +1540,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.2.7.RELEASE") {
+	library("Spring AMQP", "2.3.0-M1") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1662,7 +1550,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.2.4.RELEASE") {
+	library("Spring Batch", "4.3.0-M1") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1672,14 +1560,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Releasetrain", "Neumann-RELEASE") {
+	library("Spring Data Bom", "2020.0.0-M1") {
 		group("org.springframework.data") {
 			imports = [
-				"spring-data-releasetrain"
+				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.2.6.RELEASE") {
+	library("Spring Framework", "5.3.0-M1") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
@@ -1693,14 +1581,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.3.0.RELEASE") {
+	library("Spring Integration", "5.4.0-M1") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.5.2.RELEASE") {
+	library("Spring Kafka", "2.5.3.RELEASE") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1738,14 +1626,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.3.2.RELEASE") {
+	library("Spring Security", "5.4.0-M1") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "Dragonfruit-RELEASE") {
+	library("Spring Session Bom", "2020.0.0-M1") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
@@ -1763,7 +1651,7 @@ bom {
 			]
 		}
 	}
-	library("SQLite JDBC", "3.31.1") {
+	library("SQLite JDBC", "3.32.3") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
@@ -1860,7 +1748,7 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Core", "0.45") {
+	library("WebJars Locator Core", "0.46") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-core"

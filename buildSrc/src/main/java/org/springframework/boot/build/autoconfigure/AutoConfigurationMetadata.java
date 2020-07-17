@@ -24,8 +24,8 @@ import java.io.Reader;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
@@ -38,7 +38,7 @@ import org.springframework.core.CollectionFactory;
  *
  * @author Andy Wilkinson
  */
-public class AutoConfigurationMetadata extends AbstractTask {
+public class AutoConfigurationMetadata extends DefaultTask {
 
 	private SourceSet sourceSet;
 

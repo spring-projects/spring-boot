@@ -24,6 +24,8 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.data.redis.connection.ClusterInfo;
+import org.springframework.data.redis.connection.ReactiveRedisClusterConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 
@@ -33,6 +35,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -50,9 +53,17 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
-		return connection.serverCommands().info().map((info) -> up(builder, info))
-				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
-				.flatMap((health) -> connection.closeLater().thenReturn(health));
+		if (connection instanceof ReactiveRedisClusterConnection) {
+			ReactiveRedisClusterConnection clusterConnection = (ReactiveRedisClusterConnection) connection;
+			return clusterConnection.clusterGetClusterInfo().map((info) -> up(builder, info))
+					.onErrorResume((ex) -> Mono.just(down(builder, ex)))
+					.flatMap((health) -> clusterConnection.closeLater().thenReturn(health));
+		}
+		else {
+			return connection.serverCommands().info().map((info) -> up(builder, info))
+					.onErrorResume((ex) -> Mono.just(down(builder, ex)))
+					.flatMap((health) -> connection.closeLater().thenReturn(health));
+		}
 	}
 
 	private Mono<ReactiveRedisConnection> getConnection() {
@@ -63,6 +74,12 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	private Health up(Health.Builder builder, Properties info) {
 		return builder.up()
 				.withDetail(RedisHealthIndicator.VERSION, info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+	}
+
+	private Health up(Health.Builder builder, ClusterInfo clusterInfo) {
+		return builder.up().withDetail(RedisHealthIndicator.CLUSTER_SIZE, clusterInfo.getClusterSize())
+				.withDetail(RedisHealthIndicator.SLOTS_UP, clusterInfo.getSlotsOk())
+				.withDetail(RedisHealthIndicator.SLOTS_FAIL, clusterInfo.getSlotsFail()).build();
 	}
 
 	private Health down(Health.Builder builder, Throwable cause) {

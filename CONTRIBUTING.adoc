@@ -76,7 +76,7 @@ added after the original pull request but before a merge.
 
 == Working with the Code
 If you don't have an IDE preference we would recommend that you use
-https://spring.io/tools/sts[Spring Tools Suite] or
+https://spring.io/tools[Spring Tool Suite] or
 https://eclipse.org[Eclipse] when working with the code. We use the
 https://projects.eclipse.org/projects/tools.buildship[Buildship] Eclipse plugin for Gradle
 support. Other IDEs and tools should also work without issue.

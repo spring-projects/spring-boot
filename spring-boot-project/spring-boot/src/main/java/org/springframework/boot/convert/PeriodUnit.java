@@ -32,7 +32,7 @@ import java.time.temporal.ChronoUnit;
  * @author Edson Chávez
  * @since 2.3.0
  */
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface PeriodUnit {

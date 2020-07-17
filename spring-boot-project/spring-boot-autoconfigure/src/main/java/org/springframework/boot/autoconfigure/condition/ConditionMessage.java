@@ -381,7 +381,8 @@ public final class ConditionMessage {
 			Assert.notNull(style, "Style must not be null");
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
-			if ((this.condition == null || items.size() <= 1) && StringUtils.hasLength(this.singular)) {
+			if ((this.condition == null || items == null || items.size() <= 1)
+					&& StringUtils.hasLength(this.singular)) {
 				message.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {
@@ -405,6 +406,11 @@ public final class ConditionMessage {
 			protected Object applyToItem(Object item) {
 				return item;
 			}
+
+			@Override
+			public Collection<?> applyTo(Collection<?> items) {
+				return items;
+			}
 		},
 
 		QUOTE {
@@ -415,7 +421,10 @@ public final class ConditionMessage {
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {
-			List<Object> result = new ArrayList<>();
+			if (items == null) {
+				return null;
+			}
+			List<Object> result = new ArrayList<>(items.size());
 			for (Object item : items) {
 				result.add(applyToItem(item));
 			}

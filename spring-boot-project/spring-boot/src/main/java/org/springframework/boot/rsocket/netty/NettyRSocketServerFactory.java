@@ -172,8 +172,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private ServerTransport<CloseableChannel> createWebSocketTransport() {
 		if (this.resourceFactory != null) {
-			HttpServer httpServer = HttpServer.create().tcpConfiguration((tcpServer) -> tcpServer
-					.runOn(this.resourceFactory.getLoopResources()).bindAddress(this::getListenAddress));
+			HttpServer httpServer = HttpServer.create().runOn(this.resourceFactory.getLoopResources())
+					.bindAddress(this::getListenAddress);
 			return WebsocketServerTransport.create(httpServer);
 		}
 		return WebsocketServerTransport.create(getListenAddress());

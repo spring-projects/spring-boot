@@ -71,10 +71,40 @@ class ImageNameTests {
 
 	@Test
 	void ofWhenSimpleNameAndPortCreatesImageName() {
+		ImageName imageName = ImageName.of("repo:8080/ubuntu");
+		assertThat(imageName.toString()).isEqualTo("repo:8080/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("repo:8080");
+		assertThat(imageName.getName()).isEqualTo("ubuntu");
+	}
+
+	@Test
+	void ofWhenSimplePathAndPortCreatesImageName() {
 		ImageName imageName = ImageName.of("repo:8080/canonical/ubuntu");
 		assertThat(imageName.toString()).isEqualTo("repo:8080/canonical/ubuntu");
 		assertThat(imageName.getDomain()).isEqualTo("repo:8080");
 		assertThat(imageName.getName()).isEqualTo("canonical/ubuntu");
+	}
+
+	@Test
+	void ofWhenNameWithLongPathCreatesImageName() {
+		ImageName imageName = ImageName.of("path1/path2/path3/ubuntu");
+		assertThat(imageName.toString()).isEqualTo("docker.io/path1/path2/path3/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("docker.io");
+		assertThat(imageName.getName()).isEqualTo("path1/path2/path3/ubuntu");
+	}
+
+	@Test
+	void ofWhenLocalhostDomainCreatesImageName() {
+		ImageName imageName = ImageName.of("localhost/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("localhost");
+		assertThat(imageName.getName()).isEqualTo("ubuntu");
+	}
+
+	@Test
+	void ofWhenLocalhostDomainAndPathCreatesImageName() {
+		ImageName imageName = ImageName.of("localhost/library/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("localhost");
+		assertThat(imageName.getName()).isEqualTo("library/ubuntu");
 	}
 
 	@Test
@@ -94,6 +124,25 @@ class ImageNameTests {
 	@Test
 	void ofWhenNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("")).withMessage("Value must not be empty");
+	}
+
+	@Test
+	void ofWhenContainsUppercaseThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("Test"))
+				.withMessageContaining("Unable to parse name").withMessageContaining("Test");
+	}
+
+	@Test
+	void ofWhenNameIncludesTagThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("ubuntu:latest"))
+				.withMessageContaining("Unable to parse name").withMessageContaining(":latest");
+	}
+
+	@Test
+	void ofWhenNameIncludeDigestThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> ImageName.of("ubuntu@sha256:47bfdb88c3ae13e488167607973b7688f69d9e8c142c2045af343ec199649c09"))
+				.withMessageContaining("Unable to parse name").withMessageContaining("@sha256:47b");
 	}
 
 	@Test

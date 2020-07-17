@@ -212,12 +212,17 @@ public enum PeriodStyle {
 		throw new IllegalArgumentException("'" + value + "' is not a valid period");
 	}
 
-	enum Unit {
+	private enum Unit {
 
 		/**
 		 * Days, represented by suffix {@code d}.
 		 */
 		DAYS(ChronoUnit.DAYS, "d", Period::getDays, Period::ofDays),
+
+		/**
+		 * Weeks, represented by suffix {@code w}.
+		 */
+		WEEKS(ChronoUnit.WEEKS, "w", null, Period::ofWeeks),
 
 		/**
 		 * Months, represented by suffix {@code m}.
@@ -253,15 +258,16 @@ public enum PeriodStyle {
 			return intValue(value) + this.suffix;
 		}
 
-		public boolean isZero(Period value) {
+		private boolean isZero(Period value) {
 			return intValue(value) == 0;
 		}
 
-		public int intValue(Period value) {
+		private int intValue(Period value) {
+			Assert.notNull(this.intValue, () -> "intValue cannot be extracted from " + this.name());
 			return this.intValue.apply(value);
 		}
 
-		public static Unit fromChronoUnit(ChronoUnit chronoUnit) {
+		private static Unit fromChronoUnit(ChronoUnit chronoUnit) {
 			if (chronoUnit == null) {
 				return Unit.DAYS;
 			}

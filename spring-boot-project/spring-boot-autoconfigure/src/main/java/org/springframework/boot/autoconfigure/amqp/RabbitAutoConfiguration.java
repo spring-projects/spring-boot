@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.impl.CredentialsProvider;
+import com.rabbitmq.client.impl.CredentialsRefreshService;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -95,10 +97,13 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties properties,
+				ObjectProvider<CredentialsProvider> credentialsProvider,
+				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) throws Exception {
-			PropertyMapper map = PropertyMapper.get();
 			CachingConnectionFactory factory = new CachingConnectionFactory(
-					getRabbitConnectionFactoryBean(properties).getObject());
+					getRabbitConnectionFactoryBean(properties, credentialsProvider, credentialsRefreshService)
+							.getObject());
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineAddresses).to(factory::setAddresses);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
 			map.from(properties::getPublisherConfirmType).whenNonNull().to(factory::setPublisherConfirmType);
@@ -113,10 +118,11 @@ public class RabbitAutoConfiguration {
 			return factory;
 		}
 
-		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(RabbitProperties properties)
-				throws Exception {
-			PropertyMapper map = PropertyMapper.get();
+		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(RabbitProperties properties,
+				ObjectProvider<CredentialsProvider> credentialsProvider,
+				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineHost).whenNonNull().to(factory::setHost);
 			map.from(properties::determinePort).to(factory::setPort);
 			map.from(properties::determineUsername).whenNonNull().to(factory::setUsername);
@@ -141,6 +147,8 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(factory::setConnectionTimeout);
+			map.from(credentialsProvider::getIfUnique).whenNonNull().to(factory::setCredentialsProvider);
+			map.from(credentialsRefreshService::getIfUnique).whenNonNull().to(factory::setCredentialsRefreshService);
 			factory.afterPropertiesSet();
 			return factory;
 		}

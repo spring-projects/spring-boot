@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.apache.maven.plugins.shade.relocation.Relocator;
-import org.apache.maven.plugins.shade.resource.ResourceTransformer;
+import org.apache.maven.plugins.shade.resource.ReproducibleResourceTransformer;
 
 /**
  * Extension for the <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven
@@ -35,12 +35,14 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-public class PropertiesMergingResourceTransformer implements ResourceTransformer {
+public class PropertiesMergingResourceTransformer implements ReproducibleResourceTransformer {
 
 	// Set this in pom configuration with <resource>...</resource>
 	private String resource;
 
 	private final Properties data = new Properties();
+
+	private long time;
 
 	/**
 	 * Return the data the properties being merged.
@@ -56,12 +58,22 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	}
 
 	@Override
+	@Deprecated
 	public void processResource(String resource, InputStream inputStream, List<Relocator> relocators)
+			throws IOException {
+		processResource(resource, inputStream, relocators, 0);
+	}
+
+	@Override
+	public void processResource(String resource, InputStream inputStream, List<Relocator> relocators, long time)
 			throws IOException {
 		Properties properties = new Properties();
 		properties.load(inputStream);
 		inputStream.close();
 		properties.forEach((name, value) -> process((String) name, (String) value));
+		if (time > this.time) {
+			this.time = time;
+		}
 	}
 
 	private void process(String name, String value) {
@@ -76,7 +88,9 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public void modifyOutputStream(JarOutputStream os) throws IOException {
-		os.putNextEntry(new JarEntry(this.resource));
+		JarEntry jarEntry = new JarEntry(this.resource);
+		jarEntry.setTime(this.time);
+		os.putNextEntry(jarEntry);
 		this.data.store(os, "Merged by PropertiesMergingResourceTransformer");
 		os.flush();
 		this.data.clear();

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.annotation.DeterminableImports;
@@ -92,25 +92,12 @@ public abstract class AutoConfigurationPackages {
 	 */
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
 		if (registry.containsBeanDefinition(BEAN)) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
-			ConstructorArgumentValues constructorArguments = beanDefinition.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0, addBasePackages(constructorArguments, packageNames));
+			BasePackagesBeanDefinition beanDefinition = (BasePackagesBeanDefinition) registry.getBeanDefinition(BEAN);
+			beanDefinition.addBasePackages(packageNames);
 		}
 		else {
-			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-			beanDefinition.setBeanClass(BasePackages.class);
-			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, packageNames);
-			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(BEAN, beanDefinition);
+			registry.registerBeanDefinition(BEAN, new BasePackagesBeanDefinition(packageNames));
 		}
-	}
-
-	private static String[] addBasePackages(ConstructorArgumentValues constructorArguments, String[] packageNames) {
-		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0, String[].class).getValue();
-		Set<String> merged = new LinkedHashSet<>();
-		merged.addAll(Arrays.asList(existing));
-		merged.addAll(Arrays.asList(packageNames));
-		return StringUtils.toStringArray(merged);
 	}
 
 	/**
@@ -141,10 +128,7 @@ public abstract class AutoConfigurationPackages {
 		PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 					.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
-			List<String> packageNames = new ArrayList<>();
-			for (String basePackage : attributes.getStringArray("basePackages")) {
-				packageNames.add(basePackage);
-			}
+			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
 				packageNames.add(basePackageClass.getPackage().getName());
 			}
@@ -216,6 +200,27 @@ public abstract class AutoConfigurationPackages {
 				this.loggedBasePackageInfo = true;
 			}
 			return this.packages;
+		}
+
+	}
+
+	static final class BasePackagesBeanDefinition extends GenericBeanDefinition {
+
+		private Set<String> basePackages = new LinkedHashSet<>();
+
+		BasePackagesBeanDefinition(String... basePackages) {
+			setBeanClass(BasePackages.class);
+			setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			addBasePackages(basePackages);
+		}
+
+		@Override
+		public Supplier<?> getInstanceSupplier() {
+			return () -> new BasePackages(StringUtils.toStringArray(this.basePackages));
+		}
+
+		private void addBasePackages(String[] additionalBasePackages) {
+			this.basePackages.addAll(Arrays.asList(additionalBasePackages));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -186,6 +187,21 @@ class ConditionMessageTests {
 	void availableShouldConstructMessage() {
 		ConditionMessage message = ConditionMessage.forCondition(Test.class).available("JMX");
 		assertThat(message.toString()).isEqualTo("@Test JMX is available");
+	}
+
+	@Test
+	void itemsTolerateNullInput() {
+		Collection<?> items = null;
+		ConditionMessage message = ConditionMessage.forCondition(Test.class).didNotFind("item").items(items);
+		assertThat(message.toString()).isEqualTo("@Test did not find item");
+	}
+
+	@Test
+	void quotedItemsTolerateNullInput() {
+		Collection<?> items = null;
+		ConditionMessage message = ConditionMessage.forCondition(Test.class).didNotFind("item").items(Style.QUOTE,
+				items);
+		assertThat(message.toString()).isEqualTo("@Test did not find item");
 	}
 
 }

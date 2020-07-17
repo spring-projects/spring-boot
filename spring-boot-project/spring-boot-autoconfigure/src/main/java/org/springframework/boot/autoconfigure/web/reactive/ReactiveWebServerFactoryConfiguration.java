@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import java.util.stream.Collectors;
 
 import io.undertow.Undertow;
+import org.eclipse.jetty.servlet.ServletHolder;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -100,7 +101,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
+	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class, ServletHolder.class })
 	static class EmbeddedJetty {
 
 		@Bean

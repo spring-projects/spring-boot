@@ -1469,6 +1469,10 @@
       "description": "Whether pooling is enabled. Enabled automatically if \"r2dbc-pool\" is on the classpath."
     },
     {
+      "name": "spring.r2dbc.pool.validation-depth",
+      "defaultValue": "local"
+    },
+    {
       "name": "spring.rabbitmq.cache.connection.mode",
       "defaultValue": "channel"
     },
@@ -1964,6 +1968,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset date-time format."
         }
       ],
       "providers": [
@@ -1982,6 +1990,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local time format"
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset time format."
         }
       ],
       "providers": [
@@ -2018,6 +2030,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset date-time format."
         }
       ],
       "providers": [
@@ -2036,6 +2052,10 @@
         {
           "value": "iso",
           "description": "ISO-8601 extended local time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset time format."
         }
       ],
       "providers": [

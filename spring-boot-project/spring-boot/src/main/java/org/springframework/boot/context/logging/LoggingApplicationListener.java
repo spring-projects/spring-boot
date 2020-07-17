@@ -301,7 +301,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
 		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
-		String logConfig = environment.getProperty(CONFIG_PROPERTY);
+		String logConfig = StringUtils.trimWhitespace(environment.getProperty(CONFIG_PROPERTY));
 		if (ignoreLogConfig(logConfig)) {
 			system.initialize(initializationContext, null, logFile);
 		}

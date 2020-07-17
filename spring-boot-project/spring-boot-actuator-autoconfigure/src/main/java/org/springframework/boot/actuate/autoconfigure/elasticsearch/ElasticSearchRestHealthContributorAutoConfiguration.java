@@ -49,8 +49,8 @@ public class ElasticSearchRestHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<ElasticsearchRestHealthIndicator, RestClient> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = { "elasticsearchRestHealthIndicator", "elasticsearchRestHealthContributor" })
-	public HealthContributor elasticsearchRestHealthContributor(Map<String, RestClient> clients) {
+	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
+	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {
 		return createContributor(clients);
 	}
 

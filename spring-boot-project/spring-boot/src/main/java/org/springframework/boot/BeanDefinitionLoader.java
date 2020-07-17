@@ -26,12 +26,14 @@ import groovy.lang.Closure;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.SpringProperties;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -53,17 +55,21 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Vladislav Kisel
+ * @author Sebastien Deleuze
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
+
+	// Static final field to facilitate code removal by Graal
+	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
 
 	private final Object[] sources;
 
 	private final AnnotatedBeanDefinitionReader annotatedReader;
 
-	private final XmlBeanDefinitionReader xmlReader;
+	private final AbstractBeanDefinitionReader xmlReader;
 
-	private BeanDefinitionReader groovyReader;
+	private final BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -80,10 +86,8 @@ class BeanDefinitionLoader {
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
-		this.xmlReader = new XmlBeanDefinitionReader(registry);
-		if (isGroovyPresent()) {
-			this.groovyReader = new GroovyBeanDefinitionReader(registry);
-		}
+		this.xmlReader = (XML_ENABLED ? new XmlBeanDefinitionReader(registry) : null);
+		this.groovyReader = (isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null);
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
 	}
@@ -94,8 +98,10 @@ class BeanDefinitionLoader {
 	 */
 	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
-		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
+		if (this.xmlReader != null) {
+			this.xmlReader.setBeanNameGenerator(beanNameGenerator);
+		}
 	}
 
 	/**
@@ -104,8 +110,10 @@ class BeanDefinitionLoader {
 	 */
 	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-		this.xmlReader.setResourceLoader(resourceLoader);
 		this.scanner.setResourceLoader(resourceLoader);
+		if (this.xmlReader != null) {
+			this.xmlReader.setResourceLoader(resourceLoader);
+		}
 	}
 
 	/**
@@ -114,101 +122,105 @@ class BeanDefinitionLoader {
 	 */
 	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
-		this.xmlReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
+		if (this.xmlReader != null) {
+			this.xmlReader.setEnvironment(environment);
+		}
 	}
 
 	/**
 	 * Load the sources into the reader.
-	 * @return the number of loaded beans
 	 */
-	int load() {
-		int count = 0;
+	void load() {
 		for (Object source : this.sources) {
-			count += load(source);
+			load(source);
 		}
-		return count;
 	}
 
-	private int load(Object source) {
+	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?>) {
-			return load((Class<?>) source);
+			load((Class<?>) source);
+			return;
 		}
 		if (source instanceof Resource) {
-			return load((Resource) source);
+			load((Resource) source);
+			return;
 		}
 		if (source instanceof Package) {
-			return load((Package) source);
+			load((Package) source);
+			return;
 		}
 		if (source instanceof CharSequence) {
-			return load((CharSequence) source);
+			load((CharSequence) source);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
 	}
 
-	private int load(Class<?> source) {
+	private void load(Class<?> source) {
 		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
-			load(loader);
+			((GroovyBeanDefinitionReader) this.groovyReader).beans(loader.getBeans());
 		}
 		if (isEligible(source)) {
 			this.annotatedReader.register(source);
-			return 1;
 		}
-		return 0;
 	}
 
-	private int load(GroovyBeanDefinitionSource source) {
-		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
-		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		return after - before;
-	}
-
-	private int load(Resource source) {
+	private void load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
-			return this.groovyReader.loadBeanDefinitions(source);
+			this.groovyReader.loadBeanDefinitions(source);
 		}
-		return this.xmlReader.loadBeanDefinitions(source);
+		else {
+			if (this.xmlReader == null) {
+				throw new BeanDefinitionStoreException("Cannot load XML bean definitions when XML support is disabled");
+			}
+			this.xmlReader.loadBeanDefinitions(source);
+		}
 	}
 
-	private int load(Package source) {
-		return this.scanner.scan(source.getName());
+	private void load(Package source) {
+		this.scanner.scan(source.getName());
 	}
 
-	private int load(CharSequence source) {
+	private void load(CharSequence source) {
 		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
-			return load(ClassUtils.forName(resolvedSource, null));
+			load(ClassUtils.forName(resolvedSource, null));
+			return;
 		}
 		catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-		// Attempt as resources
-		Resource[] resources = findResources(resolvedSource);
-		int loadCount = 0;
-		boolean atLeastOneResourceExists = false;
-		for (Resource resource : resources) {
-			if (isLoadCandidate(resource)) {
-				atLeastOneResourceExists = true;
-				loadCount += load(resource);
-			}
-		}
-		if (atLeastOneResourceExists) {
-			return loadCount;
+		// Attempt as Resources
+		if (loadAsResources(resolvedSource)) {
+			return;
 		}
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
-			return load(packageResource);
+			load(packageResource);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
+	}
+
+	private boolean loadAsResources(String resolvedSource) {
+		boolean foundCandidate = false;
+		Resource[] resources = findResources(resolvedSource);
+		for (Resource resource : resources) {
+			if (isLoadCandidate(resource)) {
+				foundCandidate = true;
+				load(resource);
+			}
+		}
+		return foundCandidate;
 	}
 
 	private boolean isGroovyPresent() {

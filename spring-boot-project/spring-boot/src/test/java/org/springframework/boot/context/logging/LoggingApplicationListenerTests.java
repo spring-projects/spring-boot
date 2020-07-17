@@ -161,6 +161,14 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	void trailingWhitespaceInLoggingConfigShouldBeTrimmed() {
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml ");
+		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		this.logger.info("Hello world");
+		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
+	}
+
+	@Test
 	void overrideConfigDoesNotExist() {
 		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {

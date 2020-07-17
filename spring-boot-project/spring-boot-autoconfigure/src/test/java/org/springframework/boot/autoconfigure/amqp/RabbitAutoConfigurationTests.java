@@ -28,6 +28,9 @@ import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
+import com.rabbitmq.client.impl.CredentialsProvider;
+import com.rabbitmq.client.impl.CredentialsRefreshService;
+import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
 
@@ -716,6 +719,49 @@ class RabbitAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void whenACredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(CredentialsProviderConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isEqualTo(CredentialsProviderConfiguration.credentialsProvider));
+	}
+
+	@Test
+	void whenAPrimaryCredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(PrimaryCredentialsProviderConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isEqualTo(PrimaryCredentialsProviderConfiguration.credentialsProvider));
+	}
+
+	@Test
+	void whenMultipleCredentialsProvidersAreAvailableThenConnectionFactoryUsesDefaultProvider() throws Exception {
+		this.contextRunner.withUserConfiguration(MultipleCredentialsProvidersConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isInstanceOf(DefaultCredentialsProvider.class));
+	}
+
+	@Test
+	void whenACredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(CredentialsRefreshServiceConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isEqualTo(CredentialsRefreshServiceConfiguration.credentialsRefreshService));
+	}
+
+	@Test
+	void whenAPrimaryCredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(PrimaryCredentialsRefreshServiceConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isEqualTo(PrimaryCredentialsRefreshServiceConfiguration.credentialsRefreshService));
+	}
+
+	@Test
+	void whenMultipleCredentialsRefreshServiceAreAvailableThenConnectionFactoryHasNoCredentialsRefreshService()
+			throws Exception {
+		this.contextRunner.withUserConfiguration(MultipleCredentialsRefreshServicesConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isNull());
+	}
+
 	private TrustManager getTrustManager(com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
 		SslContextFactory sslContextFactory = (SslContextFactory) ReflectionTestUtils.getField(rabbitConnectionFactory,
 				"sslContextFactory");
@@ -870,6 +916,98 @@ class RabbitAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class NoEnableRabbitConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CredentialsProviderConfiguration {
+
+		private static final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+
+		@Bean
+		CredentialsProvider credentialsProvider() {
+			return credentialsProvider;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryCredentialsProviderConfiguration {
+
+		private static final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+
+		@Bean
+		@Primary
+		CredentialsProvider credentialsProvider() {
+			return credentialsProvider;
+		}
+
+		@Bean
+		CredentialsProvider credentialsProvider1() {
+			return mock(CredentialsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleCredentialsProvidersConfiguration {
+
+		@Bean
+		CredentialsProvider credentialsProvider1() {
+			return mock(CredentialsProvider.class);
+		}
+
+		@Bean
+		CredentialsProvider credentialsProvider2() {
+			return mock(CredentialsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CredentialsRefreshServiceConfiguration {
+
+		private static final CredentialsRefreshService credentialsRefreshService = mock(
+				CredentialsRefreshService.class);
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService() {
+			return credentialsRefreshService;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryCredentialsRefreshServiceConfiguration {
+
+		private static final CredentialsRefreshService credentialsRefreshService = mock(
+				CredentialsRefreshService.class);
+
+		@Bean
+		@Primary
+		CredentialsRefreshService credentialsRefreshService1() {
+			return credentialsRefreshService;
+		}
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService2() {
+			return mock(CredentialsRefreshService.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleCredentialsRefreshServicesConfiguration {
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService1() {
+			return mock(CredentialsRefreshService.class);
+		}
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService2() {
+			return mock(CredentialsRefreshService.class);
+		}
 
 	}
 

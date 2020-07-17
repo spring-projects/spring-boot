@@ -43,8 +43,9 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -75,8 +76,8 @@ import org.springframework.util.StringUtils;
  * @author Andreas Neiser
  * @since 1.4.0
  */
-public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
-		implements BeanClassLoaderAware, BeanFactoryAware, BeanFactoryPostProcessor, Ordered {
+public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor, BeanClassLoaderAware,
+		BeanFactoryAware, BeanFactoryPostProcessor, Ordered {
 
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
@@ -424,7 +425,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	 * {@link BeanPostProcessor} to handle {@link SpyBean} definitions. Registered as a
 	 * separate processor so that it can be ordered above AOP post processors.
 	 */
-	static class SpyPostProcessor extends InstantiationAwareBeanPostProcessorAdapter implements PriorityOrdered {
+	static class SpyPostProcessor implements SmartInstantiationAwareBeanPostProcessor, PriorityOrdered {
 
 		private static final String BEAN_NAME = SpyPostProcessor.class.getName();
 

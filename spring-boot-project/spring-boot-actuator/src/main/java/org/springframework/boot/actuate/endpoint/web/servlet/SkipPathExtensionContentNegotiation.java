@@ -19,16 +19,16 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * {@link HandlerInterceptorAdapter} to ensure that
+ * {@link HandlerInterceptor} to ensure that
  * {@link org.springframework.web.accept.PathExtensionContentNegotiationStrategy} is
  * skipped for web endpoints.
  *
  * @author Phillip Webb
  */
-final class SkipPathExtensionContentNegotiation extends HandlerInterceptorAdapter {
+final class SkipPathExtensionContentNegotiation implements HandlerInterceptor {
 
 	@SuppressWarnings("deprecation")
 	private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class

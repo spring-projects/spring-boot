@@ -319,9 +319,9 @@ Application events are sent in the following order, as your application runs:
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
 In addition to these, the following events are also published after `ApplicationPreparedEvent` and before `ApplicationStartedEvent`:
 
-. A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
-. A `WebServerInitializedEvent` is sent after the `WebServer` is ready.
+- A `WebServerInitializedEvent` is sent after the `WebServer` is ready.
   `ServletWebServerInitializedEvent` and `ReactiveWebServerInitializedEvent` are the servlet and reactive variants respectively.
+- A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
 
 TIP: You often need not use application events, but it can be handy to know that they exist.
 Internally, Spring Boot uses events to handle a variety of tasks.
@@ -461,8 +461,8 @@ Properties are considered in the following order:
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 . <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
-. Application properties outside of your packaged jar (`application.properties` and YAML variants).
-. Application properties packaged inside your jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-application-property-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-application-property-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
@@ -1426,7 +1426,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
+include::{code-examples}/context/properties/bind/javabean/AppSystemProperties.java[tag=example]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1444,6 +1444,14 @@ These are:
 * `d` for days
 
 The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/constructor/AppSystemProperties.java[tag=example]
+----
+
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DurationUnit`) if it isn't milliseconds.
 Doing so gives a transparent upgrade path while supporting a much richer format.
@@ -1482,7 +1490,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
+include::{code-examples}/context/properties/bind/javabean/AppIoProperties.java[tag=example]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1498,6 +1506,13 @@ These are:
 * `TB` for terabytes
 
 The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/constructor/AppIoProperties.java[tag=example]
+----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
 Doing so gives a transparent upgrade path while supporting a much richer format.
@@ -2425,6 +2440,24 @@ Alternatively, rather than open all suffix patterns, it's more secure to just su
 	# You can also register additional file extensions/media types with:
 	# spring.mvc.contentnegotiation.media-types.adoc=text/asciidoc
 ----
+
+As of Spring Framework 5.3, Spring MVC supports several implementation strategies for matching request paths to Controller handlers.
+It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
+Spring Boot now provides a configuration property to choose and opt in the new strategy:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.pathmatch.matching-strategy=path_pattern_parser
+----
+
+For more details on why you should consider this new implementation, please check out the
+https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
+
+NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
+{spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants]
+and is incompatible with suffix pattern matching (configprop:spring.mvc.pathmatch.use-suffix-pattern[deprecated],
+configprop:spring.mvc.pathmatch.use-registered-suffix-pattern[deprecated]) or mapping the `DispatcherServlet`
+with a Servlet prefix (configprop:spring.mvc.servlet.path[]).
 
 
 
@@ -7652,6 +7685,9 @@ For example, if you provide web-specific configuration, your class may need to b
 If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
 That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
 
+As with standard `@Configuration` classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
+The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any `@DependsOn` relationships.
+
 
 
 [[boot-features-condition-annotations]]
@@ -7936,6 +7972,30 @@ It is recommended to add the following dependency in a module that contains auto
 	</dependency>
 ----
 
+If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the fat jar:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-autoconfigure-processor</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
 With Gradle 4.5 and earlier, the dependency should be declared in the `compileOnly` configuration, as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
@@ -8147,9 +8207,14 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 
 
 
-[[building-docker-images]]
-== Building Docker Images
-Spring Boot applications can be containerized by packaging them into Docker images.
+[[boot-features-container-images]]
+== Building Container Images
+Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create docker compatible container images that you can run anywhere>>.
+
+
+
+[[boot-features-container-images-docker]]
+=== Building Docker images
 A typical Spring Boot fat jar can be converted into a Docker image by adding just a few lines to a Dockerfile that can be used to build the image.
 However, there are various downsides to copying and running the fat jar as is in the docker image.
 There’s always a certain amount of overhead when running a fat jar without unpacking it, and in a containerized environment this can be noticeable.
@@ -8157,10 +8222,12 @@ The other issue is that putting your application's code and all its dependencies
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
-=== Layering Docker Images
+
+
+==== Layering Docker Images
 To make it easier to create optimized Docker images that can be built with a dockerfile, Spring Boot supports adding a layer index file to the jar.
-The `layers.idx` file lists all the files in the jar along with the layer that the file should go in.
-The list of files in the index is ordered based on the order in which the layers should be added.
+It provides a list of layers and the parts of the jar that should be contained within them.
+The list of layers in the index is ordered based on the order in which the layers should be added to the Docker/OCI image.
 Out-of-the-box, the following layers are supported:
 
 * `dependencies` (for regular released dependencies)
@@ -8172,14 +8239,17 @@ The following shows an example of a `layers.idx` file:
 
 [source]
 ----
-dependencies BOOT-INF/lib/library1.jar
-dependencies BOOT-INF/lib/library2.jar
-spring-boot-loader org/springframework/boot/loader/JarLauncher.class
-spring-boot-loader org/springframework/boot/loader/jar/JarEntry.class
-...
-snapshot-dependencies BOOT-INF/lib/library3-SNAPSHOT.jar
-application META-INF/MANIFEST.MF
-application BOOT-INF/classes/a/b/C.class
+- "dependencies":
+  - BOOT-INF/lib/library1.jar
+  - BOOT-INF/lib/library2.jar
+- "spring-boot-loader":
+  - org/springframework/boot/loader/JarLauncher.class
+  - org/springframework/boot/loader/jar/JarEntry.class
+- "snapshot-dependencies":
+  - BOOT-INF/lib/library3-SNAPSHOT.jar
+- "application":
+  - META-INF/MANIFEST.MF
+  - BOOT-INF/classes/a/b/C.class
 ----
 
 This layering is designed to separate code based on how likely it is to change between application builds.
@@ -8191,7 +8261,7 @@ For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-jars
 
 
 
-=== Writing the Dockerfile
+==== Writing the Dockerfile
 When you create a jar containing the layers index file, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 Here’s how you can launch your jar with a `layertools` jar mode:
@@ -8249,7 +8319,7 @@ Of course, a Dockerfile can be written without using the jarmode.
 You can use some combination of `unzip` and `mv` to move things to the right layer but jarmode simplifies that.
 
 
-
+[[boot-features-container-images-buildpacks]]
 === Buildpacks
 Dockerfiles are just one way to build docker images.
 Another way to build docker images is directly from your Maven or Gradle plugin, using buildpacks.

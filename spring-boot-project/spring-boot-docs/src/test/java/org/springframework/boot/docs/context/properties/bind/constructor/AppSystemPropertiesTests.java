@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.context.properties.bind;
+package org.springframework.boot.docs.context.properties.bind.constructor;
 
 import java.util.function.Consumer;
 

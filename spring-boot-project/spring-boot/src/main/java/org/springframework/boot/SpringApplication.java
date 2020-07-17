@@ -47,7 +47,9 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -163,21 +165,27 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for non-web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using a {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
 	/**
 	 * The class name of application context that will be used by default for web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
 			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
 
 	/**
 	 * The class name of application context that will be used by default for reactive web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
 
@@ -217,8 +225,6 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment environment;
 
-	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
-
 	private WebApplicationType webApplicationType;
 
 	private boolean headless = true;
@@ -238,6 +244,8 @@ public class SpringApplication {
 	private boolean isCustomEnvironment = false;
 
 	private boolean lazyInitialization = false;
+
+	private ApplicationContextFactory applicationContextFactory = new DefaultApplicationContextFactory();
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -550,7 +558,7 @@ public class SpringApplication {
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
+				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
@@ -560,32 +568,14 @@ public class SpringApplication {
 
 	/**
 	 * Strategy method used to create the {@link ApplicationContext}. By default this
-	 * method will respect any explicitly set application context or application context
-	 * class before falling back to a suitable default.
+	 * method will respect any explicitly set application context class or factory before
+	 * falling back to a suitable default.
 	 * @return the application context (not yet refreshed)
 	 * @see #setApplicationContextClass(Class)
+	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-		Class<?> contextClass = this.applicationContextClass;
-		if (contextClass == null) {
-			try {
-				switch (this.webApplicationType) {
-				case SERVLET:
-					contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);
-					break;
-				case REACTIVE:
-					contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
-					break;
-				default:
-					contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
-				}
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
-			}
-		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
+		return this.applicationContextFactory.create(this.webApplicationType);
 	}
 
 	/**
@@ -1154,10 +1144,27 @@ public class SpringApplication {
 	 * applications or {@link AnnotationConfigApplicationContext} for non web based
 	 * applications.
 	 * @param applicationContextClass the context class to set
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
 	 */
+	@Deprecated
 	public void setApplicationContextClass(Class<? extends ConfigurableApplicationContext> applicationContextClass) {
-		this.applicationContextClass = applicationContextClass;
 		this.webApplicationType = WebApplicationType.deduceFromApplicationContext(applicationContextClass);
+		this.applicationContextFactory = ApplicationContextFactory.forContextClass(applicationContextClass);
+	}
+
+	/**
+	 * Sets the factory that will be called to create the application context. If not set,
+	 * defaults to a factory that will create
+	 * {@link AnnotationConfigServletWebServerApplicationContext} for servlet web
+	 * applications, {@link AnnotationConfigReactiveWebServerApplicationContext} for
+	 * reactive web applications, and {@link AnnotationConfigApplicationContext} for
+	 * non-web applications.
+	 * @param applicationContextFactory the factory for the context
+	 * @since 2.4.0
+	 */
+	public void setApplicationContextFactory(ApplicationContextFactory applicationContextFactory) {
+		this.applicationContextFactory = applicationContextFactory;
 	}
 
 	/**
@@ -1300,6 +1307,28 @@ public class SpringApplication {
 		List<E> list = new ArrayList<>(elements);
 		list.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<>(list);
+	}
+
+	private static final class DefaultApplicationContextFactory implements ApplicationContextFactory {
+
+		@Override
+		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+			try {
+				switch (webApplicationType) {
+				case SERVLET:
+					return new AnnotationConfigServletWebServerApplicationContext();
+				case REACTIVE:
+					return new AnnotationConfigReactiveWebServerApplicationContext();
+				default:
+					return new AnnotationConfigApplicationContext();
+				}
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(
+						"Unable create a default ApplicationContext, please specify an ApplicationContextFactory", ex);
+			}
+		}
+
 	}
 
 }
