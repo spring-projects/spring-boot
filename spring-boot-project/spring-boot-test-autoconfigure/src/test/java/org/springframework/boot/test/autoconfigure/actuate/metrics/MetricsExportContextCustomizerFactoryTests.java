@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.metrics;
+
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,21 +28,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AutoConfigureMetrics} and
- * {@link ExcludeMetricExportersContextCustomizerFactory} working together.
+ * {@link MetricsExportContextCustomizerFactory} working together.
  *
  * @author Chris Bono
  */
-class ExcludeMetricExportersContextCustomizerFactoryTests {
+class MetricsExportContextCustomizerFactoryTests {
 
-	private ExcludeMetricExportersContextCustomizerFactory factory = new ExcludeMetricExportersContextCustomizerFactory();
+	private final MetricsExportContextCustomizerFactory factory = new MetricsExportContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoAnnotationShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class,
+				Collections.emptyList());
 		assertThat(customizer).isNotNull();
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		customizer.customizeContext(context, null);
-		assertThat(context.getEnvironment().getProperty("management.metrics.export.enabled")).isEqualTo("false");
+		assertThat(context.getEnvironment().getProperty("management.metrics.export.defaults.enabled"))
+				.isEqualTo("false");
 		assertThat(context.getEnvironment().getProperty("management.metrics.export.simple.enabled")).isEqualTo("true");
 	}
 

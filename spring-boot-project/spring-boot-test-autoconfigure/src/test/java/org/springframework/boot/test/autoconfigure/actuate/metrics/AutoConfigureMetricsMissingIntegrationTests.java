@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.metrics;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,13 +37,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class AutoConfigureMetricsMissingIntegrationTests {
 
-	@Autowired
-	private Environment environment;
+	@Test
+	void customizerRunsAndOnlyEnablesSimpleMeterRegistryWhenNoAnnotationPresent(
+			@Autowired ApplicationContext applicationContext) {
+		assertThat(applicationContext.getBean(MeterRegistry.class)).isInstanceOf(SimpleMeterRegistry.class);
+		assertThat(applicationContext.getBeansOfType(PrometheusMeterRegistry.class)).isEmpty();
+	}
 
 	@Test
-	void customizerRunsAndSetsExclusionPropertiesWhenNoAnnotationPresent() {
-		assertThat(this.environment.getProperty("management.metrics.export.enabled")).isEqualTo("false");
-		assertThat(this.environment.getProperty("management.metrics.export.simple.enabled")).isEqualTo("true");
+	void customizerRunsAndSetsExclusionPropertiesWhenNoAnnotationPresent(@Autowired Environment environment) {
+		assertThat(environment.getProperty("management.metrics.export.defaults.enabled")).isEqualTo("false");
+		assertThat(environment.getProperty("management.metrics.export.simple.enabled")).isEqualTo("true");
 	}
 
 }

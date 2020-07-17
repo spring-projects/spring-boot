@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.metrics;
 
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,13 +36,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMetrics
 class AutoConfigureMetricsPresentIntegrationTests {
 
-	@Autowired
-	private Environment environment;
+	@Test
+	void customizerDoesNotDisableAvailableMeterRegistriesWhenAnnotationPresent(
+			@Autowired ApplicationContext applicationContext) {
+		assertThat(applicationContext.getBeansOfType(PrometheusMeterRegistry.class)).hasSize(1);
+	}
 
 	@Test
-	void customizerDoesNotRunWhenAnnotationPresent() {
-		assertThat(this.environment.containsProperty("management.metrics.export.enabled")).isFalse();
-		assertThat(this.environment.containsProperty("management.metrics.export.simple.enabled")).isFalse();
+	void customizerDoesNotSetExclusionPropertiesWhenAnnotationPresent(@Autowired Environment environment) {
+		assertThat(environment.containsProperty("management.metrics.export.enabled")).isFalse();
+		assertThat(environment.containsProperty("management.metrics.export.simple.enabled")).isFalse();
 	}
 
 }

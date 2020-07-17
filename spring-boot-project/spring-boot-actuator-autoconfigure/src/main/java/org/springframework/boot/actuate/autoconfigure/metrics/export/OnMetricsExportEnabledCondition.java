@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.actuate.autoconfigure.metrics.export;
+
+import org.springframework.boot.actuate.autoconfigure.OnEndpointElementCondition;
+import org.springframework.context.annotation.Condition;
+
 /**
- * Test auto-configuration support for actuator metrics.
+ * {@link Condition} that checks if a metrics exporter is enabled.
+ *
+ * @author Chris Bono
  */
-package org.springframework.boot.test.autoconfigure.metrics;
+class OnMetricsExportEnabledCondition extends OnEndpointElementCondition {
+
+	protected OnMetricsExportEnabledCondition() {
+		super("management.metrics.export.", ConditionalOnEnabledMetricsExport.class);
+	}
+
+}

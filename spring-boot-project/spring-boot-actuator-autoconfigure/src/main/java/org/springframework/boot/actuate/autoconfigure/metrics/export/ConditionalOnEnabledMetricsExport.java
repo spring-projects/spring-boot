@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.condition;
+package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,11 +25,11 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that checks whether or not a particular metrics
- * exporter is enabled. If the {@code management.metrics.export.<name>.enabled} property
- * is configured then its value is used to determine if it matches. Otherwise, matches if
- * the value of the {@code management.metrics.export.enabled} property is {@code true} or
- * if it is not configured.
+ * {@link Conditional @Conditional} that checks whether or not a metrics exporter is
+ * enabled. If the {@code management.metrics.export.<name>.enabled} property is configured
+ * then its value is used to determine if it matches. Otherwise, matches if the value of
+ * the {@code management.metrics.export.defaults.enabled} property is {@code true} or if
+ * it is not configured.
  *
  * @author Chris Bono
  * @since 2.4.0
@@ -41,10 +41,7 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnEnabledMetricsExport {
 
 	/**
-	 * The name of the metrics exporter, typically derived from the name of the
-	 * corresponding auto-configuration class which follows the typical naming scheme of
-	 * {@code <name>MetricsExportAutoConfiguration}. For example, the
-	 * {@code DatadogMetricsExportAutoConfiguration} would have a name of 'datadog'.
+	 * The name of the metrics exporter.
 	 * @return the name of the metrics exporter
 	 */
 	String value();

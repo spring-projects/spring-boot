@@ -54,10 +54,10 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
-						"management.metrics.export.enabled=false")
+						"management.metrics.export.defaults.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
 						.doesNotHaveBean(WavefrontConfig.class).doesNotHaveBean(WavefrontSender.class));
 	}

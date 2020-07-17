@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.metrics;
+package org.springframework.boot.test.autoconfigure.actuate.metrics;
 
 import java.util.List;
 
@@ -28,30 +28,28 @@ import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.MergedContextConfiguration;
 
 /**
- * {@link ContextCustomizerFactory} that creates a customizer that globally disables
- * metrics exporters unless the {@link AutoConfigureMetrics} annotation is specified on
- * the test class.
+ * {@link ContextCustomizerFactory} that globally disables metrics export unless
+ * {@link AutoConfigureMetrics} is set on the test class.
  *
  * @author Chris Bono
  */
-class ExcludeMetricExportersContextCustomizerFactory implements ContextCustomizerFactory {
+class MetricsExportContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		boolean metricExportersEnabled = MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
+		boolean disableMetricsExport = !MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
 				.get(AutoConfigureMetrics.class).isPresent();
-		return !metricExportersEnabled ? new ExcludeMetricExportersContextCustomizer() : null;
+		return disableMetricsExport ? new DisableMetricExportContextCustomizer() : null;
 	}
 
-	static class ExcludeMetricExportersContextCustomizer implements ContextCustomizer {
+	static class DisableMetricExportContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedContextConfiguration) {
-			TestPropertyValues
-					.of("management.metrics.export.enabled=false", "management.metrics.export.simple.enabled=true")
-					.applyTo(context);
+			TestPropertyValues.of("management.metrics.export.defaults.enabled=false",
+					"management.metrics.export.simple.enabled=true").applyTo(context);
 		}
 
 		@Override

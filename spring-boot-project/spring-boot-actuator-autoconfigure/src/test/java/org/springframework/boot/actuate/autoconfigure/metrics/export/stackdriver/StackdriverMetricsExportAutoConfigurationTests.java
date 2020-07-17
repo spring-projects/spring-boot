@@ -59,10 +59,11 @@ class StackdriverMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
-						.doesNotHaveBean(StackdriverMeterRegistry.class).doesNotHaveBean(StackdriverConfig.class));
+				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(StackdriverMeterRegistry.class)
+						.doesNotHaveBean(StackdriverConfig.class));
 	}
 
 	@Test

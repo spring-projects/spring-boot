@@ -77,10 +77,11 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabledWithGlobalEnabledProperty() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.enabled=false").run((context) -> assertThat(context)
-						.doesNotHaveBean(GraphiteMeterRegistry.class).doesNotHaveBean(GraphiteConfig.class));
+				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(GraphiteMeterRegistry.class)
+						.doesNotHaveBean(GraphiteConfig.class));
 	}
 
 	@Test

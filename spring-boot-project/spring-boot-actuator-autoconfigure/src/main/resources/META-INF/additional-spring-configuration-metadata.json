@@ -346,6 +346,12 @@
       }
     },
     {
+      "name": "management.metrics.export.defaults.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable default metrics exporters.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.export.dynatrace.num-threads",
       "type": "java.lang.Integer",
       "description": "Number of threads to use with the metrics publishing scheduler.",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.condition;
+package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnEnabledMetricsExport} - uses the
- * {@link SimpleMetricsExportAutoConfiguration} as the target for the conditional
- * enablement to avoid creating a test export auto config.
+ * Tests for {@link ConditionalOnEnabledMetricsExport}.
  *
  * @author Chris Bono
  */
-class ConditonalOnEnabledMetricsExportAutoConfigurationTests {
+class ConditionalOnEnabledMetricsExportAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple());
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple());
 
 	@Test
 	void exporterIsEnabledByDefault() {
@@ -48,14 +45,14 @@ class ConditonalOnEnabledMetricsExportAutoConfigurationTests {
 
 	@Test
 	void exporterCanBeGloballyDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.export.enabled=false")
+		this.contextRunner.withPropertyValues("management.metrics.export.defaults.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean("simpleMeterRegistry"));
 	}
 
 	@Test
 	void exporterCanBeGloballyDisabledWitSpecificOverride() {
 		this.contextRunner
-				.withPropertyValues("management.metrics.export.enabled=false",
+				.withPropertyValues("management.metrics.export.defaults.enabled=false",
 						"management.metrics.export.simple.enabled=true")
 				.run((context) -> assertThat(context).hasBean("simpleMeterRegistry"));
 	}

@@ -57,6 +57,7 @@ dependencies {
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 	testImplementation("io.lettuce:lettuce-core")
+	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
