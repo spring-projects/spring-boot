@@ -43,6 +43,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.Test;
+import reactor.netty.http.HttpDecoderSpec;
+import reactor.netty.http.server.HttpRequestDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -531,6 +533,35 @@ class ServerPropertiesTests {
 	void undertowMaxHttpPostSizeMatchesDefault() {
 		assertThat(this.properties.getUndertow().getMaxHttpPostSize().toBytes())
 				.isEqualTo(UndertowOptions.DEFAULT_MAX_ENTITY_SIZE);
+	}
+
+	@Test
+	void nettyMaxChunkSizeMatchesHttpDecoderSpecDefault() {
+		assertThat(this.properties.getNetty().getMaxChunkSize().toBytes())
+				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_CHUNK_SIZE);
+	}
+
+	@Test
+	void nettyMaxInitialLineLenghtMatchesHttpDecoderSpecDefault() {
+		assertThat(this.properties.getNetty().getMaxInitialLineLength().toBytes())
+				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_INITIAL_LINE_LENGTH);
+	}
+
+	@Test
+	void nettyValidateHeadersMatchesHttpDecoderSpecDefault() {
+		assertThat(this.properties.getNetty().isValidateHeaders()).isEqualTo(HttpDecoderSpec.DEFAULT_VALIDATE_HEADERS);
+	}
+
+	@Test
+	void nettyH2cMaxContentLengthMatchesHttpDecoderSpecDefault() {
+		assertThat(this.properties.getNetty().getH2cMaxContentLength().toBytes())
+				.isEqualTo(HttpRequestDecoderSpec.DEFAULT_H2C_MAX_CONTENT_LENGTH);
+	}
+
+	@Test
+	void nettyInitialBufferSizeMatchesHttpDecoderSpecDefault() {
+		assertThat(this.properties.getNetty().getInitialBufferSize().toBytes())
+				.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
 	}
 
 	private Connector getDefaultConnector() throws Exception {
