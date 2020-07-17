@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 /**
  * @author Michael J. Simons
  */
-class Neo4jDriverAutoConfigurationTests {
+class Neo4jAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(Neo4jDriverAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(Neo4jAutoConfiguration.class));
 
 	@Test
 	void shouldRequireAllNeededClasses() {

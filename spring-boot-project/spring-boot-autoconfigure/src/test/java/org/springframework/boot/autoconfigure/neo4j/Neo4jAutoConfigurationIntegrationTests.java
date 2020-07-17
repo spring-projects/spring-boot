@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
-class Neo4jDriverAutoConfigurationIntegrationTests {
+class Neo4jAutoConfigurationIntegrationTests {
 
 	@Container
 	private static Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
@@ -53,8 +53,7 @@ class Neo4jDriverAutoConfigurationIntegrationTests {
 
 	private final Driver driver;
 
-	@Autowired
-	Neo4jDriverAutoConfigurationIntegrationTests(Driver driver) {
+	@Autowired Neo4jAutoConfigurationIntegrationTests(Driver driver) {
 		this.driver = driver;
 	}
 
@@ -69,7 +68,7 @@ class Neo4jDriverAutoConfigurationIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(Neo4jDriverAutoConfiguration.class)
+	@ImportAutoConfiguration(Neo4jAutoConfiguration.class)
 	static class TestConfiguration {
 
 	}

@@ -27,7 +27,7 @@ import org.neo4j.driver.Logging;
  *
  * @author Michael J. Simons
  */
-final class Neo4jSpringJclLogging implements Logging {
+class Neo4jSpringJclLogging implements Logging {
 
 	/**
 	 * This prefix gets added to the log names the driver requests to add some namespace

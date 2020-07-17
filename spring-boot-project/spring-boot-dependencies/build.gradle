@@ -1439,7 +1439,6 @@ bom {
 				"spring-boot-starter-logging",
 				"spring-boot-starter-mail",
 				"spring-boot-starter-mustache",
-				"spring-boot-starter-neo4j",
 				"spring-boot-starter-oauth2-client",
 				"spring-boot-starter-oauth2-resource-server",
 				"spring-boot-starter-quartz",
