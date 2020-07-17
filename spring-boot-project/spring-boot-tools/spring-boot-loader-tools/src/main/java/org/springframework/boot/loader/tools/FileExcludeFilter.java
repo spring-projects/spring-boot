@@ -20,13 +20,13 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 /**
- * Callback interface used to filter excluded packages.
+ * Callback interface used to filter excluded files, e.g. from packaging.
  *
  * @author Christoph Dreis
  * @since 2.4.0
  */
 @FunctionalInterface
-public interface PackageExcludeFilter {
+public interface FileExcludeFilter {
 
 	/**
 	 * Default pattern for Spring-Boot JAR names.
@@ -36,19 +36,18 @@ public interface PackageExcludeFilter {
 	/**
 	 * Default filter.
 	 */
-	PackageExcludeFilter DEFAULT = (name, file) -> {
-		if (SPRING_BOOT_JAR_PATTERN.matcher(name).matches()) {
+	FileExcludeFilter DEFAULT = (file) -> {
+		if (SPRING_BOOT_JAR_PATTERN.matcher(file.getName()).matches()) {
 			return JarFileUtils.hasManifestAttribute(file, "Exclude-From-Packaging");
 		}
 		return false;
 	};
 
 	/**
-	 * Checks whether or not a given package should be excluded.
-	 * @param name the name of the package
-	 * @param file the file of the package
-	 * @return {@code true} if the given package is excluded, {@code false} otherwise
+	 * Checks whether or not a given file should be excluded.
+	 * @param file the file to check
+	 * @return {@code true} if the given file is excluded, {@code false} otherwise
 	 */
-	boolean isExcluded(String name, File file);
+	boolean isExcluded(File file);
 
 }

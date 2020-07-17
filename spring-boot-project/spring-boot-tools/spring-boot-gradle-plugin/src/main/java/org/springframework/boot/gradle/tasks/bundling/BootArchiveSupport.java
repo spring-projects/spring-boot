@@ -42,7 +42,7 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
-import org.springframework.boot.loader.tools.PackageExcludeFilter;
+import org.springframework.boot.loader.tools.FileExcludeFilter;
 
 /**
  * Support class for implementations of {@link BootArchive}.
@@ -127,7 +127,7 @@ class BootArchiveSupport {
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
 				layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver,
-				encoding, layerResolver, PackageExcludeFilter.DEFAULT);
+				encoding, layerResolver, FileExcludeFilter.DEFAULT);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

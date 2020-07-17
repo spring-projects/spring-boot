@@ -86,21 +86,21 @@ public abstract class Packager {
 
 	private boolean includeRelevantJarModeJars = true;
 
-	private PackageExcludeFilter excludeFilter;
+	private FileExcludeFilter fileExcludeFilter;
 
 	/**
 	 * Create a new {@link Packager} instance.
 	 * @param source the source JAR file to package
 	 * @param layoutFactory the layout factory to use or {@code null}
-	 * @param excludeFilter the package exclude filter to use or {@code null}
+	 * @param fileExcludeFilter the file exclude filter to use or {@code null}
 	 */
-	protected Packager(File source, LayoutFactory layoutFactory, PackageExcludeFilter excludeFilter) {
+	protected Packager(File source, LayoutFactory layoutFactory, FileExcludeFilter fileExcludeFilter) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
 				"Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;
-		this.excludeFilter = excludeFilter;
+		this.fileExcludeFilter = fileExcludeFilter;
 	}
 
 	/**
@@ -109,7 +109,7 @@ public abstract class Packager {
 	 * @param layoutFactory the layout factory to use or {@code null}
 	 */
 	protected Packager(File source, LayoutFactory layoutFactory) {
-		this(source, layoutFactory, PackageExcludeFilter.DEFAULT);
+		this(source, layoutFactory, FileExcludeFilter.DEFAULT);
 	}
 
 	/**
@@ -493,7 +493,7 @@ public abstract class Packager {
 		}
 
 		private boolean isExcluded(Library library) {
-			return Packager.this.excludeFilter.isExcluded(library.getName(), library.getFile());
+			return Packager.this.fileExcludeFilter.isExcluded(library.getFile());
 		}
 
 		@Override

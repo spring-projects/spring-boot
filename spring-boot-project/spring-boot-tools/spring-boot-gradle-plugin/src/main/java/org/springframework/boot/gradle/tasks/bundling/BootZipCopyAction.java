@@ -48,11 +48,11 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.WorkResults;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
+import org.springframework.boot.loader.tools.FileExcludeFilter;
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
-import org.springframework.boot.loader.tools.PackageExcludeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -95,13 +95,13 @@ class BootZipCopyAction implements CopyAction {
 
 	private final LayerResolver layerResolver;
 
-	private final PackageExcludeFilter packageExcludeFilter;
+	private final FileExcludeFilter fileExcludeFilter;
 
 	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, boolean includeDefaultLoader,
 			String layerToolsLocation, Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding, LayerResolver layerResolver,
-			PackageExcludeFilter packageExcludeFilter) {
+			FileExcludeFilter fileExcludeFilter) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -114,7 +114,7 @@ class BootZipCopyAction implements CopyAction {
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
 		this.layerResolver = layerResolver;
-		this.packageExcludeFilter = packageExcludeFilter;
+		this.fileExcludeFilter = fileExcludeFilter;
 	}
 
 	@Override
@@ -236,7 +236,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void processFile(FileCopyDetails details) throws IOException {
-			if (BootZipCopyAction.this.packageExcludeFilter.isExcluded(details.getSourceName(), details.getFile())) {
+			if (BootZipCopyAction.this.fileExcludeFilter.isExcluded(details.getFile())) {
 				return;
 			}
 			String name = details.getRelativePath().getPathString();

@@ -29,11 +29,11 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PackageExcludeFilter}
+ * Tests for {@link FileExcludeFilter}
  *
  * @author Christoph Dreis
  */
-class PackageExcludeFilterTests {
+class FileExcludeFilterTests {
 
 	@TempDir
 	File temp;
@@ -42,28 +42,28 @@ class PackageExcludeFilterTests {
 	void defaultFilterExcludesSpringBootStarter() throws IOException {
 		String name = "spring-boot-starter-web-0.1.2.jar";
 		File file = springBootJarFile(name, true);
-		assertThat(PackageExcludeFilter.DEFAULT.isExcluded(name, file)).isTrue();
+		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isTrue();
 	}
 
 	@Test
 	void defaultFilterExcludesSpringBootConfigurationProcessor() throws IOException {
 		String name = "spring-boot-configuration-processor-0.1.2.jar";
 		File file = springBootJarFile(name, true);
-		assertThat(PackageExcludeFilter.DEFAULT.isExcluded(name, file)).isTrue();
+		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isTrue();
 	}
 
 	@Test
 	void defaultFilterDoesNotExcludeWithoutManifest() throws IOException {
 		String name = "spring-boot-starter-web-0.1.2.jar";
 		File file = springBootJarFile(name, false);
-		assertThat(PackageExcludeFilter.DEFAULT.isExcluded(name, file)).isFalse();
+		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isFalse();
 	}
 
 	@Test
 	void defaultFilterDoesNotExcludeWithNonMatchingName() throws IOException {
 		String name = "test.jar";
 		File file = springBootJarFile(name, true);
-		assertThat(PackageExcludeFilter.DEFAULT.isExcluded(name, file)).isFalse();
+		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isFalse();
 	}
 
 	private File newFile(String name) throws IOException {
