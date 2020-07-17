@@ -21,6 +21,7 @@ import java.net.URI;
 import java.time.Duration;
 
 import org.neo4j.driver.net.ServerAddressResolver;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
